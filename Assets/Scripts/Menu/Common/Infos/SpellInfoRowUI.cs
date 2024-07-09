@@ -102,7 +102,7 @@ namespace Menu.Common.Infos
 
             float bonus = newValue.Value - value;
             m_BonusValue.gameObject.SetActive(true);
-            m_BonusValue.text = (value > 0 ? "+" : "") + FormatValue(bonus);
+            m_BonusValue.text = (bonus > 0 ? "+" : "") + FormatValue(bonus);
             m_BonusValue.color = bonus > 0 ? Color.green : Color.red;
         }
 

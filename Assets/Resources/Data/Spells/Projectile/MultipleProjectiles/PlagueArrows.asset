@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rarety: 2
   Linked: 0
-  Graphics: {fileID: 2272309172655654138, guid: e2ddd12911823e644a520957c64e1176, type: 3}
+  Graphics: {fileID: 8404073712820093283, guid: 8c55c61062ca286458b626fd86d47373, type: 3}
+  SpellEventActions: []
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
@@ -26,6 +27,7 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 8300000, guid: 01cc97220f578824281af20cf951c2c5, type: 3}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 9
+  LockTargetAt: 2
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
@@ -60,8 +62,8 @@ MonoBehaviour:
   m_Speed: 8
   ProjectileData: {fileID: 0}
   MultiProjectileType: 1
-  NProjectiles: 5
+  m_NProjectiles: 5
   m_ProjectileZoneSize: -1
   DelayBetweenLaunches: 0.35
-  NWaves: 1
+  m_NWaves: 1
   DelayBetweenWaves: 0

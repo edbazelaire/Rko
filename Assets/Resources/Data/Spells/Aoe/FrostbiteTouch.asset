@@ -15,7 +15,8 @@ MonoBehaviour:
   Rarety: 0
   Linked: 0
   Graphics: {fileID: 4924508274929071776, guid: 2df5e7fba6f073547b02730c76b0ebfe, type: 3}
-  Preview: {fileID: 7274605584167926077, guid: af10fdf067d9a2d4fbb11e75811a5d12, type: 3}
+  SpellEventActions: []
+  Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs:
   - {fileID: 610942752557020422, guid: b34b2f7651fde574586202b4a633cf94, type: 3}
@@ -27,11 +28,13 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 8300000, guid: 3ecced41c79ec3840824bd3813604df2, type: 3}
   OnEndSoundFX: {fileID: 8300000, guid: 299a1418d59067345b65a80b8a8b7e87, type: 3}
   SpellTarget: 1
+  LockTargetAt: 2
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 150
+  m_Damage: 100
   m_Heal: 0
+  m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
   m_Duration: 0
@@ -46,11 +49,12 @@ MonoBehaviour:
   m_Size: 4
   TriggerPlayer: 1
   EnemyStateEffects:
-  - StateEffect: 2
+  - StateEffect: 6
     Stacks: 0
     Duration: 0
     SpeedBonus: 0
   AllyStateEffects: []
+  StateEffectStackFactor: 0
   PersistanceAfterEnd: 1
   Animation: 6
   IsCancellable: 0

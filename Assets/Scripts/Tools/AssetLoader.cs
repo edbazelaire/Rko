@@ -31,6 +31,9 @@ namespace Tools
         public const string c_PrefabsPath                   = "Prefabs/";
         // ---- Managers 
         public const string c_ManagersPath                  = c_PrefabsPath + "Managers/";
+        // ---- Backgrounds 
+        public const string c_BackgroundsPath               = c_PrefabsPath + "Backgrounds/";
+        public const string c_ArenaBackgroundsPath          = c_BackgroundsPath + "Arenas/";
         // ---- Characters 
         public const string c_CharactersPreviewPath         = c_PrefabsPath + "Characters/";
         // ---- Spells 
@@ -74,8 +77,8 @@ namespace Tools
         public const string c_RaysPath                      = c_UISpritesPath + "Rays/";
         
         // -- Backgrounds
-        public const string c_BackgroundsPath               = c_SpritesPath + "Backgrounds/";
-        public const string c_ArenaBackgroundsPath          = c_BackgroundsPath + "Arenas/";
+        public const string c_BackgroundsImagePath         = c_SpritesPath + "Backgrounds/";
+        public const string c_ArenaBackgroundsImagePath    = c_BackgroundsImagePath + "Arenas/";
 
         // -- Leagues
         public const string c_LeagueBannersPath             = c_SpritesPath + "Leagues/";

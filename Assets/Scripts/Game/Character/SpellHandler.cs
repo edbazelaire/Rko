@@ -3,6 +3,7 @@ using Data;
 using Data.GameManagement;
 using Enums;
 using Game.Loaders;
+using Game.Spells;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -78,7 +79,7 @@ namespace Game.Character
         public float                        AnimationTimer          => m_AnimationTimer;
         public ESpell                       SelectedSpell           => m_SelectedSpell;
         public ESpell                       AutoAttack              => m_AutoAttack;
-        public ESpell                       SpecialAbility         => m_SpecialAbility;
+        public ESpell                       SpecialAbility          => m_SpecialAbility;
         public ESpell                       Ultimate                => m_Ultimate;
         public Transform                    SpellSpawn              => m_SpellSpawn;
         public Vector3                      TargetPos               => m_TargetPos.Value;   
@@ -86,6 +87,7 @@ namespace Game.Character
         // ===================================================================================
         // EVENTS
         public Action<ESpell> OnSpellCasted;
+        public Action<string, ESpellEvent> OnPreSpellEvent;
 
         #endregion
 
@@ -114,11 +116,6 @@ namespace Game.Character
             // only server can update cooldowns
             if (IsServer)
                 UpdateCooldowns();
-
-            if (! IsOwner)
-                return; 
-
-            CheckActionExectution();
         }
 
         #endregion
@@ -451,6 +448,9 @@ namespace Game.Character
             // SETUP : get spell data and set animation to motion
             SpellData spellData = GetSpellData(spell);
 
+            if (spellData.LockTargetAt != ESpellEvent.OnCast)
+                LockTarget(spellData);
+
             // SETUP : casting data
             m_IsCurrentSpellCancellable = spellData.IsCancellable;
             m_IsCasting.Value = true;
@@ -460,6 +460,10 @@ namespace Game.Character
 
             // set animation timer
             m_AnimationTimer = spellData.AnimationTimer / CurrentCastSpeedFactor;
+
+            // call for the spell animation
+            CallSpellEventClientRPC(spellData.name, ESpellEvent.OnStartCast);
+            m_Controller.AnimationHandler.PlayAnimationClientRPC(spellData.Animation, m_AnimationTimer);
 
             // wait for animation to finish (if not already)
             while (m_AnimationTimer > 0f)
@@ -484,6 +488,8 @@ namespace Game.Character
             Cast(spell);
             m_Controller.Movement.CancelMovement(false);
 
+            m_Controller.AnimationHandler.CancelCastAnimation();
+
             m_IsCasting.Value = false;
             m_IsCurrentSpellCancellable = true;
             m_CastCoroutine = null;
@@ -504,16 +510,11 @@ namespace Game.Character
                 ErrorHandler.Log("Cast : " + spell, ELogTag.SpellHandler);
 
             SpellData spellData = GetSpellData(spell, m_SpellLevelsNet[GetSpellIndex(spell)]);
-            if (m_IsSelectedAutoTarget)
-                spellData.ForceAutoTarget();
-
-            // recalculate target depending on spell and conditions (autocast, ...)
-            var target = m_TargetPos.Value;
-            spellData.CalculateTarget(ref target, m_Controller.PlayerId);
-            m_TargetPos.Value = target;
+            if (spellData.LockTargetAt == ESpellEvent.OnCast)
+                LockTarget(spellData);
 
             // get spawn position and cast the spell
-            StartCoroutine(spellData.CastDelay(m_Controller.PlayerId, target, m_SpellSpawn.position, m_SpellSpawn.rotation, recalculateTarget: false));
+            StartCoroutine(spellData.CastDelay(m_Controller.PlayerId, m_TargetPos.Value, m_SpellSpawn.position, m_SpellSpawn.rotation, recalculateTarget: false));
 
             // cast spell on client side
             SpellCastedClientRPC(spell);
@@ -523,7 +524,9 @@ namespace Game.Character
                 m_Controller.EnergyHandler.SpendEnergy(spellData.EnergyCost);
 
             // inform that casting is done
+            CallSpellEventClientRPC(spellData.name, ESpellEvent.OnCast);
             m_IsCasting.Value = false;
+            m_Controller.AnimationHandler.CancelCastAnimation();
 
             // setup global cooldown
             m_GlobalCooldown.Value = c_GlobalCooldown;
@@ -547,12 +550,34 @@ namespace Game.Character
             m_IsCasting.Value = false;
             m_IsCurrentSpellCancellable = true;
 
+            // cancel cast animation
+            m_Controller.AnimationHandler.CancelCastAnimation();
+
+            // call PreSpellEvent
+            CallSpellEventClientRPC(m_SelectedSpell.ToString(), ESpellEvent.OnEnd);
+
             // check Coroutine
             if (m_CastCoroutine != null)
             {
                 StopCoroutine(m_CastCoroutine);
                 m_CastCoroutine = null;
             }
+        }
+
+        #endregion
+
+
+        #region Spell Target & Position
+
+        void LockTarget(SpellData spellData)
+        {
+            if (m_IsSelectedAutoTarget)
+                spellData.ForceAutoTarget();
+
+            // recalculate target depending on spell and conditions (autocast, ...)
+            var target = m_TargetPos.Value;
+            spellData.CalculateTarget(ref target, m_Controller.PlayerId);
+            m_TargetPos.Value = target;
         }
 
         #endregion
@@ -574,51 +599,6 @@ namespace Game.Character
                     continue;
                 SetCooldown(spell, GetCooldown(spell) - Time.deltaTime);
             }
-        }
-
-        /// <summary>
-        /// Check if movement inputs have beed pressed
-        /// </summary>
-        void CheckActionExectution()
-        {
-            // ========================================================================
-            // TODO : For now all spells are by default AUTO TARGET, so there is no need to do that heavy check
-            return;
-            // ========================================================================
-
-            // get SelectedSpell from server
-            var selectedSpell = m_SelectedSpell;
-
-            // if no spell is selected : return
-            if (selectedSpell == ESpell.Count)
-                return;
-
-            // AUTO TARGET : no previsu - leave
-            if (IsAutoTarget(selectedSpell))
-                return;
-
-            // mouse button DOWN : display previsu
-            if (Input.GetMouseButtonDown(0) && IsTargettable())
-            {
-                // if unable to cast : return
-                if (!CanCast(selectedSpell))
-                    return;
-
-                DisplaySpellPreview();
-            }
-
-            // mouse button UP : fire spell
-            if (Input.GetMouseButtonUp(0))
-            {
-                if (! IsTargettable())
-                    return;
-
-                // get shoot position
-                SetTargetPosServerRPC(new Vector3(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, 0, 0));
-                RequestStartCastServerRPC(selectedSpell);
-            }
-
-            return;
         }
 
         /// <summary>
@@ -746,6 +726,11 @@ namespace Game.Character
                 && MousePosition.y < targettableArea.position.y + targettableAreaRect.rect.height;
         }
 
+        public float GetCastSpeed(ESpell spell)
+        {
+            return Mathf.Max(0.01f, spell == AutoAttack ? Settings.AutoAttackSpeedFactor * m_Controller.StateHandler.GetFloat(EStateEffectProperty.AttackSpeed) : Settings.CastSpeedFactor * m_Controller.StateHandler.GetFloat(EStateEffectProperty.CastSpeed));
+        }
+
         #endregion
 
 
@@ -806,6 +791,12 @@ namespace Game.Character
 
 
         #region Listeners
+
+        [ClientRpc]
+        void CallSpellEventClientRPC(string spellName, ESpellEvent spellEvent)
+        {
+            OnPreSpellEvent?.Invoke(spellName, spellEvent);
+        }
 
         void OnSelectedSpellChanged(int oldValue, int newValue)
         {
@@ -880,7 +871,7 @@ namespace Game.Character
 
         public bool IsAutoAttack => m_SelectedSpell == AutoAttack;
 
-        public float CurrentCastSpeedFactor => IsAutoAttack ? Settings.AutoAttackSpeedFactor * m_Controller.StateHandler.GetFloat(EStateEffectProperty.AttackSpeed) : Settings.CastSpeedFactor * m_Controller.StateHandler.GetFloat(EStateEffectProperty.CastSpeed);
+        public float CurrentCastSpeedFactor => GetCastSpeed(m_SelectedSpell);
 
         #endregion
     }

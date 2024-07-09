@@ -1,6 +1,4 @@
-﻿using Enums;
-using System;
-using Tools;
+﻿using Tools;
 using Unity.Netcode;
 
 namespace Game.Character
@@ -50,11 +48,6 @@ namespace Game.Character
             }
 
             m_Controller.SpellHandler.TryStartCastSpell(m_Controller.SpellHandler.AutoAttack);
-
-            ErrorHandler.Log("Speed : " + m_Controller.StateHandler.GetFloat(EStateEffectProperty.SpeedBonus));
-            ErrorHandler.Log("AttackSpeed : " + m_Controller.StateHandler.GetFloat(EStateEffectProperty.AttackSpeed));
-            ErrorHandler.Log("ResFix : " + m_Controller.StateHandler.GetInt(EStateEffectProperty.ResistanceFix));
-            ErrorHandler.Log("BonusDamages : " + m_Controller.StateHandler.GetInt(EStateEffectProperty.BonusDamages));
         }
 
 

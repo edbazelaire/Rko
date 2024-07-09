@@ -15,25 +15,50 @@ MonoBehaviour:
   Rarety: 2
   Linked: 0
   Graphics: {fileID: 6310744135911870057, guid: f0c38580e3e6e8e47bba9dc2913a2803, type: 3}
+  SpellEventActions:
+  - Prefab: {fileID: 1873985756121678, guid: dac7861a5b9b8674d97168aa93cd504c, type: 3}
+    GFXLifetime:
+      StartSpellPart: 4
+      EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1
+    Size: 0.5
+    OrderInLayer: 0
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Animation: 0
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
   OnHit: []
+  OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 3b0634fb8970b3646b290d3a85c0417c, type: 3}
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 1
+  LockTargetAt: 2
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 20
   m_Heal: 0
+  m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 0
+  m_SpellsScalingLevel:
+  - Property: 2
+    Value: 0.1
+  - Property: 1
+    Value: 0.1
+  - Property: 3
+    Value: 0.05
   m_Size: 0.5
   TriggerPlayer: 1
   EnemyStateEffects:

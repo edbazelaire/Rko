@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7d51f633e46b344920f012b0e1eca8, type: 3}
   m_Name: FireArena
   m_EditorClassIdentifier: 
+  m_BotPerfLevelCeiling: 10
   m_ArenaLevelData:
   - Spells: 1c00000004000000
     rewardsData:
@@ -325,3 +326,60 @@ MonoBehaviour:
       CharacterLevel: 14
     - Character: 0
       CharacterLevel: 15
+  - Spells: 200000001b0000001100000001000000
+    rewardsData:
+      Currencies: []
+      Chests: 06000000
+      Collectables: []
+      AchievementRewards: []
+    StageData:
+    - Character: 1
+      CharacterLevel: 15
+    - Character: 2
+      CharacterLevel: 15
+    - Character: 4
+      CharacterLevel: 15
+    - Character: 3
+      CharacterLevel: 15
+    - Character: 0
+      CharacterLevel: 16
+  - Spells: 200000001b0000001100000001000000
+    rewardsData:
+      Currencies: []
+      Chests: 06000000
+      Collectables: []
+      AchievementRewards: []
+    StageData:
+    - Character: 1
+      CharacterLevel: 16
+    - Character: 2
+      CharacterLevel: 16
+    - Character: 4
+      CharacterLevel: 16
+    - Character: 3
+      CharacterLevel: 16
+    - Character: 0
+      CharacterLevel: 17
+  - Spells: 200000001b0000001100000001000000
+    rewardsData:
+      Currencies: []
+      Chests: 06000000
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 1
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Badge: 1003
+        League: 0
+    StageData:
+    - Character: 0
+      CharacterLevel: 17
+    - Character: 0
+      CharacterLevel: 18
+    - Character: 0
+      CharacterLevel: 19
+    - Character: 0
+      CharacterLevel: 20
+    - Character: 0
+      CharacterLevel: 21

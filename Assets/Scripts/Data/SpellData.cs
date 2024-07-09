@@ -40,6 +40,10 @@ namespace Data
         [Header("Prefabs")]
         [Description("Prefab of the spell that will be instantiated when the spell is cast")]
         public GameObject           Graphics;
+
+        [Description("List of all Effects appening when the targets")]
+        public List<SPrefabSpawn>   SpellEventActions;
+
         [Description("Preview of the spell target on the ground displayed before the cast of the spell")]
         public GameObject           Preview;
         [Description("Particles displayed during the animation")]
@@ -62,6 +66,8 @@ namespace Data
         [Header("Stats")]
         [Description("Type of targetting for the spell")]
         public ESpellTarget                 SpellTarget         = ESpellTarget.EnemyZone;
+        [Description("Type of targetting for the spell")]
+        public ESpellEvent                  LockTargetAt        = ESpellEvent.OnCast;
         [Description("Maximum number of target that this spell can hit")]
         public int                          MaxHit              = 1;
         [Description("Energy gained when this spell hits his target")]
@@ -101,6 +107,8 @@ namespace Data
         public List<SStateEffectData> EnemyStateEffects;
         [Description("List of effects that proc on hitting an ally")]
         public List<SStateEffectData> AllyStateEffects;
+        [Description("The stats are multiplied by the number of stacks present on the enemy target")]
+        public EStateEffect StateEffectStackFactor;
 
         [Header("Graphics")]
         [Description("Delay for the spell visual to be deleted after end of the spell")]
@@ -178,7 +186,7 @@ namespace Data
             ErrorHandler.Log("Casting spell : " + Name, ELogTag.Spells);
 
             // Play SoundEffect
-            GameManager.Instance.PlaySoundClientRPC(Name, ESpellActionPart.Cast);
+            GameManager.Instance.PlaySoundClientRPC(Name, ESpellEvent.OnCast);
 
             if (recalculateTarget)
                 CalculateTarget(ref target, clientId);
@@ -201,6 +209,8 @@ namespace Data
             // backpropagate the spell intialization to the client (for the preview)
             spell.InitializeClientRpc(clientId, target, Name, m_Level);
         }
+
+
 
         /// <summary>
         /// Spawn the prefabs that are displayed when the spell is casted
@@ -600,12 +610,12 @@ namespace Data
             return (float)Math.Pow( 1 + data.Value, m_Level - 1);
         }
 
-    #endregion
+        #endregion
 
 
-    #region Public Dependent Accessors
+        #region Public Dependent Accessors
 
-    public void ForceAutoTarget()
+        public void ForceAutoTarget()
         {
             if (IsAutoTarget)
                 return;

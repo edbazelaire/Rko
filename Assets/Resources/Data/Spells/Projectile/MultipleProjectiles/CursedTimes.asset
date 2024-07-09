@@ -15,6 +15,7 @@ MonoBehaviour:
   Rarety: 1
   Linked: 0
   Graphics: {fileID: 2272309172655654138, guid: 936d3e7a462a28f4bb5405c8c9a291d0, type: 3}
+  SpellEventActions: []
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
@@ -26,10 +27,11 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 8300000, guid: 01cc97220f578824281af20cf951c2c5, type: 3}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 9
+  LockTargetAt: 2
   MaxHit: 1
   EnergyGain: 3
   EnergyCost: 0
-  m_Damage: 80
+  m_Damage: 50
   m_Heal: 0
   m_LifeSteal: 0
   Distance: -1
@@ -39,11 +41,13 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
-  - Property: 1
-    Value: 0.1
   - Property: 3
     Value: 0.05
-  m_Size: 0.3
+  - Property: 6
+    Value: 0.065
+  - Property: 7
+    Value: 0.025
+  m_Size: 0.6
   TriggerPlayer: 1
   EnemyStateEffects:
   - StateEffect: 6
@@ -51,10 +55,11 @@ MonoBehaviour:
     Duration: 0
     SpeedBonus: 0
   - StateEffect: 13
-    Stacks: 3
+    Stacks: 4
     Duration: 0
     SpeedBonus: 0
   AllyStateEffects: []
+  StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 2
   IsCancellable: 0
@@ -64,8 +69,8 @@ MonoBehaviour:
   m_Speed: 8
   ProjectileData: {fileID: 0}
   MultiProjectileType: 2
-  NProjectiles: 3
+  m_NProjectiles: 3
   m_ProjectileZoneSize: -1
   DelayBetweenLaunches: 0.1
-  NWaves: 5
+  m_NWaves: 5
   DelayBetweenWaves: 0.5

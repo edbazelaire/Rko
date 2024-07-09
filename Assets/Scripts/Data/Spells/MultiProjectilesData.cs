@@ -8,6 +8,7 @@ using UnityEngine;
 using Assets;
 using Unity.VisualScripting;
 using Data.GameManagement;
+using System;
 
 namespace Data
 {
@@ -26,15 +27,20 @@ namespace Data
         [Description("Type of multiple projectile launch")]
         public EMultiProjectileType MultiProjectileType;
         [Description("Number of projectiles launched")]
-        public int NProjectiles = 1;
+        [SerializeField] protected int m_NProjectiles = 1;
         [Description("Size of the projectile zone")]
         [SerializeField] protected float m_ProjectileZoneSize = 0f;
         [Description("Delay between each projectile cast")]
         public float DelayBetweenLaunches = 0f;
         [Description("Number of waves")]
-        public int NWaves = 1;
+        [SerializeField] protected int m_NWaves = 1;
         [Description("Delay between each waves")]
         public float DelayBetweenWaves = 0f;
+
+        // ============================================================================================
+        // Public Accessors
+        public int NProjectiles => (int)Math.Floor(m_NProjectiles * GetSpellLevelFactor(ESpellProperty.NProjectiles));
+        public int NWaves => (int)Math.Floor(m_NWaves * GetSpellLevelFactor(ESpellProperty.NWaves));
 
         // ============================================================================================
         // Private Members
@@ -90,7 +96,7 @@ namespace Data
                 if (i == NWaves - 1 || m_IsCancelled)
                     break;
 
-                controller.AnimationHandler.CastAnimation(Animation, DelayBetweenWaves);
+                controller.AnimationHandler.PlayAnimationClientRPC(Animation, DelayBetweenWaves);
 
                 var delay = DelayBetweenWaves;
                 while (delay > 0)
@@ -189,7 +195,7 @@ namespace Data
                     break;
 
                 case (EMultiProjectileType.Random):
-                    target.x += Random.Range(-zoneSize / 2, zoneSize / 2);
+                    target.x += UnityEngine.Random.Range(-zoneSize / 2, zoneSize / 2);
                     break;
 
                 default:

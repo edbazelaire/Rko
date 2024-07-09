@@ -164,7 +164,7 @@ namespace Save
         // -- Informations
         public Dictionary<Type, SInfoCollectable> InfoCollectables = new Dictionary<Type, SInfoCollectable>
         {
-            { typeof(ECharacter),   new SInfoCollectable(KEY_CHARACTERS,  new Enum[] { CharacterBuildsCloudData.DEFAULT_CHARACTER, ECharacter.Bruh, ECharacter.Kahnan, ECharacter.Srug, ECharacter.Marcus } ) },
+            { typeof(ECharacter),   new SInfoCollectable(KEY_CHARACTERS,  new Enum[] { CharacterBuildsCloudData.DEFAULT_CHARACTER, ECharacter.Nagini, ECharacter.Kahnan, ECharacter.Srug, ECharacter.Marcus } ) },
             { typeof(ESpell),       new SInfoCollectable(KEY_SPELLS,      CharacterBuildsCloudData.DEFAULT_BUILD.Cast<Enum>().ToArray() ) },
             { typeof(ERune),        new SInfoCollectable(KEY_RUNES,       new Enum[] { CharacterBuildsCloudData.DEFAULT_RUNE, ERune.PoisonRune, ERune.CurseRune, ERune.FireRune, ERune.FrostRune } ) }
         };
@@ -487,6 +487,44 @@ namespace Save
             }
         }
 
+        /// <summary>
+        /// Check that all current values from the database exists (in case of deletion from one version to another)
+        /// </summary>
+        void CheckAllNonExistingCollectables()
+        {
+            foreach (Type collectableType in COLLECTABLE_TYPES)
+            {
+                CheckNonExistingCollectable(collectableType);
+            }
+        }
+
+        void CheckNonExistingCollectable(Type collectableType)
+        {
+            List<int> indexesToRemove = new List<int>();
+            int index = 0;
+            var list = (m_Data[InfoCollectables[collectableType].Key] as List<SCollectableCloudData>);
+            foreach (var item in list)
+            {
+                if (! Enum.GetNames(collectableType).Contains(item.CollectableName))
+                {
+                    indexesToRemove.Add(index);
+                }
+                index++;
+            }
+
+            if (indexesToRemove.Count == 0)
+                return;
+
+            // remove unused values from the data
+            ErrorHandler.Warning("Found " + indexesToRemove.Count + " data to remove");
+            foreach (int idx in indexesToRemove)
+            {
+                list.RemoveAt(idx);
+            }
+            m_Data[InfoCollectables[collectableType].Key] = list;
+            SaveValue(InfoCollectables[collectableType].Key);
+        }
+
         void CheckAllMissingCollectables()
         {
             foreach (Type collectableType in COLLECTABLE_TYPES)
@@ -563,6 +601,7 @@ namespace Save
         protected override void CheckData() 
         {
             CheckCurrencies();
+            CheckAllNonExistingCollectables();
             CheckAllMissingCollectables();
         }
 

@@ -15,6 +15,7 @@ MonoBehaviour:
   Rarety: 1
   Linked: 0
   Graphics: {fileID: 4510707380993797748, guid: 51d6d62dbf340c44e8509011ca22e292, type: 3}
+  SpellEventActions: []
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
@@ -26,6 +27,7 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 8300000, guid: ee9ac0e69a3a58e4481382b3604d9edf, type: 3}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 1
+  LockTargetAt: 2
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
@@ -39,10 +41,10 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
-  - Property: 1
-    Value: 0.1
   - Property: 3
     Value: 0.05
+  - Property: 6
+    Value: 0.1
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects:
@@ -64,8 +66,8 @@ MonoBehaviour:
   m_Speed: 10
   ProjectileData: {fileID: 0}
   MultiProjectileType: 0
-  NProjectiles: 5
+  m_NProjectiles: 5
   m_ProjectileZoneSize: 0
   DelayBetweenLaunches: 0.3
-  NWaves: 1
+  m_NWaves: 1
   DelayBetweenWaves: 0

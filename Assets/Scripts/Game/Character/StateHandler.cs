@@ -188,9 +188,11 @@ namespace Game.Character
                     return (baseValue + GetInt(EStateEffectProperty.BonusTickHeal));
 
                 case EStateEffectProperty.Damages:
+                case EStateEffectProperty.EndDamages:
                     return ApplyBonusDamages((int)Mathf.Round(baseValue));
 
                 case EStateEffectProperty.Heal:
+                case EStateEffectProperty.EndHeal:
                     return ApplyBonusHeal((int)Mathf.Round(baseValue));
 
                 default:
@@ -404,6 +406,22 @@ namespace Game.Character
         public int RemoveState(EStateEffect state)
         {
             return RemoveState(state.ToString());
+        }
+
+        public int GetStacks(EStateEffect state)
+        {
+            if (! HasState(state))
+                return 0;
+
+            foreach (var stateEffect in m_StateEffects)
+            {
+                if (stateEffect.StateEffectName == state.ToString())
+                {
+                    return stateEffect.Stacks;
+                }
+            }
+
+            return 0;
         }
 
         public EAnimation GetAnimationState()

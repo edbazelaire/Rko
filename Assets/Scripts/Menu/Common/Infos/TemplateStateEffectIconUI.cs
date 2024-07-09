@@ -42,7 +42,13 @@ namespace Menu.Common.Infos
             m_Level = level;
 
             m_Icon.sprite = AssetLoader.LoadStateEffectIcon(stateEffectData.StateEffect.ToString());
-            m_DurationValue.text = stateEffectData.Duration > 0 ? stateEffectData.Duration.ToString("F2") : SpellLoader.GetStateEffect(stateEffectData.StateEffect.ToString(), level).GetFloat(EStateEffectProperty.Duration).ToString("F2");
+            if (stateEffectData.Duration > 0)
+            {
+                m_DurationValue.text = SpellLoader.GetStateEffect(stateEffectData.StateEffect.ToString(), level).GetFloat(EStateEffectProperty.Duration).ToString("F2");
+            } else
+            {
+                m_DurationValue.gameObject.SetActive(false);
+            }
         }
 
         #endregion

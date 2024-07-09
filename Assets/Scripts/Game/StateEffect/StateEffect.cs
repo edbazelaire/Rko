@@ -38,6 +38,8 @@ namespace Game.Spells
 
         [Header("Graphics")]
         [SerializeField] protected      GameObject                  m_VisualEffect;
+        [SerializeField] protected      List<EBodyPart>             m_SpawnBodyParts;
+        [SerializeField] protected      Vector2                     m_Offset;
         [SerializeField] protected      Color                       m_ColorSwitch = Color.white;
         [SerializeField] protected      EAnimation                  m_Animation;
         [SerializeField] protected      AudioClip                   m_OnApplySoundFX;
@@ -93,6 +95,8 @@ namespace Game.Spells
         // =========================================================================================
         // DEPENDENT MEMBERS  
         public GameObject               VisualEffect        => m_VisualEffect;
+        public List<EBodyPart>          SpawnBodyParts      => m_SpawnBodyParts;
+        public Vector2                  Offset              => m_Offset;
         public Color                    ColorSwitch         => m_ColorSwitch;
         public EAnimation               Animation           => m_Animation;
         public EStateEffect             Type                => Enum.TryParse(name, out EStateEffect type) ? type : m_Type ;
@@ -136,6 +140,9 @@ namespace Game.Spells
             }
 
             RefreshStats();
+
+            OnStart();
+
             return true;
         }
 
@@ -203,6 +210,11 @@ namespace Game.Spells
 
             if (m_PermanantSoundFX != null)
                 m_AudioSource = SoundFXManager.PlaySoundFXClip(m_PermanantSoundFX);
+        }
+
+        protected virtual void OnStart()
+        {
+
         }
 
         #endregion
@@ -486,7 +498,6 @@ namespace Game.Spells
                 else if (propertyInfo.FieldType == typeof(int))
                 {
                     int value = GetProperty<int>(property);
-
                     if (value == 0)
                         continue;
                    
@@ -511,9 +522,15 @@ namespace Game.Spells
                     return true;
 
                 case EStateEffectProperty.MaxStacks:
-                    var value = GetProperty<int>(property);
-                    if (value > 1)
-                        infosDict.Add(property.ToString(), value);
+                    var maxStacks = GetProperty<int>(property);
+                    if (maxStacks > 1)
+                        infosDict.Add(property.ToString(), maxStacks);
+                    return true;
+
+                case EStateEffectProperty.Duration:
+                    var duration = GetProperty<float>(property);
+                    if (duration > 0)
+                        infosDict.Add(property.ToString(), duration);
                     return true;
 
                 default:
