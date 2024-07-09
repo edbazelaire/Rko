@@ -22,7 +22,7 @@ namespace Data
 
         [Description("Spell Casted when the counter procs")]
         [ConditionalField("CounterType", false, ECounterType.Proc)]
-        public ESpell OnCounterProc;
+        public SpellData OnCounterProc;
 
         [Header("Counter Extra Graphics")]
         [Description("Change of character color")]
@@ -39,7 +39,7 @@ namespace Data
             switch (CounterType)
             {
                 case ECounterType.Proc:
-                    description = "Cast the spell " + OnCounterProc.ToString();
+                    description = "Cast the spell " + OnCounterProc.Name;
                     break;
 
                 case ECounterType.Reflect:

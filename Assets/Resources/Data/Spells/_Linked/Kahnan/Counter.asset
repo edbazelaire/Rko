@@ -15,29 +15,56 @@ MonoBehaviour:
   Rarety: 0
   Linked: 1
   Graphics: {fileID: 0}
+  SpellEventActions:
+  - Prefab: {fileID: 7053385775836331393, guid: bcf8a61165d173843972fded041563af, type: 3}
+    GFXLifetime:
+      StartSpellPart: 3
+      EndSpellPart: 5
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0.5
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 2
+    BodyPart: 0
+    IsFollowing: 1
+    Offset: {x: 0, y: 0}
+    Animation: 0
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
   OnHit: []
+  OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 3ecced41c79ec3840824bd3813604df2, type: 3}
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 4
+  LockTargetAt: 2
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 0
   m_Heal: 0
+  m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
   m_Duration: 2
   Delay: 0
+  m_SpellsScalingLevel:
+  - Property: 2
+    Value: 0.1
+  - Property: 1
+    Value: 0.1
+  - Property: 3
+    Value: 0.05
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects: []
   AllyStateEffects: []
+  StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 0
   IsCancellable: 0
@@ -47,5 +74,5 @@ MonoBehaviour:
   CounterActivation: 0
   IsBlockingMovement: 1
   IsBlockingCast: 1
-  OnCounterProc: 3
+  OnCounterProc: {fileID: 11400000, guid: d8ac52d6489ed3f4baa78178a01ecd4a, type: 2}
   ColorSwap: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}

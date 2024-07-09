@@ -14,26 +14,55 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rarety: 0
   Linked: 1
-  Graphics: {fileID: 8073250784623665408, guid: f5666e7f90e3e4841a5b155b623541d8, type: 3}
+  Graphics: {fileID: 1193745591585432, guid: eefd4b9bb98546349990ad462f5edd94, type: 3}
+  SpellEventActions:
+  - Prefab: {fileID: 458114271446715719, guid: a0691b7d658df354ea6923fa145aede0, type: 3}
+    GFXLifetime:
+      StartSpellPart: 1
+      EndSpellPart: 2
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 1
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 0
+    BodyPart: 7
+    IsFollowing: 1
+    Animation: 0
   Preview: {fileID: 0}
   OnAnimation:
   - Prefab: {fileID: 458114271446715719, guid: a0691b7d658df354ea6923fa145aede0, type: 3}
+    GFXLifetime:
+      StartSpellPart: 0
+      EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 0
     SpawnLocation: 1
+    BodyPart: 0
     IsFollowing: 1
+    Animation: 0
   OnCastPrefabs: []
   OnHit:
   - {fileID: 11400000, guid: e25d3d0af6674a548ada02e4bebf16d7, type: 2}
+  OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: ba1394737a640e14d88ac9ce6dc22709, type: 3}
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 8300000, guid: 76f93a0ccb5bb7e4a8cbb37577895623, type: 3}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 1
+  LockTargetAt: 2
   MaxHit: 1
   EnergyGain: 0
   EnergyCost: 100
   m_Damage: 200
   m_Heal: 0
+  m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
   m_Duration: 0
@@ -41,7 +70,7 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
-  m_Size: 1
+  m_Size: 2
   TriggerPlayer: 1
   EnemyStateEffects: []
   AllyStateEffects: []

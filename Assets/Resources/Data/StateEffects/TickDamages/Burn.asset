@@ -16,6 +16,8 @@ MonoBehaviour:
     seconds
   m_DescriptionVariables: 0d0000000c00000001000000
   m_VisualEffect: {fileID: 0}
+  m_SpawnBodyParts: 
+  m_Offset: {x: 0, y: 0}
   m_ColorSwitch: {r: 1, g: 0.45360184, b: 0, a: 1}
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
@@ -36,13 +38,17 @@ MonoBehaviour:
   m_StateEffectScalingLevel:
   - StateEffectProperty: 13
     ScalingFactor: 0.1
+  - StateEffectProperty: 108
+    ScalingFactor: 0.1
   m_StateEffectScalingStacks:
   - StateEffectProperty: 13
     ScalingFactor: 1
   m_Damages: 0
+  m_EndDamages: 50
   m_Heal: 0
+  m_EndHeal: 0
   m_LifeSteal: 0
-  m_Tick: 1
-  m_TickDamages: 16
+  m_Tick: 0.5
+  m_TickDamages: 3
   m_TickHeal: 0
   m_TickShield: 0

@@ -16,6 +16,7 @@ MonoBehaviour:
     can no longer move or cast. When the shield is broken, the Freeze ends
   m_DescriptionVariables: 01000000
   m_VisualEffect: {fileID: 7758585010674234526, guid: 4097eca5df8a5b1479a81a62b6bc7b03, type: 3}
+  m_SpawnBodyParts: 
   m_ColorSwitch: {r: 1, g: 1, b: 1, a: 1}
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 8300000, guid: 78072f23384a9904baa4d4d7f32a9f64, type: 3}
@@ -32,6 +33,6 @@ MonoBehaviour:
   m_ResistancePerc: 0
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
-  m_LifeSteal: 0
+  m_BonusLifeSteal: 0
   m_StateEffectScalingLevel: []
   m_StateEffectScalingStacks: []

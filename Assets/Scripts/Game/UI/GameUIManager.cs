@@ -1,6 +1,7 @@
 using Assets.Scripts.Managers.Sound;
 using Enums;
 using Game;
+using Game.Backgroud;
 using Game.UI;
 using Managers;
 using Network;
@@ -16,11 +17,14 @@ public class GameUIManager : MonoBehaviour
 
     static GameUIManager s_Instance;
 
+    [SerializeField] Canvas m_BackgroundCanvas;
+
     private IntroGameUI    m_IntroGameUI;
     private EndGameUI      m_EndGameUI;
     private ErrorGameUI    m_ErrorGameUI;
 
-    [SerializeField] private Image          m_Background;
+    GameObject m_Background;
+    //[SerializeField] private Image          m_Background;
 
     const string        c_PlayerUIContainerPrefix   = "PlayerUIContainer_";
     const string        c_SpellsContainer           = "SpellsContainer";
@@ -64,19 +68,13 @@ public class GameUIManager : MonoBehaviour
 
     void FindComponents()
     {
-        m_IntroGameUI = Finder.FindComponent<IntroGameUI>(transform.parent.gameObject, "IntroGameUI");
-        m_EndGameUI = Finder.FindComponent<EndGameUI>(transform.parent.gameObject, "EndGameUI");
-        m_ErrorGameUI = Finder.FindComponent<ErrorGameUI>(transform.parent.gameObject, "ErrorGameUI");
+        m_IntroGameUI   = Finder.FindComponent<IntroGameUI>(transform.parent.gameObject, "IntroGameUI");
+        m_EndGameUI     = Finder.FindComponent<EndGameUI>(transform.parent.gameObject, "EndGameUI");
+        m_ErrorGameUI   = Finder.FindComponent<ErrorGameUI>(transform.parent.gameObject, "ErrorGameUI");
 
         FindMovementButtons();
         FindPlayerUIContainers();
         FindSpellsContainers();
-    }
-
-    private void OnDestroy()
-    {
-        if (GameManager.Exists)
-            GameManager.Instance.State.OnValueChanged -= OnGameStateChanged;
     }
 
     public void Initialize()
@@ -147,19 +145,21 @@ public class GameUIManager : MonoBehaviour
 
     void SetUpBackground()
     {
-        m_Background.sprite = GetBackgroundImage();
+        UIHelper.CleanContent(m_BackgroundCanvas.gameObject);
+        m_Background = Instantiate(AssetLoader.Load<GameObject>("NightSkyBackground", AssetLoader.c_ArenaBackgroundsPath), m_BackgroundCanvas.transform);
+        m_Background.GetComponent<NightSkyBackground>().Initialize();
     }
 
     Sprite GetBackgroundImage()
     {
         if (LobbyHandler.Instance.GameMode == EGameMode.Arena)
         {
-            var sprite =  AssetLoader.Load<Sprite>(LobbyHandler.Instance.ArenaType.ToString(), AssetLoader.c_ArenaBackgroundsPath);
+            var sprite =  AssetLoader.Load<Sprite>(LobbyHandler.Instance.ArenaType.ToString(), AssetLoader.c_ArenaBackgroundsImagePath);
             if (sprite != null) 
                 return sprite;
         }
 
-        return AssetLoader.Load<Sprite>("Default", AssetLoader.c_ArenaBackgroundsPath);
+        return AssetLoader.Load<Sprite>("Default", AssetLoader.c_ArenaBackgroundsImagePath);
     }
 
     #endregion

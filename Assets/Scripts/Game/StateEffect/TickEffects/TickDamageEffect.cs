@@ -60,7 +60,7 @@ namespace Game.Spells
                 if (lifesteal > 0)
                 {
                     ErrorHandler.Log($"{name} : {lifesteal} LIFESTEAL", ELogTag.StateEffects);
-                    m_Controller.Life.Heal(lifesteal);
+                    m_Caster.Life.Heal(lifesteal);
                 }
             }
 

@@ -51,7 +51,7 @@
         Alexander,
         Srug,
         Marcus,
-        Bruh,
+        Nagini,
 
         Count
     }
@@ -145,15 +145,6 @@
         CurseRune,
     }
 
-    public enum ESpellActionPart
-    {
-        Animation,
-        Cast,
-        During,
-        OnHit,
-        OnEnd,
-    }
-
     public enum EAppState
     {
         /// <summary> entry point </summary>
@@ -185,6 +176,17 @@
         GameRunning,
         /// <summary> game is over </summary>
         GameOver,
+    }
+
+    public enum ESpellEvent
+    {
+        None,
+
+        OnStartCast,
+        OnCast,
+        OnSpawn,
+        OnHit,
+        OnEnd,
     }
 
     public enum ESpellTrajectory 
@@ -245,20 +247,35 @@
         Remove,
     }
 
-    public enum ESpawnLocation
+    public enum ESpawnTarget
     {
         None = 0,
 
         Caster,                 // spawn of the center of the caster
-        CasterFeets,            // spawn at the feets of the caster
-        CasterSpellSpawn,       // spawn at the spell spawn of the caster
-
         Target,
-        TargetFeets,
-        TargetSpellSpawn,
-
+        OnSpell,
         Mouse,                  // on the mouse location    
-        MouseGround,            // on the ground at the mouse location
+    }
+
+    public enum ESpawnLocation
+    {
+        None = 0,
+
+        Center,                 // spawn at the Center of the provided location
+        Ground,                 // spawn at the feets of the caster
+    }
+
+    public enum EBodyPart
+    {
+        None,
+
+        L_Hand,
+        R_Hand,
+        L_Foot,
+        R_Foot,
+        Body,
+        Head,
+        SpellSpawn,
     }
 
     public enum EStateEffect
@@ -304,6 +321,8 @@
         Cooldowns,
         Duration,
         LifeSteal,
+        NProjectiles,
+        NWaves,
     }
 
     public enum EStateEffectProperty
@@ -340,6 +359,9 @@
         LifeSteal,
         BonusHeal,
         BonusHealPerc,
+
+        EndDamages,
+        EndHeal,
     }
 
     public enum EAnimation
@@ -407,7 +429,8 @@
         GameSystem          = 104,      // login, new player, stages, ...
         SpellHandler        = 105,      // casting error/success messages, cancel, all stages of spell casting, spell ending, ...
         Animation           = 106,      // animations playing
-        StateEffects        = 107,      // animations playing
+        StateEffects        = 107,      // state effects changes
+        SpellGFX            = 107,      // spell graphics playing
 
         // AI
         AI                  = 200,

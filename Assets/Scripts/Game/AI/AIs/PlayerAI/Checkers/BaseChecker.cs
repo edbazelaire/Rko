@@ -21,11 +21,6 @@ namespace AI
             return m_State;
         }
 
-        protected virtual bool RandomActivation()
-        {
-            return m_Controller.BehaviorTree.Randomness > Random.Range(0f, 1f);
-        }
-
         #endregion
     }
 }

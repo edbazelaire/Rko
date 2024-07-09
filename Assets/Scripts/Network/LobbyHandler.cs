@@ -7,6 +7,7 @@ using Game;
 using Managers;
 using Save;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Tools;
@@ -52,7 +53,7 @@ namespace Network
 
         // Error management
         const string LOBBY_TIME_WRAPPER_ID  = "Lobby";
-        const float LOBBY_ERROR_TIMER       = 10f;
+        const float LOBBY_ERROR_TIMER       = 15f;
 
         // Update & Heartbeat management
         const string KEY_RELAY_CODE         = "RelayCode";
@@ -73,6 +74,7 @@ namespace Network
         private float m_UpdateLobbyTimer  = 0.0f;
 
         bool m_RequestInProgress = false;
+        private Coroutine m_CurrentCoroutine;
 
         bool IsHost => m_HostLobby != null && m_JoinedLobby != null && m_HostLobby.Id == m_JoinedLobby.Id;
         int m_MaxPlayers => m_GameMode == EGameMode.Ranked ? 2 : 1;
@@ -108,6 +110,10 @@ namespace Network
             m_HostLobby = null;
             m_JoinedLobby = null;
             m_RelayCode = "";
+
+            StopAllCoroutines();
+
+            m_CurrentCoroutine = null;
 
             SetState(ELobbyState.Inactive);
         }
@@ -157,11 +163,7 @@ namespace Network
                     case ELobbyState.WaitingLobbyFull:
                         UpdateLobbyData();
 
-                        if (m_JoinedLobby.Players.Count != m_JoinedLobby.MaxPlayers)
-                            return;
-
-                        SceneLoader.Instance.LoadScene("Arena");
-                        NextState();
+                        m_CurrentCoroutine = StartCoroutine(WaitLobbyFullCoroutine());
                         return;
 
                     case ELobbyState.SceneLoading:
@@ -181,20 +183,11 @@ namespace Network
                         UpdateLobbyRelayCode(m_RelayCode);
 
                         // spawn the GameManager on Server
-                        while (!GameManager.FindInstance())
-                            return;
-
-                        SetState(ELobbyState.SendingPlayerData);
+                        m_CurrentCoroutine = StartCoroutine(WaitGameManagerCoroutine());
                         return;
 
                     case ELobbyState.WaitingRelayCode:
-                        UpdateLobbyData();
-
-                        // if relay code not provided yet : return
-                        if (m_JoinedLobby.Data[KEY_RELAY_CODE].Value == "")
-                            return;
-
-                        NextState();
+                        m_CurrentCoroutine = StartCoroutine(WaitRelayCodeCoroutine());
                         return;
 
                     case ELobbyState.JoiningRelay:
@@ -206,10 +199,7 @@ namespace Network
                         return;
 
                     case ELobbyState.WaitingGameManager:
-                        while (!GameManager.FindInstance(true))
-                            return;
-
-                        NextState();
+                        m_CurrentCoroutine = StartCoroutine(WaitGameManagerCoroutine());
                         return;
 
                     case ELobbyState.SendingPlayerData:
@@ -235,9 +225,40 @@ namespace Network
             } 
             catch (Exception e)
             {
-                OnErrorCallback("Unhandled LobbyState : " + m_State).Invoke();
+                OnErrorCallback("Unhandled LobbyState : " + m_State, e.Message).Invoke();
+            }
+        }
+
+        IEnumerator WaitLobbyFullCoroutine()
+        {
+            while (m_JoinedLobby.Players.Count != m_JoinedLobby.MaxPlayers)
+            {
+                UpdateLobbyData();
+                yield return null;
             }
 
+            SceneLoader.Instance.LoadScene("Arena");
+            NextState();
+        }
+
+        IEnumerator WaitGameManagerCoroutine()
+        {
+            while (!GameManager.FindInstance(true))
+                yield return null;
+
+            SetState(ELobbyState.SendingPlayerData);
+        }
+
+        IEnumerator WaitRelayCodeCoroutine()
+        {
+            // if relay code not provided yet : return
+            while (m_JoinedLobby.Data[KEY_RELAY_CODE].Value == "")
+            {
+                UpdateLobbyData();
+                yield return null;
+            }
+
+            NextState();
         }
 
         /// <summary>
@@ -515,10 +536,13 @@ namespace Network
             // set new state
             m_State = state;
 
-            if (m_State == ELobbyState.Ready || m_State == ELobbyState.Inactive)
-                TimeErrorWrapper.Instance.Cancel(LOBBY_TIME_WRAPPER_ID);
-            else
-                TimeErrorWrapper.Instance.New(LOBBY_TIME_WRAPPER_ID, LOBBY_ERROR_TIMER, OnErrorCallback());
+            if (m_GameMode != EGameMode.Ranked)
+            {
+                if (m_State == ELobbyState.Ready || m_State == ELobbyState.Inactive)
+                    TimeErrorWrapper.Instance.Cancel(LOBBY_TIME_WRAPPER_ID);
+                else
+                    TimeErrorWrapper.Instance.New(LOBBY_TIME_WRAPPER_ID, LOBBY_ERROR_TIMER, OnErrorCallback());
+            }
 
             HandleLobbyState();
         }

@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Description: 
   m_DescriptionVariables: 
-  m_VisualEffect: {fileID: 0}
+  m_VisualEffect: {fileID: 1923825553450198, guid: 60f6ce11d75f17540a6cf9652c8c3ac5, type: 3}
+  m_SpawnBodyParts: 0200000001000000
   m_ColorSwitch: {r: 1, g: 1, b: 1, a: 1}
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
@@ -31,7 +32,7 @@ MonoBehaviour:
   m_ResistancePerc: 0
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
-  m_LifeSteal: 0
+  m_BonusLifeSteal: 0
   m_StateEffectScalingLevel:
   - StateEffectProperty: 1
     ScalingFactor: 0.1

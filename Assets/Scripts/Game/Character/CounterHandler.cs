@@ -169,9 +169,6 @@ namespace Game.Character
             if (blockingCast == m_IsBlockingCast.Value)
                 return;
 
-            if (blockingCast)
-                m_Controller.SpellHandler.CancelCast();
-
             m_IsBlockingCast.Value = blockingCast;
         }
 

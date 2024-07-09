@@ -483,26 +483,26 @@ namespace Game
         #region Music & Sound
 
         [ClientRpc]
-        public void PlaySoundClientRPC(string spellName, ESpellActionPart spellAction)
+        public void PlaySoundClientRPC(string spellName, ESpellEvent spellAction)
         {
             var spellData = SpellLoader.GetSpellData(spellName);
             AudioClip audioClip = null;
 
             switch (spellAction)
             {
-                case ESpellActionPart.Animation:
+                case ESpellEvent.OnStartCast:
                     audioClip = spellData.AnimationSoundFX;
                     break;
 
-                case ESpellActionPart.Cast:
+                case ESpellEvent.OnCast:
                     audioClip = spellData.CastSoundFX != null ? spellData.CastSoundFX : SoundFXManager.DefaultCastSoundFX;
                     break;
 
-                case ESpellActionPart.OnHit:
+                case ESpellEvent.OnHit:
                     audioClip = spellData.OnHitSoundFX != null ? spellData.OnHitSoundFX : SoundFXManager.DefaultOnHitSoundFX;
                     break;
 
-                case ESpellActionPart.OnEnd:
+                case ESpellEvent.OnEnd:
                     audioClip = spellData.OnEndSoundFX;
                     break;
             }
