@@ -20,8 +20,12 @@ namespace Game.Spells
         const string c_GraphicsContainer = "GraphicsContainer";
 
         // ========================================================================================================
+        // Actions
+        public Action<ESpellEvent>  OnSpellEvent;
+
+        // ========================================================================================================
         // Data
-        protected SpellData m_BaseSpellData;
+        protected SpellData         m_BaseSpellData;
         SpellData m_SpellData  => m_BaseSpellData;
         protected Controller        m_Controller;
         protected Vector3           m_Target;
@@ -90,6 +94,9 @@ namespace Game.Spells
 
             // initialize graphics of the spell (whith delay if has any)
             InitGraphics();
+
+            // call event that spell has spawn
+            CallSpellEvent(ESpellEvent.OnSpawn);
         }
 
         /// <summary>
@@ -129,7 +136,7 @@ namespace Game.Spells
 
             // play sound effect
             if (m_SpellData.OnEndSoundFX != null)
-                GameManager.Instance.PlaySoundClientRPC(m_SpellData.Name, ESpellActionPart.OnEnd);
+                GameManager.Instance.PlaySoundClientRPC(m_SpellData.Name, ESpellEvent.OnEnd);
 
             // destroy the spell game object
             StartCoroutine(DestroySpell());
@@ -149,7 +156,7 @@ namespace Game.Spells
             }
 
             // call an end on client side
-            EndClientRpc();
+            CallSpellEvent(ESpellEvent.OnEnd);
 
             // destroy the spell
             Destroy(gameObject);
@@ -171,12 +178,6 @@ namespace Game.Spells
             if (IsHost)
                 return;
             Initialize(clientId, target, spellName, level);
-        }
-
-        [ClientRpc]
-        public void EndClientRpc()
-        {
-            OnSpellEndedEvent?.Invoke();
         }
 
         #endregion
@@ -230,7 +231,7 @@ namespace Game.Spells
             m_Controller.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
 
             // play sound effect
-            GameManager.Instance.PlaySoundClientRPC(m_SpellData.Name, ESpellActionPart.OnHit);
+            GameManager.Instance.PlaySoundClientRPC(m_SpellData.Name, ESpellEvent.OnHit);
 
             // update hit count
             if (m_HittedPlayerId.Count <= m_SpellData.MaxHit && m_SpellData.MaxHit > 0)
@@ -253,8 +254,13 @@ namespace Game.Spells
                 return false;
 
             // add bonus damages from state bonus & boosts 
-            int damages = m_Controller.StateHandler.ApplyBonusDamages(m_SpellData.Damage);
-            
+            int damages = m_SpellData.Damage;
+            if (m_SpellData.StateEffectStackFactor != EStateEffect.None)
+            {
+                damages *= controller.StateHandler.GetStacks(m_SpellData.StateEffectStackFactor);
+            }
+            damages = m_Controller.StateHandler.ApplyBonusDamages(damages);
+
             // check if target has counter(s)
             if (controller.CounterHandler.CheckCounters(this))
                 return false;
@@ -284,6 +290,9 @@ namespace Game.Spells
 
             // apply state effects specifics to enemies
             ApplyEnemyStateEffects(controller);
+
+            // call spell event that spell has touched something
+            CallSpellEvent(ESpellEvent.OnHit);
 
             return true;
         }
@@ -331,7 +340,7 @@ namespace Game.Spells
         #endregion
 
 
-        #region Spell Effects
+        #region State Effects
 
         /// <summary>
         /// Spawn prefabs that procs on hitting a target
@@ -375,6 +384,24 @@ namespace Game.Spells
         protected virtual void ApplyAllyStateEffects(Controller targetController)
         {
             ApplyStateEffects(targetController, m_SpellData.AllyStateEffects);
+        }
+
+        #endregion
+
+
+        #region Spell Events
+
+        protected virtual void CallSpellEvent(ESpellEvent spellEvent)
+        {
+            foreach (var spawnPrefab in m_SpellData.SpellEventActions)
+            {
+                if (spawnPrefab.GFXLifetime.StartSpellPart != spellEvent)
+                    continue;
+
+                spawnPrefab.Spawn(m_Controller, m_SpellData, this);
+            }
+
+            OnSpellEvent?.Invoke(spellEvent);
         }
 
         #endregion

@@ -74,9 +74,7 @@ namespace Save
             {
                 playerTag.GamerTag = gamerTag;
                 playerTag.Token = token;
-                
             }
-
         }
 
         #endregion
@@ -101,7 +99,5 @@ namespace Save
 
 
         #endregion
-
-
     }
 }

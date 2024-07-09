@@ -44,6 +44,12 @@ namespace Save.RSDs
         /// <returns></returns>
         public static bool IsTokenAuthorized(string token)
         {
+            // special Apple testing re-useable token
+            if (token == "ZrsaGG8j2WNXXyj")
+            {
+                return true;    
+            }
+
             foreach (TokenData data in Instance.Data)
             {
                 if (token == data.Token)

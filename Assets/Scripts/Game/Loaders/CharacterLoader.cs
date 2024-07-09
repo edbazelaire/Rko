@@ -43,8 +43,7 @@ namespace Game.Loaders
 
             if (m_CharactersList.Length != (int)ECharacter.Count)
             {
-                ErrorHandler.FatalError("CharacterLoader : number of characters is not equal to number of characters in enum");
-                return;
+                ErrorHandler.Error("CharacterLoader : number of characters is not equal to number of characters in enum");
             }
 
             m_Characters = new Dictionary<ECharacter, CharacterData>();
@@ -52,8 +51,8 @@ namespace Game.Loaders
             {
                 if (Characters.ContainsKey(character.Character))
                 {
-                    ErrorHandler.FatalError($"CharacterLoader : Characters list contains duplicate : {character}");
-                    return;
+                    ErrorHandler.Error($"CharacterLoader : Characters list contains duplicate : {character}");
+                    continue;
                 }
                 Characters.Add(character.Character, character);
             }

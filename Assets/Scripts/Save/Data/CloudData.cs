@@ -300,7 +300,7 @@ namespace Save
                 OnCloudDataLoadingCompleted();
 
             ErrorHandler.Log("Key Loaded : " + key, ELogTag.CloudData);
-            ErrorHandler.Log(TextHandler.ToString(m_Data[key]), ELogTag.CloudData);
+            //ErrorHandler.Log(TextHandler.ToString(m_Data[key]), ELogTag.CloudData);
         }
 
         protected virtual void OnCloudDataLoadingCompleted()

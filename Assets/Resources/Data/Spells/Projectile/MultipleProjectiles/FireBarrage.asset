@@ -14,26 +14,50 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rarety: 0
   Linked: 0
-  Graphics: {fileID: 8073250784623665408, guid: c257a4fb98ff6be4296706aa55a16fca, type: 3}
+  Graphics: {fileID: 7995130027969150761, guid: b1712247fe6bb8f43bc42f653ed748ec, type: 3}
+  SpellEventActions:
+  - Prefab: {fileID: 5701818165401177283, guid: 14399bd3979c0b04ba97585f60659760, type: 3}
+    GFXLifetime:
+      StartSpellPart: 1
+      EndSpellPart: 2
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 0
+    BodyPart: 7
+    IsFollowing: 1
+    Offset: {x: 0, y: 0}
+    Animation: 0
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
   OnHit: []
+  OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 3b1f2da5ef887784590e9fa4ead6809a, type: 3}
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 8300000, guid: 017af4cef4e7a1a42a86aa360023d995, type: 3}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 9
+  LockTargetAt: 2
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 90
   m_Heal: 0
+  m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 0
+  m_SpellsScalingLevel:
+  - Property: 2
+    Value: 0.1
+  - Property: 3
+    Value: 0.05
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects:
@@ -51,8 +75,8 @@ MonoBehaviour:
   m_Speed: 7
   ProjectileData: {fileID: 0}
   MultiProjectileType: 1
-  NProjectiles: 4
+  m_NProjectiles: 4
   m_ProjectileZoneSize: -1
   DelayBetweenLaunches: 0
-  NWaves: 1
+  m_NWaves: 1
   DelayBetweenWaves: 0

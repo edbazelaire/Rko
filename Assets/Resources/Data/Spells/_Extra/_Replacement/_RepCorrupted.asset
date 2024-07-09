@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rarety: 0
   Linked: 0
-  Graphics: {fileID: 2910976597878939058, guid: b31ba57748e748d4d98b43494ab559b1, type: 3}
+  Graphics: {fileID: 179796, guid: 96db9f59e0051f24ab7a2843ba7a6cb7, type: 3}
+  SpellEventActions: []
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
@@ -27,11 +28,13 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 6
+  LockTargetAt: 2
   MaxHit: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
   m_Heal: 0
+  m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
   m_Duration: 0

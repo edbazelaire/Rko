@@ -30,7 +30,7 @@ namespace Game.Spells
             m_MaxDistance       = Math.Abs(m_Target.x - m_OriginalPosition.x);
 
             if (EJumpType.Teleport == m_SpellData.JumpType)
-                m_Controller.AnimationHandler.HideCharacter(true);
+                m_Controller.GFXHandler.HideCharacter(true);
 
             // make player untargatable, unmovable and unrotatable
             if (IsServer)
@@ -81,7 +81,7 @@ namespace Game.Spells
 
             if (m_SpellData.JumpType == EJumpType.Teleport)
             {
-                m_Controller.AnimationHandler.HideCharacterClientRPC(false);
+                m_Controller.GFXHandler.HideCharacterClientRPC(false);
                 m_Controller.transform.position = transform.position;
             }
         }

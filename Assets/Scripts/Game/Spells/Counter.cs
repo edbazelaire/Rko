@@ -1,6 +1,5 @@
 ﻿using Data;
 using Enums;
-using Game.Loaders;
 using System.Linq;
 using Tools;
 using UnityEngine;
@@ -34,7 +33,7 @@ namespace Game.Spells
 
             transform.position = new Vector3(transform.position.x, 0, 0);
             if (m_SpellData.ColorSwap != default)
-                m_Controller.AnimationHandler.AddColorClientRPC(m_SpellData.ColorSwap);
+                m_Controller.GFXHandler.AddColorClientRPC(m_SpellData.ColorSwap);
 
             if (!IsServer)
                 return;
@@ -46,7 +45,7 @@ namespace Game.Spells
         protected override void End()
         {
             if (m_SpellData.ColorSwap != default)
-                m_Controller.AnimationHandler.RemoveColorClientRPC(m_SpellData.ColorSwap);
+                m_Controller.GFXHandler.RemoveColorClientRPC(m_SpellData.ColorSwap);
 
             m_Controller.CounterHandler.RemoveCounter(this);
 
@@ -122,19 +121,15 @@ namespace Game.Spells
                 return false;
 
             var targetPosition = enemySpell.Controller.transform.position;
-            SpellData spellData;
-
             switch (m_SpellData.CounterType)
             {
                 // cast the counter spell on the enemy
                 case ECounterType.Proc:
-                    spellData = SpellLoader.GetSpellData(m_SpellData.OnCounterProc);
-                    spellData.Cast(OwnerClientId, targetPosition, transform.position, recalculateTarget: false);
+                    m_SpellData.OnCounterProc.Cast(OwnerClientId, targetPosition, transform.position, recalculateTarget: false);
                     break;
 
                 // block the spell : do nothing
                 case ECounterType.Block:
-                    // todo : block animation
                     break;
 
                 // Recast the spell to the enemy
@@ -154,6 +149,8 @@ namespace Game.Spells
             }
 
             Destroy(enemySpell.gameObject);
+
+            CallSpellEvent(ESpellEvent.OnHit);
 
             m_HittedPlayerId.Add(0);
             if (m_SpellData.MaxHit > 0 && m_HittedPlayerId.Count >= m_SpellData.MaxHit)

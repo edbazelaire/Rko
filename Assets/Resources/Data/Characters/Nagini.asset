@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
+  m_Name: Nagini
+  m_EditorClassIdentifier: 
+  Rarety: 1
+  AutoAttack: 11
+  SpecialAbility: 34
+  Ultimate: 12
+  Size: 0.9
+  BaseSpeed: 1.15
+  BaseHealth: 1100
+  MaxEnergy: 100
+  HealthScaleFactor: 0.1
+  CharacterStatScaling:
+  - StateEffectProperty: 101
+    BaseValue: 0.1
+    ScalingFactor: 0.1
+  - StateEffectProperty: 16
+    BaseValue: 0.1
+    ScalingFactor: 0

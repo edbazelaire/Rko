@@ -112,7 +112,20 @@ namespace Save
         protected override object Convert(Item item)
         {
             if (m_Data[item.Key].GetType() == typeof(Dictionary<ECharacter, SCharacterBuildData>))
-                return item.Value.GetAs<Dictionary<ECharacter, SCharacterBuildData>>();
+            {
+                try
+                {
+                    return item.Value.GetAs<Dictionary<ECharacter, SCharacterBuildData>>();
+                } 
+
+                // [ERROR] : if a character has been deleted it can be impossible to reconstruct the dict from the json - just throw error and use default data
+                catch (Exception e) 
+                {
+                    ErrorHandler.Error("Unable to construct the BuildData from the data - restoring with default values");
+                    ErrorHandler.Error(e.Message);
+                    return m_Data[item.Key];
+                }
+            }
 
             return base.Convert(item);
         }

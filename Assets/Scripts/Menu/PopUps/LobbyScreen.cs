@@ -64,6 +64,7 @@ namespace Menu.PopUps
                     return;
 
                 case EGameMode.Arena:
+                case EGameMode.Training:
                     m_MessageText.text = "Preparing Game...";
                     return;
 

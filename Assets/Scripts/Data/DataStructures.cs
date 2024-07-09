@@ -1,7 +1,7 @@
 ﻿using Enums;
-using MyBox;
+using Game.SpellGFX;
+using Game.Spells;
 using System;
-using System.Collections.Generic;
 using Tools;
 using UnityEngine;
 
@@ -32,78 +32,132 @@ namespace Data
     }
 
     [Serializable]
-    public struct SPrefabSpawn
+    public struct SGFXLifetime
     {
-        public GameObject       Prefab;
-        public ESpawnLocation   SpawnLocation;
-        public bool             IsFollowing;
+        public ESpellEvent StartSpellPart;
+        public ESpellEvent EndSpellPart;
+        public float StartAt;
+        public float EndAt;
+        public float Persistance;
 
-        public SPrefabSpawn(GameObject prefab, ESpawnLocation spawnLocation, bool isFollowing)
+        public SGFXLifetime(ESpellEvent startSpellSpart, ESpellEvent endSpellSpart = ESpellEvent.None, float startAt = 0f, float endAt = 1f, float persistance = 0f)
         {
-            Prefab          = prefab;
-            SpawnLocation   = spawnLocation;
-            IsFollowing     = isFollowing;
-        }
+            StartSpellPart = startSpellSpart;
+            EndSpellPart = endSpellSpart;
 
-        public readonly GameObject Spawn(Controller controller, float duration = 1f)
-        {
-            Transform parent = null;
-            Vector3 pos = Vector3.zero;
-
-            switch (SpawnLocation)
+            if (startAt < 0)
             {
-                case ESpawnLocation.None:
-                case ESpawnLocation.Caster:
-                    parent = IsFollowing ? controller.transform : null;
-                    pos = controller.transform.position;
-                    break;
-
-                case ESpawnLocation.CasterFeets:
-                    parent = IsFollowing ? controller.transform : null;
-                    pos = controller.transform.position;
-                    pos.y = 0;
-                    break;
-
-                case ESpawnLocation.CasterSpellSpawn:
-                    parent = IsFollowing ? controller.SpellHandler.SpellSpawn : null;
-                    break;
-
-                case ESpawnLocation.Target:
-                    pos = controller.SpellHandler.TargetPos;
-                    break;
-
-                case ESpawnLocation.TargetFeets:
-                    pos = controller.SpellHandler.TargetPos;
-                    pos.y = 0;
-                    break;
-
-                default:
-                    Debug.LogError("SPrefabSpawn::Spawn() - Unknown spawn location " + SpawnLocation);
-                    return null;
+                ErrorHandler.Error($"StartAt ({startAt}) set with value < 0 - setting by default with value 0 ");
+                startAt = 0;
             }
 
-            //AdjustDuration(Prefab, duration);
-            GameObject go = GameObject.Instantiate(Prefab, pos, Quaternion.identity, parent);
+            if (endAt < 0)
+            {
+                ErrorHandler.Error($"EndAt ({endAt}) set with value < 0 - setting by default with value 0 ");
+                startAt = 0;
+            }
+
+            if (persistance < 0)
+            {
+                ErrorHandler.Error($"PersistanceAfterEnd ({persistance}) set with value < 0 - setting by default with value 0 ");
+                startAt = 0;
+            }
+
+            if (startAt > 1)
+            {
+                ErrorHandler.Error($"StartAt ({startAt}) set with value > 1 - setting by default with value 0 ");
+                startAt = 0;
+            }
+
+            if (startAt > endAt)
+            {
+                ErrorHandler.Error($"StartAt ({startAt}) set with value > ({endAt}) - setting with default value 0 and 1");
+                startAt = 0;
+                endAt = 1f;
+            }
+
+            StartAt = startAt;
+            EndAt = endAt;
+            Persistance = persistance;
+        }
+    }
+
+    [Serializable]
+    public struct SPrefabSpawn
+    {
+        #region Members
+
+        public GameObject       Prefab;
+        public SGFXLifetime     GFXLifetime;
+        public float            Size;
+        public int              OrderInLayer;
+
+        public ESpawnTarget     SpawnTarget;
+        public ESpawnLocation   SpawnLocation;
+        public EBodyPart        BodyPart;
+        public bool             IsFollowing;
+        public Vector2          Offset;
+
+        public EAnimation       Animation;
+
+        #endregion
+
+
+        #region Contructor
+
+        public SPrefabSpawn(GameObject prefab, SGFXLifetime gFXLifetime, ESpawnTarget spawnTarget, ESpawnLocation spawnLocation, EBodyPart bodyPart, bool isFollowing, Vector2 offset, EAnimation animation, float size = 0f, int orderInLayer = 0)
+        {
+            Prefab          = prefab;
+            GFXLifetime     = gFXLifetime;
+            Size            = size;
+            OrderInLayer    = orderInLayer;
+
+            SpawnTarget     = spawnTarget;
+            SpawnLocation   = spawnLocation;
+            BodyPart        = bodyPart;
+            IsFollowing     = isFollowing;
+            Offset          = offset;
+
+            Animation       = animation;
+        }
+
+        #endregion
+
+
+        #region Spawn & Instantiation
+
+        public readonly GameObject Spawn(Controller controller, SpellData spellData, Spell spell)
+        {
+            if (Animation != EAnimation.None)
+                controller.AnimationHandler.PlayAnimation(Animation);
+
+            if (Prefab == null)
+                return null;
+
+            var parent = SpellGFX.CalculateParent(this, controller, spell);
+            var position = SpellGFX.CalculatePosition(parent, this, controller);
+
+            GameObject go = GameObject.Instantiate(Prefab, position, Quaternion.identity, IsFollowing ? parent : null);
+            if (go.TryGetComponent(out SpellGFX spellGfx))
+            {
+                spellGfx.Initialize(controller, spellData, spell, this);
+            }
+
+            //else if (go.TryGetComponent(out Spell spawnSpell))
+            //{
+            //    spawnSpell.Cast();
+            //}
+
+            // NO SPECIFIC COMPONENT : add default spell graphix component
+            else
+            {
+                go.AddComponent<SpellGFX>().Initialize(controller, spellData, spell, this);
+            }
 
             return go;
         }
 
-        readonly void AdjustDuration(GameObject go, float duration)
-        {
-            if (go == null)
-                return;
+        #endregion
 
-            List<ParticleSystem> particleSystems = Finder.FindComponents<ParticleSystem>(go);
-
-            foreach (ParticleSystem ps in particleSystems)
-            {
-                ps.Stop();
-
-                var main = ps.main;
-                main.duration = duration;
-                
-                ps.Play();
-            }
-        }
     }
 }

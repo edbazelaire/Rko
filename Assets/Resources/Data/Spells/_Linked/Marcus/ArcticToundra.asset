@@ -15,31 +15,33 @@ MonoBehaviour:
   Rarety: 0
   Linked: 1
   Graphics: {fileID: 236456056510051514, guid: 0e36e049eed3f8a4790d4bc09c245df8, type: 3}
+  SpellEventActions: []
   Preview: {fileID: 7274605584167926077, guid: af10fdf067d9a2d4fbb11e75811a5d12, type: 3}
   OnAnimation: []
   OnCastPrefabs:
   - {fileID: 610942752557020422, guid: 4c012a077fc8a714fb23670e129fb0eb, type: 3}
   OnHit:
   - {fileID: 11400000, guid: 96980145c41455a4aaebef628b96d1a6, type: 2}
+  OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 3ecced41c79ec3840824bd3813604df2, type: 3}
   PermanantSoundFX: {fileID: 8300000, guid: f8467e937c75c934c9865b5ec35e4e6e, type: 3}
   OnHitSoundFX: {fileID: 8300000, guid: 3ecced41c79ec3840824bd3813604df2, type: 3}
   OnEndSoundFX: {fileID: 8300000, guid: 299a1418d59067345b65a80b8a8b7e87, type: 3}
   SpellTarget: 1
+  LockTargetAt: 2
   MaxHit: 0
   EnergyGain: 5
   EnergyCost: 100
   m_Damage: 25
   m_Heal: 0
+  m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
   m_Duration: 2
   Delay: 1
-  m_SpellScalingLevel:
+  m_SpellsScalingLevel:
   - Property: 2
-    Value: 0.1
-  - Property: 1
     Value: 0.1
   m_Size: 4
   TriggerPlayer: 1
@@ -54,6 +56,7 @@ MonoBehaviour:
   IsCancellable: 0
   AnimationTimer: 0.5
   m_Cooldown: 0
+  m_SpellSpawn: 1
   DurationTick: 0.7
   GrowSizeFactor: 1
   MaxSizeAt: 1

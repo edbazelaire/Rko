@@ -15,21 +15,25 @@ MonoBehaviour:
   Rarety: 1
   Linked: 0
   Graphics: {fileID: 0}
+  SpellEventActions: []
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
   OnHit: []
+  OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 4
+  LockTargetAt: 2
   MaxHit: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
   m_Heal: 0
+  m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
   m_Duration: 0

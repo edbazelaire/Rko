@@ -36,9 +36,9 @@ public class Controller : NetworkBehaviour
     bool m_GameRunning = false;
 
     // -- Components & GameObjects
-    BehaviorTree m_BehaviorTree;
-    GameObject              m_CharacterPreview;
+    BehaviorTree            m_BehaviorTree;
     Game.Character.AnimationHandler        m_AnimationHandler;
+    GFXHandler              m_GFXHandler;
     Movement                m_Movement;
     Life                    m_Life;
     EnergyHandler           m_EnergyHandler;
@@ -65,8 +65,8 @@ public class Controller : NetworkBehaviour
 
     // -- Components & GameObjects
     public BehaviorTree     BehaviorTree        => m_BehaviorTree;
-    public GameObject       CharacterPreview    => m_CharacterPreview;
     public Game.Character.AnimationHandler AnimationHandler    => m_AnimationHandler;
+    public GFXHandler       GFXHandler          => m_GFXHandler;
     public Movement         Movement            => m_Movement;
     public Life             Life                => m_Life;
     public SpellHandler     SpellHandler        => m_SpellHandler;
@@ -96,6 +96,7 @@ public class Controller : NetworkBehaviour
         m_Movement          = Finder.FindComponent<Movement>(gameObject);
         m_SpellHandler      = Finder.FindComponent<SpellHandler>(gameObject);
         m_AnimationHandler  = Finder.FindComponent<Game.Character.AnimationHandler>(gameObject);
+        m_GFXHandler        = Finder.FindComponent<GFXHandler>(gameObject);
         m_StateHandler      = Finder.FindComponent<StateHandler>(gameObject);
         m_CounterHandler    = Finder.FindComponent<CounterHandler>(gameObject);
         m_AutoAttackHandler = Finder.FindComponent<AutoAttackHandler>(gameObject, throwError: false);
@@ -156,14 +157,14 @@ public class Controller : NetworkBehaviour
         // display the player's ui 
         GameUIManager.Instance.SetPlayersUI(PlayerId, team);
 
-        CharacterData characterData = CharacterLoader.GetCharacterData(character);
-        m_CharacterPreview = characterData.InstantiateCharacterPreview(gameObject);
+        // setup character preview
+        m_GFXHandler.Initialize(character);
 
         // setup local client size
         SetSize();
 
         // get animator
-        Animator animator       = Finder.FindComponent<Animator>(m_CharacterPreview);
+        Animator animator       = Finder.FindComponent<Animator>(m_GFXHandler.CharacterPreview);
         m_AnimationHandler.Initialize(animator);
 
         // initialize base MovementSpeed

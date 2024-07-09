@@ -52,7 +52,7 @@ namespace Menu.PopUps
         {
             base.OnPrefabLoaded();
 
-            m_Background.sprite = AssetLoader.Load<Sprite>(m_ArenaData.ArenaType.ToString(), AssetLoader.c_ArenaBackgroundsPath);
+            m_Background.sprite = AssetLoader.Load<Sprite>(m_ArenaData.ArenaType.ToString(), AssetLoader.c_ArenaBackgroundsImagePath);
             SetupStagesDisplay();
         }
 
