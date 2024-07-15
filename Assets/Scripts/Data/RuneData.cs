@@ -9,8 +9,5 @@ namespace Data
     {
         [Description("Description informations of the Rune")]
         public string Description;
-
-        [Description("State effect applying on activation")]
-        public EStateEffect StateEffect;
     }
 }

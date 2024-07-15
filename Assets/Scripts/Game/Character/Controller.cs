@@ -1,16 +1,20 @@
 using AI;
 using Data;
+using Data.DataStructures;
 using Data.GameManagement;
 using Enums;
 using Game;
 using Game.Character;
 using Game.Loaders;
 using Managers;
+using System.Collections.Generic;
 using System.Linq;
 using Tools;
 using Unity.Collections;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AdaptivePerformance.VisualScripting;
 
 public class Controller : NetworkBehaviour
 {
@@ -46,6 +50,7 @@ public class Controller : NetworkBehaviour
     StateHandler            m_StateHandler;
     CounterHandler          m_CounterHandler;
     AutoAttackHandler       m_AutoAttackHandler;
+    TriggerEffectHandler    m_TriggerEffectHandler;
     ClientAnalytics         m_ClientAnalytics;
 
     // ===================================================================================
@@ -64,19 +69,19 @@ public class Controller : NetworkBehaviour
 
 
     // -- Components & GameObjects
-    public BehaviorTree     BehaviorTree        => m_BehaviorTree;
+    public BehaviorTree     BehaviorTree                => m_BehaviorTree;
     public Game.Character.AnimationHandler AnimationHandler    => m_AnimationHandler;
-    public GFXHandler       GFXHandler          => m_GFXHandler;
-    public Movement         Movement            => m_Movement;
-    public Life             Life                => m_Life;
-    public SpellHandler     SpellHandler        => m_SpellHandler;
-    public StateHandler     StateHandler        => m_StateHandler;
-    public CounterHandler   CounterHandler      => m_CounterHandler;
-    public AutoAttackHandler AutoAttackHandler => m_AutoAttackHandler;
-    public ClientAnalytics  ClientAnalytics     => m_ClientAnalytics;
-    public EnergyHandler    EnergyHandler       => m_EnergyHandler;
-    public Collider2D       Collider            => m_Collider;
-
+    public GFXHandler       GFXHandler                  => m_GFXHandler;
+    public Movement         Movement                    => m_Movement;
+    public Life             Life                        => m_Life;
+    public SpellHandler     SpellHandler                => m_SpellHandler;
+    public StateHandler     StateHandler                => m_StateHandler;
+    public CounterHandler   CounterHandler              => m_CounterHandler;
+    public AutoAttackHandler AutoAttackHandler          => m_AutoAttackHandler;
+    public TriggerEffectHandler TriggerEffectHandler    => m_TriggerEffectHandler;
+    public ClientAnalytics  ClientAnalytics             => m_ClientAnalytics;
+    public EnergyHandler    EnergyHandler               => m_EnergyHandler;
+    public Collider2D       Collider                    => m_Collider;
 
     #endregion
 
@@ -91,16 +96,17 @@ public class Controller : NetworkBehaviour
         ErrorHandler.Log("Controller.OnNetworkSpawn()", ELogTag.GameSystem);   
 
         // setup components
-        m_Life              = Finder.FindComponent<Life>(gameObject);
-        m_EnergyHandler     = Finder.FindComponent<EnergyHandler>(gameObject);
-        m_Movement          = Finder.FindComponent<Movement>(gameObject);
-        m_SpellHandler      = Finder.FindComponent<SpellHandler>(gameObject);
-        m_AnimationHandler  = Finder.FindComponent<Game.Character.AnimationHandler>(gameObject);
-        m_GFXHandler        = Finder.FindComponent<GFXHandler>(gameObject);
-        m_StateHandler      = Finder.FindComponent<StateHandler>(gameObject);
-        m_CounterHandler    = Finder.FindComponent<CounterHandler>(gameObject);
-        m_AutoAttackHandler = Finder.FindComponent<AutoAttackHandler>(gameObject, throwError: false);
-        m_ClientAnalytics   = Finder.FindComponent<ClientAnalytics>(gameObject, throwError: false);
+        m_Life                  = Finder.FindComponent<Life>(gameObject);
+        m_EnergyHandler         = Finder.FindComponent<EnergyHandler>(gameObject);
+        m_Movement              = Finder.FindComponent<Movement>(gameObject);
+        m_SpellHandler          = Finder.FindComponent<SpellHandler>(gameObject);
+        m_AnimationHandler      = Finder.FindComponent<Game.Character.AnimationHandler>(gameObject);
+        m_GFXHandler            = Finder.FindComponent<GFXHandler>(gameObject);
+        m_StateHandler          = Finder.FindComponent<StateHandler>(gameObject);
+        m_CounterHandler        = Finder.FindComponent<CounterHandler>(gameObject);
+        m_AutoAttackHandler     = Finder.FindComponent<AutoAttackHandler>(gameObject);
+        m_TriggerEffectHandler    = Finder.FindComponent<TriggerEffectHandler>(gameObject);
+        m_ClientAnalytics       = Finder.FindComponent<ClientAnalytics>(gameObject, throwError: false);
 
         // check behavior tree
         m_BehaviorTree = Finder.FindComponent<BehaviorTree>(gameObject, throwError: false);
@@ -201,13 +207,13 @@ public class Controller : NetworkBehaviour
             return;
 
         m_PlayerData.Value      = playerData;
-
         m_PlayerName.Value      = playerData.PlayerName;
         m_Character.Value       = playerData.Character;
         m_CharacterLevel.Value  = playerData.CharacterLevel;
         m_RuneData              = SpellLoader.GetRuneData(playerData.Rune);
-
+        
         CharacterData characterData = CharacterLoader.GetCharacterData(playerData.Character, playerData.CharacterLevel);
+        characterData.AddBonusStats(GetBonusStats());
 
         // initialize SpellHandler with character's spells
         m_SpellHandler.Initialize(characterData.AutoAttack, characterData.SpecialAbility, characterData.Ultimate, playerData.Spells.ToList(), playerData.SpellLevels.ToList());
@@ -221,6 +227,7 @@ public class Controller : NetworkBehaviour
         // init health and energy
         m_Life.Initialize(characterData.MaxHealth, characterData.GetInt(EStateEffectProperty.Shield));
         m_EnergyHandler.Initialize(10, characterData.MaxEnergy);
+        m_TriggerEffectHandler.Initialize(GetTriggerEffects());
 
         // init BehaviorTree
         if (m_BehaviorTree != null)
@@ -266,6 +273,51 @@ public class Controller : NetworkBehaviour
     #endregion
 
 
+    #region Bonus Stats & Trigger Effects
+
+    List<SCharacterStatScaling> GetBonusStats()
+    {
+        var bonusStats = m_PlayerData.Value.BonusStats.ToList();
+
+        if (m_RuneData == null)
+        {
+            ErrorHandler.Error("Rune Data not defined yet");
+            return bonusStats;
+        }
+
+        if (m_RuneData is BuffRune rune)
+            bonusStats.AddRange(rune.BonusStats);
+
+        return bonusStats;
+    }
+
+    List<STriggerEffect> GetTriggerEffects()
+    {
+        var list = m_PlayerData.Value.TriggerEffects.ToList();
+
+        if (m_RuneData == null)
+        {
+            ErrorHandler.Error("Rune Data not defined yet");
+            return list;
+        }
+
+        // set level of trigger effects = to character level and add it to list of trigger effects
+        if (m_RuneData is TriggerRune rune)
+        {
+            for (int i = 0; i < rune.TriggerEffects.Count; i++)
+            {
+                var triggerEffect = rune.TriggerEffects[i];
+                triggerEffect.Level = m_CharacterLevel.Value;
+                list.Add(triggerEffect);
+            }
+        }
+
+        return list;
+    }
+
+    #endregion
+
+
     #region On Game Starts
 
     /// <summary>
@@ -284,6 +336,9 @@ public class Controller : NetworkBehaviour
 
         if (!IsServer)
             return;
+
+        // activate components allowing the player to make actions
+        ActivateActionComponent(true);
 
         // when game starts, activate behavior tree of the 
         if (!IsPlayer)
@@ -354,6 +409,7 @@ public class Controller : NetworkBehaviour
         m_CounterHandler.enabled        = active;
 
         m_SpellHandler.Activate(active);
+        m_TriggerEffectHandler.Activate(active);
 
         if (m_AutoAttackHandler != null)
             m_AutoAttackHandler.enabled     = active;

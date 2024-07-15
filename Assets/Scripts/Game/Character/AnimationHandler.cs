@@ -70,6 +70,10 @@ namespace Game.Character
 
         #region Public Manipulators
 
+        public void CancelCurrentAnimation()
+        {
+            m_Animator.Play("Idle");
+        }
 
         /// <summary>
         /// Update Animation MovementSpeed factor depending on current speed
@@ -125,9 +129,13 @@ namespace Game.Character
             m_Animator.SetBool("IsMoving", isMoving);
         }
 
-        public void CancelCastAnimation()
+        public void CancelCastAnimation(EAnimation animation = EAnimation.None)
         {
-            ErrorHandler.Log("CancelCastAnimation : ", ELogTag.Animation);
+            // if current animation is not requested animation to cancel => return
+            if (animation != EAnimation.None && !IsCurrentAnimation(animation.ToString()))
+                return;
+
+            ErrorHandler.Log("CancelCastAnimation : " + animation, ELogTag.Animation);
 
             m_Animator.SetTrigger(EAnimation.CancelCast.ToString());
             m_Animator.SetFloat("CastSpeed", 1f);

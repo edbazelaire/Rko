@@ -176,6 +176,26 @@ namespace Game.Loaders
         }
 
         /// <summary>
+        /// Check if spell exists
+        /// </summary>
+        /// <param name="spellName"></param>
+        /// <returns></returns>
+        public static bool SpellExists(string name)
+        {
+            return Enum.TryParse(name, out ESpell _) || Instance.m_OnHitSpellData.ContainsKey(name);
+        }
+
+        /// <summary>
+        /// Check if spell exists
+        /// </summary>
+        /// <param name="spellName"></param>
+        /// <returns></returns>
+        public static bool StateEffectExists(string name)
+        {
+            return Enum.TryParse(name, out EStateEffect _) || Instance.m_StateEffects.ContainsKey(name);
+        }
+
+        /// <summary>
         /// Get the specific prefab for a spell if exists, otherwise return default prefab for this type of spell
         /// </summary>
         /// <param name="spellName"></param>

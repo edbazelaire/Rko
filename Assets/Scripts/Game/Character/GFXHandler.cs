@@ -1,13 +1,13 @@
 ﻿using Data;
 using Enums;
 using Game.Loaders;
+using Game.SpellGFXs;
 using Game.Spells;
-using NUnit.Framework;
+using Game.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
-using Tools.Animations;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -23,7 +23,7 @@ namespace Game.Character
         List<SPrefabSpawn> m_PrefabSpawns = new List<SPrefabSpawn>();
 
         /// <summary> list of visual effects proc by state effects</summary>
-        List<GameObject> m_StateEffectGraphics;
+        Dictionary<string, List<SpellGFX>> m_StateEffectGraphics;
         /// <summary> list of colors of the state effect </summary>
         List<Color> m_Colors;
 
@@ -115,17 +115,6 @@ namespace Game.Character
         #endregion
 
 
-        #region Spell Events
-
-        public virtual void SpawnSpellEvent(SPrefabSpawn prefabSpawn)
-        {
-            
-        }
-
-
-        #endregion
-
-
         #region Body Parts
 
         void FindBodyParts()
@@ -183,40 +172,21 @@ namespace Game.Character
 
         #region State Effects
 
-        /// <summary>
-        /// change the color of this character on each clients
-        /// </summary>
-        /// <param name="color"></param>
-        public void SpawnSpellEffectGraphics(GameObject visualEffect, string effectName, List<EBodyPart> bodyParts = default, Vector2 offset = default)
+        public List<SpellGFX> SpawnStateEffectGFX(StateEffect stateEffect, ESpellEvent spellEvent)
         {
-            if (visualEffect == null)
-                return;
+            List<SpellGFX> listSpellGFX = new();
+            if (stateEffect.VisualEffects == null || stateEffect.VisualEffects.Count == 0)
+                return listSpellGFX;
 
-            ErrorHandler.Log("SpawnSpellEffectGraphics : " + effectName, ELogTag.Animation);
+            ErrorHandler.Log("SpawnSpellEffectGraphics : " + stateEffect.name, ELogTag.Animation);
 
-            if (bodyParts == null || bodyParts.Count == 0 || bodyParts.Count == 1 && bodyParts[0] == EBodyPart.None)
+            foreach (SPrefabSpawn prefabSpawn in stateEffect.VisualEffects)
             {
-                var myVisualEffect = Instantiate(visualEffect, gameObject.transform);
-                myVisualEffect.transform.localPosition = offset;
-                myVisualEffect.name = effectName;
-                m_StateEffectGraphics.Add(myVisualEffect);
-                return;
+                if (prefabSpawn.GFXLifetime.StartSpellPart == spellEvent)
+                    prefabSpawn.Spawn(null, null, null, targetController: m_Controller);
             }
 
-            foreach (EBodyPart bodyPart in bodyParts)
-            {
-                if (m_BodyParts[bodyPart] == null)
-                    continue;
-
-                var myVisualEffect = Instantiate(visualEffect, m_BodyParts[bodyPart].transform);
-
-                // TODO : rescale
-
-                myVisualEffect.name = effectName + "_" + bodyPart.ToString();
-                myVisualEffect.transform.localPosition = offset;
-                m_StateEffectGraphics.Add(myVisualEffect);
-            }
-
+            return listSpellGFX;
         }
 
         /// <summary>
@@ -225,19 +195,30 @@ namespace Game.Character
         /// <param name="color"></param>
         public void RemoveSpellEffectGraphics(string effectName)
         {
+            if (! m_StateEffectGraphics.ContainsKey(effectName))
+                return;
+
             ErrorHandler.Log("Removing spell effect : " + effectName, ELogTag.Animation);
 
-            int n = m_StateEffectGraphics.Count - 1;
-            while (n >= 0)
+            foreach (var spellGfx in m_StateEffectGraphics[effectName])
             {
-                if (m_StateEffectGraphics[n].name == effectName || m_StateEffectGraphics[n].name.StartsWith(effectName + "_"))
-                {
-                    Destroy(m_StateEffectGraphics[n]);
-                    m_StateEffectGraphics.RemoveAt(n);
-                }
-
-                n --;
+                spellGfx.End();
             }
+
+            m_StateEffectGraphics.Remove(effectName);
+        }
+
+        public List<SpellGFX> SpawnSpellGFX(string spellName, ESpellEvent spellEvent)
+        {
+            var spellData = SpellLoader.GetSpellData(spellName);
+            List<SpellGFX> listSpellGFX = new();
+            foreach (SPrefabSpawn prefabSpawn in spellData.SpellEventActions)
+            {
+                if (prefabSpawn.GFXLifetime.StartSpellPart == spellEvent)
+                    prefabSpawn.Spawn(m_Controller, spellData, null);
+            }
+
+            return listSpellGFX;
         }
 
         #endregion
@@ -282,13 +263,7 @@ namespace Game.Character
         void OnPreSpellEvent(string spellName, ESpellEvent spellEvent)
         {
             ErrorHandler.Log(spellName + " OnPreSpellEvent : " + spellEvent, ELogTag.SpellGFX);
-
-            var spellData = SpellLoader.GetSpellData(spellName);
-            foreach (SPrefabSpawn prefabSpawn in spellData.SpellEventActions)
-            {
-                if (prefabSpawn.GFXLifetime.StartSpellPart == spellEvent)
-                    prefabSpawn.Spawn(m_Controller, spellData, null);
-            }
+            SpawnSpellGFX(spellName, spellEvent);   
         }
 
         /// <summary>
@@ -321,24 +296,27 @@ namespace Game.Character
 
         void OnAddStateEffect(string stateEffectName)
         {
-            StateEffect data = SpellLoader.GetStateEffect(stateEffectName);
+            StateEffect stateEffect = SpellLoader.GetStateEffect(stateEffectName);
 
-            if (data.VisualEffect != null)
-                SpawnSpellEffectGraphics(data.VisualEffect, stateEffectName, data.SpawnBodyParts, data.Offset);
+            if (stateEffect.VisualEffects != null)
+                SpawnStateEffectGFX(stateEffect, ESpellEvent.OnSpawn);
 
-            if (data.ColorSwitch != Color.white)
-                AddColor(data.ColorSwitch);
+            if (stateEffect.ColorSwitch != Color.white)
+                AddColor(stateEffect.ColorSwitch);
         }
 
         void OnRemoveStateEffect(string stateEffectName)
         {
             StateEffect data = SpellLoader.GetStateEffect(stateEffectName);
 
-            if (data.VisualEffect != null)
+            if (data.VisualEffects != null)
                 RemoveSpellEffectGraphics(stateEffectName);
 
             if (data.ColorSwitch != Color.white)
                 RemoveColor(data.ColorSwitch);
+
+            // spawn on end effects
+            SpawnStateEffectGFX(data, ESpellEvent.OnEnd);
         }
 
         #endregion

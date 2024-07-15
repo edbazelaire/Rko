@@ -35,15 +35,7 @@ namespace Game.Spells
 
         protected virtual void Update()
         {
-            // destroy preview on realease
-            if (! Input.GetMouseButton(0))
-            {
-                Destroy(gameObject);
-                return;
-            }
-
-            // hide/display preview if is in targettable area
-            m_Graphics.gameObject.SetActive(SpellHandler.IsTargettable(m_TargettableArea));
+            
         }
 
         #endregion

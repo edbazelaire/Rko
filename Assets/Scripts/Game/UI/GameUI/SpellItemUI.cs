@@ -219,7 +219,7 @@ namespace Game.UI
             if (spell != m_Spell)
                 return;
 
-            m_CooldownTimer = m_BaseCooldown;
+            m_CooldownTimer = m_Owner.SpellHandler.CalculateCooldown(m_BaseCooldown);
             m_TimerBeforeAskServer = TIME_BEFORE_ASK_SERVER;
 
             SetState(EButtonState.Locked);

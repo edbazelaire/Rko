@@ -1,4 +1,6 @@
-﻿using Enums;
+﻿using Data.DataStructures;
+using Enums;
+using Game;
 using Managers;
 using Save;
 using System;
@@ -18,9 +20,11 @@ namespace Data.GameManagement
     [Serializable]
     public struct SArenaLevelData
     {
-        public List<ESpell> Spells;
-        public SRewardsData rewardsData;
-        public List<SStageData> StageData;
+        public List<ESpell>                 Spells;
+        public List<STriggerEffect>         TriggerEffects;
+        public List<SCharacterStatScaling>  BonusStats;
+        public SRewardsData                 RewardsData;
+        public List<SStageData>             StageData;
     }
 
 
@@ -137,6 +141,8 @@ namespace Data.GameManagement
                 spellLevels:    spellLevels.ToArray(),
                 profileData:    CreateProfileData(),
                 isPlayer:       false,
+                triggerEffects: CurrentArenaLevelData.TriggerEffects.ToArray(),
+                bonusStats:     CurrentArenaLevelData.BonusStats.ToArray(),
                 botData :       new SBotData(
                     GetDecisionRefresh(CurrentStageData.CharacterLevel), 
                     GetRandomness(CurrentStageData.CharacterLevel)

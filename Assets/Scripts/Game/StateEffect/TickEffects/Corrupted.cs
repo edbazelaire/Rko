@@ -1,6 +1,7 @@
 ﻿using Data;
 using Enums;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game.Spells
@@ -35,7 +36,7 @@ namespace Game.Spells
             }
 
             Debug.LogWarning("CURSED applied with " + m_Stacks + " stacks");
-            m_Controller.StateHandler.AddStateEffect(new SStateEffectData(EStateEffect.VoidPact, m_Stacks, duration: m_Duration), m_Controller);
+            m_Controller.StateHandler.AddStateEffect(EStateEffect.VoidPact, m_Controller, duration: m_Duration);
 
             return true;
         }

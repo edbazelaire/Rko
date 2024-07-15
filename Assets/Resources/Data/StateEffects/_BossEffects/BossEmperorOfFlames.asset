@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37a2110fb8b24914fb18b6f82bc81e62, type: 3}
+  m_Name: BossEmperorOfFlames
+  m_EditorClassIdentifier: 
+  m_Description: 
+  m_DescriptionVariables: 
+  m_VisualEffect: {fileID: 7582611277444767761, guid: cc4df8b01aee30c4ba31169713fdbd40, type: 3}
+  m_SpawnBodyParts: 06000000
+  m_Offset: {x: 0, y: 0}
+  m_ColorSwitch: {r: 1, g: 1, b: 1, a: 1}
+  m_Animation: 0
+  m_OnApplySoundFX: {fileID: 0}
+  m_PermanantSoundFX: {fileID: 0}
+  m_ConsumeState: 0
+  m_DefaultState: 0
+  m_Duration: -1
+  m_MaxStacks: 1
+  m_SpeedBonus: 0
+  m_CastSpeed: 0.1
+  m_AttackSpeed: 0
+  m_CooldownReduction: 0
+  m_CooldownReductionPerc: 0.5
+  m_Shield: 0
+  m_ResistanceFix: 0
+  m_ResistancePerc: 0
+  m_BonusDamages: 0
+  m_BonusDamagesPerc: 0.1
+  m_BonusLifeSteal: 0
+  m_OnStartStateEffect: []
+  m_OnEndStateEffect: []
+  m_StateEffectScalingLevel:
+  - StateEffectProperty: 17
+    ScalingFactor: 0.1
+  - StateEffectProperty: 8
+    ScalingFactor: 0.1
+  m_StateEffectScalingStacks: []
+  m_OnHits: []
+  m_AllyStateEffects: []
+  m_EnemyStateEffects:
+  - StateEffect: 8
+    Stacks: 0
+    OverridingProperties: []

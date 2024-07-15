@@ -127,7 +127,7 @@ namespace Data
         // ===========================================================================
         // Dependent Members
         public virtual ESpellType SpellType => ESpellType.InstantSpell;
-        public float Size => m_Size * Settings.SpellSizeFactor;
+        public float Size => m_Size >= 0 ? m_Size * Settings.SpellSizeFactor : ArenaManager.Instance.TargettableAreaSize;
         protected override Type m_EnumType => typeof(ESpell);
         public ESpell Spell => (ESpell)Id;
 
@@ -210,8 +210,6 @@ namespace Data
             spell.InitializeClientRpc(clientId, target, Name, m_Level);
         }
 
-
-
         /// <summary>
         /// Spawn the prefabs that are displayed when the spell is casted
         /// </summary>
@@ -270,7 +268,7 @@ namespace Data
 
             // get the component of the preview and initialize it
             var component = Finder.FindComponent<SpellPreview>(preview);
-            component.Initialize(controller.SpellHandler.TargettableArea, Distance, Size);
+            component.Initialize(GetTargettableArea(controller.Team), Distance, Size);
         }
 
         #endregion
@@ -329,13 +327,13 @@ namespace Data
 
                 case ESpellTarget.AllyZoneCenter:
                 case ESpellTarget.EnemyZoneCenter:
-                    target = new Vector3(GameManager.Instance.GetPlayer(clientId).SpellHandler.TargettableArea.position.x, target.y, target.z);
+                    target = new Vector3(GetTargettableArea(GameManager.Instance.GetPlayer(clientId).Team).position.x, target.y, target.z);
                     break;
 
                 case ESpellTarget.AllyZoneStart:
                 case ESpellTarget.EnemyZoneStart:
                     var controller = GameManager.Instance.GetPlayer(clientId);
-                    var centerPos = controller.SpellHandler.TargettableArea.position.x;
+                    var centerPos = GetTargettableArea(controller.Team).position.x;
 
                     // direction usless ??
                     int direction = ArenaManager.GetAreaMovementDirection(controller.Team, SpellTarget == ESpellTarget.EnemyZoneStart);
@@ -353,13 +351,19 @@ namespace Data
         protected virtual void ClampTargetX(ref Vector3 target, ulong clientId) 
         {
             // clamp target between min/max xPos of the target zone
-            var zoneCenter = GameManager.Instance.GetPlayer(clientId).SpellHandler.TargettableArea.position.x;
+            var zoneCenter = GetTargettableArea(GameManager.Instance.GetPlayer(clientId).Team).position.x;
             target.x = Mathf.Clamp(target.x, zoneCenter - ArenaManager.Instance.TargettableAreaSize / 2, zoneCenter + ArenaManager.Instance.TargettableAreaSize / 2);
         }
 
-        public void RecalculatePosition()
+        public Transform GetTargettableArea(int team)
         {
-            
+            if (IsEnemyTarget)
+                return ArenaManager.GetTargettableArea(team, true);
+
+            else if (IsAllyTarget)
+                return ArenaManager.GetTargettableArea(team, false);
+            else
+                return ArenaManager.Instance.Arena.transform;
         }
 
         /// <summary>

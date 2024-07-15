@@ -1,25 +1,35 @@
 ﻿using Enums;
+using Game;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 using static UnityEngine.Rendering.DebugUI;
 
 namespace Data
 {
     [Serializable]
-    public struct SCharacterStatScaling
+    public struct SCharacterStatScaling : INetworkSerializable
     {
         public EStateEffectProperty StateEffectProperty;
         public float BaseValue;
         public float ScalingFactor;
 
-        public SCharacterStatScaling(EStateEffectProperty stateEffectProperty, float baseValue, float scalingFactor = 1.1f)
+        public SCharacterStatScaling(EStateEffectProperty stateEffectProperty, float baseValue, float scalingFactor = 0.1f)
         {
             StateEffectProperty = stateEffectProperty;
-            BaseValue           = baseValue;
-            ScalingFactor       = scalingFactor;
+            BaseValue = baseValue;
+            ScalingFactor = scalingFactor;
+        }
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref StateEffectProperty);
+            serializer.SerializeValue(ref BaseValue);
+            serializer.SerializeValue(ref ScalingFactor);
         }
     }
 
@@ -61,7 +71,7 @@ namespace Data
         // DEPENDENT ACCESSORS
         protected override Type m_EnumType => typeof(ECharacter);
         public ECharacter Character => (ECharacter)Id;
-        public int MaxHealth => (int)Math.Round(BaseHealth * Math.Pow(1 + HealthScaleFactor, m_Level - 1));
+        public int MaxHealth => (int)Math.Round(BaseHealth * Math.Pow(1 + HealthScaleFactor, m_Level - 1)) + (int)GetValue(EStateEffectProperty.Hp);
         public float Speed => BaseSpeed + GetValue(EStateEffectProperty.SpeedBonus);
 
         #endregion
@@ -83,6 +93,29 @@ namespace Data
         public new CharacterData Clone(int level = 0)
         {
             return (CharacterData)base.Clone(level);
+        }
+
+        /// <summary>
+        /// Add provided bonus base stats to the CharacterScaling values
+        /// </summary>
+        /// <param name="bonusStats"></param>
+        public void AddBonusStats(List<SCharacterStatScaling> bonusStats)
+        {
+            foreach (var characterStatScaling in bonusStats)
+            {
+                int index = CharacterStatScaling.FindIndex(value => value.StateEffectProperty.Equals(characterStatScaling.StateEffectProperty));
+                if (index < 0)
+                {
+                    CharacterStatScaling.Add(characterStatScaling);
+                    return;
+                }
+
+                var current = CharacterStatScaling[index];
+                current.BaseValue += characterStatScaling.BaseValue;
+                current.ScalingFactor += characterStatScaling.ScalingFactor;
+
+                CharacterStatScaling[index] = current;
+            }
         }
 
         #endregion

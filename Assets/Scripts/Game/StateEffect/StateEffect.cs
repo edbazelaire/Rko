@@ -37,7 +37,7 @@ namespace Game.Spells
         [SerializeField] protected      List<EStateEffectProperty>  m_DescriptionVariables = new List<EStateEffectProperty>();
 
         [Header("Graphics")]
-        [SerializeField] protected      GameObject                  m_VisualEffect;
+        [SerializeField] protected      List<SPrefabSpawn>          m_VisualEffects;
         [SerializeField] protected      List<EBodyPart>             m_SpawnBodyParts;
         [SerializeField] protected      Vector2                     m_Offset;
         [SerializeField] protected      Color                       m_ColorSwitch = Color.white;
@@ -52,22 +52,28 @@ namespace Game.Spells
 
         [Header("General Stats")]
         [SerializeField] protected      float                       m_Duration;
-        [SerializeField] protected      int                         m_MaxStacks         = 1;
+        [SerializeField] protected      int                         m_MaxStacks             = 1;
 
         [Header("General Boosts")]
-        [SerializeField] protected      float                       m_SpeedBonus        = 0f;
-        [SerializeField] protected      float                       m_CastSpeed         = 0f;
-        [SerializeField] protected      float                       m_AttackSpeed       = 0f;
+        [SerializeField] protected      float                       m_SpeedBonus            = 0f;
+        [SerializeField] protected      float                       m_CastSpeed             = 0f;
+        [SerializeField] protected      float                       m_AttackSpeed           = 0f;
+        [SerializeField] protected      int                         m_CooldownReduction     = 0;
+        [SerializeField] protected      float                       m_CooldownReductionPerc = 0f;
 
         [Header("Resistance & Shields")]
-        [SerializeField] protected      int                         m_Shield            = 0;
-        [SerializeField] protected      int                         m_ResistanceFix     = 0;
-        [SerializeField] protected      float                       m_ResistancePerc    = 0f;
+        [SerializeField] protected      int                         m_Shield                = 0;
+        [SerializeField] protected      int                         m_ResistanceFix         = 0;
+        [SerializeField] protected      float                       m_ResistancePerc        = 0f;
 
         [Header("Damages")]
-        [SerializeField] protected      int                         m_BonusDamages      = 0;
-        [SerializeField] protected      float                       m_BonusDamagesPerc  = 0f;
-        [SerializeField] protected      float                       m_BonusLifeSteal    = 0f;
+        [SerializeField] protected      int                         m_BonusDamages          = 0;
+        [SerializeField] protected      float                       m_BonusDamagesPerc      = 0f;
+        [SerializeField] protected      float                       m_BonusLifeSteal        = 0f;
+
+        [Header("Extra Effects")]
+        [SerializeField] protected List<StateEffect>                m_OnStartStateEffect    = new();
+        [SerializeField] protected List<StateEffect>                m_OnEndStateEffect      = new();
 
         [Header("Level Scaling")]
         /// <summary> Scaling factor for each properties depending on number of Stacks for each levels </summary>
@@ -88,13 +94,13 @@ namespace Game.Spells
         protected EStateEffect          m_Type;
         protected AudioSource           m_AudioSource;
 
-        protected int                   m_Stacks;   
+        protected int                   m_Stacks = 1;   
         protected int                   m_RemainingShield;
         protected float                 m_Timer;
 
         // =========================================================================================
         // DEPENDENT MEMBERS  
-        public GameObject               VisualEffect        => m_VisualEffect;
+        public List<SPrefabSpawn>       VisualEffects       => m_VisualEffects;
         public List<EBodyPart>          SpawnBodyParts      => m_SpawnBodyParts;
         public Vector2                  Offset              => m_Offset;
         public Color                    ColorSwitch         => m_ColorSwitch;
@@ -131,7 +137,7 @@ namespace Game.Spells
             m_Caster = caster;
 
             // check if has overriding data
-            if (stateEffectData.HasValue)
+            if (stateEffectData.HasValue && stateEffectData.Value.OverridingProperties.Count > 0)
                 OverrideStateEffectData(stateEffectData.Value);
 
             if (!CheckBeforeGraphicInit())
@@ -148,6 +154,8 @@ namespace Game.Spells
 
         public virtual void End()
         {
+            OnEnd();
+
             if (m_AudioSource != null)
             {
                 Destroy(m_AudioSource);
@@ -188,19 +196,24 @@ namespace Game.Spells
             return true;
         }
 
+        protected virtual void OnStart()
+        {
+            foreach (var stateEffect in m_OnStartStateEffect)
+            {
+                var clone = stateEffect.Clone(m_Level);
+                clone.m_Duration = m_Duration;
+                m_Controller.StateHandler.AddStateEffect(clone, m_Caster);
+            }
+        }
+
         public void OverrideStateEffectData(SStateEffectData stateEffectData)
         {
             name = stateEffectData.StateEffect.ToString();
 
-            // override duration if any provided
-            if (stateEffectData.OverrideDuration)
-                m_Duration = stateEffectData.Duration;
-
-            // override SpeedBonus if any provided
-            if (stateEffectData.OverrideSpeedBonus)
-                m_SpeedBonus = stateEffectData.SpeedBonus;
-
-            m_Stacks = stateEffectData.Stacks > 0 ? stateEffectData.Stacks : 1;
+            foreach (SStateEffectProperty overridingProperty in stateEffectData.OverridingProperties)
+            {
+                SetProperty(overridingProperty.StateEffectProperty, overridingProperty.Value);
+            }
         }
 
         public void PlaySoundEffect()
@@ -212,9 +225,18 @@ namespace Game.Spells
                 m_AudioSource = SoundFXManager.PlaySoundFXClip(m_PermanantSoundFX);
         }
 
-        protected virtual void OnStart()
-        {
+        #endregion
 
+
+        #region End
+
+        protected virtual void OnEnd()
+        {
+            foreach (var stateEffect in m_OnEndStateEffect)
+            {
+                var clone = stateEffect.Clone(m_Level);
+                m_Controller.StateHandler.AddStateEffect(clone, m_Caster);
+            }
         }
 
         #endregion
@@ -525,6 +547,10 @@ namespace Game.Spells
                     var maxStacks = GetProperty<int>(property);
                     if (maxStacks > 1)
                         infosDict.Add(property.ToString(), maxStacks);
+                    return true;
+
+                // don't add stacks
+                case EStateEffectProperty.Stacks:
                     return true;
 
                 case EStateEffectProperty.Duration:

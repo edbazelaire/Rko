@@ -594,6 +594,10 @@ namespace Game
         [ClientRpc]
         void GameStartedEventClientRPC()
         {
+            // Host already had the event spawned by server
+            if (IsHost)
+                return;
+
             GameStartedEvent?.Invoke();
         }
 

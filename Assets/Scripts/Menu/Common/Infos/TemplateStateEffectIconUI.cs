@@ -2,6 +2,7 @@
 using Data;
 using Enums;
 using Game.Loaders;
+using System.Linq;
 using TMPro;
 using Tools;
 using UnityEngine;
@@ -42,9 +43,11 @@ namespace Menu.Common.Infos
             m_Level = level;
 
             m_Icon.sprite = AssetLoader.LoadStateEffectIcon(stateEffectData.StateEffect.ToString());
-            if (stateEffectData.Duration > 0)
+
+            float duration = stateEffectData.OverridingProperties.Any(value => value.StateEffectProperty.Equals(EStateEffectProperty.Duration)) ? stateEffectData.OverridingProperties.First(value => value.StateEffectProperty.Equals(EStateEffectProperty.Duration)).Value : SpellLoader.GetStateEffect(stateEffectData.StateEffect.ToString(), level).GetFloat(EStateEffectProperty.Duration);
+            if (duration > 0)
             {
-                m_DurationValue.text = SpellLoader.GetStateEffect(stateEffectData.StateEffect.ToString(), level).GetFloat(EStateEffectProperty.Duration).ToString("F2");
+                m_DurationValue.text = duration.ToString("F2");
             } else
             {
                 m_DurationValue.gameObject.SetActive(false);

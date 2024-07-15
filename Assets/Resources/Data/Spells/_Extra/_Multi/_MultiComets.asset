@@ -31,6 +31,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    StateEffects: 
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
@@ -61,12 +62,10 @@ MonoBehaviour:
   EnemyStateEffects:
   - StateEffect: 8
     Stacks: 0
-    Duration: 0
-    SpeedBonus: 0
+    OverridingProperties: []
   - StateEffect: 13
     Stacks: 3
-    Duration: 0
-    SpeedBonus: 0
+    OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
@@ -75,4 +74,4 @@ MonoBehaviour:
   AnimationTimer: 0
   m_Cooldown: 0
   Trajectory: 3
-  m_Speed: 8
+  m_Speed: 7

@@ -31,12 +31,23 @@ namespace Game.Character
         // ==============================================================================================
         // PUBLIC ACCESSORS
         public NetworkList<FixedString64Bytes> StateEffectList => m_StateEffectList;
-        public bool IsStunned => m_StateEffectList.Contains(EStateEffect.Stun.ToString()) 
-            || m_StateEffectList.Contains(EStateEffect.Scorched.ToString());
+        public bool IsStunned => ! IsUncontrollable
+            && (m_StateEffectList.Contains(EStateEffect.Stun.ToString()) 
+            || m_StateEffectList.Contains(EStateEffect.Scorched.ToString()));
+
         public bool IsSilenced => m_StateEffectList.Contains(EStateEffect.Silence.ToString()) 
             || m_StateEffectList.Contains(EStateEffect.Malediction.ToString());
-        public bool IsUnTargetable => m_StateEffectList.Contains(EStateEffect.Invisible.ToString()) 
-            || m_StateEffectList.Contains(EStateEffect.Jump.ToString());
+
+        public bool IsInvulnerable => m_StateEffectList.Contains(EStateEffect.Invulnerable.ToString())
+            || m_StateEffectList.Contains(EStateEffect.SpecialAnimation.ToString());
+        public bool IsUncontrollable => m_StateEffectList.Contains(EStateEffect.Uncontrollable.ToString())
+            || m_StateEffectList.Contains(EStateEffect.SpecialAnimation.ToString());
+
+        public bool IsUnTargetable => m_StateEffectList.Contains(EStateEffect.UnTargettable.ToString())
+            || m_StateEffectList.Contains(EStateEffect.SpecialAnimation.ToString())
+            || m_StateEffectList.Contains(EStateEffect.Jump.ToString())
+            || m_StateEffectList.Contains(EStateEffect.Invisible.ToString());
+
         public NetworkVariable<float> SpeedBonus => m_SpeedBonus;
         public NetworkVariable<int> RemainingShield => m_RemainingShield;
         public NetworkVariable<EAnimation> AnimationState => m_AnimationState;
@@ -116,6 +127,13 @@ namespace Game.Character
 
             OnStateEvent?.Invoke(listEvent, stateEffect, stacks, duration);
 
+            // TODO : REMOVE ===========================================================
+            if (stateEffect == EStateEffect.SpecialAnimation.ToString())
+            {
+                Debug.LogError(listEvent.ToString() + " : " + stateEffect);
+            }
+            // TODO : REMOVE ===========================================================
+
             if (listEvent == EListEvent.Add)
                 SpellLoader.GetStateEffect(stateEffect).PlaySoundEffect();
         }
@@ -143,7 +161,7 @@ namespace Game.Character
             m_Controller.Collider.enabled = !on;
 
             if (on)
-                AddStateEffect(new SStateEffectData(EStateEffect.Jump, duration: -1), m_Controller);
+                AddStateEffect(new SStateEffectData(EStateEffect.Jump, overridingProperties: new List<SStateEffectProperty> { new SStateEffectProperty(EStateEffectProperty.Duration, -1f) }), m_Controller);
             else
                 RemoveState(EStateEffect.Jump);
         }
@@ -344,16 +362,17 @@ namespace Game.Character
         /// </summary>
         /// <param name="type"></param>
         /// <param name="duration"></param>
-        public void AddStateEffect(EStateEffect type, Controller caster, int? stacks = default, float? duration = default, float? speedBonus = default)
+        public void AddStateEffect(EStateEffect type, Controller caster, int? stacks = default, float? duration = default)
         {
             if (!IsServer)
                 return;
 
+            var overridingProperties = duration.HasValue ? new List<SStateEffectProperty> { new SStateEffectProperty(EStateEffectProperty.Duration, duration.Value) } : new(); 
+
             AddStateEffect(new SStateEffectData(
                 type, 
-                stacks:     stacks      ??      1,
-                duration:   duration    ??     -1f,
-                speedBonus: speedBonus  ??      0           
+                stacks:                 stacks      ??      1,
+                overridingProperties:   overridingProperties
             ), caster);
         }
 

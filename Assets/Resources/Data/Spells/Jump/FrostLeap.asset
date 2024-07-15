@@ -20,7 +20,7 @@ MonoBehaviour:
   OnAnimation: []
   OnCastPrefabs: []
   OnHit:
-  - {fileID: 11400000, guid: 69ad332851efb1b49962fec82148ad02, type: 2}
+  - {fileID: 11400000, guid: 4b3aea1b89915604d904f5e80374aec6, type: 2}
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 0d76716516b75774eaff0bf422c35113, type: 3}
@@ -32,7 +32,7 @@ MonoBehaviour:
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 100
+  m_Damage: 50
   m_Heal: 0
   m_LifeSteal: 0
   Distance: -1
@@ -53,7 +53,7 @@ MonoBehaviour:
   Animation: 5
   IsCancellable: 1
   AnimationTimer: 0
-  m_Cooldown: 20
+  m_Cooldown: 40
   Trajectory: 1
   m_Speed: 14
   JumpType: 1

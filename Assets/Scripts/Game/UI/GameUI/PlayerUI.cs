@@ -1,6 +1,7 @@
 ﻿using Enums;
 using Game.Loaders;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Tools;
 using Unity.Netcode;
@@ -15,7 +16,15 @@ namespace Game.UI
         const string        c_EnergyBar         = "EnergyBar";
         const string        c_StateDisplayer    = "StateDisplayer";
 
-        Controller          m_Controller = null;
+        string[] IGNORED_STATE_EFFECTS = { 
+            EStateEffect.None.ToString(), 
+            EStateEffect.Invulnerable.ToString(), 
+            EStateEffect.Uncontrollable.ToString(), 
+            EStateEffect.UnTargettable.ToString(), 
+            EStateEffect.Jump.ToString()
+        };
+
+        Controller m_Controller = null;
         [SerializeField] GameObject   m_TemplateStateEffect;
 
         PlayerBarUI         m_HealthBar;
@@ -96,7 +105,7 @@ namespace Game.UI
         void OnStateEvent(EListEvent listEvent, string state, int stack, float duration)
         {
             // check that is not one of the state that are not displayed
-            if (state == EStateEffect.Jump.ToString())
+            if (IGNORED_STATE_EFFECTS.Contains(state))
                 return;
 
             switch (listEvent)

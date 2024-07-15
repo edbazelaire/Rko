@@ -9,6 +9,7 @@ using Assets;
 using Unity.VisualScripting;
 using Data.GameManagement;
 using System;
+using UnityEngine.Serialization;
 
 namespace Data
 {
@@ -31,16 +32,18 @@ namespace Data
         [Description("Size of the projectile zone")]
         [SerializeField] protected float m_ProjectileZoneSize = 0f;
         [Description("Delay between each projectile cast")]
-        public float DelayBetweenLaunches = 0f;
+        [SerializeField] protected float m_DelayBetweenLaunches = 0f;
         [Description("Number of waves")]
         [SerializeField] protected int m_NWaves = 1;
         [Description("Delay between each waves")]
-        public float DelayBetweenWaves = 0f;
+        [SerializeField] protected float m_DelayBetweenWaves = 0f;
 
         // ============================================================================================
         // Public Accessors
         public int NProjectiles => (int)Math.Floor(m_NProjectiles * GetSpellLevelFactor(ESpellProperty.NProjectiles));
         public int NWaves => (int)Math.Floor(m_NWaves * GetSpellLevelFactor(ESpellProperty.NWaves));
+        public float DelayBetweenLaunches => m_DelayBetweenLaunches * GetSpellLevelFactor(ESpellProperty.DelayBetweenLaunches);
+        public float DelayBetweenWaves => m_DelayBetweenWaves * GetSpellLevelFactor(ESpellProperty.DelayBetweenWaves);
 
         // ============================================================================================
         // Private Members
@@ -101,7 +104,7 @@ namespace Data
                 var delay = DelayBetweenWaves;
                 while (delay > 0)
                 {
-                    if (m_IsCancelled || controller.SpellHandler.HasStateBlockingCast())
+                    if ((m_IsCancelled || controller.SpellHandler.HasStateBlockingCast()) && m_IsBlocking)
                     {
                         m_IsCancelled = true;
                         break;
@@ -146,7 +149,7 @@ namespace Data
 
                 while (delay > 0)
                 {
-                    if (controller.SpellHandler.HasStateBlockingCast())
+                    if ((m_IsCancelled || controller.SpellHandler.HasStateBlockingCast()) && m_IsBlocking)
                     {
                         m_IsCancelled = true;
                         yield break;
@@ -182,8 +185,15 @@ namespace Data
         /// <returns></returns>
         protected Vector3 CalculateMultiProjectileTarget(Vector3 target, int i, int team)
         {
-            // if projectile size < 0 : use all the size of 
-            var zoneSize = ProjectileZoneSize >= 0f ? ProjectileZoneSize : ArenaManager.Instance.TargettableAreaSize;
+            (float min, float max) = ArenaManager.GetAreaBounds(team, SpellTarget == ESpellTarget.None || IsEnemyTarget);
+
+            var zoneSize = ProjectileZoneSize;
+            // if projectile size < 0 : use all the size of the arena
+            if (zoneSize < 0f)
+            {
+                zoneSize = ArenaManager.Instance.TargettableAreaSize;
+                target.x = min + zoneSize / 2;
+            }
 
             switch (MultiProjectileType)
             {
@@ -203,7 +213,6 @@ namespace Data
                     break;
             }
 
-            (float min, float max) = ArenaManager.GetAreaBounds(team, SpellTarget == ESpellTarget.None || IsEnemyTarget);
             target.x = Mathf.Clamp(target.x, min, max);
 
             return target;

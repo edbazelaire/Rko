@@ -1,10 +1,14 @@
-﻿using Enums;
+﻿using Data;
+using Data.DataStructures;
+using Enums;
+using Game;
 using Save;
 using System;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Managers
@@ -37,17 +41,19 @@ namespace Managers
     [Serializable]
     public struct SPlayerData : INetworkSerializable
     {
-        public FixedString32Bytes   PlayerName;
-        public int                  CharacterLevel;
-        public ECharacter           Character;
-        public ERune                Rune;
-        public ESpell[]             Spells;
-        public int[]                SpellLevels;
-        public SProfileDataNetwork  ProfileData;
-        public bool                 IsPlayer;
-        public SBotData             BotData; 
+        public FixedString32Bytes           PlayerName;
+        public int                          CharacterLevel;
+        public ECharacter                   Character;
+        public ERune                        Rune;
+        public ESpell[]                     Spells;
+        public int[]                        SpellLevels;
+        public SProfileDataNetwork          ProfileData;
+        public bool                         IsPlayer;
+        public STriggerEffect[]             TriggerEffects; 
+        public SCharacterStatScaling[]      BonusStats; 
+        public SBotData                     BotData; 
 
-        public SPlayerData(FixedString32Bytes playerName, int characterLevel, ECharacter character, ERune rune, ESpell[] spells, int[] spellLevels, SProfileDataNetwork profileData, bool isPlayer, SBotData botData = default)
+        public SPlayerData(FixedString32Bytes playerName, int characterLevel, ECharacter character, ERune rune, ESpell[] spells, int[] spellLevels, SProfileDataNetwork profileData, bool isPlayer, STriggerEffect[] triggerEffects = default, SCharacterStatScaling[] bonusStats = default, SBotData botData = default)
         {
             PlayerName      = playerName;
             CharacterLevel  = characterLevel;
@@ -57,43 +63,72 @@ namespace Managers
             SpellLevels     = spellLevels;
             ProfileData     = profileData;
             IsPlayer        = isPlayer;
+            TriggerEffects  = triggerEffects;
+            BonusStats      = bonusStats;
             BotData         = botData;
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
+            // direct serialization
             serializer.SerializeValue(ref PlayerName);
             serializer.SerializeValue(ref CharacterLevel);
             serializer.SerializeValue(ref Character);
             serializer.SerializeValue(ref Rune);
             serializer.SerializeValue(ref IsPlayer);
 
-            // Serialize Spells array
-            int spellsLength = Spells != null ? Spells.Length : 0;
-            serializer.SerializeValue(ref spellsLength);
+            // Sub - serialization
+            ProfileData.NetworkSerialize(serializer);
+            BotData.NetworkSerialize(serializer);
+
+            // ARRAYS - serialization
+            // -- Spells
+            int length = Spells != null ? Spells.Length : 0;
+            serializer.SerializeValue(ref length);
             if (serializer.IsReader)
             {
-                Spells = new ESpell[spellsLength];
+                Spells = new ESpell[length];
             }
-            for (int i = 0; i < spellsLength; i++)
+            for (int i = 0; i < length; i++)
             {
                 serializer.SerializeValue(ref Spells[i]);
             }
 
-            // Serialize SpellLevels array
-            int spellLevelsLength = SpellLevels != null ? SpellLevels.Length : 0;
-            serializer.SerializeValue(ref spellLevelsLength);
+            // -- SpellLevels
+            length = SpellLevels != null ? SpellLevels.Length : 0;
+            serializer.SerializeValue(ref length);
             if (serializer.IsReader)
             {
-                SpellLevels = new int[spellLevelsLength];
+                SpellLevels = new int[length];
             }
-            for (int i = 0; i < spellLevelsLength; i++)
+            for (int i = 0; i < length; i++)
             {
                 serializer.SerializeValue(ref SpellLevels[i]);
             }
 
-            ProfileData.NetworkSerialize(serializer);
-            BotData.NetworkSerialize(serializer);
+            // -- TriggerEffects
+            length = TriggerEffects != null ? TriggerEffects.Length : 0;
+            serializer.SerializeValue(ref length);
+            if (serializer.IsReader)
+            {
+                TriggerEffects = new STriggerEffect[length];
+            }
+            for (int i = 0; i < length; i++)
+            {
+                TriggerEffects[i].NetworkSerialize(serializer);
+            }
+
+            // -- BonusStats
+            length = BonusStats != null ? BonusStats.Length : 0;
+            serializer.SerializeValue(ref length);
+            if (serializer.IsReader)
+            {
+                BonusStats = new SCharacterStatScaling[length];
+            }
+            for (int i = 0; i < length; i++)
+            {
+                BonusStats[i].NetworkSerialize(serializer);
+            }
         }
     }
 

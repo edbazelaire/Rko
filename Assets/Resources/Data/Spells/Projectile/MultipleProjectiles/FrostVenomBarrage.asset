@@ -52,13 +52,12 @@ MonoBehaviour:
   EnemyStateEffects:
   - StateEffect: 6
     Stacks: 0
-    Duration: 0
-    SpeedBonus: 0
+    OverridingProperties: []
   - StateEffect: 9
     Stacks: 0
-    Duration: 0
-    SpeedBonus: 0
+    OverridingProperties: []
   AllyStateEffects: []
+  StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 2
   IsCancellable: 0
@@ -70,6 +69,6 @@ MonoBehaviour:
   MultiProjectileType: 1
   m_NProjectiles: 3
   m_ProjectileZoneSize: 5
-  DelayBetweenLaunches: 0
+  m_DelayBetweenLaunches: 0
   m_NWaves: 3
-  DelayBetweenWaves: 0.5
+  m_DelayBetweenWaves: 0.5

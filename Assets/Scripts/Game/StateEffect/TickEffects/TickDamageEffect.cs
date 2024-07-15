@@ -9,7 +9,6 @@ namespace Game.Spells
     [CreateAssetMenu(fileName = "TickDamageEffect", menuName = "Game/StateEffects/TickDamage")]
     public class TickDamageEffect : DamageEffect
     {
-
         #region Members
 
         [SerializeField] protected float    m_Tick;
