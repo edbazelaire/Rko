@@ -31,12 +31,23 @@ namespace Game.Character
         // ==============================================================================================
         // PUBLIC ACCESSORS
         public NetworkList<FixedString64Bytes> StateEffectList => m_StateEffectList;
-        public bool IsStunned => m_StateEffectList.Contains(EStateEffect.Stun.ToString()) 
-            || m_StateEffectList.Contains(EStateEffect.Scorched.ToString());
+        public bool IsStunned => ! IsUncontrollable
+            && (m_StateEffectList.Contains(EStateEffect.Stun.ToString()) 
+            || m_StateEffectList.Contains(EStateEffect.Scorched.ToString()));
+
         public bool IsSilenced => m_StateEffectList.Contains(EStateEffect.Silence.ToString()) 
             || m_StateEffectList.Contains(EStateEffect.Malediction.ToString());
-        public bool IsUnTargetable => m_StateEffectList.Contains(EStateEffect.Invisible.ToString()) 
-            || m_StateEffectList.Contains(EStateEffect.Jump.ToString());
+
+        public bool IsInvulnerable => m_StateEffectList.Contains(EStateEffect.Invulnerable.ToString())
+            || m_StateEffectList.Contains(EStateEffect.SpecialAnimation.ToString());
+        public bool IsUncontrollable => m_StateEffectList.Contains(EStateEffect.Uncontrollable.ToString())
+            || m_StateEffectList.Contains(EStateEffect.SpecialAnimation.ToString());
+
+        public bool IsUnTargetable => m_StateEffectList.Contains(EStateEffect.UnTargettable.ToString())
+            || m_StateEffectList.Contains(EStateEffect.SpecialAnimation.ToString())
+            || m_StateEffectList.Contains(EStateEffect.Jump.ToString())
+            || m_StateEffectList.Contains(EStateEffect.Invisible.ToString());
+
         public NetworkVariable<float> SpeedBonus => m_SpeedBonus;
         public NetworkVariable<int> RemainingShield => m_RemainingShield;
         public NetworkVariable<EAnimation> AnimationState => m_AnimationState;
@@ -143,9 +154,9 @@ namespace Game.Character
             m_Controller.Collider.enabled = !on;
 
             if (on)
-                AddStateEffect(new SStateEffectData(EStateEffect.Jump, duration: -1), m_Controller);
+                AddStateEffect(new SStateEffectData(EStateEffect.Jump, overridingProperties: new List<SStateEffectProperty> { new SStateEffectProperty(EStateEffectProperty.Duration, -1f) }), m_Controller);
             else
-                RemoveState(EStateEffect.Jump);
+                RemoveStateEffect(EStateEffect.Jump);
         }
 
         public int ApplyResistance(int damages)
@@ -242,7 +253,7 @@ namespace Game.Character
 
             // check states that are removed on casting 
             if (HasState(EStateEffect.Invisible))
-                RemoveState(EStateEffect.Invisible);
+                RemoveStateEffect(EStateEffect.Invisible);
         }
 
 
@@ -270,7 +281,7 @@ namespace Game.Character
         /// Refresh the state effect
         /// </summary>
         /// <param name="stateEffectName"></param>
-        void RefreshEffect(string stateEffectName, int stacks = 1)
+        void RefreshEffect(string stateEffectName, int stacks = 0)
         {
             foreach (var effect in m_StateEffects)
             {
@@ -313,13 +324,18 @@ namespace Game.Character
                 return;
 
             var pastState = GetAnimationState();
+            int stacks = overridingData != null ? overridingData.Value.Stacks : 1;
 
             // if already in the list of state effects, refresh it
             if (HasState(stateEffect.StateEffectName))
             {
-                RefreshEffect(stateEffect.StateEffectName, overridingData != null ? overridingData.Value.Stacks : 1);
+                RefreshEffect(stateEffect.StateEffectName, stacks);
                 return;
             }
+
+            // no stacks and no active effect : return
+            if (stacks == 0)
+                return;
 
             if (! stateEffect.Initialize(m_Controller, caster, overridingData))
                 return;
@@ -344,16 +360,17 @@ namespace Game.Character
         /// </summary>
         /// <param name="type"></param>
         /// <param name="duration"></param>
-        public void AddStateEffect(EStateEffect type, Controller caster, int? stacks = default, float? duration = default, float? speedBonus = default)
+        public void AddStateEffect(EStateEffect type, Controller caster, int? stacks = default, float? duration = default)
         {
             if (!IsServer)
                 return;
 
+            var overridingProperties = duration.HasValue ? new List<SStateEffectProperty> { new SStateEffectProperty(EStateEffectProperty.Duration, duration.Value) } : new(); 
+
             AddStateEffect(new SStateEffectData(
                 type, 
-                stacks:     stacks      ??      1,
-                duration:   duration    ??     -1f,
-                speedBonus: speedBonus  ??      0           
+                stacks:                 stacks      ??      1,
+                overridingProperties:   overridingProperties
             ), caster);
         }
 
@@ -361,7 +378,7 @@ namespace Game.Character
         /// Remove a state effect from the character
         /// </summary>
         /// <param name="state"></param>
-        public int RemoveState(string state)
+        public int RemoveStateEffect(string state, bool consume = false)
         {
             if (!IsServer)
                 return 0;
@@ -373,12 +390,18 @@ namespace Game.Character
             int index = m_StateEffectList.IndexOf(state);
             if (index == -1)
             {
-                ErrorHandler.FatalError($"Unable to find state {state} in list");
+                ErrorHandler.Error($"Unable to find state {state} in list");
                 return 0;
             }
 
             // keep track of the number of stacks this spell had
             int nStacks = m_StateEffects[index].Stacks;
+
+            // apply consume effect if requested
+            if (consume)
+            {
+                m_StateEffects[index].OnConsumed();
+            }
 
             // send event to clients (for UI update)
             OnStateEventClientRPC(EListEvent.Remove, m_StateEffects[index].StateEffectName, m_StateEffects[index].Stacks, 0f);
@@ -403,9 +426,9 @@ namespace Game.Character
         /// Remove a state effect from the character
         /// </summary>
         /// <param name="state"></param>
-        public int RemoveState(EStateEffect state)
+        public int RemoveStateEffect(EStateEffect state, bool consume = false)
         {
-            return RemoveState(state.ToString());
+            return RemoveStateEffect(state.ToString(), consume);
         }
 
         public int GetStacks(EStateEffect state)

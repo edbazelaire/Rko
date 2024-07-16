@@ -1,33 +1,42 @@
 ﻿using Enums;
-using Game.SpellGFX;
+using Game.SpellGFXs;
 using Game.Spells;
 using System;
+using System.Collections.Generic;
 using Tools;
 using UnityEngine;
 
 
 namespace Data
 {
+    [Serializable] 
+    public struct SStateEffectProperty
+    {
+        public EStateEffectProperty StateEffectProperty;
+        public float Value;
+
+        public SStateEffectProperty(EStateEffectProperty stateEffectProperty, float value)
+        {
+            StateEffectProperty = stateEffectProperty;
+            Value = value;
+        }
+    }
+
     /// <summary>
     /// Structure allowing to define a state effect in the SpellData inspector
     /// </summary>
     [Serializable]
     public struct SStateEffectData
     {
-        public EStateEffect     StateEffect;
-        public int              Stacks;
-        public float            Duration;
-        public float            SpeedBonus;
+        public EStateEffect                 StateEffect;
+        public int                          Stacks;
+        public List<SStateEffectProperty>   OverridingProperties;
 
-        public readonly bool OverrideDuration    => Duration > 0;
-        public readonly bool OverrideSpeedBonus  => SpeedBonus != 0;
-
-        public SStateEffectData(EStateEffect stateEffect, int stacks = 1, float duration = -1f, float speedBonus = 0f)
+        public SStateEffectData(EStateEffect stateEffect, int stacks = 1, List<SStateEffectProperty> overridingProperties = default)
         {
-            StateEffect = stateEffect;
-            Stacks      = stacks;
-            Duration    = duration;
-            SpeedBonus  = speedBonus;
+            StateEffect             = stateEffect;
+            Stacks                  = stacks;
+            OverridingProperties    = overridingProperties;
         }
     }
 
@@ -87,27 +96,30 @@ namespace Data
     {
         #region Members
 
-        public GameObject       Prefab;
-        public SGFXLifetime     GFXLifetime;
-        public float            Size;
-        public int              OrderInLayer;
+        public GameObject           Prefab;
+        public Material             MaterialEffect;
+        public SGFXLifetime         GFXLifetime;
+        public float                Size;
+        public int                  OrderInLayer;
 
-        public ESpawnTarget     SpawnTarget;
-        public ESpawnLocation   SpawnLocation;
-        public EBodyPart        BodyPart;
-        public bool             IsFollowing;
-        public Vector2          Offset;
+        public ESpawnTarget         SpawnTarget;
+        public ESpawnLocation       SpawnLocation;
+        public EBodyPart            BodyPart;
+        public bool                 IsFollowing;
+        public Vector2              Offset;
 
-        public EAnimation       Animation;
+        public EAnimation           Animation;
+        public List<EStateEffect>   StateEffects;
 
         #endregion
 
 
         #region Contructor
 
-        public SPrefabSpawn(GameObject prefab, SGFXLifetime gFXLifetime, ESpawnTarget spawnTarget, ESpawnLocation spawnLocation, EBodyPart bodyPart, bool isFollowing, Vector2 offset, EAnimation animation, float size = 0f, int orderInLayer = 0)
+        public SPrefabSpawn(GameObject prefab, Material materialEffect, SGFXLifetime gFXLifetime, ESpawnTarget spawnTarget, ESpawnLocation spawnLocation, EBodyPart bodyPart, bool isFollowing, Vector2 offset, EAnimation animation, List<EStateEffect> stateEffects = default, float size = 0f, int orderInLayer = 0)
         {
             Prefab          = prefab;
+            MaterialEffect  = materialEffect;
             GFXLifetime     = gFXLifetime;
             Size            = size;
             OrderInLayer    = orderInLayer;
@@ -119,6 +131,7 @@ namespace Data
             Offset          = offset;
 
             Animation       = animation;
+            StateEffects    = stateEffects;
         }
 
         #endregion
@@ -126,35 +139,38 @@ namespace Data
 
         #region Spawn & Instantiation
 
-        public readonly GameObject Spawn(Controller controller, SpellData spellData, Spell spell)
+        /// <summary>
+        /// Spawn a Prefab for a defined lifetime
+        /// </summary>
+        /// <param name="caster">   Controller at the origin of this action </param>
+        /// <param name="spellData">    SpellData of the spell we are trying to cast or was casted </param>
+        /// <param name="spell">        If the spell has already spawned, provide it (otherwise will be null) </param>
+        /// <returns></returns>
+        public readonly SpellGFX Spawn(Controller caster, SpellData spellData, Spell spell = null, StateEffect stateEffect = null, Controller targetController = null)
         {
-            if (Animation != EAnimation.None)
-                controller.AnimationHandler.PlayAnimation(Animation);
-
+            GameObject go;
             if (Prefab == null)
-                return null;
-
-            var parent = SpellGFX.CalculateParent(this, controller, spell);
-            var position = SpellGFX.CalculatePosition(parent, this, controller);
-
-            GameObject go = GameObject.Instantiate(Prefab, position, Quaternion.identity, IsFollowing ? parent : null);
-            if (go.TryGetComponent(out SpellGFX spellGfx))
-            {
-                spellGfx.Initialize(controller, spellData, spell, this);
-            }
-
-            //else if (go.TryGetComponent(out Spell spawnSpell))
-            //{
-            //    spawnSpell.Cast();
-            //}
-
-            // NO SPECIFIC COMPONENT : add default spell graphix component
+                go = new GameObject();
             else
             {
-                go.AddComponent<SpellGFX>().Initialize(controller, spellData, spell, this);
+                var parent = SpellGFX.CalculateParent(this, caster, spell, targetController);
+                var position = SpellGFX.CalculatePosition(parent, this, caster);
+                go = GameObject.Instantiate(Prefab, position, Quaternion.identity, IsFollowing ? parent : null);
+            }
+            
+            if (! go.TryGetComponent(out SpellGFX spellGfx))
+            {
+                // NO SPECIFIC COMPONENT : add default spell graphix component
+                spellGfx = go.AddComponent<SpellGFX>();
             }
 
-            return go;
+            //else if (go.TryGetComponent(out SpellPreview spellPreview))
+            //{
+            //    spellPreview.Intialize(controller);
+            //}
+
+            spellGfx.Initialize(this.SpawnTarget != ESpawnTarget.Target ? caster : targetController, spellData, spell, stateEffect, this);
+            return spellGfx;
         }
 
         #endregion

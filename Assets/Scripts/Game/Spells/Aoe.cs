@@ -81,6 +81,10 @@ namespace Game.Spells
             if (!IsServer)
                 return;
 
+            // if inifite zone, do nothing
+            if (m_SpellData.Duration <= -1f)
+                return;
+
             m_DurationTimer -= Time.deltaTime;
             if (m_DurationTimer <= 0f)
             {

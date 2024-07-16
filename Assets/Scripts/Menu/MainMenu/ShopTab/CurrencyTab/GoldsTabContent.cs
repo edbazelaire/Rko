@@ -14,7 +14,11 @@ namespace Menu.MainMenu
         {
             base.Initialize(tabButton, activationSoundFX);
 
-            m_Scroller.Initialize(new List<SShopData>[] { ShopManagementData.GoldsShopData, ShopManagementData.XpShopData, ShopManagementData.GemsShopData });
+            m_Scroller.Initialize(new List<SShopData>[] { 
+                ShopManagementData.GoldsShopData, 
+                ShopManagementData.XpShopData, 
+                //ShopManagementData.GemsShopData       // TODO : SET BACK when Monetization is activated
+            });
         }
 
         #endregion

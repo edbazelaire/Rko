@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bec91e441d966e438d35c0133adae84, type: 3}
+  m_Name: ShieldRune
+  m_EditorClassIdentifier: 
+  m_Description: Apply a {0} shield for {1} seconds when reaching half hp
+  m_DescriptionVariables: 0400000001000000
+  m_VisualEffects:
+  - Prefab: {fileID: 152564, guid: 4ab45d63db2ac6448a1bd863420410b7, type: 3}
+    MaterialEffect: {fileID: 0}
+    GFXLifetime:
+      StartSpellPart: 0
+      EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
+  m_Animation: 0
+  m_OnApplySoundFX: {fileID: 8300000, guid: 6f4c14cc46310ff4f9bd77d24400b113, type: 3}
+  m_PermanantSoundFX: {fileID: 0}
+  m_ConsumeState: 0
+  m_DefaultState: 0
+  m_Duration: 3
+  m_MaxStacks: 1
+  m_SpeedBonus: 0
+  m_CastSpeed: 0
+  m_AttackSpeed: 0
+  m_CooldownReduction: 0
+  m_CooldownReductionPerc: 0
+  m_Shield: 500
+  m_ResistanceFix: 0
+  m_ResistancePerc: 0
+  m_BonusDamages: 0
+  m_BonusDamagesPerc: 0
+  m_BonusLifeSteal: 0
+  m_OnStartStateEffect: []
+  m_OnEndStateEffect: []
+  m_StateEffectScalingLevel:
+  - StateEffectProperty: 1
+    ScalingFactor: 0.1
+  - StateEffectProperty: 4
+    ScalingFactor: 0.1
+  m_StateEffectScalingStacks: []

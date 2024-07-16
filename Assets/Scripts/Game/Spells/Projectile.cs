@@ -95,14 +95,18 @@ namespace Game.Spells
                 return;
 
             // check if the spell has reached its max distance
-            if (m_SpellData.Distance > 0 && Math.Abs(transform.position.x - m_OriginalPosition.x) > m_SpellData.Distance)
+            if ((m_SpellData.Distance > 0) && Math.Abs(transform.position.x - m_OriginalPosition.x) > m_SpellData.Distance)
+                End();
+
+            // check if the spell has reached its max distance
+            if (m_SpellData.StopOnTargetPos && m_Target.x - transform.position.x < 0)
                 End();
         }
 
         protected override void SetTarget(Vector3 target)
         {
             // add a small adjustement to X to avoid targetting the enemy's feets (only for autotarget aiming the ground)
-            if (m_Controller.SpellHandler.IsAutoTarget(m_SpellData.Name) && target.y == 0)
+            if (m_SpellData.IsAutoTarget && target.y == 0)
             {
                 int direction = ArenaManager.GetAreaMovementDirection(m_Controller.Team, m_SpellData.IsEnemyTarget);
                 target.x += direction * 0.2f;

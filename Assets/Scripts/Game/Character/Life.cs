@@ -28,9 +28,9 @@ public class Life : NetworkBehaviour
 
     // ===================================================================================
     // PUBLIC ACCESSORS 
-    public NetworkVariable<int> MaxHp => m_MaxHp;  
-    public NetworkVariable<int> Hp => m_Hp;
-    public NetworkVariable<int> Shield => m_Shield;
+    public NetworkVariable<int> MaxHp   => m_MaxHp;  
+    public NetworkVariable<int> Hp      => m_Hp;
+    public NetworkVariable<int> Shield  => m_Shield;
 
     /// <summary> Is the character alive </summary>
     public bool IsAlive => m_Hp.Value > 0;
@@ -83,10 +83,10 @@ public class Life : NetworkBehaviour
     public int Hit(int damage, bool ignoreRes = false)
     {
         // only server can apply damages
-        if (!IsServer || !IsAlive)
+        if (!IsServer)
             return 0;
 
-        if (m_Controller.StateHandler.HasState(EStateEffect.Invulnerable))
+        if (m_Controller.StateHandler.IsInvulnerable)
             return 0;
 
         // calculate damages after resistance
@@ -106,7 +106,12 @@ public class Life : NetworkBehaviour
         m_Hp.Value -= damage;
 
         if (!IsAlive)
-            DiedEvent?.Invoke();
+        {
+            if (! m_Controller.TriggerEffectHandler.OnDeathEffect())
+            {
+                DiedEvent?.Invoke();
+            }
+        }
 
         return damage;
     }
@@ -118,7 +123,7 @@ public class Life : NetworkBehaviour
     public int Heal(int heal)
     {
         // only server can apply heals
-        if (!IsServer || !IsAlive)
+        if (!IsServer)
             return 0;
 
         // check provided value

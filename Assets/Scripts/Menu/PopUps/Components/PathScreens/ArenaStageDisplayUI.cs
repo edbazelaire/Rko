@@ -107,7 +107,7 @@ namespace Menu.PopUps
 
         protected override SRewardsData GetRewards() 
         {
-            return m_ArenaLevelData.rewardsData;
+            return m_ArenaLevelData.RewardsData;
         }
 
 
@@ -118,7 +118,7 @@ namespace Menu.PopUps
             if (!NotificationCloudData.CollectArenaReward(m_ArenaType, m_ArenaLevel))
                 return;
 
-            Main.DisplayRewards(m_ArenaLevelData.rewardsData, ERewardContext.ArenaReward);
+            Main.DisplayRewards(m_ArenaLevelData.RewardsData, ERewardContext.ArenaReward);
         }
 
         #endregion

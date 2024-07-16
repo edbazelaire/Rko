@@ -11,7 +11,7 @@ namespace Game.Spells
             base.Update();
 
             if (m_RemainingShield <= 0)
-                m_Controller.StateHandler.RemoveState(StateEffectName);
+                m_Controller.StateHandler.RemoveStateEffect(StateEffectName);
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Game.Spells
             }
 
             // consume "Frost" state to apply "Frozen" state
-            m_Controller.StateHandler.RemoveState(EStateEffect.Frost);
+            m_Controller.StateHandler.RemoveStateEffect(EStateEffect.Frost);
 
             return true;
         }

@@ -208,7 +208,7 @@ namespace Game.Spells
                 if (!controller.StateHandler.HasState(stateEffectData.StateEffect.ToString()))
                     continue;
 
-                controller.StateHandler.RemoveState(stateEffectData.StateEffect.ToString());
+                controller.StateHandler.RemoveStateEffect(stateEffectData.StateEffect.ToString());
             }
             
         }

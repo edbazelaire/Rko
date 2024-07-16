@@ -1,13 +1,11 @@
 ﻿using Data;
 using Enums;
 using Game.Loaders;
-using Game.Spells;
-using NUnit.Framework;
+using Game.SpellGFXs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
-using Tools.Animations;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -23,9 +21,13 @@ namespace Game.Character
         List<SPrefabSpawn> m_PrefabSpawns = new List<SPrefabSpawn>();
 
         /// <summary> list of visual effects proc by state effects</summary>
-        List<GameObject> m_StateEffectGraphics;
+        Dictionary<string, List<SpellGFX>> m_StateEffectGraphics;
         /// <summary> list of colors of the state effect </summary>
-        List<Color> m_Colors;
+        Dictionary<EBodyPart, List<Color>> m_Colors;
+        /// <summary> list of colors of the state effect </summary>
+        Dictionary<EBodyPart, List<Material>> m_Materials;
+        /// <summary> default material of sprites </summary>
+        Material m_DefaultMaterial;
 
         // ===========================================================================
         // Private Components
@@ -65,6 +67,13 @@ namespace Game.Character
 
             m_StateEffectGraphics = new();
             m_Colors = new();
+            m_Materials = new();
+            foreach (EBodyPart bodyPart in Enum.GetValues(typeof(EBodyPart)))
+            {
+                m_Colors.Add(bodyPart, new());
+                m_Materials.Add(bodyPart, new());
+            }
+            m_DefaultMaterial = m_SpriteRenderers[0].material;
 
             m_Controller.StateHandler.StateEffectList.OnListChanged += OnStateEffectListChanged;
         }
@@ -115,17 +124,6 @@ namespace Game.Character
         #endregion
 
 
-        #region Spell Events
-
-        public virtual void SpawnSpellEvent(SPrefabSpawn prefabSpawn)
-        {
-            
-        }
-
-
-        #endregion
-
-
         #region Body Parts
 
         void FindBodyParts()
@@ -136,7 +134,7 @@ namespace Game.Character
                 if (bodyPart == EBodyPart.None)
                     continue;
 
-                m_BodyParts[bodyPart] = Finder.Find(m_CharacterPreview, bodyPart.ToString() + "Effector");
+                m_BodyParts[bodyPart] = Finder.Find(m_CharacterPreview, bodyPart.ToString() + "Effector", false);
             }
         }
 
@@ -181,62 +179,76 @@ namespace Game.Character
         #endregion
 
 
-        #region State Effects
+        #region Spell GFX
 
-        /// <summary>
-        /// change the color of this character on each clients
-        /// </summary>
-        /// <param name="color"></param>
-        public void SpawnSpellEffectGraphics(GameObject visualEffect, string effectName, List<EBodyPart> bodyParts = default, Vector2 offset = default)
+
+        public List<SpellGFX> SpawnSpellGFX(string spellName, ESpellEvent spellEvent)
         {
-            if (visualEffect == null)
-                return;
-
-            ErrorHandler.Log("SpawnSpellEffectGraphics : " + effectName, ELogTag.Animation);
-
-            if (bodyParts == null || bodyParts.Count == 0 || bodyParts.Count == 1 && bodyParts[0] == EBodyPart.None)
+            var spellData = SpellLoader.GetSpellData(spellName);
+            List<SpellGFX> listSpellGFX = new();
+            foreach (SPrefabSpawn prefabSpawn in spellData.SpellEventActions)
             {
-                var myVisualEffect = Instantiate(visualEffect, gameObject.transform);
-                myVisualEffect.transform.localPosition = offset;
-                myVisualEffect.name = effectName;
-                m_StateEffectGraphics.Add(myVisualEffect);
-                return;
+                if (prefabSpawn.GFXLifetime.StartSpellPart == spellEvent)
+                    prefabSpawn.Spawn(m_Controller, spellData, null);
             }
 
-            foreach (EBodyPart bodyPart in bodyParts)
-            {
-                if (m_BodyParts[bodyPart] == null)
-                    continue;
-
-                var myVisualEffect = Instantiate(visualEffect, m_BodyParts[bodyPart].transform);
-
-                // TODO : rescale
-
-                myVisualEffect.name = effectName + "_" + bodyPart.ToString();
-                myVisualEffect.transform.localPosition = offset;
-                m_StateEffectGraphics.Add(myVisualEffect);
-            }
-
+            return listSpellGFX;
         }
 
-        /// <summary>
-        /// change the color of this character on each clients
-        /// </summary>
-        /// <param name="color"></param>
-        public void RemoveSpellEffectGraphics(string effectName)
+        #endregion
+
+
+        #region Material
+
+        public void ApplyMaterial(Material material, EBodyPart bodyPart = EBodyPart.None)
         {
-            ErrorHandler.Log("Removing spell effect : " + effectName, ELogTag.Animation);
+            if (bodyPart == EBodyPart.None)
+                m_Materials[bodyPart].Add(material);
 
-            int n = m_StateEffectGraphics.Count - 1;
-            while (n >= 0)
+            foreach (var spriteRenderer in m_SpriteRenderers)
             {
-                if (m_StateEffectGraphics[n].name == effectName || m_StateEffectGraphics[n].name.StartsWith(effectName + "_"))
-                {
-                    Destroy(m_StateEffectGraphics[n]);
-                    m_StateEffectGraphics.RemoveAt(n);
-                }
+                // check if is a body part
+                if (!Enum.TryParse(spriteRenderer.name, out EBodyPart tempBodyPart))
+                    continue;
 
-                n --;
+                // check is the right body part
+                if (bodyPart != EBodyPart.None && bodyPart == tempBodyPart)
+                    continue;
+
+                // att to list of materials
+                m_Materials[tempBodyPart].Add(material);
+                spriteRenderer.material = material;
+            }
+        }
+
+        public void RemoveMaterial(Material material, EBodyPart bodyPart = EBodyPart.None)
+        {
+            if (bodyPart == EBodyPart.None)
+                m_Materials[bodyPart].Remove(material);
+           
+            foreach (var spriteRenderer in m_SpriteRenderers)
+            {
+                // check if is a body part
+                if (!Enum.TryParse(spriteRenderer.name, out EBodyPart tempBodyPart))
+                    continue;
+
+                // check is the right body part
+                if (bodyPart != EBodyPart.None && bodyPart == tempBodyPart)
+                    continue;
+
+                // check if body part has material in store
+                if (!m_Materials[tempBodyPart].Contains(material))
+                    continue;
+
+                // remove from list of materials
+                m_Materials[tempBodyPart].Remove(material);
+
+                // check if is current material
+                if (TextHandler.CleanMaterialName(spriteRenderer.sharedMaterial.name) != TextHandler.CleanMaterialName(material.name) )
+                    continue;
+
+                // use last available material if any or default
+                spriteRenderer.material = m_Materials[tempBodyPart].Count > 0 ? m_Materials[tempBodyPart].Last() : m_DefaultMaterial;
             }
         }
 
@@ -255,23 +267,57 @@ namespace Game.Character
             SetColor(color);
         }
 
-        void AddColor(Color color)
+        void AddColor(Color color, EBodyPart bodyPart = EBodyPart.None)
         {
-            m_Colors.Add(color);
-            SetColor(color);
+            if (bodyPart == EBodyPart.None)
+            {
+                foreach (var part in m_Colors.Keys)
+                {
+                    if (part == EBodyPart.None)
+                        continue;
+                    AddColor(color, part);
+                }
+                return;
+            }
+
+            m_Colors[bodyPart].Add(color);
+            SetColor(color, bodyPart);
         }
 
-        void RemoveColor(Color color)
+        void RemoveColor(Color color, EBodyPart bodyPart = EBodyPart.None)
         {
-            m_Colors.Remove(color);
-            color = m_Colors.Count > 0 ? m_Colors.Last() : Color.white;
-            SetColor(color);
+            if (bodyPart == EBodyPart.None)
+            {
+                foreach (var part in m_Colors.Keys)
+                {
+                    if (part == EBodyPart.None)
+                        continue;
+                    RemoveColor(color, part);
+                }
+                return;
+            }
+
+            m_Colors[bodyPart].Remove(color);
+            color = m_Colors[bodyPart].Count > 0 ? m_Colors[bodyPart].Last() : Color.white;
+            SetColor(color, bodyPart);
         }
 
-        void SetColor(Color color)
+        void SetColor(Color color, EBodyPart bodyPart = EBodyPart.None)
         {
             foreach (var spriteRenderer in m_SpriteRenderers)
+            {
+                if (!Enum.TryParse(spriteRenderer.name, out EBodyPart tempBodyPart))
+                    continue;
+
+                if (bodyPart != EBodyPart.None && bodyPart == tempBodyPart)
+                    continue;
+
+                // do not apply if has a material
+                if (TextHandler.CleanMaterialName(spriteRenderer.material.name) != TextHandler.CleanMaterialName(m_DefaultMaterial.name))
+                   continue;
+
                 spriteRenderer.color = color;
+            }
         }
 
         #endregion
@@ -282,13 +328,7 @@ namespace Game.Character
         void OnPreSpellEvent(string spellName, ESpellEvent spellEvent)
         {
             ErrorHandler.Log(spellName + " OnPreSpellEvent : " + spellEvent, ELogTag.SpellGFX);
-
-            var spellData = SpellLoader.GetSpellData(spellName);
-            foreach (SPrefabSpawn prefabSpawn in spellData.SpellEventActions)
-            {
-                if (prefabSpawn.GFXLifetime.StartSpellPart == spellEvent)
-                    prefabSpawn.Spawn(m_Controller, spellData, null);
-            }
+            SpawnSpellGFX(spellName, spellEvent);   
         }
 
         /// <summary>
@@ -299,11 +339,6 @@ namespace Game.Character
         void OnStateEffectListChanged(NetworkListEvent<FixedString64Bytes> changeEvent)
         {
             ErrorHandler.Log(changeEvent.Type + " " + changeEvent.Value, ELogTag.Animation);
-
-            if (changeEvent.Type != NetworkListEvent<FixedString64Bytes>.EventType.RemoveAt && changeEvent.Type != NetworkListEvent<FixedString64Bytes>.EventType.Remove)
-                OnAddStateEffect(changeEvent.Value.ToString());
-            else
-                OnRemoveStateEffect(changeEvent.Value.ToString());
 
             // ---------------------------------------------------------------------------------------
             // SPECIAL EFFECTS
@@ -317,28 +352,6 @@ namespace Game.Character
                 SetColor(new Color(1f, 1f, 1f, opacity));
                 return;
             }
-        }
-
-        void OnAddStateEffect(string stateEffectName)
-        {
-            StateEffect data = SpellLoader.GetStateEffect(stateEffectName);
-
-            if (data.VisualEffect != null)
-                SpawnSpellEffectGraphics(data.VisualEffect, stateEffectName, data.SpawnBodyParts, data.Offset);
-
-            if (data.ColorSwitch != Color.white)
-                AddColor(data.ColorSwitch);
-        }
-
-        void OnRemoveStateEffect(string stateEffectName)
-        {
-            StateEffect data = SpellLoader.GetStateEffect(stateEffectName);
-
-            if (data.VisualEffect != null)
-                RemoveSpellEffectGraphics(stateEffectName);
-
-            if (data.ColorSwitch != Color.white)
-                RemoveColor(data.ColorSwitch);
         }
 
         #endregion

@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fa8a57d0a9cfc440895df3503c97316, type: 3}
+  m_Name: BerserkerRune
+  m_EditorClassIdentifier: 
+  m_Description: 
+  m_DescriptionVariables: 
+  m_VisualEffects:
+  - Prefab: {fileID: 8992406793559661190, guid: 0a4d304b385159340bf3a0d4e7535924, type: 3}
+    GFXLifetime:
+      StartSpellPart: 3
+      EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1.5
+    Size: 3
+    OrderInLayer: 0
+    SpawnTarget: 2
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 1}
+    Animation: 0
+    StateEffects: 
+  - Prefab: {fileID: 3907952559497218901, guid: c6e8443b2e3b7b6459f659de6ee2d6ce, type: 3}
+    GFXLifetime:
+      StartSpellPart: 3
+      EndSpellPart: 5
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 2
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 1
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
+  m_SpawnBodyParts: 
+  m_Offset: {x: 0, y: 0}
+  m_ColorSwitch: {r: 1, g: 1, b: 1, a: 1}
+  m_Animation: 0
+  m_OnApplySoundFX: {fileID: 0}
+  m_PermanantSoundFX: {fileID: 0}
+  m_ConsumeState: 0
+  m_DefaultState: 0
+  m_Duration: -1
+  m_MaxStacks: 1
+  m_SpeedBonus: 0.05
+  m_CastSpeed: 0
+  m_AttackSpeed: 0.15
+  m_CooldownReduction: 0
+  m_CooldownReductionPerc: 0
+  m_Shield: 0
+  m_ResistanceFix: 0
+  m_ResistancePerc: 0
+  m_BonusDamages: 0
+  m_BonusDamagesPerc: 0.2
+  m_BonusLifeSteal: 0
+  m_OnStartStateEffect: []
+  m_OnEndStateEffect: []
+  m_StateEffectScalingLevel:
+  - StateEffectProperty: 1
+    ScalingFactor: 0.05
+  - StateEffectProperty: 9
+    ScalingFactor: 0.1
+  - StateEffectProperty: 8
+    ScalingFactor: 0.1
+  m_StateEffectScalingStacks: []
+  m_MissingLifeFactor: 1

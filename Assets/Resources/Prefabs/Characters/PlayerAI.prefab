@@ -303,6 +303,7 @@ GameObject:
   - component: {fileID: -5779417410852913318}
   - component: {fileID: -8727291100942868995}
   - component: {fileID: 8146864751764597168}
+  - component: {fileID: 4829500195178583324}
   m_Layer: 7
   m_Name: PlayerAI
   m_TagString: Player
@@ -577,6 +578,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 456882fe08c468841b26f9d8a18da4a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4829500195178583324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6187705959729963238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d35497445451e0445b94d599fd049c9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &8130017764725158727

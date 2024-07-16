@@ -24,6 +24,15 @@ namespace Tools
 
             return text;
         }
+        public static string CleanMaterialName(string name)
+        {
+            const string instanceSuffix = " (Instance)";
+            if (name.EndsWith(instanceSuffix))
+            {
+                return name.Substring(0, name.Length - instanceSuffix.Length);
+            }
+            return name;
+        }
 
         static void CleanAlignment(ref string text)
         {
