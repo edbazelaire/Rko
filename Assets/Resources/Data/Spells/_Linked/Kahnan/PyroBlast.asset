@@ -17,6 +17,7 @@ MonoBehaviour:
   Graphics: {fileID: 1193745591585432, guid: eefd4b9bb98546349990ad462f5edd94, type: 3}
   SpellEventActions:
   - Prefab: {fileID: 458114271446715719, guid: a0691b7d658df354ea6923fa145aede0, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 1
       EndSpellPart: 2
@@ -29,10 +30,30 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 7
     IsFollowing: 1
+    Offset: {x: 0, y: 0}
     Animation: 0
+    StateEffects: 
+  - Prefab: {fileID: 195742, guid: c83fb3ef04bb383408bb2064b89690b2, type: 3}
+    MaterialEffect: {fileID: 0}
+    GFXLifetime:
+      StartSpellPart: 4
+      EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1.5
+    Size: 1
+    OrderInLayer: 0
+    SpawnTarget: 4
+    SpawnLocation: 0
+    BodyPart: 5
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
   Preview: {fileID: 0}
   OnAnimation:
   - Prefab: {fileID: 458114271446715719, guid: a0691b7d658df354ea6923fa145aede0, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 0
       EndSpellPart: 0
@@ -45,10 +66,11 @@ MonoBehaviour:
     SpawnLocation: 1
     BodyPart: 0
     IsFollowing: 1
+    Offset: {x: 0, y: 0}
     Animation: 0
+    StateEffects: 
   OnCastPrefabs: []
-  OnHit:
-  - {fileID: 11400000, guid: e25d3d0af6674a548ada02e4bebf16d7, type: 2}
+  OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: ba1394737a640e14d88ac9ce6dc22709, type: 3}
@@ -60,7 +82,7 @@ MonoBehaviour:
   MaxHit: 1
   EnergyGain: 0
   EnergyCost: 100
-  m_Damage: 200
+  m_Damage: 160
   m_Heal: 0
   m_LifeSteal: 0
   Distance: -1
@@ -72,12 +94,17 @@ MonoBehaviour:
     Value: 0.1
   m_Size: 2
   TriggerPlayer: 1
-  EnemyStateEffects: []
+  EnemyStateEffects:
+  - StateEffect: 15
+    Stacks: 1
+    OverridingProperties: []
   AllyStateEffects: []
+  StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 1
   IsCancellable: 1
   AnimationTimer: 1.75
   m_Cooldown: 0
   Trajectory: 2
+  m_StopOnTargetPos: 0
   m_Speed: 40

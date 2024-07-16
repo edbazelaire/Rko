@@ -80,12 +80,20 @@ namespace Save
         /// <returns></returns>
         protected override object Convert(Item item)
         {
-            if (m_Data[item.Key].GetType() == typeof(Dictionary<EArenaType, SArenaCloudData>))
-                return item.Value.GetAs<Dictionary<EArenaType, SArenaCloudData>>();
+            try
+            {
+                if (m_Data[item.Key].GetType() == typeof(Dictionary<EArenaType, SArenaCloudData>))
+                    return item.Value.GetAs<Dictionary<EArenaType, SArenaCloudData>>();
 
-            if (m_Data[item.Key].GetType() == typeof(SLeagueCloudData))
-                return item.Value.GetAs<SLeagueCloudData>();
-
+                if (m_Data[item.Key].GetType() == typeof(SLeagueCloudData))
+                    return item.Value.GetAs<SLeagueCloudData>();
+            } catch (Exception ex) 
+            {
+                ErrorHandler.Error("Unable to convert item " + item.Key);
+                ErrorHandler.Error(ex.Message);
+                return m_Data[item.Key];
+            }
+            
             return base.Convert(item);
         }
 

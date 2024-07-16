@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3187be67d58548144a9d4f83cb44e7d2, type: 3}
+  m_Name: _OnHitExperimentalVial
+  m_EditorClassIdentifier: 
+  Rarety: 0
+  Linked: 0
+  Graphics: {fileID: 160890, guid: e8cc97033e0c4f94b84578c0348180d6, type: 3}
+  SpellEventActions: []
+  Preview: {fileID: 0}
+  OnAnimation: []
+  OnCastPrefabs: []
+  OnHit: []
+  OnHitSpellSpawn: 1
+  AnimationSoundFX: {fileID: 0}
+  CastSoundFX: {fileID: 0}
+  PermanantSoundFX: {fileID: 0}
+  OnHitSoundFX: {fileID: 0}
+  OnEndSoundFX: {fileID: 0}
+  SpellTarget: 0
+  LockTargetAt: 2
+  MaxHit: 0
+  EnergyGain: 10
+  EnergyCost: 0
+  m_Damage: 0
+  m_Heal: 0
+  m_LifeSteal: 0
+  Distance: -1
+  OverrideOnHitProperties: 
+  m_Duration: 0
+  Delay: 0
+  m_SpellsScalingLevel: []
+  m_Size: 5
+  TriggerPlayer: 1
+  EnemyStateEffects:
+  - StateEffect: 6
+    Stacks: 1
+    OverridingProperties: []
+  - StateEffect: 2
+    Stacks: 0
+    OverridingProperties: []
+  - StateEffect: 8
+    Stacks: 1
+    OverridingProperties: []
+  - StateEffect: 15
+    Stacks: 0
+    OverridingProperties: []
+  - StateEffect: 9
+    Stacks: 1
+    OverridingProperties: []
+  - StateEffect: 17
+    Stacks: 0
+    OverridingProperties: []
+  - StateEffect: 13
+    Stacks: 3
+    OverridingProperties: []
+  - StateEffect: 18
+    Stacks: 0
+    OverridingProperties: []
+  AllyStateEffects: []
+  StateEffectStackFactor: 0
+  PersistanceAfterEnd: 2
+  Animation: 0
+  IsCancellable: 1
+  AnimationTimer: 0
+  m_Cooldown: 0
+  m_SpellSpawn: 2

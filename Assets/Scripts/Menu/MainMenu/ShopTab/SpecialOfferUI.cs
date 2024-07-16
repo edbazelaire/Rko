@@ -98,6 +98,12 @@ namespace Menu.MainMenu.ShopTab
 
             foreach(var bundleData in ShopManagementData.SpecialOffers)
             {
+                // ============================================================
+                // TODO REMOVE : skip $ currencies
+                if (bundleData.Currency == ECurrency.Dollars)
+                    continue;
+                // ============================================================
+
                 var template = Instantiate(m_TemplateBundleItemUI, m_BundlesSection.transform);
                 STimeData? timeData = bundleData.MaxCollection > 0 ? TimeCloudData.GetSpecialShopOffer(bundleData.Name) : null;
 

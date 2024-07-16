@@ -24,6 +24,19 @@ MonoBehaviour:
     Color: {r: 0.6223734, g: 0.27959237, b: 0.9716981, a: 1}
   m_DailyOffersRareties: 0000000001000000010000000200000003000000
   m_SpecialOffers:
+  - Name: DailyPack
+    Icon: {fileID: 0}
+    Rewards:
+      Currencies:
+      - Currency: 0
+        Qty: 5000
+      Chests: 0100000001000000
+      Collectables: []
+      AchievementRewards: []
+    Currency: 1
+    Cost: 100
+    MaxCollection: 1
+    Reduction: 0
   - Name: StarterPack
     Icon: {fileID: 0}
     Rewards:
@@ -116,13 +129,35 @@ MonoBehaviour:
     Cost: 1800
     MaxCollection: 0
     Reduction: 0
+  - Name: 
+    Icon: {fileID: 0}
+    Rewards:
+      Currencies: []
+      Chests: 06000000
+      Collectables: []
+      AchievementRewards: []
+    Currency: 1
+    Cost: 2200
+    MaxCollection: 0
+    Reduction: 0
+  - Name: 
+    Icon: {fileID: 0}
+    Rewards:
+      Currencies: []
+      Chests: 09000000
+      Collectables: []
+      AchievementRewards: []
+    Currency: 1
+    Cost: 2200
+    MaxCollection: 0
+    Reduction: 0
   - Name: Pack_01
     Icon: {fileID: 0}
     Rewards:
       Currencies:
       - Currency: 0
         Qty: 15000
-      Chests: 02000000
+      Chests: 000000000100000002000000
       Collectables: []
       AchievementRewards: []
     Currency: 1
@@ -139,7 +174,7 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
     Currency: 1
-    Cost: 3000
+    Cost: 3500
     MaxCollection: 0
     Reduction: 0
   - Name: Pack_03
@@ -293,7 +328,7 @@ MonoBehaviour:
     Rewards:
       Currencies:
       - Currency: 3
-        Qty: 800
+        Qty: 400
       Chests: 
       Collectables: []
       AchievementRewards: []
@@ -306,12 +341,12 @@ MonoBehaviour:
     Rewards:
       Currencies:
       - Currency: 3
-        Qty: 10000
+        Qty: 15000
       Chests: 
       Collectables: []
       AchievementRewards: []
     Currency: 0
-    Cost: 15000
+    Cost: 50000
     MaxCollection: 0
     Reduction: 0
   - Name: 

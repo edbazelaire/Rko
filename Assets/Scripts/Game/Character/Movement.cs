@@ -241,6 +241,7 @@ namespace Game.Character
                     && ! m_MovementBlocked.Value
                     && ! m_MovementCancelled.Value
                     && ! m_Controller.SpellHandler.IsCastingUncancellable
+                    && ! m_Controller.StateHandler.HasState(EStateEffect.SpecialAnimation)    // special animation cancel movement
                     && ! m_Controller.StateHandler.HasState(EStateEffect.Frozen) 
                     && ! m_Controller.CounterHandler.IsBlockingMovement.Value
                     && ! m_Controller.StateHandler.HasState(EStateEffect.Jump);

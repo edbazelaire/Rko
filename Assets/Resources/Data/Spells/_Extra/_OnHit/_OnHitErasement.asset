@@ -50,8 +50,9 @@ MonoBehaviour:
   EnemyStateEffects:
   - StateEffect: 1
     Stacks: 1
-    Duration: 3
-    SpeedBonus: 0
+    OverridingProperties:
+    - StateEffectProperty: 1
+      Value: 2
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 1.5

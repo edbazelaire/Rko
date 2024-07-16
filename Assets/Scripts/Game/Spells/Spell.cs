@@ -292,7 +292,7 @@ namespace Game.Spells
             ApplyEnemyStateEffects(controller);
 
             // call spell event that spell has touched something
-            CallSpellEvent(ESpellEvent.OnHit);
+            CallSpellEvent(ESpellEvent.OnHit, controller);
 
             return true;
         }
@@ -391,14 +391,14 @@ namespace Game.Spells
 
         #region Spell Events
 
-        protected virtual void CallSpellEvent(ESpellEvent spellEvent)
+        protected virtual void CallSpellEvent(ESpellEvent spellEvent, Controller targetController = null)
         {
             foreach (var spawnPrefab in m_SpellData.SpellEventActions)
             {
                 if (spawnPrefab.GFXLifetime.StartSpellPart != spellEvent)
                     continue;
 
-                spawnPrefab.Spawn(m_Controller, m_SpellData, this);
+                spawnPrefab.Spawn(m_Controller, m_SpellData, this, null, targetController);
             }
 
             OnSpellEvent?.Invoke(spellEvent);

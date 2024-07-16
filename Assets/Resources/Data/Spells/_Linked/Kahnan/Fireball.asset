@@ -31,6 +31,7 @@ MonoBehaviour:
     IsFollowing: 1
     Offset: {x: 0, y: 0}
     Animation: 0
+    StateEffects: 
   - Prefab: {fileID: 1257899049973296, guid: b2815b5a107c0e04e8378fd22048add2, type: 3}
     GFXLifetime:
       StartSpellPart: 4
@@ -46,6 +47,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    StateEffects: 
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
@@ -61,7 +63,7 @@ MonoBehaviour:
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 40
+  m_Damage: 80
   m_Heal: 0
   m_LifeSteal: 0
   Distance: -1
@@ -75,10 +77,10 @@ MonoBehaviour:
   TriggerPlayer: 1
   EnemyStateEffects:
   - StateEffect: 8
-    Stacks: 0
-    Duration: 0
-    SpeedBonus: 0
+    Stacks: 1
+    OverridingProperties: []
   AllyStateEffects: []
+  StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 2
   IsCancellable: 1

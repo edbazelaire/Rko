@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Description: Slow the enemy by {0} for {1} seconds
   m_DescriptionVariables: 0300000001000000
-  m_VisualEffect: {fileID: 0}
-  m_ColorSwitch: {r: 0.025943398, g: 0.31864953, b: 0.5, a: 1}
+  m_VisualEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
   m_PermanantSoundFX: {fileID: 0}
@@ -26,12 +25,16 @@ MonoBehaviour:
   m_SpeedBonus: -0.1
   m_CastSpeed: 0
   m_AttackSpeed: 0
+  m_CooldownReduction: 0
+  m_CooldownReductionPerc: 0
   m_Shield: 0
   m_ResistanceFix: 0
   m_ResistancePerc: 0
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
-  m_LifeSteal: 0
+  m_BonusLifeSteal: 0
+  m_OnStartStateEffect: []
+  m_OnEndStateEffect: []
   m_StateEffectScalingLevel:
   - StateEffectProperty: 1
     ScalingFactor: 0.05

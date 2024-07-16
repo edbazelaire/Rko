@@ -1,10 +1,7 @@
-﻿
-
-using Save;
+﻿using Save;
 using Tools;
 using Tools.Debugs.BetaTest;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Menu.PopUps
 {
@@ -35,6 +32,10 @@ namespace Menu.PopUps
             base.OnPrefabLoaded();
 
             Finder.Find(m_TabButtonContainer, "DebugButton").SetActive(ProfileCloudData.IsAdmin);
+
+            // deactivate tabs button for non admins
+            if (!ProfileCloudData.IsAdmin)
+                m_TabButtonContainer.SetActive(false);
 
             m_SettingsTabManager.Initialize();
         }

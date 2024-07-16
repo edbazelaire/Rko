@@ -307,8 +307,7 @@ namespace Assets
         {
             Main.SetPopUp(EPopUpState.RewardsScreen, rewardsData, context.ToString());
         }
-        
-
+     
         public static void DisplayAchievementRewards(List<SAchievementReward> rewardsData)
         {
             Main.SetPopUp(EPopUpState.AchievementRewardScreen, rewardsData);
@@ -362,9 +361,13 @@ namespace Assets
             Main.SetPopUp(EPopUpState.ConfirmBuyBundlePopUp, priceData, rewardsData, onValidate, onCancel);
         }
 
+        public static void SetMessagePopUp(string message, string title = "")
+        {
+            SetPopUp(EPopUpState.MessagePopUp, message, title);
+        }
+
         public static void ErrorMessagePopUp(string message)
         {
-
             Debug.LogWarning(message);
             SetPopUp(EPopUpState.MessagePopUp, message);
         }
@@ -387,6 +390,29 @@ namespace Assets
 
             // store the change of the display PseudoPopUp for when the user will reach the MainMenu
             Main.AddStoredEvent(EAppState.MainMenu, () => SetPopUp(EPopUpState.PseudoPopUp));
+        }
+
+        public void CheckCurrentMessage()
+        {
+            // pseudo not changed : this a new player no need to reset
+            if (! ProfileCloudData.PseudoChanged)
+            {
+                PlayerPrefs.SetInt("Message_01", 1);
+            }
+
+            // already seen
+            if (PlayerPrefs.GetInt("Message_01", 0) == 1)
+                return;
+
+            // store the change of the display PseudoPopUp for when the user will reach the MainMenu
+            Main.AddStoredEvent(EAppState.MainMenu, () => SetMessagePopUp("Please be inform that your data have been reseted. Checkout the Discord PatchNote for more information.", title: "Your data have been reseted"));
+
+            // reset all data (except token and pseudo)
+            string pseudo = ProfileCloudData.GamerTag;
+            m_CloudSaveManager.ResetAll();
+            ProfileCloudData.SetGamerTag(pseudo);
+
+            PlayerPrefs.SetInt("Message_01", 1);
         }
 
         bool AuthorizeAccess()
@@ -424,6 +450,10 @@ namespace Assets
             if (AuthorizeAccess())
             {
                 ErrorHandler.Log("Initialization of the data completed : loading MainMenu", ELogTag.System);
+
+                // check if a current message needs to be dislayed to the user before loading the scene 
+                CheckCurrentMessage();
+
                 SceneLoader.Instance.LoadScene("MainMenu");
             } 
             else

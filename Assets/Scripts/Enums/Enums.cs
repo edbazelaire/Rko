@@ -42,7 +42,7 @@
     public enum EArenaType
     {
         FireArena,
-        FrostArena,
+        //FrostArena,
     }
 
     public enum ECharacter
@@ -76,7 +76,7 @@
         Torment,
         Sanctuary,
         ScorchedEarth,
-        BerzerkerRage,
+        BerserkerRage,
         SmokeBomb,
         ArcticToundra,
         Blizzard,
@@ -102,6 +102,8 @@
         Corrupted,
         VoidEmbrace,
         PlagueArrows,
+        EmperorOfFlames,
+        ExperimentalVial,
 
         Count
     }
@@ -139,10 +141,15 @@
     public enum ERune
     {
         None,
-        FrostRune,
-        FireRune,
-        PoisonRune,
-        CurseRune,
+        FrostRune = 1,
+        FireRune = 2,
+        PoisonRune = 3,
+        CurseRune = 4,
+
+        ProtectorRune,
+        BerserkerRune,
+        ShieldRune,
+        ResurrectionRune,
     }
 
     public enum EAppState
@@ -176,6 +183,15 @@
         GameRunning,
         /// <summary> game is over </summary>
         GameOver,
+    }
+
+    public enum ESpellActivationEvent
+    {
+        GameStart,
+        Time,
+        Hp,
+        Shield,
+        Death,
     }
 
     public enum ESpellEvent
@@ -252,8 +268,9 @@
         None = 0,
 
         Caster,                 // spawn of the center of the caster
-        Target,
-        OnSpell,
+        Target,                 // Controller touched by the spell
+        OnSpell,                // spell location
+        TargetPos,              // target of the spell (position where it's aim at)
         Mouse,                  // on the mouse location    
     }
 
@@ -276,6 +293,10 @@
         Body,
         Head,
         SpellSpawn,
+        L_Arm,
+        R_Arm,
+        L_Leg,
+        R_Leg
     }
 
     public enum EStateEffect
@@ -310,6 +331,8 @@
         Infected,
         Malediction,
         VoidPact,
+        UnTargettable,
+        SpecialAnimation,
     }
 
     public enum ESpellProperty
@@ -323,32 +346,37 @@
         LifeSteal,
         NProjectiles,
         NWaves,
+        DelayBetweenLaunches,
+        DelayBetweenWaves,
+        ProjectileZoneSize,
     }
 
     public enum EStateEffectProperty
     {
         None = 0,
 
-        Duration            = 1,
-        MaxStacks           = 2,
-        SpeedBonus          = 3,
-        Shield              = 4,
-        ResistanceFix       = 5,
-        ResistancePerc      = 6,
-        BonusDamages        = 7,
-        BonusDamagesPerc    = 8,
-        BonusLifeSteal      = 9,
-        MissingLifeFactor   = 10,
-        Damages             = 11,
+        Duration                = 1,
+        MaxStacks               = 2,
+        SpeedBonus              = 3,
+        Shield                  = 4,
+        ResistanceFix           = 5,
+        ResistancePerc          = 6,
+        BonusDamages            = 7,
+        BonusDamagesPerc        = 8,
+        BonusLifeSteal          = 9,
+        MissingLifeFactor       = 10,
+        Damages                 = 11,
 
-        Tick                = 12,
-        TickDamages         = 13,
-        TickHeal            = 14,
-        TickShield          = 15,
-        AttackSpeed         = 16,
+        Tick                    = 12,
+        TickDamages             = 13,
+        TickHeal                = 14,
+        TickShield              = 15,
+        AttackSpeed             = 16,
 
-        CastSpeed           = 17,
-        ConsumeState        = 18,
+        CastSpeed               = 17,
+        ConsumeState            = 18,
+        CooldownReduction       = 19,
+        CooldownReductionPerc   = 20,
 
         BonusTickDamages        = 100,
         BonusTickDamagesPerc    = 101,
@@ -362,6 +390,8 @@
 
         EndDamages,
         EndHeal,
+        Stacks,
+        Hp,
     }
 
     public enum EAnimation

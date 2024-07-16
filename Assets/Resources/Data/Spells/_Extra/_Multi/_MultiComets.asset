@@ -17,6 +17,7 @@ MonoBehaviour:
   Graphics: {fileID: 6631489239233227332, guid: 51d6d62dbf340c44e8509011ca22e292, type: 3}
   SpellEventActions:
   - Prefab: {fileID: 1209601309875748, guid: b170aebab32c55e468901bd9220320f8, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 4
       EndSpellPart: 0
@@ -31,6 +32,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    StateEffects: 
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
@@ -60,19 +62,18 @@ MonoBehaviour:
   TriggerPlayer: 1
   EnemyStateEffects:
   - StateEffect: 8
-    Stacks: 0
-    Duration: 0
-    SpeedBonus: 0
+    Stacks: 1
+    OverridingProperties: []
   - StateEffect: 13
     Stacks: 3
-    Duration: 0
-    SpeedBonus: 0
+    OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 0
   IsCancellable: 0
   AnimationTimer: 0
-  m_Cooldown: 0
+  m_Cooldown: 5
   Trajectory: 3
-  m_Speed: 8
+  m_StopOnTargetPos: 0
+  m_Speed: 7

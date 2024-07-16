@@ -19,6 +19,8 @@ namespace Data
         [Header("Movement Data")]
         [Description("Type of path that the spell is taking")]
         public ESpellTrajectory Trajectory;
+        [Description("Should the projectile end when reaching target position ?")]
+        [SerializeField] bool m_StopOnTargetPos;
         [Description("Speed of the spell")]
         [SerializeField] float            m_Speed       = 0f;
 
@@ -26,6 +28,7 @@ namespace Data
         // Dependent Members
         /// <summary> Movement speed of the spell </summary>
         public float Speed => Settings.SpellSpeedFactor * m_Speed;
+        public bool StopOnTargetPos => m_StopOnTargetPos;
         public bool IsTrajectoryFromAbove => Trajectory == ESpellTrajectory.Hight || Trajectory == ESpellTrajectory.Diagonal;
         #endregion
 

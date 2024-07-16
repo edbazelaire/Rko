@@ -291,7 +291,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85bb568f68e872a4b9412cf4503733c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Background: {fileID: 0}
+  m_BackgroundCanvas: {fileID: 0}
   m_PlayerUITemplate: {fileID: 42941702189104153, guid: ceb8649a07749a644b89f9ca85c8da35, type: 3}
   SpellTemplate: {fileID: 907986355969698494, guid: 91238690da4c37845a1e403a7d12f8fb, type: 3}
 --- !u!1 &5627129684713623609
@@ -2014,11 +2014,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8911271451663107756, guid: ae8857d8b1728c84e8d5275dedb4111d, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8911271451663107756, guid: ae8857d8b1728c84e8d5275dedb4111d, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8911271451663107756, guid: ae8857d8b1728c84e8d5275dedb4111d, type: 3}
       propertyPath: m_SizeDelta.x
@@ -2026,7 +2026,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8911271451663107756, guid: ae8857d8b1728c84e8d5275dedb4111d, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 80.451
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8911271451663107756, guid: ae8857d8b1728c84e8d5275dedb4111d, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -2034,7 +2034,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8911271451663107756, guid: ae8857d8b1728c84e8d5275dedb4111d, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -40.2255
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8978109697252957383, guid: ae8857d8b1728c84e8d5275dedb4111d, type: 3}
       propertyPath: m_Name

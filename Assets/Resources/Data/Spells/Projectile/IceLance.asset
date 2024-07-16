@@ -25,11 +25,13 @@ MonoBehaviour:
       Persistance: 1
     Size: 0.5
     OrderInLayer: 0
-    SpawnTarget: 0
+    SpawnTarget: 3
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 0
+    Offset: {x: 0, y: 0}
     Animation: 0
+    StateEffects: 
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
@@ -63,10 +65,10 @@ MonoBehaviour:
   TriggerPlayer: 1
   EnemyStateEffects:
   - StateEffect: 16
-    Stacks: 0
-    Duration: 0
-    SpeedBonus: 0
+    Stacks: 1
+    OverridingProperties: []
   AllyStateEffects: []
+  StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 1
   IsCancellable: 0

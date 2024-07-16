@@ -14,8 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rarety: 0
   Linked: 0
-  Graphics: {fileID: 1000010675638318, guid: a3768c8a9d1b90d4bb0eb0e4bdbe730c, type: 3}
-  SpellEventActions: []
+  Graphics: {fileID: 0}
+  SpellEventActions:
+  - Prefab: {fileID: 4052242029054160489, guid: 176729cebd0a60d42a7a18f43c296775, type: 3}
+    GFXLifetime:
+      StartSpellPart: 4
+      EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1
+    Size: 0.5
+    OrderInLayer: 0
+    SpawnTarget: 2
+    SpawnLocation: 0
+    BodyPart: 6
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
@@ -24,7 +40,7 @@ MonoBehaviour:
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
   PermanantSoundFX: {fileID: 0}
-  OnHitSoundFX: {fileID: 0}
+  OnHitSoundFX: {fileID: 8300000, guid: f8d22533595fb1b4288f1658b4cc08e7, type: 3}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 0
   LockTargetAt: 2
@@ -50,11 +66,10 @@ MonoBehaviour:
   EnemyStateEffects:
   - StateEffect: 17
     Stacks: 1
-    Duration: 0
-    SpeedBonus: 0
+    OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 9
-  PersistanceAfterEnd: 1.5
+  PersistanceAfterEnd: 0
   Animation: 0
   IsCancellable: 1
   AnimationTimer: 0

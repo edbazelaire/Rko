@@ -110,7 +110,7 @@ namespace Menu.PopUps
             m_CurrentRune = rune;
             m_CurrentRuneItem.RefreshRune(rune);
             m_CurrentRuneTitle.text         = TextLocalizer.SplitCamelCase(rune.ToString());
-            m_CurrentRuneDescription.text   = runeData.Description;
+            m_CurrentRuneDescription.text   = runeData.GetDescription();
 
             RefreshUpgradeButtonUI();
         }

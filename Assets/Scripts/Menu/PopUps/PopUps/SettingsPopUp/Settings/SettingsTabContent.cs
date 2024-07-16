@@ -2,8 +2,6 @@
 using Menu.MainMenu;
 using System;
 using Tools;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 

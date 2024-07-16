@@ -3,7 +3,6 @@ using Data;
 using Data.GameManagement;
 using Enums;
 using Game.Loaders;
-using Game.Spells;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -380,11 +379,12 @@ namespace Game.Character
         /// <returns></returns>
         public bool HasStateBlockingCast()
         {
-            return m_Controller.StateHandler.IsStunned                          // is stunned
-                || m_Controller.StateHandler.IsSilenced                         // is silenced
-                || m_Controller.StateHandler.HasState(EStateEffect.Frozen)      // is frozen 
-                || m_Controller.StateHandler.HasState(EStateEffect.Jump)        // is jumping
-                || m_Controller.CounterHandler.IsBlockingCast.Value;            // is using a counter
+            return m_Controller.StateHandler.IsStunned                                  // is stunned
+                || m_Controller.StateHandler.IsSilenced                                 // is silenced
+                || m_Controller.StateHandler.HasState(EStateEffect.SpecialAnimation)    // special animation cancel casts
+                || m_Controller.StateHandler.HasState(EStateEffect.Frozen)              // is frozen 
+                || m_Controller.StateHandler.HasState(EStateEffect.Jump)                // is jumping
+                || m_Controller.CounterHandler.IsBlockingCast.Value;                    // is using a counter
         }
 
         /// <summary>
@@ -419,11 +419,11 @@ namespace Game.Character
             if (!CanCast(spell))
                 return false;
 
-            m_SelectedSpell = spell;
-
             // if curently casting another spell, cancel it
             if (m_IsCasting.Value)
                 CancelCast();
+
+            m_SelectedSpell = spell;
 
             // cast spell
             m_CastCoroutine = StartCoroutine(StartCast(spell));
@@ -532,7 +532,7 @@ namespace Game.Character
             m_GlobalCooldown.Value = c_GlobalCooldown;
 
             // setup cooldown
-            SetCooldown(spell, spellData.Cooldown);
+            SetCooldown(spell, CalculateCooldown(spellData.Cooldown));
         }
 
         /// <summary>
@@ -702,33 +702,14 @@ namespace Game.Character
             return GetSpellData(spell).IsAutoTarget;
         }
 
-        /// <summary>
-        /// Check if click was in an targettable area
-        /// </summary>
-        /// <returns></returns>
-        public bool IsTargettable()
-        {
-            return IsTargettable(TargettableArea);
-        }
-
-        /// <summary>
-        /// Check if click was in an targettable area
-        /// </summary>
-        /// <returns></returns>
-        public static bool IsTargettable(Transform targettableArea)
-        {
-            var MousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            RectTransform targettableAreaRect = targettableArea.GetComponent<RectTransform>();
-
-            return MousePosition.x > targettableArea.position.x - targettableAreaRect.rect.width / 2
-                && MousePosition.x < targettableArea.position.x + targettableAreaRect.rect.width / 2
-                && MousePosition.y > targettableArea.position.y
-                && MousePosition.y < targettableArea.position.y + targettableAreaRect.rect.height;
-        }
-
         public float GetCastSpeed(ESpell spell)
         {
             return Mathf.Max(0.01f, spell == AutoAttack ? Settings.AutoAttackSpeedFactor * m_Controller.StateHandler.GetFloat(EStateEffectProperty.AttackSpeed) : Settings.CastSpeedFactor * m_Controller.StateHandler.GetFloat(EStateEffectProperty.CastSpeed));
+        }
+
+        public float CalculateCooldown(float baseCooldown)
+        {
+            return Mathf.Max(0f, baseCooldown - m_Controller.StateHandler.GetInt(EStateEffectProperty.CooldownReduction)) * Mathf.Max(0f, 2 - m_Controller.StateHandler.GetFloat(EStateEffectProperty.CooldownReductionPerc));
         }
 
         #endregion
@@ -793,7 +774,7 @@ namespace Game.Character
         #region Listeners
 
         [ClientRpc]
-        void CallSpellEventClientRPC(string spellName, ESpellEvent spellEvent)
+        public void CallSpellEventClientRPC(string spellName, ESpellEvent spellEvent)
         {
             OnPreSpellEvent?.Invoke(spellName, spellEvent);
         }
@@ -852,20 +833,6 @@ namespace Game.Character
                     levels.Add(level);
                 
                 return levels;
-            }
-        }
-
-        public Transform TargettableArea
-        {
-            get
-            {
-                SpellData spellData = SpellLoader.GetSpellData(m_SelectedSpell);
-                if (spellData.IsEnemyTarget)
-                    return ArenaManager.GetTargettableArea(m_Controller.Team, true);
-                else if (spellData.IsAllyTarget)
-                    return ArenaManager.GetTargettableArea(m_Controller.Team, false);
-                else
-                    return ArenaManager.Instance.Arena.transform;
             }
         }
 

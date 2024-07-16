@@ -9,7 +9,6 @@ namespace Game.Spells
     [CreateAssetMenu(fileName = "TickDamageEffect", menuName = "Game/StateEffects/TickDamage")]
     public class TickDamageEffect : DamageEffect
     {
-
         #region Members
 
         [SerializeField] protected float    m_Tick;
@@ -49,6 +48,8 @@ namespace Game.Spells
         protected virtual void ApplyTickEffects()
         {
             ErrorHandler.Log($"Applying {name} with " + m_Stacks + " stacks", ELogTag.StateEffects);
+
+            CallSpellEventClientRPC(ESpellEvent.OnHit);
 
             int damages = GetInt(EStateEffectProperty.TickDamages);
             if (damages > 0)

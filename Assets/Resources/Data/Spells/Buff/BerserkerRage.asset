@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b829d596b80e4f042aa5d80d985cf693, type: 3}
+  m_Name: BerserkerRage
+  m_EditorClassIdentifier: 
+  Rarety: 2
+  Linked: 0
+  Graphics: {fileID: 3907952559497218901, guid: c6e8443b2e3b7b6459f659de6ee2d6ce, type: 3}
+  SpellEventActions: []
+  Preview: {fileID: 0}
+  OnAnimation: []
+  OnCastPrefabs: []
+  OnHit: []
+  OnHitSpellSpawn: 1
+  AnimationSoundFX: {fileID: 0}
+  CastSoundFX: {fileID: 0}
+  PermanantSoundFX: {fileID: 0}
+  OnHitSoundFX: {fileID: 0}
+  OnEndSoundFX: {fileID: 0}
+  SpellTarget: 4
+  LockTargetAt: 2
+  MaxHit: 1
+  EnergyGain: 0
+  EnergyCost: 0
+  m_Damage: 0
+  m_Heal: 0
+  m_LifeSteal: 0
+  Distance: -1
+  OverrideOnHitProperties: 
+  m_Duration: 3
+  Delay: 0
+  m_SpellsScalingLevel:
+  - Property: 4
+    Value: 0.1
+  - Property: 3
+    Value: 0.05
+  m_Size: 0
+  TriggerPlayer: 1
+  EnemyStateEffects: []
+  AllyStateEffects: []
+  StateEffectStackFactor: 0
+  PersistanceAfterEnd: 0
+  Animation: 0
+  IsCancellable: 0
+  AnimationTimer: 0
+  m_Cooldown: 20

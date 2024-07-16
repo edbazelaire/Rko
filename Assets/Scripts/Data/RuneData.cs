@@ -1,4 +1,5 @@
 ﻿using Enums;
+using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
 
@@ -10,7 +11,9 @@ namespace Data
         [Description("Description informations of the Rune")]
         public string Description;
 
-        [Description("State effect applying on activation")]
-        public EStateEffect StateEffect;
+        public virtual string GetDescription()
+        {
+            return Description;
+        }
     }
 }

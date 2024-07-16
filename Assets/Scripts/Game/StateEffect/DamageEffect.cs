@@ -29,6 +29,8 @@ namespace Game.Spells
 
             // apply heal
             m_Controller.Life.Heal(GetInt(EStateEffectProperty.Heal));
+
+            base.OnStart();
         }
 
         /// <summary>
