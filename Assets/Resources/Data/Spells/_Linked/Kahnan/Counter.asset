@@ -17,6 +17,7 @@ MonoBehaviour:
   Graphics: {fileID: 0}
   SpellEventActions:
   - Prefab: {fileID: 7053385775836331393, guid: bcf8a61165d173843972fded041563af, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 3
       EndSpellPart: 5
@@ -31,6 +32,7 @@ MonoBehaviour:
     IsFollowing: 1
     Offset: {x: 0, y: 0}
     Animation: 0
+    StateEffects: 
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
@@ -75,4 +77,4 @@ MonoBehaviour:
   IsBlockingMovement: 1
   IsBlockingCast: 1
   OnCounterProc: {fileID: 11400000, guid: d8ac52d6489ed3f4baa78178a01ecd4a, type: 2}
-  ColorSwap: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 1}
+  ColorSwap: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 1}

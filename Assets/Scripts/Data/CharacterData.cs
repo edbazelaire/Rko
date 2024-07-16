@@ -38,7 +38,7 @@ namespace Data
     {
         #region Members
 
-        private static readonly EStateEffectProperty[] INT_PROPERTIES = new EStateEffectProperty[] {
+        public static readonly EStateEffectProperty[] INT_PROPERTIES = new EStateEffectProperty[] {
             EStateEffectProperty.MaxStacks,
             EStateEffectProperty.Shield,
             EStateEffectProperty.ResistanceFix,
@@ -48,6 +48,10 @@ namespace Data
             EStateEffectProperty.BonusTickDamages,
             EStateEffectProperty.BonusTickHeal,
             EStateEffectProperty.BonusTickShield,
+            EStateEffectProperty.Hp,
+            EStateEffectProperty.Stacks,
+            EStateEffectProperty.EndDamages,
+            EStateEffectProperty.EndHeal, 
         };
 
         // ===============================================================================================================

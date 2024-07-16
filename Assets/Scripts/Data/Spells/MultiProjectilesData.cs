@@ -10,6 +10,7 @@ using Unity.VisualScripting;
 using Data.GameManagement;
 using System;
 using UnityEngine.Serialization;
+using System.Linq;
 
 namespace Data
 {
@@ -99,7 +100,9 @@ namespace Data
                 if (i == NWaves - 1 || m_IsCancelled)
                     break;
 
-                controller.AnimationHandler.PlayAnimationClientRPC(Animation, DelayBetweenWaves);
+                // play animation only if blocked during the animation
+                if (m_IsBlocking)
+                    controller.AnimationHandler.PlayAnimationClientRPC(Animation, DelayBetweenWaves);
 
                 var delay = DelayBetweenWaves;
                 while (delay > 0)
@@ -114,7 +117,9 @@ namespace Data
                     yield return null;
                 }
 
-                controller.AnimationHandler.CancelCastAnimation();
+                // cancel animation only if blocked during the animation
+                if (m_IsBlocking)
+                    controller.AnimationHandler.CancelCastAnimation();
 
                 if (m_IsCancelled)
                 {
@@ -257,11 +262,17 @@ namespace Data
 
         public override Dictionary<string, object> GetInfos()
         {
+            string[] keysToIgnore = new string[] { "Cooldown", "Cast" };
             var infoDict = base.GetInfos();
             if (ProjectileData != null)
             {
                 foreach (var item in ProjectileData.GetInfos())
-                    infoDict[item.Key] = item.Value;
+                {
+                    if (keysToIgnore.Contains(item.Key))
+                        continue;
+
+                    infoDict[item.Key] = item.Value;    
+                }
             }
 
             infoDict["Projectiles"] = NProjectiles;

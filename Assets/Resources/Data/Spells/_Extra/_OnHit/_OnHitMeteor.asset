@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2413bf9bea7a81d44a0b645bca9d69f8, type: 3}
-  m_Name: ToxicFiole
+  m_Script: {fileID: 11500000, guid: 3187be67d58548144a9d4f83cb44e7d2, type: 3}
+  m_Name: _OnHitMeteor
   m_EditorClassIdentifier: 
-  Rarety: 1
+  Rarety: 0
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions: []
@@ -20,20 +20,19 @@ MonoBehaviour:
   OnAnimation: []
   OnCastPrefabs:
   - {fileID: 610942752557020422, guid: 4c012a077fc8a714fb23670e129fb0eb, type: 3}
-  OnHit:
-  - {fileID: 11400000, guid: 19ba31f689720044b948cd4fd97c6784, type: 2}
+  OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
-  CastSoundFX: {fileID: 8300000, guid: 3b1f2da5ef887784590e9fa4ead6809a, type: 3}
+  CastSoundFX: {fileID: 0}
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
-  OnEndSoundFX: {fileID: 8300000, guid: 835426082e048794dbf05e65aa71c35a, type: 3}
-  SpellTarget: 1
+  OnEndSoundFX: {fileID: 0}
+  SpellTarget: 0
   LockTargetAt: 2
-  MaxHit: 1
-  EnergyGain: 0
+  MaxHit: 0
+  EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 0
+  m_Damage: 70
   m_Heal: 0
   m_LifeSteal: 0
   Distance: -1
@@ -47,15 +46,17 @@ MonoBehaviour:
     Value: 0.1
   - Property: 3
     Value: 0.05
-  m_Size: 1
-  TriggerPlayer: 0
-  EnemyStateEffects: []
+  m_Size: 7
+  TriggerPlayer: 1
+  EnemyStateEffects:
+  - StateEffect: 15
+    Stacks: 1
+    OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
-  PersistanceAfterEnd: 0
-  Animation: 2
-  IsCancellable: 0
-  AnimationTimer: 0.5
-  m_Cooldown: 20
-  Trajectory: 1
-  m_Speed: 8
+  PersistanceAfterEnd: 2
+  Animation: 0
+  IsCancellable: 1
+  AnimationTimer: 0
+  m_Cooldown: 0
+  m_SpellSpawn: 2

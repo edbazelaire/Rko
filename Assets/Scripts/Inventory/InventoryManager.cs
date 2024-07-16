@@ -182,6 +182,26 @@ namespace Inventory
 
             // fire event of upgrade
             CollectableUpgradedEvent?.Invoke(collectable, data.Level);
+
+            // =============================================================================
+            // TODO : BETA TESTING : make characters have same levels
+            //      -> REMOVE later if not use OR set global account level
+            if (collectable.GetType() == typeof(ECharacter))
+            {
+                // get all other characters to level up
+                foreach (ECharacter character in Enum.GetValues(typeof(ECharacter)))
+                {
+                    SCollectableCloudData charData = InventoryCloudData.Instance.GetCollectable(character);
+                    charData.Level = data.Level;
+
+                    // SAVE : update cloud data
+                    InventoryCloudData.Instance.SetCollectable(charData);
+
+                    // fire event of upgrade
+                    CollectableUpgradedEvent?.Invoke(collectable, data.Level);
+                }
+            }
+            // =============================================================================
         }
 
         public static bool CanUpgrade(Enum collectable)

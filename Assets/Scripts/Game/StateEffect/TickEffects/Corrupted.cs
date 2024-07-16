@@ -32,7 +32,7 @@ namespace Game.Spells
                 m_Stacks = 1;
             } else
             {
-                m_Stacks = Math.Min(enemyController.StateHandler.RemoveState(m_ConsumeState), m_MaxStacks);
+                m_Stacks = Math.Min(enemyController.StateHandler.RemoveStateEffect(m_ConsumeState), m_MaxStacks);
             }
 
             Debug.LogWarning("CURSED applied with " + m_Stacks + " stacks");
@@ -40,11 +40,6 @@ namespace Game.Spells
 
             return true;
         }
-
-        /// <summary>
-        /// Remove end hit (since it is applied on the enemy not ourself)
-        /// </summary>        
-        protected override void ApplyEndHits() { }
 
         #endregion
     }

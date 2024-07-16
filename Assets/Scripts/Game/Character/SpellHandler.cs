@@ -419,11 +419,11 @@ namespace Game.Character
             if (!CanCast(spell))
                 return false;
 
-            m_SelectedSpell = spell;
-
             // if curently casting another spell, cancel it
             if (m_IsCasting.Value)
                 CancelCast();
+
+            m_SelectedSpell = spell;
 
             // cast spell
             m_CastCoroutine = StartCoroutine(StartCast(spell));

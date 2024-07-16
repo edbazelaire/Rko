@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Tools;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Game.Spells
@@ -38,9 +39,6 @@ namespace Game.Spells
 
         [Header("Graphics")]
         [SerializeField] protected      List<SPrefabSpawn>          m_VisualEffects;
-        [SerializeField] protected      List<EBodyPart>             m_SpawnBodyParts;
-        [SerializeField] protected      Vector2                     m_Offset;
-        [SerializeField] protected      Color                       m_ColorSwitch = Color.white;
         [SerializeField] protected      EAnimation                  m_Animation;
         [SerializeField] protected      AudioClip                   m_OnApplySoundFX;
         [SerializeField] protected      AudioClip                   m_PermanantSoundFX;
@@ -99,11 +97,12 @@ namespace Game.Spells
         protected float                 m_Timer;
 
         // =========================================================================================
+        // ACTIONS
+        public Action<ESpellEvent> OnSpellEvent;
+
+        // =========================================================================================
         // DEPENDENT MEMBERS  
         public List<SPrefabSpawn>       VisualEffects       => m_VisualEffects;
-        public List<EBodyPart>          SpawnBodyParts      => m_SpawnBodyParts;
-        public Vector2                  Offset              => m_Offset;
-        public Color                    ColorSwitch         => m_ColorSwitch;
         public EAnimation               Animation           => m_Animation;
         public EStateEffect             Type                => Enum.TryParse(name, out EStateEffect type) ? type : m_Type ;
         public virtual int              Stacks              => m_Stacks;
@@ -152,19 +151,6 @@ namespace Game.Spells
             return true;
         }
 
-        public virtual void End()
-        {
-            OnEnd();
-
-            if (m_AudioSource != null)
-            {
-                Destroy(m_AudioSource);
-            }
-
-            m_Controller.StateHandler.RemoveState(StateEffectName);
-        }
-
-
         #endregion
 
 
@@ -191,7 +177,7 @@ namespace Game.Spells
             }
 
             // consume "ConsumeState" state to apply current state
-            m_Stacks = Math.Min(m_Controller.StateHandler.RemoveState(m_ConsumeState), m_MaxStacks);
+            m_Stacks = Math.Min(m_Controller.StateHandler.RemoveStateEffect(m_ConsumeState, true), m_MaxStacks);
 
             return true;
         }
@@ -204,6 +190,9 @@ namespace Game.Spells
                 clone.m_Duration = m_Duration;
                 m_Controller.StateHandler.AddStateEffect(clone, m_Caster);
             }
+
+            // call state effect 
+            CallSpellEventClientRPC(ESpellEvent.OnSpawn);
         }
 
         public void OverrideStateEffectData(SStateEffectData stateEffectData)
@@ -230,7 +219,25 @@ namespace Game.Spells
 
         #region End
 
-        protected virtual void OnEnd()
+        protected virtual void OnDestroy()
+        {
+            if (m_AudioSource != null)
+            {
+                Destroy(m_AudioSource);
+            }
+
+            CallSpellEventClientRPC(ESpellEvent.OnEnd);
+        }
+
+        /// <summary>
+        /// Reached its end naturaly or was consumed by another spell
+        /// </summary>
+        public virtual void End()
+        {
+            m_Controller.StateHandler.RemoveStateEffect(StateEffectName, true);
+        }
+
+        public virtual void OnConsumed()
         {
             foreach (var stateEffect in m_OnEndStateEffect)
             {
@@ -255,19 +262,9 @@ namespace Game.Spells
                 End();
         }
 
-        public virtual void Refresh(int stacks = 1)
+        public virtual void Refresh(int stacks = 0)
         {
-            if (m_MaxStacks <= 1)
-                m_Stacks = 1;
-
-            else if (m_Stacks < m_MaxStacks)
-            {
-                if (stacks == 0)
-                    stacks = 1;
-
-                m_Stacks = Math.Min(m_MaxStacks, m_Stacks + stacks);
-            }
-
+            m_Stacks = Math.Min(m_MaxStacks, m_Stacks + stacks);
             RefreshStats();
         }
 
@@ -489,6 +486,28 @@ namespace Game.Spells
             float stacksFactor = stateEffectScaling.StateEffectProperty == property ? Stacks * stateEffectScaling.ScalingFactor : 1f;                  // apply Stack bonus 
 
             return Mathf.Round(100 * boostedValue * stacksFactor) / 100;
+        }
+
+        #endregion
+
+
+        #region Spell Events
+
+        [ClientRpc]
+        protected virtual void CallSpellEventClientRPC(ESpellEvent spellEvent)
+        {
+            if (m_VisualEffects != null)
+            {
+                foreach (var spawnPrefab in m_VisualEffects)
+                {
+                    if (spawnPrefab.GFXLifetime.StartSpellPart != spellEvent)
+                        continue;
+
+                    spawnPrefab.Spawn(m_Caster, null, null, this, m_Controller);
+                }
+            } 
+
+            OnSpellEvent?.Invoke(spellEvent);
         }
 
         #endregion

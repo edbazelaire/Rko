@@ -21,7 +21,7 @@ namespace Game.Spells
             }
 
             // if has cursed effects consumme them to apply damages and stung
-            int nStacks = targetController.StateHandler.RemoveState(EStateEffect.Cursed);
+            int nStacks = targetController.StateHandler.RemoveStateEffect(EStateEffect.Cursed);
             targetController.Life.Hit(nStacks * DAMAGES_PER_STACKS);
             m_Controller.EnergyHandler.AddEnergy(nStacks * ENERGY_PER_STACKS);
 

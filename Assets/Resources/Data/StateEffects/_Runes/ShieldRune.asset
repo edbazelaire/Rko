@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bec91e441d966e438d35c0133adae84, type: 3}
   m_Name: ShieldRune
   m_EditorClassIdentifier: 
-  m_Description: 
-  m_DescriptionVariables: 
+  m_Description: Apply a {0} shield for {1} seconds when reaching half hp
+  m_DescriptionVariables: 0400000001000000
   m_VisualEffects:
   - Prefab: {fileID: 152564, guid: 4ab45d63db2ac6448a1bd863420410b7, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 0
       EndSpellPart: 0
@@ -31,9 +32,6 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 
-  m_SpawnBodyParts: 
-  m_Offset: {x: 0, y: 0}
-  m_ColorSwitch: {r: 1, g: 1, b: 1, a: 1}
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 8300000, guid: 6f4c14cc46310ff4f9bd77d24400b113, type: 3}
   m_PermanantSoundFX: {fileID: 0}

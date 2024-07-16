@@ -12,9 +12,7 @@ using Unity.Netcode;
 using Unity.Services.CloudSave;
 using Unity.Services.CloudSave.Models;
 using Unity.Services.CloudSave.Models.Data.Player;
-using Unity.Services.Relay.Models;
 using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime;
 
 namespace Save
 {
@@ -84,7 +82,7 @@ namespace Save
         // ========================================================================================================================
         // CONSTANTS
         /// <summary> default gamer tag </summary>
-        public const string DEFAULT_GAMER_TAG = "Jean Francois Valjean";
+        public const string DEFAULT_GAMER_TAG = "DEFAULT_PSEUDO";
         public static Dictionary<EAchievementReward, string> DEFAULT_AR => new Dictionary<EAchievementReward, string>(){
             { EAchievementReward.Avatar,    EAvatar.None.ToString() },
             { EAchievementReward.Border,    EBorder.None.ToString() },
@@ -780,8 +778,9 @@ namespace Save
 
             switch (key)
             {
+                // Make KEY_PSEUDO_CHANGED un-resetable
                 case KEY_PSEUDO_CHANGED:
-                    Instance.m_Data[key] = false;
+                    //Instance.m_Data[key] = false;
                     break;
 
                 case KEY_CURRENT_PROFILE_DATA:

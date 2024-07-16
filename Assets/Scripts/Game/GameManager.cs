@@ -744,6 +744,20 @@ namespace Game
 
         #region Debug Callbacks
 
+        [Command(KeyCode.I)]
+        public void Invulnerabiliy()
+        {
+            if (!Owner.StateHandler.HasState(EStateEffect.Invulnerable))
+                Owner.StateHandler.AddStateEffect(EStateEffect.Invulnerable, Owner);
+            else
+                Owner.StateHandler.RemoveStateEffect(EStateEffect.Invulnerable);
+        }
+
+        public void AddStateEffect(string effect)
+        {
+            Owner.StateHandler.AddStateEffect(SpellLoader.GetStateEffect(effect), Owner);
+        }
+
         [Command(KeyCode.N)]
         public void AutoWin()
         {

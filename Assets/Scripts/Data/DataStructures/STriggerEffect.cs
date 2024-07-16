@@ -13,15 +13,20 @@ namespace Data.DataStructures
     [Serializable]
     public struct STriggerEffect : INetworkSerializable
     {
-        public string SpellDataName;
-        public int Level;
-        public ESpellActivationEvent SpellActivationEvent;
-        public float ActivationTreshold;
-        public int NActivations;
-        public float Cooldown;
+        public  string                  SpellDataName;
+        public  int                     Level;
+        public  ESpellActivationEvent   SpellActivationEvent;
+        public  float                   ActivationTreshold;
+        public  int                     NActivations;
+        public  float                   Cooldown;
 
-        float m_CooldownTimer;
-        public bool IsActivable => (NActivations > 0 || NActivations == -1) && m_CooldownTimer <= 0;
+        int     m_NActivationsCtr;
+        float   m_CooldownTimer;
+
+        public bool IsActivable => (
+            NActivations == -1                  // infinite activations
+                || m_NActivationsCtr < (NActivations >= 1 ? NActivations : 1)) // OR below min activation 
+            && m_CooldownTimer <= 0;            // cooldown must be done
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
@@ -29,6 +34,8 @@ namespace Data.DataStructures
             serializer.SerializeValue(ref Level);
             serializer.SerializeValue(ref SpellActivationEvent);
             serializer.SerializeValue(ref ActivationTreshold);
+            serializer.SerializeValue(ref NActivations);
+            serializer.SerializeValue(ref Cooldown);
         }
 
         public void Activate(Controller controller)
@@ -36,9 +43,12 @@ namespace Data.DataStructures
             if (! IsActivable)
                 return;
 
-            NActivations--;
-            m_CooldownTimer = Cooldown;
-            controller.StartCoroutine(UpdateCooldownTimer());
+            m_NActivationsCtr++;
+            if (Cooldown > 0)
+            {
+                m_CooldownTimer = Cooldown;
+                controller.StartCoroutine(UpdateCooldownTimer());
+            }
 
             Debug.LogWarning("ACTIVATE : " + SpellDataName);
 

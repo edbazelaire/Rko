@@ -29,14 +29,14 @@ namespace Data
     public struct SStateEffectData
     {
         public EStateEffect                 StateEffect;
-        public int                          Stacks          = 1;
+        public int                          Stacks;
         public List<SStateEffectProperty>   OverridingProperties;
 
         public SStateEffectData(EStateEffect stateEffect, int stacks = 1, List<SStateEffectProperty> overridingProperties = default)
         {
-            StateEffect = stateEffect;
-            Stacks = stacks;
-            OverridingProperties = overridingProperties;
+            StateEffect             = stateEffect;
+            Stacks                  = stacks;
+            OverridingProperties    = overridingProperties;
         }
     }
 
@@ -97,6 +97,7 @@ namespace Data
         #region Members
 
         public GameObject           Prefab;
+        public Material             MaterialEffect;
         public SGFXLifetime         GFXLifetime;
         public float                Size;
         public int                  OrderInLayer;
@@ -115,9 +116,10 @@ namespace Data
 
         #region Contructor
 
-        public SPrefabSpawn(GameObject prefab, SGFXLifetime gFXLifetime, ESpawnTarget spawnTarget, ESpawnLocation spawnLocation, EBodyPart bodyPart, bool isFollowing, Vector2 offset, EAnimation animation, List<EStateEffect> stateEffects = default, float size = 0f, int orderInLayer = 0)
+        public SPrefabSpawn(GameObject prefab, Material materialEffect, SGFXLifetime gFXLifetime, ESpawnTarget spawnTarget, ESpawnLocation spawnLocation, EBodyPart bodyPart, bool isFollowing, Vector2 offset, EAnimation animation, List<EStateEffect> stateEffects = default, float size = 0f, int orderInLayer = 0)
         {
             Prefab          = prefab;
+            MaterialEffect  = materialEffect;
             GFXLifetime     = gFXLifetime;
             Size            = size;
             OrderInLayer    = orderInLayer;
@@ -144,15 +146,18 @@ namespace Data
         /// <param name="spellData">    SpellData of the spell we are trying to cast or was casted </param>
         /// <param name="spell">        If the spell has already spawned, provide it (otherwise will be null) </param>
         /// <returns></returns>
-        public readonly SpellGFX Spawn(Controller caster, SpellData spellData, Spell spell = null, Controller targetController = null)
+        public readonly SpellGFX Spawn(Controller caster, SpellData spellData, Spell spell = null, StateEffect stateEffect = null, Controller targetController = null)
         {
+            GameObject go;
             if (Prefab == null)
-                return null;
-
-            var parent = SpellGFX.CalculateParent(this, caster, spell, targetController);
-            var position = SpellGFX.CalculatePosition(parent, this, caster);
-
-            GameObject go = GameObject.Instantiate(Prefab, position, Quaternion.identity, IsFollowing ? parent : null);
+                go = new GameObject();
+            else
+            {
+                var parent = SpellGFX.CalculateParent(this, caster, spell, targetController);
+                var position = SpellGFX.CalculatePosition(parent, this, caster);
+                go = GameObject.Instantiate(Prefab, position, Quaternion.identity, IsFollowing ? parent : null);
+            }
+            
             if (! go.TryGetComponent(out SpellGFX spellGfx))
             {
                 // NO SPECIFIC COMPONENT : add default spell graphix component
@@ -164,7 +169,7 @@ namespace Data
             //    spellPreview.Intialize(controller);
             //}
 
-            spellGfx.Initialize(this.SpawnTarget != ESpawnTarget.Target ? caster : targetController, spellData, spell, this);
+            spellGfx.Initialize(this.SpawnTarget != ESpawnTarget.Target ? caster : targetController, spellData, spell, stateEffect, this);
             return spellGfx;
         }
 

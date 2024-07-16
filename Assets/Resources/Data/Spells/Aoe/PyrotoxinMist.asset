@@ -50,14 +50,13 @@ MonoBehaviour:
   TriggerPlayer: 1
   EnemyStateEffects:
   - StateEffect: 8
-    Stacks: 0
-    Duration: 0
-    SpeedBonus: 0
+    Stacks: 1
+    OverridingProperties: []
   - StateEffect: 9
     Stacks: 1
-    Duration: 0
-    SpeedBonus: 0
+    OverridingProperties: []
   AllyStateEffects: []
+  StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 6
   IsCancellable: 0

@@ -32,6 +32,22 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 15000000
+  - Prefab: {fileID: 2750916684303480959, guid: 81e3e6d277729ef4bae7709f2d1aad17, type: 3}
+    GFXLifetime:
+      StartSpellPart: 3
+      EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1
+    Size: 1
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 2
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []

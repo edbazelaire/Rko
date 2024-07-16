@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f0b58ae9491f61429ad93245e719b38, type: 3}
   m_Name: ProtectorRune
   m_EditorClassIdentifier: 
-  Rarety: 0
-  Description: 
-  StateEffect: 0
+  Rarety: 1
+  Description: Gain a bonus of {0} hp and {1} resistance fix
+  m_DescriptionVariables: 6f00000005000000
   m_BonusStats:
   - StateEffectProperty: 111
-    BaseValue: 250
+    BaseValue: 300
     ScalingFactor: 0.1
   - StateEffectProperty: 5
     BaseValue: 5

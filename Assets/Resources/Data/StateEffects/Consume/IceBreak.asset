@@ -14,9 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Description: Consume {0} to inflict an extra {1} damages
   m_DescriptionVariables: 120000000b000000
-  m_VisualEffect: {fileID: 1364846237022580, guid: b7cc9b248528c8044b25f9538cc72b06, type: 3}
-  m_SpawnBodyParts: 
-  m_ColorSwitch: {r: 1, g: 1, b: 1, a: 1}
+  m_VisualEffects:
+  - Prefab: {fileID: 1364846237022580, guid: b7cc9b248528c8044b25f9538cc72b06, type: 3}
+    MaterialEffect: {fileID: 0}
+    GFXLifetime:
+      StartSpellPart: 3
+      EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1
+    Size: 1
+    OrderInLayer: 0
+    SpawnTarget: 2
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 8300000, guid: e3abed086c6be224a83488520f98f6af, type: 3}
   m_PermanantSoundFX: {fileID: 0}
@@ -27,16 +42,22 @@ MonoBehaviour:
   m_SpeedBonus: 0
   m_CastSpeed: 0
   m_AttackSpeed: 0
+  m_CooldownReduction: 0
+  m_CooldownReductionPerc: 0
   m_Shield: 0
   m_ResistanceFix: 0
   m_ResistancePerc: 0
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
   m_BonusLifeSteal: 0
+  m_OnStartStateEffect: []
+  m_OnEndStateEffect: []
   m_StateEffectScalingLevel:
   - StateEffectProperty: 11
     ScalingFactor: 0.1
   m_StateEffectScalingStacks: []
   m_Damages: 150
+  m_EndDamages: 0
   m_Heal: 0
+  m_EndHeal: 0
   m_LifeSteal: 0

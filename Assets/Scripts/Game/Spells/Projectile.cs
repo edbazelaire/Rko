@@ -95,7 +95,11 @@ namespace Game.Spells
                 return;
 
             // check if the spell has reached its max distance
-            if (m_SpellData.Distance > 0 && Math.Abs(transform.position.x - m_OriginalPosition.x) > m_SpellData.Distance)
+            if ((m_SpellData.Distance > 0) && Math.Abs(transform.position.x - m_OriginalPosition.x) > m_SpellData.Distance)
+                End();
+
+            // check if the spell has reached its max distance
+            if (m_SpellData.StopOnTargetPos && m_Target.x - transform.position.x < 0)
                 End();
         }
 

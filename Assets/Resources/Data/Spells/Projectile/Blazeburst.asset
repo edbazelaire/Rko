@@ -17,13 +17,14 @@ MonoBehaviour:
   Graphics: {fileID: 8073250784623665408, guid: bf45f65dd6f8fdd418ab488945ccd61b, type: 3}
   SpellEventActions:
   - Prefab: {fileID: 171482, guid: 3dcfe366093158c41982110b9b8d3125, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 1
       EndSpellPart: 2
       StartAt: 0
       EndAt: 1
       Persistance: 0
-    Size: 0.5
+    Size: 2
     OrderInLayer: 0
     SpawnTarget: 1
     SpawnLocation: 0
@@ -77,4 +78,5 @@ MonoBehaviour:
   AnimationTimer: 1.5
   m_Cooldown: 40
   Trajectory: 2
+  m_StopOnTargetPos: 0
   m_Speed: 40

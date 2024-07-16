@@ -222,7 +222,7 @@ namespace Save
 
                     m_Data[key] = data;
 
-                    CurrentBuildIndexChangedEvent.Invoke();
+                    CurrentBuildIndexChangedEvent?.Invoke();
                     break;
 
                 default:

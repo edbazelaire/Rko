@@ -42,7 +42,7 @@
     public enum EArenaType
     {
         FireArena,
-        FrostArena,
+        //FrostArena,
     }
 
     public enum ECharacter
@@ -103,7 +103,7 @@
         VoidEmbrace,
         PlagueArrows,
         EmperorOfFlames,
-        ToxicFiole,
+        ExperimentalVial,
 
         Count
     }
@@ -293,6 +293,10 @@
         Body,
         Head,
         SpellSpawn,
+        L_Arm,
+        R_Arm,
+        L_Leg,
+        R_Leg
     }
 
     public enum EStateEffect

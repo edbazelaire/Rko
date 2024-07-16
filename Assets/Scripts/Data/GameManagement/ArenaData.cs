@@ -114,9 +114,9 @@ namespace Data.GameManagement
                     rune = ERune.FireRune;
                     break;
 
-                case EArenaType.FrostArena:
-                    rune = ERune.FrostRune;
-                    break;
+                //case EArenaType.FrostArena:
+                //    rune = ERune.FrostRune;
+                //    break;
 
                 default:
                     rune = ERune.None;

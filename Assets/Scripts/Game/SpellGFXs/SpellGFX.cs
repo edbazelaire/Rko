@@ -16,6 +16,7 @@ namespace Game.SpellGFXs
         protected Controller        m_Controller;
         protected SpellData         m_SpellData;
         protected Spell             m_Spell;
+        protected StateEffect       m_StateEffect;
         protected SPrefabSpawn      m_PrefabSpawn;
         protected EBodyPart         m_BodyPart;
 
@@ -28,18 +29,21 @@ namespace Game.SpellGFXs
 
         #region Init & End
 
-        protected virtual void Awake()
-        {
-
-        }
-
-        public virtual void Initialize(Controller controller, SpellData spellData, Spell spell, SPrefabSpawn prefabSpawn, EBodyPart bodyPart = EBodyPart.None)
+        public virtual void Initialize(Controller controller, SpellData spellData, Spell spell, StateEffect stateEffect, SPrefabSpawn prefabSpawn, EBodyPart bodyPart = EBodyPart.None)
         {
             m_Controller    = controller;
             m_SpellData     = spellData;
             m_Spell         = spell;
+            m_StateEffect   = stateEffect;
             m_PrefabSpawn   = prefabSpawn;
             m_BodyPart      = bodyPart;
+
+            // TODO : REMOVE
+            if (m_StateEffect != null)
+            {
+                Debug.LogWarning("START SPELL GFX : " + this.name);
+            }
+            // TODO : REMOVE
 
             // set Parent & Position based on provided data
             transform.localScale *= prefabSpawn.Size > 0 ? prefabSpawn.Size : (spellData != null ? spellData.Size : 1);
@@ -53,6 +57,9 @@ namespace Game.SpellGFXs
                 controller.AnimationHandler.PlayAnimation(prefabSpawn.Animation);
             }
 
+            // apply material of the effect on the target bodyparts
+            ApplyMaterial();
+
             // add state effects happening during the lifetime
             AddStateEffects();
 
@@ -63,9 +70,6 @@ namespace Game.SpellGFXs
             }
 
             RegisterListeners();
-
-            if (spell != null)
-                spell.OnSpellEvent += OnSpellEvent;
            
             m_Intialized = true;
         }
@@ -73,6 +77,13 @@ namespace Game.SpellGFXs
         public virtual void End()
         {
             ErrorHandler.Log("ENDED SPELL GFX : " + this.name, ELogTag.SpellGFX);
+            
+            // TODO : REMOVE
+            if (m_StateEffect != null)
+            {
+                Debug.LogWarning("ENDED SPELL GFX : " + this.name);
+            }
+            // TODO : REMOVE
 
             // stop the animation
             if (m_PrefabSpawn.Animation != EAnimation.None)
@@ -162,7 +173,7 @@ namespace Game.SpellGFXs
                     break;
             }
 
-            return basePos;
+            return basePos + new Vector3(prefabSpawn.Offset.x, prefabSpawn.Offset.y, 0);
 
         }
 
@@ -226,6 +237,29 @@ namespace Game.SpellGFXs
         #endregion
 
 
+        #region Materials & Colors
+
+        protected void ApplyMaterial()
+        {
+            if (m_PrefabSpawn.MaterialEffect == null)
+                return;
+
+            m_Controller.GFXHandler.ApplyMaterial(m_PrefabSpawn.MaterialEffect, m_BodyPart);
+        }
+
+        protected void RemoveMaterial()
+        {
+            if (m_StateEffect != null)
+                Debug.Log("édfqsf");
+            if (m_PrefabSpawn.MaterialEffect == null)
+                return;
+
+            m_Controller.GFXHandler.RemoveMaterial(m_PrefabSpawn.MaterialEffect, m_BodyPart);
+        }
+
+        #endregion
+
+
         #region StateEffects
 
         protected void AddStateEffects()
@@ -237,7 +271,7 @@ namespace Game.SpellGFXs
         protected void RemoveStateEffects()
         {
             foreach (var effect in m_PrefabSpawn.StateEffects)
-                m_Controller.StateHandler.RemoveState(effect);
+                m_Controller.StateHandler.RemoveStateEffect(effect);
         }
 
         #endregion
@@ -259,6 +293,9 @@ namespace Game.SpellGFXs
             // remove the state effects of the animation
             RemoveStateEffects();
 
+            // remove material applied
+            RemoveMaterial();
+
             // destroy the spell
             Destroy(gameObject);
         }
@@ -278,20 +315,34 @@ namespace Game.SpellGFXs
             // Only register to SpellHandler events if this was spawn BEFORE casting
             if (m_PrefabSpawn.GFXLifetime.StartSpellPart < ESpellEvent.OnSpawn)
                 m_Controller.SpellHandler.OnPreSpellEvent += OnPreSpellEvent;
+
+            if (m_Spell != null)
+                m_Spell.OnSpellEvent += OnSpellEvent;
+
+            if (m_StateEffect != null)
+                m_StateEffect.OnSpellEvent += OnSpellEvent;
         }
 
         protected virtual void UnRegisterListeners()
         {
-            m_Controller.SpellHandler.OnPreSpellEvent -= OnPreSpellEvent;
+            if (m_Controller != null)
+                m_Controller.SpellHandler.OnPreSpellEvent -= OnPreSpellEvent;
 
             if (m_Spell != null)
-            {
                 m_Spell.OnSpellEvent -= OnSpellEvent;
-            }
+            
+            if (m_StateEffect != null)
+                m_StateEffect.OnSpellEvent -= OnSpellEvent;
         }
 
         protected virtual void OnPreSpellEvent(string spell, ESpellEvent spellEvent)
         {
+            // --------
+            // ISSUE with CancelCast()
+            // --------
+            //if (spell != m_SpellData.ToString())
+            //    return;
+
             if (m_PrefabSpawn.GFXLifetime.EndSpellPart != ESpellEvent.None && m_PrefabSpawn.GFXLifetime.EndSpellPart <= spellEvent)
             {
                 End();
@@ -305,7 +356,7 @@ namespace Game.SpellGFXs
                 End();
             }
         } 
-
+        
         #endregion
     }
 }

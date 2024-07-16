@@ -555,6 +555,13 @@ namespace Save
 
         public bool AddCollectableData(Enum collectable, bool unlock)
         {
+            // =================================================================
+            // =================================================================
+            // TODO : REMOVE (this is just for beta testing)
+            unlock = true;
+            // =================================================================
+            // =================================================================
+
             if (IGNORED_COLLECTABLES.Contains(collectable))
                 return false;
 

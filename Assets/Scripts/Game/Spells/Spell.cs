@@ -398,7 +398,7 @@ namespace Game.Spells
                 if (spawnPrefab.GFXLifetime.StartSpellPart != spellEvent)
                     continue;
 
-                spawnPrefab.Spawn(m_Controller, m_SpellData, this, targetController);
+                spawnPrefab.Spawn(m_Controller, m_SpellData, this, null, targetController);
             }
 
             OnSpellEvent?.Invoke(spellEvent);
