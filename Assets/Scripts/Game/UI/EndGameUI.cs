@@ -1,9 +1,7 @@
 ﻿using Analytics.Events;
-using Assets;
 using Data.GameManagement;
 using Enums;
 using Game;
-using Game.UI;
 using Inventory;
 using Managers;
 using Network;
@@ -104,7 +102,8 @@ public class EndGameUI : MObject
         NetworkManager.Singleton.Shutdown();
 
         // reset GameManager
-        GameManager.Instance.Shutdown();
+        if (GameManager.Exists)
+            GameManager.Instance.Shutdown();
 
         // load MainMenu
         SceneLoader.Instance.LoadScene("MainMenu");

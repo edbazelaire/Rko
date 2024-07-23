@@ -38,12 +38,6 @@ namespace Game.SpellGFXs
             m_PrefabSpawn   = prefabSpawn;
             m_BodyPart      = bodyPart;
 
-            // TODO : REMOVE
-            if (m_StateEffect != null)
-            {
-                Debug.LogWarning("START SPELL GFX : " + this.name);
-            }
-            // TODO : REMOVE
 
             // set Parent & Position based on provided data
             transform.localScale *= prefabSpawn.Size > 0 ? prefabSpawn.Size : (spellData != null ? spellData.Size : 1);
@@ -78,13 +72,6 @@ namespace Game.SpellGFXs
         {
             ErrorHandler.Log("ENDED SPELL GFX : " + this.name, ELogTag.SpellGFX);
             
-            // TODO : REMOVE
-            if (m_StateEffect != null)
-            {
-                Debug.LogWarning("ENDED SPELL GFX : " + this.name);
-            }
-            // TODO : REMOVE
-
             // stop the animation
             if (m_PrefabSpawn.Animation != EAnimation.None)
                 m_Controller.AnimationHandler.CancelCastAnimation(m_PrefabSpawn.Animation);
@@ -119,7 +106,7 @@ namespace Game.SpellGFXs
                             return bodyPartGO.transform;
                     }
                     return caster.transform;
-
+                     
                 case ESpawnTarget.Target:
                     if (targetController == null)
                     {
@@ -249,8 +236,6 @@ namespace Game.SpellGFXs
 
         protected void RemoveMaterial()
         {
-            if (m_StateEffect != null)
-                Debug.Log("édfqsf");
             if (m_PrefabSpawn.MaterialEffect == null)
                 return;
 

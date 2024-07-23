@@ -1,6 +1,7 @@
 ﻿using Data;
 using Enums;
 using Game.Loaders;
+using System.Collections.Generic;
 using Tools;
 using UnityEngine;
 
@@ -16,6 +17,9 @@ namespace Game.Spells
         // DATA
         protected ESpell m_ReplacedSpell = ESpell.Count;
 
+        // ==============================================================================
+        // PUBLIC MANIPULATORS
+        public override EStateEffectType StateEffectType => EStateEffectType.AutoAttackBuff;
 
         #region Init & End
 
@@ -48,10 +52,23 @@ namespace Game.Spells
 
         protected override void OnDestroy()
         {
-            if (m_ReplacementData != null)
+            if (m_ReplacementData != null && m_Controller != null)
                 m_Controller.SpellHandler.RemoveOverridingSpell(m_Controller.SpellHandler.AutoAttack);
 
             base.OnDestroy(); 
+        }
+
+        #endregion
+
+
+        #region Infos & Description
+
+        public override Dictionary<string, object> GetInfos()
+        {
+            var infos = base.GetInfos();
+            if (m_ReplacementData != null)
+                m_ReplacementData.AddAsSubSpellInfos(ref infos);
+            return infos;
         }
 
         #endregion

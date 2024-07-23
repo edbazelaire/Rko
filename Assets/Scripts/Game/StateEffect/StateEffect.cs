@@ -36,6 +36,7 @@ namespace Game.Spells
         // SERIALIZED DATA
         [SerializeField] protected      string                      m_Description = "";
         [SerializeField] protected      List<EStateEffectProperty>  m_DescriptionVariables = new List<EStateEffectProperty>();
+        [SerializeField] protected      EStateEffectType            m_StateEffectType = EStateEffectType.Default;
 
         [Header("Graphics")]
         [SerializeField] protected      List<SPrefabSpawn>          m_VisualEffects;
@@ -102,6 +103,8 @@ namespace Game.Spells
 
         // =========================================================================================
         // DEPENDENT MEMBERS  
+        public virtual EStateEffectType StateEffectType     => m_StateEffectType;
+        public bool                     IsUnique            => StateEffectType == EStateEffectType.Incarnation || StateEffectType == EStateEffectType.AutoAttackBuff;
         public List<SPrefabSpawn>       VisualEffects       => m_VisualEffects;
         public EAnimation               Animation           => m_Animation;
         public EStateEffect             Type                => Enum.TryParse(name, out EStateEffect type) ? type : m_Type ;
@@ -518,7 +521,9 @@ namespace Game.Spells
         public virtual Dictionary<string, object> GetInfos()
         {
             var infosDict = new Dictionary<string, object>();
-            
+            if (StateEffectType != EStateEffectType.Default)
+                infosDict["Type"] = StateEffectType.ToString();
+
             foreach (EStateEffectProperty property in Enum.GetValues(typeof(EStateEffectProperty)))
             {
                 // check if property exists for this StateEffect and get reflection object

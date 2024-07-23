@@ -35,7 +35,7 @@ namespace Menu.Common.Infos
         }
 
 
-        public void Initialize(string name, object value, object newValue = null, bool isPerc = false)
+        public void Initialize(string name, object value, object newValue = null)
         {
             FindComponents();
 
@@ -44,14 +44,14 @@ namespace Menu.Common.Infos
             // by default, deactivate bonus value
             m_BonusValue.gameObject.SetActive(false);
             // is the value a percentage value ?
-            m_IsPerc = isPerc;
+            m_IsPerc = CheckIsPercentageValue(name);
 
             // handles special cases
             switch (name)
             {
                 case "Type":
-                    m_Icon.sprite   = AssetLoader.LoadUIElementIcon(value as string);
-                    m_Value.text    = TextLocalizer.SplitCamelCase(TextLocalizer.LocalizeText(value as string));
+                    m_Icon.sprite   = AssetLoader.LoadUIElementIcon(value.ToString());
+                    m_Value.text    = TextLocalizer.SplitCamelCase(TextLocalizer.LocalizeText(value.ToString()));
                     return; 
 
                 case "CounterActivation":
@@ -92,7 +92,7 @@ namespace Menu.Common.Infos
 
         public void RefreshValue(float value, float? newValue = null)
         {
-            m_Value.text = FormatValue(value);
+            m_Value.text = FormatValue(value, m_IsPerc);
 
             if (newValue == null || newValue.Value - value == 0)
             {
@@ -102,7 +102,7 @@ namespace Menu.Common.Infos
 
             float bonus = newValue.Value - value;
             m_BonusValue.gameObject.SetActive(true);
-            m_BonusValue.text = (bonus > 0 ? "+" : "") + FormatValue(bonus);
+            m_BonusValue.text = (bonus > 0 ? "+" : "") + FormatValue(bonus, m_IsPerc);
             m_BonusValue.color = bonus > 0 ? Color.green : Color.red;
         }
 
@@ -111,17 +111,28 @@ namespace Menu.Common.Infos
 
         #region Format
 
-        string FormatValue(float value)
+        public static string FormatValue(float value, bool isPerc)
         {
-            if (m_IsPerc)
+            if (isPerc)
                 return FormatPercValue(value);
 
             return value.ToString(Mathf.Round(value) == value ? "0" : "F2");
         }
 
-        string FormatPercValue(float value)
+        public static string FormatPercValue(float value)
         {
             return (value >= 0.01 ? Mathf.Round(value * 100).ToString("0") : (Mathf.Round(value * 1000) / 10).ToString("F1")) + "%";
+        }
+
+        public static bool CheckIsPercentageValue(string property)
+        {
+            return property.EndsWith("Perc")
+                || property == EStateEffectProperty.BonusLifeSteal.ToString()
+                || property == EStateEffectProperty.AttackSpeed.ToString()
+                || property == EStateEffectProperty.CastSpeed.ToString()
+                || property == EStateEffectProperty.LifeSteal.ToString()
+                || property == EStateEffectProperty.SpeedBonus.ToString()
+                ;
         }
 
         #endregion

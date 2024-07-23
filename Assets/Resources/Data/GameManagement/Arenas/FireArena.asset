@@ -52,7 +52,9 @@ MonoBehaviour:
       - Currency: 0
         Qty: 1000
       - Currency: 1
-        Qty: 100
+        Qty: 150
+      - Currency: 3
+        Qty: 150
       Chests: 
       Collectables:
       - CollectableType: 2
@@ -92,7 +94,7 @@ MonoBehaviour:
       - Currency: 0
         Qty: 1500
       - Currency: 1
-        Qty: 200
+        Qty: 250
       - Currency: 3
         Qty: 500
       Chests: 
@@ -132,7 +134,7 @@ MonoBehaviour:
     RewardsData:
       Currencies:
       - Currency: 1
-        Qty: 350
+        Qty: 450
       - Currency: 3
         Qty: 1000
       Chests: 04000000
@@ -182,7 +184,7 @@ MonoBehaviour:
     RewardsData:
       Currencies:
       - Currency: 1
-        Qty: 500
+        Qty: 750
       - Currency: 3
         Qty: 1500
       - Currency: 0
@@ -234,7 +236,7 @@ MonoBehaviour:
     RewardsData:
       Currencies:
       - Currency: 1
-        Qty: 500
+        Qty: 1000
       - Currency: 3
         Qty: 2500
       Chests: 0400000004000000
@@ -254,7 +256,7 @@ MonoBehaviour:
   - Spells: 03000000110000001b00000020000000
     TriggerEffects:
     - SpellDataName: _CometsRain
-      Level: 9
+      Level: 6
       SpellActivationEvent: 0
       ActivationTreshold: 0
       NActivations: 1
@@ -265,19 +267,13 @@ MonoBehaviour:
       ActivationTreshold: 0.5
       NActivations: 1
       Cooldown: 0
-    - SpellDataName: _Heat
-      Level: 9
-      SpellActivationEvent: 2
-      ActivationTreshold: 0.5
-      NActivations: 1
-      Cooldown: 0
     - SpellDataName: _TriggerHeal
       Level: 12
       SpellActivationEvent: 2
       ActivationTreshold: 0.25
       NActivations: 1
       Cooldown: 0
-    - SpellDataName: _CometsRain
+    - SpellDataName: _Heat
       Level: 9
       SpellActivationEvent: 2
       ActivationTreshold: 0.25
@@ -285,12 +281,12 @@ MonoBehaviour:
       Cooldown: 0
     BonusStats:
     - StateEffectProperty: 111
-      BaseValue: 1500
+      BaseValue: 150
       ScalingFactor: 0
     RewardsData:
       Currencies:
       - Currency: 1
-        Qty: 1000
+        Qty: 1500
       - Currency: 3
         Qty: 7500
       Chests: 05000000
@@ -321,12 +317,6 @@ MonoBehaviour:
       ActivationTreshold: 0.5
       NActivations: 1
       Cooldown: 0
-    - SpellDataName: _CometsRain
-      Level: 9
-      SpellActivationEvent: 2
-      ActivationTreshold: 0.5
-      NActivations: 1
-      Cooldown: 0
     - SpellDataName: InfernalHealing
       Level: 7
       SpellActivationEvent: 2
@@ -339,15 +329,9 @@ MonoBehaviour:
       ActivationTreshold: 0.5
       NActivations: 1
       Cooldown: 0
-    - SpellDataName: _TriggerHeal
-      Level: 9
-      SpellActivationEvent: 2
-      ActivationTreshold: 0.25
-      NActivations: 1
-      Cooldown: 0
     BonusStats:
     - StateEffectProperty: 111
-      BaseValue: 1000
+      BaseValue: 200
       ScalingFactor: 0
     - StateEffectProperty: 5
       BaseValue: 10
@@ -358,7 +342,9 @@ MonoBehaviour:
     RewardsData:
       Currencies:
       - Currency: 1
-        Qty: 750
+        Qty: 2000
+      - Currency: 3
+        Qty: 10000
       Chests: 05000000
       Collectables: []
       AchievementRewards:
@@ -412,15 +398,23 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
     BonusStats:
-    - StateEffectProperty: 4
-      BaseValue: 1000
+    - StateEffectProperty: 111
+      BaseValue: 250
+      ScalingFactor: 0
+    - StateEffectProperty: 5
+      BaseValue: 10
+      ScalingFactor: 0
+    - StateEffectProperty: 6
+      BaseValue: 5
       ScalingFactor: 0
     RewardsData:
       Currencies:
       - Currency: 1
-        Qty: 1000
+        Qty: 2500
       - Currency: 3
-        Qty: 10000
+        Qty: 15000
+      - Currency: 0
+        Qty: 25000
       Chests: 05000000
       Collectables:
       - CollectableType: 2
@@ -453,32 +447,35 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _TriggerHeal
-      Level: 20
-      SpellActivationEvent: 2
-      ActivationTreshold: 0.5
-      NActivations: 0
-      Cooldown: 0
-    - SpellDataName: _Heat
-      Level: 9
-      SpellActivationEvent: 2
-      ActivationTreshold: 0.5
-      NActivations: 0
-      Cooldown: 0
-    - SpellDataName: _TriggerHeal
       Level: 10
       SpellActivationEvent: 2
       ActivationTreshold: 0.25
       NActivations: 0
       Cooldown: 0
-    BonusStats: []
+    - SpellDataName: _Heat
+      Level: 9
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.25
+      NActivations: 0
+      Cooldown: 0
+    BonusStats:
+    - StateEffectProperty: 111
+      BaseValue: 250
+      ScalingFactor: 0
+    - StateEffectProperty: 5
+      BaseValue: 10
+      ScalingFactor: 0
+    - StateEffectProperty: 6
+      BaseValue: 5
+      ScalingFactor: 0
     RewardsData:
       Currencies:
       - Currency: 1
-        Qty: 1200
+        Qty: 3000
       - Currency: 3
-        Qty: 15000
+        Qty: 25000
       - Currency: 0
-        Qty: 15000
+        Qty: 50000
       Chests: 0500000005000000
       Collectables: []
       AchievementRewards: []
@@ -519,15 +516,24 @@ MonoBehaviour:
       ActivationTreshold: 0
       NActivations: 0
       Cooldown: 0
-    BonusStats: []
+    BonusStats:
+    - StateEffectProperty: 111
+      BaseValue: 250
+      ScalingFactor: 0
+    - StateEffectProperty: 5
+      BaseValue: 10
+      ScalingFactor: 0
+    - StateEffectProperty: 6
+      BaseValue: 5
+      ScalingFactor: 0
     RewardsData:
       Currencies:
       - Currency: 1
-        Qty: 1000
+        Qty: 5000
       - Currency: 3
-        Qty: 15000
+        Qty: 40000
       - Currency: 0
-        Qty: 15000
+        Qty: 75000
       Chests: 06000000
       Collectables: []
       AchievementRewards:
@@ -551,7 +557,7 @@ MonoBehaviour:
   - Spells: 200000001b0000001100000001000000
     TriggerEffects:
     - SpellDataName: _MeteorRain
-      Level: 12
+      Level: 7
       SpellActivationEvent: 0
       ActivationTreshold: 0
       NActivations: 0
@@ -580,30 +586,27 @@ MonoBehaviour:
       ActivationTreshold: 0
       NActivations: 0
       Cooldown: 0
-    - SpellDataName: _Heat
-      Level: 9
-      SpellActivationEvent: 4
-      ActivationTreshold: 0
-      NActivations: 0
-      Cooldown: 0
-    BonusStats: []
+    BonusStats:
+    - StateEffectProperty: 111
+      BaseValue: 250
+      ScalingFactor: 0
+    - StateEffectProperty: 5
+      BaseValue: 10
+      ScalingFactor: 0
+    - StateEffectProperty: 6
+      BaseValue: 5
+      ScalingFactor: 0
     RewardsData:
       Currencies:
       - Currency: 1
-        Qty: 1500
+        Qty: 6000
       - Currency: 3
-        Qty: 25000
+        Qty: 50000
       - Currency: 0
-        Qty: 25000
+        Qty: 100000
       Chests: 06000000
       Collectables: []
-      AchievementRewards:
-      - AchievementReward: 3
-        Title: 0
-        Avatar: 0
-        Border: 0
-        Badge: 0
-        League: 0
+      AchievementRewards: []
     StageData:
     - Character: 1
       CharacterLevel: 12
@@ -665,15 +668,24 @@ MonoBehaviour:
       ActivationTreshold: 0
       NActivations: 1
       Cooldown: 0
-    BonusStats: []
+    BonusStats:
+    - StateEffectProperty: 111
+      BaseValue: 250
+      ScalingFactor: 0
+    - StateEffectProperty: 5
+      BaseValue: 10
+      ScalingFactor: 0
+    - StateEffectProperty: 6
+      BaseValue: 5
+      ScalingFactor: 0
     RewardsData:
       Currencies:
       - Currency: 1
-        Qty: 2000
+        Qty: 7500
       - Currency: 3
-        Qty: 50000
+        Qty: 75000
       - Currency: 0
-        Qty: 50000
+        Qty: 150000
       Chests: 06000000
       Collectables: []
       AchievementRewards:
@@ -732,15 +744,24 @@ MonoBehaviour:
       ActivationTreshold: 0
       NActivations: 2
       Cooldown: 0
-    BonusStats: []
+    BonusStats:
+    - StateEffectProperty: 111
+      BaseValue: 250
+      ScalingFactor: 0
+    - StateEffectProperty: 5
+      BaseValue: 10
+      ScalingFactor: 0
+    - StateEffectProperty: 6
+      BaseValue: 5
+      ScalingFactor: 0
     RewardsData:
       Currencies:
       - Currency: 0
-        Qty: 100000
+        Qty: 200000
       - Currency: 3
         Qty: 100000
       - Currency: 1
-        Qty: 5000
+        Qty: 10000
       Chests: 06000000
       Collectables: []
       AchievementRewards:

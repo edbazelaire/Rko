@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: Heal
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: Instantly heals your character for {0}
+  m_DescriptionVariables:
+  - Name: Heal
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 1119570692733944796, guid: d3ad3704e86c406448793bf79ee3a1ab, type: 3}
   SpellEventActions: []

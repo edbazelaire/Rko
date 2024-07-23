@@ -25,7 +25,7 @@ namespace Data
         #endregion
 
 
-        #region Infos
+        #region Infos & Description
 
         public override Dictionary<string, object> GetInfos()
         {
@@ -41,6 +41,14 @@ namespace Data
             }
             
             return infoDict;
+        }
+
+        public override string GetDescription()
+        {
+            if (m_Description == "")
+                return GetStateEffect().GetDescription();
+
+            return base.GetDescription();
         }
 
         #endregion

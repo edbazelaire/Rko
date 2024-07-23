@@ -13,6 +13,15 @@ MonoBehaviour:
   m_Name: VenomousBite
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: Jumps on the enemy , dealing {0} Damages for each stack of {1} on
+    him and applying {2}
+  m_DescriptionVariables:
+  - Name: Damages
+    WithIcon: 1
+  - Name: Poison
+    WithIcon: 1
+  - Name: Infected
+    WithIcon: 1
   Linked: 1
   Graphics: {fileID: 0}
   SpellEventActions: []
@@ -30,7 +39,7 @@ MonoBehaviour:
   SpellTarget: 1
   LockTargetAt: 2
   MaxHit: 1
-  EnergyGain: 15
+  EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
   m_Heal: 0
@@ -55,5 +64,6 @@ MonoBehaviour:
   AnimationTimer: 0
   m_Cooldown: 30
   Trajectory: 1
+  m_StopOnTargetPos: 0
   m_Speed: 15
   JumpType: 1

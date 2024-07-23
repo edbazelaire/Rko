@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37a2110fb8b24914fb18b6f82bc81e62, type: 3}
   m_Name: VoidEmbrace
   m_EditorClassIdentifier: 
-  m_Description: 
-  m_DescriptionVariables: 
-  m_VisualEffect: {fileID: 2910976597878939058, guid: 7270a2a094578834c8d190e52dd208d5, type: 3}
-  m_SpawnBodyParts: 0100000002000000
-  m_ColorSwitch: {r: 1, g: 1, b: 1, a: 1}
+  m_Description: Make all your spells apply 2 extra "Curse" effect on hitting a target
+    for {0} seconds
+  m_DescriptionVariables: 01000000
+  m_StateEffectType: 0
+  m_VisualEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
   m_PermanantSoundFX: {fileID: 0}
@@ -27,12 +27,16 @@ MonoBehaviour:
   m_SpeedBonus: 0
   m_CastSpeed: 0
   m_AttackSpeed: 0
+  m_CooldownReduction: 0
+  m_CooldownReductionPerc: 0
   m_Shield: 0
   m_ResistanceFix: 0
   m_ResistancePerc: 0
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
   m_BonusLifeSteal: 0
+  m_OnStartStateEffect: []
+  m_OnEndStateEffect: []
   m_StateEffectScalingLevel:
   - StateEffectProperty: 1
     ScalingFactor: 0.05
@@ -42,5 +46,4 @@ MonoBehaviour:
   m_EnemyStateEffects:
   - StateEffect: 13
     Stacks: 2
-    Duration: 0
-    SpeedBonus: 0
+    OverridingProperties: []

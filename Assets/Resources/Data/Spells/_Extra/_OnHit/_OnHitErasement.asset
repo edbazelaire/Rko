@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: _OnHitErasement
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: 
+  m_DescriptionVariables: []
   Linked: 0
   Graphics: {fileID: 150222, guid: 44f40a08278d2704d86e189b67164324, type: 3}
   SpellEventActions: []
@@ -31,7 +33,7 @@ MonoBehaviour:
   MaxHit: 0
   EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 150
+  m_Damage: 200
   m_Heal: 0
   m_LifeSteal: 0
   Distance: -1

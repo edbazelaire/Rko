@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: Invisibility
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: Makes your character {0} for 3 seconds
+  m_DescriptionVariables:
+  - Name: Invisible
+    WithIcon: 1
   Linked: 1
   Graphics: {fileID: 0}
   SpellEventActions: []
@@ -51,7 +55,9 @@ MonoBehaviour:
   AllyStateEffects:
   - StateEffect: 4
     Stacks: 1
-    OverridingProperties: []
+    OverridingProperties:
+    - StateEffectProperty: 1
+      Value: 3
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 0

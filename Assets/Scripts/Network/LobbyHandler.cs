@@ -56,6 +56,7 @@ namespace Network
         const float LOBBY_ERROR_TIMER       = 15f;
 
         // Update & Heartbeat management
+        const string KEY_GAME_MODE          = "GameMode";
         const string KEY_RELAY_CODE         = "RelayCode";
         const float HEARTBEAT_TIMER         = 15f;
         const float UPDATE_LOBBY_TIMER      = 1.5f;
@@ -351,7 +352,7 @@ namespace Network
                         Data = StaticPlayerData.ToPlayerDataObject()
                     },
                     Data = new Dictionary<string, DataObject> {
-                        { "GameMode", new DataObject(DataObject.VisibilityOptions.Public, "1v1", DataObject.IndexOptions.S1) },
+                        { KEY_GAME_MODE, new DataObject(DataObject.VisibilityOptions.Public, m_GameMode.ToString(), DataObject.IndexOptions.S1) },
                         { KEY_RELAY_CODE, new DataObject(DataObject.VisibilityOptions.Member, "", DataObject.IndexOptions.S2) }
                     }
                 };
@@ -691,7 +692,7 @@ namespace Network
                     Count = 25,
                     Filters = new List<QueryFilter> {
                         new QueryFilter(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT),
-                        new QueryFilter(QueryFilter.FieldOptions.S1, "1v1", QueryFilter.OpOptions.EQ)
+                        new QueryFilter(QueryFilter.FieldOptions.S1, m_GameMode.ToString(), QueryFilter.OpOptions.EQ)
                     },
                     Order = new List<QueryOrder> {
                         new QueryOrder(false, QueryOrder.FieldOptions.Created)

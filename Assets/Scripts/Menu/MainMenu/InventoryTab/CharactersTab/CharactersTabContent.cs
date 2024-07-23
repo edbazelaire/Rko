@@ -20,13 +20,6 @@ namespace Menu.MainMenu
             m_CharacterSelectionUI.Initialize();
         }
 
-        public override void Activate(bool activate)
-        {
-            base.Activate(activate);
-
-            gameObject.SetActive(activate);
-        }
-
         #endregion
     }
 }

@@ -14,10 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Description: 
   m_DescriptionVariables: 
-  m_VisualEffect: {fileID: 152564, guid: 4ab45d63db2ac6448a1bd863420410b7, type: 3}
-  m_SpawnBodyParts: 
-  m_Offset: {x: 0, y: 0}
-  m_ColorSwitch: {r: 1, g: 1, b: 1, a: 1}
+  m_StateEffectType: 0
+  m_VisualEffects:
+  - Prefab: {fileID: 152564, guid: 4ab45d63db2ac6448a1bd863420410b7, type: 3}
+    MaterialEffect: {fileID: 0}
+    GFXLifetime:
+      StartSpellPart: 3
+      EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1
+    Size: 2
+    OrderInLayer: 0
+    SpawnTarget: 2
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 8300000, guid: 6f4c14cc46310ff4f9bd77d24400b113, type: 3}
   m_PermanantSoundFX: {fileID: 0}

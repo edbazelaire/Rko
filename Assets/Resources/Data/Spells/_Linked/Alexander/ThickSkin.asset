@@ -13,6 +13,12 @@ MonoBehaviour:
   m_Name: ThickSkin
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: Grants a Shield of {0} for {1} seconds
+  m_DescriptionVariables:
+  - Name: Shield
+    WithIcon: 1
+  - Name: Duration
+    WithIcon: 1
   Linked: 1
   Graphics: {fileID: 0}
   SpellEventActions: []
@@ -49,6 +55,7 @@ MonoBehaviour:
   TriggerPlayer: 1
   EnemyStateEffects: []
   AllyStateEffects: []
+  StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 9
   IsCancellable: 0

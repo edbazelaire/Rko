@@ -13,10 +13,16 @@ MonoBehaviour:
   m_Name: WinterProtection
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: Blocks the next attack. On blocking the attack, casts a Blizzard
+    on the enemy, dealing damages on an area for a period of time and applying {0}
+  m_DescriptionVariables:
+  - Name: Frost
+    WithIcon: 1
   Linked: 1
   Graphics: {fileID: 0}
   SpellEventActions:
   - Prefab: {fileID: 7053385775836331393, guid: 70ba052d061d342418be501ab1418439, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 3
       EndSpellPart: 5
@@ -31,6 +37,7 @@ MonoBehaviour:
     IsFollowing: 1
     Offset: {x: 0, y: 0}
     Animation: 0
+    StateEffects: 
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []

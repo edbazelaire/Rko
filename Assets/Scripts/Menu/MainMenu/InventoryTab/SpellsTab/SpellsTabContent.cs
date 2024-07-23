@@ -84,17 +84,6 @@ namespace Menu.MainMenu
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="activate"></param>
-        public override void Activate(bool activate)
-        {
-            base.Activate(activate);
-
-            gameObject.SetActive(activate);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         protected override void OnDestroy()
         {
             base.OnDestroy();

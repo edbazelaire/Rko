@@ -1,5 +1,4 @@
 ﻿using Enums;
-using Game.Loaders;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -21,7 +20,8 @@ namespace Game.UI
             EStateEffect.Invulnerable.ToString(), 
             EStateEffect.Uncontrollable.ToString(), 
             EStateEffect.UnTargettable.ToString(), 
-            EStateEffect.Jump.ToString()
+            EStateEffect.Jump.ToString(),
+            EStateEffect.SpecialAnimation.ToString(),
         };
 
         Controller m_Controller = null;

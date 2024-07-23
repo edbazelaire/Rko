@@ -13,6 +13,15 @@ MonoBehaviour:
   m_Name: Needlestorm
   m_EditorClassIdentifier: 
   Rarety: 1
+  m_Description: Shoots {0} frost needles on the enemy position, each dealing {1}
+    damages and applying {2}
+  m_DescriptionVariables:
+  - Name: Projectiles
+    WithIcon: 1
+  - Name: Damages
+    WithIcon: 1
+  - Name: Frost
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 2272309172655654138, guid: 764d75da0cfb93141ab26e32994e4d3d, type: 3}
   SpellEventActions: []
@@ -59,6 +68,7 @@ MonoBehaviour:
   AnimationTimer: 1
   m_Cooldown: 20
   Trajectory: 0
+  m_StopOnTargetPos: 0
   m_Speed: 12
   ProjectileData: {fileID: 0}
   MultiProjectileType: 2

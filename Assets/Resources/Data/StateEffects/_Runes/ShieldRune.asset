@@ -14,18 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Description: Apply a {0} shield for {1} seconds when reaching half hp
   m_DescriptionVariables: 0400000001000000
+  m_StateEffectType: 0
   m_VisualEffects:
   - Prefab: {fileID: 152564, guid: 4ab45d63db2ac6448a1bd863420410b7, type: 3}
     MaterialEffect: {fileID: 0}
     GFXLifetime:
-      StartSpellPart: 0
+      StartSpellPart: 3
       EndSpellPart: 0
       StartAt: 0
       EndAt: 0
-      Persistance: 0
-    Size: 0
+      Persistance: 1
+    Size: 2
     OrderInLayer: 0
-    SpawnTarget: 0
+    SpawnTarget: 2
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 0

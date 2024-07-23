@@ -642,7 +642,7 @@ namespace Game
             return true;
         }
 
-        public static bool Exists => s_Instance != null || FindAnyObjectByType<GameManager>() == null;
+        public static bool Exists => s_Instance != null || FindAnyObjectByType<GameManager>() != null;
 
         /// <summary>
         /// Controller of the local player

@@ -74,8 +74,6 @@ namespace Game.Character
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-
-            m_Controller.SpellHandler.IsCasting.OnValueChanged     += OnIsCastingValueChanged;
         }
 
         public override void OnNetworkDespawn()
@@ -90,10 +88,6 @@ namespace Game.Character
             m_CharacterData = CharacterLoader.GetCharacterData(character, level);
         }
 
-        public override void OnDestroy()
-        {
-            m_Controller.SpellHandler.IsCasting.OnValueChanged     -= OnIsCastingValueChanged;
-        }
 
         #endregion
 
@@ -241,23 +235,6 @@ namespace Game.Character
         #region Private Manipulators
 
         /// <summary>
-        /// When an animation starts, remove states that are not allowed
-        /// </summary>
-        /// <param name="previousValue"></param>
-        /// <param name="newValue"></param>
-        void OnIsCastingValueChanged(bool previousValue, bool newValue)
-        {
-            // if cast is canceled dont do anything 
-            if (! newValue)
-                return;
-
-            // check states that are removed on casting 
-            if (HasState(EStateEffect.Invisible))
-                RemoveStateEffect(EStateEffect.Invisible);
-        }
-
-
-        /// <summary>
         /// Calculate the total speed bonus provided by all OnHitEffects
         /// </summary>
         void RecalculateBonus()
@@ -333,6 +310,12 @@ namespace Game.Character
                 return;
             }
 
+            // if is UNIQUE : remove all effects of the same type
+            if (stateEffect.IsUnique)
+            {
+                RemoveStateEffectsOfType(stateEffect.StateEffectType);
+            }
+
             // no stacks and no active effect : return
             if (stacks == 0)
                 return;
@@ -383,9 +366,6 @@ namespace Game.Character
             if (!IsServer)
                 return 0;
 
-            // check state before removing value
-            var pastState = GetAnimationState();
-
             // remove effect type from list of active effects
             int index = m_StateEffectList.IndexOf(state);
             if (index == -1)
@@ -393,6 +373,23 @@ namespace Game.Character
                 ErrorHandler.Error($"Unable to find state {state} in list");
                 return 0;
             }
+
+            return RemoveStateEffectAtIndex(index);
+        }
+
+        /// <summary>
+        /// Remove a state effect from the character
+        /// </summary>
+        /// <param name="state"></param>
+        public int RemoveStateEffect(EStateEffect state, bool consume = false)
+        {
+            return RemoveStateEffect(state.ToString(), consume);
+        }
+
+        public int RemoveStateEffectAtIndex(int index, bool consume = false)
+        {
+            // check state before removing value
+            var pastState = GetAnimationState();
 
             // keep track of the number of stacks this spell had
             int nStacks = m_StateEffects[index].Stacks;
@@ -422,13 +419,16 @@ namespace Game.Character
             return nStacks;
         }
 
-        /// <summary>
-        /// Remove a state effect from the character
-        /// </summary>
-        /// <param name="state"></param>
-        public int RemoveStateEffect(EStateEffect state, bool consume = false)
+        public void RemoveStateEffectsOfType(EStateEffectType stateEffectType)
         {
-            return RemoveStateEffect(state.ToString(), consume);
+            for (int index = m_StateEffects.Count - 1; index >= 0; index--)
+            {
+                var stateEffect = m_StateEffects[index];
+                if (stateEffect.StateEffectType == stateEffectType)
+                {
+                    RemoveStateEffectAtIndex(index, true);
+                }
+            }
         }
 
         public int GetStacks(EStateEffect state)

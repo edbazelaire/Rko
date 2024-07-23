@@ -13,9 +13,17 @@ using System.Collections;
 using System.Linq;
 using Data.GameManagement;
 using System.Reflection;
+using Menu.Common.Infos;
 
 namespace Data
 {
+    [Serializable]
+    public struct SDescriptionVariable
+    {
+        public string Name;
+        public bool WithIcon;
+    }
+
     [Serializable]
     public struct SSpellPropertyScaling
     {
@@ -33,6 +41,9 @@ namespace Data
     public class SpellData : CollectableData
     {
         #region Members
+
+        [SerializeField] protected string m_Description = "";
+        [SerializeField] protected List<SDescriptionVariable> m_DescriptionVariables = new List<SDescriptionVariable>();
 
         [Description("Is this spell linked to a specific character")]
         public bool                 Linked;
@@ -435,9 +446,24 @@ namespace Data
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        public virtual object GetProperty(ESpellProperty property)
+        public virtual bool TryGetProperty(ESpellProperty property, out object value, bool throwError = false)
         {
-            if (!TryGetPropertyInfo(property, out FieldInfo propertyInfo))
+            value = null;
+            if (!TryGetPropertyInfo(property, out FieldInfo propertyInfo, throwError))
+                return false;
+
+            value = propertyInfo.GetValue(this);
+            return true;
+        }
+
+        /// <summary>
+        /// Get the value of a property by Reflection
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        public virtual object GetProperty(ESpellProperty property, bool throwError = true)
+        {
+            if (!TryGetPropertyInfo(property, out FieldInfo propertyInfo, throwError))
                 return null;
 
             return propertyInfo.GetValue(this);
@@ -495,15 +521,18 @@ namespace Data
         #endregion
 
 
-        #region Infos Display
+        #region Infos & Description
 
         public override Dictionary<string, object> GetInfos()
         {
             var infosDict = base.GetInfos();
             
             infosDict.Add("Type", GetTypeInfo());
-            infosDict.Add("Energy", EnergyGain);
 
+            if (EnergyGain > 0)
+                infosDict.Add("Energy", EnergyGain);
+            if (EnergyCost > 0)
+                infosDict.Add("EnergyCost", EnergyCost);
             if (Damage > 0)
                 infosDict.Add("Damages", Damage);
             if (Heal > 0)
@@ -529,6 +558,52 @@ namespace Data
         }
 
         /// <summary>
+        /// Get Description info of the StateEffect
+        /// </summary>
+        /// <returns></returns>
+        public virtual string GetDescription()
+        {
+            List<string> values = new List<string>();
+            var infos = GetInfos();
+
+            foreach (SDescriptionVariable descriptionVariable in m_DescriptionVariables)
+            {
+                if (Enum.TryParse(descriptionVariable.Name, out EStateEffect stateEffect))
+                {
+                    string value = descriptionVariable.Name.ToString();
+                    string iconTag = descriptionVariable.WithIcon ? $" <sprite name=\"{"Ic_" + descriptionVariable.Name}\">" : "";
+                    values.Add($"<i>{value}</i> {iconTag}");
+                }
+                else if (infos.ContainsKey(descriptionVariable.Name))
+                {
+                    string value = infos[descriptionVariable.Name].ToString();
+                    if (float.TryParse(value, out float floatValue)) 
+                        value = SpellInfoRowUI.FormatValue(floatValue, SpellInfoRowUI.CheckIsPercentageValue(descriptionVariable.Name));
+                    
+                    string iconTag = descriptionVariable.WithIcon ? $" <sprite name=\"{"Ic_" + descriptionVariable.Name}\">" : "";
+                    values.Add($"<b>{value}</b>{iconTag}");
+                }
+                else if (Enum.TryParse(descriptionVariable.Name, out ESpellProperty property))
+                {
+                    if (! TryGetProperty(property, out object value))
+                    {
+                        ErrorHandler.Error("Unable to find property " + property + " in spell " + Spell);
+                        values.Add("<b>UNDEFINED</b>");
+                        continue;
+                    }
+                    values.Add($"<b>{value}</b>");
+                }
+                else
+                {
+                    ErrorHandler.Error("Unable to find property " + descriptionVariable.Name + " in info dict of spell " + Spell);
+                    values.Add("<b>UNDEFINED</b>");
+                }
+            }
+
+            return string.Format(m_Description, values.ToArray());
+        }
+
+        /// <summary>
         /// Add on hit infos to infos dictionnary
         /// </summary>
         /// <param name="infosDict"></param>
@@ -544,10 +619,16 @@ namespace Data
                 return;
             }
 
-            string[] keysToIgnore = new string[]{ "Cooldown", "Cast", "Distance"};
+            OnHit[0].AddAsSubSpellInfos(ref infosDict);
+        }
 
-            var onHitInfos = OnHit[0].GetInfos();
-            foreach (var info in onHitInfos)
+        public void AddAsSubSpellInfos(ref Dictionary<string, object> infosDict)
+        {
+            string[] keysToIgnore = new string[] { "Type", "Cooldown", "CastDuration", "Distance", "EnergyCost" };        // keys to ignore as overwrite  
+            string[] keysToAdd = new string[] { "Damages", "Heal", "TickDamages", "TickHeal", "Effects" };                                // keys that are not overritten but additionned 
+
+            var subSpellInfos = GetInfos();
+            foreach (var info in subSpellInfos)
             {
                 // skip some keys
                 if (keysToIgnore.Contains(info.Key))
@@ -557,9 +638,29 @@ namespace Data
                 if (OverrideOnHitProperties.Any(property => property.ToString().Equals(info.Key, StringComparison.OrdinalIgnoreCase)))
                     continue;
 
-                // do not override Jump type
-                if (info.Key == "Type" && SpellType == ESpellType.Jump)
+                if (keysToAdd.Contains(info.Key) && infosDict.ContainsKey(info.Key))
+                {
+                    if (info.Key == "Effects")
+                    {
+                        ((List<SStateEffectData>)infosDict[info.Key]).AddRange((List<SStateEffectData>)info.Value);
+                        continue;
+                    }
+
+                    if (!float.TryParse(infosDict[info.Key].ToString(), out float baseValue))
+                    {
+                        ErrorHandler.Error("Unable to parse " + info.Key + " with value " + infosDict[info.Key] + " in base spell of " + Spell);
+                        continue;
+                    }
+
+                    if (!float.TryParse(info.Value.ToString(), out float subSpellValue))
+                    {
+                        ErrorHandler.Error("Unable to parse " + info.Key + " with value " + info.Value + " in spell " + Spell);
+                        continue;
+                    }
+
+                    infosDict[info.Key] = baseValue + subSpellValue;
                     continue;
+                }
 
                 infosDict[info.Key] = info.Value;
             }
@@ -602,9 +703,9 @@ namespace Data
         {
             base.SetLevel(level);
 
-            foreach (var onHit in OnHit)
+            for (int i = 0; i < OnHit.Count; i++)
             {
-                onHit.SetLevel(level);
+                OnHit[i] = OnHit[i].Clone(level);
             }
         }
 

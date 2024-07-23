@@ -13,10 +13,21 @@ MonoBehaviour:
   m_Name: IceLance
   m_EditorClassIdentifier: 
   Rarety: 2
+  m_Description: Throw an ice lance in a straight line to your enemy dealing {0}
+    damages to your target and applying {1}. If the target is {2} breaks the shield
+    dealing a great amount of extra damages
+  m_DescriptionVariables:
+  - Name: Damages
+    WithIcon: 1
+  - Name: Frost
+    WithIcon: 1
+  - Name: Frozen
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 6310744135911870057, guid: f0c38580e3e6e8e47bba9dc2913a2803, type: 3}
   SpellEventActions:
   - Prefab: {fileID: 1873985756121678, guid: dac7861a5b9b8674d97168aa93cd504c, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 4
       EndSpellPart: 0
@@ -75,4 +86,5 @@ MonoBehaviour:
   AnimationTimer: 0.2
   m_Cooldown: 10
   Trajectory: 2
+  m_StopOnTargetPos: 0
   m_Speed: 16
