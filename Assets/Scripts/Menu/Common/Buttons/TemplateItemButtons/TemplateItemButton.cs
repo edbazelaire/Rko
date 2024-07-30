@@ -110,27 +110,6 @@ namespace Menu.Common.Buttons
 
         protected virtual void SetUpUI() { }
 
-        /// <summary>
-        protected virtual void RegisterListeners()
-        {
-            if (m_IsInitialized)
-                UnRegisterListeners();
-
-            // Listeners
-            m_Button.onClick.AddListener(OnClick);
-        }
-
-        /// <summary>
-        /// Unregister all listeners
-        /// </summary>
-        protected virtual void UnRegisterListeners()
-        {
-            if (m_Button == null)
-                return;
-
-            m_Button.onClick.RemoveListener(OnClick);
-        }
-
         protected virtual void OnDestroy()
         {
             if (m_IsInitialized)
@@ -292,6 +271,26 @@ namespace Menu.Common.Buttons
 
 
         #region Listeners
+
+        protected virtual void RegisterListeners()
+        {
+            if (m_IsInitialized)
+                UnRegisterListeners();
+
+            // Listeners
+            m_Button.onClick.AddListener(OnClick);
+        }
+
+        /// <summary>
+        /// Unregister all listeners
+        /// </summary>
+        protected virtual void UnRegisterListeners()
+        {
+            if (m_Button == null)
+                return;
+
+            m_Button.onClick.RemoveListener(OnClick);
+        }
 
         /// <summary>
         /// Action happening when the button is clicked on - depending on button context

@@ -1,9 +1,11 @@
-﻿using MyBox;
+﻿using Data;
+using MyBox;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Tools
 {
@@ -101,9 +103,21 @@ namespace Tools
                 return "";
 
             if (! text.Contains(" "))
-                text = TextLocalizer.SplitCamelCase(text);
+                text = SplitCamelCase(text);
 
             return text.Replace(by, " ");
+        }
+
+        public static string SplitCamelCase(string input)
+        {
+            if (input == null || input == "")
+                return "";
+
+            // Use regular expression to split UpperCamelCase string with spaces
+            string output = Regex.Replace(input, "(\\B[A-Z])", " $1");
+
+            // Convert first character to uppercase
+            return char.ToUpper(output[0]) + output.Substring(1);
         }
 
         public static string FormatNumericalString(int number, string separator = " ")
@@ -156,8 +170,19 @@ namespace Tools
                 default:
                     ErrorHandler.Error("Unable to transform " + number + " into roman value");
                     return "";
-
             }
+        }
+
+        /// <summary>
+        /// Format description name of a state effect to add the icon if necessary
+        /// </summary>
+        /// <param name="stateEffectName"></param>
+        /// <param name="withIcon"></param>
+        /// <returns></returns>
+        public static string FormatStateEffectIcon(string stateEffectName, bool withIcon = true)
+        {
+            string iconTag = withIcon ? $" <sprite name=\"{"Ic_" + stateEffectName}\">" : "";
+            return $"<i>{stateEffectName}</i> {iconTag}";
         }
 
         #endregion

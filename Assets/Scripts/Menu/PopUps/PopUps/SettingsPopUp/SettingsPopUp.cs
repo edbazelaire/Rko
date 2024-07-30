@@ -31,11 +31,10 @@ namespace Menu.PopUps
         {
             base.OnPrefabLoaded();
 
+            // hide some tabs for non-admins
             Finder.Find(m_TabButtonContainer, "DebugButton").SetActive(ProfileCloudData.IsAdmin);
-
-            // deactivate tabs button for non admins
-            if (!ProfileCloudData.IsAdmin)
-                m_TabButtonContainer.SetActive(false);
+            Finder.Find(m_TabButtonContainer, "DataButton").SetActive(ProfileCloudData.IsAdmin);
+            Finder.Find(m_TabButtonContainer, "SettingsButton").SetActive(ProfileCloudData.IsAdmin);
 
             m_SettingsTabManager.Initialize();
         }

@@ -19,6 +19,8 @@ namespace Save
 
         public static CloudData Instance => Main.CloudSaveManager.GetCloudData(typeof(CloudData));
 
+        public const int MAX_LOADING_RETRY = 3;
+
         protected virtual Dictionary<string, object> m_Data { get; set; }
         protected virtual List<string> m_PublicKeys => new() { };
 
@@ -40,7 +42,6 @@ namespace Save
             LoadingCompleted = false;
             m_KeysToLoad = m_Data.Keys.ToList();
             Load();
-
             RegisterListeners();
         }
 
@@ -63,14 +64,31 @@ namespace Save
 
         protected async virtual void LoadValueAsync(string key)
         {
-            var cloudData = await CloudDatabase.LoadAsync(new HashSet<string> { key }, m_PublicKeys.Contains(key) ? new LoadOptions(new PublicReadAccessClassOptions()) : new LoadOptions(new DefaultReadAccessClassOptions()));
+            Dictionary<string, Item> cloudData = new();
 
+            // LOADING DATA (with multiple retries)
+            for (var i = 0; i < MAX_LOADING_RETRY; i++)
+            {
+                try
+                {
+                    cloudData = await CloudDatabase.LoadAsync(new HashSet<string> { key }, m_PublicKeys.Contains(key) ? new LoadOptions(new PublicReadAccessClassOptions()) : new LoadOptions(new DefaultReadAccessClassOptions()));
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    ErrorHandler.Error($"Unable to load [{key}] try {i}/{MAX_LOADING_RETRY} : " + ex.Message);
+                    continue;
+                }
+            }
+
+            // CHECK : expected key present in the directory - otherwise exit
             if (!cloudData.TryGetValue(key, out var item))
             {
                 OnCloudDataKeyLoaded(key);
                 return;
             }
 
+            // CONVERT value in expected type
             var value = Convert(item);
             if (value == null)
                 return;

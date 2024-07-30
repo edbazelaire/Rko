@@ -35,6 +35,8 @@ public class EndGameUI : MObject
     TMP_Text    m_XpQty;
     GameObject  m_GoldsRewardDisplay;
     TMP_Text    m_GoldsQty;
+    GameObject  m_GemsRewardDisplay;
+    TMP_Text    m_GemsQty;
     Image       m_ChestRewardIcon;
     Button      m_LeaveButton;
     GameObject  m_Fireworks;
@@ -55,6 +57,8 @@ public class EndGameUI : MObject
         m_XpQty                 = Finder.FindComponent<TMP_Text>(m_XpRewardDisplay, "Qty");
         m_GoldsRewardDisplay    = Finder.Find(m_RewardsContent, "GoldsRewardDisplay");
         m_GoldsQty              = Finder.FindComponent<TMP_Text>(m_GoldsRewardDisplay, "Qty");
+        m_GemsRewardDisplay     = Finder.Find(m_RewardsContent, "GemsRewardDisplay");
+        m_GemsQty               = Finder.FindComponent<TMP_Text>(m_GemsRewardDisplay, "Qty");
         m_ChestRewardIcon       = Finder.FindComponent<Image>(m_RewardsContent, "ChestRewardIcon");
     }
 
@@ -119,9 +123,11 @@ public class EndGameUI : MObject
         ErrorHandler.Log("HandleReward() : start", ELogTag.Rewards);
 
         SRewardCalculator reward = win ? Rewarder.WinGameReward : Rewarder.LossGameReward;
+        reward.SetCurrencyMultiplicator(CalculateCurrencyMultiplicator());
+
         // no rewards for training mode
         if (LobbyHandler.Instance.GameMode == EGameMode.Training)
-            reward = new SRewardCalculator(0, 0, 0, new List<SChestDropPercentage>());
+            reward = new SRewardCalculator(0, 0, 0, 0, new List<SChestDropPercentage>());
 
         // ----------------------------------------------------------------------------
         // Xp   
@@ -151,6 +157,19 @@ public class EndGameUI : MObject
         }
 
         // ----------------------------------------------------------------------------
+        // Gems   
+        int gems = reward.GetGems();
+        ErrorHandler.Log("         + XP : " + xp, ELogTag.Rewards);
+        if (gems <= 0)
+            m_GemsRewardDisplay.SetActive(false);
+        else
+        {
+            m_GemsRewardDisplay.SetActive(true);
+            m_GemsQty.text = string.Format(GOLDS_FORMAT, gems);
+            InventoryManager.UpdateCurrency(ECurrency.Gems, gems, ERewardContext.EndGameChest.ToString());
+        }
+
+        // ----------------------------------------------------------------------------
         // CHESTS
         // init chests rewards to empty list
         List<EChest> chests = new();
@@ -177,6 +196,19 @@ public class EndGameUI : MObject
         ErrorHandler.Log("HandleReward() : end", ELogTag.Rewards);
     }
 
+    float CalculateCurrencyMultiplicator()
+    {
+        switch (LobbyHandler.Instance.GameMode)
+        {
+            case EGameMode.Arena:
+                ArenaData arenaData = AssetLoader.LoadArenaData(PlayerPrefsHandler.GetArenaType());
+                return arenaData.CurrentRewardMultiplicator;
+
+            default:
+                return 1f;
+        }
+    }
+
     void HandleProgression(bool win, bool preventiveLossApplied)
     {
         // if a preventive loss has already been applied and this is a loss - exit
@@ -187,23 +219,16 @@ public class EndGameUI : MObject
         {
             case EGameMode.Arena:
                 ErrorHandler.Log("HandleProgression() : Loading Arena Data : " + PlayerPrefsHandler.GetArenaType().ToString(), ELogTag.GameSystem);
-                ArenaData arenaData = AssetLoader.LoadArenaData(PlayerPrefsHandler.GetArenaType());
 
                 // if preventive loss has been applied, apply double win
-                if (win & preventiveLossApplied)
-                    arenaData.UpdateStageValue(win);
-
-                arenaData.UpdateStageValue(win);
+                ProgressionCloudData.UpdateStageValue(PlayerPrefsHandler.GetArenaType(), win, nTimes: win & preventiveLossApplied ? 2 : 1);
                 break;
 
             case EGameMode.Ranked:
                 ErrorHandler.Log("HandleProgression() : Ranked game", ELogTag.GameSystem);
 
                 // if preventive loss has been applied, apply double win
-                if (win & preventiveLossApplied)
-                    ProgressionCloudData.UpdateLeagueValue(win);
-
-                ProgressionCloudData.UpdateLeagueValue(win);
+                ProgressionCloudData.UpdateLeagueValue(win, nTimes: win & preventiveLossApplied ? 2 : 1);
                 break;
 
             // no progression on training game

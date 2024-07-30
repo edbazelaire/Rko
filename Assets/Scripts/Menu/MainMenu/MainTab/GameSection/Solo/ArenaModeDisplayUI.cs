@@ -20,8 +20,10 @@ namespace Menu.MainMenu.MainTab
 
         TMP_Dropdown        m_DropdownButton;
         GameObject          m_ArenaSection;
+        TMP_Text            m_DifficultyMode;
         ArenaButton         m_ArenaButton;
         ArenaStageSectionUI m_StageSectionUI;
+        GameObject          m_MessageSection;
 
         #endregion
 
@@ -32,9 +34,11 @@ namespace Menu.MainMenu.MainTab
         {
             base.FindComponents();
 
-            m_DropdownButton = Finder.FindComponent<TMP_Dropdown>(gameObject, "DropdownButton");
-            m_ArenaSection = Finder.Find(gameObject, "ArenaSection");
-            m_StageSectionUI = Finder.FindComponent<ArenaStageSectionUI>(gameObject, "StageSection");
+            m_DropdownButton    = Finder.FindComponent<TMP_Dropdown>(gameObject, "DropdownButton");
+            m_DifficultyMode    = Finder.FindComponent<TMP_Text>(gameObject, "DifficultyMode");
+            m_ArenaSection      = Finder.Find(gameObject, "ArenaSection");
+            m_StageSectionUI    = Finder.FindComponent<ArenaStageSectionUI>(gameObject, "StageSection");
+            m_MessageSection    = Finder.Find(gameObject, "MessageSection");
         }
 
         protected override void SetUpUI()
@@ -54,15 +58,45 @@ namespace Menu.MainMenu.MainTab
         {
             UIHelper.CleanContent(m_ArenaSection);
 
-            m_ArenaButton           = Instantiate(AssetLoader.LoadArenaButton(m_ArenaType), m_ArenaSection.transform).GetComponent<ArenaButton>();
+            // set the difficulty mode of the current arena
+            m_DifficultyMode.text = TextHandler.SplitCamelCase(ProgressionCloudData.GetArenaDifficulty(m_ArenaType).ToString());
+
+            // setup arena button style
+            m_ArenaButton = Instantiate(AssetLoader.LoadArenaButton(m_ArenaType), m_ArenaSection.transform).GetComponent<ArenaButton>();
             m_ArenaButton.Initialize(m_ArenaType);
 
+            // ARENA COMPLETED
             if (ProgressionCloudData.IsArenaCompleted(m_ArenaType))
             {
-                m_StageSectionUI.gameObject.SetActive(false);
-            } else
+                m_StageSectionUI.transform.parent.gameObject.SetActive(true);   // keep the parent (layout management)
+                m_StageSectionUI.gameObject.SetActive(false);                   // deactivate content
+                m_MessageSection.gameObject.SetActive(false);                   // deactivate message
+            } 
+
+            // ARENA DIFFICULTY COMPLETED
+            else if (ProgressionCloudData.IsArenaDifficultyCompleted(m_ArenaType))
             {
+                // check that all rewards have been collected
+                if (NotificationCloudData.HasRewardsForArenaType(m_ArenaType))
+                {
+                    m_StageSectionUI.transform.parent.gameObject.SetActive(false);
+                    m_MessageSection.gameObject.SetActive(true);
+                } 
+
+                // ERROR CONTROL : if no more rewards to collect but for some reason the difficulty has not been updated -> do it
+                else
+                {
+                    ErrorHandler.Error($"No rewards to claim on arena {m_ArenaType} at difficulty {m_ArenaData.ArenaDifficulty} - upgrading difficulty");
+                    ProgressionCloudData.UpgradeArenaDifficulty(m_ArenaType);
+                }
+            }
+
+            // NORMAL DISPLAY
+            else
+            {
+                m_StageSectionUI.transform.parent.gameObject.SetActive(true);
                 m_StageSectionUI.gameObject.SetActive(true);
+                m_MessageSection.gameObject.SetActive(false);
                 m_StageSectionUI.Initialize(m_ArenaData.CurrentLevel, m_ArenaData.CurrentLevel, m_ArenaData.CurrentStage, m_ArenaData.CurrentArenaLevelData.StageData.Count);
             }
         }
@@ -85,6 +119,7 @@ namespace Menu.MainMenu.MainTab
             base.RegisterListeners();
 
             PlayerPrefsHandler.ArenaTypeChangedEvent += OnArenaTypeChanged;
+            ProgressionCloudData.ArenaDataChangedEvent += OnArenaDataChanged;
             m_DropdownButton.onValueChanged.AddListener(OnDropDownValueChanged);
         }
 
@@ -104,9 +139,23 @@ namespace Menu.MainMenu.MainTab
 
             // set value to last selected value
             m_DropdownButton.value = Enum.GetNames(typeof(EArenaType)).ToList().IndexOf(m_ArenaType.ToString());
-
+            
             RefreshUI();
         }
+
+        void OnArenaDataChanged(EArenaType arenaType)
+        {
+            // CHECK : is same arena
+            if (m_ArenaType != arenaType)
+                return;
+
+            // CHECK : is new difficulty
+            if (m_ArenaData.ArenaDifficulty == ProgressionCloudData.GetArenaDifficulty(arenaType))
+                return;
+
+            m_ArenaData = AssetLoader.LoadArenaData(arenaType);
+            RefreshUI();
+        } 
 
         void OnDropDownValueChanged(int index)
         {

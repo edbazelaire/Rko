@@ -54,7 +54,10 @@ namespace Game.Character
 
         // ==============================================================================================
         // EVENTS
+        // used to signal when a state is added / removed
         public event Action<EListEvent, string, int, float> OnStateEvent;
+        // used to signal client GFX about spell events
+        public event Action<ESpellEvent, string>            OnStateEffectEvent;
 
         #endregion
 
@@ -123,6 +126,28 @@ namespace Game.Character
 
             if (listEvent == EListEvent.Add)
                 SpellLoader.GetStateEffect(stateEffect).PlaySoundEffect();
+        }
+
+
+        [ClientRpc]
+        public void CallSpellEventClientRPC(ESpellEvent spellEvent, string stateEffectName)
+        {
+            ErrorHandler.Log(stateEffectName + " " + spellEvent, ELogTag.StateEffectGFX);
+
+            OnStateEffectEvent?.Invoke(spellEvent, stateEffectName);
+
+            StateEffect stateEffect = SpellLoader.GetStateEffect(stateEffectName);
+
+            if (stateEffect.VisualEffects == null)
+                return;
+
+            foreach (var spawnPrefab in stateEffect.VisualEffects)
+            {
+                if (spawnPrefab.GFXLifetime.StartSpellPart != spellEvent)
+                    continue;
+
+                spawnPrefab.Spawn(null, null, null, stateEffectName, m_Controller);
+            }
         }
 
         #endregion
@@ -361,7 +386,7 @@ namespace Game.Character
         /// Remove a state effect from the character
         /// </summary>
         /// <param name="state"></param>
-        public int RemoveStateEffect(string state, bool consume = false)
+        public int RemoveStateEffect(string state, bool consume = false, int maxStacks = 0)
         {
             if (!IsServer)
                 return 0;
@@ -374,16 +399,22 @@ namespace Game.Character
                 return 0;
             }
 
-            return RemoveStateEffectAtIndex(index);
+            // check if remove effect if not enought stacks 
+            if (maxStacks <= 0 || m_StateEffects[index].Stacks < maxStacks)
+                return RemoveStateEffectAtIndex(index);
+
+            // just retrieve stacks otherwise
+            m_StateEffects[index].RemoveStacks(maxStacks);
+            return maxStacks;
         }
 
         /// <summary>
         /// Remove a state effect from the character
         /// </summary>
         /// <param name="state"></param>
-        public int RemoveStateEffect(EStateEffect state, bool consume = false)
+        public int RemoveStateEffect(EStateEffect state, bool consume = false, int maxStacks = 0)
         {
-            return RemoveStateEffect(state.ToString(), consume);
+            return RemoveStateEffect(state.ToString(), consume, maxStacks);
         }
 
         public int RemoveStateEffectAtIndex(int index, bool consume = false)

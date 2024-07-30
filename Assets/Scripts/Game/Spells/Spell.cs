@@ -2,11 +2,13 @@
 using Data;
 using Enums;
 using Game.Loaders;
+using MyBox;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using Tools;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Game.Spells
@@ -100,27 +102,6 @@ namespace Game.Spells
         }
 
         /// <summary>
-        /// Instantiate the graphics of the spell
-        /// </summary>
-        protected virtual void InitGraphics()
-        {
-            m_GraphicsContainer = Finder.Find(gameObject, c_GraphicsContainer, throwError: false);
-            if (m_GraphicsContainer == null)
-                m_GraphicsContainer = new GameObject(c_GraphicsContainer);
-
-            if (m_SpellData.Graphics != null)
-            {
-                ErrorHandler.Log("InitGraphics() : " + m_SpellData.Graphics + " with size " + m_SpellData.Size, ELogTag.Spells);
-                Instantiate(m_SpellData.Graphics, m_GraphicsContainer.transform);
-            }
-
-            transform.localScale = new Vector3(m_SpellData.Size, m_SpellData.Size, 1f);
-
-            if (m_SpellData.PermanantSoundFX != null)
-                SoundFXManager.PlaySoundFXClip(m_SpellData.PermanantSoundFX, transform);
-        }
-
-        /// <summary>
         /// 
         /// </summary>
         protected virtual void End()
@@ -178,6 +159,98 @@ namespace Game.Spells
             if (IsHost)
                 return;
             Initialize(clientId, target, spellName, level);
+        }
+
+        #endregion
+
+
+        #region On Init
+
+        /// <summary>
+        /// Instantiate the graphics of the spell
+        /// </summary>
+        protected virtual void InitGraphics()
+        {
+            m_GraphicsContainer = Finder.Find(gameObject, c_GraphicsContainer, throwError: false);
+            if (m_GraphicsContainer == null)
+                m_GraphicsContainer = new GameObject(c_GraphicsContainer);
+
+            if (m_SpellData.Graphics != null)
+            {
+                ErrorHandler.Log("InitGraphics() : " + m_SpellData.Graphics + " with size " + m_SpellData.Size, ELogTag.Spells);
+                SwapColliders(Instantiate(m_SpellData.Graphics, m_GraphicsContainer.transform));
+            }
+
+            transform.localScale = new Vector3(m_SpellData.Size, m_SpellData.Size, 1f);
+
+            if (m_SpellData.PermanantSoundFX != null)
+                SoundFXManager.PlaySoundFXClip(m_SpellData.PermanantSoundFX, transform);
+        }
+
+        /// <summary>
+        /// Swap default Collider with Graphics Collider if it has one
+        /// </summary>
+        protected virtual void SwapColliders(GameObject graphics)
+        {
+            // Check if the graphics GameObject has a Collider2D component
+            Collider2D originalCollider = graphics.GetComponent<Collider2D>();
+            if (originalCollider == null)
+                return;
+
+            // destroy the collider on the Spell before adding the new one
+            Destroy(this.GetComponent<Collider2D>());
+
+            // Get the type of the original collider
+            Type colliderType = originalCollider.GetType();
+
+            // Add a new collider of the same type to this GameObject
+            Collider2D newCollider = this.gameObject.AddComponent(colliderType) as Collider2D;
+
+            // Copy properties from the original collider to the new one
+            if (newCollider != null)
+            {
+                CopyColliderProperties(originalCollider, newCollider);
+            }
+
+            // Destroy the original collider on the graphics GameObject
+            Destroy(originalCollider);
+        }
+
+        /// <summary>
+        /// Copies properties from one collider to another.
+        /// </summary>
+        /// <param name="source">The original collider to copy from.</param>
+        /// <param name="destination">The new collider to copy to.</param>
+        private void CopyColliderProperties(Collider2D source, Collider2D destination)
+        {
+            if (source == null || destination == null)
+                return;
+
+            // General properties
+            destination.isTrigger = source.isTrigger;
+            destination.offset = source.offset;
+
+            // Specific properties for BoxCollider2D
+            if (source is BoxCollider2D sourceBoxCollider && destination is BoxCollider2D destinationBoxCollider)
+            {
+                destinationBoxCollider.size = sourceBoxCollider.size;
+            }
+            // Specific properties for CircleCollider2D
+            else if (source is CircleCollider2D sourceCircleCollider && destination is CircleCollider2D destinationCircleCollider)
+            {
+                destinationCircleCollider.radius = sourceCircleCollider.radius;
+            }
+            // Specific properties for PolygonCollider2D
+            else if (source is PolygonCollider2D sourcePolygonCollider && destination is PolygonCollider2D destinationPolygonCollider)
+            {
+                destinationPolygonCollider.points = sourcePolygonCollider.points;
+            }
+            // Specific properties for EdgeCollider2D
+            else if (source is EdgeCollider2D sourceEdgeCollider && destination is EdgeCollider2D destinationEdgeCollider)
+            {
+                destinationEdgeCollider.points = sourceEdgeCollider.points;
+            }
+            // Add more collider types if necessary
         }
 
         #endregion

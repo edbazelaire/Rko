@@ -14,8 +14,8 @@ namespace Menu.PopUps
     {
         #region Members
 
-        EArenaType m_ArenaType;
-        ArenaData m_ArenaData;
+        EArenaType  m_ArenaType;
+        ArenaData   m_ArenaData;
 
         Image                   m_Background;
         GameObject              m_ScrollContent;
@@ -32,7 +32,7 @@ namespace Menu.PopUps
         public void Initialize(EArenaType arenaType)
         {
             m_ArenaType = arenaType;
-            m_ArenaData = AssetLoader.LoadArenaData(arenaType);
+            m_ArenaData = AssetLoader.LoadArenaData(arenaType, ProgressionCloudData.GetArenaDifficulty(arenaType));
 
             base.Initialize();
         }
@@ -116,6 +116,46 @@ namespace Menu.PopUps
 
             // setup position
             m_ScrollContent.transform.localPosition = new Vector3(poseX, m_ScrollContent.transform.localPosition.y, 0f);
+        }
+
+        #endregion
+
+
+        #region Listeners
+
+        protected override void RegisterListeners()
+        {
+            base.RegisterListeners();
+
+            ProgressionCloudData.ArenaDataChangedEvent += OnArenaDataChanged;
+        }
+
+        protected override void UnRegisterListeners()
+        {
+            base.UnRegisterListeners();
+
+            ProgressionCloudData.ArenaDataChangedEvent -= OnArenaDataChanged;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected void OnArenaDataChanged(EArenaType arenaType)
+        {
+            // check is same type
+            if (m_ArenaData.ArenaType == arenaType)
+                return;
+
+            // check that the difficulty has changed
+            if (m_ArenaData.ArenaDifficulty == ProgressionCloudData.GetArenaDifficulty(m_ArenaType))
+                return;
+
+              ///////////////////////////////////////
+             // TODO : Animation Hard Core mode ? //
+            ///////////////////////////////////////
+
+            // Refresh the interface with the new data
+            Initialize(m_ArenaType);
         }
 
         #endregion

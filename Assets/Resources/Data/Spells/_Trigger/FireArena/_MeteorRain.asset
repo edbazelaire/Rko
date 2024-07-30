@@ -13,6 +13,19 @@ MonoBehaviour:
   m_Name: _MeteorRain
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: '{0} Meteors falling from the sky every {1} seconds.\nEach dealing
+    {2} damages and applying 3 stacks of {3} and 1 stack of {4}'
+  m_DescriptionVariables:
+  - Name: Projectiles
+    WithIcon: 1
+  - Name: DelayBetweenWaves
+    WithIcon: 1
+  - Name: Damages
+    WithIcon: 1
+  - Name: Cursed
+    WithIcon: 1
+  - Name: Burn
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions: []
@@ -54,6 +67,7 @@ MonoBehaviour:
   AnimationTimer: 0
   m_Cooldown: 0
   Trajectory: 0
+  m_StopOnTargetPos: 0
   m_Speed: 0
   ProjectileData: {fileID: 11400000, guid: 2c9ea39538d0f4e40a36d7cf2b20f0e2, type: 2}
   MultiProjectileType: 2

@@ -2,6 +2,7 @@
 using Enums;
 using Game.Spells;
 using System.Collections;
+using System.Runtime.CompilerServices;
 using Tools;
 using UnityEngine;
 
@@ -11,12 +12,10 @@ namespace Game.SpellGFXs
     {
         #region Members
 
-        bool m_Intialized = false;
-
         protected Controller        m_Controller;
         protected SpellData         m_SpellData;
         protected Spell             m_Spell;
-        protected StateEffect       m_StateEffect;
+        protected string       m_StateEffectName;
         protected SPrefabSpawn      m_PrefabSpawn;
         protected EBodyPart         m_BodyPart;
 
@@ -27,16 +26,16 @@ namespace Game.SpellGFXs
         #endregion
 
 
-        #region Init & End
+        #region Init
 
-        public virtual void Initialize(Controller controller, SpellData spellData, Spell spell, StateEffect stateEffect, SPrefabSpawn prefabSpawn, EBodyPart bodyPart = EBodyPart.None)
+        public virtual void Initialize(Controller controller, SpellData spellData, Spell spell, string stateEffectName, SPrefabSpawn prefabSpawn, EBodyPart bodyPart = EBodyPart.None)
         {
-            m_Controller    = controller;
-            m_SpellData     = spellData;
-            m_Spell         = spell;
-            m_StateEffect   = stateEffect;
-            m_PrefabSpawn   = prefabSpawn;
-            m_BodyPart      = bodyPart;
+            m_Controller        = controller;
+            m_SpellData         = spellData;
+            m_Spell             = spell;
+            m_StateEffectName   = stateEffectName;
+            m_PrefabSpawn       = prefabSpawn;
+            m_BodyPart          = bodyPart;
 
 
             // set Parent & Position based on provided data
@@ -64,14 +63,17 @@ namespace Game.SpellGFXs
             }
 
             RegisterListeners();
-           
-            m_Intialized = true;
         }
+
+        #endregion
+
+
+        #region End
 
         public virtual void End()
         {
             ErrorHandler.Log("ENDED SPELL GFX : " + this.name, ELogTag.SpellGFX);
-            
+
             // stop the animation
             if (m_PrefabSpawn.Animation != EAnimation.None)
                 m_Controller.AnimationHandler.CancelCastAnimation(m_PrefabSpawn.Animation);
@@ -80,6 +82,40 @@ namespace Game.SpellGFXs
             UnRegisterListeners();
 
             StartCoroutine(EndCoroutine());
+        }
+        
+        protected virtual IEnumerator EndCoroutine()
+        {
+            // delay destruction of spell graphismes for visual purpuses
+            SetPersistantTimer();
+
+            while (m_PersistanceTimer > 0)
+            {
+                m_PersistanceTimer -= Time.deltaTime;
+                yield return null;
+            }
+
+            // remove the state effects of the animation
+            RemoveStateEffects();
+
+            // remove material applied
+            RemoveMaterial();
+
+            // destroy the spell
+            Destroy(gameObject);
+        }
+
+        protected virtual void SetPersistantTimer()
+        {
+            m_PersistanceTimer = m_PrefabSpawn.GFXLifetime.Persistance;
+        }
+
+        void CheckEnd(ESpellEvent spellEvent)
+        {
+            if (m_PrefabSpawn.GFXLifetime.EndSpellPart == ESpellEvent.None || m_PrefabSpawn.GFXLifetime.EndSpellPart > spellEvent)
+                return;
+
+            End();
         }
 
         protected virtual void OnDestroy()
@@ -262,37 +298,6 @@ namespace Game.SpellGFXs
         #endregion
 
 
-        #region Coroutines
-
-        protected virtual IEnumerator EndCoroutine()
-        {
-            // delay destruction of spell graphismes for visual purpuses
-            SetPersistantTimer();
-
-            while (m_PersistanceTimer > 0)
-            {
-                m_PersistanceTimer -= Time.deltaTime;
-                yield return null;
-            }
-
-            // remove the state effects of the animation
-            RemoveStateEffects();
-
-            // remove material applied
-            RemoveMaterial();
-
-            // destroy the spell
-            Destroy(gameObject);
-        }
-
-        protected virtual void SetPersistantTimer()
-        {
-            m_PersistanceTimer = m_PrefabSpawn.GFXLifetime.Persistance;
-        }
-
-        #endregion
-
-
         #region Listeners
 
         protected virtual void RegisterListeners()
@@ -304,8 +309,8 @@ namespace Game.SpellGFXs
             if (m_Spell != null)
                 m_Spell.OnSpellEvent += OnSpellEvent;
 
-            if (m_StateEffect != null)
-                m_StateEffect.OnSpellEvent += OnSpellEvent;
+            if (m_StateEffectName != null)
+                m_Controller.StateHandler.OnStateEffectEvent += OnStateEffectEvent;
         }
 
         protected virtual void UnRegisterListeners()
@@ -316,8 +321,8 @@ namespace Game.SpellGFXs
             if (m_Spell != null)
                 m_Spell.OnSpellEvent -= OnSpellEvent;
             
-            if (m_StateEffect != null)
-                m_StateEffect.OnSpellEvent -= OnSpellEvent;
+            if (m_StateEffectName != null)
+                m_Controller.StateHandler.OnStateEffectEvent -= OnStateEffectEvent;
         }
 
         protected virtual void OnPreSpellEvent(string spell, ESpellEvent spellEvent)
@@ -328,20 +333,22 @@ namespace Game.SpellGFXs
             //if (spell != m_SpellData.ToString())
             //    return;
 
-            if (m_PrefabSpawn.GFXLifetime.EndSpellPart != ESpellEvent.None && m_PrefabSpawn.GFXLifetime.EndSpellPart <= spellEvent)
-            {
-                End();
-            }
-        } 
+            CheckEnd(spellEvent);
+        }
 
         void OnSpellEvent(ESpellEvent spellEvent)
         {
-            if (m_PrefabSpawn.GFXLifetime.EndSpellPart != ESpellEvent.None && m_PrefabSpawn.GFXLifetime.EndSpellPart <= spellEvent)
-            {
-                End();
-            }
-        } 
-        
+            CheckEnd(spellEvent);
+        }
+
+        void OnStateEffectEvent(ESpellEvent spellEvent, string stateEffectName)
+        {
+            if (m_StateEffectName != stateEffectName)
+                return;
+
+            CheckEnd(spellEvent);
+        }
+
         #endregion
     }
 }

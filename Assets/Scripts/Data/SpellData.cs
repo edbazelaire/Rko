@@ -148,7 +148,7 @@ namespace Data
         public virtual int Damage               => (int)Math.Round(m_Damage * GetSpellLevelFactor(ESpellProperty.Damages));
         public virtual int Heal                 => (int)Math.Round(m_Heal * GetSpellLevelFactor(ESpellProperty.Heal));
         public virtual float LifeSteal          => m_LifeSteal * GetSpellLevelFactor(ESpellProperty.LifeSteal);
-        public virtual float Duration           => m_Duration;
+        public virtual float Duration           => m_Duration * GetSpellLevelFactor(ESpellProperty.Duration);
 
         #endregion
 
@@ -416,16 +416,41 @@ namespace Data
             }
 
             propertyInfo = myType.GetField(propertyName, BindingFlags.Public | BindingFlags.Instance);
- 
-            // check if the property exists
-            if (propertyInfo == null)
-            {
-                if (throwError)
-                    ErrorHandler.Error("Unknown property " + property + " for Spell " + name);
-                return false;
-            }
+            if (propertyInfo != null)
+                return true;
 
-            return true;
+                        // try get property with "m_"
+            propertyInfo = myType.GetField("m_"+propertyName, BindingFlags.Public | BindingFlags.Instance);
+            if (propertyInfo != null)
+                return true;
+
+            if (throwError)
+                ErrorHandler.Error("Unknown property " + property + " for Spell " + name);
+
+            return false;
+        }
+
+        /// <summary>
+        /// Get Reflection PropertyInfo of desire property
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        protected bool TryGetPropertyInfo(ESpellProperty property, out PropertyInfo propertyInfo, bool throwError = true)
+        {
+            // Get the type of MyClass
+            Type myType = this.GetType();
+
+            string propertyName = property.ToString();
+
+            // check to get Dependent Properties
+            propertyInfo = myType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
+            if (propertyInfo != null)
+                return true;
+
+            if (throwError)
+                ErrorHandler.Error("Unknown property " + property + " for Spell " + name);
+
+            return false;
         }
 
         /// <summary>
@@ -449,11 +474,22 @@ namespace Data
         public virtual bool TryGetProperty(ESpellProperty property, out object value, bool throwError = false)
         {
             value = null;
-            if (!TryGetPropertyInfo(property, out FieldInfo propertyInfo, throwError))
-                return false;
 
-            value = propertyInfo.GetValue(this);
-            return true;
+            // CHECK : Fields
+            if (TryGetPropertyInfo(property, out FieldInfo fieldInfo, false))
+            {
+                value = fieldInfo.GetValue(this);
+                return true;
+            }
+
+            // CHECK : Properties (dependent, etc..)
+            if (TryGetPropertyInfo(property, out PropertyInfo propertyInfo, throwError))
+            {
+                value = propertyInfo.GetValue(this);
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -463,10 +499,13 @@ namespace Data
         /// <returns></returns>
         public virtual object GetProperty(ESpellProperty property, bool throwError = true)
         {
-            if (!TryGetPropertyInfo(property, out FieldInfo propertyInfo, throwError))
-                return null;
+            if (TryGetPropertyInfo(property, out FieldInfo fieldInfo, false))
+                return fieldInfo.GetValue(this);
 
-            return propertyInfo.GetValue(this);
+            if (TryGetPropertyInfo(property, out PropertyInfo propertyInfo, throwError))
+                return propertyInfo.GetValue(this);
+
+            return null;
         }
 
         public virtual float GetFloat(ESpellProperty property)
@@ -570,9 +609,7 @@ namespace Data
             {
                 if (Enum.TryParse(descriptionVariable.Name, out EStateEffect stateEffect))
                 {
-                    string value = descriptionVariable.Name.ToString();
-                    string iconTag = descriptionVariable.WithIcon ? $" <sprite name=\"{"Ic_" + descriptionVariable.Name}\">" : "";
-                    values.Add($"<i>{value}</i> {iconTag}");
+                    values.Add(TextHandler.FormatStateEffectIcon(descriptionVariable.Name, descriptionVariable.WithIcon));
                 }
                 else if (infos.ContainsKey(descriptionVariable.Name))
                 {
@@ -587,7 +624,7 @@ namespace Data
                 {
                     if (! TryGetProperty(property, out object value))
                     {
-                        ErrorHandler.Error("Unable to find property " + property + " in spell " + Spell);
+                        ErrorHandler.Error("Unable to find property " + property + " in spell " + Name);
                         values.Add("<b>UNDEFINED</b>");
                         continue;
                     }
@@ -595,7 +632,7 @@ namespace Data
                 }
                 else
                 {
-                    ErrorHandler.Error("Unable to find property " + descriptionVariable.Name + " in info dict of spell " + Spell);
+                    ErrorHandler.Error("Unable to find property " + descriptionVariable.Name + " in info dict of spell " + Name);
                     values.Add("<b>UNDEFINED</b>");
                 }
             }

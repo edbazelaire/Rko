@@ -19,6 +19,7 @@
         SpellInfoPopUp,
         StateEffectPopUp,
         RuneSelectionPopUp,
+        TriggerEffectPopUp,
 
         // -- message PopUps
         MessagePopUp,
@@ -43,6 +44,12 @@
     {
         FireArena,
         //FrostArena,
+    }
+
+    public enum EArenaDifficulty
+    {
+        Normal,
+        HardCore,
     }
 
     public enum ECharacter
@@ -104,6 +111,7 @@
         PlagueArrows,
         EmperorOfFlames,
         ExperimentalVial,
+        Vortex,
 
         Count
     }
@@ -476,6 +484,7 @@
         Animation           = 106,      // animations playing
         StateEffects        = 107,      // state effects changes
         SpellGFX            = 107,      // spell graphics playing
+        StateEffectGFX      = 108,      // spell graphics playing
 
         // AI
         AI                  = 200,

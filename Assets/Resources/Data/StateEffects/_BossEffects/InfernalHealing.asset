@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea8328bdbe40b584daa6549887933f55, type: 3}
   m_Name: InfernalHealing
   m_EditorClassIdentifier: 
-  m_Description: 
-  m_DescriptionVariables: 
-  m_StateEffectType: 1
+  m_Description: Heal {0} hp every {1} seconds
+  m_DescriptionVariables: 0e0000000c000000
+  m_StateEffectType: 0
   m_VisualEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Heal: 0
   m_EndHeal: 0
   m_LifeSteal: 0
-  m_Tick: 0
+  m_Tick: 1
   m_TickDamages: 0
   m_TickHeal: 10
   m_TickShield: 0

@@ -147,36 +147,6 @@ namespace Game.Character
         #endregion
 
 
-        #region Animation Spawns
-
-        void StartAnimationParticles()
-        {
-            //SpellData spellData = SpellLoader.GetSpellData(m_Controller.SpellHandler.SelectedSpell);
-
-            //if (spellData.OnAnimation.Count == 0)
-            //    return;
-
-            //foreach (SPrefabSpawn onAnimationPrefab in spellData.OnAnimation)
-            //    m_AnimationPrefabs.Add(onAnimationPrefab.Spawn(m_Controller, null, spellData.AnimationTimer));
-        }
-
-        /// <summary>
-        /// Destroy animation particles if any
-        /// </summary>
-        void EndAnimationParticles()
-        {
-            if (m_AnimationPrefabs.Count == 0)
-                return;
-
-            foreach (var prefab in m_AnimationPrefabs)
-                Destroy(prefab);
-
-            m_AnimationPrefabs = new List<GameObject>();
-        }
-
-        #endregion
-
-
         #region Helpers
 
         public bool IsCurrentAnimation(string animation)
