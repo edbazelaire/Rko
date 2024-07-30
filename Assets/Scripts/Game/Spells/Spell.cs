@@ -192,16 +192,16 @@ namespace Game.Spells
         /// </summary>
         protected virtual void SwapColliders(GameObject graphics)
         {
-            // Check if the graphics GameObject has a Collider2D component
-            Collider2D originalCollider = graphics.GetComponent<Collider2D>();
-            if (originalCollider == null)
+            // Check if the graphics GameObject has a enabled Collider2D component
+            Collider2D graphicsCollider = graphics.GetComponent<Collider2D>();
+            if (graphicsCollider == null || ! graphicsCollider.enabled)
                 return;
 
             // destroy the collider on the Spell before adding the new one
             Destroy(this.GetComponent<Collider2D>());
 
             // Get the type of the original collider
-            Type colliderType = originalCollider.GetType();
+            Type colliderType = graphicsCollider.GetType();
 
             // Add a new collider of the same type to this GameObject
             Collider2D newCollider = this.gameObject.AddComponent(colliderType) as Collider2D;
@@ -209,11 +209,11 @@ namespace Game.Spells
             // Copy properties from the original collider to the new one
             if (newCollider != null)
             {
-                CopyColliderProperties(originalCollider, newCollider);
+                CopyColliderProperties(graphicsCollider, newCollider);
             }
 
             // Destroy the original collider on the graphics GameObject
-            Destroy(originalCollider);
+            Destroy(graphicsCollider);
         }
 
         /// <summary>
