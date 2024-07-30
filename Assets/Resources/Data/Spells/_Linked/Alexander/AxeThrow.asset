@@ -13,10 +13,15 @@ MonoBehaviour:
   m_Name: AxeThrow
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: Throw an axe dealing {0} damages
+  m_DescriptionVariables:
+  - Name: Damages
+    WithIcon: 1
   Linked: 1
   Graphics: {fileID: 2272309172655654138, guid: aea2ab7d92a4e1a4b8d3d1e595e034e8, type: 3}
   SpellEventActions:
   - Prefab: {fileID: 2272309172655654138, guid: aea2ab7d92a4e1a4b8d3d1e595e034e8, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 1
       EndSpellPart: 2
@@ -31,7 +36,9 @@ MonoBehaviour:
     IsFollowing: 1
     Offset: {x: 0, y: 0}
     Animation: 0
+    StateEffects: 
   - Prefab: {fileID: 176804, guid: 4889039938a567444827eafcfbc2b267, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 4
       EndSpellPart: 0
@@ -46,6 +53,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    StateEffects: 
   Preview: {fileID: 7274605584167926077, guid: 0961e062c4a6d3b40b81e8e5e6da0eae, type: 3}
   OnAnimation: []
   OnCastPrefabs: []
@@ -75,10 +83,12 @@ MonoBehaviour:
   TriggerPlayer: 1
   EnemyStateEffects: []
   AllyStateEffects: []
+  StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 2
   IsCancellable: 1
   AnimationTimer: 0.7
   m_Cooldown: 0
   Trajectory: 1
+  m_StopOnTargetPos: 0
   m_Speed: 8

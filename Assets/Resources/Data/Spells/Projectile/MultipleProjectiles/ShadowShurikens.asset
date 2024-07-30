@@ -13,10 +13,23 @@ MonoBehaviour:
   m_Name: ShadowShurikens
   m_EditorClassIdentifier: 
   Rarety: 1
+  m_Description: Shoots {0} Shadow Shurikens on the enemy in a straight line, each
+    dealing {1} damages, applying {2} and 3 stacks of {3}. The shadow shurikens end
+    when reaching the center of the enemy's area.
+  m_DescriptionVariables:
+  - Name: Projectiles
+    WithIcon: 1
+  - Name: Damages
+    WithIcon: 1
+  - Name: Poison
+    WithIcon: 1
+  - Name: Cursed
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 6631489239233227332, guid: 02bec8ec829840b40ad07d8f99117476, type: 3}
   SpellEventActions:
   - Prefab: {fileID: 1209601309875748, guid: b170aebab32c55e468901bd9220320f8, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 4
       EndSpellPart: 0
@@ -47,7 +60,7 @@ MonoBehaviour:
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 0
+  m_Damage: 40
   m_Heal: 0
   m_LifeSteal: 0
   Distance: -1

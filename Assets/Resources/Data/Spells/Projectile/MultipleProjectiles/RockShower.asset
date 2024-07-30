@@ -13,10 +13,17 @@ MonoBehaviour:
   m_Name: RockShower
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: Shoots {0} rocks at once on the enemy's side, each dealing {1} damages
+  m_DescriptionVariables:
+  - Name: Projectiles
+    WithIcon: 1
+  - Name: Damages
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 2272309172655654138, guid: 707016094918de145aed102b2535ac3e, type: 3}
   SpellEventActions:
   - Prefab: {fileID: 2272309172655654138, guid: 707016094918de145aed102b2535ac3e, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 1
       EndSpellPart: 2
@@ -31,6 +38,7 @@ MonoBehaviour:
     IsFollowing: 1
     Offset: {x: 0, y: 0}
     Animation: 0
+    StateEffects: 
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
@@ -69,11 +77,12 @@ MonoBehaviour:
   AnimationTimer: 0.5
   m_Cooldown: 20
   Trajectory: 1
+  m_StopOnTargetPos: 0
   m_Speed: 7
   ProjectileData: {fileID: 0}
   MultiProjectileType: 1
   m_NProjectiles: 5
   m_ProjectileZoneSize: -1
-  DelayBetweenLaunches: 0
+  m_DelayBetweenLaunches: 0
   m_NWaves: 1
-  DelayBetweenWaves: 0
+  m_DelayBetweenWaves: 0

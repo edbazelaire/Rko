@@ -13,10 +13,15 @@ MonoBehaviour:
   m_Name: _TriggerHeal
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: Heal {0} hp on activation
+  m_DescriptionVariables:
+  - Name: Heal
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions:
   - Prefab: {fileID: 152564, guid: 0e4a7fa9fd28f154b91c98ee6fe8ebea, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 3
       EndSpellPart: 0

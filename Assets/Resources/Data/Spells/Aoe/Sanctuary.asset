@@ -13,8 +13,20 @@ MonoBehaviour:
   m_Name: Sanctuary
   m_EditorClassIdentifier: 
   Rarety: 1
+  m_Description: Zone of size {0} restauring {1} health each {2} seconds for {3}
+    seconds
+  m_DescriptionVariables:
+  - Name: Size
+    WithIcon: 0
+  - Name: Heal
+    WithIcon: 1
+  - Name: DurationTick
+    WithIcon: 0
+  - Name: Duration
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 8179447634951739534, guid: a98bb070248f37942b1ca92fd54510d9, type: 3}
+  SpellEventActions: []
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
@@ -26,19 +38,19 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 8300000, guid: 3ecced41c79ec3840824bd3813604df2, type: 3}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 4
+  LockTargetAt: 2
   MaxHit: 0
   EnergyGain: 5
   EnergyCost: 0
   m_Damage: 0
-  m_Heal: 50
+  m_Heal: 0
+  m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
-  m_Duration: 3
+  m_Duration: 5
   Delay: 0
   m_SpellsScalingLevel:
-  - Property: 2
-    Value: 0.1
-  - Property: 1
+  - Property: 15
     Value: 0.1
   - Property: 3
     Value: 0.05
@@ -46,6 +58,7 @@ MonoBehaviour:
   TriggerPlayer: 1
   EnemyStateEffects: []
   AllyStateEffects: []
+  StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 9
   IsCancellable: 0
@@ -53,6 +66,9 @@ MonoBehaviour:
   m_Cooldown: 25
   m_SpellSpawn: 1
   DurationTick: 0.5
+  m_TickDamages: 0
+  m_TickHeal: 35
+  m_TickShield: 0
   GrowSizeFactor: 0
   MaxSizeAt: 1
   PersistentStateEffects: []

@@ -49,7 +49,8 @@ namespace Game.Spells
         {
             ErrorHandler.Log($"Applying {name} with " + m_Stacks + " stacks", ELogTag.StateEffects);
 
-            CallSpellEventClientRPC(ESpellEvent.OnHit);
+            // ask state handler to fire the "OnHit" event to clients GFX
+            m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnHit, StateEffectName);
 
             int damages = GetInt(EStateEffectProperty.TickDamages);
             if (damages > 0)

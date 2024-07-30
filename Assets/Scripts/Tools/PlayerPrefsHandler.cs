@@ -7,8 +7,10 @@ namespace Tools
     public enum EPlayerPref
     {
         PlayerName,
+        Region,
         GameMode,
         ArenaType,
+
         WarningMessageAccepted,
 
         TrainingCharacter,

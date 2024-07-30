@@ -13,26 +13,41 @@ MonoBehaviour:
   m_Name: IronSkin
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: Increases your Resistance by {0} fix and {1} for {2} seconds, but
+    also reduces your Movement Speed by {3}
+  m_DescriptionVariables:
+  - Name: ResistanceFix
+    WithIcon: 1
+  - Name: ResistancePerc
+    WithIcon: 1
+  - Name: Duration
+    WithIcon: 1
+  - Name: SpeedBonus
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 0}
+  SpellEventActions: []
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
   OnHit: []
+  OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 4
+  LockTargetAt: 2
   MaxHit: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
   m_Heal: 0
+  m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
-  m_Duration: 3
+  m_Duration: 0
   Delay: 0
   m_SpellsScalingLevel:
   - Property: 3
@@ -43,6 +58,7 @@ MonoBehaviour:
   TriggerPlayer: 1
   EnemyStateEffects: []
   AllyStateEffects: []
+  StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 0
   IsCancellable: 0

@@ -11,11 +11,14 @@ namespace Menu.MainMenu
         RectTransform m_RectTransform;
         public RectTransform RectTransform => m_RectTransform;
 
+        // set ActivationContent to null to prevent TabContent to manipulate its SetActive() since this content is always active
+        protected override GameObject m_ActivationContent => null;
+
         #endregion
 
 
         #region Init & End
-      
+
         public void SetWidth(float width)
         {
             m_RectTransform = Finder.FindComponent<RectTransform>(gameObject);

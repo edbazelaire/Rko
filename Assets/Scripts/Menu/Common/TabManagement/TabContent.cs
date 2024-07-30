@@ -9,8 +9,12 @@ namespace Menu.MainMenu
 
         [SerializeField] protected AudioClip m_ActivationSoundFX = null;
 
-        protected TabButton   m_TabButton;
-        protected bool        m_Activated;
+        /// <summary> button linked to this tab </summary>
+        protected TabButton     m_TabButton;
+        /// <summary> is the table currently activater ? </summary>
+        protected bool          m_Activated;
+        /// <summary> Content getting turned on/off during the activation </summary>
+        protected virtual GameObject m_ActivationContent => gameObject;    
 
         public TabButton TabButton => m_TabButton;
 
@@ -46,6 +50,9 @@ namespace Menu.MainMenu
             {
                 SoundFXManager.PlayOnce(m_ActivationSoundFX);
             }
+
+            if (m_ActivationContent != null)
+                m_ActivationContent.SetActive(activate);
         }
 
         /// <summary>

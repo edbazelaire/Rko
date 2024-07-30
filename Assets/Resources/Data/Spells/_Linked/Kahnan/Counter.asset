@@ -13,6 +13,11 @@ MonoBehaviour:
   m_Name: Counter
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: Blocks the next attack and shoots a FireBomb, dealing damages and
+    appying {0}
+  m_DescriptionVariables:
+  - Name: Scorched
+    WithIcon: 1
   Linked: 1
   Graphics: {fileID: 0}
   SpellEventActions:

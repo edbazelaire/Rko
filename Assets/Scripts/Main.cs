@@ -19,6 +19,7 @@ using Unity.Services.Core.Environments;
 using Network;
 using Save.RSDs;
 using Assets.Scripts.Tools;
+using Data.DataStructures;
 
 
 
@@ -36,11 +37,11 @@ namespace Assets
 
         // ==========================================================================================================
         // SERIALIZED MEMBERS
-        [SerializeField] Canvas m_Canvas;
-        [SerializeField] CloudSaveManager m_CloudSaveManager;
-        [SerializeField] LeagueDataConfig m_LeagueDataConfig;
-        [SerializeField] bool m_ActivateSaveOnClose; 
-        [SerializeField] List<ELogTag> m_LogTags;
+        [SerializeField] Canvas                 m_Canvas;
+        [SerializeField] CloudSaveManager       m_CloudSaveManager;
+        [SerializeField] LeagueDataConfig       m_LeagueDataConfig;
+        [SerializeField] bool                   m_ActivateSaveOnClose; 
+        [SerializeField] List<ELogTag>          m_LogTags;
 
         // ==========================================================================================================
         // EVENTS
@@ -140,8 +141,8 @@ namespace Assets
                 || SceneLoader.Instance             == null
                 || ItemLoader.ChestRewardData       == null
                 || AchievementLoader.Achievements   == null
-                || RelayHandler.Instance            == null
                 || LobbyHandler.Instance            == null
+                || ! RelayHandler.Initialized
                 || ! RSDManager.LoadingCompleted
                 || ! m_CloudSaveManager.LoadingCompleted
                 || ! m_SignedIn
@@ -245,7 +246,7 @@ namespace Assets
 
                 // SCREENS -------------------------------------------------------
                 case EPopUpState.RewardsScreen:
-                    obj.GetComponent<RewardsScreen>().Initialize((SRewardsData)args[0], (string)args[1]);
+                    obj.GetComponent<RewardsScreen>().Initialize((SRewardsData)args[0], (string)args[1], args.Length > 2 ? (Action)args[2] : null);
                     break;
 
                 case EPopUpState.AchievementRewardScreen:
@@ -279,6 +280,11 @@ namespace Assets
                     obj.GetComponent<RuneSelectionPopUp>().Initialize();
                     break;
 
+                case EPopUpState.TriggerEffectPopUp:
+                    obj.GetComponent<TriggerEffectPopUp>().Initialize((STriggerEffect)args[0]);
+                    break;
+
+                // SETTINGS & OPTIONS -------------------------------------------------------
                 case EPopUpState.SettingsPopUp:
                     obj.GetComponent<SettingsPopUp>().Initialize();
                     break;
@@ -303,9 +309,9 @@ namespace Assets
             }, unlockedOnly);
         }
 
-        public static void DisplayRewards(SRewardsData rewardsData, ERewardContext context)
+        public static void DisplayRewards(SRewardsData rewardsData, ERewardContext context, Action OnRewardCollected = null)
         {
-            Main.SetPopUp(EPopUpState.RewardsScreen, rewardsData, context.ToString());
+            Main.SetPopUp(EPopUpState.RewardsScreen, rewardsData, context.ToString(), OnRewardCollected);
         }
      
         public static void DisplayAchievementRewards(List<SAchievementReward> rewardsData)
@@ -382,6 +388,9 @@ namespace Assets
 
         #region Checkers
 
+        /// <summary>
+        /// Check if pseudo needs to be changed
+        /// </summary>
         public static void CheckPseudoPopUp()
         {
             // pseudo already changed : no need to proc the popup
@@ -390,6 +399,27 @@ namespace Assets
 
             // store the change of the display PseudoPopUp for when the user will reach the MainMenu
             Main.AddStoredEvent(EAppState.MainMenu, () => SetPopUp(EPopUpState.PseudoPopUp));
+        }
+
+        public static void CheckRegion()
+        {
+            if (ProfileCloudData.Region != "")
+                return;
+
+            ResetRegion();
+        }
+
+        public static async void ResetRegion()
+        {
+            string region = await RelayHandler.Instance.FindRegion();
+
+            if (region != "")
+            {
+                ProfileCloudData.SetRegion(region);
+                return;
+            }
+
+            ErrorHandler.Error("Unable to setup Region for the player");
         }
 
         public void CheckCurrentMessage()
@@ -450,6 +480,9 @@ namespace Assets
             if (AuthorizeAccess())
             {
                 ErrorHandler.Log("Initialization of the data completed : loading MainMenu", ELogTag.System);
+
+                // check that region has been provided
+                CheckRegion();
 
                 // check if a current message needs to be dislayed to the user before loading the scene 
                 CheckCurrentMessage();

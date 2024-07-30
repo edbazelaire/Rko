@@ -12,26 +12,37 @@ namespace Tools
     public struct SRewardCalculator
     {
         public int Xp;
+        public int Gems;
         public int MinGolds;
         public int MaxGolds;
         public List<SChestDropPercentage> Chests;
+        public float CurrencyMultiplicator;
 
-        public SRewardCalculator(int xp, int minGolds, int maxGolds, List<SChestDropPercentage> chests)
+        public SRewardCalculator(int xp, int gems, int minGolds, int maxGolds, List<SChestDropPercentage> chests, float currencyMultiplicator = 1f)
         {
             Xp          = xp;
+            Gems        = gems;
             MinGolds    = minGolds;
             MaxGolds    = maxGolds;
             Chests      = chests;
+            CurrencyMultiplicator = currencyMultiplicator;
         }
+
+        #region Accessors
 
         public int GetXp()
         {
-            return Xp;
+            return (int)Mathf.Round(Xp * CurrencyMultiplicator);
+        }
+
+        public int GetGems()
+        {
+            return (int)Mathf.Round(Gems * CurrencyMultiplicator);
         }
 
         public int GetGolds()
         {
-            return Random.Range(MinGolds, MaxGolds);
+            return (int)Mathf.Round(Random.Range(MinGolds, MaxGolds) * CurrencyMultiplicator);
         }
 
         public List<EChest> GetChests()
@@ -44,6 +55,20 @@ namespace Tools
 
             return chests;
         }
+
+        public void SetCurrencyMultiplicator(float currencyMultiplicator)
+        {
+            if (currencyMultiplicator < 0f)
+            {
+                ErrorHandler.Error("currencyMultiplicator (" + currencyMultiplicator + ") < 0");
+                currencyMultiplicator = 0f;
+            }
+
+            CurrencyMultiplicator *= currencyMultiplicator;
+        }
+
+        #endregion
+
     }
 
     public struct SChestDropPercentage
@@ -80,6 +105,7 @@ namespace Tools
         /// <summary> reward when the game is won </summary>
         public static SRewardCalculator WinGameReward = new SRewardCalculator(
             xp: 25,
+            gems: 10,
             minGolds: 30, maxGolds: 55,
             chests: new List<SChestDropPercentage>() {
                 new SChestDropPercentage(new Dictionary<EChest, float>
@@ -95,6 +121,7 @@ namespace Tools
         /// <summary> reward when the game is lost </summary>
         public static SRewardCalculator LossGameReward = new SRewardCalculator(
             xp: 5,
+            gems: 0,
             minGolds: 10, maxGolds: 15,
             chests: new List<SChestDropPercentage>() {}
         );

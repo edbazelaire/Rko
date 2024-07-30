@@ -37,7 +37,7 @@ namespace Menu.MainMenu.MainTab
             RefreshUI();
         }
 
-        void OnArenaDataChanged() 
+        void OnArenaDataChanged(EArenaType arenaType) 
         {
             RefreshUI();
         }

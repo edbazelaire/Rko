@@ -36,6 +36,7 @@ namespace Game.Spells
         // SERIALIZED DATA
         [SerializeField] protected      string                      m_Description = "";
         [SerializeField] protected      List<EStateEffectProperty>  m_DescriptionVariables = new List<EStateEffectProperty>();
+        [SerializeField] protected      EStateEffectType            m_StateEffectType = EStateEffectType.Default;
 
         [Header("Graphics")]
         [SerializeField] protected      List<SPrefabSpawn>          m_VisualEffects;
@@ -102,6 +103,8 @@ namespace Game.Spells
 
         // =========================================================================================
         // DEPENDENT MEMBERS  
+        public virtual EStateEffectType StateEffectType     => m_StateEffectType;
+        public bool                     IsUnique            => StateEffectType == EStateEffectType.Incarnation || StateEffectType == EStateEffectType.AutoAttackBuff;
         public List<SPrefabSpawn>       VisualEffects       => m_VisualEffects;
         public EAnimation               Animation           => m_Animation;
         public EStateEffect             Type                => Enum.TryParse(name, out EStateEffect type) ? type : m_Type ;
@@ -136,7 +139,7 @@ namespace Game.Spells
             m_Caster = caster;
 
             // check if has overriding data
-            if (stateEffectData.HasValue && stateEffectData.Value.OverridingProperties.Count > 0)
+            if (stateEffectData.HasValue && stateEffectData.Value.OverridingProperties != null && stateEffectData.Value.OverridingProperties.Count > 0)
                 OverrideStateEffectData(stateEffectData.Value);
 
             if (!CheckBeforeGraphicInit())
@@ -177,7 +180,7 @@ namespace Game.Spells
             }
 
             // consume "ConsumeState" state to apply current state
-            m_Stacks = Math.Min(m_Controller.StateHandler.RemoveStateEffect(m_ConsumeState, true), m_MaxStacks);
+            m_Stacks = m_Controller.StateHandler.RemoveStateEffect(m_ConsumeState, true, m_MaxStacks);
 
             return true;
         }
@@ -192,7 +195,7 @@ namespace Game.Spells
             }
 
             // call state effect 
-            CallSpellEventClientRPC(ESpellEvent.OnSpawn);
+            m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnSpawn, StateEffectName);
         }
 
         public void OverrideStateEffectData(SStateEffectData stateEffectData)
@@ -226,7 +229,13 @@ namespace Game.Spells
                 Destroy(m_AudioSource);
             }
 
-            CallSpellEventClientRPC(ESpellEvent.OnEnd);
+            if (m_Controller == null)
+            {
+                ErrorHandler.Error("Unable to find Controller for StateEffect " + StateEffectName);
+                return;
+            }
+
+            m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnEnd, StateEffectName);
         }
 
         /// <summary>
@@ -272,6 +281,17 @@ namespace Game.Spells
         {
             m_RemainingShield = GetInt(EStateEffectProperty.Shield); 
             m_Timer = m_Duration;
+        }
+
+        public virtual void RemoveStacks(int nStacks)
+        {
+            if (nStacks >= m_Stacks || nStacks <= 0)
+            {
+                End();
+                return;
+            }
+
+            m_Stacks -= nStacks;
         }
 
         #endregion
@@ -491,34 +511,14 @@ namespace Game.Spells
         #endregion
 
 
-        #region Spell Events
-
-        [ClientRpc]
-        protected virtual void CallSpellEventClientRPC(ESpellEvent spellEvent)
-        {
-            if (m_VisualEffects != null)
-            {
-                foreach (var spawnPrefab in m_VisualEffects)
-                {
-                    if (spawnPrefab.GFXLifetime.StartSpellPart != spellEvent)
-                        continue;
-
-                    spawnPrefab.Spawn(m_Caster, null, null, this, m_Controller);
-                }
-            } 
-
-            OnSpellEvent?.Invoke(spellEvent);
-        }
-
-        #endregion
-
-
         #region Infos
 
         public virtual Dictionary<string, object> GetInfos()
         {
             var infosDict = new Dictionary<string, object>();
-            
+            if (StateEffectType != EStateEffectType.Default)
+                infosDict["Type"] = StateEffectType.ToString();
+
             foreach (EStateEffectProperty property in Enum.GetValues(typeof(EStateEffectProperty)))
             {
                 // check if property exists for this StateEffect and get reflection object

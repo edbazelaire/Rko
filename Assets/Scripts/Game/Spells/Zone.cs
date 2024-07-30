@@ -1,6 +1,8 @@
 ﻿using Data;
+using Enums;
 using System.Collections.Generic;
 using System.Linq;
+using Tools;
 using UnityEngine;
 
 namespace Game.Spells
@@ -149,23 +151,115 @@ namespace Game.Spells
                 return;
 
             // hit the player
-            OnHitPlayer(controller);
+            OnHitTickPlayer(controller);
         }
 
-        /// <summary>
-        /// When a player is hit, remove it from list of hitted players (because there is no such limit for zones)
-        /// </summary>
-        /// <param name="controller"></param>
-        protected override void OnHitPlayer(Controller controller)
+        protected virtual void OnHitTickPlayer(Controller controller)
         {
-            base.OnHitPlayer(controller);
+             // not alive : skip
+            if (!controller.Life.IsAlive)
+                return;
 
-            // zone can affect the same player multiple times
-            m_HittedPlayerId.Clear();
+            // apply effects on ally or enemy : if none, skip
+            if (!CheckHitEnemyTick(controller) && !CheckHitAllyTick(controller))
+                return;
+
+            // energy gain
+            m_Controller.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
+
+            // play sound effect
+            GameManager.Instance.PlaySoundClientRPC(m_SpellData.Name, ESpellEvent.OnHit);
 
             // add player to affected players
             if (m_SpellData.DurationTick > 0)
                 m_PlayersAffected.Add(controller.OwnerClientId, m_SpellData.DurationTick);
+        }
+
+        /// <summary>
+        /// Check if ability hit an enemy
+        /// </summary>
+        /// <param name="controller"> controller of hit target </param>
+        /// <returns></returns>
+        protected virtual bool CheckHitEnemyTick(Controller controller)
+        {
+            // Target is Ally - return
+            if (controller.Team == m_Controller.Team)
+                return false;
+
+            // no base Damages, StateEffects or OnHit effects - return
+            if (m_SpellData.Damage <= 0 && m_SpellData.EnemyStateEffects.Count == 0 && m_SpellData.OnHit.Count == 0)
+                return false;
+
+            // add bonus damages from state bonus & boosts 
+            int damages = m_SpellData.TickDamages;
+            if (m_SpellData.StateEffectStackFactor != EStateEffect.None)
+            {
+                damages *= controller.StateHandler.GetStacks(m_SpellData.StateEffectStackFactor);
+            }
+            damages = m_Controller.StateHandler.ApplyBonusInt(damages, EStateEffectProperty.TickDamages);
+
+            // get final damages after shields and resistances
+            int finalDamages = controller.Life.Hit(damages);
+            if (finalDamages > 0 && m_Controller.ClientAnalytics != null)
+                m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Damage, finalDamages);
+
+            ErrorHandler.Log(m_SpellData.Name + " : " + finalDamages, ELogTag.Spells);
+
+            // apply lifesteal if any (remove 1 because floats values are always based on 1 as default value)
+            float lifeSteal = SpellData.LifeSteal + Mathf.Max(0f, m_Controller.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal) - 1);
+            if (lifeSteal > 0 && finalDamages > 0)
+            {
+                m_Controller.Life.Heal((int)Mathf.Round(lifeSteal * finalDamages));
+
+                if (m_Controller.ClientAnalytics != null)
+                { 
+                    m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Heal, (int)Mathf.Round(lifeSteal * finalDamages));
+                    m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.LifeSteal, (int)Mathf.Round(lifeSteal * finalDamages));
+                }
+            }
+
+            if (IsAutoAttack && m_Controller.RuneData.GetType() == typeof(AutoAttackRune))
+                ((AutoAttackRune)m_Controller.RuneData).ApplyOnHit(ref controller, m_Controller);
+
+            // apply state effects specifics to enemies
+            ApplyEnemyStateEffects(controller);
+
+            // call spell event that spell has touched something
+            CallSpellEvent(ESpellEvent.OnHit, controller);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Check if ability hit an ally
+        /// </summary>
+        /// <param name="controller"> controller of hit target </param>
+        /// <returns></returns>
+        protected virtual bool CheckHitAllyTick(Controller controller)
+        {
+            if (controller.Team != m_Controller.Team)
+                return false;
+
+            if (m_SpellData.TickHeal <= 0 && m_SpellData.AllyStateEffects.Count == 0)
+                return false;
+
+            // add bonus heal from state bonus & boosts 
+            int heal = m_SpellData.TickHeal;
+            if (m_SpellData.StateEffectStackFactor != EStateEffect.None)
+            {
+                heal *= controller.StateHandler.GetStacks(m_SpellData.StateEffectStackFactor);
+            }
+            heal = m_Controller.StateHandler.ApplyBonusInt(heal, EStateEffectProperty.TickHeal);
+
+            // heal the target for the specified amount
+            controller.Life.Heal(heal);
+
+            if (m_Controller.ClientAnalytics != null)
+                m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Heal, heal);
+
+            ApplyAllyStateEffects(controller);
+
+            return true;
         }
 
         #endregion

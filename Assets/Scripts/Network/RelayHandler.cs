@@ -1,9 +1,13 @@
 ﻿using Enums;
+using MyBox;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tools;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
+using Unity.Services.Authentication;
+using Unity.Services.Lobbies.Scheduler;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
@@ -12,16 +16,59 @@ namespace Assets.Scripts.Network
 {
     public class RelayHandler : MonoBehaviour
     {
-        static RelayHandler s_Instance;
-        public static RelayHandler Instance => s_Instance;
+        #region Members
+
+        // ===================================================================================
+        // STATIC
+        public const int MAX_RETRY_INITIALIZATION = 1;
+        
+        // ===================================================================================
+        // PRIVATE VARIABLES 
+        static      RelayHandler s_Instance     = null;
+        bool        m_Initialized               = false;
+
+        // ===================================================================================
+        // PUBLIC ACCESSORS
+        public static RelayHandler Instance     => s_Instance;
+        public static bool Initialized          => Instance != null && Instance.m_Initialized;
+
+        #endregion
+
 
         // Use this for initialization
         void Start()
         {
-            if (s_Instance == null)
-                s_Instance = this;
+            // Initialize Instance
+            s_Instance = this;
 
+            // keep it in all scenes
             DontDestroyOnLoad(gameObject);
+
+            // tell the game that it has been initialized properly
+            m_Initialized = true;
+        }
+
+
+        public async Task<string> FindRegion()
+        {
+            try
+            {
+                Allocation allocation = await RelayService.Instance.CreateAllocationAsync(3);
+                return allocation.Region;
+            }
+            catch (RelayServiceException e)
+            {
+                ErrorHandler.Error(e.Message);
+            }
+
+            return "";
+        }
+
+        public static string TrimRegion(string regionName)
+        {
+            Regex regex = new Regex(@"(\D+)\d*$");
+            Match match = regex.Match(regionName);
+            return match.Groups[1].Value;
         }
 
         public async Task<string> CreateRelay()

@@ -1,11 +1,10 @@
 ﻿using Assets;
 using Assets.Scripts.Managers.Sound;
+using Data.DataStructures;
 using Data.GameManagement;
 using Enums;
-using Menu.Common.Displayers;
-using Menu.Common.Notifications;
+using Menu.Common.Buttons.TemplateItemButtons;
 using Menu.MainMenu;
-using Menu.MainMenu.MainTab;
 using Save;
 using Tools;
 using UnityEngine;
@@ -21,6 +20,11 @@ namespace Menu.PopUps
         int                 m_ArenaLevel;
         EArenaType          m_ArenaType;
 
+        /// <summary> section containg all objects related to bonus effects </summary>
+        GameObject          m_EffectsSection;
+        /// <summary> layout container for bonus effects </summary>
+        GameObject          m_EffectsContainer;
+        /// <summary> layout container for spells </summary>
         GameObject          m_SpellsContainer;
 
         #endregion
@@ -32,15 +36,17 @@ namespace Menu.PopUps
         {
             base.FindComponents();
 
+            m_EffectsSection                = Finder.Find(gameObject, "EffectsSection");
+            m_EffectsContainer              = Finder.Find(gameObject, "EffectsContainer");
             m_SpellsContainer               = Finder.Find(gameObject, "SpellsContainer");
         }
 
         public void Initialize(ArenaData arenaData, int arenaLevel, EArenaType arenaType)
         {
-            m_ArenaData = arenaData;
-            m_ArenaLevelData = arenaData.GetArenaLevelData(arenaLevel);
-            m_ArenaLevel = arenaLevel;
-            m_ArenaType = arenaType;
+            m_ArenaData         = arenaData;
+            m_ArenaLevelData    = arenaData.GetArenaLevelData(arenaLevel);
+            m_ArenaLevel        = arenaLevel;
+            m_ArenaType         = arenaType;
 
             base.Initialize();
         }
@@ -51,6 +57,7 @@ namespace Menu.PopUps
 
             base.SetUpUI();
 
+            SetUpEffects();
             SetUpSpells();
         }
 
@@ -58,6 +65,32 @@ namespace Menu.PopUps
 
 
         #region GUI Manipulators
+
+        void SetUpEffects()
+        {
+            // clean content (remove potential TEST displays)
+            UIHelper.CleanContent(m_EffectsContainer);
+
+            // no trigger effects : deactivate and return
+            if (m_ArenaLevelData.TriggerEffects.Count == 0)
+            {
+                m_EffectsSection.SetActive(false);
+                return;
+            }
+
+            // active section (by precaution)
+            m_EffectsSection.SetActive(true);
+
+            // load template of TriggerEffectUI
+            TemplateTriggerEffectUI template = AssetLoader.LoadTemplateItem<TemplateTriggerEffectUI>();
+
+            // add UI for each trigger effects
+            foreach (STriggerEffect triggerEffect in m_ArenaLevelData.TriggerEffects)
+            {
+                TemplateTriggerEffectUI triggerEffectUI = Instantiate(template, m_EffectsContainer.transform);
+                triggerEffectUI.Initialize(triggerEffect);
+            }
+        }
 
         void SetUpSpells()
         {
@@ -109,8 +142,7 @@ namespace Menu.PopUps
         {
             return m_ArenaLevelData.RewardsData;
         }
-
-
+        
         protected override void CollectReward()
         {
             base.CollectReward();
@@ -118,7 +150,17 @@ namespace Menu.PopUps
             if (!NotificationCloudData.CollectArenaReward(m_ArenaType, m_ArenaLevel))
                 return;
 
-            Main.DisplayRewards(m_ArenaLevelData.RewardsData, ERewardContext.ArenaReward);
+            bool isLastReward = 
+                ProgressionCloudData.IsArenaDifficultyCompleted(m_ArenaType)        // the current difficulty is finished
+                && ! ProgressionCloudData.IsArenaCompleted(m_ArenaType)             // this is not the last difficulty level
+                && ! NotificationCloudData.HasRewardsForArenaType(m_ArenaType);     // this was the last reward to collect for this arena type
+
+            Main.DisplayRewards(m_ArenaLevelData.RewardsData, ERewardContext.ArenaReward, isLastReward ? OnCollectingLastReward : null);
+        }
+
+        protected void OnCollectingLastReward() 
+        {
+            ProgressionCloudData.UpgradeArenaDifficulty(m_ArenaType);
         }
 
         #endregion

@@ -146,7 +146,7 @@ namespace Data
         /// <param name="spellData">    SpellData of the spell we are trying to cast or was casted </param>
         /// <param name="spell">        If the spell has already spawned, provide it (otherwise will be null) </param>
         /// <returns></returns>
-        public readonly SpellGFX Spawn(Controller caster, SpellData spellData, Spell spell = null, StateEffect stateEffect = null, Controller targetController = null)
+        public readonly SpellGFX Spawn(Controller caster, SpellData spellData, Spell spell = null, string stateEffectName = null, Controller targetController = null)
         {
             GameObject go;
             if (Prefab == null)
@@ -169,7 +169,7 @@ namespace Data
             //    spellPreview.Intialize(controller);
             //}
 
-            spellGfx.Initialize(this.SpawnTarget != ESpawnTarget.Target ? caster : targetController, spellData, spell, stateEffect, this);
+            spellGfx.Initialize(this.SpawnTarget != ESpawnTarget.Target ? caster : targetController, spellData, spell, stateEffectName, this);
             return spellGfx;
         }
 

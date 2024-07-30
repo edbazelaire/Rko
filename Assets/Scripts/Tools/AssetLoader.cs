@@ -2,6 +2,7 @@
 using Enums;
 using Game.Spells;
 using Menu.Common.Buttons;
+using Save;
 using System.Linq;
 using UnityEngine;
 
@@ -93,8 +94,8 @@ namespace Tools
         public const string c_IconPath                      = "Sprites/Icons/";
         public const string c_IconCharactersPath            = c_IconPath + "Characters/";
         public const string c_IconSpellsPath                = c_IconPath + "Spells/";
+        public const string c_IconStateEffectsPath          = c_IconSpellsPath + "StateEffects/";
         public const string c_IconRunesPath                 = c_IconPath + "Runes/";
-        public const string c_IconStateEffectsPath          = c_IconPath + "StateEffects/";
         public const string c_ItemsPath                     = c_IconPath + "Items/";
         public const string c_CurrenciesPath                = c_ItemsPath + "Currencies/";
         public const string c_ChestsIconPath                = c_ItemsPath + "Chests/";
@@ -168,10 +169,13 @@ namespace Tools
 
         #region Data Loading
 
-        public static ArenaData LoadArenaData(EArenaType arena)
+        public static ArenaData LoadArenaData(EArenaType arena, EArenaDifficulty? arenaDifficulty = null)
         {
-            return Load<ArenaData>(arena.ToString(), c_ArenaDataPath);
+            if (! arenaDifficulty.HasValue)
+                arenaDifficulty = ProgressionCloudData.GetArenaDifficulty(arena);
+            return Load<ArenaData>(arena.ToString() + "_" + arenaDifficulty.Value.ToString(), c_ArenaDataPath);
         }
+
 
         #endregion
 
@@ -317,7 +321,7 @@ namespace Tools
 
         #region Icon Loading
 
-        public static Sprite LoadIcon (string itemName, System.Type iconType)
+        public static Sprite LoadIcon (string itemName, System.Type iconType = null)
         {
             string path;
             
@@ -352,8 +356,11 @@ namespace Tools
             }
             else
             {
-                ErrorHandler.Error("Unhandled type of enum " + iconType + " for icon " + itemName + " - skipping");
-                return null;
+                if (iconType != null)
+                    ErrorHandler.Error("Unhandled type of enum " + iconType + " for icon " + itemName + " - skipping");
+                
+                // no specific found : load any icon 
+                return Load<Sprite>("c_IconPrefix" + itemName, c_IconPath);
             }
             return Load<Sprite>(path + c_IconPrefix + itemName);
         }
@@ -368,9 +375,14 @@ namespace Tools
             return Load<Sprite>(c_IconCharactersPath + c_IconPrefix + character.ToString());
         }
 
-        public static Sprite LoadSpellIcon(ESpell spell)
+        /// <summary>
+        /// Load any icon that is spell related (can be "Trigger" or "StateEffects", ...)
+        /// </summary>
+        /// <param name="name">Name of the effect, the spell or the trigger effect</param>
+        /// <returns></returns>
+        public static Sprite LoadSpellIcon(string name)
         {
-            return Load<Sprite>(c_IconSpellsPath + c_IconPrefix + spell.ToString());
+            return Load<Sprite>(c_IconPrefix + name, c_IconSpellsPath);
         }
 
         public static Sprite LoadStateEffectIcon(string stateEffect)

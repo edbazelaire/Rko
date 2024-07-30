@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Description: 
   m_DescriptionVariables: 
+  m_StateEffectType: 0
   m_VisualEffects:
   - Prefab: {fileID: 8992406793559661190, guid: 0a4d304b385159340bf3a0d4e7535924, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 3
       EndSpellPart: 0
@@ -32,6 +34,7 @@ MonoBehaviour:
     Animation: 0
     StateEffects: 
   - Prefab: {fileID: 3907952559497218901, guid: c6e8443b2e3b7b6459f659de6ee2d6ce, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 3
       EndSpellPart: 5
@@ -47,9 +50,6 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 
-  m_SpawnBodyParts: 
-  m_Offset: {x: 0, y: 0}
-  m_ColorSwitch: {r: 1, g: 1, b: 1, a: 1}
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
   m_PermanantSoundFX: {fileID: 0}
@@ -57,7 +57,7 @@ MonoBehaviour:
   m_DefaultState: 0
   m_Duration: -1
   m_MaxStacks: 1
-  m_SpeedBonus: 0.05
+  m_SpeedBonus: 0.1
   m_CastSpeed: 0
   m_AttackSpeed: 0.15
   m_CooldownReduction: 0
@@ -67,7 +67,7 @@ MonoBehaviour:
   m_ResistancePerc: 0
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0.2
-  m_BonusLifeSteal: 0
+  m_BonusLifeSteal: 0.2
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel:
@@ -77,5 +77,7 @@ MonoBehaviour:
     ScalingFactor: 0.1
   - StateEffectProperty: 8
     ScalingFactor: 0.1
+  - StateEffectProperty: 16
+    ScalingFactor: 0.05
   m_StateEffectScalingStacks: []
   m_MissingLifeFactor: 1

@@ -13,6 +13,19 @@ MonoBehaviour:
   m_Name: FrostVenomBarrage
   m_EditorClassIdentifier: 
   Rarety: 1
+  m_Description: Shoots {0} projectiles {1} times. Each dealing {2} damages, applying
+    {3} and {4}
+  m_DescriptionVariables:
+  - Name: Projectiles
+    WithIcon: 1
+  - Name: Waves
+    WithIcon: 1
+  - Name: Damages
+    WithIcon: 1
+  - Name: Frost
+    WithIcon: 1
+  - Name: Poison
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 4510707380993797748, guid: 2f8def97db0868f42a5bf121916615be, type: 3}
   SpellEventActions: []
@@ -64,6 +77,7 @@ MonoBehaviour:
   AnimationTimer: 0.55
   m_Cooldown: 20
   Trajectory: 1
+  m_StopOnTargetPos: 0
   m_Speed: 10
   ProjectileData: {fileID: 0}
   MultiProjectileType: 1

@@ -13,6 +13,21 @@ MonoBehaviour:
   m_Name: EmperorOfFlames
   m_EditorClassIdentifier: 
   Rarety: 3
+  m_Description: Incarnates the Emperor of Flames for {0} seconds, increasing your
+    Damages by {1}, your Cast Speed by {2} and reducing the Cooldown of your spells
+    by {3}.<br>Any time you hit an enemy with a spell or an AutoAttack, applies a
+    stack of {4} <br>Only one buff of type "Incarnation" can be active on your character.
+  m_DescriptionVariables:
+  - Name: Duration
+    WithIcon: 1
+  - Name: BonusDamagesPerc
+    WithIcon: 1
+  - Name: CastSpeed
+    WithIcon: 1
+  - Name: CooldownReductionPerc
+    WithIcon: 1
+  - Name: Burn
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions: []

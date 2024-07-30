@@ -43,17 +43,5 @@ namespace MainMenu.ProfileTab
         }
 
         #endregion
-
-
-        #region GUI Manipulators
-
-        public override void Activate(bool activate)
-        {
-            base.Activate(activate);
-
-            gameObject.SetActive(activate);
-        }
-
-        #endregion
     }
 }

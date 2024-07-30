@@ -13,6 +13,15 @@ MonoBehaviour:
   m_Name: Meteor
   m_EditorClassIdentifier: 
   Rarety: 2
+  m_Description: A huge meteor falling from the sky dealing {0} damages and applying
+    {1} in an area of {2}
+  m_DescriptionVariables:
+  - Name: Damages
+    WithIcon: 1
+  - Name: Scorched
+    WithIcon: 1
+  - Name: Size
+    WithIcon: 0
   Linked: 0
   Graphics: {fileID: 8073250784623665408, guid: 2b184465c434d1549ba65c362b97bbf1, type: 3}
   SpellEventActions:
@@ -90,4 +99,4 @@ MonoBehaviour:
   m_Cooldown: 45
   Trajectory: 3
   m_StopOnTargetPos: 0
-  m_Speed: 10
+  m_Speed: 8

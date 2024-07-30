@@ -13,10 +13,23 @@ MonoBehaviour:
   m_Name: Corrupted
   m_EditorClassIdentifier: 
   Rarety: 3
+  m_Description: Consume all {0} stacks on your enemy to corrupt your character for
+    {1} seconds. The effect of the incarnation is multiplied for each stacks consummed.<br>Replaces
+    your auto attack by an explosive projectile, dealing 80 damages in a zone of
+    size 2, applying 3 stacks of {2}.<br>Only one buff of type "Incarnation" can
+    be active on your character.
+  m_DescriptionVariables:
+  - Name: Cursed
+    WithIcon: 1
+  - Name: Duration
+    WithIcon: 1
+  - Name: Cursed
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions:
   - Prefab: {fileID: 7582611277444767761, guid: 1e2eb207c38c6a348a832c85ad684817, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 2
       EndSpellPart: 0
@@ -33,6 +46,7 @@ MonoBehaviour:
     Animation: 0
     StateEffects: 15000000
   - Prefab: {fileID: 2750916684303480959, guid: 81e3e6d277729ef4bae7709f2d1aad17, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 3
       EndSpellPart: 0

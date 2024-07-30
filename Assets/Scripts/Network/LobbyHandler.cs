@@ -9,6 +9,7 @@ using Save;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Tools;
 using Unity.Netcode;
@@ -56,6 +57,9 @@ namespace Network
         const float LOBBY_ERROR_TIMER       = 15f;
 
         // Update & Heartbeat management
+        const string KEY_GAME_MODE          = "GameMode";
+        const string KEY_REGION             = "Region";
+        const string KEY_SUB_REGION         = "SubRegion";
         const string KEY_RELAY_CODE         = "RelayCode";
         const float HEARTBEAT_TIMER         = 15f;
         const float UPDATE_LOBBY_TIMER      = 1.5f;
@@ -67,8 +71,8 @@ namespace Network
         private Lobby       m_JoinedLobby;
         private string      m_RelayCode;
 
-        private EGameMode m_GameMode = EGameMode.Arena;
-        private EArenaType m_ArenaType = EArenaType.FireArena;
+        private EGameMode m_GameMode    = EGameMode.Arena;
+        private EArenaType m_ArenaType  = EArenaType.FireArena;
 
         private float m_HeartbeatTimer    = 0.0f;
         private float m_UpdateLobbyTimer  = 0.0f;
@@ -167,6 +171,8 @@ namespace Network
                         return;
 
                     case ELobbyState.SceneLoading:
+                        SceneLoader.Instance.LoadScene("Arena");
+
                         await SceneLoader.Instance.SceneLoadingAsync();
 
                         if (!IsHost)
@@ -183,7 +189,7 @@ namespace Network
                         UpdateLobbyRelayCode(m_RelayCode);
 
                         // spawn the GameManager on Server
-                        m_CurrentCoroutine = StartCoroutine(WaitGameManagerCoroutine());
+                        SetState(ELobbyState.WaitingGameManager);
                         return;
 
                     case ELobbyState.WaitingRelayCode:
@@ -237,7 +243,6 @@ namespace Network
                 yield return null;
             }
 
-            SceneLoader.Instance.LoadScene("Arena");
             NextState();
         }
 
@@ -351,8 +356,11 @@ namespace Network
                         Data = StaticPlayerData.ToPlayerDataObject()
                     },
                     Data = new Dictionary<string, DataObject> {
-                        { "GameMode", new DataObject(DataObject.VisibilityOptions.Public, "1v1", DataObject.IndexOptions.S1) },
-                        { KEY_RELAY_CODE, new DataObject(DataObject.VisibilityOptions.Member, "", DataObject.IndexOptions.S2) }
+                        { KEY_RELAY_CODE,   new DataObject(DataObject.VisibilityOptions.Member, "", DataObject.IndexOptions.S1) },
+                        { KEY_GAME_MODE,    new DataObject(DataObject.VisibilityOptions.Public, m_GameMode.ToString(), DataObject.IndexOptions.S2) },
+                        { KEY_REGION,       new DataObject(DataObject.VisibilityOptions.Public, RelayHandler.TrimRegion(ProfileCloudData.Region), DataObject.IndexOptions.S3) },
+                        { KEY_SUB_REGION,   new DataObject(DataObject.VisibilityOptions.Public, ProfileCloudData.Region, DataObject.IndexOptions.S4) },
+                        
                     }
                 };
 
@@ -682,16 +690,23 @@ namespace Network
 
 
         #region Tools Methods
+
         public async Task<List<Lobby>> ListLobbies()
         {
+            List<Lobby> lobbies = new List<Lobby>();
             try
             {
+                // NO REGION: return empty lobbies
+                if (string.IsNullOrEmpty(ProfileCloudData.Region))
+                    return lobbies;
+
                 QueryLobbiesOptions queryLobbiesOptions = new QueryLobbiesOptions
                 {
                     Count = 25,
                     Filters = new List<QueryFilter> {
                         new QueryFilter(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT),
-                        new QueryFilter(QueryFilter.FieldOptions.S1, "1v1", QueryFilter.OpOptions.EQ)
+                        new QueryFilter(QueryFilter.FieldOptions.S2, m_GameMode.ToString(), QueryFilter.OpOptions.EQ),
+                        new QueryFilter(QueryFilter.FieldOptions.S3, RelayHandler.TrimRegion(ProfileCloudData.Region), QueryFilter.OpOptions.EQ)
                     },
                     Order = new List<QueryOrder> {
                         new QueryOrder(false, QueryOrder.FieldOptions.Created)
@@ -702,19 +717,18 @@ namespace Network
 
                 ErrorHandler.Log("Lobbies found: " + queryResponse.Results.Count, ELogTag.Lobby);
 
-                foreach (var lobby in queryResponse.Results)
-                {
-                    ErrorHandler.Log("Lobby: " + lobby.Name + " - MaxPlayers : " + lobby.MaxPlayers, ELogTag.Lobby);
-                }
-
-                return queryResponse.Results;
-
+                // Filter and sort the results
+                lobbies = queryResponse.Results
+                    .OrderByDescending(lobby => lobby.Data[KEY_SUB_REGION].Value == ProfileCloudData.Region)
+                    .ThenBy(lobby => lobby.Created)
+                    .ToList();
             }
             catch (LobbyServiceException e)
             {
                 ErrorHandler.Error("Failed to list lobbies: " + e.Message);
-                return new List<Lobby>();
             }
+
+            return lobbies;
         }
 
         /// <summary>
@@ -764,8 +778,8 @@ namespace Network
             return () =>
             {
                 string message =
-                "An error has occured while creating " + m_GameMode + " game mode : "
-                    + "\n   + Lobby State : " + m_State
+                "An error has occured while creating " + m_GameMode.ToString() + " game mode : "
+                    + "\n   + Lobby State : " + m_State.ToString()
                     + (reason.Length > 0 ? "\n   + Reason : " + reason : "")
                     + (exceptionMessage.Length > 0 ? "\n   + Exception : " + exceptionMessage : "");
 

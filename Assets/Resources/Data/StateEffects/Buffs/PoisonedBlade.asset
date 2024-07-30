@@ -14,25 +14,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Description: 
   m_DescriptionVariables: 
-  m_VisualEffect: {fileID: 1923825553450198, guid: 60f6ce11d75f17540a6cf9652c8c3ac5, type: 3}
-  m_SpawnBodyParts: 0200000001000000
-  m_ColorSwitch: {r: 1, g: 1, b: 1, a: 1}
+  m_StateEffectType: 0
+  m_VisualEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 0
   m_DefaultState: 0
-  m_Duration: 5
+  m_Duration: 10
   m_MaxStacks: 1
   m_SpeedBonus: 0
   m_CastSpeed: 0
   m_AttackSpeed: 0
+  m_CooldownReduction: 0
+  m_CooldownReductionPerc: 0
   m_Shield: 0
   m_ResistanceFix: 0
   m_ResistancePerc: 0
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
   m_BonusLifeSteal: 0
+  m_OnStartStateEffect: []
+  m_OnEndStateEffect: []
   m_StateEffectScalingLevel:
   - StateEffectProperty: 1
     ScalingFactor: 0.1
@@ -41,7 +44,6 @@ MonoBehaviour:
   m_AllyStateEffects: []
   m_EnemyStateEffects:
   - StateEffect: 9
-    Stacks: 0
-    Duration: 0
-    SpeedBonus: 0
+    Stacks: 1
+    OverridingProperties: []
   m_ReplacementData: {fileID: 0}

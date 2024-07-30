@@ -67,6 +67,12 @@ namespace Data
                 if (AchievementReward == EAchievementReward.Badge)
                     return ProfileCloudData.BadgeToString(Badge, League);
 
+                if (EnumValue == null)
+                {
+                    ErrorHandler.Error("EnumValue is null - return");
+                    return "";
+                }
+
                 return EnumValue.ToString();
             }
 

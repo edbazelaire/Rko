@@ -41,7 +41,7 @@ namespace Menu.Common.Buttons
         /// </summary>
         protected virtual void SetUpSpellIconUI()
         {
-            m_Icon.sprite = AssetLoader.LoadSpellIcon(Spell);
+            m_Icon.sprite = AssetLoader.LoadIcon(Spell);
             SetBottomOverlay(string.Format(LEVEL_FORMAT, m_CollectableCloudData.Level));
             SetColor(SpellLoader.GetRaretyData(Spell).Color);
         }

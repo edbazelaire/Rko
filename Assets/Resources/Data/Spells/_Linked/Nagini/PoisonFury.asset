@@ -13,10 +13,19 @@ MonoBehaviour:
   m_Name: PoisonFury
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: Shoots {0} Poison Spits each dealing {1} Damages and applying {2}
+  m_DescriptionVariables:
+  - Name: Projectiles
+    WithIcon: 1
+  - Name: Damages
+    WithIcon: 1
+  - Name: Poison
+    WithIcon: 1
   Linked: 1
   Graphics: {fileID: 0}
   SpellEventActions:
   - Prefab: {fileID: 1923825553450198, guid: bd4cb3e325f36c84f89950ca3ce6659d, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 1
       EndSpellPart: 2
@@ -31,6 +40,7 @@ MonoBehaviour:
     IsFollowing: 1
     Offset: {x: 0, y: 0}
     Animation: 0
+    StateEffects: 
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
@@ -69,6 +79,7 @@ MonoBehaviour:
   AnimationTimer: 0.4
   m_Cooldown: 0.5
   Trajectory: 1
+  m_StopOnTargetPos: 0
   m_Speed: 10
   ProjectileData: {fileID: 11400000, guid: 93a080128b9d08b41be2771c8b8e659a, type: 2}
   MultiProjectileType: 2

@@ -21,7 +21,7 @@ namespace Game.Spells
         public override int GetInt(EStateEffectProperty property)
         {
             if (m_Controller == null)
-                return base.GetInt(property);
+                return (int)Mathf.Round(ApplyMissingLifeFactor(base.GetInt(property), 0, 1));
 
             return (int)Mathf.Round(ApplyMissingLifeFactor(base.GetInt(property), m_Controller.Life.Hp.Value, m_Controller.Life.MaxHp.Value));
         }
@@ -29,8 +29,8 @@ namespace Game.Spells
         public override float GetFloat(EStateEffectProperty property)
         {
             if (m_Controller == null)
-                return base.GetFloat(property);
-          
+                return ApplyMissingLifeFactor(base.GetFloat(property), 0, 1);
+
             return ApplyMissingLifeFactor(base.GetFloat(property), m_Controller.Life.Hp.Value, m_Controller.Life.MaxHp.Value);
         }
 

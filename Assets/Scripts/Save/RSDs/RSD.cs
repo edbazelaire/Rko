@@ -179,18 +179,30 @@ namespace Save.RSDs
         /// <returns></returns>
         public IEnumerator LoadData(string url)
         {
-            UnityWebRequest request = UnityWebRequest.Get(url);
+            UnityWebRequest request;
+            int retryAttempt = 0;
+            do
+            {
+                retryAttempt++;
+                request = UnityWebRequest.Get(url);
+                yield return request.SendWebRequest();
 
-            yield return request.SendWebRequest();
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    // error 
+                    ErrorHandler.Warning(request.result + " - Attempt (" + retryAttempt + ") : Unable to load RSD " + this.GetType() + " at " + url);
+
+                    yield return null;
+                }
+            } while (request.result != UnityWebRequest.Result.Success && retryAttempt <= 3);
 
             if (request.result != UnityWebRequest.Result.Success)
             {
                 // error 
-                ErrorHandler.Error(request.result + " : Unable to load RSD " + this.GetType() +" at " + url);
+                ErrorHandler.Error(request.result + " : Unable to load RSD " + this.GetType() + " at " + url);
                 yield break;
             }
 
-            //string content = CleanResponseText(request.downloadHandler.text);
             SSheetsData data = JsonConvert.DeserializeObject<SSheetsData>(request.downloadHandler.text);
 
             ReadSheetsData(data);

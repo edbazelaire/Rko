@@ -13,6 +13,21 @@ MonoBehaviour:
   m_Name: PyrotoxinMist
   m_EditorClassIdentifier: 
   Rarety: 2
+  m_Description: Zone applying {0} damages each {1} seconds for {2} seconds. Also
+    applies a {3} and a {4} stack. The size of the zone grows by {5} during its lifetime
+  m_DescriptionVariables:
+  - Name: TickDamages
+    WithIcon: 1
+  - Name: DurationTick
+    WithIcon: 0
+  - Name: Duration
+    WithIcon: 1
+  - Name: Burn
+    WithIcon: 1
+  - Name: Poison
+    WithIcon: 1
+  - Name: GrowSizeFactor
+    WithIcon: 0
   Linked: 0
   Graphics: {fileID: 167252, guid: e7c3a9353c0302b4cb1fab702e1db14f, type: 3}
   SpellEventActions: []
@@ -32,7 +47,7 @@ MonoBehaviour:
   MaxHit: 0
   EnergyGain: 5
   EnergyCost: 0
-  m_Damage: 15
+  m_Damage: 0
   m_Heal: 0
   m_LifeSteal: 0
   Distance: -1
@@ -40,9 +55,7 @@ MonoBehaviour:
   m_Duration: 2
   Delay: 1
   m_SpellsScalingLevel:
-  - Property: 2
-    Value: 0.1
-  - Property: 1
+  - Property: 14
     Value: 0.1
   - Property: 3
     Value: 0.05
@@ -64,6 +77,9 @@ MonoBehaviour:
   m_Cooldown: 20
   m_SpellSpawn: 1
   DurationTick: 0.5
+  m_TickDamages: 15
+  m_TickHeal: 0
+  m_TickShield: 0
   GrowSizeFactor: 2.5
   MaxSizeAt: 0.7
   PersistentStateEffects: []

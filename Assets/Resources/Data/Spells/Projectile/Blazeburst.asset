@@ -13,6 +13,15 @@ MonoBehaviour:
   m_Name: Blazeburst
   m_EditorClassIdentifier: 
   Rarety: 3
+  m_Description: Charging energy for {0} seconds to launch a powerfull missile in
+    a straight line, dealing {1} damages and applying a {2} for 2 seconds
+  m_DescriptionVariables:
+  - Name: CastDuration
+    WithIcon: 0
+  - Name: Damages
+    WithIcon: 1
+  - Name: Stun
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 8073250784623665408, guid: bf45f65dd6f8fdd418ab488945ccd61b, type: 3}
   SpellEventActions:

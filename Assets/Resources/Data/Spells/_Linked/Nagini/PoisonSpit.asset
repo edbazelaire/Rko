@@ -13,10 +13,17 @@ MonoBehaviour:
   m_Name: PoisonSpit
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: Spits poison to the enemy, dealing {0} damages and applying {1}
+  m_DescriptionVariables:
+  - Name: Damages
+    WithIcon: 1
+  - Name: Poison
+    WithIcon: 1
   Linked: 1
   Graphics: {fileID: 1923825553450198, guid: c518ffb802a01b947b08d6b8c8ea9948, type: 3}
   SpellEventActions:
   - Prefab: {fileID: 1923825553450198, guid: bd4cb3e325f36c84f89950ca3ce6659d, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 1
       EndSpellPart: 2
@@ -33,6 +40,7 @@ MonoBehaviour:
     Animation: 0
     StateEffects: 
   - Prefab: {fileID: 181780, guid: 9dbd6578ad45ab34da731a133a3bd5f7, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 4
       EndSpellPart: 0
@@ -87,4 +95,5 @@ MonoBehaviour:
   AnimationTimer: 0.6
   m_Cooldown: 0
   Trajectory: 1
+  m_StopOnTargetPos: 0
   m_Speed: 11

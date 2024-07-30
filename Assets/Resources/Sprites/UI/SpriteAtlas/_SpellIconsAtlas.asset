@@ -1,0 +1,139 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84a92b25f83d49b9bc132d206b370281, type: 3}
+  m_Name: _SpellIconsAtlas
+  m_EditorClassIdentifier: 
+  m_Version: 1.1.0
+  m_FaceInfo:
+    m_FaceIndex: 0
+    m_FamilyName: 
+    m_StyleName: 
+    m_PointSize: 0
+    m_Scale: 0
+    m_UnitsPerEM: 0
+    m_LineHeight: 0
+    m_AscentLine: 0
+    m_CapLine: 0
+    m_MeanLine: 0
+    m_Baseline: 0
+    m_DescentLine: 0
+    m_SuperscriptOffset: 0
+    m_SuperscriptSize: 0
+    m_SubscriptOffset: 0
+    m_SubscriptSize: 0
+    m_UnderlineOffset: 0
+    m_UnderlineThickness: 0
+    m_StrikethroughOffset: 0
+    m_StrikethroughThickness: 0
+    m_TabWidth: 0
+  m_Material: {fileID: 3995734495515248966}
+  spriteSheet: {fileID: 2800000, guid: b9726a165f70e9741ace3770c5247d98, type: 3}
+  m_SpriteCharacterTable:
+  - m_ElementType: 2
+    m_Unicode: 65534
+    m_GlyphIndex: 0
+    m_Scale: 1
+    m_Name: Ic_Size
+  m_GlyphTable:
+  - m_Index: 0
+    m_Metrics:
+      m_Width: 512
+      m_Height: 512
+      m_HorizontalBearingX: -350
+      m_HorizontalBearingY: 400
+      m_HorizontalAdvance: 0
+    m_GlyphRect:
+      m_X: 0
+      m_Y: 0
+      m_Width: 512
+      m_Height: 512
+    m_Scale: 1.5
+    m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
+    sprite: {fileID: 21300000, guid: b9726a165f70e9741ace3770c5247d98, type: 3}
+  spriteInfoList: []
+  fallbackSpriteAssets:
+  - {fileID: 11400000, guid: 01de723083cec4749b602d0b87ca5f77, type: 2}
+  - {fileID: 11400000, guid: bc3b733c7afefcb41bc5c72c63679f6c, type: 2}
+  - {fileID: 11400000, guid: 2fc8dc82f47feb248896f3c14e3dd3b0, type: 2}
+  - {fileID: 11400000, guid: 499e9b4ea5ccfe746a07f7559be7a23f, type: 2}
+  - {fileID: 11400000, guid: e8312e07c8847af468bf1d68eb2e09d3, type: 2}
+  - {fileID: 11400000, guid: 4fe654fc6b06c154082c357ee25639f2, type: 2}
+  - {fileID: 11400000, guid: 7c2e673ad08db274dacdc1fe38414873, type: 2}
+  - {fileID: 11400000, guid: d552360549ffe6544a321220664d07cd, type: 2}
+  - {fileID: 11400000, guid: cfea54dfb52c9e14993df61df2bea01c, type: 2}
+  - {fileID: 11400000, guid: fecd0ed6e0133b8479915ead1dc196ad, type: 2}
+  - {fileID: 11400000, guid: 6c3d984e44a955346b0632fecfab572f, type: 2}
+  - {fileID: 11400000, guid: bea3c43c4e4a96f4fb44f95cc8d33c89, type: 2}
+  - {fileID: 11400000, guid: 725f6d4e8aa1fd24a9fe0cbbd8d3d6d3, type: 2}
+  - {fileID: 11400000, guid: 9d91d05e550b7364c92c4c1a418898fc, type: 2}
+  - {fileID: 11400000, guid: 89f83ca8de665ef43b6b5d0038a04a7c, type: 2}
+  - {fileID: 11400000, guid: cde7fc9384c6eb04c8f65ad40142c835, type: 2}
+  - {fileID: 11400000, guid: 0fc8750d6786f5044817258e14f36320, type: 2}
+  - {fileID: 11400000, guid: ae21a25f57784c24bbbdebdb4b50bb2f, type: 2}
+  - {fileID: 11400000, guid: 26162316247739f4e819b27c7b1fd8c6, type: 2}
+  - {fileID: 11400000, guid: 5e50378cfbd79654a933fbfa2d42fc7d, type: 2}
+  - {fileID: 11400000, guid: 180d32a6fa85a484d8d6b93f06b75c7d, type: 2}
+  - {fileID: 11400000, guid: 6a2d2b8875aa9164cbdd9b7f74302c95, type: 2}
+  - {fileID: 11400000, guid: ca00d58b8b864204b802e162aae579bf, type: 2}
+  - {fileID: 11400000, guid: 155801cd01ef8744784826d994497823, type: 2}
+  - {fileID: 11400000, guid: c5cee5f280cd97d4f84838004b6c4ca3, type: 2}
+  - {fileID: 11400000, guid: 1c571ae203f93ab44a71d014b70c519f, type: 2}
+  - {fileID: 11400000, guid: 56729bd0c94f73648a184713813a402c, type: 2}
+  - {fileID: 11400000, guid: 51e962559bbed5d4284d592efd2333ca, type: 2}
+  - {fileID: 11400000, guid: ef5298c2c747e4f46ad0db01422bc4fb, type: 2}
+  - {fileID: 11400000, guid: 7aa7570a84dbb0a4b94fe5f7a45cac10, type: 2}
+  - {fileID: 11400000, guid: 5818b0397c0ce9c42bb2915c51ab70da, type: 2}
+  - {fileID: 11400000, guid: ab748b3c207651c42bcdbde7a81d1939, type: 2}
+  - {fileID: 11400000, guid: 70cd92922304cbd4389ef6aef3c316cb, type: 2}
+--- !u!21 &3995734495515248966
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Ic_Size Material
+  m_Shader: {fileID: 4800000, guid: cf81c85f95fe47e1a27f6ae460cf182c, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: b9726a165f70e9741ace3770c5247d98, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _ColorMask: 15
+    - _CullMode: 0
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    - _UseUIAlphaClip: 0
+    m_Colors:
+    - _ClipRect: {r: -32767, g: -32767, b: 32767, a: 32767}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

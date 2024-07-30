@@ -69,7 +69,7 @@ namespace Menu.PopUps
             foreach (var item in infos)
             {
                 var infoRow = Instantiate(templateInfoRow, m_PropertiesContainer.transform).GetComponent<SpellInfoRowUI>();
-                infoRow.Initialize(item.Key, item.Value, nextLevelInfos[item.Key], CollectableInfoPopUp.CheckIsPercentageValue(item.Key));
+                infoRow.Initialize(item.Key, item.Value, nextLevelInfos[item.Key]);
             }
         }
 

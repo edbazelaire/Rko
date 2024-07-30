@@ -4,6 +4,7 @@ using Inventory;
 using Menu.Common.Buttons;
 using Save;
 using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 using TMPro;
 using Tools;
 using Unity.VisualScripting;
@@ -82,7 +83,7 @@ namespace Menu.Common
                 if (layout != null)
                 {
                     layout.enabled = false;
-                    CoroutineManager.DelayMethod(() => layout.enabled = true);
+                    CoroutineManager.DelayMethod(() => { if (layout.IsDestroyed()) return; layout.enabled = true; });
                 }
 
                 // deactivate icon

@@ -13,10 +13,20 @@ MonoBehaviour:
   m_Name: FireBarrage
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: Shoots {0} fireballs at once spreading on the enemy's area, each
+    dealing {1} damages and applying {2}
+  m_DescriptionVariables:
+  - Name: Projectiles
+    WithIcon: 1
+  - Name: Damages
+    WithIcon: 1
+  - Name: Burn
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 7995130027969150761, guid: b1712247fe6bb8f43bc42f653ed748ec, type: 3}
   SpellEventActions:
   - Prefab: {fileID: 5701818165401177283, guid: 14399bd3979c0b04ba97585f60659760, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 1
       EndSpellPart: 2
@@ -73,6 +83,7 @@ MonoBehaviour:
   AnimationTimer: 0.5
   m_Cooldown: 20
   Trajectory: 1
+  m_StopOnTargetPos: 0
   m_Speed: 7
   ProjectileData: {fileID: 0}
   MultiProjectileType: 1
