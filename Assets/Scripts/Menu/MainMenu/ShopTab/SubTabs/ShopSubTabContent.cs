@@ -25,13 +25,6 @@ namespace Menu.MainMenu
 
         }
 
-        public override void Activate(bool activate)
-        {
-            base.Activate(activate);
-
-            gameObject.SetActive(activate);
-        }
-
         #endregion
     }
 }

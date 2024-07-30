@@ -19,6 +19,7 @@
         SpellInfoPopUp,
         StateEffectPopUp,
         RuneSelectionPopUp,
+        TriggerEffectPopUp,
 
         // -- message PopUps
         MessagePopUp,
@@ -43,6 +44,12 @@
     {
         FireArena,
         //FrostArena,
+    }
+
+    public enum EArenaDifficulty
+    {
+        Normal,
+        HardCore,
     }
 
     public enum ECharacter
@@ -104,6 +111,7 @@
         PlagueArrows,
         EmperorOfFlames,
         ExperimentalVial,
+        Vortex,
 
         Count
     }
@@ -278,8 +286,9 @@
     {
         None = 0,
 
-        Center,                 // spawn at the Center of the provided location
-        Ground,                 // spawn at the feets of the caster
+        Center,                 // spawn at the Center of the provided position
+        Ground,                 // spawn on the ground (y = 0) at the X requested position
+        Sky,                    // spawn in the sky at the X requested position
     }
 
     public enum EBodyPart
@@ -335,6 +344,14 @@
         SpecialAnimation,
     }
 
+    public enum EStateEffectType
+    {
+        Default,
+        Incarnation,
+        AutoAttackBuff,
+        SpellBuff,
+    }
+
     public enum ESpellProperty
     {
         Non,
@@ -349,6 +366,12 @@
         DelayBetweenLaunches,
         DelayBetweenWaves,
         ProjectileZoneSize,
+        Size,
+        DurationTick,
+        GrowSizeFactor,
+        TickDamages,
+        TickHeal,
+        TickShield,
     }
 
     public enum EStateEffectProperty
@@ -461,6 +484,7 @@
         Animation           = 106,      // animations playing
         StateEffects        = 107,      // state effects changes
         SpellGFX            = 107,      // spell graphics playing
+        StateEffectGFX      = 108,      // spell graphics playing
 
         // AI
         AI                  = 200,

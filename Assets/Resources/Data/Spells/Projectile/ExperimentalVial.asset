@@ -13,6 +13,28 @@ MonoBehaviour:
   m_Name: ExperimentalVial
   m_EditorClassIdentifier: 
   Rarety: 1
+  m_Description: A vial of chemical products that applies 1 stack of each base effects
+    ({0}, {1}, {2}, {3}) and refreshes all advanced effects ({4}, {5}, {6}, {7})
+    while dealing {8} damages in a zone
+  m_DescriptionVariables:
+  - Name: Frost
+    WithIcon: 1
+  - Name: Burn
+    WithIcon: 1
+  - Name: Poison
+    WithIcon: 1
+  - Name: Cursed
+    WithIcon: 1
+  - Name: Frozen
+    WithIcon: 1
+  - Name: Scorched
+    WithIcon: 1
+  - Name: Infected
+    WithIcon: 1
+  - Name: Malediction
+    WithIcon: 1
+  - Name: Damages
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 160890, guid: f172c17128687804e89dc22fb9b17bb0, type: 3}
   SpellEventActions: []
@@ -58,4 +80,5 @@ MonoBehaviour:
   AnimationTimer: 0.5
   m_Cooldown: 20
   Trajectory: 1
+  m_StopOnTargetPos: 0
   m_Speed: 10

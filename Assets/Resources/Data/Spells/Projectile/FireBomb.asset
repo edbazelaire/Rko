@@ -13,6 +13,15 @@ MonoBehaviour:
   m_Name: FireBomb
   m_EditorClassIdentifier: 
   Rarety: 1
+  m_Description: Throw a fireball that deals {0} damages and applies {1} in an area
+    of {2}
+  m_DescriptionVariables:
+  - Name: Damages
+    WithIcon: 1
+  - Name: Scorched
+    WithIcon: 1
+  - Name: Size
+    WithIcon: 0
   Linked: 0
   Graphics: {fileID: 1258406917094090, guid: d17c3aaa467df414ba6c247f64f8d4bb, type: 3}
   SpellEventActions:

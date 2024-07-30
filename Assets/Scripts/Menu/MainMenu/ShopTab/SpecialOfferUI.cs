@@ -195,7 +195,7 @@ namespace Menu.MainMenu.ShopTab
 
             return new SShopData(
                 name:           "",
-                icon:           AssetLoader.LoadSpellIcon(spell),
+                icon:           AssetLoader.LoadIcon(spell),
                 rewards:        rewards,
                 currency:       ECurrency.Golds,
                 cost:           price,

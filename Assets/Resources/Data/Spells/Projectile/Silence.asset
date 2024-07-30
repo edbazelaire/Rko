@@ -13,6 +13,11 @@ MonoBehaviour:
   m_Name: Silence
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: Shoot a projectile in a straight line, applying {0} on hitted enemy
+    for 3 seconds, making him unable to use spells or auto attacks
+  m_DescriptionVariables:
+  - Name: Silence
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 1453329069581620619, guid: f87c65a9356a6734b96e661ed7ef7bbc, type: 3}
   SpellEventActions: []
@@ -61,4 +66,5 @@ MonoBehaviour:
   AnimationTimer: 0.3
   m_Cooldown: 20
   Trajectory: 2
+  m_StopOnTargetPos: 0
   m_Speed: 10

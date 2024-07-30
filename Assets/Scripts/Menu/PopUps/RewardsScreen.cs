@@ -40,7 +40,8 @@ namespace Menu.PopUps
 
         // SPECIFIC DATA
         SRewardsData        m_RewardsData;
-        string              m_Context;
+        string              m_Context                   = "";
+        Action              m_OnRewardCollected         = null;
 
         bool                m_CanSkip                   = false;
         bool                m_Skip                      = false;
@@ -73,16 +74,18 @@ namespace Menu.PopUps
         }
 
         /// <summary>
-        /// Initialize with a chest
+        /// Initialize data to collect
         /// </summary>
-        /// <param name="chestType"></param>
-        /// <param name="chestIndex"></param>
-        public void Initialize(SRewardsData rewardsData, string context)
+        /// <param name="rewardsData">          every rewards to collect (golds, chests, achievements, ...) </param>
+        /// <param name="context">              [ANALYTICS] context from where this rewards came from       </param>
+        /// <param name="onRewardCollected">    Action() to fire after the rewards are collected            </param>
+        public void Initialize(SRewardsData rewardsData, string context, Action onRewardCollected = null)
         {
             m_Skip                      = false;
             m_RewardsData               = rewardsData;
             m_Context                   = context;
             m_CurrentChestRewardData    = null;
+            m_OnRewardCollected         = onRewardCollected;
 
             base.Initialize();
         }
@@ -106,6 +109,8 @@ namespace Menu.PopUps
 
         protected override void OnExit()
         {
+            m_OnRewardCollected?.Invoke();    
+
             base.OnExit();
 
             SoundFXManager.MusicAudioSource.volume *= 2;

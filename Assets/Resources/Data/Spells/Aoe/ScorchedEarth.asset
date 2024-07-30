@@ -13,6 +13,19 @@ MonoBehaviour:
   m_Name: ScorchedEarth
   m_EditorClassIdentifier: 
   Rarety: 1
+  m_Description: Burning zone of size {0} applying a {1} effect and {2} damages each
+    {3} seconds for {4} seconds
+  m_DescriptionVariables:
+  - Name: Size
+    WithIcon: 0
+  - Name: Burn
+    WithIcon: 1
+  - Name: TickDamages
+    WithIcon: 1
+  - Name: DurationTick
+    WithIcon: 0
+  - Name: Duration
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 161738, guid: b3b90796920a2ff4b9d406f046ff843b, type: 3}
   SpellEventActions: []
@@ -32,7 +45,7 @@ MonoBehaviour:
   MaxHit: 0
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 15
+  m_Damage: 0
   m_Heal: 0
   m_LifeSteal: 0
   Distance: 0
@@ -40,9 +53,7 @@ MonoBehaviour:
   m_Duration: 2
   Delay: 1
   m_SpellsScalingLevel:
-  - Property: 2
-    Value: 0.1
-  - Property: 1
+  - Property: 14
     Value: 0.1
   - Property: 3
     Value: 0.05
@@ -51,9 +62,9 @@ MonoBehaviour:
   EnemyStateEffects:
   - StateEffect: 8
     Stacks: 1
-    Duration: 0
-    SpeedBonus: 0
+    OverridingProperties: []
   AllyStateEffects: []
+  StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 6
   IsCancellable: 0
@@ -61,6 +72,9 @@ MonoBehaviour:
   m_Cooldown: 20
   m_SpellSpawn: 1
   DurationTick: 0.5
+  m_TickDamages: 15
+  m_TickHeal: 0
+  m_TickShield: 0
   GrowSizeFactor: 0
   MaxSizeAt: 1
   PersistentStateEffects: []

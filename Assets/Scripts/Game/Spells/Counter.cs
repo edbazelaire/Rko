@@ -1,5 +1,6 @@
 ﻿using Data;
 using Enums;
+using NUnit.Framework.Internal;
 using System.Linq;
 using Tools;
 using UnityEngine;
@@ -31,7 +32,7 @@ namespace Game.Spells
         {
             base.Initialize(clientId, target, spellName, level);
 
-            transform.position = new Vector3(transform.position.x, 0, 0);
+            transform.position = new Vector3(transform.position.x + m_SpellData.SpawnOffset.x, m_SpellData.SpawnOffset.y, 0);
             if (m_SpellData.ColorSwap != default)
                 m_Controller.GFXHandler.AddColorClientRPC(m_SpellData.ColorSwap);
 
@@ -39,6 +40,11 @@ namespace Game.Spells
                 return;
 
             m_CounterTimer = m_SpellData.Duration;
+
+            // TODO : BETTER - if spell is not impacting player by blocking movement or cast, and is not Trigger by player, do not add to list of Counters
+            if (!m_SpellData.IsBlockingCast && !m_SpellData.IsBlockingMovement && m_SpellData.CounterActivation == ECounterActivation.SelfTrigger)
+                return;
+
             m_Controller.CounterHandler.AddCounter(this);
         }
 
@@ -63,8 +69,6 @@ namespace Game.Spells
         protected override void Update()
         {
             base.Update();
-
-            transform.position = m_Controller.transform.position;
 
             if (!IsServer)
                 return;
@@ -148,15 +152,35 @@ namespace Game.Spells
                     break;
             }
 
+            // Converts spell incoming damages into someting else
+            ProcDamageConversionEffects(enemySpell);
+
+            // Destroy the spell
             Destroy(enemySpell.gameObject);
 
+            // Call "OnHit" event for the Counter
             CallSpellEvent(ESpellEvent.OnHit);
-
+            
+            // Check MaxHit
             m_HittedPlayerId.Add(0);
             if (m_SpellData.MaxHit > 0 && m_HittedPlayerId.Count >= m_SpellData.MaxHit)
                 End();
 
             return true;
+        }
+
+        /// <summary>
+        /// Converts spell incoming damages into someting else
+        /// </summary>
+        void ProcDamageConversionEffects(Spell enemySpell)
+        {
+            if (m_SpellData.DamageConversionEffects == null || m_SpellData.DamageConversionEffects.Count == 0)
+                return;
+
+            foreach(var effect in m_SpellData.DamageConversionEffects)
+            {
+                effect.Apply(enemySpell, Controller);
+            }
         }
 
         #endregion

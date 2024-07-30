@@ -3,9 +3,6 @@ using Assets.Scripts.Managers.Sound;
 using Enums;
 using Network;
 using Save;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using Tools;
 using UnityEngine;
@@ -112,6 +109,13 @@ namespace Menu.MainMenu.MainTab
             {
                 SoundFXManager.PlayOnce(SoundFXManager.ErrorSoundFX);
                 Main.ErrorMessagePopUp("This arena has already beed completed");
+                return false;
+            }
+
+            if (PlayerPrefsHandler.GetGameMode() == EGameMode.Arena && ProgressionCloudData.IsArenaDifficultyCompleted(PlayerPrefsHandler.GetArenaType()))
+            {
+                SoundFXManager.PlayOnce(SoundFXManager.ErrorSoundFX);
+                Main.ErrorMessagePopUp("You need to collect your rewards to unlock the next level of difficulty.\nClick the Arena button to display the Arena Path of Rewards and click rewards to collect them !");
                 return false;
             }
 

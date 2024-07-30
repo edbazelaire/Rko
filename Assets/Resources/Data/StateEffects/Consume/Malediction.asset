@@ -15,24 +15,28 @@ MonoBehaviour:
   m_Description: Consume all {0} stacks to inflict {1} damages for each stack consumed.
     Also apply a silence and a slow for {2} seconds
   m_DescriptionVariables: 120000000b00000001000000
-  m_VisualEffect: {fileID: 0}
-  m_ColorSwitch: {r: 1, g: 1, b: 1, a: 1}
+  m_StateEffectType: 0
+  m_VisualEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 13
   m_DefaultState: 0
   m_Duration: 0.05
-  m_MaxStacks: 100
-  m_SpeedBonus: -0.01
+  m_MaxStacks: 10
+  m_SpeedBonus: -0.05
   m_CastSpeed: 0
   m_AttackSpeed: 0
+  m_CooldownReduction: 0
+  m_CooldownReductionPerc: 0
   m_Shield: 0
   m_ResistanceFix: 0
   m_ResistancePerc: 0
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
   m_BonusLifeSteal: 0
+  m_OnStartStateEffect: []
+  m_OnEndStateEffect: []
   m_StateEffectScalingLevel:
   - StateEffectProperty: 11
     ScalingFactor: 0.1
@@ -44,5 +48,7 @@ MonoBehaviour:
   - StateEffectProperty: 1
     ScalingFactor: 1
   m_Damages: 5
+  m_EndDamages: 0
   m_Heal: 0
+  m_EndHeal: 0
   m_LifeSteal: 0.5

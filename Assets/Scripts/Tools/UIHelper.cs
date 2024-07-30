@@ -66,6 +66,26 @@ namespace Tools
             dropdown.value = options.IndexOf(defaultValue.ToString());
         }
 
+        public static void SetUpDropdown(TMP_Dropdown dropdown, List<string> values, string defaultValue, Action<string> onDropDownValueChanged)
+        {
+            // Create a dropdown reward method based on that finds the value linked to the index change and call "onDropDownValueChanged" method
+            void OnDropDown(int index)
+            {
+                SoundFXManager.PlayOnce(SoundFXManager.ClickButtonSoundFX);
+                onDropDownValueChanged.Invoke(values[index]);
+            }
+
+            // setup option values
+            dropdown.options.Clear();
+            dropdown.AddOptions(values);
+
+            // change Lobby game mode on new selection
+            dropdown.onValueChanged.AddListener(OnDropDown);
+
+            // set value to last selected value
+            dropdown.value = values.IndexOf(defaultValue.ToString());
+        }
+
         /// <summary>
         /// Set a game objects anchors and sizeDelta to 100% match the size of the parent
         /// </summary>

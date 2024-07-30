@@ -2,6 +2,7 @@
 using Menu.Common.Infos;
 using System;
 using System.Collections.Generic;
+using TMPro;
 using Tools;
 
 namespace Menu.PopUps
@@ -12,7 +13,8 @@ namespace Menu.PopUps
 
         // =========================================================================================
         // GameObjects & Components
-        StateEffectsInfoRow                 m_StateEffectsInfoRow;
+        StateEffectsInfoRow     m_StateEffectsInfoRow;
+        TMP_Text                m_DescriptionText;
 
         // =========================================================================================
         // Dependent Members
@@ -29,6 +31,7 @@ namespace Menu.PopUps
             base.FindComponents();
 
             m_StateEffectsInfoRow = Finder.FindComponent<StateEffectsInfoRow>(gameObject, "StateEffectsInfoRow");
+            m_DescriptionText = Finder.FindComponent<TMP_Text>(gameObject, "Description");
         }
 
         protected override void OnPrefabLoaded()
@@ -37,6 +40,7 @@ namespace Menu.PopUps
 
             SetUpStateEffects();
             SetupCollectionFillbar();
+            SetUpDescription();
         }
 
         #endregion
@@ -60,6 +64,11 @@ namespace Menu.PopUps
         {
             if (m_IsLinked)
                 m_CollectableItemUI.CollectionFillBar.gameObject.SetActive(false);
+        }
+
+        void SetUpDescription()
+        {
+            m_DescriptionText.text = m_SpellData.GetDescription();
         }
 
         /// <summary>

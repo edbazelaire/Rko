@@ -1,11 +1,8 @@
 ﻿using Enums;
 using Menu.MainMenu;
-using Menu.PopUps.Components.ProfilePopUp;
 using Save;
 using Tools;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace MainMenu.ProfileTab
 {
@@ -45,13 +42,6 @@ namespace MainMenu.ProfileTab
 
 
         #region GUI Manipulators
-
-        public override void Activate(bool activate)
-        {
-            base.Activate(activate);
-
-            gameObject.SetActive(activate);
-        }
 
         void AddToScroller(string rewardName)
         {

@@ -13,6 +13,15 @@ MonoBehaviour:
   m_Name: FrostbiteTouch
   m_EditorClassIdentifier: 
   Rarety: 1
+  m_Description: AoE of size {0} applying {1} effect and {2} damages on hitting a
+    target
+  m_DescriptionVariables:
+  - Name: Size
+    WithIcon: 0
+  - Name: Frozen
+    WithIcon: 1
+  - Name: Damages
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 4924508274929071776, guid: 2df5e7fba6f073547b02730c76b0ebfe, type: 3}
   SpellEventActions: []

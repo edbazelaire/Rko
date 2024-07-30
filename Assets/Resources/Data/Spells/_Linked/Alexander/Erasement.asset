@@ -13,6 +13,17 @@ MonoBehaviour:
   m_Name: Erasement
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: Jumps on the enemy to inflict {0} damages and a {1} of 2 seconds
+    in an area of size {2}. Requires {3} energy to be used
+  m_DescriptionVariables:
+  - Name: Damages
+    WithIcon: 1
+  - Name: Stun
+    WithIcon: 1
+  - Name: Size
+    WithIcon: 0
+  - Name: EnergyCost
+    WithIcon: 1
   Linked: 1
   Graphics: {fileID: 0}
   SpellEventActions: []
@@ -33,11 +44,11 @@ MonoBehaviour:
   MaxHit: 0
   EnergyGain: 0
   EnergyCost: 100
-  m_Damage: 200
+  m_Damage: 0
   m_Heal: 0
   m_LifeSteal: 0
   Distance: -1
-  OverrideOnHitProperties: 02000000
+  OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 0
   m_SpellsScalingLevel:
@@ -54,5 +65,6 @@ MonoBehaviour:
   AnimationTimer: 0
   m_Cooldown: 0.5
   Trajectory: 1
+  m_StopOnTargetPos: 0
   m_Speed: 20
   JumpType: 1

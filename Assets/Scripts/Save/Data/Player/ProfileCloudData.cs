@@ -296,6 +296,7 @@ namespace Save
         public const string KEY_PSEUDO_CHANGED          = "PseudoChanged";
         public const string KEY_GAMER_TAG               = "GamerTag";
         public const string KEY_TOKEN                   = "Token";
+        public const string KEY_REGION                  = "Region";
         public const string KEY_CURRENT_PROFILE_DATA    = "CurrentProfileData";
         public const string KEY_ACHIEVEMENTS            = "Achievements";
         public const string KEY_ACHIEVEMENT_REWARDS     = "AchievementRewards";
@@ -319,6 +320,7 @@ namespace Save
             { KEY_PSEUDO_CHANGED,           false                                               },
             { KEY_GAMER_TAG,                ""                                                  },
             { KEY_TOKEN,                    ""                                                  },
+            { KEY_REGION,                   ""                                                  },
             { KEY_CURRENT_PROFILE_DATA,     new SProfileCurrentData()                           },
             { KEY_ACHIEVEMENTS,             new Dictionary<string, int>()                       },
             { KEY_ACHIEVEMENT_REWARDS,      new Dictionary<EAchievementReward, List<string>>()  },
@@ -333,6 +335,7 @@ namespace Save
         public static bool IsAdmin => TokensRSD.IsTokenAdmin(Token);
         public static bool PseudoChanged => (bool)Instance.m_Data[KEY_PSEUDO_CHANGED];
         public static string Token => (string)Instance.m_Data[KEY_TOKEN];
+        public static string Region => (string)Instance.m_Data[KEY_REGION];
         public static SProfileCurrentData CurrentProfileData => (SProfileCurrentData)Instance.m_Data[KEY_CURRENT_PROFILE_DATA];
         public static string GamerTag => CurrentProfileData.GamerTag;
         public static string[] CurrentBadges => CurrentProfileData.Badges;
@@ -400,6 +403,15 @@ namespace Save
         public static void SetToken(string token)
         {
             Instance.SetData(KEY_TOKEN, token);
+        }
+
+        /// <summary>
+        /// Set Rune of the current build
+        /// </summary>
+        /// <param name="rune"></param>
+        public static void SetRegion(string region)
+        {
+            Instance.SetData(KEY_REGION, region);
         }
 
         /// <summary>

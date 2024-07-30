@@ -1,7 +1,5 @@
-﻿using Data;
-using Enums;
+﻿using Enums;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game.Spells
@@ -16,6 +14,17 @@ namespace Game.Spells
 
 
         #region Inherited Manipulators
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected override void OnDestroy()
+        {
+            // if still has VoidPact : remove it
+            if (m_Controller.StateHandler.HasState(EStateEffect.VoidPact))
+                m_Controller.StateHandler.RemoveStateEffect(EStateEffect.VoidPact);
+            base.OnDestroy();
+        }
 
         /// <summary>
         /// Check that Frost state is applied, otherwise apply it instead of Frozen state

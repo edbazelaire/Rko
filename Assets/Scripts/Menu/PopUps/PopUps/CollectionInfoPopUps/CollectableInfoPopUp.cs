@@ -189,7 +189,7 @@ namespace Menu.PopUps
         {
             // spawn a spellRowInfo from prefab and init with spell data
             SpellInfoRowUI spellRowInfo = Instantiate(m_InfoPrefab, m_InfosContent.transform).GetComponent<SpellInfoRowUI>();
-            spellRowInfo.Initialize(key, value, newDataValue, CheckIsPercentageValue(key));
+            spellRowInfo.Initialize(key, value, newDataValue);
             m_InfoRows.Add(key, spellRowInfo);
         }
 
@@ -250,17 +250,6 @@ namespace Menu.PopUps
 
 
         #region Tools
-
-        public static bool CheckIsPercentageValue(string property)
-        {
-            return property.EndsWith("Perc")
-                || property == EStateEffectProperty.BonusLifeSteal.ToString()
-                || property == EStateEffectProperty.AttackSpeed.ToString()
-                || property == EStateEffectProperty.CastSpeed.ToString()
-                || property == EStateEffectProperty.LifeSteal.ToString()
-                || property == EStateEffectProperty.BonusLifeSteal.ToString()
-                ;
-        }
 
         CollectableData LoadCollectionData(Enum enumValue, int level)
         {

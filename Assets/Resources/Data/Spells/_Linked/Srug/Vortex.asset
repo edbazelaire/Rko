@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0eac928962cb2b8498d5234d56207800, type: 3}
+  m_Name: Vortex
+  m_EditorClassIdentifier: 
+  Rarety: 0
+  m_Description: Creates a Vortex that blocks every projectiles touching it and converts
+    the damages into {0} stacks on the Enemy
+  m_DescriptionVariables:
+  - Name: Cursed
+    WithIcon: 1
+  Linked: 1
+  Graphics: {fileID: 6943126035498906454, guid: a41a16f244058b0459bfc2c28f7a5799, type: 3}
+  SpellEventActions: []
+  Preview: {fileID: 0}
+  OnAnimation: []
+  OnCastPrefabs: []
+  OnHit: []
+  OnHitSpellSpawn: 1
+  AnimationSoundFX: {fileID: 0}
+  CastSoundFX: {fileID: 0}
+  PermanantSoundFX: {fileID: 0}
+  OnHitSoundFX: {fileID: 0}
+  OnEndSoundFX: {fileID: 0}
+  SpellTarget: 2
+  LockTargetAt: 2
+  MaxHit: -1
+  EnergyGain: 5
+  EnergyCost: 0
+  m_Damage: 0
+  m_Heal: 0
+  m_LifeSteal: 0
+  Distance: -1
+  OverrideOnHitProperties: 
+  m_Duration: 5
+  Delay: 0
+  m_SpellsScalingLevel:
+  - Property: 4
+    Value: 0.05
+  - Property: 3
+    Value: 0.05
+  m_Size: 2.5
+  TriggerPlayer: 0
+  EnemyStateEffects: []
+  AllyStateEffects: []
+  StateEffectStackFactor: 0
+  PersistanceAfterEnd: 0
+  Animation: 9
+  IsCancellable: 0
+  AnimationTimer: 0.7
+  m_Cooldown: 45
+  CounterType: 2
+  CounterActivation: 1
+  m_SpawnOffset: {x: 0.25, y: 0}
+  m_IsFollowing: 0
+  IsBlockingMovement: 0
+  IsBlockingCast: 0
+  m_DamageConversionEffects:
+  - m_Ratio: 0.05
+    m_Target: 6
+    m_StateEffect: Cursed
+    m_MinValue: 0
+    m_MaxValue: 10
+  OnCounterProc: {fileID: 0}
+  ColorSwap: {r: 0, g: 0, b: 0, a: 0}

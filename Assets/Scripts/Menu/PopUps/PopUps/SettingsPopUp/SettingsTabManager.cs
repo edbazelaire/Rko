@@ -8,6 +8,7 @@ namespace Tools.Debugs.BetaTest
         Data,
         Settings,
         Debug,
+        Account,
     }
 
     public class SettingsTabManager : TabsManager

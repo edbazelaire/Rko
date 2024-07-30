@@ -13,6 +13,13 @@ MonoBehaviour:
   m_Name: ExtraHands
   m_EditorClassIdentifier: 
   Rarety: 1
+  m_Description: Your AutoAttack now fires {0} projectiles for {1} seconds.<br>Only
+    one buff of type "Auto Attack" can be active on your character.
+  m_DescriptionVariables:
+  - Name: Projectiles
+    WithIcon: 1
+  - Name: Duration
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions: []
@@ -47,6 +54,7 @@ MonoBehaviour:
   TriggerPlayer: 1
   EnemyStateEffects: []
   AllyStateEffects: []
+  StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 9
   IsCancellable: 0

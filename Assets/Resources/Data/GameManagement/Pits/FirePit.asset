@@ -1,0 +1,776 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df7d51f633e46b344920f012b0e1eca8, type: 3}
+  m_Name: FirePit
+  m_EditorClassIdentifier: 
+  m_BotPerfLevelCeiling: 10
+  m_ArenaLevelData:
+  - Spells: 1c00000004000000
+    TriggerEffects: []
+    BonusStats: []
+    RewardsData:
+      Currencies:
+      - Currency: 0
+        Qty: 500
+      - Currency: 1
+        Qty: 50
+      - Currency: 3
+        Qty: 100
+      Chests: 
+      Collectables:
+      - CollectableType: 2
+        CollectableName: FireBarrage
+        Qty: 50
+      AchievementRewards: []
+    StageData:
+    - Character: 1
+      CharacterLevel: 1
+    - Character: 4
+      CharacterLevel: 1
+    - Character: 0
+      CharacterLevel: 2
+  - Spells: 0300000004000000
+    TriggerEffects:
+    - SpellDataName: BossShield
+      Level: 1
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.5
+      NActivations: 0
+      Cooldown: 0
+    BonusStats: []
+    RewardsData:
+      Currencies:
+      - Currency: 0
+        Qty: 1000
+      - Currency: 1
+        Qty: 150
+      - Currency: 3
+        Qty: 150
+      Chests: 
+      Collectables:
+      - CollectableType: 2
+        CollectableName: FireBomb
+        Qty: 15
+      AchievementRewards:
+      - AchievementReward: 2
+        Title: 0
+        Avatar: 104
+        Border: 0
+        Badge: 0
+        League: 0
+    StageData:
+    - Character: 1
+      CharacterLevel: 2
+    - Character: 4
+      CharacterLevel: 2
+    - Character: 0
+      CharacterLevel: 3
+  - Spells: 030000001c00000011000000
+    TriggerEffects:
+    - SpellDataName: BossShield
+      Level: 1
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.5
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _TriggerHeal
+      Level: 1
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.25
+      NActivations: 0
+      Cooldown: 0
+    BonusStats: []
+    RewardsData:
+      Currencies:
+      - Currency: 0
+        Qty: 1500
+      - Currency: 1
+        Qty: 250
+      - Currency: 3
+        Qty: 500
+      Chests: 
+      Collectables:
+      - CollectableType: 2
+        CollectableName: ScorchedEarth
+        Qty: 15
+      AchievementRewards: []
+    StageData:
+    - Character: 1
+      CharacterLevel: 3
+    - Character: 4
+      CharacterLevel: 3
+    - Character: 0
+      CharacterLevel: 4
+  - Spells: 03000000110000001c000000
+    TriggerEffects:
+    - SpellDataName: BossShield
+      Level: 5
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.5
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _CometsRain
+      Level: 3
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.25
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _TriggerHeal
+      Level: 5
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.25
+      NActivations: 0
+      Cooldown: 0
+    BonusStats: []
+    RewardsData:
+      Currencies:
+      - Currency: 1
+        Qty: 450
+      - Currency: 3
+        Qty: 1000
+      Chests: 04000000
+      Collectables: []
+      AchievementRewards: []
+    StageData:
+    - Character: 1
+      CharacterLevel: 4
+    - Character: 2
+      CharacterLevel: 4
+    - Character: 4
+      CharacterLevel: 4
+    - Character: 3
+      CharacterLevel: 4
+    - Character: 0
+      CharacterLevel: 5
+  - Spells: 03000000110000001c00000000000000
+    TriggerEffects:
+    - SpellDataName: _CometsRain
+      Level: 3
+      SpellActivationEvent: 0
+      ActivationTreshold: 0
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: BossShield
+      Level: 5
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.5
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _TriggerHeal
+      Level: 5
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.25
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _CometsRain
+      Level: 5
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.25
+      NActivations: 0
+      Cooldown: 0
+    BonusStats:
+    - StateEffectProperty: 4
+      BaseValue: 250
+      ScalingFactor: 0
+    RewardsData:
+      Currencies:
+      - Currency: 1
+        Qty: 750
+      - Currency: 3
+        Qty: 1500
+      - Currency: 0
+        Qty: 2500
+      Chests: 04000000
+      Collectables: []
+      AchievementRewards: []
+    StageData:
+    - Character: 1
+      CharacterLevel: 5
+    - Character: 2
+      CharacterLevel: 5
+    - Character: 4
+      CharacterLevel: 5
+    - Character: 3
+      CharacterLevel: 5
+    - Character: 0
+      CharacterLevel: 6
+  - Spells: 03000000110000001c0000001b000000
+    TriggerEffects:
+    - SpellDataName: _CometsRain
+      Level: 7
+      SpellActivationEvent: 0
+      ActivationTreshold: 0
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: BossShield
+      Level: 7
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.5
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _TriggerHeal
+      Level: 7
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.25
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _Heat
+      Level: 7
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.25
+      NActivations: 0
+      Cooldown: 0
+    BonusStats:
+    - StateEffectProperty: 4
+      BaseValue: 750
+      ScalingFactor: 0
+    RewardsData:
+      Currencies:
+      - Currency: 1
+        Qty: 1000
+      - Currency: 3
+        Qty: 2500
+      Chests: 0400000004000000
+      Collectables: []
+      AchievementRewards: []
+    StageData:
+    - Character: 1
+      CharacterLevel: 6
+    - Character: 2
+      CharacterLevel: 6
+    - Character: 4
+      CharacterLevel: 6
+    - Character: 3
+      CharacterLevel: 6
+    - Character: 0
+      CharacterLevel: 7
+  - Spells: 03000000110000001b00000020000000
+    TriggerEffects:
+    - SpellDataName: _CometsRain
+      Level: 6
+      SpellActivationEvent: 0
+      ActivationTreshold: 0
+      NActivations: 1
+      Cooldown: 0
+    - SpellDataName: _TriggerHeal
+      Level: 10
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.5
+      NActivations: 1
+      Cooldown: 0
+    - SpellDataName: _TriggerHeal
+      Level: 12
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.25
+      NActivations: 1
+      Cooldown: 0
+    - SpellDataName: _Heat
+      Level: 9
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.25
+      NActivations: 1
+      Cooldown: 0
+    BonusStats:
+    - StateEffectProperty: 111
+      BaseValue: 150
+      ScalingFactor: 0
+    RewardsData:
+      Currencies:
+      - Currency: 1
+        Qty: 1500
+      - Currency: 3
+        Qty: 7500
+      Chests: 05000000
+      Collectables: []
+      AchievementRewards: []
+    StageData:
+    - Character: 1
+      CharacterLevel: 7
+    - Character: 2
+      CharacterLevel: 8
+    - Character: 4
+      CharacterLevel: 7
+    - Character: 3
+      CharacterLevel: 7
+    - Character: 0
+      CharacterLevel: 8
+  - Spells: 03000000110000001c0000001b000000
+    TriggerEffects:
+    - SpellDataName: _CometsRain
+      Level: 9
+      SpellActivationEvent: 0
+      ActivationTreshold: 0
+      NActivations: 1
+      Cooldown: 0
+    - SpellDataName: BossShield
+      Level: 9
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.5
+      NActivations: 1
+      Cooldown: 0
+    - SpellDataName: InfernalHealing
+      Level: 7
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.5
+      NActivations: 1
+      Cooldown: 0
+    - SpellDataName: _Heat
+      Level: 7
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.5
+      NActivations: 1
+      Cooldown: 0
+    BonusStats:
+    - StateEffectProperty: 111
+      BaseValue: 200
+      ScalingFactor: 0
+    - StateEffectProperty: 5
+      BaseValue: 10
+      ScalingFactor: 0
+    - StateEffectProperty: 6
+      BaseValue: 5
+      ScalingFactor: 0
+    RewardsData:
+      Currencies:
+      - Currency: 1
+        Qty: 2000
+      - Currency: 3
+        Qty: 10000
+      Chests: 05000000
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 2
+        Title: 0
+        Avatar: 101
+        Border: 0
+        Badge: 0
+        League: 0
+    StageData:
+    - Character: 1
+      CharacterLevel: 8
+    - Character: 2
+      CharacterLevel: 8
+    - Character: 4
+      CharacterLevel: 8
+    - Character: 3
+      CharacterLevel: 8
+    - Character: 0
+      CharacterLevel: 9
+  - Spells: 03000000110000001b00000021000000
+    TriggerEffects:
+    - SpellDataName: _CometsRain
+      Level: 9
+      SpellActivationEvent: 0
+      ActivationTreshold: 0
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: BossShield
+      Level: 9
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.5
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _Heat
+      Level: 9
+      SpellActivationEvent: 2
+      ActivationTreshold: 5
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _TriggerHeal
+      Level: 15
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.25
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _MeteorRain
+      Level: 1
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.25
+      NActivations: 0
+      Cooldown: 0
+    BonusStats:
+    - StateEffectProperty: 111
+      BaseValue: 250
+      ScalingFactor: 0
+    - StateEffectProperty: 5
+      BaseValue: 10
+      ScalingFactor: 0
+    - StateEffectProperty: 6
+      BaseValue: 5
+      ScalingFactor: 0
+    RewardsData:
+      Currencies:
+      - Currency: 1
+        Qty: 2500
+      - Currency: 3
+        Qty: 15000
+      - Currency: 0
+        Qty: 25000
+      Chests: 05000000
+      Collectables:
+      - CollectableType: 2
+        CollectableName: Meteor
+        Qty: 25
+      AchievementRewards: []
+    StageData:
+    - Character: 1
+      CharacterLevel: 9
+    - Character: 2
+      CharacterLevel: 9
+    - Character: 4
+      CharacterLevel: 9
+    - Character: 3
+      CharacterLevel: 9
+    - Character: 0
+      CharacterLevel: 10
+  - Spells: 20000000030000001100000021000000
+    TriggerEffects:
+    - SpellDataName: BossShield
+      Level: 20
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.75
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _MeteorRain
+      Level: 4
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.75
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _TriggerHeal
+      Level: 10
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.25
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _Heat
+      Level: 9
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.25
+      NActivations: 0
+      Cooldown: 0
+    BonusStats:
+    - StateEffectProperty: 111
+      BaseValue: 250
+      ScalingFactor: 0
+    - StateEffectProperty: 5
+      BaseValue: 10
+      ScalingFactor: 0
+    - StateEffectProperty: 6
+      BaseValue: 5
+      ScalingFactor: 0
+    RewardsData:
+      Currencies:
+      - Currency: 1
+        Qty: 3000
+      - Currency: 3
+        Qty: 25000
+      - Currency: 0
+        Qty: 50000
+      Chests: 0500000005000000
+      Collectables: []
+      AchievementRewards: []
+    StageData:
+    - Character: 1
+      CharacterLevel: 10
+    - Character: 2
+      CharacterLevel: 10
+    - Character: 4
+      CharacterLevel: 10
+    - Character: 3
+      CharacterLevel: 10
+    - Character: 0
+      CharacterLevel: 11
+  - Spells: 20000000030000001100000001000000
+    TriggerEffects:
+    - SpellDataName: BossShield
+      Level: 20
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.75
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: InfernalHealing
+      Level: 6
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.75
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _BossEmperorOfFlames
+      Level: 9
+      SpellActivationEvent: 4
+      ActivationTreshold: 0
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _TriggerHeal
+      Level: 50
+      SpellActivationEvent: 4
+      ActivationTreshold: 0
+      NActivations: 0
+      Cooldown: 0
+    BonusStats:
+    - StateEffectProperty: 111
+      BaseValue: 250
+      ScalingFactor: 0
+    - StateEffectProperty: 5
+      BaseValue: 10
+      ScalingFactor: 0
+    - StateEffectProperty: 6
+      BaseValue: 5
+      ScalingFactor: 0
+    RewardsData:
+      Currencies:
+      - Currency: 1
+        Qty: 5000
+      - Currency: 3
+        Qty: 40000
+      - Currency: 0
+        Qty: 75000
+      Chests: 06000000
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 4
+        Title: 10
+        Avatar: 0
+        Border: 0
+        Badge: 0
+        League: 0
+    StageData:
+    - Character: 1
+      CharacterLevel: 11
+    - Character: 2
+      CharacterLevel: 11
+    - Character: 4
+      CharacterLevel: 11
+    - Character: 3
+      CharacterLevel: 11
+    - Character: 0
+      CharacterLevel: 12
+  - Spells: 200000001b0000001100000001000000
+    TriggerEffects:
+    - SpellDataName: _MeteorRain
+      Level: 7
+      SpellActivationEvent: 0
+      ActivationTreshold: 0
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: BossShield
+      Level: 20
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.75
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: InfernalHealing
+      Level: 12
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.75
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _BossEmperorOfFlames
+      Level: 9
+      SpellActivationEvent: 4
+      ActivationTreshold: 0
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _TriggerHeal
+      Level: 50
+      SpellActivationEvent: 4
+      ActivationTreshold: 0
+      NActivations: 0
+      Cooldown: 0
+    BonusStats:
+    - StateEffectProperty: 111
+      BaseValue: 250
+      ScalingFactor: 0
+    - StateEffectProperty: 5
+      BaseValue: 10
+      ScalingFactor: 0
+    - StateEffectProperty: 6
+      BaseValue: 5
+      ScalingFactor: 0
+    RewardsData:
+      Currencies:
+      - Currency: 1
+        Qty: 6000
+      - Currency: 3
+        Qty: 50000
+      - Currency: 0
+        Qty: 100000
+      Chests: 06000000
+      Collectables: []
+      AchievementRewards: []
+    StageData:
+    - Character: 1
+      CharacterLevel: 12
+    - Character: 2
+      CharacterLevel: 12
+    - Character: 4
+      CharacterLevel: 12
+    - Character: 3
+      CharacterLevel: 12
+    - Character: 0
+      CharacterLevel: 13
+  - Spells: 20000000030000001100000001000000
+    TriggerEffects:
+    - SpellDataName: _BossEmperorOfFlames
+      Level: 9
+      SpellActivationEvent: 0
+      ActivationTreshold: 0
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _MeteorRain
+      Level: 14
+      SpellActivationEvent: 0
+      ActivationTreshold: 0
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: BossShield
+      Level: 30
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.75
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: InfernalHealing
+      Level: 14
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.75
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _TriggerHeal
+      Level: 50
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.5
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _Heat
+      Level: 14
+      SpellActivationEvent: 4
+      ActivationTreshold: 0
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _CometesRain
+      Level: 14
+      SpellActivationEvent: 4
+      ActivationTreshold: 0
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _TriggerBossResurrection
+      Level: 50
+      SpellActivationEvent: 4
+      ActivationTreshold: 0
+      NActivations: 1
+      Cooldown: 0
+    BonusStats:
+    - StateEffectProperty: 111
+      BaseValue: 250
+      ScalingFactor: 0
+    - StateEffectProperty: 5
+      BaseValue: 10
+      ScalingFactor: 0
+    - StateEffectProperty: 6
+      BaseValue: 5
+      ScalingFactor: 0
+    RewardsData:
+      Currencies:
+      - Currency: 1
+        Qty: 7500
+      - Currency: 3
+        Qty: 75000
+      - Currency: 0
+        Qty: 150000
+      Chests: 06000000
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 3
+        Title: 0
+        Avatar: 0
+        Border: 201
+        Badge: 0
+        League: 0
+    StageData:
+    - Character: 1
+      CharacterLevel: 13
+    - Character: 2
+      CharacterLevel: 13
+    - Character: 4
+      CharacterLevel: 13
+    - Character: 3
+      CharacterLevel: 13
+    - Character: 0
+      CharacterLevel: 14
+  - Spells: 200000001b0000000300000001000000
+    TriggerEffects:
+    - SpellDataName: _BossEmperorOfFlames
+      Level: 15
+      SpellActivationEvent: 0
+      ActivationTreshold: 0
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _Heat
+      Level: 15
+      SpellActivationEvent: 2
+      ActivationTreshold: 0.5
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _BossEmperorOfFlames
+      Level: 15
+      SpellActivationEvent: 4
+      ActivationTreshold: 0
+      NActivations: 2
+      Cooldown: 0
+    - SpellDataName: _TriggerHeal
+      Level: 50
+      SpellActivationEvent: 4
+      ActivationTreshold: 0
+      NActivations: 3
+      Cooldown: 0
+    - SpellDataName: InfernalHealing
+      Level: 15
+      SpellActivationEvent: 4
+      ActivationTreshold: 0
+      NActivations: 2
+      Cooldown: 0
+    - SpellDataName: _MeteorRain
+      Level: 15
+      SpellActivationEvent: 4
+      ActivationTreshold: 0
+      NActivations: 2
+      Cooldown: 0
+    BonusStats:
+    - StateEffectProperty: 111
+      BaseValue: 250
+      ScalingFactor: 0
+    - StateEffectProperty: 5
+      BaseValue: 10
+      ScalingFactor: 0
+    - StateEffectProperty: 6
+      BaseValue: 5
+      ScalingFactor: 0
+    RewardsData:
+      Currencies:
+      - Currency: 0
+        Qty: 200000
+      - Currency: 3
+        Qty: 100000
+      - Currency: 1
+        Qty: 10000
+      Chests: 06000000
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 1
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Badge: 1001
+        League: 0
+    StageData:
+    - Character: 0
+      CharacterLevel: 15

@@ -13,10 +13,20 @@ MonoBehaviour:
   m_Name: _Heat
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: Heat the entire field dealing {0} damages and applying {1} every
+    {2} seconds
+  m_DescriptionVariables:
+  - Name: Damages
+    WithIcon: 1
+  - Name: Burn
+    WithIcon: 1
+  - Name: DurationTick
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions:
   - Prefab: {fileID: 1939305563288243135, guid: 58fbc3d1f06ad854890aebf39f289e20, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 3
       EndSpellPart: 5
@@ -74,6 +84,9 @@ MonoBehaviour:
   m_Cooldown: 0
   m_SpellSpawn: 1
   DurationTick: 3
+  m_TickDamages: 0
+  m_TickHeal: 0
+  m_TickShield: 0
   GrowSizeFactor: 0
   MaxSizeAt: 1
   PersistentStateEffects: []

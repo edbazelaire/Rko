@@ -13,10 +13,22 @@ MonoBehaviour:
   m_Name: Comets
   m_EditorClassIdentifier: 
   Rarety: 1
+  m_Description: '{0} comets falling from the sky each dealing {1} damages and applying
+    3 stacks of {2} and 1 stack of {3}'
+  m_DescriptionVariables:
+  - Name: Projectiles
+    WithIcon: 1
+  - Name: Damages
+    WithIcon: 1
+  - Name: Cursed
+    WithIcon: 1
+  - Name: Burn
+    WithIcon: 1
   Linked: 0
   Graphics: {fileID: 6631489239233227332, guid: 51d6d62dbf340c44e8509011ca22e292, type: 3}
   SpellEventActions:
   - Prefab: {fileID: 2193303834319087607, guid: 063a282158b073641b9a4508ad531ebe, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 1
       EndSpellPart: 2
@@ -72,6 +84,7 @@ MonoBehaviour:
   AnimationTimer: 0.7
   m_Cooldown: 25
   Trajectory: 3
+  m_StopOnTargetPos: 0
   m_Speed: 0
   ProjectileData: {fileID: 11400000, guid: 2e54346bdf612824999026fa5a9da31b, type: 2}
   MultiProjectileType: 2

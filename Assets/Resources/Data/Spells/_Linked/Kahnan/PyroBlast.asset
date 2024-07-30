@@ -13,8 +13,17 @@ MonoBehaviour:
   m_Name: PyroBlast
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: 'Charges for {0} seconds to launch a blast of fire in a straight
+    line, dealing {1} damages and applying {2} '
+  m_DescriptionVariables:
+  - Name: CastDuration
+    WithIcon: 1
+  - Name: Damages
+    WithIcon: 1
+  - Name: Scorched
+    WithIcon: 1
   Linked: 1
-  Graphics: {fileID: 1193745591585432, guid: eefd4b9bb98546349990ad462f5edd94, type: 3}
+  Graphics: {fileID: 6568525604674795387, guid: 912f46e9e2caafe42a97770cf5725ac6, type: 3}
   SpellEventActions:
   - Prefab: {fileID: 458114271446715719, guid: a0691b7d658df354ea6923fa145aede0, type: 3}
     MaterialEffect: {fileID: 0}
@@ -33,7 +42,7 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 
-  - Prefab: {fileID: 195742, guid: c83fb3ef04bb383408bb2064b89690b2, type: 3}
+  - Prefab: {fileID: 168108, guid: 8ea15392430306241aaf3e02c6ed6b3b, type: 3}
     MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 4
@@ -100,7 +109,7 @@ MonoBehaviour:
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
-  PersistanceAfterEnd: 0
+  PersistanceAfterEnd: 1
   Animation: 1
   IsCancellable: 1
   AnimationTimer: 1.75

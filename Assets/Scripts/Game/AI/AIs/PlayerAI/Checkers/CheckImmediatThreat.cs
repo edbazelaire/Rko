@@ -31,7 +31,7 @@ namespace AI
             // checks if is on a spell preview
             if (m_ImmediatThreatTrigger.CheckTriggerSpellSpawn(0.2f))
             {
-                ErrorHandler.Log("Checker ZONE detected");
+                ErrorHandler.Log("Checker ZONE detected", Enums.ELogTag.AI);
                 m_State = NodeState.SUCCESS;
                 return m_State;
             }
@@ -39,7 +39,7 @@ namespace AI
             // checks that is not in the trajectory of projectile
             if (m_ImmediatThreatTrigger.CheckTriggerProjectile(true))
             {
-                ErrorHandler.Log("Checker PROJECTILE detected");
+                ErrorHandler.Log("Checker PROJECTILE detected", Enums.ELogTag.AI);
                 m_State = NodeState.SUCCESS;
                 return m_State;
             }

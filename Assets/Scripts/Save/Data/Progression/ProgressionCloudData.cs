@@ -5,6 +5,7 @@ using Game.AI;
 using Menu.MainMenu;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Tools;
 using Unity.Services.CloudSave.Models;
 
@@ -13,15 +14,18 @@ namespace Save
     [Serializable]
     public struct SArenaCloudData
     {
-        public int CurrentLevel;
-        public int CurrentStage;
+        public int              CurrentLevel;
+        public int              CurrentStage;
+        public EArenaDifficulty CurrentDifficulty;
 
-        public SArenaCloudData(int level = 0, int stage = 0)
+        public SArenaCloudData(int level = 0, int stage = 0, EArenaDifficulty currentDifficulty = EArenaDifficulty.Normal)
         {
             CurrentLevel = level;
             CurrentStage = stage;
+            CurrentDifficulty = currentDifficulty;
         }
     }
+
     [Serializable]
     public struct SLeagueCloudData
     {
@@ -45,13 +49,13 @@ namespace Save
 
         // ===============================================================================================
         // CONSTANTS
-        public const string KEY_LEAGUE         = "League";
+        public const string KEY_LEAGUE          = "League";
         public const string KEY_SOLO_ARENAS     = "SoloArenas";
 
         // ===============================================================================================
         // ACTIONS
         public static Action LeagueDataChangedEvent;
-        public static Action ArenaDataChangedEvent;
+        public static Action<EArenaType> ArenaDataChangedEvent;
 
         // ===============================================================================================
         // DATA
@@ -68,6 +72,7 @@ namespace Save
         public static int                                       CurrentLeagueLevel      => LeagueCloudData.CurrentLevel;
         public static int                                       CurrentLeagueStage      => LeagueCloudData.CurrentStage;
         public static Dictionary<EArenaType, SArenaCloudData>   SoloArenas              => Instance.m_Data[KEY_SOLO_ARENAS] as Dictionary<EArenaType, SArenaCloudData>;
+        public static EArenaDifficulty                          MaxArenaDifficulty      => ((EArenaDifficulty[])Enum.GetValues(typeof(EArenaDifficulty))).Last();
 
         #endregion
 
@@ -75,25 +80,32 @@ namespace Save
         #region Loading & Saving
 
         /// <summary>
-        /// Convert SCharacterBuildsCloudData into a dictionnary (easier to manipulate type of data)
+        /// Convert CloudData into a dictionnary (easier to manipulate type of data)
         /// </summary>
         /// <returns></returns>
         protected override object Convert(Item item)
         {
             try
             {
-                if (m_Data[item.Key].GetType() == typeof(Dictionary<EArenaType, SArenaCloudData>))
-                    return item.Value.GetAs<Dictionary<EArenaType, SArenaCloudData>>();
+                var itemType = m_Data[item.Key].GetType();
 
-                if (m_Data[item.Key].GetType() == typeof(SLeagueCloudData))
+                if (itemType == typeof(Dictionary<EArenaType, SArenaCloudData>))
+                {
+                    return item.Value.GetAs<Dictionary<EArenaType, SArenaCloudData>>();
+                }
+
+                if (itemType == typeof(SLeagueCloudData))
+                {
                     return item.Value.GetAs<SLeagueCloudData>();
-            } catch (Exception ex) 
+                }
+            }
+            catch (Exception ex)
             {
                 ErrorHandler.Error("Unable to convert item " + item.Key);
                 ErrorHandler.Error(ex.Message);
                 return m_Data[item.Key];
             }
-            
+
             return base.Convert(item);
         }
 
@@ -139,56 +151,70 @@ namespace Save
             return CurrentLeague >= Main.LeagueDataConfig.LeagueDataList[^1].League;
         }
 
-        public static void UpdateLeagueValue(bool up)
+        public static void UpdateLeagueValue(bool up, int nTimes = 1, bool save = true)
         {
             var leagueCloudData = LeagueCloudData;
+            bool hasChanged = false;
 
-            // Retrieve stage level
-            if (!up)
+            // Check that nTimes is only 1 or 2, other cases should not occure
+            if (nTimes != 1 && nTimes != 2)
             {
-                // stage level is 0 : do nothing
-                if (leagueCloudData.CurrentStage == 0)
-                    return;
-
-                leagueCloudData.CurrentStage--;
+                ErrorHandler.Error("Unhandled case : nTimes != 1 or 2");
+                return;
             }
 
-            else
+            // Repeat the action nTimes
+            for (int i = 0; i < nTimes; i++)
             {
-                SLeagueData leagueData = Main.LeagueDataConfig.CurrentLeagueData;
-
-                // ADD stage level
-                if (leagueCloudData.CurrentStage == leagueData.LevelData[CurrentLeagueLevel].NStages)
+                // Retrieve stage level
+                if (!up)
                 {
-                    UpgradeLeagueLevel();
-                    return;
+                    // stage level is 0 : do nothing
+                    if (leagueCloudData.CurrentStage == 0)
+                        break;
+
+                    hasChanged = true;
+                    leagueCloudData.CurrentStage--;
                 }
 
-                leagueCloudData.CurrentStage++;
+                else
+                {
+                    hasChanged = true;
+                    SLeagueData leagueData = Main.LeagueDataConfig.CurrentLeagueData;
+
+                    // ADD stage level
+                    if (leagueCloudData.CurrentStage == leagueData.LevelData[CurrentLeagueLevel].NStages)
+                        UpgradeLeagueLevel(false);
+                    else
+                        leagueCloudData.CurrentStage++;
+                }
             }
 
-            SaveLeagueData(leagueCloudData);
+            if (save && hasChanged)
+                SaveLeagueData(leagueCloudData);
         }
 
-        public static void UpgradeLeagueLevel()
+        public static void UpgradeLeagueLevel(bool save = true)
         {
             // reached max level of the league : go to next league 
             if (CurrentLeagueLevel == Main.LeagueDataConfig.CurrentLeagueData.LevelData.Count - 1)
             {
-                UpgradeLeague();
+                UpgradeLeague(save);
                 return;
-            }
-
+            } 
+           
             // add rewards to notification data so they can be collected later
             NotificationCloudData.AddLeagueLevelReward(CurrentLeague, CurrentLeagueLevel);
 
             SLeagueCloudData leagueCloudData = LeagueCloudData;
             leagueCloudData.CurrentStage = 0;
             leagueCloudData.CurrentLevel++;
-            SaveLeagueData(leagueCloudData);
+
+            if (save)
+                SaveLeagueData(leagueCloudData);
         }
 
-        public static void UpgradeLeague()
+        public static void UpgradeLeague(bool save = true)
         {
             SLeagueCloudData leagueCloudData = LeagueCloudData;
 
@@ -201,7 +227,9 @@ namespace Save
             leagueCloudData.CurrentStage = 0;
             leagueCloudData.CurrentLevel = 0;
             leagueCloudData.CurrentLeague = newLeague;
-            SaveLeagueData(leagueCloudData);
+
+            if (save)
+                SaveLeagueData(leagueCloudData);
         }
 
         public static void SaveLeagueData(SLeagueCloudData leagueCloudData)
@@ -217,47 +245,66 @@ namespace Save
 
         #region Arena Data
 
-        public static bool IsArenaCompleted(EArenaType arenaType)
+        public static EArenaDifficulty GetArenaDifficulty(EArenaType arenaType) => SoloArenas[arenaType].CurrentDifficulty;
+
+        public static bool IsArenaDifficultyCompleted(EArenaType arenaType)
         {
             return SoloArenas[arenaType].CurrentLevel >= AssetLoader.LoadArenaData(arenaType).MaxLevel;
         }
 
-        public static void UpdateStageValue(EArenaType arenaType, bool up)
+        public static bool IsArenaCompleted(EArenaType arenaType)
         {
-            SArenaCloudData arenaCloudData = SoloArenas[arenaType];
-
-            // Retrieve stage level
-            if (! up)
-            {
-                // stage level is 0 : do nothing
-                if (arenaCloudData.CurrentStage == 0)
-                    return;
-
-                arenaCloudData.CurrentStage--;
-            } 
-            
-            else
-            {
-                ArenaData arenaData = AssetLoader.LoadArenaData(arenaType);
-
-                // ADD stage level
-                if (arenaCloudData.CurrentStage == arenaData.CurrentArenaLevelData.StageData.Count - 1)
-                {
-                    UpgradeArenaLevel(arenaType);
-                    return;
-                }
-
-                arenaCloudData.CurrentStage++;
-            }
-
-            SoloArenas[arenaType] = arenaCloudData;
-            Instance.SaveValue(KEY_SOLO_ARENAS);
+            return SoloArenas[arenaType].CurrentLevel >= AssetLoader.LoadArenaData(arenaType).MaxLevel && GetArenaDifficulty(arenaType) == EArenaDifficulty.HardCore;
         }
 
-        public static void UpgradeArenaLevel(EArenaType arenaType)
+        public static void UpdateStageValue(EArenaType arenaType, bool up, int nTimes = 1, bool save = true)
+        {
+            bool hasChanged = false;
+
+            // Check that nTimes is only 1 or 2, other cases should not occure
+            if (nTimes != 1 && nTimes != 2)
+            {
+                ErrorHandler.Error("Unhandled case : nTimes != 1 or 2");
+                return;
+            }
+
+            // Repeat the action nTimes
+            for (int i = 0; i < nTimes; i++)
+            {
+                // Retrieve stage level
+                if (!up)
+                {
+                    // stage level is 0 : do nothing
+                    if (SoloArenas[arenaType].CurrentStage == 0)
+                        break;
+
+                    hasChanged = true;
+                    SetArenaData(arenaType, SoloArenas[arenaType].CurrentLevel, SoloArenas[arenaType].CurrentStage - 1, SoloArenas[arenaType].CurrentDifficulty, false);
+                }
+
+                else
+                {
+                    hasChanged = true;
+                    ArenaData arenaData = AssetLoader.LoadArenaData(arenaType, SoloArenas[arenaType].CurrentDifficulty);
+
+                    // ADD level 
+                    if (SoloArenas[arenaType].CurrentStage == arenaData.CurrentArenaLevelData.StageData.Count - 1)
+                        UpgradeArenaLevel(arenaType, false);
+                    // ADD stage
+                    else
+                        SetArenaData(arenaType, SoloArenas[arenaType].CurrentLevel, SoloArenas[arenaType].CurrentStage + 1, SoloArenas[arenaType].CurrentDifficulty, false);
+                }
+            }
+
+            // SAVE
+            if (save && hasChanged)
+                Instance.SaveValue(KEY_SOLO_ARENAS);
+        }
+
+        public static void UpgradeArenaLevel(EArenaType arenaType, bool save = true)
         {
             SArenaCloudData arenaCloudData = SoloArenas[arenaType];
-            ArenaData arenaData = AssetLoader.LoadArenaData(arenaType);
+            ArenaData arenaData = AssetLoader.LoadArenaData(arenaType, arenaCloudData.CurrentDifficulty);
 
             if (arenaCloudData.CurrentLevel >= arenaData.ArenaLevelData.Count)
                 return;
@@ -265,17 +312,30 @@ namespace Save
             // add rewards to notification data so they can be collected later
             NotificationCloudData.AddArenaReward(arenaType, arenaCloudData.CurrentLevel);
 
-            SetArenaData(arenaType, arenaCloudData.CurrentLevel + 1, 0);
+            SetArenaData(arenaType, arenaCloudData.CurrentLevel + 1, 0, SoloArenas[arenaType].CurrentDifficulty, save);
         }
 
-        public static void SetArenaData(EArenaType arenaType, int level, int stage, bool save = true)
+        /// <summary>
+        /// Upgrade the difficulty level of an arena on completion 
+        /// </summary>
+        /// <param name="arenaType"></param>
+        /// <param name="save"></param>
+        public static void UpgradeArenaDifficulty(EArenaType arenaType, bool save = true)
         {
-            SoloArenas[arenaType] = new SArenaCloudData(level, stage);
+            if (SoloArenas[arenaType].CurrentDifficulty >= MaxArenaDifficulty)
+                return;
+
+            SetArenaData(arenaType, 0, 0, SoloArenas[arenaType].CurrentDifficulty + 1, save);
+        }
+
+        public static void SetArenaData(EArenaType arenaType, int level, int stage, EArenaDifficulty difficulty, bool save = true)
+        {
+            SoloArenas[arenaType] = new SArenaCloudData(level, stage, difficulty);
 
             if (save)
                 Instance.SaveValue(KEY_SOLO_ARENAS);
 
-            ArenaDataChangedEvent?.Invoke();
+            ArenaDataChangedEvent?.Invoke(arenaType);
         }
 
         #endregion
@@ -297,7 +357,7 @@ namespace Save
                 case KEY_SOLO_ARENAS:
                     foreach (EArenaType arenaType in Enum.GetValues(typeof(EArenaType))) 
                     {
-                        SetArenaData(arenaType, 0, 0, false);
+                        SetArenaData(arenaType, 0, 0, EArenaDifficulty.Normal, false);
                     }
 
                     break;

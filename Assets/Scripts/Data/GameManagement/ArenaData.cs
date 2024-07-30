@@ -45,8 +45,10 @@ namespace Data.GameManagement
 
         public int CurrentLevel => ProgressionCloudData.SoloArenas[ArenaType].CurrentLevel;
         public int CurrentStage => ProgressionCloudData.SoloArenas[ArenaType].CurrentStage;
+        public float CurrentRewardMultiplicator => (1 + (int)ArenaDifficulty * 10) * (1 + CurrentStage * 0.5f + CurrentLevel * 0.05f);
 
-        public EArenaType               ArenaType               => Enum.TryParse(name, out EArenaType arenaType) ? arenaType : EArenaType.FireArena;
+        public EArenaType               ArenaType               => Enum.TryParse(name.Split("_")[0], out EArenaType arenaType) ? arenaType : EArenaType.FireArena;
+        public EArenaDifficulty         ArenaDifficulty         => Enum.TryParse(name.Split("_")[1], out EArenaDifficulty arenaDifficulty) ? arenaDifficulty : EArenaDifficulty.Normal;
         public List<SArenaLevelData>    ArenaLevelData          => m_ArenaLevelData;
         public SArenaLevelData          CurrentArenaLevelData   => GetArenaLevelData(CurrentLevel);
         public SStageData               CurrentStageData        => GetStageData(CurrentLevel, CurrentStage);

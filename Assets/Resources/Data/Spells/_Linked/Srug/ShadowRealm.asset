@@ -13,10 +13,22 @@ MonoBehaviour:
   m_Name: ShadowRealm
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: AoE of size {0} dealing {1} damages, applying 3 seconds of {2} and
+    25 stacks of {3}.<br>Your character is invulnerable during the cast.
+  m_DescriptionVariables:
+  - Name: Size
+    WithIcon: 0
+  - Name: Damages
+    WithIcon: 1
+  - Name: Silence
+    WithIcon: 1
+  - Name: Cursed
+    WithIcon: 1
   Linked: 1
   Graphics: {fileID: 0}
   SpellEventActions:
   - Prefab: {fileID: 5703175862088787386, guid: b4bb8c2ca90060449be3e70b60c299f5, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 1
       EndSpellPart: 2
@@ -33,6 +45,7 @@ MonoBehaviour:
     Animation: 0
     StateEffects: 03000000
   - Prefab: {fileID: 5703175862088787386, guid: b4bb8c2ca90060449be3e70b60c299f5, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 1
       EndSpellPart: 2
