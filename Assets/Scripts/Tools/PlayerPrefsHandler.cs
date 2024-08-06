@@ -10,6 +10,7 @@ namespace Tools
         Region,
         GameMode,
         ArenaType,
+        CurrentGameId,
 
         WarningMessageAccepted,
 

@@ -61,6 +61,9 @@ namespace Menu.MainMenu.MainTab
             CoroutineManager.DelayMethod(m_CharacterPreviewSection.Initialize);
             // delay register method by one frame (to avoid issue with Awake() order)
             CoroutineManager.DelayMethod(() => { m_CharacterPreviewSection.CharacterPreviewButton.onClick.AddListener(ToggleCharacterSelection); });
+
+            // check if player is in a game currently
+            CheckCurrentGameId();
         }
 
         protected override void OnDestroy()
@@ -94,7 +97,24 @@ namespace Menu.MainMenu.MainTab
         #endregion
 
 
-        #region Check Before Playing
+        #region Checkers
+
+        async void CheckCurrentGameId()
+        {
+            if (PlayerPrefs.GetString(EPlayerPref.CurrentGameId.ToString(), "") == "")
+                return;
+
+            var joined = await LobbyHandler.Instance.JoinLobby(PlayerPrefs.GetString(EPlayerPref.CurrentGameId.ToString()));
+            if (! joined)
+            {
+                ErrorHandler.Warning("Unable to join lobby with id : " + PlayerPrefs.GetString(EPlayerPref.CurrentGameId.ToString()));
+                PlayerPrefs.SetString(EPlayerPref.CurrentGameId.ToString(), "");
+                return;
+            }
+
+            // TODO : reconnect to the game
+            ErrorHandler.Error("[TODO] Joined lobby with id : " + PlayerPrefs.GetString(EPlayerPref.CurrentGameId.ToString()));
+        }
 
         bool CheckBeforePlaying()
         {

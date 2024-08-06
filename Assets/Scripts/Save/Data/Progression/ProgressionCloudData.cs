@@ -1,8 +1,6 @@
 ﻿using Assets;
 using Data.GameManagement;
 using Enums;
-using Game.AI;
-using Menu.MainMenu;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
+using UnityEngine.Animations;
+using UnityEngine.UIElements;
 
 
 namespace Data
@@ -146,7 +148,7 @@ namespace Data
         /// <param name="spellData">    SpellData of the spell we are trying to cast or was casted </param>
         /// <param name="spell">        If the spell has already spawned, provide it (otherwise will be null) </param>
         /// <returns></returns>
-        public readonly SpellGFX Spawn(Controller caster, SpellData spellData, Spell spell = null, string stateEffectName = null, Controller targetController = null)
+        public readonly SpellGFX Spawn(Controller caster, SpellData spellData, Spell spell = null, string stateEffectName = null, Controller targetController = null, Vector3 callFromPosition = default)
         {
             GameObject go;
             if (Prefab == null)
@@ -154,7 +156,7 @@ namespace Data
             else
             {
                 var parent = SpellGFX.CalculateParent(this, caster, spell, targetController);
-                var position = SpellGFX.CalculatePosition(parent, this, caster);
+                var position = SpellGFX.CalculatePosition(parent, this, caster, callFromPosition);
                 go = GameObject.Instantiate(Prefab, position, Quaternion.identity, IsFollowing ? parent : null);
             }
             

@@ -43,7 +43,7 @@ namespace Inventory
             return (int)InventoryCloudData.Instance.Data[currency.ToString()];
         }
 
-        public static void UpdateCurrency(ECurrency currency, int amount, string context)
+        public static void UpdateCurrency(ECurrency currency, int amount, string context, bool save = true)
         {
             var data = InventoryCloudData.Instance.Data;
 
@@ -61,7 +61,7 @@ namespace Inventory
             }
 
             MAnalytics.SendEvent(new CurrencyEvent(currency, amount, context));
-            InventoryCloudData.Instance.SetData(currency.ToString(), total);
+            InventoryCloudData.Instance.SetData(currency.ToString(), total, save);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Inventory
             }
 
             // fire analytics event that the currency has been spent
-            MAnalytics.SendEvent(new CurrencyEvent(currency, cost, context));
+            MAnalytics.SendEvent(new CurrencyEvent(currency, -cost, context));
 
             // save new currency value in cloud data
             InventoryCloudData.Instance.SetData(currency.ToString(), GetCurrency(currency) - cost);
@@ -171,7 +171,7 @@ namespace Inventory
             SLevelData levelData = CollectablesManagementData.GetLevelData(collectable, data.Level);
 
             // UPGRADE : spend golds and cards to update the level
-            if (! Spend(levelData.RequiredGolds, ECurrency.Golds, "Upgrade" + collectable.GetType()))
+            if (! Spend(levelData.RequiredGolds, ECurrency.Golds, "Upgrade" + collectable.GetType().ToString().Replace("Enums.E", "") + "." + collectable.ToString()))
                 return;
 
             data.AddQty(- levelData.RequiredQty);
@@ -191,6 +191,9 @@ namespace Inventory
                 // get all other characters to level up
                 foreach (ECharacter character in Enum.GetValues(typeof(ECharacter)))
                 {
+                    if (character == ECharacter.Count)
+                        continue;
+
                     SCollectableCloudData charData = InventoryCloudData.Instance.GetCollectable(character);
                     charData.Level = data.Level;
 

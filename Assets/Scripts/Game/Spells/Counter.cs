@@ -32,7 +32,6 @@ namespace Game.Spells
         {
             base.Initialize(clientId, target, spellName, level);
 
-            transform.position = new Vector3(transform.position.x + m_SpellData.SpawnOffset.x, m_SpellData.SpawnOffset.y, 0);
             if (m_SpellData.ColorSwap != default)
                 m_Controller.GFXHandler.AddColorClientRPC(m_SpellData.ColorSwap);
 
@@ -42,7 +41,7 @@ namespace Game.Spells
             m_CounterTimer = m_SpellData.Duration;
 
             // TODO : BETTER - if spell is not impacting player by blocking movement or cast, and is not Trigger by player, do not add to list of Counters
-            if (!m_SpellData.IsBlockingCast && !m_SpellData.IsBlockingMovement && m_SpellData.CounterActivation == ECounterActivation.SelfTrigger)
+            if (! m_SpellData.IsLinkedCounter)
                 return;
 
             m_Controller.CounterHandler.AddCounter(this);
@@ -53,7 +52,8 @@ namespace Game.Spells
             if (m_SpellData.ColorSwap != default)
                 m_Controller.GFXHandler.RemoveColorClientRPC(m_SpellData.ColorSwap);
 
-            m_Controller.CounterHandler.RemoveCounter(this);
+            if (m_SpellData.IsLinkedCounter)
+                m_Controller.CounterHandler.RemoveCounter(this);
 
             base.End();
         }

@@ -1,7 +1,9 @@
-﻿using Enums;
+﻿using Data;
+using Enums;
 using Game.Loaders;
 using Game.Spells;
 using Inventory;
+using Menu.Common.Filters;
 using Save;
 using System;
 using System.Collections.Generic;
@@ -22,8 +24,10 @@ namespace Menu.MainMenu
         GameObject m_TemplateSpellItem;
         Dictionary<ESpell, TemplateSpellItemUI> m_SpellItems = new();
 
-        GameObject m_SpellItemContainer;
-        GameObject m_LockedSpellItemContainer;
+        SpellFiltersSection m_SpellFiltersSection;
+        GameObject          m_ParentContent;
+        GameObject          m_SpellItemContainer;
+        GameObject          m_LockedSpellItemContainer;
 
         #endregion
 
@@ -33,6 +37,8 @@ namespace Menu.MainMenu
         void Awake()
         {
             m_TemplateSpellItem             = AssetLoader.LoadTemplateItem("SpellItem");
+            m_SpellFiltersSection           = Finder.FindComponent<SpellFiltersSection>("SpellFiltersSection");
+            m_ParentContent                 = transform.parent.gameObject;
             m_SpellItemContainer            = Finder.Find(gameObject, "SpellItemContainer");
             m_LockedSpellItemContainer      = Finder.Find(gameObject, "LockedSpellItemContainer");
 
@@ -41,6 +47,7 @@ namespace Menu.MainMenu
             CharacterBuildsCloudData.CurrentBuildIndexChangedEvent  += RefreshSpellItemsDisplay;
             CharacterBuildsCloudData.CurrentBuildValueChangedEvent  += RefreshSpellItemsDisplay;
             InventoryManager.UnlockCollectableEvent                 += OnUnlockedSpell;
+            m_SpellFiltersSection.FilterChangedEvent                += OnFilterChanged;
         }
 
         /// <summary>
@@ -54,6 +61,10 @@ namespace Menu.MainMenu
             // remove content in spell items displayers
             UIHelper.CleanContent(m_SpellItemContainer);
             UIHelper.CleanContent(m_LockedSpellItemContainer);
+
+            // init Filters
+            m_SpellFiltersSection.Initialize();
+            m_SpellFiltersSection.SearchInputField.onValueChanged.AddListener(OnSearchValueChanged);
 
             m_SpellItems = new Dictionary<ESpell, TemplateSpellItemUI>();
             foreach (ESpell spell in SpellLoader.Spells)
@@ -92,6 +103,8 @@ namespace Menu.MainMenu
             CharacterBuildsCloudData.CurrentBuildIndexChangedEvent  -= RefreshSpellItemsDisplay;
             CharacterBuildsCloudData.CurrentBuildValueChangedEvent  -= RefreshSpellItemsDisplay;
             InventoryManager.UnlockCollectableEvent                 -= OnUnlockedSpell;
+            m_SpellFiltersSection.FilterChangedEvent                -= OnFilterChanged;
+            m_SpellFiltersSection.SearchInputField.onValueChanged.RemoveListener(OnSearchValueChanged);
         }
 
         #endregion
@@ -99,22 +112,40 @@ namespace Menu.MainMenu
 
         #region GUI Manipulators
 
+        public override void Activate(bool activate)
+        {
+            base.Activate(activate);    
+
+            m_SpellFiltersSection.gameObject.SetActive(activate);
+        }
+
         /// <summary>
         /// When a build or character selected is changed, refresh which spell item is displayed or not
         /// </summary>
         public void RefreshSpellItemsDisplay()
         {
+            var allowedSpells = m_SpellFiltersSection.GetFilteredSpells();
             foreach (var item in m_SpellItems)
             {
-                // set spell active only if not in current build
-                item.Value.gameObject.SetActive( ! CharacterBuildsCloudData.CurrentBuild.Contains(item.Key) );
+                bool activate = true;
+
+                // CHECK : is in current build
+                if (CharacterBuildsCloudData.CurrentBuild.Contains(item.Key))
+                    activate = false;
+
+                // CHECK : is allowed by filters
+                if (activate && allowedSpells.Where(data => data.Spell == item.Key).ToList().Count == 0)
+                    activate = false;
+
+                item.Value.gameObject.SetActive(activate);
             }
 
             // Force layout rebuild for both containers
             LayoutRebuilder.ForceRebuildLayoutImmediate(m_LockedSpellItemContainer.GetComponent<RectTransform>());
             LayoutRebuilder.ForceRebuildLayoutImmediate(m_SpellItemContainer.GetComponent<RectTransform>());
+            LayoutRebuilder.ForceRebuildLayoutImmediate(m_ParentContent.GetComponent<RectTransform>());
         }
-        
+
         #endregion
 
 
@@ -144,6 +175,20 @@ namespace Menu.MainMenu
 
             // add spellUI to dict of spell UIs
             m_SpellItems.Add(spellItemUI.Spell, spellItemUI);
+        }
+
+        void OnSearchValueChanged(string value)
+        {
+            RefreshSpellItemsDisplay();
+        }
+
+        void OnFilterChanged()
+        {
+            // refresh filter only if no search input
+            if (m_SpellFiltersSection.SearchInputField.text != "")
+                return;
+
+            RefreshSpellItemsDisplay();
         }
 
         #endregion

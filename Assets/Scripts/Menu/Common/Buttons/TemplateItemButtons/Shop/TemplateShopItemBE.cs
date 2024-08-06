@@ -80,7 +80,7 @@ namespace Menu.Common.Buttons
                 return;
             }
             
-            Main.ConfirmBuyRewards(new SPriceData((int)m_Cost, m_Currency), m_Rewards, OnPurchaseCompleted);            
+            Main.ConfirmBuyRewards(m_Name, new SPriceData((int)m_Cost, m_Currency), m_Rewards, OnPurchaseCompleted);            
         }
 
         protected void OnPurchaseCompleted(bool success)
@@ -88,7 +88,7 @@ namespace Menu.Common.Buttons
             switch (success)
             {
                 case true:
-                    Main.DisplayRewards(m_Rewards, ERewardContext.Shop);
+                    Main.DisplayRewards(m_Rewards, ERewardContext.Shop.ToString());
                     break;
                 
                 case false:

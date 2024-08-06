@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4192577057645875090}
   - component: {fileID: 1954645796425867749}
   - component: {fileID: 3063337092876336615}
+  - component: {fileID: 3806530105060709161}
   m_Layer: 5
   m_Name: SpellItemContainer
   m_TagString: Untagged
@@ -59,6 +60,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4f1069a7a8a0bd41aad84c159e5e0e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3806530105060709161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2921452701850261338}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: 190
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &3335734037555674734
 GameObject:
   m_ObjectHideFlags: 0
@@ -71,6 +92,7 @@ GameObject:
   - component: {fileID: 406619483143592087}
   - component: {fileID: 1792422810928741661}
   - component: {fileID: 7305139082931093265}
+  - component: {fileID: 7665193862456213849}
   m_Layer: 5
   m_Name: BackgroundImage
   m_TagString: Untagged
@@ -151,6 +173,19 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
   m_EffectDistance: {x: 5, y: -5}
   m_UseGraphicAlpha: 0
+--- !u!114 &7665193862456213849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3335734037555674734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d60216c9bca3b4d4caa5f39a3e631259, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AspectRatio: 0.66
 --- !u!1 &3616875878064271454
 GameObject:
   m_ObjectHideFlags: 0
@@ -350,7 +385,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 108
+  m_fontSize: 18
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1

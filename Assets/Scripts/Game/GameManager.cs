@@ -630,7 +630,10 @@ namespace Game
 
         public static bool FindInstance(bool checkSpawned = false)
         {
-            var instance = FindAnyObjectByType<GameManager>();
+            var instance = s_Instance;
+            if (instance == null)
+                instance = FindAnyObjectByType<GameManager>();
+
             if (instance == null)
                 return false;
 

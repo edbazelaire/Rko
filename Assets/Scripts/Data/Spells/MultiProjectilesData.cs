@@ -62,11 +62,15 @@ namespace Data
 
         #region Casting & Spawning
 
-        public override void Cast(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default, bool recalculateTarget = true)
+        public override void Cast(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default, bool recalculateTarget = true, bool recalculatePosition = true)
         {
             // recalculate target depending on spell type
             if (recalculateTarget)
                 CalculateTarget(ref target, clientId);
+
+            // recalculate target depending on spell type
+            if (recalculatePosition)
+                RecalculatePosition(ref position, target, clientId);
 
             if (NProjectiles < 1)
             {
@@ -170,11 +174,11 @@ namespace Data
         {
             // if specific projectile data are provided : use theme
             if (ProjectileData != null)
-                ProjectileData.Cast(clientId, target, position, rotation, false);
+                ProjectileData.Cast(clientId, target, position, rotation, false, true);
 
             // otherwise use config of the file
             else
-                base.Cast(clientId, target, position, rotation, false);
+                base.Cast(clientId, target, position, rotation, false, true);
         }
 
         #endregion

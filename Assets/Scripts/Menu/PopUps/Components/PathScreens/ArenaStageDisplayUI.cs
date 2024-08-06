@@ -155,7 +155,7 @@ namespace Menu.PopUps
                 && ! ProgressionCloudData.IsArenaCompleted(m_ArenaType)             // this is not the last difficulty level
                 && ! NotificationCloudData.HasRewardsForArenaType(m_ArenaType);     // this was the last reward to collect for this arena type
 
-            Main.DisplayRewards(m_ArenaLevelData.RewardsData, ERewardContext.ArenaReward, isLastReward ? OnCollectingLastReward : null);
+            Main.DisplayRewards(m_ArenaLevelData.RewardsData, ERewardContext.ArenaReward.ToString(), isLastReward ? OnCollectingLastReward : null);
         }
 
         protected void OnCollectingLastReward() 

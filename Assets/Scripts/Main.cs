@@ -20,8 +20,7 @@ using Network;
 using Save.RSDs;
 using Assets.Scripts.Tools;
 using Data.DataStructures;
-
-
+using Assets.Scripts.Managers;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -232,7 +231,7 @@ namespace Assets
                     break;
 
                 case EPopUpState.ConfirmBuyPopUp:
-                    obj.GetComponent<ConfirmBuyPopUp>().Initialize((SPriceData)args[0], (SRewardsData)args[1], (Action)args[2], (Action)args[3]);
+                    obj.GetComponent<ConfirmBuyPopUp>().Initialize((string)args[0], (SPriceData)args[1], (SRewardsData)args[2], (Action)args[3], (Action)args[4]);
                     break;
 
                 case EPopUpState.ConfirmBuyItemPopUp:
@@ -240,7 +239,7 @@ namespace Assets
                     break;
 
                 case EPopUpState.ConfirmBuyBundlePopUp:
-                    obj.GetComponent<ConfirmBuyBundlePopUp>().Initialize((SPriceData)args[0], (SRewardsData)args[1], (Action)args[2], (Action)args[3]);
+                    obj.GetComponent<ConfirmBuyBundlePopUp>().Initialize((string)args[0], (SPriceData)args[1], (SRewardsData)args[2], (Action)args[3], (Action)args[4]);
                     break;
 
 
@@ -309,9 +308,9 @@ namespace Assets
             }, unlockedOnly);
         }
 
-        public static void DisplayRewards(SRewardsData rewardsData, ERewardContext context, Action OnRewardCollected = null)
+        public static void DisplayRewards(SRewardsData rewardsData, string context, Action OnRewardCollected = null)
         {
-            Main.SetPopUp(EPopUpState.RewardsScreen, rewardsData, context.ToString(), OnRewardCollected);
+            Main.SetPopUp(EPopUpState.RewardsScreen, rewardsData, context, OnRewardCollected);
         }
      
         public static void DisplayAchievementRewards(List<SAchievementReward> rewardsData)
@@ -332,7 +331,7 @@ namespace Assets
                 return;
 
             SRewardsData rewardsData = new SRewardsData(collectableRewards: new List<SCollectableReward>() { new SCollectableReward(collectableType, collectable.ToString(), qty) }) ;
-            ConfirmBuyRewards(priceData, rewardsData, OnPurchase);
+            ConfirmBuyRewards(collectable.ToString(), priceData, rewardsData, OnPurchase);
         }
 
         /// <summary>
@@ -341,7 +340,7 @@ namespace Assets
         /// <param name="priceData"></param>
         /// <param name="rewardsData"></param>
         /// <param name="OnPurchase"></param>
-        public static void ConfirmBuyRewards(SPriceData priceData, SRewardsData rewardsData, Action<bool> OnPurchase)
+        public static void ConfirmBuyRewards(string itemName, SPriceData priceData, SRewardsData rewardsData, Action<bool> OnPurchase)
         {
             if (rewardsData.Rewards.Count == 0)
             {
@@ -364,7 +363,7 @@ namespace Assets
                 return;
             }
 
-            Main.SetPopUp(EPopUpState.ConfirmBuyBundlePopUp, priceData, rewardsData, onValidate, onCancel);
+            Main.SetPopUp(EPopUpState.ConfirmBuyBundlePopUp, itemName, priceData, rewardsData, onValidate, onCancel);
         }
 
         public static void SetMessagePopUp(string message, string title = "")
@@ -387,6 +386,21 @@ namespace Assets
 
 
         #region Checkers
+
+        /// <summary>
+        /// Check if there are changes to make from on version to another
+        /// </summary>
+        async void CheckUpdateVersion()
+        {
+            if (!ProfileCloudData.PseudoChanged)
+            {
+                PlayerPrefs.SetString("LastPlayedVersion", Application.version);
+                return;
+            }
+
+            // update version if needed
+            await UpdateManager.CheckUpdates();
+        }
 
         /// <summary>
         /// Check if pseudo needs to be changed
@@ -481,6 +495,9 @@ namespace Assets
             {
                 ErrorHandler.Log("Initialization of the data completed : loading MainMenu", ELogTag.System);
 
+                // check that current version matches the last played version for the player (apply changes if needed)
+                CheckUpdateVersion();
+              
                 // check that region has been provided
                 CheckRegion();
 

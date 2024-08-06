@@ -19,6 +19,7 @@ MonoBehaviour:
     WithIcon: 1
   - Name: Poison
     WithIcon: 1
+  m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 1923825553450198, guid: c518ffb802a01b947b08d6b8c8ea9948, type: 3}
   SpellEventActions:
@@ -92,7 +93,7 @@ MonoBehaviour:
   PersistanceAfterEnd: 0
   Animation: 2
   IsCancellable: 1
-  AnimationTimer: 0.6
+  AnimationTimer: 0.7
   m_Cooldown: 0
   Trajectory: 1
   m_StopOnTargetPos: 0
