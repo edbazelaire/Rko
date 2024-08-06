@@ -18,11 +18,11 @@ namespace Game.Loaders
 
         static SpellLoader s_Instance;
 
-        Dictionary<string, GameObject> m_SpellsPrefabs;
-        Dictionary<ESpell, SpellData> m_Spells;
-        Dictionary<string, SpellData> m_OnHitSpellData;
-        Dictionary<string, StateEffect> m_StateEffects;
-        Dictionary<ERune, RuneData> m_RunesData;
+        Dictionary<string, GameObject>      m_SpellsPrefabs;
+        Dictionary<ESpell, SpellData>       m_Spells;
+        Dictionary<string, SpellData>       m_OnHitSpellData;
+        Dictionary<string, StateEffect>     m_StateEffects;
+        Dictionary<ERune, RuneData>         m_RunesData;
 
         public static List<ESpell> Spells => Instance.m_Spells.Keys.ToList();
 
@@ -285,9 +285,9 @@ namespace Game.Loaders
             return spells;
         }
 
-        public static SpellData GetRandomSpell(List<ERarety> raretyFilters = default, List<ESpellType> spellTypeFilters = default, List<EStateEffect> stateEffectFilters = default, List<ESpell> notAllowedSpellsFilter = default, bool? unlocked = null)
+        public static SpellData GetRandomSpell(List<ERarety> raretyFilters = default, List<ESpellType> spellTypeFilters = default, List<ESpellElement> spellElementFilters = default, List<EStateEffect> stateEffectFilters = default, List<ESpell> notAllowedSpellsFilter = default, bool? unlocked = null)
         {
-            var spells = FilterSpells(raretyFilters, spellTypeFilters, stateEffectFilters, notAllowedSpellsFilter, unlocked);
+            var spells = FilterSpells(raretyFilters, spellTypeFilters, spellElementFilters, stateEffectFilters, notAllowedSpellsFilter, unlocked);
             if (spells.Count == 0)
             {
                 ErrorHandler.Warning("Unable to find any spell matching provided filters");
@@ -308,7 +308,7 @@ namespace Game.Loaders
         /// <param name="spellTypeFilters"></param>
         /// <param name="stateEffectFilters"></param>
         /// <returns></returns>
-        public static List<SpellData> FilterSpells(List<ERarety> raretyFilters = default, List<ESpellType> spellTypeFilters = default, List<EStateEffect> stateEffectFilters = default, List<ESpell> notAllowedSpellsFilter = default, bool? unlocked = null)
+        public static List<SpellData> FilterSpells(List<ERarety> raretyFilters = default, List<ESpellType> spellTypeFilters = default, List<ESpellElement> spellElementFilters = default, List<EStateEffect> stateEffectFilters = default, List<ESpell> notAllowedSpellsFilter = default, bool? unlocked = null, string containsName = "")
         {
             List<SpellData> spells = new List<SpellData>();
             foreach (var spellData in Instance.m_Spells.Values)
@@ -328,8 +328,23 @@ namespace Game.Loaders
                 // CHECK : type
                 if (spellTypeFilters != null && spellTypeFilters.Count > 0 && !spellTypeFilters.Contains(spellData.SpellType))
                     continue;
+
+                // CHECK : Spell Element
+                if (spellElementFilters != null && spellElementFilters.Count > 0)
+                {
+                    if (spellData.SpellElements == null || spellData.SpellElements.Count == 0)
+                    {
+                        // CHECK : NEUTRAL type
+                        if (! spellElementFilters.Contains(ESpellElement.Neutral))
+                            continue;
+                    }
+
+                    // CHECK : has at least one of required elements
+                    else if (spellData.SpellElements.Where(element => spellElementFilters.Contains(element)).ToList().Count() == 0)
+                        continue;
+                }
                 
-                // CHECK : spell filter
+                // FILTER : State Effects
                 if (stateEffectFilters != null && stateEffectFilters.Count > 0)
                 {
                     var spellInfos = spellData.GetInfos();
@@ -342,16 +357,16 @@ namespace Game.Loaders
                     if (spellEffects.Count == 0)
                         continue;
 
-                    var filteredEffects = spellEffects.Where(effect => stateEffectFilters.Contains(effect.StateEffect)).ToList();
-                    if (filteredEffects.Count == 0)
+                    // CHECK : at least one of the effects of the spell is one of the requested effects
+                    if (spellEffects.Where(effect => stateEffectFilters.Contains(effect.StateEffect)).ToList().Count == 0)
                         continue;
                 }
 
-                // CHECK : not in not allowed spells
+                // FILTER : not in not allowed spells
                 if (notAllowedSpellsFilter != null && notAllowedSpellsFilter.Contains(spellData.Spell))
                     continue;
 
-                // CHECK : is owned
+                // FILTER : is owned
                 if (unlocked != null)
                 {
                     // if UNLOCKED is required : check that spell is already unlocked
@@ -362,6 +377,10 @@ namespace Game.Loaders
                     if (!unlocked.Value && InventoryCloudData.Instance.GetSpell(spellData.Spell).Level > 0)
                         continue;
                 }
+
+                // FILTER : name contains string
+                if (! string.IsNullOrEmpty(containsName) && ! spellData.Spell.ToString().ToLower().Contains(containsName.ToLower()))
+                   continue;
 
                 spells.Add(spellData);
             }

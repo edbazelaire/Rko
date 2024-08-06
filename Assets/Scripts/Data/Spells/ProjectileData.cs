@@ -35,15 +35,6 @@ namespace Data
 
         #region Inherited Spawning Members
 
-        public override void Cast(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default, bool recalculateTarget = true)
-        {
-            if (recalculateTarget)
-                CalculateTarget(ref target, clientId);
-
-            RecalculatePosition(ref position, target, clientId);
-            base.Cast(clientId, target, position, rotation, false);
-        }
-
         public override void SpellPreview(Controller controller, Transform parent = default, Vector3 offset = default)
         {
             offset = GetSpawnOffset(controller);
@@ -99,7 +90,7 @@ namespace Data
 
         #region Postion & Target
 
-        protected virtual void RecalculatePosition(ref Vector3 position, Vector3 target, ulong clientId)
+        protected override void RecalculatePosition(ref Vector3 position, Vector3 target, ulong clientId)
         {
             Controller controller = GameManager.Instance.GetPlayer(clientId);
 

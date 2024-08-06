@@ -37,6 +37,8 @@ namespace Menu.Common.Buttons
         protected SRewardsData      m_Rewards;
         protected Sprite            m_Image;
 
+        /// <summary> EVENT DATA : collection context </summary>
+        protected string m_Context => ERewardContext.Shop + "." + m_Title;
         protected string m_CostString => m_Cost > 0 ? (Mathf.Round(m_Cost) == m_Cost ? m_Cost.ToString("0") : m_Cost.ToString("F2")) : "Free";
 
         #endregion
@@ -269,7 +271,7 @@ namespace Menu.Common.Buttons
                 return;
             }
             
-            Main.ConfirmBuyRewards(new SPriceData((int)m_Cost, m_Currency), m_Rewards, OnPurchaseCompleted);            
+            Main.ConfirmBuyRewards(m_Title, new SPriceData((int)m_Cost, m_Currency), m_Rewards, OnPurchaseCompleted);
         }
 
         protected void OnPurchaseCompleted(bool success)
@@ -280,7 +282,7 @@ namespace Menu.Common.Buttons
                     if (m_TimeData != null && ! TimeCloudData.CollectTimeData(m_TimeData.Value.Name))
                         return;
                     
-                    Main.DisplayRewards(m_Rewards, ERewardContext.Shop);
+                    Main.DisplayRewards(m_Rewards, m_Context);
                     break;
                 
                 case false:

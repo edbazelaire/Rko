@@ -160,9 +160,12 @@ namespace Game.SpellGFXs
                 case ESpawnTarget.OnSpell:
                     if (spell == null)
                     {
-                        ErrorHandler.Error("Trying to spawn " + prefabSpawn.Prefab.name + " OnSpell but spell is None");
+                        // It can happen that the spell is already destroyed when the client receive the data for "OnHit" or "OnEnd" effects.
+                        // This is not an error then and his handled later
+                        if (prefabSpawn.GFXLifetime.StartSpellPart <= ESpellEvent.OnHit)
+                            ErrorHandler.Error("Trying to spawn " + prefabSpawn.Prefab.name + " OnSpell but spell is None");
                         return null;
-                    }    
+                    }
                     return spell.transform;
 
 
@@ -172,15 +175,15 @@ namespace Game.SpellGFXs
             }
         }
 
-        public static Vector3 CalculatePosition(Transform parent, SPrefabSpawn prefabSpawn, Controller controller)
+        public static Vector3 CalculatePosition(Transform parent, SPrefabSpawn prefabSpawn, Controller controller, Vector3 callFromPosition)
         {
-            Vector3 basePos = Vector3.zero;
+            Vector3 basePos = callFromPosition;
             if (parent != null)
                 basePos = parent.transform.position;
 
             else if (prefabSpawn.SpawnTarget == ESpawnTarget.TargetPos)
                 basePos = controller.SpellHandler.TargetPos;
-            
+
             switch (prefabSpawn.SpawnLocation)
             {
                 case ESpawnLocation.None:

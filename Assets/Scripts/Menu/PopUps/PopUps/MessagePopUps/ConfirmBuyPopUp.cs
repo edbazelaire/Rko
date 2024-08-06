@@ -1,4 +1,5 @@
-﻿using Assets;
+﻿using Analytics.Events;
+using Assets;
 using Assets.Scripts.Menu.Common.Buttons.SubButtons;
 using Data.GameManagement;
 using Enums;
@@ -15,12 +16,16 @@ namespace Menu.PopUps
         #region Members
 
         // Data
+        protected string            m_ItemName;
         protected SPriceData        m_PriceData;
         protected SRewardsData      m_RewardsData;
 
         // GameObjects & Components
         protected Button            m_BuyButton;
         protected PriceDisplay      m_BuyButtonDisplay;
+
+        // Dependent Properties
+        protected virtual string m_Context => "Shop." + m_ItemName;
 
         #endregion
 
@@ -35,11 +40,12 @@ namespace Menu.PopUps
             m_BuyButtonDisplay = Finder.FindComponent<PriceDisplay>(m_BuyButton.gameObject);
         }
 
-        public void Initialize(SPriceData priceData, SRewardsData rewardsData, Action onValidate, Action onCancel)
+        public void Initialize(string itemName, SPriceData priceData, SRewardsData rewardsData, Action onValidate, Action onCancel)
         {
             base.Initialize(GetMessage(), "Confirm Buy", onValidate, onCancel);
-            m_PriceData = priceData;
-            m_RewardsData = rewardsData;
+            m_ItemName      = itemName;
+            m_PriceData     = priceData;
+            m_RewardsData   = rewardsData;
         }
 
         protected override void OnPrefabLoaded()
@@ -57,9 +63,6 @@ namespace Menu.PopUps
         protected virtual string GetMessage()
         {
             return "";
-
-            // TODO : remove ?
-            //return TextLocalizer.LocalizeText("Do you want to buy this item ?");
         }
 
         #endregion
@@ -79,7 +82,6 @@ namespace Menu.PopUps
                     base.OnUIButton(bname);
                     break;
             }
-
         }
 
         protected virtual void OnBuyClicked()
@@ -91,16 +93,11 @@ namespace Menu.PopUps
                 return;
             }
 
-            InventoryManager.Spend(m_PriceData.Price, m_PriceData.Currency, "Shop");
+            InventoryManager.Spend(m_PriceData.Price, m_PriceData.Currency, m_Context);
 
             OnValidateButton();
 
             Exit();
-        }
-
-        protected virtual void OnPurchaseCompleted()
-        {
-            Main.DisplayRewards(m_RewardsData, ERewardContext.Shop);
         }
 
         #endregion

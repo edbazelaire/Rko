@@ -43,8 +43,10 @@ namespace Data
         #region Members
 
         [SerializeField] protected string m_Description = "";
-        [SerializeField] protected List<SDescriptionVariable> m_DescriptionVariables = new List<SDescriptionVariable>();
+        [SerializeField] protected List<SDescriptionVariable>   m_DescriptionVariables = new List<SDescriptionVariable>();
 
+        [Description("List of Element catagories of the spell")]
+        [SerializeField] protected List<ESpellElement> m_SpellElements;
         [Description("Is this spell linked to a specific character")]
         public bool                 Linked;
 
@@ -144,6 +146,7 @@ namespace Data
 
         // ===========================================================================
         // Level Dependent Members
+        public virtual List<ESpellElement> SpellElements => m_SpellElements;
         public virtual float Cooldown           => Mathf.Max(Mathf.Round(100f * m_Cooldown / GetSpellLevelFactor(ESpellProperty.Cooldowns)) / 100f, 0f);
         public virtual int Damage               => (int)Math.Round(m_Damage * GetSpellLevelFactor(ESpellProperty.Damages));
         public virtual int Heal                 => (int)Math.Round(m_Heal * GetSpellLevelFactor(ESpellProperty.Heal));
@@ -192,15 +195,19 @@ namespace Data
         /// <param name="position"></param>
         /// <param name="rotation"></param>
         /// <param name="recalculateTarget"></param>
-        public virtual void Cast(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default, bool recalculateTarget = true)
+        public virtual void Cast(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default, bool recalculateTarget = true, bool recalculatePosition = true)
         {
             ErrorHandler.Log("Casting spell : " + Name, ELogTag.Spells);
 
             // Play SoundEffect
             GameManager.Instance.PlaySoundClientRPC(Name, ESpellEvent.OnCast);
 
+            // recalculate target if required
             if (recalculateTarget)
                 CalculateTarget(ref target, clientId);
+
+            if (recalculatePosition)
+                RecalculatePosition(ref position, target, clientId);
 
             // instantiate the prefab of the spell
             GameObject spellGO = GameObject.Instantiate(GetSpellPrefab(), position, rotation);
@@ -385,6 +392,14 @@ namespace Data
         {
             return null;
         }
+
+        #endregion
+
+
+        #region Position
+
+        protected virtual void RecalculatePosition(ref Vector3 position, Vector3 target, ulong clientId) { }
+
 
         #endregion
 

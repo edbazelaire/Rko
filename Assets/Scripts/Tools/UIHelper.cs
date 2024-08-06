@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AdaptivePerformance;
 
 namespace Tools
 {
@@ -84,6 +85,46 @@ namespace Tools
 
             // set value to last selected value
             dropdown.value = values.IndexOf(defaultValue.ToString());
+        }
+
+        public static void SetUpMultiDropdown(TMP_Dropdown dropdown, List<string> values, string defaultValue, Action<List<string>> onDropDownValueChanged)
+        {
+            // Create a dropdown reward method based on that finds the value linked to the index change and call "onDropDownValueChanged" method
+            void OnDropDown(int index)
+            {
+                SoundFXManager.PlayOnce(SoundFXManager.ClickButtonSoundFX);
+                onDropDownValueChanged.Invoke(DecodeBytesValue(index, values));
+            }
+
+            // setup option values
+            dropdown.options.Clear();
+            dropdown.AddOptions(values);
+
+            // change Lobby game mode on new selection
+            dropdown.onValueChanged.AddListener(OnDropDown);
+
+            // set value to last selected value
+            if (defaultValue != "")
+                dropdown.value = values.IndexOf(defaultValue.ToString());
+        }
+
+        public static List<string> DecodeBytesValue(int value, List<string> values)
+        {
+            List<string> selectedValues = new List<string>();
+            for (int i = 0; i < values.Count; i++)
+            {
+                if ((value & (1 << i)) != 0)
+                {
+                    selectedValues.Add(values[i]);
+                }
+            }
+            return selectedValues;
+        }
+
+        public static float GetSizeRatio(GameObject gameObject)
+        {
+            GetSize(gameObject, out float width, out float height);
+            return width / height;
         }
 
         /// <summary>

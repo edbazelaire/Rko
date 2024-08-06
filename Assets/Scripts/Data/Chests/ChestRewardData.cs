@@ -72,7 +72,7 @@ namespace Data
             Splits      = splits;
         }
 
-        public List<SReward> Generate(EStateEffect[] stateEffectFilter = default)
+        public List<SReward> Generate(ESpellElement[] spellElementFilter = default)
         {
             if (Qty == 0)
                 return new List<SReward>();
@@ -95,8 +95,8 @@ namespace Data
             List<SReward> rewardsList = new();
             var usedSpells = new List<ESpell>() { };
 
-            if (stateEffectFilter == default)
-                stateEffectFilter = new EStateEffect[] {};
+            if (spellElementFilter == default)
+                spellElementFilter = new ESpellElement[] {};
 
             // splits data into N parts
             for (int i = 0; i < Splits; i++)
@@ -122,7 +122,7 @@ namespace Data
                 // generate random quantity of cards and add it to list of rewards
                 rewardsList.Add(new SReward(
                     typeof(ESpell),
-                    GenerateRandomSpell(Rarety, ref usedSpells, stateEffectFilter.ToList()).ToString(),
+                    GenerateRandomSpell(Rarety, ref usedSpells, spellElementFilter.ToList()).ToString(),
                     qty
                 ));
 
@@ -137,13 +137,13 @@ namespace Data
         /// Get a random spell from list of spells
         /// </summary>
         /// <param name="rarety"></param>
-        /// <param name="stateEffectFilter"></param>
+        /// <param name="spellElementsFilter"></param>
         /// <returns></returns>
-        public static ESpell GenerateRandomSpell(ERarety rarety, ref List<ESpell> usedSpells, List<EStateEffect> stateEffectFilter = default)
+        public static ESpell GenerateRandomSpell(ERarety rarety, ref List<ESpell> usedSpells, List<ESpellElement> spellElementFilters = default)
         {
             var spells = SpellLoader.FilterSpells(
-                raretyFilters:          new List<ERarety>() { rarety }, 
-                stateEffectFilters:     stateEffectFilter,
+                raretyFilters:          new List<ERarety>() { rarety },
+                spellElementFilters:    spellElementFilters,
                 notAllowedSpellsFilter: usedSpells
             );
 
@@ -152,13 +152,13 @@ namespace Data
             {
                 spells = SpellLoader.FilterSpells(
                     raretyFilters: new List<ERarety>() { rarety },
-                    stateEffectFilters: stateEffectFilter
+                    spellElementFilters: spellElementFilters
                 );
 
                 // COUNT still 0 : ERROR
                 if (spells.Count == 0)
                 {
-                    ErrorHandler.Warning("Not able to find any spells with rarety " + rarety + " and state effects : " + TextHandler.ToString(stateEffectFilter));
+                    ErrorHandler.Warning("Not able to find any spells with rarety " + rarety + " and state effects : " + TextHandler.ToString(spellElementFilters));
                     spells = SpellLoader.GetSpellsFromRarety(rarety);
                 } 
             } 
@@ -195,7 +195,7 @@ namespace Data
 
         [Header("Filters")]
         [Description("Filter spells to only get spells with provided state effects")]
-        public EStateEffect[] StateEffectFilter;
+        public ESpellElement[] SpellElements;
 
         // ========================================================================================================
         // Dependent Properties
@@ -244,7 +244,7 @@ namespace Data
             // SPELLS
             foreach (SSpellDistributionData spellDistribution in SpellsDistribution)
             {
-                rewards.AddRange(spellDistribution.Generate(StateEffectFilter));
+                rewards.AddRange(spellDistribution.Generate(SpellElements));
             }
 
             // EXTRA CARD
@@ -277,7 +277,7 @@ namespace Data
 
                     rewards.Add(item.Key, new SReward(
                         typeof(ESpell),
-                        SSpellDistributionData.GenerateRandomSpell(item.Key, ref usedSpells, StateEffectFilter.ToList()).ToString(),
+                        SSpellDistributionData.GenerateRandomSpell(item.Key, ref usedSpells, SpellElements.ToList()).ToString(),
                         1
                     ));
                     break;

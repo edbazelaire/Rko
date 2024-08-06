@@ -50,7 +50,7 @@ namespace Menu.PopUps
             SRewardsData rewardsData = new SRewardsData();
             rewardsData.Add(item, qty);
 
-            base.Initialize(priceData, rewardsData, onValidate, onCancel);
+            base.Initialize(m_Item.ToString(), priceData, rewardsData, onValidate, onCancel);
         }
 
         protected override void OnPrefabLoaded()

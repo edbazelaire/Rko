@@ -230,7 +230,11 @@ namespace Menu.MainMenu
 
                 case EButtonState.Normal:
                 case EButtonState.Updatable:
-                    ToggleSubButtons();
+                    if (m_IsLinked)
+                        OnInfosButtonClicked();
+                    else
+                        ToggleSubButtons();
+
                     break;
             }
         }

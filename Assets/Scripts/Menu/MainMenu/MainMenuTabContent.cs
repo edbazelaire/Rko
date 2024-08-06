@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using Tools;
+﻿using Tools;
 using UnityEngine;
 
 namespace Menu.MainMenu

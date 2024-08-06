@@ -83,7 +83,7 @@ namespace Menu.PopUps
             if (!NotificationCloudData.CollectLeagueReward(m_League, m_Level))
                 return;
 
-            Main.DisplayRewards(GetRewards(), ERewardContext.LeagueReward);
+            Main.DisplayRewards(GetRewards(), ERewardContext.LeagueReward.ToString());
         }
 
         #endregion

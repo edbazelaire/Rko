@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 namespace Menu
 {
@@ -35,12 +36,33 @@ namespace Menu
 
         void SetupChestItems()
         {
+            // check ratio of the game object to decide wich display format to use
+            string format = UIHelper.GetSizeRatio(m_ChestsContainer) < 0.66f ? "line" : "square";
+
+            // init List of items and parent container
             m_ChestItems = new();
-            UIHelper.CleanContent(m_ChestsContainer);
+            GameObject parent;
+            if (format == "line")
+            {
+                parent = m_ChestsContainer;
+            } else
+            {
+                parent = Finder.Find(m_ChestsContainer, "Row1");
+            }
+
+            // clean container from potential TEST values
+            UIHelper.CleanContent(parent);
 
             for (int i = 0; i < InventoryManager.Chests.Length; i++)
             {
-                ChestUnlock chestItem = Instantiate(m_ChestUnlockPrefab, m_ChestsContainer.transform).GetComponent<ChestUnlock>();
+                // change row (if square format)
+                if (i == 2 && format == "square")
+                {
+                    parent = Finder.Find(m_ChestsContainer, "Row2");
+                    UIHelper.CleanContent(parent);
+                }
+
+                ChestUnlock chestItem = Instantiate(m_ChestUnlockPrefab, parent.transform).GetComponent<ChestUnlock>();
                 chestItem.Initialize(i);
                 m_ChestItems.Add(chestItem);
             }

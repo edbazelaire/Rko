@@ -220,9 +220,12 @@ namespace Network
                         return;
 
                     case ELobbyState.Ready:
+                        // save id of the lobby
+                        if (m_GameMode == EGameMode.Ranked)
+                            PlayerPrefs.SetString(EPlayerPref.CurrentGameId.ToString(), m_JoinedLobby.Id);
+
                         TimeErrorWrapper.Instance.Cancel(LOBBY_TIME_WRAPPER_ID);
                         return;
-
 
                     default:
                         OnErrorCallback("Unhandled LobbyState : " + m_State).Invoke();
@@ -390,6 +393,23 @@ namespace Network
                 if (lobbies.Count == 0)
                     return false;
 
+                return await JoinLobby(lobbies[0].Id);
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.Log("Failed to join lobby: " + e.Message);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Join the first lobby found
+        /// </summary>
+        public async Task<bool> JoinLobby(string id)
+        {
+            try
+            {
                 JoinLobbyByIdOptions lobbyOptions = new JoinLobbyByIdOptions
                 {
                     Player = new Player
@@ -398,7 +418,7 @@ namespace Network
                     }
                 };
 
-                m_JoinedLobby = await Lobbies.Instance.JoinLobbyByIdAsync(lobbies[0].Id, lobbyOptions);
+                m_JoinedLobby = await Lobbies.Instance.JoinLobbyByIdAsync(id, lobbyOptions);
                 return true;
             }
             catch (LobbyServiceException e)

@@ -128,6 +128,7 @@ namespace Menu.MainMenu.MainTab
             base.UnRegisterListeners();
 
             PlayerPrefsHandler.ArenaTypeChangedEvent -= OnArenaTypeChanged;
+            ProgressionCloudData.ArenaDataChangedEvent -= OnArenaDataChanged;
             m_DropdownButton.onValueChanged.RemoveListener(OnDropDownValueChanged);
         }
 

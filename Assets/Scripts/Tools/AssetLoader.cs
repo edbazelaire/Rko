@@ -101,6 +101,7 @@ namespace Tools
         public const string c_ChestsIconPath                = c_ItemsPath + "Chests/";
         public const string c_ShopPath                      = c_IconPath + "Shop/";
         public const string c_IconUIElementsPath            = c_IconPath + "UIElements/";
+        public const string c_IconFiltersPath               = c_IconUIElementsPath + "Filters/";
 
         // =============================================================================================================
         // ANIMATIONS
@@ -459,6 +460,11 @@ namespace Tools
         public static Sprite LoadUIElementIcon(string name)
         {
             return Load<Sprite>(c_IconUIElementsPath + c_IconPrefix + name);
+        }
+
+        public static Sprite LoadFilterIcon(string name)
+        {
+            return Load<Sprite>(c_IconFiltersPath + c_IconPrefix + name);
         }
 
         #endregion
