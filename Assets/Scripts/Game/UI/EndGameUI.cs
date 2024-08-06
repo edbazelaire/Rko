@@ -8,6 +8,7 @@ using Network;
 using Save;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Tools;
 using Tools.Animations;
@@ -85,9 +86,12 @@ public class EndGameUI : MObject
         m_TitleText.color = m_Win ? Color.green : Color.red;
 
         // handle data processing before animation & stuff
+        HandleEndGameData(win);
         HandleReward(win);
         HandleProgression(win, preventiveLossApplied);
-        HandleEndGameData(win);
+
+        // clean game data
+        PlayerPrefs.SetString(EPlayerPref.CurrentGameId.ToString(), "");
 
         // activate game object
         gameObject.SetActive(true);
@@ -121,6 +125,7 @@ public class EndGameUI : MObject
     void HandleReward(bool win)
     {
         ErrorHandler.Log("HandleReward() : start", ELogTag.Rewards);
+        bool saveCurrency = false;
 
         SRewardCalculator reward = win ? Rewarder.WinGameReward : Rewarder.LossGameReward;
         reward.SetCurrencyMultiplicator(CalculateCurrencyMultiplicator());
@@ -153,7 +158,7 @@ public class EndGameUI : MObject
         {
             m_GoldsRewardDisplay.SetActive(true);
             m_GoldsQty.text = string.Format(GOLDS_FORMAT, golds);
-            InventoryManager.UpdateCurrency(ECurrency.Golds, golds, ERewardContext.EndGameChest.ToString()) ;
+            InventoryManager.UpdateCurrency(ECurrency.Golds, golds, ERewardContext.EndGameChest.ToString(), false) ;
         }
 
         // ----------------------------------------------------------------------------
@@ -222,6 +227,9 @@ public class EndGameUI : MObject
 
                 // if preventive loss has been applied, apply double win
                 ProgressionCloudData.UpdateStageValue(PlayerPrefsHandler.GetArenaType(), win, nTimes: win & preventiveLossApplied ? 2 : 1);
+                
+                // DEBUG : check new level coherence
+                CheckNewLevelValue(ProgressionCloudData.SoloArenas[PlayerPrefsHandler.GetArenaType()].CurrentStage, GameUIManager.Instance.PreviousStage, win);
                 break;
 
             case EGameMode.Ranked:
@@ -229,6 +237,9 @@ public class EndGameUI : MObject
 
                 // if preventive loss has been applied, apply double win
                 ProgressionCloudData.UpdateLeagueValue(win, nTimes: win & preventiveLossApplied ? 2 : 1);
+                
+                // DEBUG : check new level coherence
+                CheckNewLevelValue(ProgressionCloudData.CurrentLeagueStage, GameUIManager.Instance.PreviousStage, win);
                 break;
 
             // no progression on training game
@@ -248,7 +259,89 @@ public class EndGameUI : MObject
     void HandleEndGameData(bool win)
     {
         // send analytics event (that also saves in StatCloudData)
-        MAnalytics.SendEvent(new GameEndedEvent(LobbyHandler.Instance.GameMode, win, StaticPlayerData.Character, StaticPlayerData.CharacterLevel)); ;
+        switch(LobbyHandler.Instance.GameMode)
+        {
+            case EGameMode.Arena:
+                var currentArena = ProgressionCloudData.SoloArenas[PlayerPrefsHandler.GetArenaType()];
+                MAnalytics.SendEvent(new ArenaGameEndedEvent(
+                    win,
+                    character:          StaticPlayerData.Character,
+                    playerLevel:        StaticPlayerData.CharacterLevel,
+                    rune:               StaticPlayerData.Rune,
+                    spells:             StaticPlayerData.Spells.ToList(),
+                    spellLevels:        StaticPlayerData.SpellLevels.ToList(),
+                    arenaType:          PlayerPrefsHandler.GetArenaType(),
+                    arenaDifficulty:    currentArena.CurrentDifficulty,
+                    level:              currentArena.CurrentLevel,
+                    stage:              GameUIManager.Instance.PreviousStage
+                ));
+                break;
+
+            case EGameMode.Ranked:
+                MAnalytics.SendEvent(new RankedGameEndedEvent(
+                    win, 
+                    character:      StaticPlayerData.Character, 
+                    characterLevel: StaticPlayerData.CharacterLevel,
+                    rune:           StaticPlayerData.Rune,
+                    spells:         StaticPlayerData.Spells.ToList(),
+                    spellLevels:    StaticPlayerData.SpellLevels.ToList(),
+                    gameId:         PlayerPrefs.GetString(EPlayerPref.CurrentGameId.ToString()),
+                    league:         ProgressionCloudData.CurrentLeague,
+                    level:          ProgressionCloudData.CurrentLeagueLevel,
+                    stage:          GameUIManager.Instance.PreviousStage
+                ));
+                break;
+
+            case EGameMode.Training:
+                break;
+
+            default:
+                ErrorHandler.Warning("Unhandled case : " + LobbyHandler.Instance.GameMode);
+                return;
+        }
+    }
+
+    void CheckNewLevelValue(int currentStage, int previousLevel, bool win)
+    {
+        if (win)
+        {
+            // check growth more than 1 level
+            if (currentStage > previousLevel + 1) 
+            {
+                ErrorHandler.Error($"WIN : currentLevel ({currentStage}) > previousLevel + 1 ({previousLevel})");
+            }
+
+            else if (currentStage < previousLevel && currentStage != 0)
+            {
+                ErrorHandler.Error($"WIN : currentLevel ({currentStage}) < previousLevel ({previousLevel}) BUT currentLevel != 0 ");
+            }
+
+            else if (currentStage == previousLevel)
+            {
+                ErrorHandler.Error($"WIN : currentLevel ({currentStage}) == previousLevel ({previousLevel})");
+            }
+        }
+
+        else
+        {
+            // loss more than 1 level
+            if (currentStage < previousLevel - 1)
+            {
+                ErrorHandler.Error($"LOSS : currentLevel ({currentStage}) < previousLevel - 1 ({previousLevel})");
+            }
+
+            else if (currentStage > previousLevel)
+            {
+                ErrorHandler.Error($"LOSS : currentLevel ({currentStage}) > previousLevel ({previousLevel})");
+            }
+
+            else if (currentStage == previousLevel && currentStage != 0)
+            {
+                ErrorHandler.Error($"LOSS : currentLevel ({currentStage}) == previousLevel ({previousLevel}) BUT currentLevel != 0 ");
+            }
+        }
+
+        Debug.Log($"Checked : current stage ({currentStage}) - previous level ({previousLevel})");
     }
 
     #endregion

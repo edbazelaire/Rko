@@ -254,7 +254,7 @@ namespace Data
 
             // MULTIPLE REWARDS
             else if (!achievementData.Rewards.IsEmpty)
-                Main.DisplayRewards(achievementData.Rewards, ERewardContext.Achievements);
+                Main.DisplayRewards(achievementData.Rewards, ERewardContext.Achievements.ToString());
 
             // save that the achievement was completed
             ProfileCloudData.CompleteAchievement(Name);

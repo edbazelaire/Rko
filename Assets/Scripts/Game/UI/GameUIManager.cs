@@ -54,6 +54,10 @@ public class GameUIManager : MonoBehaviour
     bool                m_RightMovementButtonPressed;
     bool                m_PreventiveLossApplied;
 
+    // DEBUG - Remove (?)
+    public int PreviousStage;
+    // DEBUG - Remove (?)
+
     // ==============================================================================================================
     // Public Accessors
     public static IntroGameUI IntroGameUI               => Instance.m_IntroGameUI;
@@ -286,6 +290,26 @@ public class GameUIManager : MonoBehaviour
         {
             if (m_PreventiveLossApplied)
                 return;
+
+            switch (LobbyHandler.Instance.GameMode)
+            {
+                case EGameMode.Arena:
+                    PreviousStage = ProgressionCloudData.SoloArenas[LobbyHandler.Instance.ArenaType].CurrentStage;
+                    break;
+
+                case EGameMode.Ranked:
+                    PreviousStage = ProgressionCloudData.CurrentLeagueStage;
+                    break;
+
+                case EGameMode.Training:
+                    PreviousStage = -1;
+                    break;
+
+                default:
+                    ErrorHandler.Warning("Unahandled case : " + LobbyHandler.Instance.GameMode);
+                    PreviousStage = -1;
+                    break;
+            }
 
             // apply a loss at start to handle potential disconnections
             m_PreventiveLossApplied = ProgressionCloudData.ApplyPreventiveLoss(LobbyHandler.Instance.GameMode);

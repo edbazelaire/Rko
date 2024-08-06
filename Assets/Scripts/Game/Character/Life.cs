@@ -68,7 +68,7 @@ public class Life : NetworkBehaviour
     /// </summary>
     void Update()
     {
-        //DisplayLife(2f);
+
     }
 
     #endregion
@@ -83,7 +83,7 @@ public class Life : NetworkBehaviour
     public int Hit(int damage, bool ignoreRes = false)
     {
         // only server can apply damages
-        if (!IsServer)
+        if (! IsServer || ! IsAlive)
             return 0;
 
         if (m_Controller.StateHandler.IsInvulnerable)
@@ -105,7 +105,7 @@ public class Life : NetworkBehaviour
         // apply damages (after shield)
         m_Hp.Value -= damage;
 
-        if (!IsAlive)
+        if (m_Hp.Value <= 0)
         {
             if (! m_Controller.TriggerEffectHandler.OnDeathEffect())
             {

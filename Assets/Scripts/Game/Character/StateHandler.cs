@@ -82,8 +82,6 @@ namespace Game.Character
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
-
-            m_StateEffectList.Dispose();
         }
 
         public void Initialize(ECharacter character, int level)
@@ -146,7 +144,7 @@ namespace Game.Character
                 if (spawnPrefab.GFXLifetime.StartSpellPart != spellEvent)
                     continue;
 
-                spawnPrefab.Spawn(null, null, null, stateEffectName, m_Controller);
+                spawnPrefab.Spawn(null, null, null, stateEffectName, m_Controller, transform.position);
             }
         }
 

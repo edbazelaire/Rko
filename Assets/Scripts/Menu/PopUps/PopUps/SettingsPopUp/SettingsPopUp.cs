@@ -7,7 +7,6 @@ namespace Menu.PopUps
 {
     public class SettingsPopUp : PopUp
     {
-
         #region Members
 
         GameObject m_TabButtonContainer;

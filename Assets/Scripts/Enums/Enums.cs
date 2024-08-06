@@ -130,6 +130,16 @@
         Count
     }
 
+    public enum ESpellElement
+    {
+        Neutral,
+
+        Fire,
+        Frost,
+        Poison,
+        Void,
+    }
+
     public enum ERarety
     {
         Common,
@@ -602,6 +612,10 @@
         InGame,
         Damage,
         Heal,
+        ArenaGameEnded,
+        RankedGameEnded,
+
+        PlayerData,
     }
 
     public enum EAnalyticsParam
@@ -611,6 +625,9 @@
         Win             = 2,
         Character       = 3,
         CharacterLevel  = 4,
+        Rune            = 5,
+        Spells          = 6,
+        SpellLevels     = 7,
 
         // InGame data
         Spell           = 50,

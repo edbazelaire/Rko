@@ -107,7 +107,6 @@ namespace Data
     }
 
 
-
     [CreateAssetMenu(fileName = "Counter", menuName = "Game/Spells/Counter")]
     public class CounterData : SpellData
     {
@@ -119,6 +118,7 @@ namespace Data
         public ECounterActivation CounterActivation;
         [SerializeField] protected Vector2 m_SpawnOffset    = new Vector2(0, 0);
         [SerializeField] protected bool m_IsFollowing       = true;
+        [SerializeField] protected ESpawnLocation m_SpawnLocation = ESpawnLocation.Center;
         public bool IsBlockingMovement                      = true;
         public bool IsBlockingCast                          = true;
 
@@ -136,11 +136,12 @@ namespace Data
 
         // ===================================================================================
         // Public Accessors
+        public bool IsLinkedCounter => IsBlockingCast || IsBlockingMovement || CounterActivation == ECounterActivation.OnHitPlayer;
         public List<SDamageConversionEffects> DamageConversionEffects => m_DamageConversionEffects;
         public Vector2 SpawnOffset => m_SpawnOffset;
 
 
-        #region Spawn 
+        #region Target & Position 
 
         protected override Transform FindParent(ulong clientId)
         {
@@ -149,6 +150,38 @@ namespace Data
 
             return GameManager.Instance.GetPlayer(clientId).transform;
         }
+
+        protected override void RecalculatePosition(ref Vector3 position, Vector3 target, ulong clientId)
+        {
+            // init position to target position
+            switch (m_SpawnLocation)
+            {
+                case ESpawnLocation.None:
+                case ESpawnLocation.Center:
+                    position = GameManager.Instance.GetPlayer(clientId).transform.position;
+                    break;
+
+                case ESpawnLocation.Ground:
+                    position = GameManager.Instance.GetPlayer(clientId).transform.position;
+                    position.y = 0;
+                    break;
+
+                case ESpawnLocation.Sky:
+                    position = GameManager.Instance.GetPlayer(clientId).transform.position;
+                    position.y = 5;
+                    break;
+
+                default:
+                    ErrorHandler.Error("Unhandled case : " + m_SpawnLocation);
+                    position = GameManager.Instance.GetPlayer(clientId).transform.position;
+                    break;
+            }
+            
+            // add offset
+            position.x += SpawnOffset.x;
+            position.y += SpawnOffset.y;
+        }
+
 
         #endregion
 

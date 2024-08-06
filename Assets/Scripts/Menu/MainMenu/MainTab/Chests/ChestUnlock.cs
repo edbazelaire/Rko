@@ -181,7 +181,6 @@ namespace Menu
             m_PreviousState = m_State;
         }
 
-
         #endregion
 
 
@@ -189,7 +188,7 @@ namespace Menu
 
         void DisplayUnlockPopUp()
         {
-            Main.ConfirmBuyRewards(GetUnlockPrice(), CreateRewardsData(), (bool success) => { if (success) UnlockChest(); });
+            Main.ConfirmBuyRewards("UnlockChest", GetUnlockPrice(), CreateRewardsData(), (bool success) => { if (success) UnlockChest(); });
         }
 
         /// <summary>
@@ -217,7 +216,7 @@ namespace Menu
         void UnlockChest()
         {
             // display rewards
-            Main.DisplayRewards(CreateRewardsData(), ERewardContext.EndGameChest);
+            Main.DisplayRewards(CreateRewardsData(), ERewardContext.EndGameChest.ToString());
 
             // remove chest in inventory
             InventoryManager.RemoveChestAtIndex(m_Index);

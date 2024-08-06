@@ -1,4 +1,5 @@
-﻿using Assets;
+﻿using Analytics.Events;
+using Assets;
 using Enums;
 using Newtonsoft.Json.Linq;
 using Save.RSDs;
@@ -389,10 +390,10 @@ namespace Save
             data.GamerTag = gamerTag;
 
             Instance.SetData(KEY_CURRENT_PROFILE_DATA, data);
-
             Instance.SetData(KEY_GAMER_TAG, gamerTag);
             Instance.SetData(KEY_PSEUDO_CHANGED, true);
 
+            MAnalytics.SendEvent(new PlayerDataEvent(gamerTag, Token, Region));
             GamerTagChanged?.Invoke();
         }
 
@@ -994,6 +995,35 @@ namespace Save
             }
 
             return results[0];
+        }
+
+        /// <summary>
+        /// Get a list of each players PublicData
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<List<EntityData>> GetAllPlayersPublicData()
+        {
+            int nResults = 10;
+            List<EntityData> results = new List<EntityData>();
+
+            for (int i = 0; i < 5000; i++)
+            {
+                var query = new Query(
+                    fields: default,
+                    new HashSet<string> { KEY_TOKEN, KEY_GAMER_TAG },
+                    limit: nResults,
+                    offset: nResults * i
+                );
+
+                var returnedData = await CloudSaveService.Instance.Data.Player.QueryAsync(query, new QueryOptions());
+
+                if (returnedData.Count == 0)
+                    return results;
+
+                results.AddRange(returnedData);
+            }
+
+            return results;
         }
 
         #endregion

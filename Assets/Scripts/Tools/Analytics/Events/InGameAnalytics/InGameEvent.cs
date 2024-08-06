@@ -16,7 +16,7 @@ namespace Analytics.Events
             SetParameter(EAnalyticsParam.GameMode.ToString(),   gameMode.ToString());
             SetParameter(EAnalyticsParam.Character.ToString(),  character.ToString());
             SetParameter(EAnalyticsParam.Spell.ToString(),      spell.ToString());
-            SetParameter(EAnalyticsParam.HitType .ToString(),    spell.ToString());
+            SetParameter(EAnalyticsParam.HitType .ToString(),   hitType.ToString());
             SetParameter(EAnalyticsParam.Qty.ToString(),        qty);
 
             StatCloudData.AddAnalytics(EventType, new SInGameEventCloudData(gameMode, character, spell, hitType, qty));
