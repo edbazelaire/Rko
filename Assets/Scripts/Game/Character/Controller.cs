@@ -212,7 +212,7 @@ public class Controller : NetworkBehaviour
         m_CharacterLevel.Value  = playerData.CharacterLevel;
         m_RuneData              = SpellLoader.GetRuneData(playerData.Rune);
         
-        CharacterData characterData = CharacterLoader.GetCharacterData(playerData.Character, playerData.CharacterLevel);
+        CharacterData characterData = CharacterLoader.GetCharacterData(playerData.Character, playerData.CharacterLevel, destroy: true);
         characterData.AddBonusStats(GetBonusStats());
 
         // initialize SpellHandler with character's spells
@@ -246,7 +246,7 @@ public class Controller : NetworkBehaviour
         GameUIManager.Instance.ClearSpells();
 
         // add linked spells
-        var characterData = CharacterLoader.GetCharacterData(m_Character.Value);
+        var characterData = CharacterLoader.GetCharacterData(m_Character.Value, destroy: true);
         GameUIManager.Instance.CreateLinkedSpellTemplate(characterData.Ultimate, m_CharacterLevel.Value);
         GameUIManager.Instance.CreateLinkedSpellTemplate(characterData.SpecialAbility, m_CharacterLevel.Value);
 
@@ -371,7 +371,7 @@ public class Controller : NetworkBehaviour
     /// </summary>
     public void SetSize()
     {
-        transform.localScale = Settings.CharacterSizeFactor * CharacterLoader.GetCharacterData(m_Character.Value).Size * Vector3.one;
+        transform.localScale = Settings.CharacterSizeFactor * CharacterLoader.GetCharacterData(m_Character.Value, destroy: true).Size * Vector3.one;
     }
 
     #endregion

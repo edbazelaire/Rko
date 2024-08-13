@@ -165,6 +165,12 @@ namespace Game
             var area = GetTargettableArea(team, enemyArea);
             return (area.position.x - Instance.TargettableAreaSize / 2 + (area.position.x < 0 ? 0.5f : 0.1f), area.position.x + Instance.TargettableAreaSize / 2 - (area.position.x > 0 ? 0.5f : 0.1f));
         }
+
+        public static bool IsInVoid(float x)
+        {
+            return x > Instance.m_TargettableAreas[0].transform.position.x + Instance.TargettableAreaSize / 2
+                || x < Instance.m_TargettableAreas[1].transform.position.x - Instance.TargettableAreaSize / 2;
+        }
  
         /// <summary>
         /// 

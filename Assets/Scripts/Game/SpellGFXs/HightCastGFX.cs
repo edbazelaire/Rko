@@ -16,17 +16,20 @@ namespace Game.SpellGFXs
 
         #region End
 
-        public override void End()
-        {
-            // start moving towards the target
-            m_MovementStarted = true;
-
-            base.End();
-        }
-
         protected override void SetPersistantTimer()
         {
             m_PersistanceTimer = m_SpellData.Delay;
+        }
+
+        #endregion
+
+
+        #region Post Processing
+
+        protected override void ApplyPostProcessing() 
+        {
+            transform.rotation = Quaternion.Euler(0f, 0f, 90f);
+            m_MovementStarted = true;
         }
 
         #endregion

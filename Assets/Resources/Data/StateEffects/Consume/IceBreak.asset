@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Description: Consume {0} to inflict an extra {1} damages
   m_DescriptionVariables: 120000000b000000
+  m_StateEffectType: 0
   m_VisualEffects:
   - Prefab: {fileID: 1364846237022580, guid: b7cc9b248528c8044b25f9538cc72b06, type: 3}
     MaterialEffect: {fileID: 0}
@@ -56,7 +57,7 @@ MonoBehaviour:
   - StateEffectProperty: 11
     ScalingFactor: 0.1
   m_StateEffectScalingStacks: []
-  m_Damages: 150
+  m_Damages: 200
   m_EndDamages: 0
   m_Heal: 0
   m_EndHeal: 0

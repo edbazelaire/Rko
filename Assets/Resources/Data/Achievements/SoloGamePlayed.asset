@@ -32,13 +32,7 @@ MonoBehaviour:
       Currencies: []
       Chests: 00000000
       Collectables: []
-      AchievementRewards:
-      - AchievementReward: 1
-        Title: 0
-        Avatar: 0
-        Border: 0
-        Badge: 201
-        League: 2
+      AchievementRewards: []
   - MaxValue: 25
     Rewards:
       Currencies: []
@@ -93,8 +87,16 @@ MonoBehaviour:
         Title: 0
         Avatar: 0
         Border: 0
-        Badge: 1
+        Badge: 201
         League: 4
+  - MaxValue: 375
+    Rewards:
+      Currencies:
+      - Currency: 0
+        Qty: 10000
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards: []
   - MaxValue: 500
     Rewards:
       Currencies: []

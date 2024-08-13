@@ -60,13 +60,13 @@ namespace Menu.PopUps
 
             // load data of the item
             if (enumValue.GetType() == typeof(ECharacter))
-                m_Data = CharacterLoader.GetCharacterData((ECharacter)enumValue, level);
+                m_Data = CharacterLoader.GetCharacterData((ECharacter)enumValue, level, destroy: false);
                 
             else if (enumValue.GetType() == typeof(ESpell))
-                m_Data = SpellLoader.GetSpellData((ESpell)enumValue, level);
+                m_Data = SpellLoader.GetSpellData((ESpell)enumValue, level, destroy: false);
                             
             else if (enumValue.GetType() == typeof(ERune))
-                m_Data = SpellLoader.GetSpellData((ESpell)enumValue, level);
+                m_Data = SpellLoader.GetRuneData((ERune)enumValue, level, destroy: false);
         }
 
         protected override void FindComponents()
@@ -101,23 +101,10 @@ namespace Menu.PopUps
             SetUpButtons();
         }
 
-        protected override void RegisterListeners()
-        {
-            base.RegisterListeners();
-
-            InventoryManager.CollectableUpgradedEvent += OnLevelUp;
-        }
-
-        protected override void UnRegisterListeners()
-        {
-            base.UnRegisterListeners();
-
-            InventoryManager.CollectableUpgradedEvent -= OnLevelUp;
-        }
-
         protected override void Exit()
         {
             AnimationHandler.EndAnimation(UPGRADE_ANIMATION_ID);
+            Destroy(m_Data);
 
             base.Exit();
         }
@@ -126,6 +113,24 @@ namespace Menu.PopUps
 
 
         #region GUI Manipulators
+
+        protected override void AdjustAspectRatio()
+        {
+            base.AdjustAspectRatio();
+
+            if (UIHelper.ScreenAspect == EScreenAspect.Square)
+            {
+                // get the RectTransform component of the GameObject
+                RectTransform rectTransform = Finder.FindComponent<RectTransform>(m_PopUpWindow);
+
+                // set the anchors to be at full length
+                rectTransform.anchorMin = new Vector2(rectTransform.anchorMin.y, rectTransform.anchorMin.y);
+                rectTransform.anchorMax = new Vector2(rectTransform.anchorMax.y, rectTransform.anchorMax.y);
+
+                // remove delta size
+                rectTransform.sizeDelta = Vector2.zero;
+            }
+        }
 
         protected virtual void SetUpTitle()
         {
@@ -170,7 +175,7 @@ namespace Menu.PopUps
             // -- get new data if spell is updatable
             Dictionary<string, object> newDataInfos = null;
             if (! m_IsMaxedLevel)
-                newDataInfos = m_Data.Clone(m_Level + 1).GetInfos();
+                newDataInfos = m_Data.Clone(m_Level + 1, true).GetInfos();
 
             var infos = m_Data.GetInfos();
             foreach (var item in infos)
@@ -215,7 +220,11 @@ namespace Menu.PopUps
             // -- get new data if spell is updatable
             Dictionary<string, object> newSpelLDataInfos = null;
             if (! m_IsMaxedLevel)
-                newSpelLDataInfos = m_Data.Clone(m_Level + 1).GetInfos();
+            {
+                var newSpell = m_Data.Clone(m_Level + 1);
+                newSpelLDataInfos = newSpell.GetInfos();
+                Destroy(newSpell);
+            }
 
             foreach (var item in m_Data.GetInfos())
             {
@@ -251,14 +260,14 @@ namespace Menu.PopUps
 
         #region Tools
 
-        CollectableData LoadCollectionData(Enum enumValue, int level)
+        CollectableData LoadCollectionData(Enum enumValue, int level, bool destroy = false)
         {
             // load data of the item
             if (enumValue.GetType() == typeof(ECharacter))
-                return CharacterLoader.GetCharacterData((ECharacter)enumValue, level);
+                return CharacterLoader.GetCharacterData((ECharacter)enumValue, level, destroy: destroy);
             
             else if (enumValue.GetType() == typeof(ESpell))
-                return SpellLoader.GetSpellData((ESpell)enumValue, level);
+                return SpellLoader.GetSpellData((ESpell)enumValue, level, destroy: destroy);
 
             ErrorHandler.Error("Unknown CollectionDataType for enum : " + enumValue);
 
@@ -270,6 +279,20 @@ namespace Menu.PopUps
 
 
         #region Listeners
+
+        protected override void RegisterListeners()
+        {
+            base.RegisterListeners();
+
+            InventoryManager.CollectableUpgradedEvent += OnLevelUp;
+        }
+
+        protected override void UnRegisterListeners()
+        {
+            base.UnRegisterListeners();
+
+            InventoryManager.CollectableUpgradedEvent -= OnLevelUp;
+        }
 
         protected override void OnUIButton(string bname)
         {
@@ -313,8 +336,11 @@ namespace Menu.PopUps
             if (! collectable.Equals(m_Collectable))
                 return;
 
+            // destroy previous data
+            Destroy(m_Data);
+
             // reload data
-            m_Data = LoadCollectionData(collectable, level);
+            m_Data = LoadCollectionData(collectable, level, false);
 
             // refresh UI
             RefreshUpgradeButtonUI();

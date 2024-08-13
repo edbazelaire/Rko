@@ -98,8 +98,12 @@ namespace Game.Spells
             if ((m_SpellData.Distance > 0) && Math.Abs(transform.position.x - m_OriginalPosition.x) > m_SpellData.Distance)
                 End();
 
-            // check if the spell has reached its max distance
+            // check if the spell has reached its target position
             if (m_SpellData.StopOnTargetPos && m_Target.x - transform.position.x < 0)
+                End();
+
+            // check if the spell is stuck in the void
+            if (transform.position.y - m_SpellData.Size / 2 <= 0 && ArenaManager.IsInVoid(transform.position.x))
                 End();
         }
 

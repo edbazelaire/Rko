@@ -21,6 +21,13 @@ using Save.RSDs;
 using Assets.Scripts.Tools;
 using Data.DataStructures;
 using Assets.Scripts.Managers;
+using Managers.Friends;
+using Menu.PopUps.PopUps.MessagePopUps;
+using Unity.Services.Friends.Models;
+
+
+
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -142,6 +149,7 @@ namespace Assets
                 || AchievementLoader.Achievements   == null
                 || LobbyHandler.Instance            == null
                 || ! RelayHandler.Initialized
+                || ! FriendsHandler.Initialized
                 || ! RSDManager.LoadingCompleted
                 || ! m_CloudSaveManager.LoadingCompleted
                 || ! m_SignedIn
@@ -174,8 +182,46 @@ namespace Assets
             if (state == Instance.m_State) 
                 return;
 
+            UpdateAvailabilityToState(state);
+
             Instance.m_State = state;
             StateChangedEvent?.Invoke(state);
+        }
+
+        /// <summary>
+        /// Check Appstate to setup players availibility
+        /// </summary>
+        /// <param name="state"></param>
+        public static async void UpdateAvailabilityToState(EAppState state)
+        {
+            Availability availability;
+            string task = "";
+            switch (state)
+            {
+                // loading screen does not change the current state
+                case EAppState.Release:
+                case EAppState.LoadingScreen:
+                    return;
+
+                case EAppState.MainMenu:
+                    availability = Availability.Online;
+                    break;
+
+                case EAppState.Lobby:
+                case EAppState.InGame:
+                    availability = Availability.Busy;
+                    task = "In Game";
+                    break;
+
+                default:
+                    ErrorHandler.Error("Unhandled app state : " + state);
+                    return;
+            }
+
+            if (FriendsHandler.CurrentActivity != null && availability.ToString() == FriendsHandler.CurrentActivity.Status)
+                return;
+
+            await FriendsHandler.Instance.SetPresence(availability, task);
         }
 
         public static void AddStoredEvent(EAppState state, Action action)
@@ -288,6 +334,10 @@ namespace Assets
                     obj.GetComponent<SettingsPopUp>().Initialize();
                     break;
 
+                case EPopUpState.PseudoPopUp:
+                    obj.GetComponent<PseudoPopUp>().Initialize(args.Count() > 0 ? (string)args[0] : "");
+                    break;
+
                 default:
                     obj.GetComponent<OverlayScreen>().Initialize();
                     break;
@@ -388,21 +438,6 @@ namespace Assets
         #region Checkers
 
         /// <summary>
-        /// Check if there are changes to make from on version to another
-        /// </summary>
-        async void CheckUpdateVersion()
-        {
-            if (!ProfileCloudData.PseudoChanged)
-            {
-                PlayerPrefs.SetString("LastPlayedVersion", Application.version);
-                return;
-            }
-
-            // update version if needed
-            await UpdateManager.CheckUpdates();
-        }
-
-        /// <summary>
         /// Check if pseudo needs to be changed
         /// </summary>
         public static void CheckPseudoPopUp()
@@ -480,37 +515,36 @@ namespace Assets
 
             // setup analytics
             MAnalytics.Initialize();
+            FriendsHandler.Instance.Initialize();
         }
 
-        private void OnInitializationCompleted()
+        private async void OnInitializationCompleted()
         {
             if (SceneLoader.Instance == null)
                 ErrorHandler.Log("SceneLoader is null", ELogTag.System);
 
+            // loading MainMenu
+            if (! AuthorizeAccess())
+            {
+                Main.SetPopUp(EPopUpState.MessagePopUp, "Unauthorized Access");
+                return;
+            } 
+
+            ErrorHandler.Log("Initialization of the data completed : loading MainMenu", ELogTag.System);
+
             // at the end of the initialization - check if PseudoPopUp should be displayed
             CheckPseudoPopUp();
 
-            // loading MainMenu
-            if (AuthorizeAccess())
-            {
-                ErrorHandler.Log("Initialization of the data completed : loading MainMenu", ELogTag.System);
+            // check that current version matches the last played version for the player (apply changes if needed)
+            UpdateManager.CheckUpdates();
 
-                // check that current version matches the last played version for the player (apply changes if needed)
-                CheckUpdateVersion();
-              
-                // check that region has been provided
-                CheckRegion();
+            // check that region has been provided
+            CheckRegion();
 
-                // check if a current message needs to be dislayed to the user before loading the scene 
-                CheckCurrentMessage();
+            // check if a current message needs to be dislayed to the user before loading the scene 
+            CheckCurrentMessage();
 
-                SceneLoader.Instance.LoadScene("MainMenu");
-            } 
-            else
-            {
-                Main.SetPopUp(EPopUpState.MessagePopUp, "Unauthorized Access");
-            }
-            
+            SceneLoader.Instance.LoadScene("MainMenu");
         }
 
         private void OnStateChanged(EAppState state)
@@ -533,7 +567,10 @@ namespace Assets
         {
             // call manual event that the application is quitting
             if (state == PlayModeStateChange.ExitingPlayMode)
+            {
+                ErrorHandler.IsExiting = true;
                 ApplicationQuitEvent?.Invoke();
+            }
         }
 #endif
         #endregion

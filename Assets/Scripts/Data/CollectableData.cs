@@ -61,9 +61,20 @@ namespace Data
         #endregion
 
 
+        #region End & Destroy
+
+        protected virtual void OnDestroy()
+        {
+            if (ErrorHandler.IsExiting)
+                ErrorHandler.Error("Unhandled Destroy() Data : " + Name);
+        }
+
+        #endregion
+
+
         #region Levels
 
-        public virtual CollectableData Clone(int level = 0)
+        public virtual CollectableData Clone(int level = 0, bool destroy = false)
         {
             CollectableData clone = Instantiate(this);
             if (level == 0)
@@ -71,6 +82,10 @@ namespace Data
 
             clone.SetLevel(level);
             clone.name = Name;
+
+            if (destroy)
+                CoroutineManager.DelayMethod(() => Destroy(clone));
+
             return clone;
         }
 

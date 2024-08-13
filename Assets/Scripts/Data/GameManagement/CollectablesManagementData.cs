@@ -63,17 +63,17 @@ namespace Data.GameManagement
 
         #region Data Management
 
-        public static CollectableData GetData(Enum collectable, int level)
+        public static CollectableData GetData(Enum collectable, int level, bool destroy = false)
         {
             // load data of the item
             if (collectable.GetType() == typeof(ECharacter))
-                return CharacterLoader.GetCharacterData((ECharacter)collectable, level);
+                return CharacterLoader.GetCharacterData((ECharacter)collectable, level, destroy);
 
             if (collectable.GetType() == typeof(ESpell))
-                return SpellLoader.GetSpellData((ESpell)collectable, level);
+                return SpellLoader.GetSpellData((ESpell)collectable, level, destroy);
 
             if (collectable.GetType() == typeof(ERune))
-                return SpellLoader.GetRuneData((ERune)collectable, level);
+                return SpellLoader.GetRuneData((ERune)collectable, level, destroy);
 
             ErrorHandler.Error("Unable to find CollectionData for data " + collectable + " of type " + collectable.GetType());
             return null;
@@ -210,7 +210,7 @@ namespace Data.GameManagement
         /// <returns></returns>
         public static SRaretyData GetRaretyData(Enum collectable)
         {
-            return GetRaretyData(GetData(collectable, 1).Rarety);
+            return GetRaretyData(GetData(collectable, 1, destroy: true).Rarety);
         }
 
         /// <summary>

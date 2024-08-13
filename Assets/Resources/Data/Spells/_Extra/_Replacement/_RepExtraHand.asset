@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: _RepExtraHand
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: 
+  m_DescriptionVariables: []
+  m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions: []
@@ -49,17 +52,19 @@ MonoBehaviour:
   TriggerPlayer: 1
   EnemyStateEffects: []
   AllyStateEffects: []
+  StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 2
   IsCancellable: 1
-  AnimationTimer: 0.6
-  m_Cooldown: 0
-  Trajectory: 0
+  AnimationTimer: 0.55
+  m_Cooldown: 0.5
+  Trajectory: 1
+  m_StopOnTargetPos: 0
   m_Speed: 0
   ProjectileData: {fileID: 0}
   MultiProjectileType: 1
   m_NProjectiles: 3
   m_ProjectileZoneSize: 5
-  DelayBetweenLaunches: 0
+  m_DelayBetweenLaunches: 0
   m_NWaves: 1
-  DelayBetweenWaves: 0
+  m_DelayBetweenWaves: 0

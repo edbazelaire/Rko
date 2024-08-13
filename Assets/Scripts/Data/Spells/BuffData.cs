@@ -30,7 +30,8 @@ namespace Data
         public override Dictionary<string, object> GetInfos()
         {
             var infoDict = base.GetInfos();
-            var stateEffectInfos = GetStateEffect().GetInfos();
+            var stateEffect = GetStateEffect();
+            var stateEffectInfos = stateEffect.GetInfos();
 
             foreach (var item in stateEffectInfos)
             {
@@ -39,7 +40,9 @@ namespace Data
                 else 
                     infoDict.Add(item.Key, item.Value);
             }
-            
+
+            Destroy(stateEffect);
+
             return infoDict;
         }
 

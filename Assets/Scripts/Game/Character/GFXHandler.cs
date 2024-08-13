@@ -59,7 +59,7 @@ namespace Game.Character
 
         public void Initialize(ECharacter character)
         {
-            CharacterData characterData = CharacterLoader.GetCharacterData(character);
+            CharacterData characterData = CharacterLoader.GetCharacterData(character, destroy: true);
             m_CharacterPreview = characterData.InstantiateCharacterPreview(gameObject);
             m_SpriteRenderers = Finder.FindComponents<SpriteRenderer>(m_CharacterPreview);
 

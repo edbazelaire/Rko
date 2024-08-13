@@ -70,7 +70,7 @@ namespace Menu.MainMenu
             foreach (ESpell spell in SpellLoader.Spells)
             {
                 // skip if spell is linked to a character
-                if (SpellLoader.GetSpellData(spell).Linked)
+                if (SpellLoader.GetSpellData(spell, destroy: true).Linked)
                     continue;
 
                 // check if is unlocked or not

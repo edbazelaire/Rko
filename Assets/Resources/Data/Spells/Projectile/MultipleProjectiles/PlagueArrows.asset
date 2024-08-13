@@ -25,7 +25,41 @@ MonoBehaviour:
   m_SpellElements: 03000000
   Linked: 0
   Graphics: {fileID: 8404073712820093283, guid: 8c55c61062ca286458b626fd86d47373, type: 3}
-  SpellEventActions: []
+  SpellEventActions:
+  - Prefab: {fileID: 8404073712820093283, guid: 7c07f264d7b379c4d9e0c8d9238115f4, type: 3}
+    MaterialEffect: {fileID: 0}
+    GFXLifetime:
+      StartSpellPart: 2
+      EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1
+    Size: 0.5
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 0
+    BodyPart: 6
+    IsFollowing: 0
+    Offset: {x: 0, y: 0.5}
+    Animation: 0
+    StateEffects: 
+  - Prefab: {fileID: 5138121657292497717, guid: ceef5902ada59ee458474fef9111c2fc, type: 3}
+    MaterialEffect: {fileID: 0}
+    GFXLifetime:
+      StartSpellPart: 4
+      EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1
+    Size: 0.5
+    OrderInLayer: 0
+    SpawnTarget: 3
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
@@ -34,7 +68,7 @@ MonoBehaviour:
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 2d433fc235c1d3848abd1f356b4509fa, type: 3}
   PermanantSoundFX: {fileID: 0}
-  OnHitSoundFX: {fileID: 8300000, guid: 01cc97220f578824281af20cf951c2c5, type: 3}
+  OnHitSoundFX: {fileID: 8300000, guid: c6d45d69015ca934fbd95932874c5b59, type: 3}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 9
   LockTargetAt: 2
@@ -47,7 +81,7 @@ MonoBehaviour:
   Distance: -1
   OverrideOnHitProperties: 
   m_Duration: 0
-  Delay: 0
+  Delay: 0.5
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
@@ -64,9 +98,9 @@ MonoBehaviour:
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
-  Animation: 2
+  Animation: 14
   IsCancellable: 0
-  AnimationTimer: 0.6
+  AnimationTimer: 0.35
   m_Cooldown: 25
   Trajectory: 0
   m_StopOnTargetPos: 0

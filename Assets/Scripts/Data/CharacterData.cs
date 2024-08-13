@@ -94,9 +94,9 @@ namespace Data
 
         #region Cloning & Level
 
-        public new CharacterData Clone(int level = 0)
+        public new CharacterData Clone(int level = 0, bool destroy = false)
         {
-            return (CharacterData)base.Clone(level);
+            return (CharacterData)base.Clone(level, destroy);
         }
 
         /// <summary>

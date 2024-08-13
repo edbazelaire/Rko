@@ -28,24 +28,23 @@ namespace Game.Spells
             if (!base.Initialize(controller, caster, stateEffectData))
                 return false;
 
-            if (m_ReplacementData != null)
-            {
-                if (m_ReplacementData.SpellType == ESpellType.MultiProjectiles)
-                {
-                    var autoAttackData = SpellLoader.GetSpellData(m_Controller.SpellHandler.AutoAttack);
-                    if (autoAttackData.SpellType != ESpellType.Projectile)
-                    {
-                        ErrorHandler.Error("Unhandled case : trying to set multiprojectile AutoAttack BUFF on a non projectile auto attack");
-                        return false;
-                    }
+            if (m_ReplacementData == null)
+                return true;
 
-                    (m_ReplacementData as MultiProjectilesData).ProjectileData = (SpellLoader.GetSpellData(m_Controller.SpellHandler.AutoAttack) as ProjectileData);
-                    (m_ReplacementData as MultiProjectilesData).OverrideProjectile((SpellLoader.GetSpellData(m_Controller.SpellHandler.AutoAttack) as ProjectileData));
+            if (m_ReplacementData.SpellType == ESpellType.MultiProjectiles)
+            {
+                var autoAttackData = SpellLoader.GetSpellData(m_Controller.SpellHandler.AutoAttack, level: m_Controller.CharacterLevel);
+                if (autoAttackData.SpellType != ESpellType.Projectile)
+                {
+                    ErrorHandler.Error("Unhandled case : trying to set multiprojectile AutoAttack BUFF on a non projectile auto attack");
+                    return false;
                 }
 
-                m_ReplacedSpell = m_Controller.SpellHandler.AutoAttack;
-                m_Controller.SpellHandler.ReplaceSpell(m_Controller.SpellHandler.AutoAttack, m_ReplacementData);
+                (m_ReplacementData as MultiProjectilesData).OverrideProjectile(autoAttackData as ProjectileData);
             }
+
+            m_ReplacedSpell = m_Controller.SpellHandler.AutoAttack;
+            m_Controller.SpellHandler.ReplaceSpell(m_Controller.SpellHandler.AutoAttack, m_ReplacementData);
 
             return true;
         }
@@ -53,7 +52,7 @@ namespace Game.Spells
         protected override void OnDestroy()
         {
             if (m_ReplacementData != null && m_Controller != null)
-                m_Controller.SpellHandler.RemoveOverridingSpell(m_Controller.SpellHandler.AutoAttack);
+                m_Controller.SpellHandler.RemoveOverridingSpell(m_Controller.SpellHandler.AutoAttack, m_ReplacementData.Name);
 
             base.OnDestroy(); 
         }

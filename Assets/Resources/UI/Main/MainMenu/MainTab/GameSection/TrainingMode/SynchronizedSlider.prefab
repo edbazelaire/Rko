@@ -501,6 +501,7 @@ GameObject:
   - component: {fileID: 8762700932256446871}
   - component: {fileID: 4076774773915910467}
   - component: {fileID: 3022950633408074563}
+  - component: {fileID: 5605770373435838886}
   m_Layer: 5
   m_Name: SynchronizedSlider
   m_TagString: Untagged
@@ -567,6 +568,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf2b16d8fc880104aa171cac2da969ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5605770373435838886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3631347606662341399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 50
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &4713134114488634629
 GameObject:
   m_ObjectHideFlags: 0

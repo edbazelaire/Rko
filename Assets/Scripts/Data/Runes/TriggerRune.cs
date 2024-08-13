@@ -40,7 +40,7 @@ namespace Data
             // description of the Rune is the description of the Trigger Effect (at the level of the current character)
             if (SpellLoader.StateEffectExists(m_TriggerEffects[0].SpellDataName))
             {
-                return SpellLoader.GetStateEffect(m_TriggerEffects[0].SpellDataName, InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter).Level).GetDescription();
+                return SpellLoader.GetStateEffectDescription(m_TriggerEffects[0].SpellDataName, InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter).Level);
             }
 
             ErrorHandler.Warning("Unhandled yet, spell have currently no description : TODO");

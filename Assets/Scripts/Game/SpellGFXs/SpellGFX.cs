@@ -53,6 +53,9 @@ namespace Game.SpellGFXs
             // apply material of the effect on the target bodyparts
             ApplyMaterial();
 
+            // allow children to apply post processing
+            ApplyPostProcessing();
+
             // add state effects happening during the lifetime
             AddStateEffects();
 
@@ -259,6 +262,13 @@ namespace Game.SpellGFXs
         {
             return m_SpellData.AnimationTimer / m_Controller.SpellHandler.GetCastSpeed(m_SpellData.Spell);
         }
+
+        #endregion
+
+
+        #region Post Processing
+
+        protected virtual void ApplyPostProcessing() { }
 
         #endregion
 
