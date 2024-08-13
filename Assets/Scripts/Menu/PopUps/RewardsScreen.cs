@@ -90,6 +90,40 @@ namespace Menu.PopUps
             base.Initialize();
         }
 
+        /// <summary>
+        /// Re-adjust size of the elements depending on current AspectRatio
+        /// </summary>
+        protected override void AdjustAspectRatio()
+        {
+            base.AdjustAspectRatio();
+
+            if (UIHelper.ScreenAspect == EScreenAspect.Normal)
+                return;
+
+            if (UIHelper.ScreenAspect == EScreenAspect.Large)
+            {
+                // adjust max layout width of the Icon
+                var layoutIcon = Finder.FindComponent<LayoutElement>(m_RewardIconSection);
+                if (layoutIcon != null)
+                    layoutIcon.preferredWidth = 700;
+
+                // adjust vertical alignment of the Icon
+                var verticalLayoutGroupIcon = Finder.FindComponent<VerticalLayoutGroup>(m_RewardIconSection);
+                if (verticalLayoutGroupIcon != null)
+                {
+                    verticalLayoutGroupIcon.padding.left = 50;
+                    verticalLayoutGroupIcon.padding.right = 50;
+                    verticalLayoutGroupIcon.padding.top = 50;
+                    verticalLayoutGroupIcon.padding.bottom = 50;
+                }
+
+                // adjust max layout width of the Icon
+                var layoutInfo = Finder.FindComponent<LayoutElement>(m_RewardInfosSection);
+                if (layoutIcon != null)
+                    layoutInfo.preferredWidth = 600;
+            }
+        }
+
         protected override void OnPrefabLoaded()
         {
             base.OnPrefabLoaded();

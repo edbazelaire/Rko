@@ -471,7 +471,7 @@ namespace Game.Character
                 m_AnimationTimer -= Time.deltaTime;
 
                 // if player is moving, cancel the spell
-                if ((spellData.IsCancellable && m_Controller.Movement.IsMoving) || HasStateBlockingCast())
+                if ((spellData.IsCancellable && m_Controller.Movement.IsMoving) || HasStateBlockingCast() || ! CheckEnemyTargetable(spell))
                 {
                     // reset Animator
                     CancelCast();
@@ -730,9 +730,11 @@ namespace Game.Character
             m_OverridingSpellData[spell] = spellData;
         }
 
-        public void RemoveOverridingSpell(ESpell spell)
+        public void RemoveOverridingSpell(ESpell originalSpell, string replacementSpell)
         {
-            m_OverridingSpellData.Remove(spell);
+            Debug.Log("RemoveOverridingSpell : " + originalSpell);
+            if (m_OverridingSpellData.ContainsKey(originalSpell) && m_OverridingSpellData[originalSpell].Name == replacementSpell)
+                m_OverridingSpellData.Remove(originalSpell);
         }
 
         /// <summary>

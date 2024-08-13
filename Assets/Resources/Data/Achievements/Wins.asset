@@ -46,13 +46,7 @@ MonoBehaviour:
         Qty: 1000
       Chests: 
       Collectables: []
-      AchievementRewards:
-      - AchievementReward: 2
-        Title: 0
-        Avatar: 1
-        Border: 0
-        Badge: 0
-        League: 0
+      AchievementRewards: []
   - MaxValue: 15
     Rewards:
       Currencies: []
@@ -82,7 +76,7 @@ MonoBehaviour:
   - MaxValue: 50
     Rewards:
       Currencies: []
-      Chests: 
+      Chests: 01000000
       Collectables: []
       AchievementRewards:
       - AchievementReward: 1
@@ -93,9 +87,7 @@ MonoBehaviour:
         League: 3
   - MaxValue: 75
     Rewards:
-      Currencies:
-      - Currency: 0
-        Qty: 2500
+      Currencies: []
       Chests: 02000000
       Collectables: []
       AchievementRewards:
@@ -114,10 +106,52 @@ MonoBehaviour:
       - AchievementReward: 1
         Title: 0
         Avatar: 0
+        Border: 0
+        Badge: 2
+        League: 3
+  - MaxValue: 150
+    Rewards:
+      Currencies:
+      - Currency: 1
+        Qty: 750
+      Chests: 
+      Collectables: []
+      AchievementRewards: []
+  - MaxValue: 200
+    Rewards:
+      Currencies:
+      - Currency: 0
+        Qty: 15000
+      - Currency: 3
+        Qty: 2000
+      Chests: 
+      Collectables: []
+      AchievementRewards: []
+  - MaxValue: 250
+    Rewards:
+      Currencies: []
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 1
+        Title: 0
+        Avatar: 0
         Border: 11
         Badge: 2
         League: 4
-  - MaxValue: 150
+  - MaxValue: 300
+    Rewards:
+      Currencies: []
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards: []
+  - MaxValue: 400
+    Rewards:
+      Currencies: []
+      Chests: 03000000
+      Collectables: []
+      AchievementRewards: []
+  - MaxValue: 500
     Rewards:
       Currencies: []
       Chests: 

@@ -184,6 +184,19 @@ namespace Data
         #endregion
 
 
+        #region End & Destruction
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            if (ProjectileData != null)
+                Destroy(ProjectileData);
+        }
+
+        #endregion
+
+
         #region Postion & Target
 
         /// <summary>
@@ -240,10 +253,14 @@ namespace Data
         {
             ErrorHandler.Log("Overriding data of " + Name + " with " + overridingData.Name, ELogTag.Spells);
 
-            Animation       = overridingData.Animation;
-            IsCancellable   = overridingData.IsCancellable;
-            AnimationTimer  = overridingData.AnimationTimer;
-            m_Cooldown      = overridingData.Cooldown;
+            ProjectileData              = overridingData;
+            Animation                   = overridingData.Animation;
+            IsCancellable               = overridingData.IsCancellable;
+            AnimationTimer              = overridingData.AnimationTimer;
+            m_Cooldown                  = overridingData.Cooldown;
+
+            if (Trajectory == ESpellTrajectory.Count)
+                Trajectory = overridingData.Trajectory;
         }
 
         #endregion

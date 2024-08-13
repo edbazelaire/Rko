@@ -292,6 +292,19 @@ namespace Data
         #endregion
 
 
+        #region Ending
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            foreach (var onHit in OnHit)
+                Destroy(onHit);
+        }
+
+        #endregion
+
+
         #region Overriders 
 
         public void Override(SpellData overridingData)
@@ -746,9 +759,9 @@ namespace Data
 
         #region Level management
 
-        public new SpellData Clone(int level = 0)
+        public new SpellData Clone(int level = 0, bool destroy = false)
         {
-            return (SpellData)base.Clone(level);
+            return (SpellData)base.Clone(level, destroy);
         }
 
         protected override void SetLevel(int level)

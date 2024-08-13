@@ -1,5 +1,4 @@
 ﻿using Assets;
-using Assets.Scripts.Managers.Sound;
 using Data.GameManagement;
 using Enums;
 using Inventory;
@@ -29,11 +28,10 @@ namespace Menu.Common.Buttons
 
         protected SCollectableCloudData m_CollectableCloudData;
 
-        protected Enum m_Collectable => m_CollectableCloudData.GetCollectable();
-        protected int m_Level => m_CollectableCloudData.Level;
-
-        public SCollectableCloudData CollectableCloudData => m_CollectableCloudData;
-        public CollectionFillBar CollectionFillBar => m_CollectionFillBar;
+        protected Enum m_Collectable                        => m_CollectableCloudData.GetCollectable();
+        protected int m_Level                               => m_CollectableCloudData.Level;
+        public SCollectableCloudData CollectableCloudData   => m_CollectableCloudData;
+        public CollectionFillBar CollectionFillBar          => m_CollectionFillBar;
 
         #endregion
 

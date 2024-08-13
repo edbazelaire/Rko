@@ -22,6 +22,7 @@ MonoBehaviour:
     WithIcon: 1
   - Name: Scorched
     WithIcon: 1
+  m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 6568525604674795387, guid: 912f46e9e2caafe42a97770cf5725ac6, type: 3}
   SpellEventActions:
@@ -91,7 +92,7 @@ MonoBehaviour:
   MaxHit: 1
   EnergyGain: 0
   EnergyCost: 100
-  m_Damage: 160
+  m_Damage: 140
   m_Heal: 0
   m_LifeSteal: 0
   Distance: -1

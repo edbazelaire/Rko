@@ -7,6 +7,7 @@ using Save;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Tools;
 using UnityEngine;
 
@@ -223,7 +224,7 @@ namespace Game.Loaders
         /// </summary>
         /// <param name="spell"></param>
         /// <returns></returns>
-        public static SpellData GetSpellData(ESpell spell, int level = 1)
+        public static SpellData GetSpellData(ESpell spell, int level = 1, bool destroy = false)
         {
             if (!Instance.m_Spells.ContainsKey(spell))
             {
@@ -231,7 +232,9 @@ namespace Game.Loaders
                 return null;
             }
 
-            return Instance.m_Spells[spell].Clone(level);
+            var spellData = Instance.m_Spells[spell].Clone(level, destroy);
+
+            return spellData;
         }
 
         /// <summary>
@@ -239,20 +242,56 @@ namespace Game.Loaders
         /// </summary>
         /// <param name="spell"></param>
         /// <returns></returns>
-        public static SpellData GetSpellData(string spellName, int level = 1)
+        public static SpellData GetSpellData(string spellName, int level = 1, bool destroy = false)
         {
             if (Enum.TryParse(spellName, out ESpell spell))
             {
-                return GetSpellData(spell, level);
+                return GetSpellData(spell, level, destroy);
             }
 
             if (Instance.m_OnHitSpellData.ContainsKey(spellName))
             {
-                return Instance.m_OnHitSpellData[spellName].Clone(level);
+                return Instance.m_OnHitSpellData[spellName].Clone(level, destroy);
             }
-
+            
             ErrorHandler.Error($"SpellLoader : Spell {spellName} not found");
             return null;
+        }
+
+        /// <summary>
+        /// Get only spell's description and destroy the Instance after 
+        /// </summary>
+        /// <param name="spellName"></param>
+        /// <param name="level"></param>
+        /// <returns></returns>
+        public static string GetSpellDescription(string spellName, int level = 1)
+        {
+            var spellData = GetSpellData(spellName, level);
+            string description = spellData.GetDescription();
+            Destroy(spellData);
+            return description;
+        }
+
+        /// <summary>
+        /// Get only spell's info dict and destroy the Instance after 
+        /// </summary>
+        /// <param name="spellName"></param>
+        /// <param name="level"></param>
+        /// <returns></returns>
+        public static Dictionary<string, object> GetSpellInfos(string spellName, int level = 1)
+        {
+            var spellData = GetSpellData(spellName, level);
+            var infos = spellData.GetInfos();
+            Destroy(spellData);
+            return infos;
+        }
+
+        public static bool IsLinked(string spellName)
+        {
+            var spellData = GetSpellData(spellName);
+            bool isLinked = spellData.Linked;
+            Destroy(spellData);
+            return isLinked;
         }
 
         /// <summary>
@@ -395,16 +434,32 @@ namespace Game.Loaders
         /// <returns></returns>
         public static StateEffect GetStateEffect(string stateEffectName, int level = 1)
         {
+            StateEffect stateEffect;
             if (! Instance.m_StateEffects.ContainsKey(stateEffectName))
             {
-                StateEffect state = ScriptableObject.CreateInstance<StateEffect>();
-                state.name = stateEffectName;
-                return state;
+                stateEffect = ScriptableObject.CreateInstance<StateEffect>(); 
+            } 
+            else
+            {
+                stateEffect = Instance.m_StateEffects[stateEffectName].Clone(level);
             }
 
-            var clone = Instance.m_StateEffects[stateEffectName].Clone(level);
-            clone.name = stateEffectName;
-            return clone;
+            stateEffect.name = stateEffectName;
+            return stateEffect;
+        }
+
+        /// <summary>
+        /// Get the description of a state effect and destroy the instance right after
+        /// </summary>
+        /// <param name="stateEffectName"></param>
+        /// <param name="level"></param>
+        /// <returns></returns>
+        public static string GetStateEffectDescription(string stateEffectName, int level = 1)
+        {
+            StateEffect stateEffect = GetStateEffect(stateEffectName, level);
+            string description = stateEffect.GetDescription();
+            Destroy(stateEffect);
+            return description;
         }
 
         /// <summary>
@@ -422,7 +477,7 @@ namespace Game.Loaders
         /// </summary>
         /// <param name="rune"></param>
         /// <returns></returns>
-        public static RuneData GetRuneData(ERune rune, int level = 1)
+        public static RuneData GetRuneData(ERune rune, int level = 1, bool destroy = false)
         {
             if (!Instance.m_RunesData.ContainsKey(rune))
             {
@@ -430,7 +485,11 @@ namespace Game.Loaders
                 return default;
             }
 
-            return (RuneData)Instance.m_RunesData[rune].Clone(level);
+            var data = (RuneData)Instance.m_RunesData[rune].Clone(level);
+            if (destroy)
+                CoroutineManager.DelayMethod(() => Destroy(data));
+
+            return data;
         }
 
         #endregion

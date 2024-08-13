@@ -2,7 +2,9 @@ using Data;
 using Enums;
 using System.Collections.Generic;
 using Tools;
+using Unity.VisualScripting;
 using UnityEngine;
+using static Unity.Collections.Unicode;
 
 
 namespace Game.Loaders
@@ -70,7 +72,7 @@ namespace Game.Loaders
         /// <param name="character"></param>
         /// <param name="level"></param>
         /// <returns></returns>
-        public static CharacterData GetCharacterData(ECharacter character, int level = 1)
+        public static CharacterData GetCharacterData(ECharacter character, int level = 1, bool destroy = false)
         {
             if (!CharacterLoader.Instance.Characters.ContainsKey(character))
             {
@@ -78,7 +80,7 @@ namespace Game.Loaders
                 return null;
             }
 
-            return Instance.Characters[character].Clone(level);
+            return Instance.Characters[character].Clone(level, destroy);
         }
 
         /// <summary>

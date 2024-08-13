@@ -154,6 +154,30 @@ public class GameUIManager : MonoBehaviour
         m_Background.GetComponent<NightSkyBackground>().Initialize();
     }
 
+    public void RescaleBackground(float scale)
+    {
+        if (m_Background == null)
+        {
+            ErrorHandler.Error("No Background to rescale");
+            return;
+        }
+
+        if (scale <= 0)
+        {
+            ErrorHandler.Error("Bad scale provided : " + scale);
+            return;
+        }
+
+        var canvasScaler = m_BackgroundCanvas.GetComponent<CanvasScaler>();
+        if (canvasScaler == null) 
+        {
+            ErrorHandler.Error("Trying to rescale background without CanvasScaler component");
+            return;
+        }
+
+        canvasScaler.scaleFactor = scale;
+    }
+
     Sprite GetBackgroundImage()
     {
         if (LobbyHandler.Instance.GameMode == EGameMode.Arena)

@@ -7,11 +7,15 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AdaptivePerformance;
+using UnityEngine.Rendering;
 
 namespace Tools
 {
     public static class UIHelper
     {
+
+        #region Helpers
+
         /// <summary>
         /// Remove all childs of a container
         /// </summary>
@@ -33,6 +37,100 @@ namespace Tools
                 GameObject.Destroy(child.gameObject);
             }
         }
+
+        /// <summary>
+        /// Check if mouse is over position of a gameobject
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <returns></returns>
+        public static bool IsMouseIn(GameObject gameObject)
+        {
+            // Convert mouse position to local position of the scroller container
+            RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
+
+            if (rectTransform == null)
+            {
+                ErrorHandler.Error("Unable to define if mouse is in game object " + gameObject.name + " because game object has no RectTransform value");
+                return false;
+            }
+
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, Input.mousePosition, null, out Vector2 localMousePos);
+
+            // check if the local mouse position is within the bounds of the game object
+            return RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition, Camera.main);
+        }
+
+        #endregion
+        
+
+        #region Size & Ratio
+
+        /// <summary>
+        /// Get Width and Height of a GameObject
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public static void GetSize(GameObject gameObject, out float width, out float height)
+        {
+            RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
+
+            width = rectTransform.rect.width;
+            height = rectTransform.rect.height;
+        }
+
+        /// <summary>
+        /// Get Width and Height of the current Scren
+        /// </summary>
+        /// <returns></returns>
+        public static float ScreenRatio => (float)Screen.width / Screen.height;
+       
+        public static EScreenAspect ScreenAspect
+        {
+            get
+            {
+                if (ScreenRatio <= 1.4f)
+                    return EScreenAspect.Square;
+
+                if (ScreenRatio >= 2.5f)
+                    return EScreenAspect.Large;
+
+                return EScreenAspect.Normal;
+            }
+        }
+
+        /// <summary>
+        /// Get ratio Width vs Hight of the provided game obejct
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <returns></returns>
+        public static float GetSizeRatio(GameObject gameObject)
+        {
+            GetSize(gameObject, out float width, out float height);
+            return width / height;
+        }
+
+        /// <summary>
+        /// Set a game objects anchors and sizeDelta to 100% match the size of the parent
+        /// </summary>
+        /// <param name="gameObject"></param>
+        public static void SetFullSize(GameObject gameObject)
+        {
+            // get the RectTransform component of the GameObject
+            RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
+
+            // set the anchors to be at full length
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+
+            // remove delta size
+            rectTransform.sizeDelta = Vector2.zero;
+        }
+
+        #endregion
+
+
+        #region DropDown
 
         public static void SetUpDropdown<TEnum>(TMP_Dropdown dropdown, Enum defaultValue, Action<TEnum> onDropDownValueChanged, List<TEnum> excludeValues = default)
         {
@@ -121,64 +219,7 @@ namespace Tools
             return selectedValues;
         }
 
-        public static float GetSizeRatio(GameObject gameObject)
-        {
-            GetSize(gameObject, out float width, out float height);
-            return width / height;
-        }
-
-        /// <summary>
-        /// Set a game objects anchors and sizeDelta to 100% match the size of the parent
-        /// </summary>
-        /// <param name="gameObject"></param>
-        public static void SetFullSize(GameObject gameObject)
-        {
-            // get the RectTransform component of the GameObject
-            RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
-
-            // set the anchors to be at full length
-            rectTransform.anchorMin = Vector2.zero;
-            rectTransform.anchorMax = Vector2.one;
-
-            // remove delta size
-            rectTransform.sizeDelta = Vector2.zero;
-        }
-
-        /// <summary>
-        /// Get Width and Height of a GameObject
-        /// </summary>
-        /// <param name="gameObject"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        public static void GetSize(GameObject gameObject, out float width, out float height)
-        {
-            RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
-
-            width = rectTransform.rect.width;
-            height = rectTransform.rect.height;
-        }
-
-        /// <summary>
-        /// Check if mouse is over position of a gameobject
-        /// </summary>
-        /// <param name="gameObject"></param>
-        /// <returns></returns>
-        public static bool IsMouseIn(GameObject gameObject)
-        {
-            // Convert mouse position to local position of the scroller container
-            RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
-
-            if (rectTransform == null)
-            {
-                ErrorHandler.Error("Unable to define if mouse is in game object " +  gameObject.name + " because game object has no RectTransform value");
-                return false;
-            }
-
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, Input.mousePosition, null, out Vector2 localMousePos);
-
-            // check if the local mouse position is within the bounds of the game object
-            return RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition, Camera.main);
-        }
+        #endregion
 
 
         #region Spawning
@@ -189,13 +230,19 @@ namespace Tools
             CleanContent(parent);
 
             // get selected character preview
-            var characterPreview = CharacterLoader.GetCharacterData(character).InstantiateCharacterPreview(parent);
+            var characterPreview = CharacterLoader.GetCharacterData(character, destroy: true).InstantiateCharacterPreview(parent);
 
             // display character preview
             var baseScale = characterPreview.transform.localScale;
             var parentRect = Finder.FindComponent<RectTransform>(parent);
-            float scaleFactor = parentRect.rect.height / characterPreview.transform.localScale.y;
+            float scaleFactor = Mathf.Min(parentRect.rect.height / characterPreview.transform.localScale.y, parentRect.rect.width / characterPreview.transform.localScale.x);
             characterPreview.transform.localScale = new Vector3(baseScale.x * scaleFactor, baseScale.y * scaleFactor, 1f);
+
+            // remove offset
+            var characterContainer = Finder.Find(characterPreview, "CharacterContainer");
+            var basePos = characterContainer.transform.localPosition;
+            basePos.x = 0f;
+            characterContainer.transform.localPosition = basePos;
 
             // adjust ordering of the character preview to be above canvas
             AdjustLayout(characterPreview, layerName);

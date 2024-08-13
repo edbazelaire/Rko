@@ -39,7 +39,6 @@ namespace Game.Spells
                 m_Controller.SpellHandler.ForceBlockCast(true);
                 m_Controller.Movement.ForceBlockMovement(true);
             }
-               
         }
 
         // Update is called once per frame

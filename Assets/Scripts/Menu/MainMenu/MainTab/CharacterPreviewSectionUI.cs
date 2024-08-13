@@ -157,7 +157,7 @@ namespace Menu.MainMenu
                 return;
 
             // get current character data
-            var charData = CharacterLoader.GetCharacterData(CharacterBuildsCloudData.SelectedCharacter);
+            var charData = CharacterLoader.GetCharacterData(CharacterBuildsCloudData.SelectedCharacter, destroy: true);
 
             // init ultimate button
             if (m_UltimateButton != null)
@@ -197,17 +197,7 @@ namespace Menu.MainMenu
         /// </summary>
         void SpawnCharPreview()
         {
-            // clean current preview
-            UIHelper.CleanContent(m_CharacterPreviewContainer);
-
-            // get selected character preview
-            var characterData = CharacterLoader.GetCharacterData(StaticPlayerData.Character);
-            var characterPreview = characterData.InstantiateCharacterPreview(m_CharacterPreviewContainer);
-
-            // display character preview
-            var baseScale = characterPreview.transform.localScale;
-            float scaleFactor = m_CharacterPreviewRectTransform.rect.height / characterPreview.transform.localScale.y;
-            characterPreview.transform.localScale = new Vector3(baseScale.x * scaleFactor, baseScale.y * scaleFactor, 1f);
+            UIHelper.SpawnCharacter(StaticPlayerData.Character, m_CharacterPreviewContainer);
         }
 
         #endregion

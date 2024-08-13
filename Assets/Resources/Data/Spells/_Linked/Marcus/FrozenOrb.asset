@@ -19,6 +19,7 @@ MonoBehaviour:
     WithIcon: 1
   - Name: Frost
     WithIcon: 1
+  m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 4510707380993797748, guid: e740832f2d2d6544e84874fb474964fd, type: 3}
   SpellEventActions:
@@ -62,9 +63,9 @@ MonoBehaviour:
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
-  CastSoundFX: {fileID: 8300000, guid: 3b0634fb8970b3646b290d3a85c0417c, type: 3}
+  CastSoundFX: {fileID: 8300000, guid: 48c4b02a391eb8747a4268ba4a4caaa8, type: 3}
   PermanantSoundFX: {fileID: 0}
-  OnHitSoundFX: {fileID: 8300000, guid: 01cc97220f578824281af20cf951c2c5, type: 3}
+  OnHitSoundFX: {fileID: 8300000, guid: 6e62fa1315e78ef449a0dd0d6ded2c17, type: 3}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 1
   LockTargetAt: 2

@@ -65,12 +65,14 @@ namespace Game
         public Dictionary<ulong, Controller> Controllers => m_Controllers;
         public NetworkVariable<float> ProgressGameStart => m_ProgressGameStart;
         public NetworkVariable<EGameState> State => m_State;
+        /// <summary> check if GameManager exists, if has an Instance or the game object exists in the scene </summary>
+        public static bool Exists => s_Instance != null || FindAnyObjectByType<GameManager>() != null;
         /// <summary> intro starting : game fully loaded </summary>
         public bool IsGameLoaded => m_State.Value >= EGameState.Intro;
         /// <summary> intro completed : game starts </summary>
         public bool IsGameStarted => m_State.Value > EGameState.Intro;
         /// <summary> game is over </summary>
-        public static bool IsGameOver => Instance == null || Instance.m_State.Value >= EGameState.GameOver;
+        public static bool IsGameOver => s_Instance == null || Instance.m_State.Value >= EGameState.GameOver || ErrorHandler.IsExiting;
 
         #endregion
 
@@ -341,6 +343,20 @@ namespace Game
         [ClientRpc]
         void SetupUIClientRPC()
         {
+            // adjust Camera
+            if (IsOwner)
+            {
+                var cameraAdjuster = Finder.FindComponent<CameraAdjuster>(Camera.main.gameObject);
+                if (cameraAdjuster == null)
+                {
+                    ErrorHandler.Error("No CameraAdjuster was found for client " + OwnerClientId);
+                }
+                else
+                {
+                    cameraAdjuster.Initialize();
+                }
+            }
+           
             foreach (Controller controller in m_Controllers.Values)
             {
                 controller.InitializeUI();
@@ -485,7 +501,7 @@ namespace Game
         [ClientRpc]
         public void PlaySoundClientRPC(string spellName, ESpellEvent spellAction)
         {
-            var spellData = SpellLoader.GetSpellData(spellName);
+            var spellData = SpellLoader.GetSpellData(spellName, destroy: true);
             AudioClip audioClip = null;
 
             switch (spellAction)
@@ -644,8 +660,6 @@ namespace Game
             s_Instance = instance;
             return true;
         }
-
-        public static bool Exists => s_Instance != null || FindAnyObjectByType<GameManager>() != null;
 
         /// <summary>
         /// Controller of the local player

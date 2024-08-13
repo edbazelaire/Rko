@@ -1,6 +1,4 @@
-﻿using Enums;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using UnityEngine;
 
 namespace Data
@@ -14,6 +12,11 @@ namespace Data
         public virtual string GetDescription()
         {
             return Description;
+        }
+
+        public new RuneData Clone(int level = 0, bool destroy = false)
+        {
+            return (RuneData)base.Clone(level, destroy);
         }
     }
 }

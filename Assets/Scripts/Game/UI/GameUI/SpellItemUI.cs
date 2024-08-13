@@ -85,7 +85,7 @@ namespace Game.UI
             m_CollectableCloudData = new SCollectableCloudData(spell, level);
             m_Owner = GameManager.Instance.Owner;
 
-            SpellData spellData = SpellLoader.GetSpellData(m_Spell, level);
+            SpellData spellData = SpellLoader.GetSpellData(m_Spell, level, destroy: true);
             m_BaseCooldown      = spellData.Cooldown;
             m_CooldownTimer     = 0;
 

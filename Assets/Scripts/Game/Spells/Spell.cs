@@ -68,6 +68,8 @@ namespace Game.Spells
         {
             base.OnDestroy();
 
+            Destroy(m_SpellData);
+
             if (GameManager.Exists)
                 GameManager.Instance.State.OnValueChanged -= OnGameStateChanged;
         }

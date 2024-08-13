@@ -86,7 +86,7 @@ namespace Game.Character
 
         public void Initialize(ECharacter character, int level)
         {
-            m_CharacterData = CharacterLoader.GetCharacterData(character, level);
+            m_CharacterData = CharacterLoader.GetCharacterData(character, level, destroy: false);
         }
 
 
@@ -126,7 +126,6 @@ namespace Game.Character
                 SpellLoader.GetStateEffect(stateEffect).PlaySoundEffect();
         }
 
-
         [ClientRpc]
         public void CallSpellEventClientRPC(ESpellEvent spellEvent, string stateEffectName)
         {
@@ -155,6 +154,8 @@ namespace Game.Character
 
         public bool HasState(string state)
         {
+            if (GameManager.IsGameOver)
+                return false;
             return m_StateEffectList.Contains(state);
         }
 
@@ -335,9 +336,7 @@ namespace Game.Character
 
             // if is UNIQUE : remove all effects of the same type
             if (stateEffect.IsUnique)
-            {
                 RemoveStateEffectsOfType(stateEffect.StateEffectType);
-            }
 
             // no stacks and no active effect : return
             if (stacks == 0)
@@ -345,6 +344,8 @@ namespace Game.Character
 
             if (! stateEffect.Initialize(m_Controller, caster, overridingData))
                 return;
+
+            Debug.LogWarning("Adding state effect " + stateEffect);
 
             // add the state effect to the list of active effects
             m_StateEffects.Add(stateEffect);
@@ -457,6 +458,8 @@ namespace Game.Character
                 {
                     RemoveStateEffectAtIndex(index, true);
                 }
+
+                Debug.LogWarning("Remove StateEffect " + stateEffect);
             }
         }
 

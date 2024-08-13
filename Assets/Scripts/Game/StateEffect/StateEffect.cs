@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Tools;
-using Unity.Netcode;
 using UnityEngine;
 
 namespace Game.Spells
@@ -220,23 +219,9 @@ namespace Game.Spells
         #endregion
 
 
-        #region End
+        #region End & Destroy
 
-        protected virtual void OnDestroy()
-        {
-            if (m_AudioSource != null)
-            {
-                Destroy(m_AudioSource);
-            }
 
-            if (m_Controller == null)
-            {
-                ErrorHandler.Error("Unable to find Controller for StateEffect " + StateEffectName);
-                return;
-            }
-
-            m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnEnd, StateEffectName);
-        }
 
         /// <summary>
         /// Reached its end naturaly or was consumed by another spell
@@ -253,6 +238,17 @@ namespace Game.Spells
                 var clone = stateEffect.Clone(m_Level);
                 m_Controller.StateHandler.AddStateEffect(clone, m_Caster);
             }
+        }
+
+        protected virtual void OnDestroy()
+        {
+            if (m_AudioSource != null)
+                Destroy(m_AudioSource);
+
+            if (m_Controller == null)
+                return;
+
+            m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnEnd, StateEffectName);
         }
 
         #endregion

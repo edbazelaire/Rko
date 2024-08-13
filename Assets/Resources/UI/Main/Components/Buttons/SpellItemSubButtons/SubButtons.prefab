@@ -137,7 +137,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 493044602307194658, guid: c052a96cda329de4cb2b09053a485fc6, type: 3}
       propertyPath: m_fontSize
-      value: 42.6
+      value: 32.4
       objectReference: {fileID: 0}
     - target: {fileID: 4862975996953189510, guid: c052a96cda329de4cb2b09053a485fc6, type: 3}
       propertyPath: m_Pivot.x
@@ -247,7 +247,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 142680746850975308, guid: d819958e66f4f2449aa8804938417daa, type: 3}
       propertyPath: m_fontSize
-      value: 42.6
+      value: 37.1
       objectReference: {fileID: 0}
     - target: {fileID: 3134001476184136022, guid: d819958e66f4f2449aa8804938417daa, type: 3}
       propertyPath: m_Sprite
@@ -439,9 +439,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: RemoveSubButton
       objectReference: {fileID: 0}
+    - target: {fileID: 5135702035484321995, guid: 8bd9f24f10962ef4aa0d354b17b38e9c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 2.324463
+      objectReference: {fileID: 0}
+    - target: {fileID: 5135702035484321995, guid: 8bd9f24f10962ef4aa0d354b17b38e9c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 8.328499
+      objectReference: {fileID: 0}
     - target: {fileID: 6032422756541901739, guid: 8bd9f24f10962ef4aa0d354b17b38e9c, type: 3}
       propertyPath: m_fontSize
-      value: 42.6
+      value: 37.1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -461,26 +469,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3358125597417833050}
     m_Modifications:
-    - target: {fileID: 204631524398224955, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 204631524398224955, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 204631524398224955, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 2415.73
-      objectReference: {fileID: 0}
-    - target: {fileID: 204631524398224955, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 1207.865
-      objectReference: {fileID: 0}
-    - target: {fileID: 204631524398224955, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -11.4887
-      objectReference: {fileID: 0}
     - target: {fileID: 1074784237409721416, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -561,73 +549,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1211932833125303010, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1211932833125303010, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1211932833125303010, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 2415.73
-      objectReference: {fileID: 0}
-    - target: {fileID: 1211932833125303010, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 1207.865
-      objectReference: {fileID: 0}
-    - target: {fileID: 1211932833125303010, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -39.9174
-      objectReference: {fileID: 0}
     - target: {fileID: 2517666625387252751, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
       propertyPath: m_Name
       value: UpgradeSubButton
       objectReference: {fileID: 0}
-    - target: {fileID: 4023773787931509293, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4023773787931509293, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4023773787931509293, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 23.88
-      objectReference: {fileID: 0}
-    - target: {fileID: 4023773787931509293, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 1178.5479
-      objectReference: {fileID: 0}
-    - target: {fileID: 4023773787931509293, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -11.94
-      objectReference: {fileID: 0}
     - target: {fileID: 4216709717377410596, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 6.4190063
-      objectReference: {fileID: 0}
-    - target: {fileID: 6592995494872633157, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6592995494872633157, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6592995494872633157, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 23.88
-      objectReference: {fileID: 0}
-    - target: {fileID: 6592995494872633157, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 1245.3851
-      objectReference: {fileID: 0}
-    - target: {fileID: 6592995494872633157, guid: 54fa9a4e84e63ad40a6ac94b6626fea5, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -11.94
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
