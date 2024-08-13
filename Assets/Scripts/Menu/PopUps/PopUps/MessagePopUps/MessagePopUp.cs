@@ -10,12 +10,12 @@ namespace Menu.PopUps
         #region Members
 
         // data
-        string m_TitleData;
-        string m_Message;
+        protected string m_TitleData;
+        protected string m_Message;
 
         // GameObjects & Components
-        GameObject m_MessageContainer;
-        TMP_Text m_MessageText;
+        protected GameObject m_MessageContainer;
+        protected TMP_Text m_MessageText;
 
         #endregion
 
@@ -30,7 +30,7 @@ namespace Menu.PopUps
             m_MessageText = Finder.FindComponent<TMP_Text>(m_MessageContainer != null ? m_WindowContent : m_WindowContent, "Message");
         }
 
-        public void Initialize(string message, string title = "", Action onValidate = null, Action onCancel = null)
+        public void Initialize(string message = "", string title = "", Action onValidate = null, Action onCancel = null)
         {
             base.Initialize(onValidate, onCancel);
 

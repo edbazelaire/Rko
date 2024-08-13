@@ -103,7 +103,7 @@ namespace Menu.PopUps
         {
             ERune rune = (ERune)collectable;
 
-            var runeData = SpellLoader.GetRuneData(rune);
+            var runeData = SpellLoader.GetRuneData(rune, destroy: true);
             if (runeData == default)
                 return;
 

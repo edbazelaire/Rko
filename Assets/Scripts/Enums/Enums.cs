@@ -33,6 +33,13 @@
         SettingsPopUp,
     }
 
+    public enum EScreenAspect
+    {
+        Square,     // screen is more square shape than rectangle
+        Normal,     // aspect ratio of the screen is normal
+        Large,      // aspect ratio of the screen is considere larger than normal
+    }
+
     public enum EGameMode
     {
         Arena,
@@ -352,6 +359,7 @@
         VoidPact,
         UnTargettable,
         SpecialAnimation,
+        Combustion,
     }
 
     public enum EStateEffectType
@@ -443,6 +451,7 @@
         Stun,
         Frozen,
         Silenced,
+        CastHight,
     }
 
     public enum ECounterType

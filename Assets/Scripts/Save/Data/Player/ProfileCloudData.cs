@@ -1,6 +1,7 @@
 ﻿using Analytics.Events;
 using Assets;
 using Enums;
+using MyBox;
 using Newtonsoft.Json.Linq;
 using Save.RSDs;
 using System;
@@ -10,9 +11,11 @@ using System.Threading.Tasks;
 using Tools;
 using Unity.Collections;
 using Unity.Netcode;
+using Unity.Services.Authentication;
 using Unity.Services.CloudSave;
 using Unity.Services.CloudSave.Models;
 using Unity.Services.CloudSave.Models.Data.Player;
+using Unity.Services.Relay.Models;
 using Unity.VisualScripting;
 
 namespace Save
@@ -280,6 +283,55 @@ namespace Save
         #endregion
     }
 
+    [Serializable]
+    public struct SPublicProfileData
+    {
+        public string       Pseudo;
+        public string       Tag;
+        public string       Token;
+        public string       Region;
+        //public Presence     Availability;
+        public string PlayerName => Pseudo + Tag;   
+        public bool IsValid => ! Pseudo.IsNullOrEmpty() 
+            && ! Tag.IsNullOrEmpty() 
+            && ! Token.IsNullOrEmpty() 
+            && ! Region.IsNullOrEmpty();
+
+        public SPublicProfileData(EntityData entityData)
+        {
+            Pseudo      = "";
+            Tag         = "";
+            Token       = "";
+            Region      = "";
+
+            foreach (Item data in entityData.Data)
+            {
+                switch (data.Key)
+                {
+                    case ProfileCloudData.KEY_GAMER_TAG:
+                        Pseudo = data.Value.GetAsString();
+                        break;
+
+                    case ProfileCloudData.KEY_TAG:
+                        Tag = data.Value.GetAsString();
+                        break;
+
+                    case ProfileCloudData.KEY_TOKEN:
+                        Token = data.Value.GetAsString();
+                        break;
+
+                    case ProfileCloudData.KEY_REGION:
+                        Region = data.Value.GetAsString();
+                        break;
+
+                    default:
+                        ErrorHandler.Error("Unhandled case " + data.Key);
+                        break;
+                }
+            }
+        }
+    }
+
     public class ProfileCloudData : CloudData
     {
         #region Members
@@ -292,10 +344,12 @@ namespace Save
         public const int N_BADGES_DISPLAYED = 3;
         public const int MIN_CHAR_GAMER_TAG = 4;
         public const int MAX_CHAR_GAMER_TAG = 25;
+        public static List<char> FORBIDDEN_CHARACTERS => new (){ '#', ' ' };
 
         // KEYS ------------------------------------
         public const string KEY_PSEUDO_CHANGED          = "PseudoChanged";
         public const string KEY_GAMER_TAG               = "GamerTag";
+        public const string KEY_TAG                     = "Tag";
         public const string KEY_TOKEN                   = "Token";
         public const string KEY_REGION                  = "Region";
         public const string KEY_CURRENT_PROFILE_DATA    = "CurrentProfileData";
@@ -314,12 +368,13 @@ namespace Save
 
         // ===============================================================================================
         // DATA
-        protected override List<string> m_PublicKeys => new() { KEY_TOKEN, KEY_GAMER_TAG };
+        protected override List<string> m_PublicKeys => new() { KEY_GAMER_TAG, KEY_TAG, KEY_REGION, KEY_TOKEN };
 
         /// <summary> default data for the Inventory </summary>
         protected override Dictionary<string, object> m_Data { get; set; } = new Dictionary<string, object>() {
             { KEY_PSEUDO_CHANGED,           false                                               },
             { KEY_GAMER_TAG,                ""                                                  },
+            { KEY_TAG,                      ""                                                  },
             { KEY_TOKEN,                    ""                                                  },
             { KEY_REGION,                   ""                                                  },
             { KEY_CURRENT_PROFILE_DATA,     new SProfileCurrentData()                           },
@@ -332,14 +387,16 @@ namespace Save
 
         // ===============================================================================================
         // DEPENDENT STATIC ACCESSORS
-        public static int LastSelectedBadgeIndex = 0;
-        public static bool IsAdmin => TokensRSD.IsTokenAdmin(Token);
-        public static bool PseudoChanged => (bool)Instance.m_Data[KEY_PSEUDO_CHANGED];
-        public static string Token => (string)Instance.m_Data[KEY_TOKEN];
-        public static string Region => (string)Instance.m_Data[KEY_REGION];
-        public static SProfileCurrentData CurrentProfileData => (SProfileCurrentData)Instance.m_Data[KEY_CURRENT_PROFILE_DATA];
-        public static string GamerTag => CurrentProfileData.GamerTag;
-        public static string[] CurrentBadges => CurrentProfileData.Badges;
+        public static int                   LastSelectedBadgeIndex = 0;
+        public static bool                  IsAdmin             => TokensRSD.IsTokenAdmin(Token);
+        public static string                PlayerName          => GamerTag + Tag;
+        public static string                GamerTag            => (string)Instance.m_Data[KEY_GAMER_TAG];
+        public static string                Tag                 => (string)Instance.m_Data[KEY_TAG];
+        public static bool                  PseudoChanged       => (bool)Instance.m_Data[KEY_PSEUDO_CHANGED];
+        public static string                Token               => (string)Instance.m_Data[KEY_TOKEN];
+        public static string                Region              => (string)Instance.m_Data[KEY_REGION];
+        public static SProfileCurrentData   CurrentProfileData  => (SProfileCurrentData)Instance.m_Data[KEY_CURRENT_PROFILE_DATA];
+        public static string[]              CurrentBadges       => CurrentProfileData.Badges;
 
         public static Dictionary<string, int> Achievements => (Instance.m_Data[KEY_ACHIEVEMENTS] as Dictionary<string, int>);
         public static Dictionary<EAchievementReward, List<string>> AchievementRewards => (Instance.m_Data[KEY_ACHIEVEMENT_REWARDS] as Dictionary<EAchievementReward, List<string>>);
@@ -393,8 +450,20 @@ namespace Save
             Instance.SetData(KEY_GAMER_TAG, gamerTag);
             Instance.SetData(KEY_PSEUDO_CHANGED, true);
 
+            // update value in AuthService
+            AuthenticationService.Instance.UpdatePlayerNameAsync(gamerTag);
+
             MAnalytics.SendEvent(new PlayerDataEvent(gamerTag, Token, Region));
             GamerTagChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// Set Rune of the current build
+        /// </summary>
+        /// <param name="rune"></param>
+        public static void SetTag(string tag)
+        {
+            Instance.SetData(KEY_TAG, tag);
         }
 
         /// <summary>
@@ -413,6 +482,11 @@ namespace Save
         public static void SetRegion(string region)
         {
             Instance.SetData(KEY_REGION, region);
+        }
+
+        public static void ResetGamerTag()
+        {
+
         }
 
         /// <summary>
@@ -492,14 +566,28 @@ namespace Save
         /// <summary>
         /// 
         /// </summary>
-        public static async Task<(bool Success, string Reason)> IsGamerTagValid(string gamerTag)
+        public static async Task<(bool Success, string Reason)> IsGamerTagValid(string gamerTag, bool checkAvailable = true)
         {
             if (gamerTag.Length < MIN_CHAR_GAMER_TAG || gamerTag.Length > MAX_CHAR_GAMER_TAG)
             {
                 return (false, TextLocalizer.LocalizeText("gamer tag must have between " + MIN_CHAR_GAMER_TAG + " and " + MAX_CHAR_GAMER_TAG + " characters"));
             }
 
-            if (await Instance.FindPlayerWithValue(KEY_GAMER_TAG, gamerTag) != null)
+            if (gamerTag.Contains(" "))
+            {
+                return (false, "Spaces are not allowe");
+            }
+
+            foreach (char c in gamerTag)
+            {
+                if (FORBIDDEN_CHARACTERS.Contains(c))
+                {
+                    return (false, "'" + c + "' is not allowed (" + string.Join(", ", FORBIDDEN_CHARACTERS) + ")"); 
+                }
+            }
+
+
+            if (checkAvailable && await Instance.FindPlayerWithValue(KEY_GAMER_TAG, gamerTag) != null)
             {
                 return (false, "Pseudo already used");
             }
@@ -981,7 +1069,7 @@ namespace Save
                 new List<FieldFilter>() {
                     new FieldFilter(key, value, FieldFilter.OpOptions.EQ, true)
                 },
-                new HashSet<string> { KEY_TOKEN, KEY_GAMER_TAG }
+                new HashSet<string> { KEY_TOKEN, KEY_GAMER_TAG, KEY_REGION }
             );
 
             var results = await CloudSaveService.Instance.Data.Player.QueryAsync(query, new QueryOptions());
@@ -1001,16 +1089,16 @@ namespace Save
         /// Get a list of each players PublicData
         /// </summary>
         /// <returns></returns>
-        public static async Task<List<EntityData>> GetAllPlayersPublicData()
+        public static async Task<List<SPublicProfileData>> GetAllPlayersPublicData(bool validOnly = true)
         {
             int nResults = 10;
-            List<EntityData> results = new List<EntityData>();
+            List<SPublicProfileData> results = new List<SPublicProfileData>();
 
-            for (int i = 0; i < 5000; i++)
+            for (int i = 0; i < 999999; i++)
             {
                 var query = new Query(
                     fields: default,
-                    new HashSet<string> { KEY_TOKEN, KEY_GAMER_TAG },
+                    new HashSet<string> { KEY_GAMER_TAG, KEY_TAG, KEY_TOKEN, KEY_REGION },
                     limit: nResults,
                     offset: nResults * i
                 );
@@ -1020,7 +1108,13 @@ namespace Save
                 if (returnedData.Count == 0)
                     return results;
 
-                results.AddRange(returnedData);
+                foreach (var entityData in returnedData)
+                {
+                    var profileData = new SPublicProfileData(entityData);
+                    if (validOnly && ! profileData.IsValid)
+                        continue;
+                    results.Add(profileData);
+                }
             }
 
             return results;

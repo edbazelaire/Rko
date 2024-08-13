@@ -1,11 +1,7 @@
-﻿using Assets;
-using Assets.Scripts.Managers.Sound;
-using Enums;
-using MyBox;
+﻿using Assets.Scripts.Managers.Sound;
 using System.Collections;
 using Tools;
 using Tools.Animations;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -61,6 +57,9 @@ namespace Menu.PopUps
             // find components of the GameObject
             FindComponents();
 
+            // adjust size ratio to match the size of the screen
+            AdjustAspectRatio();
+
             // init & setup UI
             OnPrefabLoaded();
 
@@ -82,6 +81,8 @@ namespace Menu.PopUps
             m_Canvas.sortingLayerName   = "Overlay";
             m_Canvas.sortingOrder       = OrderInLayer;
         }
+        
+        protected virtual void AdjustAspectRatio() { }
 
         protected virtual void OnPrefabLoaded() { }
 

@@ -349,7 +349,7 @@ namespace Save
         /// <returns></returns>
         public SCollectableCloudData GetSpell(ESpell spell)
         {
-            if (SpellLoader.GetSpellData(spell).Linked)
+            if (SpellLoader.GetSpellData(spell, destroy: true).Linked)
             {
                 var character = CharacterLoader.GetCharacterWithSpell(spell);
                 return new SCollectableCloudData(spell, GetCollectable(character.Value).Level, 0);
@@ -566,7 +566,7 @@ namespace Save
                 return false;
 
             // linked spell : level is dependent on the character
-            if (collectable.GetType() == typeof(ESpell) && SpellLoader.GetSpellData((ESpell)collectable).Linked)
+            if (collectable.GetType() == typeof(ESpell) && SpellLoader.GetSpellData(collectable.ToString(), destroy: true).Linked)
                 return false;
 
             // already in data : skip

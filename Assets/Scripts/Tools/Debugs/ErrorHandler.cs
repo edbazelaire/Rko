@@ -7,7 +7,11 @@ namespace Tools
     {
         #region Members
 
+        /// <summary> Is Error Handler activated ? </summary>
         public static bool IsActivated => PlayerPrefsHandler.GetDebug(EDebugOption.ErrorHandler);
+        /// <summary> check if application is currently closing </summary>
+        public static bool IsExiting = false;
+        /// <summary> list of errors </summary>
         public static List<Error> Errors = new List<Error>();
 
         #endregion

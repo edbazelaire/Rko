@@ -21,7 +21,7 @@ namespace Analytics.Events
             SetParameter(EAnalyticsParam.Spells.ToString(),         String.Join(",", spells.ToArray()));
             SetParameter(EAnalyticsParam.SpellLevels.ToString(),    String.Join(",", spellLevels.ToArray()));
 
-            StatCloudData.AddAnalytics(eventType, new SGameEndedCloudData(gameMode, win, character));
+            StatCloudData.AddAnalytics(EAnalytics.GameEnded, new SGameEndedCloudData(gameMode, win, character));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Inventory;
+﻿using Enums;
+using Inventory;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
@@ -36,13 +37,10 @@ namespace Menu
 
         void SetupChestItems()
         {
-            // check ratio of the game object to decide wich display format to use
-            string format = UIHelper.GetSizeRatio(m_ChestsContainer) < 0.66f ? "line" : "square";
-
             // init List of items and parent container
             m_ChestItems = new();
             GameObject parent;
-            if (format == "line")
+            if (UIHelper.ScreenAspect == EScreenAspect.Square)
             {
                 parent = m_ChestsContainer;
             } else
@@ -56,7 +54,7 @@ namespace Menu
             for (int i = 0; i < InventoryManager.Chests.Length; i++)
             {
                 // change row (if square format)
-                if (i == 2 && format == "square")
+                if (i == 2 && UIHelper.ScreenAspect != EScreenAspect.Square)
                 {
                     parent = Finder.Find(m_ChestsContainer, "Row2");
                     UIHelper.CleanContent(parent);

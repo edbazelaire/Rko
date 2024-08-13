@@ -2,6 +2,7 @@
 using Game.Loaders;
 using Game.Spells;
 using Menu.Common.Infos;
+using System.Collections.Generic;
 using TMPro;
 using Tools;
 using Unity.VisualScripting;
@@ -53,6 +54,13 @@ namespace Menu.PopUps
             InitProperties();
         }
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            Destroy(m_StateEffect);
+        }
+
         #endregion
 
 
@@ -65,7 +73,14 @@ namespace Menu.PopUps
             UIHelper.CleanContent(m_PropertiesContainer);
 
             var infos = m_StateEffect.GetInfos();
-            var nextLevelInfos = m_StateEffect.Clone(m_StateEffect.Level + 1).GetInfos();
+            Dictionary<string, object> nextLevelInfos = new ();
+            if (m_StateEffect.Level < 14)
+            {
+                var stateEffect = m_StateEffect.Clone(m_StateEffect.Level + 1);
+                nextLevelInfos = stateEffect.GetInfos();
+                Destroy(stateEffect);
+            }
+
             foreach (var item in infos)
             {
                 var infoRow = Instantiate(templateInfoRow, m_PropertiesContainer.transform).GetComponent<SpellInfoRowUI>();

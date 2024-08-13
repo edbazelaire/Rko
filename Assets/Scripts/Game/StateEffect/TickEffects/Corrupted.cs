@@ -20,10 +20,14 @@ namespace Game.Spells
         /// </summary>
         protected override void OnDestroy()
         {
+            base.OnDestroy();
+
+            if (m_Controller == null)
+                return;
+
             // if still has VoidPact : remove it
             if (m_Controller.StateHandler.HasState(EStateEffect.VoidPact))
                 m_Controller.StateHandler.RemoveStateEffect(EStateEffect.VoidPact);
-            base.OnDestroy();
         }
 
         /// <summary>

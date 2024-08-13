@@ -330,7 +330,7 @@ namespace Data.GameManagement
 
         public static SPriceData GetPrice(Enum collectable)
         {
-            ERarety rarety = CollectablesManagementData.GetData(collectable, 1).Rarety;
+            ERarety rarety = CollectablesManagementData.GetData(collectable, 1, destroy: true).Rarety;
             foreach (var data in Instance.m_CharacterPrices)
             {
                 if (data.Rarety == rarety)

@@ -103,7 +103,6 @@ namespace Menu.PopUps
 
             // refresh state effects
             SetUpStateEffects();
-
         }
 
         protected override void RefreshUpgradeButtonUI()

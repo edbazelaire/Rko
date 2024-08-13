@@ -51,18 +51,10 @@ MonoBehaviour:
         League: 2
   - MaxValue: 50000
     Rewards:
-      Currencies:
-      - Currency: 3
-        Qty: 150
+      Currencies: []
       Chests: 01000000
       Collectables: []
-      AchievementRewards:
-      - AchievementReward: 4
-        Title: 8
-        Avatar: 0
-        Border: 0
-        Badge: 0
-        League: 0
+      AchievementRewards: []
   - MaxValue: 100000
     Rewards:
       Currencies: []
@@ -77,8 +69,10 @@ MonoBehaviour:
         League: 3
   - MaxValue: 150000
     Rewards:
-      Currencies: []
-      Chests: 02000000
+      Currencies:
+      - Currency: 1
+        Qty: 100
+      Chests: 
       Collectables: []
       AchievementRewards: []
   - MaxValue: 250000

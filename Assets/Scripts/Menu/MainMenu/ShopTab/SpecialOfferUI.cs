@@ -160,7 +160,7 @@ namespace Menu.MainMenu.ShopTab
 
             int qty;
             int price;
-            ERarety rarety = SpellLoader.GetSpellData(spell).Rarety;
+            ERarety rarety = SpellLoader.GetSpellData(spell, destroy: true).Rarety;
 
             switch (rarety)
             {

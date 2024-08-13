@@ -26,7 +26,7 @@ namespace Menu.Common.Buttons
 
         protected override void SetUpUI(bool asIconOnly = false)
         {
-            SpellData spellData = SpellLoader.GetSpellData((ESpell)m_Collectable);
+            SpellData spellData = SpellLoader.GetSpellData((ESpell)m_Collectable, destroy: true);
             m_IsLinked = spellData.Linked;
             m_IsAutoTarget = spellData.IsAutoTarget;
 

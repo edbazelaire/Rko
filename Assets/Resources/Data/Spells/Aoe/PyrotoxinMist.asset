@@ -28,7 +28,7 @@ MonoBehaviour:
     WithIcon: 1
   - Name: GrowSizeFactor
     WithIcon: 0
-  m_SpellElements: 0200000003000000
+  m_SpellElements: 0100000003000000
   Linked: 0
   Graphics: {fileID: 167252, guid: e7c3a9353c0302b4cb1fab702e1db14f, type: 3}
   SpellEventActions: []
@@ -54,11 +54,13 @@ MonoBehaviour:
   Distance: -1
   OverrideOnHitProperties: 
   m_Duration: 2
-  Delay: 1
+  Delay: 0.8
   m_SpellsScalingLevel:
   - Property: 14
     Value: 0.1
   - Property: 3
+    Value: 0.05
+  - Property: 4
     Value: 0.05
   m_Size: 2
   TriggerPlayer: 1

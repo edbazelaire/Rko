@@ -90,7 +90,7 @@ namespace Menu.MainMenu
 
         public override void SetUpCollectionFillBar(bool activate = true)
         {
-            base.SetUpCollectionFillBar(activate && ! SpellLoader.GetSpellData(Spell).Linked);    
+            base.SetUpCollectionFillBar(activate && ! SpellLoader.GetSpellData(Spell, destroy: true).Linked);    
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace Menu.MainMenu
         protected override void UpdateState()
         {
             // linked spell are always in "Normal" state
-            if (SpellLoader.GetSpellData(Spell).Linked)
+            if (SpellLoader.GetSpellData(Spell, destroy: true).Linked)
             {
                 SetState(EButtonState.Normal);
                 return;

@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Managers.Sound;
+using MyBox;
 using Save;
 using Save.RSDs;
 using TMPro;
@@ -36,6 +37,19 @@ namespace Menu.PopUps.PopUps.MessagePopUps
             base.OnPrefabLoaded();
 
             m_ErrorMessage.text = "";
+        }
+
+        #endregion
+
+
+        #region GUI Manipulators
+
+        protected override void SetUpMessage()
+        {
+            if (m_Message.IsNullOrEmpty())
+                return;
+
+            m_MessageText.text = m_Message;
         }
 
         #endregion
