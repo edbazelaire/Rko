@@ -371,6 +371,14 @@ namespace Data
                     target = new Vector3(centerPos - direction * ArenaManager.Instance.TargettableAreaSize / 2, target.y, target.z);
                     break;
 
+                case ESpellTarget.Mirror:
+                    target = new Vector4(-GameManager.Instance.GetPlayer(clientId).transform.position.x, target.y, 0f);
+                    break;
+
+                case ESpellTarget.Fixed:
+                    target = new Vector4(GameManager.Instance.GetPlayer(clientId).transform.position.x + 7f, target.y, 0f);
+                    break;
+
                 default:
                     ErrorHandler.Error("Unhandled case : " + SpellTarget);
                     break;
@@ -595,6 +603,7 @@ namespace Data
             var infosDict = base.GetInfos();
             
             infosDict.Add("Type", GetTypeInfo());
+            infosDict.Add("Target", GetTargetTypeInfo());
 
             if (EnergyGain > 0)
                 infosDict.Add("Energy", EnergyGain);
@@ -689,7 +698,7 @@ namespace Data
 
         public void AddAsSubSpellInfos(ref Dictionary<string, object> infosDict)
         {
-            string[] keysToIgnore = new string[] { "Type", "Cooldown", "CastDuration", "Distance", "EnergyCost" };        // keys to ignore as overwrite  
+            string[] keysToIgnore = new string[] { "Type", "Target", "Cooldown", "CastDuration", "Distance", "EnergyCost" };        // keys to ignore as overwrite  
             string[] keysToAdd = new string[] { "Damages", "Heal", "TickDamages", "TickHeal", "Effects" };                                // keys that are not overritten but additionned 
 
             var subSpellInfos = GetInfos();
@@ -752,6 +761,20 @@ namespace Data
         public string GetTypeInfo()
         {
             return SpellType.ToString();
+        }
+
+        public string GetTargetTypeInfo()
+        {
+            switch(SpellTarget)
+            {
+                case ESpellTarget.Fixed:
+                case ESpellTarget.Mirror:
+                case ESpellTarget.Self:
+                    return SpellTarget.ToString();
+
+                default:
+                    return "Auto";
+            }
         }
 
         #endregion
@@ -818,7 +841,9 @@ namespace Data
         public bool IsEnemyTarget => SpellTarget == ESpellTarget.FirstEnemy
             || SpellTarget == ESpellTarget.EnemyZone
             || SpellTarget == ESpellTarget.EnemyZoneStart
-            || SpellTarget == ESpellTarget.EnemyZoneCenter;
+            || SpellTarget == ESpellTarget.EnemyZoneCenter
+            || SpellTarget == ESpellTarget.Fixed
+            || SpellTarget == ESpellTarget.Mirror;
             
 
         public bool IsAllyTarget => SpellTarget == ESpellTarget.FirstAlly

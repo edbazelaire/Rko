@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
   m_Name: Marcus
   m_EditorClassIdentifier: 
-  Rarety: 3
+  Rarety: 1
   AutoAttack: 22
   SpecialAbility: 38
   Ultimate: 20
   Size: 1
   BaseSpeed: 1
-  BaseHealth: 600
+  BaseHealth: 700
   MaxEnergy: 100
   HealthScaleFactor: 0.1
   CharacterStatScaling:
@@ -26,5 +26,5 @@ MonoBehaviour:
     BaseValue: 10
     ScalingFactor: 0.1
   - StateEffectProperty: 4
-    BaseValue: 800
+    BaseValue: 700
     ScalingFactor: 0.1

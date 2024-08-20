@@ -35,6 +35,7 @@ MonoBehaviour:
     WithIcon: 1
   - Name: Damages
     WithIcon: 1
+  m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 160890, guid: f172c17128687804e89dc22fb9b17bb0, type: 3}
   SpellEventActions: []
@@ -50,7 +51,7 @@ MonoBehaviour:
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 8300000, guid: 4bcd5f64192edf543930a6a4073d78d9, type: 3}
-  SpellTarget: 1
+  SpellTarget: 102
   LockTargetAt: 2
   MaxHit: 1
   EnergyGain: 0

@@ -125,7 +125,6 @@ public class EndGameUI : MObject
     void HandleReward(bool win)
     {
         ErrorHandler.Log("HandleReward() : start", ELogTag.Rewards);
-        bool saveCurrency = false;
 
         SRewardCalculator reward = win ? Rewarder.WinGameReward : Rewarder.LossGameReward;
         reward.SetCurrencyMultiplicator(CalculateCurrencyMultiplicator());
@@ -158,7 +157,7 @@ public class EndGameUI : MObject
         {
             m_GoldsRewardDisplay.SetActive(true);
             m_GoldsQty.text = string.Format(GOLDS_FORMAT, golds);
-            InventoryManager.UpdateCurrency(ECurrency.Golds, golds, ERewardContext.EndGameChest.ToString(), false) ;
+            InventoryManager.UpdateCurrency(ECurrency.Golds, golds, ERewardContext.EndGameChest.ToString());
         }
 
         // ----------------------------------------------------------------------------

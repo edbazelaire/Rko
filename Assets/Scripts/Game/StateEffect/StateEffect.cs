@@ -30,6 +30,8 @@ namespace Game.Spells
     public class StateEffect : ScriptableObject
     {
         #region Members
+        /// <summary> Event that is fired when, </summary>
+        public static Action<string, EStateEffectEvent, ulong, ulong> StateEffectEvent;
 
         // =========================================================================================
         // SERIALIZED DATA
@@ -51,6 +53,7 @@ namespace Game.Spells
         [Header("General Stats")]
         [SerializeField] protected      float                       m_Duration;
         [SerializeField] protected      int                         m_MaxStacks             = 1;
+        [SerializeField] protected      int                         m_StackDecay            = -1;   // number of stacks decaying at the end of the duration (-1 = all stacks)
 
         [Header("General Boosts")]
         [SerializeField] protected      float                       m_SpeedBonus            = 0f;
@@ -136,6 +139,7 @@ namespace Game.Spells
         {
             m_Controller = controller;
             m_Caster = caster;
+            m_Stacks = stateEffectData.HasValue ? stateEffectData.Value.Stacks : 1;
 
             // check if has overriding data
             if (stateEffectData.HasValue && stateEffectData.Value.OverridingProperties != null && stateEffectData.Value.OverridingProperties.Count > 0)
@@ -167,21 +171,29 @@ namespace Game.Spells
             if (m_ConsumeState == EStateEffect.None)
                 return true;
 
-            // can only apply to enemy with required state 
-            if (! m_Controller.StateHandler.HasState(m_ConsumeState))
-            {
-                // add DefaultState state (if any)
-                if (m_DefaultState != EStateEffect.None)
-                    m_Controller.StateHandler.AddStateEffect(m_DefaultState, m_Caster);
+            m_Stacks = Mathf.Min(ApplyConsumeState(m_Stacks), MaxStacks);
+            return m_Stacks > 0;
+        }
 
-                // return that this state can not be applied
-                return false;
+        /// <summary>
+        /// Check if player has required "ConsumeState"
+        /// </summary>
+        /// <returns></returns>
+        protected virtual int ApplyConsumeState(int stacks = 1)
+        {
+            // if has state to consume 
+            if (m_Controller.StateHandler.HasState(m_ConsumeState))
+            {
+                // consume "ConsumeState" state to apply current state
+                return m_Controller.StateHandler.RemoveStateEffect(m_ConsumeState, true, stacks);
             }
 
-            // consume "ConsumeState" state to apply current state
-            m_Stacks = m_Controller.StateHandler.RemoveStateEffect(m_ConsumeState, true, m_MaxStacks);
+            // add DefaultState state (if any)
+            if (m_DefaultState != EStateEffect.None)
+                m_Controller.StateHandler.AddStateEffect(m_DefaultState, m_Caster);
 
-            return true;
+            // return that no stacks has been 
+            return 0;
         }
 
         protected virtual void OnStart()
@@ -194,6 +206,7 @@ namespace Game.Spells
             }
 
             // call state effect 
+            StateEffectEvent?.Invoke(StateEffectName, EStateEffectEvent.OnApplied, m_Controller.PlayerId, m_Caster.PlayerId);
             m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnSpawn, StateEffectName);
         }
 
@@ -221,14 +234,14 @@ namespace Game.Spells
 
         #region End & Destroy
 
-
-
         /// <summary>
         /// Reached its end naturaly or was consumed by another spell
         /// </summary>
         public virtual void End()
         {
             m_Controller.StateHandler.RemoveStateEffect(StateEffectName, true);
+
+            StateEffectEvent?.Invoke(StateEffectName, EStateEffectEvent.OnRemoved, m_Controller.PlayerId, m_Caster.PlayerId);
         }
 
         public virtual void OnConsumed()
@@ -238,6 +251,8 @@ namespace Game.Spells
                 var clone = stateEffect.Clone(m_Level);
                 m_Controller.StateHandler.AddStateEffect(clone, m_Caster);
             }
+
+            StateEffectEvent?.Invoke(StateEffectName, EStateEffectEvent.OnConsumed, m_Controller.PlayerId, m_Caster.PlayerId);
         }
 
         protected virtual void OnDestroy()
@@ -261,14 +276,48 @@ namespace Game.Spells
             if (IsInfinite)
                 return;
 
+
             m_Timer -= Time.deltaTime;
 
             if (m_Timer <= 0)
-                End();
+            {
+                // refresh timer
+                m_Timer = m_Duration;
+
+                // remove N stacks
+                RemoveStacks(m_StackDecay);
+            }
         }
 
-        public virtual void Refresh(int stacks = 0)
+        /// <summary>
+        /// Refresh an effect and add N stacks. Also upgrade level if the spell that is refreshing the spell is higher level
+        /// </summary>
+        /// <param name="stacks"></param>
+        /// <param name="level"></param>
+        public virtual void Refresh(int stacks = 0, int level = 1)
         {
+            StateEffectEvent?.Invoke(StateEffectName, EStateEffectEvent.OnRefreshed, m_Controller.PlayerId, m_Caster.PlayerId);
+
+            // if stacks = 0 -> just refresh timer and leave
+            if (stacks == 0)
+            {
+                RefreshStats();
+                return;
+            }
+
+            // check state that needs to be consumed
+            if (m_ConsumeState != EStateEffect.None)
+            {
+                // set refreshed stacks to number of consumed stacks
+                stacks = ApplyConsumeState(stacks);
+                if (stacks == 0)
+                    return;     // no stacks consumed : do not refresh
+            }
+
+            // keep max level as applied level
+            if (m_Level < level)
+                SetLevel(level);
+
             m_Stacks = Math.Min(m_MaxStacks, m_Stacks + stacks);
             RefreshStats();
         }
@@ -279,15 +328,20 @@ namespace Game.Spells
             m_Timer = m_Duration;
         }
 
-        public virtual void RemoveStacks(int nStacks)
+        public virtual int RemoveStacks(int nStacks)
         {
             if (nStacks >= m_Stacks || nStacks <= 0)
             {
+                nStacks = m_Stacks;
                 End();
-                return;
+                return nStacks;
             }
 
             m_Stacks -= nStacks;
+
+            // refresh UI on client side
+            m_Controller.StateHandler.OnStateEventClientRPC(EListEvent.Add, StateEffectName, Stacks, GetFloat(EStateEffectProperty.Duration));
+            return nStacks;
         }
 
         #endregion

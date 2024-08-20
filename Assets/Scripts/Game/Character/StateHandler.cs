@@ -3,6 +3,7 @@ using Enums;
 using Game.Loaders;
 using Game.Spells;
 using MyBox;
+using NUnit.Framework.Internal;
 using System;
 using System.Collections.Generic;
 using Tools;
@@ -115,7 +116,7 @@ namespace Game.Character
         #region Client RPC
 
         [ClientRpc]
-        void OnStateEventClientRPC(EListEvent listEvent, string stateEffect, int stacks, float duration)
+        public void OnStateEventClientRPC(EListEvent listEvent, string stateEffect, int stacks, float duration)
         {
             if (GameManager.IsGameOver)
                 return;
@@ -282,18 +283,20 @@ namespace Game.Character
         /// Refresh the state effect
         /// </summary>
         /// <param name="stateEffectName"></param>
-        void RefreshEffect(string stateEffectName, int stacks = 0)
+        void RefreshEffect(string stateEffectName, int level, int stacks = 0)
         {
             foreach (var effect in m_StateEffects)
             {
                 if (effect.StateEffectName != stateEffectName)
                     continue;
 
-                effect.Refresh(stacks);
+                effect.Refresh(stacks, level);
                 OnStateEventClientRPC(EListEvent.Add, effect.StateEffectName, effect.Stacks, effect.GetFloat(EStateEffectProperty.Duration));
                 RecalculateBonus();
-                break;
+                return;
             }
+
+            ErrorHandler.Error("Unable to find state effect ("+stateEffectName+") to refresh");
         }
 
         #endregion
@@ -330,7 +333,7 @@ namespace Game.Character
             // if already in the list of state effects, refresh it
             if (HasState(stateEffect.StateEffectName))
             {
-                RefreshEffect(stateEffect.StateEffectName, stacks);
+                RefreshEffect(stateEffect.StateEffectName, stateEffect.Level, stacks);
                 return;
             }
 
@@ -400,10 +403,12 @@ namespace Game.Character
 
             // check if remove effect if not enought stacks 
             if (maxStacks <= 0 || m_StateEffects[index].Stacks < maxStacks)
-                return RemoveStateEffectAtIndex(index);
+                return RemoveStateEffectAtIndex(index, consume);     // return number of consumed stacks
 
             // just retrieve stacks otherwise
-            m_StateEffects[index].RemoveStacks(maxStacks);
+            maxStacks = m_StateEffects[index].RemoveStacks(maxStacks);
+
+            // return number of consumed stacks
             return maxStacks;
         }
 

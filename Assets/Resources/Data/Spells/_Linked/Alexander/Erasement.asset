@@ -24,9 +24,27 @@ MonoBehaviour:
     WithIcon: 0
   - Name: EnergyCost
     WithIcon: 1
+  m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 0}
-  SpellEventActions: []
+  SpellEventActions:
+  - Prefab: {fileID: 150222, guid: 44f40a08278d2704d86e189b67164324, type: 3}
+    MaterialEffect: {fileID: 0}
+    GFXLifetime:
+      StartSpellPart: 5
+      EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1.5
+    Size: 1.5
+    OrderInLayer: 0
+    SpawnTarget: 3
+    SpawnLocation: 2
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs:
@@ -59,7 +77,7 @@ MonoBehaviour:
   EnemyStateEffects: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
-  PersistanceAfterEnd: 0.3
+  PersistanceAfterEnd: 0
   Animation: 5
   IsCancellable: 0
   AnimationTimer: 0

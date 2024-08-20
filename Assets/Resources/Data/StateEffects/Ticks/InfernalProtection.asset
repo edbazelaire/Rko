@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ea8328bdbe40b584daa6549887933f55, type: 3}
-  m_Name: Infected
+  m_Name: InfernalProtection
   m_EditorClassIdentifier: 
-  m_Description: Consume every stacks of poison to inflict {0} damages every {1}
-    seconds for {2} seconds
-  m_DescriptionVariables: 0d0000000c00000001000000
+  m_Description: Heal {0} hp every {1} seconds
+  m_DescriptionVariables: 0e0000000c000000
   m_StateEffectType: 0
   m_VisualEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
   m_PermanantSoundFX: {fileID: 0}
-  m_ConsumeState: 9
+  m_ConsumeState: 0
   m_DefaultState: 0
-  m_Duration: 7
-  m_MaxStacks: 10
+  m_Duration: 5
+  m_MaxStacks: 1
+  m_StackDecay: -1
   m_SpeedBonus: 0
   m_CastSpeed: 0
   m_AttackSpeed: 0
@@ -38,21 +38,15 @@ MonoBehaviour:
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel:
-  - StateEffectProperty: 13
+  - StateEffectProperty: 14
     ScalingFactor: 0.1
-  - StateEffectProperty: 1
-    ScalingFactor: 0.1
-  m_StateEffectScalingStacks:
-  - StateEffectProperty: 11
-    ScalingFactor: 1
-  - StateEffectProperty: 13
-    ScalingFactor: 1
+  m_StateEffectScalingStacks: []
   m_Damages: 0
   m_EndDamages: 0
   m_Heal: 0
   m_EndHeal: 0
-  m_LifeSteal: 1
+  m_LifeSteal: 0
   m_Tick: 1
-  m_TickDamages: 5
-  m_TickHeal: 0
+  m_TickDamages: 0
+  m_TickHeal: 10
   m_TickShield: 0

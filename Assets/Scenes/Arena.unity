@@ -293,7 +293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_RenderShadows: 1
+  m_RenderShadows: 0
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0
@@ -836,6 +836,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Plateform_1
       objectReference: {fileID: 0}
+    - target: {fileID: 2294720319729331619, guid: a38bd95d6f97b6c44a5fe8b27cef7721, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
     - target: {fileID: 2802363362580776987, guid: a38bd95d6f97b6c44a5fe8b27cef7721, type: 3}
       propertyPath: m_Name
       value: Arena
@@ -851,7 +855,7 @@ PrefabInstance:
     - target: {fileID: 3823951179862763109, guid: a38bd95d6f97b6c44a5fe8b27cef7721, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+      objectReference: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
     - target: {fileID: 3968857614939069640, guid: a38bd95d6f97b6c44a5fe8b27cef7721, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 

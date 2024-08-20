@@ -1,5 +1,4 @@
 ﻿using Enums;
-using System.Text.RegularExpressions;
 using TMPro;
 using Tools;
 using UnityEngine;
@@ -52,6 +51,12 @@ namespace Menu.Common.Infos
                 case "Type":
                     m_Icon.sprite   = AssetLoader.LoadUIElementIcon(value.ToString());
                     m_Value.text    = TextLocalizer.SplitCamelCase(TextLocalizer.LocalizeText(value.ToString()));
+                    return; 
+
+                case "Target":
+                    m_Icon.sprite   = AssetLoader.LoadUIElementIcon("Target");
+                    m_Value.text    = TextLocalizer.LocalizeText(value as string);
+                    m_BonusValue.gameObject.SetActive(false);
                     return; 
 
                 case "CounterActivation":

@@ -160,6 +160,12 @@ namespace Game
             return (team == 0 && enemyArea || team == 1 && !enemyArea) ? 1 : -1;
         }
 
+        public static bool IsInArenaBounds(float x, int team, bool enemyArea)
+        {
+            (float xMin, float xMax) = GetAreaBounds(team, enemyArea);
+            return xMax > x && x > xMin;
+        } 
+
         public static (float Min, float Max) GetAreaBounds(int team, bool enemyArea = true)
         {
             var area = GetTargettableArea(team, enemyArea);

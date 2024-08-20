@@ -251,7 +251,7 @@ namespace Network
 
         IEnumerator WaitGameManagerCoroutine()
         {
-            while (!GameManager.FindInstance(true))
+            while (! GameManager.FindInstance(true))
                 yield return null;
 
             SetState(ELobbyState.SendingPlayerData);
@@ -363,7 +363,6 @@ namespace Network
                         { KEY_GAME_MODE,    new DataObject(DataObject.VisibilityOptions.Public, m_GameMode.ToString(), DataObject.IndexOptions.S2) },
                         { KEY_REGION,       new DataObject(DataObject.VisibilityOptions.Public, RelayHandler.TrimRegion(ProfileCloudData.Region), DataObject.IndexOptions.S3) },
                         { KEY_SUB_REGION,   new DataObject(DataObject.VisibilityOptions.Public, ProfileCloudData.Region, DataObject.IndexOptions.S4) },
-                        
                     }
                 };
 

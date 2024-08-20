@@ -31,7 +31,24 @@ MonoBehaviour:
   m_SpellElements: 01000000
   Linked: 0
   Graphics: {fileID: 0}
-  SpellEventActions: []
+  SpellEventActions:
+  - Prefab: {fileID: 7582611277444767761, guid: 42c43c58112c98c46ae1cc93470f7e53, type: 3}
+    MaterialEffect: {fileID: 0}
+    GFXLifetime:
+      StartSpellPart: 1
+      EndSpellPart: 2
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1.5
+    Size: 1
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 2
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 15000000
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
@@ -65,5 +82,5 @@ MonoBehaviour:
   PersistanceAfterEnd: 0
   Animation: 9
   IsCancellable: 0
-  AnimationTimer: 0.5
+  AnimationTimer: 5
   m_Cooldown: 90
