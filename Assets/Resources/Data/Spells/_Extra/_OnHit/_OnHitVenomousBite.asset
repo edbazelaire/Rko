@@ -13,10 +13,14 @@ MonoBehaviour:
   m_Name: _OnHitVenomousBite
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: 
+  m_DescriptionVariables: []
+  m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions:
   - Prefab: {fileID: 4052242029054160489, guid: 176729cebd0a60d42a7a18f43c296775, type: 3}
+    MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 4
       EndSpellPart: 0
@@ -65,7 +69,7 @@ MonoBehaviour:
   TriggerPlayer: 1
   EnemyStateEffects:
   - StateEffect: 17
-    Stacks: 1
+    Stacks: 7
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 9

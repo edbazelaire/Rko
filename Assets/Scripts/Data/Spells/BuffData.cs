@@ -1,8 +1,10 @@
 ﻿using Enums;
+using Game;
 using Game.Loaders;
 using Game.Spells;
 using System;
 using System.Collections.Generic;
+using Tools;
 using UnityEngine;
 
 namespace Data
@@ -10,9 +12,13 @@ namespace Data
     [CreateAssetMenu(fileName = "Buff", menuName = "Game/Spells/Buff")]
     public class BuffData : SpellData
     {
+        #region Members
+
         public override ESpellType SpellType => ESpellType.Buff;
 
         public override float Duration => (float)Math.Round(m_Duration * GetSpellLevelFactor(ESpellProperty.Duration));
+
+        #endregion
 
 
         #region State Effect

@@ -7,6 +7,10 @@ using Unity.Services.Friends.Notifications;
 using System.Linq;
 using System.Threading.Tasks;
 using Unity.Services.Friends.Exceptions;
+using Save;
+using Tools;
+using System.Runtime.CompilerServices;
+using Assets.Scripts.Network;
 
 namespace Managers.Friends
 {
@@ -161,6 +165,43 @@ namespace Managers.Friends
             foreach (Member member in requests)
             {
                 await Instance.AcceptRequest(member.Profile.Name);
+            }
+        }
+
+        /// <summary>
+        /// Send a FriendRequest to every player from the same region
+        /// </summary>
+        public static async void SendFriendRequestToAll()
+        {
+            // get all valid pseudos
+            List<SPublicProfileData> allPlayers = await ProfileCloudData.GetAllPlayersPublicData(validOnly: true);
+            foreach (SPublicProfileData playerData in allPlayers)
+            {
+                // get only player from the same region
+                if (RelayHandler.TrimRegion(playerData.Region) != RelayHandler.TrimRegion(ProfileCloudData.Region))
+                    continue;
+
+                // ignore self pseudo
+                if (playerData.Pseudo == ProfileCloudData.GamerTag)
+                    continue;
+
+                if (FriendsHandler.HasFriend(playerData.PlayerName))
+                    continue;
+
+                bool success = await Instance.SendFriendRequest(playerData.PlayerName);
+                if (!success)
+                {
+                    ErrorHandler.Warning("Unable to add " + playerData.PlayerName + " as friend");
+                }
+            }
+        }
+
+        public static void RemoveAllCurrentFriends()
+        {
+            var friends = Instance.GetFriends();
+            foreach (var member in friends)
+            {
+                Instance.RemoveFriendAsync(member.Id);
             }
         }
 

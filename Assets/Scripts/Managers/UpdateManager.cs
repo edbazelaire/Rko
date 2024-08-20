@@ -26,7 +26,7 @@ namespace Assets.Scripts.Managers
         /// <returns></returns>
         static void InitNewPlayer()
         {
-            SendFriendRequestToAll();
+            FriendsHandler.SendFriendRequestToAll();
             SetVersion(Application.version);
         }
 
@@ -70,6 +70,9 @@ namespace Assets.Scripts.Managers
 
             if (LastVersion.CompareTo("0.1.6") == -1)
                 test = UpdateVersion_0_1_6();
+
+            if (LastVersion.CompareTo("0.1.7") == -1)
+                test = UpdateVersion_0_1_7();
 
             // if does not trigger any version until now, update to current version
             if (LastVersion.CompareTo(Application.version) == -1)
@@ -128,7 +131,7 @@ namespace Assets.Scripts.Managers
             UpdateAuthPlayerName();
 
             // send a friend request to every player
-            SendFriendRequestToAll();
+            FriendsHandler.SendFriendRequestToAll();
 
             // save version
             if (!SetVersion("0.1.6"))
@@ -161,34 +164,30 @@ namespace Assets.Scripts.Managers
             ProfileCloudData.SetTag("#"+playerName.Split("#")[1]);
         }
 
-        /// <summary>
-        /// Send a FriendRequest to every player from the same region
-        /// </summary>
-        static async void SendFriendRequestToAll()
+
+
+        #endregion
+
+
+        #region v0.1.7
+
+        static bool UpdateVersion_0_1_7()
         {
-            // get all valid pseudos
-            List<SPublicProfileData> allPlayers = await ProfileCloudData.GetAllPlayersPublicData(validOnly: true);
-            foreach (SPublicProfileData playerData in allPlayers)
-            {
-                // get only player from the same region
-                if (playerData.Region != ProfileCloudData.Region)
-                    continue;
+            var test = true;
 
-                // ignore self pseudo
-                if (playerData.Pseudo == ProfileCloudData.GamerTag)
-                    continue;
+            // update 
+            UpdateAuthPlayerName();
 
-                if (FriendsHandler.HasFriend(playerData.PlayerName))
-                    continue;
+            // send a friend request to every player
+            FriendsHandler.SendFriendRequestToAll();
 
-                bool success = await FriendsHandler.Instance.SendFriendRequest(playerData.PlayerName);
-                if (! success)
-                {
-                    ErrorHandler.Warning("Unable to add " + playerData.PlayerName + " as friend");
-                }
-            }
+            // save version
+            if (!SetVersion("0.1.7"))
+                test = false;
+
+            return test;
         }
-
+        
         #endregion
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using Enums;
+using System.ComponentModel;
+using Tools;
 using UnityEngine;
 
 namespace Data
@@ -11,7 +13,7 @@ namespace Data
 
         public virtual string GetDescription()
         {
-            return Description;
+            return TextHandler.ReplaceStateEffectTokens(Description);
         }
 
         public new RuneData Clone(int level = 0, bool destroy = false)

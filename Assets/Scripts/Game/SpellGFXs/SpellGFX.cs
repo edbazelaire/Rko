@@ -15,7 +15,7 @@ namespace Game.SpellGFXs
         protected Controller        m_Controller;
         protected SpellData         m_SpellData;
         protected Spell             m_Spell;
-        protected string       m_StateEffectName;
+        protected string            m_StateEffectName;
         protected SPrefabSpawn      m_PrefabSpawn;
         protected EBodyPart         m_BodyPart;
 
@@ -23,10 +23,14 @@ namespace Game.SpellGFXs
         protected float             m_PersistanceTimer = -1f;
         protected float             m_Duration;
 
+        public string m_Name => m_SpellData != null ? m_SpellData.Name : (string.IsNullOrEmpty(m_StateEffectName) ? "" : m_StateEffectName);
+
         #endregion
 
 
         #region Init
+
+        protected virtual void FindComponents() { }
 
         public virtual void Initialize(Controller controller, SpellData spellData, Spell spell, string stateEffectName, SPrefabSpawn prefabSpawn, EBodyPart bodyPart = EBodyPart.None)
         {
@@ -37,6 +41,8 @@ namespace Game.SpellGFXs
             m_PrefabSpawn       = prefabSpawn;
             m_BodyPart          = bodyPart;
 
+            // find components if any
+            FindComponents();
 
             // set Parent & Position based on provided data
             transform.localScale *= prefabSpawn.Size > 0 ? prefabSpawn.Size : (spellData != null ? spellData.Size : 1);
@@ -65,14 +71,23 @@ namespace Game.SpellGFXs
                 return;
             }
 
+            // register the listeners at the end of configuration
             RegisterListeners();
+
+            // start animation
+            StartAnimation();
         }
+
+        protected virtual void StartAnimation() { }
 
         #endregion
 
 
         #region End
 
+        /// <summary>
+        /// Start the end of the spell, enabling Persistance
+        /// </summary>
         public virtual void End()
         {
             ErrorHandler.Log("ENDED SPELL GFX : " + this.name, ELogTag.SpellGFX);
@@ -86,7 +101,22 @@ namespace Game.SpellGFXs
 
             StartCoroutine(EndCoroutine());
         }
-        
+
+        /// <summary>
+        /// End the graphix immediatly without using the Graphics or Persistance
+        /// </summary>
+        protected virtual void ForceEnd()
+        {
+            // remove listeners
+            UnRegisterListeners();
+
+            Destroy(this);
+        }
+
+        /// <summary>
+        /// If the graphics have persistance, delay the end of graphics
+        /// </summary>
+        /// <returns></returns>
         protected virtual IEnumerator EndCoroutine()
         {
             // delay destruction of spell graphismes for visual purpuses
@@ -113,6 +143,10 @@ namespace Game.SpellGFXs
             m_PersistanceTimer = m_PrefabSpawn.GFXLifetime.Persistance;
         }
 
+        /// <summary>
+        /// Check if the graphics should end
+        /// </summary>
+        /// <param name="spellEvent"></param>
         void CheckEnd(ESpellEvent spellEvent)
         {
             if (m_PrefabSpawn.GFXLifetime.EndSpellPart == ESpellEvent.None || m_PrefabSpawn.GFXLifetime.EndSpellPart > spellEvent)
@@ -131,6 +165,14 @@ namespace Game.SpellGFXs
 
         #region Target & Position
 
+        /// <summary>
+        /// Based on configuration, find out the spawn parent
+        /// </summary>
+        /// <param name="prefabSpawn"></param>
+        /// <param name="caster"></param>
+        /// <param name="spell"></param>
+        /// <param name="targetController"></param>
+        /// <returns></returns>
         public static Transform CalculateParent(SPrefabSpawn prefabSpawn, Controller caster, Spell spell, Controller targetController)
         {
             switch (prefabSpawn.SpawnTarget)
@@ -173,11 +215,19 @@ namespace Game.SpellGFXs
 
 
                 default:
-                    ErrorHandler.Warning("SPrefabSpawn::Spawn() - Unhandled spawn location " + prefabSpawn.SpawnLocation);
+                    ErrorHandler.Warning("SPrefabSpawn::Spawn() - Unhandled spawn Target " + prefabSpawn.SpawnTarget + " for prefab " + prefabSpawn.Prefab.name);
                     return null;
             }
         }
 
+        /// <summary>
+        /// Based on the configuration, find out the position relative to the parent
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="prefabSpawn"></param>
+        /// <param name="controller"></param>
+        /// <param name="callFromPosition"></param>
+        /// <returns></returns>
         public static Vector3 CalculatePosition(Transform parent, SPrefabSpawn prefabSpawn, Controller controller, Vector3 callFromPosition)
         {
             Vector3 basePos = callFromPosition;
@@ -198,7 +248,7 @@ namespace Game.SpellGFXs
                     break;
 
                 default:
-                    Debug.LogError("SPrefabSpawn::Spawn() - Unknown spawn location " + prefabSpawn.SpawnLocation);
+                    Debug.LogError("SPrefabSpawn::Spawn() - Unknown spawn location " + prefabSpawn.SpawnLocation + " for prefab " + prefabSpawn.Prefab.name);
                     break;
             }
 
@@ -338,13 +388,10 @@ namespace Game.SpellGFXs
                 m_Controller.StateHandler.OnStateEffectEvent -= OnStateEffectEvent;
         }
 
-        protected virtual void OnPreSpellEvent(string spell, ESpellEvent spellEvent)
+        protected virtual void OnPreSpellEvent(string spellName, ESpellEvent spellEvent)
         {
-            // --------
-            // ISSUE with CancelCast()
-            // --------
-            //if (spell != m_SpellData.ToString())
-            //    return;
+            if (spellName != m_SpellData.Name)
+                return;
 
             CheckEnd(spellEvent);
         }

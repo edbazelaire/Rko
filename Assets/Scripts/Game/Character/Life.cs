@@ -61,19 +61,6 @@ public class Life : NetworkBehaviour
     #endregion
 
 
-    #region Inherited Manipulators
-
-    /// <summary>
-    /// 
-    /// </summary>
-    void Update()
-    {
-
-    }
-
-    #endregion
-
-
     #region Public Manipulator
 
     /// <summary>

@@ -518,7 +518,7 @@ namespace Assets
             FriendsHandler.Instance.Initialize();
         }
 
-        private async void OnInitializationCompleted()
+        private void OnInitializationCompleted()
         {
             if (SceneLoader.Instance == null)
                 ErrorHandler.Log("SceneLoader is null", ELogTag.System);

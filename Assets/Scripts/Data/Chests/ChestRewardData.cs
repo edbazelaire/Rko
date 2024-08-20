@@ -255,7 +255,7 @@ namespace Data
 
         List<SReward> GenerateExtraCardsRewards(int extraCardsQty, Dictionary<ERarety, float> extraCardsPerc)
         {
-            List<ESpell> usedSpells = default;
+            List<ESpell> usedSpells = new List<ESpell>();
             var rewards = new Dictionary<ERarety, SReward>();
             for (int i = 0; i < extraCardsQty; i++)
             {
@@ -275,11 +275,41 @@ namespace Data
                         break;
                     }
 
-                    rewards.Add(item.Key, new SReward(
-                        typeof(ESpell),
-                        SSpellDistributionData.GenerateRandomSpell(item.Key, ref usedSpells, SpellElements.ToList()).ToString(),
-                        1
-                    ));
+                    bool success = false;
+                    do
+                    {
+                        try
+                        {
+                            if (usedSpells == null)
+                            {
+                                ErrorHandler.Error("UsedSpells is null");
+                                usedSpells = new List<ESpell>();
+                            }
+
+                            if (SpellElements == null)
+                            {
+                                ErrorHandler.Error("SpellElements is null");
+                                SpellElements = new ESpellElement[0];
+                            }
+
+                            rewards.Add(item.Key, new SReward(
+                                typeof(ESpell),
+                                SSpellDistributionData.GenerateRandomSpell(item.Key, ref usedSpells, SpellElements.ToList()).ToString(),
+                                1
+                            ));
+                            success = true;
+                        }
+                        catch (Exception e)
+                        {
+                            ErrorHandler.Error(e.Message);
+                            ErrorHandler.Error(TextHandler.ToString(new Dictionary<string, string>() {
+                                { "item.Key",           item.Key.ToString() },
+                                { "usedSpells",         TextHandler.ToString(usedSpells) },
+                                { "SpellElements",      TextHandler.ToString(SpellElements.ToList()) },
+                            }));
+                        }
+                    } while (!success);
+                    
                     break;
                 }
             }

@@ -1,5 +1,9 @@
 ﻿using Data;
+using Data.DataStructures;
+using Enums;
+using Game.Loaders;
 using MyBox;
+using Save;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -188,6 +192,49 @@ namespace Tools
         #endregion
 
 
+        #region Replace Token
+
+        public static string ReplaceStateEffectTokens(string text)
+        {
+            foreach (EStateEffect stateEffect in Enum.GetValues(typeof(EStateEffect)))
+            {
+                text = text.Replace("[" + stateEffect.ToString() + "]", FormatStateEffectIcon(stateEffect.ToString(), true));
+            }
+            return text;
+        }
+
+        public static string ReplaceTriggerEffectTokens(string text, List<STriggerEffect> triggerEffects)
+        {
+            for (int i = 0; i < triggerEffects.Count; i++)
+            {
+                string token = $"[TriggerEffect.{i}]";
+                if (text.Contains(token))
+                    text = text.Replace(token, GetTriggerEffectDescription(triggerEffects[i]));
+            }
+            return text;
+        }
+
+        public static string GetTriggerEffectDescription(STriggerEffect triggerEffect)
+        {
+            // description of the Rune is the description of the Trigger Effect (at the level of the current character)
+            if (SpellLoader.SpellExists(triggerEffect.SpellDataName))
+            {
+                return SpellLoader.GetSpellDescription(triggerEffect.SpellDataName, InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter).Level);
+            }
+
+            // description of the Rune is the description of the Trigger Effect (at the level of the current character)
+            else if (SpellLoader.StateEffectExists(triggerEffect.SpellDataName))
+            {
+                return SpellLoader.GetStateEffectDescription(triggerEffect.SpellDataName, InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter).Level);
+            }
+
+            ErrorHandler.Error("Unable to find description for trigger effect " + triggerEffect.SpellDataName);
+            return "";
+        }
+
+        #endregion
+
+
         #region ToString()
 
         public static string ToString(object obj, int indent = 1)
@@ -195,6 +242,10 @@ namespace Tools
             StringBuilder sb = new StringBuilder();
             switch (obj)
             {
+                case null:
+                    sb.Append("null");
+                    break;
+
                 case double d:
                     sb.Append(d.ToString("G17"));
                     break;

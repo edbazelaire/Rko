@@ -381,7 +381,6 @@ namespace Game.Character
         {
             return m_Controller.StateHandler.IsStunned                                  // is stunned
                 || m_Controller.StateHandler.IsSilenced                                 // is silenced
-                || m_Controller.StateHandler.HasState(EStateEffect.SpecialAnimation)    // special animation cancel casts
                 || m_Controller.StateHandler.HasState(EStateEffect.Frozen)              // is frozen 
                 || m_Controller.StateHandler.HasState(EStateEffect.Jump)                // is jumping
                 || m_Controller.CounterHandler.IsBlockingCast.Value;                    // is using a counter
@@ -571,7 +570,7 @@ namespace Game.Character
 
         void LockTarget(SpellData spellData)
         {
-            if (m_IsSelectedAutoTarget)
+            if (IsAutoTarget(spellData.Name))
                 spellData.ForceAutoTarget();
 
             // recalculate target depending on spell and conditions (autocast, ...)
