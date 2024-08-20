@@ -603,6 +603,7 @@ namespace Data
             var infosDict = base.GetInfos();
             
             infosDict.Add("Type", GetTypeInfo());
+            infosDict.Add("Target", GetTargetTypeInfo());
 
             if (EnergyGain > 0)
                 infosDict.Add("Energy", EnergyGain);
@@ -697,7 +698,7 @@ namespace Data
 
         public void AddAsSubSpellInfos(ref Dictionary<string, object> infosDict)
         {
-            string[] keysToIgnore = new string[] { "Type", "Cooldown", "CastDuration", "Distance", "EnergyCost" };        // keys to ignore as overwrite  
+            string[] keysToIgnore = new string[] { "Type", "Target", "Cooldown", "CastDuration", "Distance", "EnergyCost" };        // keys to ignore as overwrite  
             string[] keysToAdd = new string[] { "Damages", "Heal", "TickDamages", "TickHeal", "Effects" };                                // keys that are not overritten but additionned 
 
             var subSpellInfos = GetInfos();
@@ -760,6 +761,20 @@ namespace Data
         public string GetTypeInfo()
         {
             return SpellType.ToString();
+        }
+
+        public string GetTargetTypeInfo()
+        {
+            switch(SpellTarget)
+            {
+                case ESpellTarget.Fixed:
+                case ESpellTarget.Mirror:
+                case ESpellTarget.Self:
+                    return SpellTarget.ToString();
+
+                default:
+                    return "Auto";
+            }
         }
 
         #endregion
