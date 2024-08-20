@@ -85,15 +85,13 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
-  - Property: 1
-    Value: 0.1
   - Property: 3
     Value: 0.05
   m_Size: 1.5
   TriggerPlayer: 1
   EnemyStateEffects:
   - StateEffect: 17
-    Stacks: 1
+    Stacks: 4
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
@@ -101,7 +99,7 @@ MonoBehaviour:
   Animation: 14
   IsCancellable: 0
   AnimationTimer: 0.35
-  m_Cooldown: 25
+  m_Cooldown: 15
   Trajectory: 0
   m_StopOnTargetPos: 0
   m_Speed: 8

@@ -1,5 +1,7 @@
 using AI;
+using System.Collections.Generic;
 using Tools;
+using Unity.VisualScripting;
 
 public class CheckDodge : BaseChecker
 {
@@ -34,8 +36,15 @@ public class CheckDodge : BaseChecker
         // checks that is not in the trajectory of projectile
         if (m_ProjectileTrigger.IsTriggered)
         {
-            m_State = NodeState.SUCCESS;
-            return m_State;
+            foreach (var projectile in m_ProjectileTrigger.Projectiles)
+            {
+                (bool isThreat, bool isDodgeable, int _) = TaskMove.IsProjectileAtThreatDistance(projectile, m_Controller, new List<int>() { -1, 1 });
+                if (isThreat && isDodgeable) 
+                {
+                    m_State = NodeState.SUCCESS;
+                    return m_State;
+                }
+            }
         }
 
         return m_State;

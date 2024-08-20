@@ -1,19 +1,25 @@
 using AI;
+using Data;
 using Enums;
+using Game;
 using Game.AI;
 using Game.Character;
+using Game.Spells;
 using System.Collections.Generic;
-using Tools;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class TaskMove : Node
+public class TaskMove : BaseNode
 {
     #region Members
 
     // =============================================================================
+    // CONSTANTS
+    /// <summary> dodge time window for a projectile to be considerated as a threat </summary>
+    public const float THREAT_TIME_WINDOW = 0.5f;
+
+    // =============================================================================
     // Component & GameObjects
-    protected Controller m_Controller;
-    protected ImmediatThreatTrigger m_ImmediatThreatTrigger;
     protected Movement m_Movement => m_Controller.Movement;
 
     // =============================================================================
@@ -32,11 +38,7 @@ public class TaskMove : Node
 
     #region Init & End
     
-    public TaskMove(Controller controller)
-    {
-        m_Controller = controller;
-        m_ImmediatThreatTrigger = Finder.FindComponent<ImmediatThreatTrigger>(controller.gameObject);
-    }
+    public TaskMove(Controller controller) : base(controller) { }
 
     #endregion
 
@@ -134,10 +136,153 @@ public class TaskMove : Node
         }
     }
 
+    /// <summary>
+    /// Check allowed movements to dodge projectiles
+    /// </summary>
     protected virtual void CheckProjectiles()
     {
         if (m_AllowedMovements.Count == 0)
             return;
+
+        // CHECK : straight line projectile
+        if (m_AllowedMovements.Contains(-1) && m_ProjectileTrigger.CheckStraightProjectiles(out float xPos))
+        {
+            Debug.LogWarning("-- STRAIGHT PROJECTILE DETECTED");
+
+            // no straight projectile can reach us (add offset for safety)
+            if (xPos + 0.5f <= m_Controller.transform.position.x)
+                return;
+
+            Debug.Log("     + Left Movement : canceled");
+
+            // otherwise : run the other direction
+            m_AllowedMovements.Remove(-1);
+        }
+
+        foreach (Projectile projectile in m_ProjectileTrigger.Projectiles)
+        {
+            if (projectile.IsDestroyed())
+                continue;
+
+            (bool isThreat, bool isDodgeable, int move) = IsProjectileAtThreatDistance(projectile, m_Controller, m_AllowedMovements);
+            
+            // force dodge first encoutered dodgeable projectile
+            if (isThreat && isDodgeable && move != 0)
+            {
+                m_AllowedMovements = new List<int>() { move };
+                break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Check if there are obstacles between controller and provided X position
+    /// </summary>
+    /// <param name="xPos"></param>
+    /// <returns></returns>
+    public static bool HasObstacles(float originalXPos, float targetXPos)
+    {
+        Collider2D[] colliders = CollisionChecker.GetCollidersInDistance(originalXPos, targetXPos - originalXPos, CollisionChecker.OBSTACLES_LAYERS);
+        return colliders.Length > 0;
+    }
+
+    /// <summary>
+    /// Check if the projectile is close enought to be a threat that needs to be dodged.
+    /// Also check if the projectile is actually dodgeable by movement
+    /// </summary>
+    /// <param name="projectile">           Projectile that is coming towards the Controller                        </param>
+    /// <param name="controller">           Controller of the Player trying to dodge the Projectile                 </param>
+    /// <param name="startIntersection">    Starts of the Intersection between the projectile and the Controller    </param>
+    /// <param name="endIntersection">      Starts of the Intersection between the projectile and the Controller    </param>
+    /// <returns></returns>
+    public static (bool isThreat, bool isDodgeable, int move) IsProjectileAtThreatDistance(Projectile projectile, Controller controller, List<int> allowedMovements)
+    {
+        if (projectile.IsDestroyed())
+            return (false, false, 0);
+
+        // get data of the projectiles
+        ProjectileData projectileData = projectile.SpellData as ProjectileData;
+
+        // ====================================================================================================
+        // CALCULATE DISTANCE
+        // get points to reach left and right to be sage
+        (float startX, float endX) = ProjectileTrigger.CalculateProjectileSafeBounds(projectile, controller);
+
+        // check if both positions left and right can be accessed
+        if (allowedMovements.Contains(-1))
+        {
+            if (! ArenaManager.IsInArenaBounds(startX, controller.Team, false) || HasObstacles(controller.transform.position.x, startX) )
+                allowedMovements.Remove(-1);
+        }
+
+        if (allowedMovements.Contains(1))
+        {
+            if (!ArenaManager.IsInArenaBounds(endX, controller.Team, false) || HasObstacles(controller.transform.position.x, endX))
+                allowedMovements.Remove(1);
+        }
+
+        // no movement left : THREAT : yes | DOGEABLE : false 
+        if (allowedMovements.Count == 0)
+            return (true, false, 0);
+
+        float distanceToMoveLeft = Mathf.Min(Mathf.Abs(startX - controller.transform.position.x), Mathf.Abs(endX - controller.transform.position.x));
+        float distanceToMoveRight = Mathf.Min(Mathf.Abs(startX - controller.transform.position.x), Mathf.Abs(endX - controller.transform.position.x));
+
+        // at which point in space the projectile would intersect with the player
+        Vector3 intersectionPointLeft = new Vector3(startX, controller.CharacterHeight + projectileData.Size / 2, 0f);
+        float projectileRemainingDistanceLeft = Vector3.Distance(projectile.transform.position, intersectionPointLeft);
+        float projectileRemainingDistanceRight = Vector3.Distance(projectile.transform.position, projectile.Target - new Vector3(projectileData.Size / 2, 0f, 0f));
+
+        switch (projectileData.Trajectory)
+        {
+            case ESpellTrajectory.Curve:
+                projectileRemainingDistanceLeft = Vector3.Distance(ArenaManager.Instance.TargetHight.position, projectile.Target);
+
+                if (projectile.transform.position.x < ArenaManager.Instance.TargetHight.position.x)
+                {
+                    projectileRemainingDistanceLeft     = Vector3.Distance(projectile.transform.position, ArenaManager.Instance.TargetHight.position) + Vector3.Distance(ArenaManager.Instance.TargetHight.position, intersectionPointLeft);
+                    projectileRemainingDistanceRight    = Vector3.Distance(projectile.transform.position, ArenaManager.Instance.TargetHight.position) + Vector3.Distance(ArenaManager.Instance.TargetHight.position, projectile.Target);
+                }
+                break;
+
+            case ESpellTrajectory.Straight:
+                distanceToMoveLeft = Mathf.Infinity;
+                projectileRemainingDistanceRight = Vector3.Distance(projectile.transform.position, projectile.Target);
+                break;
+
+            default:
+                break;
+        }
+
+        // ====================================================================================================
+        // CALCULATE TIME 
+        int move;
+        float timeToMove;           // time that the character will take to move the required distance to safety
+        float timeProjectile;       // time that the projectile will take to reach its target
+        if (allowedMovements.Count == 1)
+        {
+            if (allowedMovements.Contains(-1))
+            {
+                move = -1;
+                timeToMove = distanceToMoveLeft / controller.Movement.Speed;
+                timeProjectile = projectileRemainingDistanceLeft / projectileData.Speed;
+            }
+            else
+            {
+                move = 1;
+                timeToMove = distanceToMoveRight / controller.Movement.Speed;
+                timeProjectile = projectileRemainingDistanceRight / projectileData.Speed;
+            }
+        }
+        else
+        {
+            move = distanceToMoveRight > distanceToMoveLeft ? -1 : 1;
+            timeProjectile = (distanceToMoveRight > distanceToMoveLeft ? projectileRemainingDistanceLeft : projectileRemainingDistanceRight) / projectileData.Speed;
+            timeToMove = Mathf.Min(distanceToMoveLeft, distanceToMoveRight) / controller.Movement.Speed;
+        }
+
+        // projectile is a threat if the required time to move (+ a safety) is superior to the time that the
+        return (timeToMove + THREAT_TIME_WINDOW > timeProjectile, timeToMove <= timeProjectile, move);
     }
 
     #endregion

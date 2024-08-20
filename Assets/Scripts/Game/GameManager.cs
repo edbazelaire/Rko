@@ -691,17 +691,17 @@ namespace Game
             switch (newState)
             {
                 case EGameState.WaitingForConnection:
-                    TimeErrorWrapper.Instance.New(TIME_WRAPPER_ID, 30f, OnPreparingGameTimeLimit);
+                    TimeErrorWrapper.Instance.New(TIME_WRAPPER_ID, 60f, OnPreparingGameTimeLimit);
                     break;
 
                 case EGameState.PreparingGame:
-                    TimeErrorWrapper.Instance.New(TIME_WRAPPER_ID, 30f, OnPreparingGameTimeLimit);
+                    TimeErrorWrapper.Instance.New(TIME_WRAPPER_ID, 60f, OnPreparingGameTimeLimit);
                     StartCoroutine(WaitClientInitialized());
                     SpawnPlayers();
                     break;
 
                 case EGameState.Intro:
-                    TimeErrorWrapper.Instance.New(TIME_WRAPPER_ID, 30f, OnGameRunningTimeLimit);
+                    TimeErrorWrapper.Instance.New(TIME_WRAPPER_ID, 45f, OnGameRunningTimeLimit);
                     StartIntro();
                     break;
 
@@ -727,6 +727,8 @@ namespace Game
 
         void ExitWithError(string message)
         {
+            ErrorHandler.Error(message);
+
             Main.AddStoredEvent(EAppState.MainMenu, () => Main.SetPopUp(EPopUpState.MessagePopUp, message));
             GameManager.Instance.Shutdown();
             SceneLoader.Instance.LoadScene("MainMenu");

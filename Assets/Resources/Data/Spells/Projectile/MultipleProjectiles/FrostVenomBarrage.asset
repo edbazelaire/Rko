@@ -57,10 +57,10 @@ MonoBehaviour:
     Value: 0.1
   - Property: 3
     Value: 0.05
-  - Property: 7
-    Value: 0.03
   - Property: 6
-    Value: 0.1
+    Value: 0.035
+  - Property: 10
+    Value: 0.03
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects:
@@ -83,7 +83,7 @@ MonoBehaviour:
   ProjectileData: {fileID: 0}
   MultiProjectileType: 1
   m_NProjectiles: 3
-  m_ProjectileZoneSize: 5
+  m_ProjectileZoneSize: 6
   m_DelayBetweenLaunches: 0
   m_NWaves: 3
   m_DelayBetweenWaves: 0.5

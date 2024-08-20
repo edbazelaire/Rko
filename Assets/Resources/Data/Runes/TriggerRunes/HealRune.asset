@@ -17,7 +17,11 @@ MonoBehaviour:
   m_TriggerEffects:
   - SpellDataName: HealRune
     Level: 0
-    SpellActivationEvent: 2
+    SpellActivationEvent: 3
     ActivationTreshold: 0.5
+    SpellDeactivationEvent: 0
+    DeactivationTreshold: 0
+    StateEffectEvent: 0
+    StateEffectName: 
     NActivations: 0
     Cooldown: 60

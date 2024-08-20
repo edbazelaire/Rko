@@ -119,6 +119,7 @@
         EmperorOfFlames,
         ExperimentalVial,
         Vortex,
+        Shardrot,
 
         Count
     }
@@ -175,6 +176,8 @@
         BerserkerRune,
         ShieldRune,
         ResurrectionRune,
+        InfernalProtectionRune,
+        AncientAegisRune,
     }
 
     public enum EAppState
@@ -212,11 +215,13 @@
 
     public enum ESpellActivationEvent
     {
-        GameStart,
-        Time,
-        Hp,
-        Shield,
-        Death,
+        None = 0, 
+
+        GameStart           = 1,        // activate effect when the game starts
+        Time                = 2,        // activate effect when after a period of TIME
+        Hp                  = 3,        // activate effect when HP goes below a threshold
+        Shield              = 4,        // activate effect when SHIELD foes below a threshold
+        Death               = 5,        // activate effect when the player DIES
     }
 
     public enum ESpellEvent
@@ -228,6 +233,18 @@
         OnSpawn,
         OnHit,
         OnEnd,
+    }
+
+    public enum EStateEffectEvent
+    {
+        None            = 0,    
+
+        OnApplied       = 1,        // procs when a state effect is applied
+        OnRefreshed     = 2,        // procs when a state effect is refreshed
+        OnConsumed      = 3,        // procs when a state effect is consumed 
+        OnRemoved       = 4,        // procs when a state effect is removed without beeing consumed
+
+        OnTick          = 100,      // procs at each tick of the state effect
     }
 
     public enum ESpellTrajectory 
@@ -242,20 +259,23 @@
 
     public enum ESpellTarget
     {
-        None,
+        None = 0,
 
-        EnemyZone,
-        AllyZone,
-        Free,
+        EnemyZone = 1,
+        AllyZone = 2,
+        Free = 3,
         
-        Self,
-        FirstAlly,
-        FirstEnemy,
+        Self = 4,
+        FirstAlly = 5,
+        FirstEnemy = 6,
 
-        EnemyZoneStart,
-        AllyZoneStart,
-        EnemyZoneCenter,
-        AllyZoneCenter,
+        EnemyZoneStart = 7,
+        AllyZoneStart = 8,
+        EnemyZoneCenter = 9,
+        AllyZoneCenter = 10,
+
+        Mirror = 101,               // target the symetrical point
+        Fixed = 102,                // at a fixed distance
     }
 
     public enum ESpellSpawn
@@ -722,7 +742,6 @@
         Bruh            = 1020,
         Kahnan          = 1030,
         Srug            = 1040,
-
     }
 
     public enum EBorder

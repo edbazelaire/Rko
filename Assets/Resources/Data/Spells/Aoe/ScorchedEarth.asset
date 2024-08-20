@@ -31,11 +31,28 @@ MonoBehaviour:
   m_SpellElements: 01000000
   Linked: 0
   Graphics: {fileID: 0}
-  SpellEventActions: []
+  SpellEventActions:
+  - Prefab: {fileID: 1707519472764412, guid: 81d6c07ff4b2cb64fb250afa8b5a65c3, type: 3}
+    MaterialEffect: {fileID: 0}
+    GFXLifetime:
+      StartSpellPart: 3
+      EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1.5
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs:
-  - {fileID: 610942752557020422, guid: 4c012a077fc8a714fb23670e129fb0eb, type: 3}
+  - {fileID: 610942752557020422, guid: 449b781c7b997944bbb41bbb9642c178, type: 3}
   OnHit:
   - {fileID: 11400000, guid: e39cfbee781b4b54f974648e3652d53f, type: 2}
   OnHitSpellSpawn: 1
@@ -44,26 +61,24 @@ MonoBehaviour:
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
-  SpellTarget: 1
+  SpellTarget: 101
   LockTargetAt: 2
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 0
+  m_Damage: 25
   m_Heal: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
   m_Duration: 0
-  Delay: 0.5
+  Delay: 0.8
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
-  - Property: 1
-    Value: 0.1
   - Property: 3
     Value: 0.05
-  m_Size: 4
+  m_Size: 5
   TriggerPlayer: 1
   EnemyStateEffects:
   - StateEffect: 22

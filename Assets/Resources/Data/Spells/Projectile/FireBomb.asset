@@ -72,7 +72,7 @@ MonoBehaviour:
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 8300000, guid: 835426082e048794dbf05e65aa71c35a, type: 3}
-  SpellTarget: 1
+  SpellTarget: 102
   LockTargetAt: 2
   MaxHit: 1
   EnergyGain: 5
@@ -86,8 +86,6 @@ MonoBehaviour:
   Delay: 0
   m_SpellsScalingLevel:
   - Property: 2
-    Value: 0.1
-  - Property: 1
     Value: 0.1
   - Property: 3
     Value: 0.05
@@ -103,4 +101,4 @@ MonoBehaviour:
   m_Cooldown: 10
   Trajectory: 1
   m_StopOnTargetPos: 0
-  m_Speed: 8
+  m_Speed: 9

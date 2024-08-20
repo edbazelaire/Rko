@@ -3,6 +3,7 @@ using Enums;
 using System;
 using Tools;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Game.Spells
 {
@@ -15,6 +16,8 @@ namespace Game.Spells
         protected float m_MaxDistance;
 
         protected Vector3 m_OriginalPosition;
+
+        public Vector3 OriginalPosition => m_OriginalPosition;
 
         #endregion
 
@@ -109,11 +112,12 @@ namespace Game.Spells
 
         protected override void SetTarget(Vector3 target)
         {
+            // TODO : remove (TRUE) when IsAutoTarget is implemented
             // add a small adjustement to X to avoid targetting the enemy's feets (only for autotarget aiming the ground)
-            if (m_SpellData.IsAutoTarget && target.y == 0)
+            if ((true || m_SpellData.IsAutoTarget) && target.y == 0)
             {
-                int direction = ArenaManager.GetAreaMovementDirection(m_Controller.Team, m_SpellData.IsEnemyTarget);
-                target.x += direction * 0.2f;
+                // add X offset depending on the type of projectile
+                target.x += CalculateTargetOffsetX();
             }
 
             // set value of the target
@@ -121,6 +125,35 @@ namespace Game.Spells
 
             // look at the direction of the target
             LookAt(m_Target);
+        }
+
+        float CalculateTargetOffsetX()
+        {
+            float offset = 0f;
+            int direction = ArenaManager.GetAreaMovementDirection(m_Controller.Team, m_SpellData.IsEnemyTarget);
+
+            switch (m_SpellData.Trajectory)
+            {
+                case ESpellTrajectory.Count:
+                case ESpellTrajectory.Straight:
+                case ESpellTrajectory.Hight:
+                    offset = 0f;
+                    break;
+
+                case ESpellTrajectory.Curve:
+                    offset = 0.2f;
+                    break;
+
+                case ESpellTrajectory.Diagonal:
+                    offset = 0.8f;
+                    break;
+
+                default:
+                    ErrorHandler.Warning("Unhandled case");
+                    break;
+            }
+
+            return direction * offset;
         }
 
         #endregion

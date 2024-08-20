@@ -82,6 +82,8 @@ public class Controller : NetworkBehaviour
     public ClientAnalytics  ClientAnalytics             => m_ClientAnalytics;
     public EnergyHandler    EnergyHandler               => m_EnergyHandler;
     public Collider2D       Collider                    => m_Collider;
+    /// <summary> y position of the character's Height point </summary>
+    public float            CharacterHeight             => m_Collider.transform.position.y + m_Collider.bounds.extents.y;
 
     #endregion
 

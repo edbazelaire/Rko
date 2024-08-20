@@ -1,7 +1,5 @@
 ﻿using Data;
 using Enums;
-using Game.Loaders;
-using System.Linq;
 using Tools;
 using UnityEngine;
 
@@ -32,6 +30,29 @@ namespace Game.Spells
 
             OnHitPlayer(GetTargetController());
             End();
+        }
+
+        #endregion
+
+        #region Target & Position
+
+        protected override Controller GetTargetController()
+        {
+            if (! SpellData.IsAutoTarget)
+                ErrorHandler.Warning("Buff spell " + SpellData.Name + " is not AutoTarget. This is currently not handled");
+
+            switch (SpellData.SpellTarget)
+            {
+                case ESpellTarget.Self:
+                    return m_Controller;
+
+                case ESpellTarget.FirstEnemy:
+                    return GameManager.Instance.GetFirstEnemy(m_Controller.Team);
+
+                default:
+                    ErrorHandler.Error("Unhandled case : " + SpellData.SpellTarget + " for BUFF spell " + SpellData.Name);
+                    return m_Controller;
+            }
         }
 
         #endregion

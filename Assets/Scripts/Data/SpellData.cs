@@ -371,6 +371,14 @@ namespace Data
                     target = new Vector3(centerPos - direction * ArenaManager.Instance.TargettableAreaSize / 2, target.y, target.z);
                     break;
 
+                case ESpellTarget.Mirror:
+                    target = new Vector4(-GameManager.Instance.GetPlayer(clientId).transform.position.x, target.y, 0f);
+                    break;
+
+                case ESpellTarget.Fixed:
+                    target = new Vector4(GameManager.Instance.GetPlayer(clientId).transform.position.x + 7f, target.y, 0f);
+                    break;
+
                 default:
                     ErrorHandler.Error("Unhandled case : " + SpellTarget);
                     break;
@@ -818,7 +826,9 @@ namespace Data
         public bool IsEnemyTarget => SpellTarget == ESpellTarget.FirstEnemy
             || SpellTarget == ESpellTarget.EnemyZone
             || SpellTarget == ESpellTarget.EnemyZoneStart
-            || SpellTarget == ESpellTarget.EnemyZoneCenter;
+            || SpellTarget == ESpellTarget.EnemyZoneCenter
+            || SpellTarget == ESpellTarget.Fixed
+            || SpellTarget == ESpellTarget.Mirror;
             
 
         public bool IsAllyTarget => SpellTarget == ESpellTarget.FirstAlly

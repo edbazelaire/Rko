@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Network;
+using Managers.Friends;
 using Menu.MainMenu;
 using Network;
 using Save;
@@ -85,7 +86,7 @@ namespace Assets.Scripts.UI
                 dropdown: m_RegionDropdown, 
                 values: values, 
                 defaultValue: defaultValue, 
-                onDropDownValueChanged: (string regionValue) => ProfileCloudData.SetRegion(CleanDropdownRegionValue(regionValue))
+                onDropDownValueChanged: OnRegionChanged
             );
         }
 
@@ -103,6 +104,14 @@ namespace Assets.Scripts.UI
 
         #region Listeners
 
+        /// <summary>
+        /// When a region is manually changed
+        /// </summary>
+        void OnRegionChanged(string regionValue)
+        {
+            // change the current region in cloud data
+            ProfileCloudData.SetRegion(CleanDropdownRegionValue(regionValue));
+        }
 
         #endregion
     }
