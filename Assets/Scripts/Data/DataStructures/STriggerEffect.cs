@@ -1,5 +1,4 @@
 ﻿using Enums;
-using Game;
 using Game.Loaders;
 using Game.Spells;
 using System;
@@ -7,7 +6,6 @@ using System.Collections;
 using System.Linq;
 using Tools;
 using Unity.Netcode;
-using UnityEditor;
 using UnityEngine;
 
 namespace Data.DataStructures
@@ -68,6 +66,12 @@ namespace Data.DataStructures
             if (m_IsActivated)
                 return;
 
+            if (m_Controller == null)
+            {
+                ErrorHandler.Error("Provided Controller is null");
+                return;
+            }
+
             m_IsActivated = true;
             m_Controller = controller;
 
@@ -85,14 +89,20 @@ namespace Data.DataStructures
             if (!IsActivable())
                 return;
 
+            if (controller == null)
+            {
+                ErrorHandler.Error("Provided Controller is null");
+                return;
+            }
+
+            Debug.LogWarning("TRIGGER EFFECT : " + SpellDataName);
+
             m_NActivationsCtr++;
             if (Cooldown > 0)
             {
                 m_CooldownTimer = Cooldown;
                 controller.StartCoroutine(UpdateCooldownTimer());
             }
-
-            Debug.LogWarning("ACTIVATE : " + SpellDataName);
 
             if (SpellLoader.SpellExists(SpellDataName))
             {
@@ -161,6 +171,12 @@ namespace Data.DataStructures
 
         void OnStateEffectEvent(string stateEffectName, EStateEffectEvent stateEffectEvent, ulong targetId, ulong casterId)
         {
+            if (m_Controller == null)
+            {
+                ErrorHandler.Error("Provided Controller is null");
+                return;
+            }
+
             if (! HasStateEffect(stateEffectName))
                 return;
 

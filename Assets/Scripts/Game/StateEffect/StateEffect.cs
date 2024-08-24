@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Managers.Sound;
 using Data;
 using Enums;
+using Game.Loaders;
 using MyBox;
 using System;
 using System.Collections.Generic;
@@ -117,6 +118,7 @@ namespace Game.Spells
         public EStateEffect             ConsumeState        => m_ConsumeState;
         public EStateEffect             DefaultState        => m_DefaultState;
         public int                      Level               => m_Level;
+        public bool                     IsBuff              => SpellLoader.SpellExists(StateEffectName);
 
         public string StateEffectName
         {
@@ -137,6 +139,12 @@ namespace Game.Spells
 
         public virtual bool Initialize(Controller controller, Controller caster, SStateEffectData? stateEffectData = null)
         {
+            if (controller == null)
+            {
+                ErrorHandler.Error("Provided Controller is null");
+                return false;
+            }
+
             m_Controller = controller;
             m_Caster = caster;
             m_Stacks = stateEffectData.HasValue ? stateEffectData.Value.Stacks : 1;

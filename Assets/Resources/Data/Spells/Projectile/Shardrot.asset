@@ -13,8 +13,15 @@ MonoBehaviour:
   m_Name: Shardrot
   m_EditorClassIdentifier: 
   Rarety: 2
-  m_Description: 'A '
-  m_DescriptionVariables: []
+  m_Description: Shard of ice infected with a virulent poison inflecting {0} damages
+    while applying 3 stacks of {1}  and {2}
+  m_DescriptionVariables:
+  - Name: Damages
+    WithIcon: 1
+  - Name: Infected
+    WithIcon: 1
+  - Name: IceBreak
+    WithIcon: 1
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 6310744135911870057, guid: db1693c6d8bb88b48809832f2f3abd04, type: 3}

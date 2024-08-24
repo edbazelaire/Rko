@@ -28,6 +28,7 @@ namespace Network
         SceneLoading,
         WaitingRelayCode,
         JoiningRelay,
+        CreateGameManager,
         WaitingGameManager,
         SendingPlayerData,
         Ready,
@@ -188,8 +189,8 @@ namespace Network
 
                         UpdateLobbyRelayCode(m_RelayCode);
 
-                        // spawn the GameManager on Server
-                        SetState(ELobbyState.WaitingGameManager);
+                        // Create game manager
+                        SetState(ELobbyState.CreateGameManager);
                         return;
 
                     case ELobbyState.WaitingRelayCode:
@@ -201,7 +202,11 @@ namespace Network
 
                         await Retry(JoinRelay);
 
-                        NextState();
+                        SetState(ELobbyState.WaitingGameManager);
+                        return;
+
+                    case ELobbyState.CreateGameManager:
+                        m_CurrentCoroutine = StartCoroutine(CreateGameManager());
                         return;
 
                     case ELobbyState.WaitingGameManager:
@@ -249,11 +254,47 @@ namespace Network
             NextState();
         }
 
+        IEnumerator CreateGameManager(int nRetry = 0)
+        {
+            var gameManager = Instantiate(SceneLoader.Instance.GameManager);
+            Finder.FindComponent<NetworkObject>(gameManager.gameObject).Spawn();
+
+            float timer = 15f;
+            while (! gameManager.IsSpawned && timer > 0)
+            {
+                timer -= Time.deltaTime;
+                yield return null;
+            }
+
+            if (! gameManager.IsSpawned)
+            {
+                ErrorHandler.Warning("Unable to spawn GameManager. NRetry left : " + nRetry);
+                gameManager.Shutdown();
+
+                if (--nRetry > 0)
+                    m_CurrentCoroutine = StartCoroutine(CreateGameManager(nRetry));
+
+                yield break;
+            }
+
+            gameManager.Initialize();
+            ErrorHandler.Log("CREATED : GameManager");
+
+            // spawn the GameManager on Server
+            SetState(ELobbyState.WaitingGameManager);
+        }
+
         IEnumerator WaitGameManagerCoroutine()
         {
+            // waiting for game manager to be initialized and spawned
             while (! GameManager.FindInstance(true))
                 yield return null;
 
+            // waiting for game manager to be ready to receive connections
+            while (GameManager.Instance.State.Value < EGameState.WaitingForConnection)
+                yield return null;
+
+            // send my player data
             SetState(ELobbyState.SendingPlayerData);
         }
 

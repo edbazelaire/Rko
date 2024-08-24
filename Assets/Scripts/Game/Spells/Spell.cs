@@ -339,7 +339,7 @@ namespace Game.Spells
             // check if target has counter(s)
             if (controller.CounterHandler.CheckCounters(this))
                 return false;
-            
+
             // get final damages after shields and resistances
             int finalDamages = controller.Life.Hit(damages);
             if (finalDamages > 0 && m_Controller.ClientAnalytics != null)

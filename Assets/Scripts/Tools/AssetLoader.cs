@@ -1,5 +1,6 @@
 ﻿using Data.GameManagement;
 using Enums;
+using Game;
 using Game.Spells;
 using Menu.Common.Buttons;
 using Save;
@@ -46,7 +47,7 @@ namespace Tools
         // UI 
         public const string c_UIPath                        = "UI/";
         // ---- Templates
-        public const string c_TemplatesUIPath               = c_UIPath + "Templates/";
+        public const string c_TemplatesUIPath               = c_UIPath  + "Templates/";
         public const string c_TemplatesShopPath             = c_TemplatesUIPath + "Shop/";
         public const string c_AchievementsTemplatesPath     = c_TemplatesUIPath + "Achievements/";
         // ---- Commons
@@ -59,6 +60,9 @@ namespace Tools
         public const string c_MainMenuPath                  = c_MainUIPath + "MainMenu/";
         public const string c_MainTabPath                   = c_MainMenuPath + "MainTab/";
         public const string c_ProfileTabPath                = c_MainMenuPath + "ProfileTab/";
+        // ---- Arena Background
+        public const string c_GameContentPath               = c_UIPath + "Game/";
+        public const string c_ArenaBackgroundPath           = c_GameContentPath + "Arena/";
         // ---- solo mode ui
         public const string c_GameSectionPath               = c_MainTabPath + "GameSection/";
         public const string c_ArenaModeUIPath               = c_GameSectionPath + "ArenaMode/";
@@ -139,7 +143,7 @@ namespace Tools
             return allRessources[0];
         }
 
-        public static T Load<T>(string assetName, string dirpath) where T : Object
+        public static T Load<T>(string assetName, string dirpath, bool warning = true) where T : Object
         {
             // try to find the ressource directly
             var ressource = Load<T>(dirpath + assetName, false);
@@ -156,7 +160,8 @@ namespace Tools
                 }
             }
 
-            ErrorHandler.Error("Unable to find any ressource named " + assetName + " with type " + typeof(T) + " at " + dirpath);
+            if (warning)
+                ErrorHandler.Error("Unable to find any ressource named " + assetName + " with type " + typeof(T) + " at " + dirpath);
             return null;
         }
 
@@ -213,6 +218,17 @@ namespace Tools
         public static GameObject[] LoadSpellPrefabs()
         {
             return Resources.LoadAll<GameObject>(c_SpellsPrefabsPath);
+        }
+
+        #endregion
+
+
+        #region Arena Loading
+
+
+        public static ArenaManager LoadArena(string arenaName)
+        {
+            return Load<ArenaManager>(arenaName, c_ArenaBackgroundPath);
         }
 
         #endregion
@@ -388,14 +404,13 @@ namespace Tools
 
         public static Sprite LoadStateEffectIcon(string stateEffect)
         {
+            // search in StateEffects file first
             var icon = Load<Sprite>(c_IconStateEffectsPath + c_IconPrefix + stateEffect, false);
             if (icon != null)
                 return icon;
 
-            icon = Load<Sprite>(c_IconSpellsPath + c_IconPrefix + stateEffect, false);
-            if (icon == null)
-                ErrorHandler.Warning("Unable to find icon of state effect : " + stateEffect);
-
+            // search in any "Spells" file or sub-files
+            icon = Load<Sprite>(c_IconPrefix + stateEffect, c_IconSpellsPath);
             return icon;
         }
 

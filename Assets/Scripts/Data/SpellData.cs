@@ -233,7 +233,7 @@ namespace Data
         /// </summary>
         /// <returns></returns>
         /// 
-        public virtual List<GameObject> SpawnOnCastPrefabs(Transform ownerTransform, Vector3 target)
+        public virtual List<GameObject> SpawnOnCastPrefabs(Vector3 target)
         {
             List<GameObject> gameObjects = new List<GameObject>();
             // spawn on cast particles

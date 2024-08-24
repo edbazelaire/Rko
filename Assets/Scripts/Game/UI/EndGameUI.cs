@@ -16,7 +16,6 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 public class EndGameUI : MObject
 {
     #region Members
@@ -339,8 +338,6 @@ public class EndGameUI : MObject
                 ErrorHandler.Error($"LOSS : currentLevel ({currentStage}) == previousLevel ({previousLevel}) BUT currentLevel != 0 ");
             }
         }
-
-        Debug.Log($"Checked : current stage ({currentStage}) - previous level ({previousLevel})");
     }
 
     #endregion

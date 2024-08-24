@@ -32,6 +32,12 @@ namespace Game.Character
 
         public virtual void Activate(bool activate)
         {
+            if (m_Controller == null)
+            {
+                ErrorHandler.Error("Provided Controller is null");
+                return;
+            }
+
             if (activate) 
             {
                 OnGameStartEffect();

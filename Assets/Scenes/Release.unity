@@ -265,6 +265,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1671938020116076709, guid: 1b81fe39b9ad5b14e9ae237ad030b84f, type: 3}
+      propertyPath: m_GameManager
+      value: 
+      objectReference: {fileID: 1840164171120593076, guid: 3d33a969d5bbdc849a6b40aac9109cb1, type: 3}
+    - target: {fileID: 1671938020116076709, guid: 1b81fe39b9ad5b14e9ae237ad030b84f, type: 3}
       propertyPath: m_LoadingScreen
       value: 
       objectReference: {fileID: 1640892226}
@@ -410,6 +414,51 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 839516774}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &875350475
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 875350477}
+  - component: {fileID: 875350476}
+  m_Layer: 0
+  m_Name: FriendsHandler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &875350476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 875350475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49620ef0ec864954c91a9f2548dc4400, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RelationshipsViewGameObject: {fileID: 0}
+--- !u!4 &875350477
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 875350475}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -878,8 +927,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1345730176}
     - target: {fileID: 7331426314855813146, guid: 31810dd91ac2f7b419ede3745d62a1cc, type: 3}
+      propertyPath: m_LogTags.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7331426314855813146, guid: 31810dd91ac2f7b419ede3745d62a1cc, type: 3}
       propertyPath: 'm_LogTags.Array.data[1]'
-      value: 201
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7331426314855813146, guid: 31810dd91ac2f7b419ede3745d62a1cc, type: 3}
       propertyPath: 'm_LogTags.Array.data[2]'
@@ -1835,3 +1888,4 @@ SceneRoots:
   - {fileID: 8131106571762105972}
   - {fileID: 973877998}
   - {fileID: 1873845876}
+  - {fileID: 875350477}

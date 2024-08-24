@@ -19,7 +19,7 @@ namespace Game.Character
         // ==============================================================================================
         // PRIVATE ACCESSORS
         // -- Network Variables
-        NetworkList<FixedString64Bytes>     m_StateEffectList;
+        MNetworkList<FixedString64Bytes>    m_StateEffectList;
         NetworkVariable<float>              m_SpeedBonus = new(1f);
         NetworkVariable<int>                m_RemainingShield = new(0);
         NetworkVariable<EAnimation>         m_AnimationState = new(EAnimation.None);
@@ -34,13 +34,16 @@ namespace Game.Character
         public NetworkList<FixedString64Bytes> StateEffectList => m_StateEffectList;
         public bool IsStunned => ! IsUncontrollable
             && (m_StateEffectList.Contains(EStateEffect.Stun.ToString()) 
-            || m_StateEffectList.Contains(EStateEffect.Scorched.ToString()));
+            || m_StateEffectList.Contains(EStateEffect.Scorched.ToString())
+            || m_StateEffectList.Contains(EStateEffect.Airborn.ToString())
+            );
 
         public bool IsSilenced => m_StateEffectList.Contains(EStateEffect.Silence.ToString()) 
             || m_StateEffectList.Contains(EStateEffect.Malediction.ToString());
 
         public bool IsInvulnerable => m_StateEffectList.Contains(EStateEffect.Invulnerable.ToString())
             || m_StateEffectList.Contains(EStateEffect.SpecialAnimation.ToString());
+
         public bool IsUncontrollable => m_StateEffectList.Contains(EStateEffect.Uncontrollable.ToString())
             || m_StateEffectList.Contains(EStateEffect.SpecialAnimation.ToString());
 
@@ -49,9 +52,11 @@ namespace Game.Character
             || m_StateEffectList.Contains(EStateEffect.Jump.ToString())
             || m_StateEffectList.Contains(EStateEffect.Invisible.ToString());
 
-        public NetworkVariable<float> SpeedBonus => m_SpeedBonus;
-        public NetworkVariable<int> RemainingShield => m_RemainingShield;
-        public NetworkVariable<EAnimation> AnimationState => m_AnimationState;
+        public bool IsImmuneToEffects => HasState(EStateEffect.SpecialAnimation);
+
+        public NetworkVariable<float> SpeedBonus            => m_SpeedBonus;
+        public NetworkVariable<int> RemainingShield         => m_RemainingShield;
+        public NetworkVariable<EAnimation> AnimationState   => m_AnimationState;
 
         // ==============================================================================================
         // EVENTS
@@ -68,7 +73,7 @@ namespace Game.Character
         private void Awake()
         {
             // init network lists
-            m_StateEffectList = new NetworkList<FixedString64Bytes>();
+            m_StateEffectList = new MNetworkList<FixedString64Bytes>();
 
             // init components 
             m_Controller = GetComponent<Controller>();
@@ -82,6 +87,8 @@ namespace Game.Character
 
         public override void OnNetworkDespawn()
         {
+            if (!GameManager.IsGameOver)
+                ErrorHandler.Error("Calling OnNetworkDespawn() while game not over");
             base.OnNetworkDespawn();
         }
 
@@ -157,7 +164,17 @@ namespace Game.Character
         {
             if (GameManager.IsGameOver)
                 return false;
-            return m_StateEffectList.Contains(state);
+            
+            try
+            {
+                return m_StateEffectList.Contains(state);
+            } 
+            catch (Exception e)
+            {
+                ErrorHandler.Error(e.Message);
+                m_StateEffectList = new MNetworkList<FixedString64Bytes>();
+                return false;
+            }
         }
 
         public bool HasState(EStateEffect state)
@@ -184,7 +201,7 @@ namespace Game.Character
             damages = Math.Max(0, damages - GetInt(EStateEffectProperty.ResistanceFix));
 
             // apply percentage res
-            damages = (int)Mathf.Round(damages * GetFloat(EStateEffectProperty.ResistancePerc));
+            damages = (int)Mathf.Round(damages * Mathf.Max(2 - GetFloat(EStateEffectProperty.ResistancePerc), 0));
             
             return damages;
         }
@@ -327,6 +344,9 @@ namespace Game.Character
             if (!IsServer)
                 return;
 
+            if (IsImmuneToEffects && ! stateEffect.IsBuff)
+                return;
+
             var pastState = GetAnimationState();
             int stacks = overridingData != null ? overridingData.Value.Stacks : 1;
 
@@ -348,7 +368,7 @@ namespace Game.Character
             if (! stateEffect.Initialize(m_Controller, caster, overridingData))
                 return;
 
-            Debug.LogWarning("Adding state effect " + stateEffect);
+            ErrorHandler.Log("Adding state effect " + stateEffect, ELogTag.StateEffects);
 
             // add the state effect to the list of active effects
             m_StateEffects.Add(stateEffect);

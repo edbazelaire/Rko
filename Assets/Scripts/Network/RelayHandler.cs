@@ -35,7 +35,8 @@ namespace Assets.Scripts.Network
         #endregion
 
 
-        // Use this for initialization
+        #region Init & End
+
         void Start()
         {
             // Initialize Instance
@@ -48,6 +49,66 @@ namespace Assets.Scripts.Network
             m_Initialized = true;
         }
 
+        #endregion
+
+
+        #region Relay
+
+        public async Task<string> CreateRelay()
+        {
+            ErrorHandler.Log("RelayHandler.CreateRelay()", ELogTag.System);
+
+            try
+            {
+                Allocation allocation = await RelayService.Instance.CreateAllocationAsync(3);
+
+                string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+
+                ErrorHandler.Log("Created relay with code " + joinCode, ELogTag.System);
+
+                RelayServerData relayServerData = new RelayServerData(allocation, "dtls");
+
+                NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
+
+                NetworkManager.Singleton.StartHost();
+
+                return joinCode;
+
+            }
+            catch (RelayServiceException e)
+            {
+                ErrorHandler.Error(e.Message);
+            }
+
+            return "";
+        }
+
+        public async Task JoinRelay(string joinCode)
+        {
+            try
+            {
+                ErrorHandler.Log("Joining relay with code " + joinCode, ELogTag.System);
+
+                JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+                RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
+
+                NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
+
+                NetworkManager.Singleton.StartClient();
+
+                ErrorHandler.Log("Client started with local id : " + NetworkManager.Singleton.LocalClientId, ELogTag.System);
+
+            }
+            catch (RelayServiceException e)
+            {
+                Debug.LogError(e.Message);
+            }
+        }
+
+        #endregion
+
+
+        #region Region Management
 
         public async Task<string> FindRegion()
         {
@@ -71,53 +132,6 @@ namespace Assets.Scripts.Network
             return match.Groups[1].Value;
         }
 
-        public async Task<string> CreateRelay()
-        {
-            ErrorHandler.Log("RelayHandler.CreateRelay()", ELogTag.System);
-
-            try
-            {
-                Allocation allocation = await RelayService.Instance.CreateAllocationAsync(3);
-
-                string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
-
-                ErrorHandler.Log("Created relay with code " + joinCode, ELogTag.System);
-
-                RelayServerData relayServerData = new RelayServerData(allocation, "dtls");
-
-                NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
-
-                NetworkManager.Singleton.StartHost();
-
-                return joinCode;
-
-            } catch (RelayServiceException e)
-            {
-                ErrorHandler.Error(e.Message);
-            }
-
-            return "";
-        }
-
-        public async Task JoinRelay(string joinCode)
-        {
-            try
-            {
-                ErrorHandler.Log("Joining relay with code " + joinCode, ELogTag.System);   
-                
-                JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
-                RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
-
-                NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
-
-                NetworkManager.Singleton.StartClient();
-
-                ErrorHandler.Log("Client started with local id : " + NetworkManager.Singleton.LocalClientId, ELogTag.System);
-
-            } catch (RelayServiceException e)
-            {
-                Debug.LogError(e.Message);
-            }
-        }   
+        #endregion
     }
 }

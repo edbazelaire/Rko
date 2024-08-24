@@ -7,26 +7,41 @@ using UnityEngine;
 
 namespace Game.GameManagers.Components
 {
+    public enum EErrorType
+    {
+        None,
+
+        ClientDisconnected,
+        HostDisconnected,
+        ServerDown,
+    }
+
     public class DisconnectionHandler : NetworkBehaviour
     {
         [SerializeField] float      m_ReconnectionTimeout   = 5f; // Timeout period in seconds
+        [SerializeField] string     m_ServerDownMessage     = "The server went down for unexpected reasons"; 
         [SerializeField] string     m_ReconnectionMessage   = "Your opponent has been disconnected"; 
-        [SerializeField] string     m_CountdownMessage      = "The game will end in... {0}"; 
+        [SerializeField] string     m_CountdownMessage      = "The game will end in... {0}";
 
-        List<ulong> m_DisconnectedClients;
-        float       m_DisconnectionTimestamp;
-        bool m_IsWaitingForReconnection => m_DisconnectedClients.Count > 0;
-        bool m_IsHostDisconnected => m_DisconnectedClients.Contains(NetworkManager.ServerClientId);
+        List<EErrorType>    m_DisconnectionReasons      = new List<EErrorType>();
+        List<ulong>         m_DisconnectedClients       = new List<ulong>();
+        float               m_DisconnectionTimestamp    = 0f;
+
+        bool m_IsPaused = false;
+        bool m_IsWaitingServer              => m_DisconnectionReasons.Contains(EErrorType.ServerDown);
+        bool m_IsWaitingForReconnection     => m_DisconnectedClients.Count > 0;
+        bool m_IsHostDisconnected           => m_DisconnectedClients.Contains(NetworkManager.ServerClientId);
 
 
         #region Init & End
 
         public void Start()
         {
-
+            m_DisconnectionReasons = new();
             m_DisconnectedClients = new();
 
-            Debug.Log("Added listeners");
+            NetworkManager.Singleton.OnServerStopped            += OnServerStopped;
+            NetworkManager.Singleton.OnServerStarted            += OnServerStarted;
             NetworkManager.Singleton.OnClientConnectedCallback  += OnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
         }
@@ -38,6 +53,7 @@ namespace Game.GameManagers.Components
             if (NetworkManager.Singleton == null) 
                 return;
 
+            NetworkManager.Singleton.OnServerStopped            -= OnServerStopped;
             NetworkManager.Singleton.OnClientConnectedCallback  -= OnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
         }
@@ -47,16 +63,36 @@ namespace Game.GameManagers.Components
 
         #region Handling Deconnection
 
-        private void PauseGame()
+        private void PauseGame(EErrorType errorType)
         {
+            if (m_IsPaused)
+            {
+                ErrorHandler.Warning("Call Pause() on the game while already in Pause");
+                return;
+            }
+
+            switch (errorType)
+            {
+                case EErrorType.HostDisconnected:
+                case EErrorType.ClientDisconnected:
+                    NotifyPlayers(m_ReconnectionMessage);
+                    StartCoroutine(WaitForClientReconnection());
+                    break;
+
+                case EErrorType.ServerDown:
+                    NotifyPlayers(m_ServerDownMessage);             
+                    StartCoroutine(WaitServerRestart());
+                    break;
+
+                default:
+                    ErrorHandler.Error("Unhandled case : " + errorType);
+                    return;
+
+            }
+
             // stop time scale
             Time.timeScale = 0f;
-
-            // notify player of the error
-            NotifyPlayers(m_ReconnectionMessage);
-
-            // start coroutine waiting for reconnection
-            StartCoroutine(WaitForClientReconnection());
+            m_IsPaused = true;
         }
 
         private void ResumeGame()
@@ -65,6 +101,7 @@ namespace Game.GameManagers.Components
 
             // Implement game resuming logic here
             Time.timeScale = 1f;
+            m_IsPaused = false;
         }
 
         private void NotifyPlayers(string message)
@@ -103,6 +140,34 @@ namespace Game.GameManagers.Components
             Time.timeScale = 1f;
         }
 
+        private IEnumerator WaitServerRestart()
+        {
+            Debug.Log("WaitServerRestart()");
+
+            float timePassed = Time.unscaledTime - m_DisconnectionTimestamp;
+            while (timePassed < m_ReconnectionTimeout)
+            {
+                timePassed = Time.unscaledTime - m_DisconnectionTimestamp;
+                if (! m_IsWaitingServer)
+                {
+                    // Host has reconnected
+                    ResumeGame();
+                    yield break;
+                }
+
+                ErrorGameUI.SetSubMessage(string.Format(m_CountdownMessage, Mathf.Ceil(m_ReconnectionTimeout - timePassed)));
+                yield return null;
+            }
+
+            ErrorGameUI.Hide();
+
+            // end the game
+            EndGame();
+
+            // resume to the game
+            Time.timeScale = 1f;
+        }
+
         private void EndGame()
         {
             // force deactivation of the Intro 
@@ -111,8 +176,8 @@ namespace Game.GameManagers.Components
                 GameUIManager.IntroGameUI.Deactivate();
             }
 
-            // no host - insta display end of game
-            if (m_IsHostDisconnected)
+            // no host or server - insta display end of game
+            if (m_IsHostDisconnected || m_IsWaitingServer)
             {
                 GameUIManager.Instance.SetUpGameOver(true);
                 return;
@@ -122,7 +187,7 @@ namespace Game.GameManagers.Components
             int winningTeam;
 
             // both players are disconnected : no winner
-            if (m_DisconnectedClients.Count == 0)
+            if (m_DisconnectedClients.Count == 0 && m_DisconnectionReasons.Contains(EErrorType.ClientDisconnected))
             {
                 ErrorHandler.Error("EndGame() called by the DeconnectionHandler but no disconnected player were found");
                 return;
@@ -140,6 +205,35 @@ namespace Game.GameManagers.Components
 
         #region Listeners
 
+        void OnServerStarted()
+        {
+            if (! m_IsWaitingServer)
+                return;
+
+            m_DisconnectionReasons.Remove(EErrorType.ServerDown);
+        }
+
+        void OnServerStopped(bool stopped)
+        {
+            Debug.LogError("ON SERVER STOPPED : " + stopped);
+            
+            if (m_IsWaitingServer == stopped)
+                return;
+
+            m_DisconnectionTimestamp = Time.unscaledTime;
+
+            if (stopped)
+            {
+                m_DisconnectionReasons.Add(EErrorType.ServerDown);
+                PauseGame(EErrorType.ServerDown);
+            }
+            else
+            {
+                m_DisconnectionReasons.Remove(EErrorType.ServerDown);
+                ResumeGame();
+            }
+        }
+
         /// <summary>
         /// Called when a client disconnects
         /// </summary>
@@ -151,12 +245,7 @@ namespace Game.GameManagers.Components
             if (GameManager.IsGameOver)
                 return;
 
-            switch (GameManager.Instance.State)
-            {
-                default:
-                    break;
-            }
-
+            EErrorType errorType = EErrorType.ClientDisconnected;
             bool wasWaiting = m_IsWaitingForReconnection;
 
             // add client to list of disconnected client
@@ -171,11 +260,12 @@ namespace Game.GameManagers.Components
             {
                 // HOST DISCONNECTED
                 Debug.Log("HOST HAS BEEN DISCONNECTED");
+                errorType = EErrorType.HostDisconnected;
             }
 
             if (! wasWaiting)
             {
-                PauseGame();
+                PauseGame(errorType);
             }
         }
 

@@ -57,14 +57,15 @@ MonoBehaviour:
   m_DefaultState: 0
   m_Duration: -1
   m_MaxStacks: 10
+  m_StackDecay: -1
   m_SpeedBonus: 0.15
   m_CastSpeed: 0.1
   m_AttackSpeed: 0.25
   m_CooldownReduction: 0
   m_CooldownReductionPerc: 0.5
   m_Shield: 0
-  m_ResistanceFix: 40
-  m_ResistancePerc: 10
+  m_ResistanceFix: 20
+  m_ResistancePerc: 0.15
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0.25
   m_BonusLifeSteal: 0.25

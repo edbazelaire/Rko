@@ -1,6 +1,7 @@
 using Data.GameManagement;
 using Enums;
 using System;
+using Tools;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -32,6 +33,14 @@ namespace Game.Character
         void Awake()
         {
             m_Controller = GetComponent<Controller>();
+        }
+
+        public override void OnNetworkSpawn() 
+        {
+            if (IsServer)
+                return;
+
+            m_MoveX.OnValueChanged += OnMoveXChanged;
         }
 
         /// <summary>
@@ -70,6 +79,12 @@ namespace Game.Character
         public void SetMovementServerRPC(int moveX)
         {
             SetMovement(moveX);
+        }
+
+        [ServerRpc]
+        public void ResetCancelMovementServerRPC()
+        {
+            m_MovementCancelled.Value = false;
         }
 
         public void SetMovement(int moveX)
@@ -121,7 +136,7 @@ namespace Game.Character
         /// </summary>
         void CheckInputs()
         {
-            if (!IsOwner)
+            if (! IsOwner)
                 return;
 
             if (! m_Controller.IsPlayer)
@@ -131,7 +146,7 @@ namespace Game.Character
             if (m_MovementCancelled.Value)
             {
                 if (Input.GetKeyUp(KeyCode.Q) || Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.D))
-                    m_MovementCancelled.Value = false;
+                    ResetCancelMovementServerRPC();
                 return;
             }
 
@@ -148,16 +163,39 @@ namespace Game.Character
 
             if (m_MovementInput != moveX)
             {
-                m_MovementInput = moveX;
+                SetMovementInput(moveX);
                 SetMovementServerRPC(moveX);
             }
         }
 
-        void ResetRotation()
+        void SetMovementInput(int moveX)
         {
-            if (!IsServer)
+            if (m_MovementInput == moveX)
                 return;
 
+            m_MovementInput = moveX;
+            UpdateRotation(m_Controller.Team == 0 ? moveX : -moveX);
+        }
+
+        void UpdateRotation(int moveX)
+        {
+            if (moveX == -1)
+            {
+                SetRotation(m_Controller.Team == 0 ? -180f : 0f);
+                return;
+            }
+
+            ResetRotation();
+        }
+
+        [ClientRpc]
+        void ResetRotationClientRPC()
+        {
+            ResetRotation();
+        }
+
+        void ResetRotation()
+        {
             SetRotation(m_Controller.Team == 0 ? 0f : -180f);
         }
 
@@ -171,13 +209,25 @@ namespace Game.Character
         /// </summary>
         public void Shake()
         {
-            if (!IsServer)
-                return;
+            Debug.Log("Shake()");
+            Debug.Log("     + old position : " + transform.position);
 
-            transform.position += new Vector3(0.01f, 0, 0);
-            transform.rotation = Quaternion.Euler(0f, 0f, 0.01f);
+            transform.position += new Vector3(0.15f, 0, 0);
+            transform.rotation = Quaternion.Euler(0f, 0f, 0.1f);
+
+            Debug.Log("     + new position : " + transform.position);
 
             ResetRotation();
+        }
+
+        [ClientRpc]
+        public void ShakeClientRPC()
+        {
+            if (transform.position.x == 0)
+            {
+                Debug.Log("ShakeClientRPC()");
+                Shake();
+            }
         }
 
         public void CancelMovement(bool cancel)
@@ -186,7 +236,7 @@ namespace Game.Character
                 return;
 
             if (cancel)
-                ResetRotation();
+                ResetRotationClientRPC();
 
             if (cancel && ! IsMoving)
                 return;
@@ -208,6 +258,12 @@ namespace Game.Character
 
 
         #region Listeners
+
+        void OnMoveXChanged(int oldValue, int moveX)
+        {
+            Debug.Log("OnMoveXChanged : " + moveX);
+            UpdateRotation(moveX);
+        }
 
         private void OnSpeedBonusValueChanged(float oldValue, float newValue)
         {

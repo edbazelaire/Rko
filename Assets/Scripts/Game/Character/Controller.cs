@@ -107,7 +107,7 @@ public class Controller : NetworkBehaviour
         m_StateHandler          = Finder.FindComponent<StateHandler>(gameObject);
         m_CounterHandler        = Finder.FindComponent<CounterHandler>(gameObject);
         m_AutoAttackHandler     = Finder.FindComponent<AutoAttackHandler>(gameObject);
-        m_TriggerEffectHandler    = Finder.FindComponent<TriggerEffectHandler>(gameObject);
+        m_TriggerEffectHandler  = Finder.FindComponent<TriggerEffectHandler>(gameObject);
         m_ClientAnalytics       = Finder.FindComponent<ClientAnalytics>(gameObject, throwError: false);
 
         // check behavior tree
@@ -273,6 +273,18 @@ public class Controller : NetworkBehaviour
     }
 
     #endregion
+
+
+    private void Update()
+    {
+        if (!m_GameRunning || GameManager.IsGameOver)
+            return;
+
+        if (m_StateHandler == null || m_StateHandler.IsDestroyed())
+        {
+            ErrorHandler.Error("StateHandler disconnected during the game");
+        }
+    }
 
 
     #region Bonus Stats & Trigger Effects

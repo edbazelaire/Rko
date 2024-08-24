@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Externals
 {
-    public class OvNetworkBehavior : NetworkBehaviour
+    public class MNetworkBehavior : NetworkBehaviour
     {
         protected virtual void Start()
         {

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Game;
+using System.Collections;
 using System.ComponentModel;
 using Tools;
 using UnityEngine;
@@ -68,10 +69,10 @@ public class CameraAdjuster : MObject
         m_CameraToAdjust.orthographicSize = m_BaseOrthographicSize / differenceInAspectRatio;
 
         // rescale the background to match Height or Width
-        if (GameUIManager.Instance != null)
+        if (ArenaManager.Instance != null)
         {
             float backgroundScale = Mathf.Max(Screen.width / m_BaseReferenceWidth, Screen.height / m_BaseReferenceHeight);
-            GameUIManager.Instance.RescaleBackground(backgroundScale);
+            ArenaManager.Instance.ArenaBackground.Rescale(backgroundScale);
         }
     }
 

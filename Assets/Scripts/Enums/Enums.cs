@@ -380,6 +380,7 @@
         UnTargettable,
         SpecialAnimation,
         Combustion,
+        Airborn,
     }
 
     public enum EStateEffectType
@@ -472,6 +473,7 @@
         Frozen,
         Silenced,
         CastHight,
+        Airborn,
     }
 
     public enum ECounterType

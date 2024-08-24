@@ -55,14 +55,13 @@ namespace Game.SpellGFXs
 
             // init data 
             m_BasePosition = m_CharacterPreview.position;
-            m_AnimationTimer = m_SpellData.AnimationTimer / m_Controller.SpellHandler.GetCastSpeed(m_SpellData.Spell);
+            m_AnimationTimer = m_SpellData.AnimationTimer / m_Controller.SpellHandler.GetCastSpeed(m_SpellData.Name);
             m_Timer = m_AnimationTimer;
         }
 
         protected override void StartAnimation()
         {
             // Queue animations
-            //m_AnimationQueue.Enqueue(GrowFireTorch());
             m_AnimationQueue.Enqueue(MoveFire());
             m_AnimationQueue.Enqueue(FireEruption());
             m_AnimationQueue.Enqueue(ChargeEnergy());
@@ -85,13 +84,10 @@ namespace Game.SpellGFXs
             m_CharacterPreview.position = m_BasePosition;
 
             base.End();
-
         }
 
         protected override void OnDestroy()
         {
-            
-
             Destroy(m_FireEnergyCharge);
             Destroy(m_EnergyExplosion);
         }
@@ -120,32 +116,8 @@ namespace Game.SpellGFXs
             yield return StartCoroutine(currentAnimation);
         }
 
-        IEnumerator GrowFireTorch()
-        {
-            Debug.Log("================ (START) GrowFireTorch");
-            m_FireTorch.gameObject.SetActive(true);
-
-            var halfTimer = m_SpellData.AnimationTimer * 0.25f / 2;         // half the time the animation should take
-            var timer = halfTimer * 2;                                      // remaining time for the animation
-            var baseScale = m_FireTorch.transform.localScale;               // base scale of the fire torch
-
-            StartCoroutine(NextAnimation(0.9f * timer));
-
-            while (timer > 0)
-            {
-                timer -= Time.deltaTime;
-                m_FireTorch.transform.localScale = baseScale * (1 - Mathf.Abs(halfTimer - timer) / halfTimer);
-                yield return null;
-            }
-
-            m_FireTorch.gameObject.SetActive(false);                // deactivate at the end of the animation
-            m_FireTorch.transform.localScale = baseScale;           // reset scale
-            Debug.Log("================ (END) GrowFireTorch");
-        }
-
         IEnumerator MoveFire()
         {
-            Debug.Log("================ (START) MoveFire");
             var halfTimer = m_SpellData.AnimationTimer * 0.25f / 2;         // half the time the animation should take
             var timer = halfTimer * 2;
 
@@ -164,13 +136,10 @@ namespace Game.SpellGFXs
 
             m_FireMovingLeft.gameObject.SetActive(false);
             m_FireMovingRight.gameObject.SetActive(false);
-
-            Debug.Log("================ (END) MoveFire");
         }
 
         IEnumerator FireEruption()
         {
-            Debug.Log("================ (START) FireEruption");
             m_FireTorch.gameObject.SetActive(true);
 
             var baseTimer = m_SpellData.AnimationTimer * 0.25f;         // half the time the animation should take
@@ -179,7 +148,7 @@ namespace Game.SpellGFXs
 
             StartCoroutine(NextAnimation(0.2f * timer));
 
-            m_Controller.AnimationHandler.PlayAnimation(Enums.EAnimation.Frozen, -1);
+            m_Controller.AnimationHandler.PlayAnimation(Enums.EAnimation.Airborn, -1);
             while (timer > 0)
             {
                 timer -= Time.deltaTime;
@@ -190,14 +159,10 @@ namespace Game.SpellGFXs
 
             m_FireTorch.gameObject.SetActive(false);                // deactivate at the end of the animation
             m_FireTorch.transform.localScale = baseScale;           // reset scale
-
-            Debug.Log("================ (END) FireEruption");
         }
 
         IEnumerator ChargeEnergy()
         {
-            Debug.Log("================ (START) ChargeEnergy");
-
             m_FireEnergyCharge.transform.parent = m_CharacterPreview;
             m_FireEnergyCharge.transform.localPosition = Vector3.zero;
             m_FireEnergyCharge.gameObject.SetActive(true);
@@ -215,8 +180,6 @@ namespace Game.SpellGFXs
             }
 
             m_FireEnergyCharge.gameObject.SetActive(false);
-
-            Debug.Log("================ (END) ChargeEnergy");
         }
 
         #endregion
