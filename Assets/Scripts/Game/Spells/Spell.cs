@@ -2,13 +2,11 @@
 using Data;
 using Enums;
 using Game.Loaders;
-using MyBox;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using Tools;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Game.Spells
@@ -92,6 +90,10 @@ namespace Game.Spells
 
             // add extra effects (damages bonus, on hit effects, ...) that the controller has at time of casting
             AddExtraEffects();
+
+            // re-order the effects by Priority
+            m_SpellData.AllyStateEffects = m_SpellData.ReOrderStateEffects(m_SpellData.AllyStateEffects);
+            m_SpellData.EnemyStateEffects = m_SpellData.ReOrderStateEffects(m_SpellData.EnemyStateEffects);
 
             // set the target
             SetTarget(target);
@@ -359,9 +361,6 @@ namespace Game.Spells
                     m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.LifeSteal, (int)Mathf.Round(lifeSteal * finalDamages));
                 }
             }
-
-            if (IsAutoAttack && m_Controller.RuneData.GetType() == typeof(AutoAttackRune))
-                ((AutoAttackRune)m_Controller.RuneData).ApplyOnHit(ref controller, m_Controller);
 
             // apply state effects specifics to enemies
             ApplyEnemyStateEffects(controller);

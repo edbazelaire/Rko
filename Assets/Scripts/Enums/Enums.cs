@@ -16,9 +16,9 @@
         // -- info PopUps
         CollectableInfoPopUp,
         CharacterInfoPopUp,
+        RuneInfoPopUp,
         SpellInfoPopUp,
         StateEffectPopUp,
-        RuneSelectionPopUp,
         TriggerEffectPopUp,
 
         // -- message PopUps
@@ -156,6 +156,15 @@
         Legendary
     }
 
+    public enum ERuneActivation
+    {
+        None,
+
+        Minor,
+        Major,
+        Primal
+    }
+
     public enum ECollectableType
     {
         None,
@@ -274,6 +283,8 @@
         EnemyZoneCenter = 9,
         AllyZoneCenter = 10,
 
+        CurrentTarget = 50,
+
         Mirror = 101,               // target the symetrical point
         Fixed = 102,                // at a fixed distance
     }
@@ -300,6 +311,13 @@
         Curve,
         Dash,
         Teleport,
+    }
+
+    public enum ESpellEffectType
+    {
+        AutoAttack,
+        Spells,
+        Both,
     }
 
     public enum EListEvent
@@ -381,6 +399,7 @@
         SpecialAnimation,
         Combustion,
         Airborn,
+        Infection,
     }
 
     public enum EStateEffectType
@@ -454,6 +473,9 @@
         EndHeal,
         Stacks,
         Hp,
+        BonusBurnDamages,
+        BonusSlowPerc,
+        Priority,
     }
 
     public enum EAnimation
@@ -741,7 +763,6 @@
         Alexander       = 1000,
         YoungAlexander  = 1001,
         Marcus          = 1010,
-        Bruh            = 1020,
         Kahnan          = 1030,
         Srug            = 1040,
     }

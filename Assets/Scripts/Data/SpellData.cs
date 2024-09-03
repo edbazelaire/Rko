@@ -14,6 +14,7 @@ using System.Linq;
 using Data.GameManagement;
 using System.Reflection;
 using Menu.Common.Infos;
+using MyBox;
 
 namespace Data
 {
@@ -337,46 +338,77 @@ namespace Data
             return SpellLoader.GetSpellPrefab(Name, SpellType);
         }
 
+        /// <summary>
+        /// Re order state effects by application priority
+        /// </summary>
+        /// <param name="stateEffects"></param>
+        public virtual List<SStateEffectData> ReOrderStateEffects(List<SStateEffectData> stateEffects)
+        {
+            // Step 1: Calculate the effective priority for each state effect
+            var stateEffectWithPriority = stateEffects.Select(effect =>
+            {
+                int priority = 0;
+
+                // check if has overriding priority
+                int index = effect.OverridingProperties.FirstIndex(property => property.StateEffectProperty == EStateEffectProperty.Priority);
+                if (index == -1)
+                    priority = SpellLoader.GetStateEffect(effect.StateEffect.ToString()).Priority;
+                else
+                    priority = (int)effect.OverridingProperties[index].Value;
+
+                // Return a tuple containing the original effect and its calculated priority
+                return (Effect: effect, Priority: priority);
+            });
+
+            // Step 2: Sort the effects by priority in descending order (highest priority first)
+            var sortedStateEffects = stateEffectWithPriority
+                .OrderByDescending(item => item.Priority)
+                .Select(item => item.Effect)
+                .ToList();
+
+            return sortedStateEffects;
+        }
+
         public virtual void CalculateTarget(ref Vector3 target, ulong clientId) 
         {
             if (!IsAutoTarget)
                 return;
 
+            Controller controller = GameManager.Instance.GetPlayer(clientId);
+            int direction;
             switch (SpellTarget)
             {
                 case ESpellTarget.Self:
-                    target = GameManager.Instance.GetPlayer(clientId).transform.position;
+                    target = controller.transform.position;
                     break;
 
                 case ESpellTarget.FirstAlly:
-                    target = GameManager.Instance.GetFirstAlly(GameManager.Instance.GetPlayer(clientId).Team, clientId).transform.position;
+                    target = GameManager.Instance.GetFirstAlly(controller.Team, clientId).transform.position;
                     break;
 
                 case ESpellTarget.FirstEnemy:
-                    target = GameManager.Instance.GetFirstEnemy(GameManager.Instance.GetPlayer(clientId).Team).transform.position;
+                    target = GameManager.Instance.GetFirstEnemy(controller.Team).transform.position;
                     break;
 
                 case ESpellTarget.AllyZoneCenter:
                 case ESpellTarget.EnemyZoneCenter:
-                    target = new Vector3(GetTargettableArea(GameManager.Instance.GetPlayer(clientId).Team).position.x, target.y, target.z);
+                    target = new Vector3(GetTargettableArea(controller.Team).position.x, target.y, target.z);
                     break;
 
                 case ESpellTarget.AllyZoneStart:
                 case ESpellTarget.EnemyZoneStart:
-                    var controller = GameManager.Instance.GetPlayer(clientId);
                     var centerPos = GetTargettableArea(controller.Team).position.x;
-
-                    // direction usless ??
-                    int direction = ArenaManager.GetAreaMovementDirection(controller.Team, SpellTarget == ESpellTarget.EnemyZoneStart);
+                    direction = ArenaManager.GetAreaMovementDirection(controller.Team, SpellTarget == ESpellTarget.EnemyZoneStart);
                     target = new Vector3(centerPos - direction * ArenaManager.Instance.TargettableAreaSize / 2, target.y, target.z);
                     break;
 
                 case ESpellTarget.Mirror:
-                    target = new Vector4(-GameManager.Instance.GetPlayer(clientId).transform.position.x, target.y, 0f);
+                    target = new Vector4(-controller.transform.position.x, target.y, 0f);
                     break;
 
                 case ESpellTarget.Fixed:
-                    target = new Vector4(GameManager.Instance.GetPlayer(clientId).transform.position.x + 7f, target.y, 0f);
+                    direction = ArenaManager.GetAreaMovementDirection(controller.Team, true);
+                    target = new Vector4(controller.transform.position.x + direction * 7f, target.y, 0f);
                     break;
 
                 default:
@@ -644,19 +676,21 @@ namespace Data
 
             foreach (SDescriptionVariable descriptionVariable in m_DescriptionVariables)
             {
-                if (Enum.TryParse(descriptionVariable.Name, out EStateEffect stateEffect))
+                if (Enum.TryParse(descriptionVariable.Name, out EStateEffect _))
                 {
                     values.Add(TextHandler.FormatStateEffectIcon(descriptionVariable.Name, descriptionVariable.WithIcon));
                 }
+
                 else if (infos.ContainsKey(descriptionVariable.Name))
                 {
                     string value = infos[descriptionVariable.Name].ToString();
                     if (float.TryParse(value, out float floatValue)) 
-                        value = SpellInfoRowUI.FormatValue(floatValue, SpellInfoRowUI.CheckIsPercentageValue(descriptionVariable.Name));
+                        value = TextHandler.FormatPropertyValue(floatValue, descriptionVariable.Name);
                     
                     string iconTag = descriptionVariable.WithIcon ? $" <sprite name=\"{"Ic_" + descriptionVariable.Name}\">" : "";
                     values.Add($"<b>{value}</b>{iconTag}");
                 }
+
                 else if (Enum.TryParse(descriptionVariable.Name, out ESpellProperty property))
                 {
                     if (! TryGetProperty(property, out object value))
@@ -665,8 +699,13 @@ namespace Data
                         values.Add("<b>UNDEFINED</b>");
                         continue;
                     }
+
+                    if (float.TryParse(value.ToString(), out float floatValue))
+                        value = TextHandler.FormatPropertyValue(floatValue, descriptionVariable.Name);
+
                     values.Add($"<b>{value}</b>");
                 }
+
                 else
                 {
                     ErrorHandler.Error("Unable to find property " + descriptionVariable.Name + " in info dict of spell " + Name);

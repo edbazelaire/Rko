@@ -72,6 +72,7 @@ namespace Tools
         // ---- PopUps & Overlays
         public const string c_OverlayPath                   = c_UIPath + "OverlayScreens/";
         public const string c_PopUpsPath                    = c_OverlayPath + "PopUps/";
+        public const string c_CollectablesPopUpPath         = c_PopUpsPath + "Collectables/";
 
         // =============================================================================================================
         // SPRITES

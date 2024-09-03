@@ -4806,8 +4806,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1382885079
+  m_SortingLayer: 2
   m_SortingOrder: 30
   m_RenderMode: 0
   m_MeshDistribution: 0
@@ -4868,6 +4868,14 @@ PrefabInstance:
     - target: {fileID: 2004287300571643609, guid: 3087abaca405bb8418eb9ab7309a5acc, type: 3}
       propertyPath: InitialModule.startColor.maxColor.r
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2897471066911149131, guid: 3087abaca405bb8418eb9ab7309a5acc, type: 3}
+      propertyPath: m_SortingLayer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2897471066911149131, guid: 3087abaca405bb8418eb9ab7309a5acc, type: 3}
+      propertyPath: m_SortingLayerID
+      value: -1382885079
       objectReference: {fileID: 0}
     - target: {fileID: 2897471066911149131, guid: 3087abaca405bb8418eb9ab7309a5acc, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -5363,7 +5371,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7829320749616337049, guid: 3087abaca405bb8418eb9ab7309a5acc, type: 3}
       propertyPath: m_Name
-      value: CorruptionAura
+      value: ChargeCorruption
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5865984390455399077, guid: 3087abaca405bb8418eb9ab7309a5acc, type: 3}

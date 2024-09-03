@@ -101,7 +101,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_EmptyColor: {r: 0, g: 0, b: 0, a: 0}
   m_LockedColor: {r: 0, g: 0, b: 0, a: 0}
-  m_UnlockingColor: {r: 0.47843137, g: 0.8862745, b: 0.99215686, a: 0.4392157}
+  m_UnlockingColor: {r: 0, g: 0.49803922, b: 1, a: 1}
   m_ReadyColor: {r: 0.58431375, g: 0.94509804, b: 0.13333334, a: 0.39607844}
 --- !u!222 &6833076900048605363
 CanvasRenderer:
@@ -335,7 +335,7 @@ MonoBehaviour:
   m_text: '12 : 25 : 00'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: f629c6e43dba4bf38cb74d8860150664, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -579,7 +579,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0.000061035, y: -65.0067}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3136079638420220130
 CanvasRenderer:

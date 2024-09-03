@@ -9,9 +9,54 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbfdd18c4b99a3041825863522b560d1, type: 3}
+  m_Script: {fileID: 11500000, guid: a402882a257d18548a281b17574b3711, type: 3}
   m_Name: FireRune
   m_EditorClassIdentifier: 
   Rarety: 2
-  Description: Add a burn effect on auto attack
-  StateEffect: 8
+  Description: 
+  m_MinorPower:
+    Description: Increase [Burn] explosion damages by {0}
+    m_DescriptionVariables:
+    - Name: BonusBurnDamages
+      WithIcon: 0
+    m_IsOverwritten: 0
+    m_TriggerEffects: []
+    m_BonusStats:
+    - StateEffectProperty: 112
+      BaseValue: 15
+      BonusValue: 0
+      ScalingFactor: 0.1
+  m_MajorPower:
+    Description: Apply [Burn]  on every auto attack
+    m_DescriptionVariables: []
+    m_IsOverwritten: 0
+    m_TriggerEffects:
+    - SpellDataName: _FireRuneMajor
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NActivations: 0
+      Cooldown: 0
+    m_BonusStats: []
+  m_PrimalPower:
+    Description: When a [Burn] effect is consumed, re-apply it.
+    m_DescriptionVariables: []
+    m_IsOverwritten: 0
+    m_TriggerEffects:
+    - SpellDataName: Burn
+      Level: 0
+      Target: 50
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 1
+      StateEffectName: Combustion,Scorched
+      NActivations: -1
+      Cooldown: 0
+    m_BonusStats: []

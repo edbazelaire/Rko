@@ -13,11 +13,134 @@ MonoBehaviour:
   m_Name: AncientAegisRune
   m_EditorClassIdentifier: 
   Rarety: 1
-  Description: 'While your character has shield [TriggerEffect.0].\n[TriggerEffect.1]
-    whenever your character procs [Frozen], [IceBreak] or [Burn]'
+  Description: 
+  m_MinorPower:
+    Description: 'While your character has shield [TriggerEffect.0].\n[TriggerEffect.1]
+      whenever your character procs [Frozen], [IceBreak] or [Burn]'
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_IsOverwritten: 0
+    m_TriggerEffects:
+    - SpellDataName: AncientAegis
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 4
+      ActivationTreshold: 1
+      SpellDeactivationEvent: 4
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NActivations: -1
+      Cooldown: 0
+    - SpellDataName: AncientAegisShield
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 1
+      StateEffectName: Frozen,IceBreak
+      NActivations: -1
+      Cooldown: 0
+    - SpellDataName: AncientAegisShield
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 3
+      StateEffectName: Burn
+      NActivations: -1
+      Cooldown: 0
+    m_BonusStats: []
+  m_MajorPower:
+    Description: 'While your character has shield [TriggerEffect.0].\n[TriggerEffect.1]
+      whenever your character procs [Frozen], [IceBreak] or [Burn]'
+    m_DescriptionVariables: []
+    m_BonusLevel: 6
+    m_IsOverwritten: 0
+    m_TriggerEffects:
+    - SpellDataName: AncientAegis
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 4
+      ActivationTreshold: 1
+      SpellDeactivationEvent: 4
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NActivations: -1
+      Cooldown: 0
+    - SpellDataName: AncientAegisShield
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 1
+      StateEffectName: Frozen,IceBreak
+      NActivations: -1
+      Cooldown: 0
+    - SpellDataName: AncientAegisShield
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 3
+      StateEffectName: Burn
+      NActivations: -1
+      Cooldown: 0
+    m_BonusStats: []
+  m_PrimalPower:
+    Description: 'While your character has shield : [TriggerEffect.0].\n[TriggerEffect.1]
+      whenever your character procs [Frozen], [IceBreak] or [Burn]'
+    m_DescriptionVariables: []
+    m_BonusLevel: 12
+    m_IsOverwritten: 0
+    m_TriggerEffects:
+    - SpellDataName: AncientAegis
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 4
+      ActivationTreshold: 1
+      SpellDeactivationEvent: 4
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NActivations: -1
+      Cooldown: 0
+    - SpellDataName: AncientAegisShield
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 1
+      StateEffectName: Frozen,IceBreak
+      NActivations: -1
+      Cooldown: 0
+    - SpellDataName: AncientAegisShield
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 3
+      StateEffectName: Burn
+      NActivations: -1
+      Cooldown: 0
+    m_BonusStats: []
   m_TriggerEffects:
   - SpellDataName: AncientAegis
     Level: 0
+    Target: 0
     SpellActivationEvent: 4
     ActivationTreshold: 1
     SpellDeactivationEvent: 4
@@ -28,6 +151,7 @@ MonoBehaviour:
     Cooldown: 0
   - SpellDataName: AncientAegisShield
     Level: 0
+    Target: 0
     SpellActivationEvent: 1
     ActivationTreshold: 0
     SpellDeactivationEvent: 0
@@ -38,6 +162,7 @@ MonoBehaviour:
     Cooldown: 0
   - SpellDataName: AncientAegisShield
     Level: 0
+    Target: 0
     SpellActivationEvent: 1
     ActivationTreshold: 0
     SpellDeactivationEvent: 0

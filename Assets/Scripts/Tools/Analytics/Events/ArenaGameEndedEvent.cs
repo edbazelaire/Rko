@@ -6,7 +6,7 @@ namespace Analytics.Events
 {
     public class ArenaGameEndedEvent : GameEndedEvent
     {
-        public ArenaGameEndedEvent(bool win, ECharacter character, int playerLevel, ERune rune, List<ESpell> spells, List<int> spellLevels, EArenaType arenaType, EArenaDifficulty arenaDifficulty, int level, int stage) : base(EGameMode.Arena, win, character, playerLevel, rune, spells, spellLevels, EAnalytics.ArenaGameEnded) 
+        public ArenaGameEndedEvent(bool win, ECharacter character, int playerLevel, ERune[] runes, List<ESpell> spells, List<int> spellLevels, EArenaType arenaType, EArenaDifficulty arenaDifficulty, int level, int stage) : base(EGameMode.Arena, win, character, playerLevel, runes, spells, spellLevels, EAnalytics.ArenaGameEnded) 
         {
             // Additional parameters specific to ArenaGameEndedEvent
             SetParameter("ArenaType", arenaType.ToString());

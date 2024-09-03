@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
-using UnityEngine.Animations;
-using UnityEngine.UIElements;
 
 
 namespace Data

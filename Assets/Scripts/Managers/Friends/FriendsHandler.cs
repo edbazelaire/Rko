@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Unity.Services.Friends.Exceptions;
 using Save;
 using Tools;
-using System.Runtime.CompilerServices;
 using Assets.Scripts.Network;
 
 namespace Managers.Friends
@@ -96,7 +95,7 @@ namespace Managers.Friends
             var playerName = await AuthenticationService.Instance.GetPlayerNameAsync();
             m_LoggedPlayerProfile = new PlayerProfile(playerName, playerID);
 
-            await SetPresence(Availability.Online, "In Friends Menu");
+            await SetPresence(Availability.Online, "Logged In");
             //m_LocalPlayerView.Refresh(
             //    m_LoggedPlayerProfile.Name,
             //    "In Friends Menu",

@@ -443,7 +443,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 505, y: 0}
+  m_AnchoredPosition: {x: 545, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8296624118264909576
@@ -542,7 +542,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 505, y: 0}
+  m_AnchoredPosition: {x: 545, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7195493515386770845
@@ -1927,6 +1927,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CollectButton
       objectReference: {fileID: 0}
+    - target: {fileID: 4709060587785084369, guid: 8dac4018dda86604a9d857fb37a0f262, type: 3}
+      propertyPath: m_fontSize
+      value: 104.8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2137,7 +2141,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2439457239475878054, guid: b4a59d9b39826724883034a2cdf70dd3, type: 3}
       propertyPath: m_fontSize
-      value: 34.7
+      value: 34.75
       objectReference: {fileID: 0}
     - target: {fileID: 2478792785712081478, guid: b4a59d9b39826724883034a2cdf70dd3, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -3088,7 +3092,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2439457239475878054, guid: b4a59d9b39826724883034a2cdf70dd3, type: 3}
       propertyPath: m_fontSize
-      value: 34.7
+      value: 34.75
       objectReference: {fileID: 0}
     - target: {fileID: 2478792785712081478, guid: b4a59d9b39826724883034a2cdf70dd3, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -3442,7 +3446,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2439457239475878054, guid: b4a59d9b39826724883034a2cdf70dd3, type: 3}
       propertyPath: m_fontSize
-      value: 34.7
+      value: 34.75
       objectReference: {fileID: 0}
     - target: {fileID: 2478792785712081478, guid: b4a59d9b39826724883034a2cdf70dd3, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -3796,7 +3800,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2439457239475878054, guid: b4a59d9b39826724883034a2cdf70dd3, type: 3}
       propertyPath: m_fontSize
-      value: 34.7
+      value: 34.75
       objectReference: {fileID: 0}
     - target: {fileID: 2478792785712081478, guid: b4a59d9b39826724883034a2cdf70dd3, type: 3}
       propertyPath: m_AnchoredPosition.x

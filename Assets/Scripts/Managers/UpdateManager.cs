@@ -3,6 +3,7 @@ using Data.GameManagement;
 using Enums;
 using Managers.Friends;
 using MyBox;
+using NUnit.Framework.Internal;
 using Save;
 using System.Collections.Generic;
 using Tools;
@@ -29,7 +30,6 @@ namespace Assets.Scripts.Managers
             FriendsHandler.SendFriendRequestToAll();
             SetVersion(Application.version);
         }
-
 
         /// <summary>
         /// Check if Player requires an Update
@@ -73,6 +73,9 @@ namespace Assets.Scripts.Managers
 
             if (LastVersion.CompareTo("0.1.7") == -1)
                 test = UpdateVersion_0_1_7();
+
+            if (LastVersion.CompareTo("0.1.8") == -1)
+                test = UpdateVersion_0_1_8();
 
             // if does not trigger any version until now, update to current version
             if (LastVersion.CompareTo(Application.version) == -1)
@@ -187,7 +190,27 @@ namespace Assets.Scripts.Managers
 
             return test;
         }
-        
+
+        #endregion
+
+
+        #region v0.1.8
+
+        static bool UpdateVersion_0_1_8()
+        {
+            var test = true;
+
+            // set ErrorHandler to false for everyone by default (too consuming)
+            PlayerPrefsHandler.SetDebug(EDebugOption.ErrorHandler, false);
+            ErrorHandler.IsActivated = false;
+
+            // save version
+            if (!SetVersion("0.1.8"))
+                test = false;
+
+            return test;
+        }
+
         #endregion
     }
 }

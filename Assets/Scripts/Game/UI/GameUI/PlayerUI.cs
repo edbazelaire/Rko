@@ -1,4 +1,5 @@
 ﻿using Enums;
+using Game.Loaders;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -67,8 +68,8 @@ namespace Game.UI
             // HealthBar
             m_ShieldBar = Finder.FindComponent<PlayerBarUI>(gameObject, "ShieldBar");
             m_ShieldBar.Initialize(controller.StateHandler.RemainingShield.Value + controller.Life.Shield.Value, controller.Life.MaxHp.Value);
-            controller.Life.Shield.OnValueChanged                   += m_ShieldBar.OnValueChanged;
-            controller.StateHandler.RemainingShield.OnValueChanged  += m_ShieldBar.OnValueChanged;
+            controller.Life.Shield.OnValueChanged                   += OnShieldChanged;
+            controller.StateHandler.RemainingShield.OnValueChanged  += OnShieldChanged;
 
             // Energy Bar
             m_EnergyBar = Finder.FindComponent<PlayerBarUI>(gameObject, c_EnergyBar);
@@ -105,7 +106,7 @@ namespace Game.UI
         void OnStateEvent(EListEvent listEvent, string state, int stack, float duration)
         {
             // check that is not one of the state that are not displayed
-            if (IGNORED_STATE_EFFECTS.Contains(state))
+            if (IGNORED_STATE_EFFECTS.Contains(state) || state.StartsWith("_") || SpellLoader.IsInstantanious(state))
                 return;
 
             switch (listEvent)
@@ -151,6 +152,16 @@ namespace Game.UI
             // destroy state and remove from list
             Destroy(m_StateEffectsUI[state].gameObject);
             m_StateEffectsUI.Remove(state);
+        }
+
+        #endregion
+
+
+        #region Listeners
+
+        void OnShieldChanged(int _, int newValue)
+        {
+            m_ShieldBar.OnValueChanged(0, m_Controller.Life.Shield.Value + m_Controller.StateHandler.RemainingShield.Value);
         }
 
         #endregion

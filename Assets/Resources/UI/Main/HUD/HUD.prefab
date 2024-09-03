@@ -76,6 +76,7 @@ GameObject:
   - component: {fileID: 6437143116011494732}
   - component: {fileID: 7467936836374318949}
   - component: {fileID: 9143596950968060464}
+  - component: {fileID: 18518268547296330}
   m_Layer: 5
   m_Name: SettingsButton
   m_TagString: Untagged
@@ -130,7 +131,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8dd8f58d3ebc4e54588af3b1a6850ba8, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f4e392e371eac5a4db3bd9a720ce2e30, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -184,6 +185,26 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &18518268547296330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2073596372641227247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: 350
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &2915133437394028976
 GameObject:
   m_ObjectHideFlags: 0
@@ -860,6 +881,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2946265706731335321, guid: 7493c2b4a11c9314e9f18d3bb948dc94, type: 3}
+      propertyPath: m_fontSize
+      value: 42.8
+      objectReference: {fileID: 0}
     - target: {fileID: 3155389757666688271, guid: 7493c2b4a11c9314e9f18d3bb948dc94, type: 3}
       propertyPath: m_Name
       value: FriendsContainer
@@ -1151,6 +1176,22 @@ PrefabInstance:
     - target: {fileID: 7351723898231961177, guid: 7493c2b4a11c9314e9f18d3bb948dc94, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7389148628593813895, guid: 7493c2b4a11c9314e9f18d3bb948dc94, type: 3}
+      propertyPath: m_fontSize
+      value: 42.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8437944235905984208, guid: 7493c2b4a11c9314e9f18d3bb948dc94, type: 3}
+      propertyPath: m_fontSize
+      value: 42.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8875460762566392495, guid: 7493c2b4a11c9314e9f18d3bb948dc94, type: 3}
+      propertyPath: m_fontSize
+      value: 42.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8940406495994601827, guid: 7493c2b4a11c9314e9f18d3bb948dc94, type: 3}
+      propertyPath: m_fontSize
+      value: 29.9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

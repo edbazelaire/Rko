@@ -9,9 +9,57 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbfdd18c4b99a3041825863522b560d1, type: 3}
+  m_Script: {fileID: 11500000, guid: a402882a257d18548a281b17574b3711, type: 3}
   m_Name: FrostRune
   m_EditorClassIdentifier: 
   Rarety: 2
-  Description: Add a frost effect on auto attack
-  StateEffect: 6
+  Description: 
+  m_MinorPower:
+    Description: All slows are {0} more efficients
+    m_DescriptionVariables:
+    - Name: BonusSlowPerc
+      WithIcon: 0
+    m_BonusLevel: 0
+    m_IsOverwritten: 0
+    m_TriggerEffects: []
+    m_BonusStats:
+    - StateEffectProperty: 113
+      BaseValue: 0.2
+      BonusValue: 0
+      ScalingFactor: 0.05
+  m_MajorPower:
+    Description: Apply [Frost] on every auto attack
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_IsOverwritten: 0
+    m_TriggerEffects:
+    - SpellDataName: _FrostRuneMajor
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NActivations: 0
+      Cooldown: 0
+    m_BonusStats: []
+  m_PrimalPower:
+    Description: 
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_IsOverwritten: 0
+    m_TriggerEffects:
+    - SpellDataName: _FrostRunePrimal
+      Level: 0
+      Target: 50
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 1
+      StateEffectName: IceBreak
+      NActivations: 0
+      Cooldown: 0
+    m_BonusStats: []

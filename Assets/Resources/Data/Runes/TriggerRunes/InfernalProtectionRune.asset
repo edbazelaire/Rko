@@ -13,11 +13,68 @@ MonoBehaviour:
   m_Name: InfernalProtectionRune
   m_EditorClassIdentifier: 
   Rarety: 1
-  Description: Every time you proc a "Burn" effect, apply "Infernal Healing", healing
-    your character over time
+  Description: 
+  m_MinorPower:
+    Description: 'Every time you proc a [Burn] effect, apply "Infernal Protection"
+      : [TriggerEffect.0]'
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_IsOverwritten: 0
+    m_TriggerEffects:
+    - SpellDataName: InfernalProtection
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 3
+      StateEffectName: Burn
+      NActivations: -1
+      Cooldown: 0
+    m_BonusStats: []
+  m_MajorPower:
+    Description: 'Every time you proc a [Burn] effect, apply "Infernal Protection"
+      : [TriggerEffect.0]'
+    m_DescriptionVariables: []
+    m_BonusLevel: 6
+    m_IsOverwritten: 0
+    m_TriggerEffects:
+    - SpellDataName: InfernalProtection
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 3
+      StateEffectName: Burn
+      NActivations: -1
+      Cooldown: 0
+    m_BonusStats: []
+  m_PrimalPower:
+    Description: 'Every time you proc a [Burn] effect, apply "Infernal Protection"
+      : [TriggerEffect.0]'
+    m_DescriptionVariables: []
+    m_BonusLevel: 12
+    m_IsOverwritten: 0
+    m_TriggerEffects:
+    - SpellDataName: InfernalProtection
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 3
+      StateEffectName: Burn
+      NActivations: -1
+      Cooldown: 0
+    m_BonusStats: []
   m_TriggerEffects:
   - SpellDataName: InfernalProtection
     Level: 0
+    Target: 0
     SpellActivationEvent: 1
     ActivationTreshold: 0
     SpellDeactivationEvent: 0

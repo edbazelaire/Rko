@@ -3,7 +3,6 @@ using Enums;
 using Game.Loaders;
 using Game.Spells;
 using MyBox;
-using NUnit.Framework.Internal;
 using System;
 using System.Collections.Generic;
 using Tools;
@@ -92,9 +91,9 @@ namespace Game.Character
             base.OnNetworkDespawn();
         }
 
-        public void Initialize(ECharacter character, int level)
+        public void Initialize(CharacterData characterData)
         {
-            m_CharacterData = CharacterLoader.GetCharacterData(character, level, destroy: false);
+            m_CharacterData = characterData;
         }
 
 
@@ -257,12 +256,10 @@ namespace Game.Character
         {
             foreach (StateEffect stateEffect in m_StateEffects)
             {
-                if (stateEffect is not SpellEffect)
+                if (stateEffect is not SpellEffect spellEffect)
                     continue;
 
-                SpellEffect spellEffect = (SpellEffect)stateEffect;
-
-                if (typeof(AutoAttackEffect) == spellEffect.GetType() && !isAutoAttack)
+                if (! spellEffect.IsAllowed(spellData.SpellType, isAutoAttack))
                     continue;
 
                 spellData.OnHit.AddRange(spellEffect.OnHits);
@@ -553,7 +550,7 @@ namespace Game.Character
 
             float baseValue;
             if (property == EStateEffectProperty.SpeedBonus)
-                baseValue = 1f;
+                baseValue = 0f;
             else
                 baseValue = 1f + m_CharacterData.GetValue(property);
 

@@ -39,30 +39,6 @@ namespace Data
             return 0;  
         }
 
-        /// <summary>
-        /// Get Description info of the StateEffect
-        /// </summary>
-        /// <returns></returns>
-        public override string GetDescription()
-        {
-            List<string> values = new List<string>();
-            foreach (EStateEffectProperty property in m_DescriptionVariables)
-            {
-                var value = GetProperty(property);
-
-                if (CharacterData.INT_PROPERTIES.Contains(property))
-                {
-                    values.Add(Mathf.Round(value).ToString("0"));
-                }
-                else
-                {
-                    values.Add(value.ToString("F2")); 
-                }
-            }
-
-            return string.Format(Description, values.ToArray());
-        }
-
         #endregion
     }
 }

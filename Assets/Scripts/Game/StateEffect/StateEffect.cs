@@ -31,6 +31,7 @@ namespace Game.Spells
     public class StateEffect : ScriptableObject
     {
         #region Members
+
         /// <summary> Event that is fired when, </summary>
         public static Action<string, EStateEffectEvent, ulong, ulong> StateEffectEvent;
 
@@ -52,7 +53,9 @@ namespace Game.Spells
         [SerializeField] protected EStateEffect                     m_DefaultState;
 
         [Header("General Stats")]
-        [SerializeField] protected      float                       m_Duration;
+        [SerializeField] protected      int                         m_Priority              = 0;
+        [SerializeField] protected      float                       m_Duration              = 0f;
+        [SerializeField] protected      bool                        m_IsInstantanious       = false;
         [SerializeField] protected      int                         m_MaxStacks             = 1;
         [SerializeField] protected      int                         m_StackDecay            = -1;   // number of stacks decaying at the end of the duration (-1 = all stacks)
 
@@ -72,6 +75,10 @@ namespace Game.Spells
         [SerializeField] protected      int                         m_BonusDamages          = 0;
         [SerializeField] protected      float                       m_BonusDamagesPerc      = 0f;
         [SerializeField] protected      float                       m_BonusLifeSteal        = 0f;
+
+        [Header("Elementary")]
+        [SerializeField] protected      int                         m_BonusBurnDamages      = 0;
+        [SerializeField] protected      float                       m_BonusSlowPerc         = 0f;
 
         [Header("Extra Effects")]
         [SerializeField] protected List<StateEffect>                m_OnStartStateEffect    = new();
@@ -112,8 +119,10 @@ namespace Game.Spells
         public EAnimation               Animation           => m_Animation;
         public EStateEffect             Type                => Enum.TryParse(name, out EStateEffect type) ? type : m_Type ;
         public virtual int              Stacks              => m_Stacks;
+        public virtual int              Priority            => m_Priority;
         public virtual bool             IsInfinite          => m_Duration <= 0;
         public int                      RemainingShield     => m_RemainingShield;
+        public bool                     IsInstantanious     => m_IsInstantanious;
         public virtual int              MaxStacks           => m_MaxStacks;
         public EStateEffect             ConsumeState        => m_ConsumeState;
         public EStateEffect             DefaultState        => m_DefaultState;
@@ -162,6 +171,10 @@ namespace Game.Spells
 
             OnStart();
 
+            // if spell is instantanious do not proceed after initalization in state handler
+            if (m_IsInstantanious)
+                return false;
+            
             return true;
         }
 
@@ -216,6 +229,10 @@ namespace Game.Spells
             // call state effect 
             StateEffectEvent?.Invoke(StateEffectName, EStateEffectEvent.OnApplied, m_Controller.PlayerId, m_Caster.PlayerId);
             m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnSpawn, StateEffectName);
+
+            // if instantatious effect : end after start
+            if (m_IsInstantanious)
+                End();
         }
 
         public void OverrideStateEffectData(SStateEffectData stateEffectData)
@@ -247,7 +264,8 @@ namespace Game.Spells
         /// </summary>
         public virtual void End()
         {
-            m_Controller.StateHandler.RemoveStateEffect(StateEffectName, true);
+            if (! IsInstantanious)
+                m_Controller.StateHandler.RemoveStateEffect(StateEffectName, true);
 
             StateEffectEvent?.Invoke(StateEffectName, EStateEffectEvent.OnRemoved, m_Controller.PlayerId, m_Caster.PlayerId);
         }
@@ -260,7 +278,11 @@ namespace Game.Spells
                 m_Controller.StateHandler.AddStateEffect(clone, m_Caster);
             }
 
-            StateEffectEvent?.Invoke(StateEffectName, EStateEffectEvent.OnConsumed, m_Controller.PlayerId, m_Caster.PlayerId);
+            // delay event of "OnConsumed" to wait for the end of the consumption
+            string name = StateEffectName;
+            ulong controllerId = m_Controller.PlayerId;
+            ulong casterId = m_Caster.PlayerId;
+            CoroutineManager.DelayMethod(() => StateEffectEvent?.Invoke(name, EStateEffectEvent.OnConsumed, controllerId, casterId));
         }
 
         protected virtual void OnDestroy()
@@ -283,7 +305,6 @@ namespace Game.Spells
         {
             if (IsInfinite)
                 return;
-
 
             m_Timer -= Time.deltaTime;
 
@@ -553,14 +574,28 @@ namespace Game.Spells
 
             float baseValue = GetProperty<float>(property);
 
-            // check that a scaling value was provided
-            if (stateEffectScaling.StateEffectProperty != property || stateEffectScaling.ScalingFactor == 0)
-                return baseValue;
-
             if (m_Controller == null)
                 return baseValue;
 
-            float boostedValue = m_Controller.StateHandler.ApplyBonus(baseValue, property);                                                              // Bonus values applied to the property
+            // if is a slow, check the bonus from the caster bonus slow 
+            if (property == EStateEffectProperty.SpeedBonus && baseValue < 0 && m_Caster != null)
+            {
+                Debug.Log("GET SPEED BONUS : ");
+                Debug.Log("     + baseValue : " + baseValue);
+                Debug.Log("     + BonuSlowPerc : " + m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusSlowPerc));
+
+                // ADD : && baseValue < 0
+                baseValue *= Mathf.Max(0, m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusSlowPerc));
+
+                Debug.Log("     + finalValue : " + baseValue);
+            }
+
+            float boostedValue = m_Controller.StateHandler.ApplyBonus(baseValue, property);
+
+            // check that a scaling value was provided
+            if (stateEffectScaling.StateEffectProperty != property || stateEffectScaling.ScalingFactor == 0)
+                return baseValue;
+                                                        // Bonus values applied to the property
             float stacksFactor = stateEffectScaling.StateEffectProperty == property ? Stacks * stateEffectScaling.ScalingFactor : 1f;                  // apply Stack bonus 
 
             return Mathf.Round(100 * boostedValue * stacksFactor) / 100;
@@ -657,21 +692,26 @@ namespace Game.Spells
                     continue;
                 }
 
+                string stringValue;
                 if (value is float floatValue)
                 {
-                    values.Add(floatValue.ToString("F2"));
+                    stringValue = TextHandler.FormatPropertyValue(floatValue, property.ToString());
                 }
                 else if (value is double doubleValue)
                 {
-                    values.Add(doubleValue.ToString("F2"));
+                    stringValue = doubleValue.ToString("F2");
                 }
                 else
                 {
-                    values.Add(value.ToString());
+                    stringValue = value.ToString();
                 }
+
+                stringValue += TextHandler.FormatStateEffectIcon(property.ToString(), withIcon: true, withPropertyName: false);
+
+                values.Add(stringValue);
             }
 
-            return string.Format(m_Description, values.ToArray());
+            return TextHandler.ReplaceStateEffectTokens(string.Format(m_Description, values.ToArray()));
         }
 
         #endregion

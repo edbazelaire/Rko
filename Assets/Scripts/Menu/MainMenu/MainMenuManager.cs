@@ -17,7 +17,12 @@ namespace Menu.MainMenu
     public class MainMenuManager : TabsManager
     {
         #region Members
+        // =================================================================================================
+        // EVENTS
+        public static Action OnClickedEvent;
 
+        // =================================================================================================
+        // DATA
         /// <summary> scroll percentage of the window to consider going to the next tab </summary>
         [SerializeField] float m_NewTabScrollThreshold = 0.7f;
         /// <summary> time that the scroll animation will take to move an entire tab window </summary>
@@ -57,6 +62,9 @@ namespace Menu.MainMenu
 
         private void Update()
         {
+            if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended) || Input.GetMouseButtonUp(0))
+                OnClickedEvent?.Invoke();
+
             if (m_ListeningToScrollEnd && Input.GetMouseButtonUp(0) && m_TabsContainerContent != null)
             {
                 OnScrollEnd();

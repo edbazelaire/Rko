@@ -1,9 +1,8 @@
-﻿using Enums;
+﻿using Menu.Common.Buttons;
 using Menu.MainMenu;
-using System.Collections;
+using System;
 using Tools;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Assets.Scripts.Menu.MainMenu.InventoryTab
 {
@@ -31,15 +30,15 @@ namespace Assets.Scripts.Menu.MainMenu.InventoryTab
 
         #region Activation & Deactivation
 
-        public void Activate(ESpell spell)
+        public void Activate(Enum collectable)
         {
             // activate game object and clean potentiel previous content
             gameObject.SetActive(true);
             UIHelper.CleanContent(m_SelectedCardContainer);
 
             // create spell item
-            var spellItem = Instantiate(AssetLoader.LoadTemplateItem("SpellItem"), m_SelectedCardContainer.transform).GetComponent<TemplateSpellItemUI>();
-            spellItem.Initialize(spell, true);
+            var spellItem = Instantiate(AssetLoader.LoadTemplateItem(collectable), m_SelectedCardContainer.transform).GetComponent<TemplateCollectableItemUI>();
+            spellItem.Initialize(collectable, true);
 
             // set game object anchors to match parent size
             UIHelper.SetFullSize(spellItem.gameObject);
@@ -68,7 +67,7 @@ namespace Assets.Scripts.Menu.MainMenu.InventoryTab
             if (Input.GetMouseButtonUp(0)) // Check for left mouse button click
             {
                 // delay method by one frame (in case of clicking a button that needs the value
-                CoroutineManager.DelayMethod(() => { CurrentBuildDisplayUI.SetCurrentSelectedCard(null); } );
+                CoroutineManager.DelayMethod(() => { CurrentBuildDisplayUI.SetCurrentSelectedItem(null); } );
             }
         }
 

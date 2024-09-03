@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_Lava
-  m_Shader: {fileID: -6465566751694194690, guid: 5189454cfdbb4ee4094b1bf16dd6c6be, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: eb07430958758e54aa4ca7c29f0321dd, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -24,11 +24,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 155f67fd8750f8e4e83c8efb1731f3a0, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _MainText:
-        m_Texture: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -45,20 +41,20 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _FlowSpeed: 2
-    - _FoamDensity: 10
+    - _Alpha: 1
+    - _FlowSpeed: 0.5
+    - _FoamDensity: 5
     - _FoamSpeed: 0.5
     - _FoamThickness: 2
-    - _MaxHeight: 0.359
+    - _MaxHeight: 0.501
     - _WaveHeight: 0.1
-    - _WaveSpread: 5
     m_Colors:
-    - _Color: {r: 1, g: 0.44705886, b: 0, a: 1}
+    - _Color: {r: 1, g: 0.3057164, b: 0, a: 1}
     - _FlowDirection: {r: 0.1, g: 0.5, b: 0, a: 0}
-    - _FoamColor: {r: 0.990566, g: 0.8126397, b: 0.6775098, a: 1}
+    - _FoamColor: {r: 4, g: 2.7536433, b: 1.6415095, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!114 &3958184533344883759
+--- !u!114 &4870468751615195100
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

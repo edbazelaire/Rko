@@ -12,7 +12,7 @@ namespace Game.SpellGFXs
         #region Members
 
         [SerializeField] float m_MoveFireSize = 10f;
-        [SerializeField] float m_CharacterHight = 1.2f;
+        [SerializeField] float m_CharacterHight = 2f;
         [SerializeField] float m_GrowingChargeSize = 0.3f;
 
         // ================================================================================
@@ -54,7 +54,7 @@ namespace Game.SpellGFXs
             m_EnergyExplosion.gameObject.SetActive(false);
 
             // init data 
-            m_BasePosition = m_CharacterPreview.position;
+            m_BasePosition = m_CharacterPreview.localPosition;
             m_AnimationTimer = m_SpellData.AnimationTimer / m_Controller.SpellHandler.GetCastSpeed(m_SpellData.Name);
             m_Timer = m_AnimationTimer;
         }
@@ -81,7 +81,7 @@ namespace Game.SpellGFXs
 
             // make controller back on its position
             m_Controller.AnimationHandler.CancelCurrentAnimation();
-            m_CharacterPreview.position = m_BasePosition;
+            m_CharacterPreview.localPosition = m_BasePosition;
 
             base.End();
         }
@@ -153,7 +153,7 @@ namespace Game.SpellGFXs
             {
                 timer -= Time.deltaTime;
                 m_FireTorch.transform.localScale = baseScale * (baseTimer - timer) / baseTimer;
-                m_CharacterPreview.position = new Vector3(m_BasePosition.x, m_BasePosition.y + m_CharacterHight * (baseTimer - timer) / baseTimer, 0f);
+                m_CharacterPreview.localPosition = new Vector3(m_BasePosition.x, m_BasePosition.y + m_CharacterHight * (baseTimer - timer) / baseTimer, 0f);
                 yield return null;
             }
 
@@ -164,14 +164,13 @@ namespace Game.SpellGFXs
         IEnumerator ChargeEnergy()
         {
             m_FireEnergyCharge.transform.parent = m_CharacterPreview;
-            m_FireEnergyCharge.transform.localPosition = Vector3.zero;
+            m_FireEnergyCharge.transform.localPosition = new Vector3(0f, -0.2f, 0f);
             m_FireEnergyCharge.gameObject.SetActive(true);
 
             var baseTimer = m_Timer - 0.1f;                              // timer is current remaining time
             var timer = baseTimer;                                      // remaining time for the animation
             var baseScale = m_FireEnergyCharge.transform.localScale;    // base scale of the fire torch
 
-            m_Controller.AnimationHandler.PlayAnimation(Enums.EAnimation.Frozen, -1);
             while (timer > 0)
             {
                 timer -= Time.deltaTime;

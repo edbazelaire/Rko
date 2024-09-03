@@ -1,3 +1,5 @@
+using Enums;
+using Menu.Common.Buttons;
 using System;
 using Tools;
 using UnityEngine;
@@ -31,9 +33,7 @@ namespace Menu.MainMenu
             CoroutineManager.DelayMethod(m_CharacterPreviewSectionUI.Initialize);
 
             // register listeners & buttons
-            TemplateSpellItemUI.ButtonClickedEvent += SelectSpellItemsTab;
-            // delay method by one frame to avoid Awake() issues
-            CoroutineManager.DelayMethod(() => { m_CharacterPreviewSectionUI.CharacterPreviewButton.onClick.AddListener(SelectCharacterItemsTab); });
+            TemplateCollectableItemUI.ButtonClickedEvent += SelectTab;
         }
 
         public override void Activate(bool activate)
@@ -47,7 +47,7 @@ namespace Menu.MainMenu
         {
             base.OnDestroy();
 
-            TemplateSpellItemUI.ButtonClickedEvent -= SelectSpellItemsTab;
+            TemplateCollectableItemUI.ButtonClickedEvent -= SelectTab;
         }
 
         #endregion
@@ -55,14 +55,13 @@ namespace Menu.MainMenu
 
         #region Listeners
 
-        void SelectSpellItemsTab(Enum spell)
+        void SelectTab(Enum collectable)
         {
-            m_ItemsTabManager.SelectTab(EInvetoryItemTab.SpellsTab);
-        }
+            if (collectable.GetType() == typeof(ESpell))
+                m_ItemsTabManager.SelectTab(EInvetoryItemTab.SpellsTab);
 
-        void SelectCharacterItemsTab()
-        {
-            m_ItemsTabManager.SelectTab(EInvetoryItemTab.CharactersTab);
+            else if (collectable.GetType() == typeof(ERune))
+                m_ItemsTabManager.SelectTab(EInvetoryItemTab.RunesTab);
         }
 
         #endregion

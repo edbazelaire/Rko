@@ -556,7 +556,7 @@ namespace Network
                         trainingCharacter.ToString(),
                         9,
                         trainingCharacter,
-                        PlayerPrefsHandler.GetString<ERune>(EPlayerPref.TrainingRune),
+                        PlayerPrefsHandler.GetTrainingRunes(),
                         PlayerPrefsHandler.GetTrainingSpells(),
                         new int[] { 9, 9, 9, 9 },
                         new SProfileCurrentData(gamerTag: trainingCharacter.ToString()).AsNetworkSerializable(),
@@ -573,7 +573,7 @@ namespace Network
                         character.ToString(),
                         1,
                         character,
-                        ERune.None,
+                        new ERune[] { ERune.None, ERune.None, ERune.None },
                         new ESpell[] { ESpell.Heal, ESpell.RockShower },
                         new int[] { 1, 1 },
                         new SProfileCurrentData(

@@ -6,8 +6,6 @@ using System.Linq;
 using Tools;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
-using static UnityEngine.Rendering.DebugUI;
 
 namespace Data
 {
@@ -16,12 +14,14 @@ namespace Data
     {
         public EStateEffectProperty StateEffectProperty;
         public float BaseValue;
+        public float BonusValue;
         public float ScalingFactor;
 
-        public SCharacterStatScaling(EStateEffectProperty stateEffectProperty, float baseValue, float scalingFactor = 0.1f)
+        public SCharacterStatScaling(EStateEffectProperty stateEffectProperty, float baseValue, float bonusValue, float scalingFactor = 0.1f)
         {
             StateEffectProperty = stateEffectProperty;
             BaseValue = baseValue;
+            BonusValue = bonusValue;
             ScalingFactor = scalingFactor;
         }
 
@@ -29,7 +29,30 @@ namespace Data
         {
             serializer.SerializeValue(ref StateEffectProperty);
             serializer.SerializeValue(ref BaseValue);
+            serializer.SerializeValue(ref BonusValue);
             serializer.SerializeValue(ref ScalingFactor);
+        }
+
+        /// <summary>
+        /// Return a SCharacterStatScaling but the final value is set as fixed bonus value
+        /// </summary>
+        /// <param name="level"></param>
+        /// <returns></returns>
+        public SCharacterStatScaling AsBonus(int level)
+        {
+            // set BonusValue as the total value for the level
+            BonusValue = GetValue(level);
+
+            // reset scaling values
+            BaseValue = 0f;
+            ScalingFactor = 0f;
+            
+            return this;
+        }
+
+        public float GetValue(int level)
+        {
+            return BonusValue + BaseValue * Mathf.Pow(1 + ScalingFactor, level - 1);
         }
     }
 
@@ -48,6 +71,7 @@ namespace Data
             EStateEffectProperty.BonusTickDamages,
             EStateEffectProperty.BonusTickHeal,
             EStateEffectProperty.BonusTickShield,
+            EStateEffectProperty.BonusBurnDamages,
             EStateEffectProperty.Hp,
             EStateEffectProperty.Stacks,
             EStateEffectProperty.EndDamages,
@@ -110,14 +134,12 @@ namespace Data
                 int index = CharacterStatScaling.FindIndex(value => value.StateEffectProperty.Equals(characterStatScaling.StateEffectProperty));
                 if (index < 0)
                 {
-                    CharacterStatScaling.Add(characterStatScaling);
+                    CharacterStatScaling.Add(characterStatScaling.AsBonus(m_Level));
                     return;
                 }
 
                 var current = CharacterStatScaling[index];
-                current.BaseValue += characterStatScaling.BaseValue;
-                current.ScalingFactor += characterStatScaling.ScalingFactor;
-
+                current.BonusValue += characterStatScaling.AsBonus(m_Level).BonusValue;
                 CharacterStatScaling[index] = current;
             }
         }
@@ -133,7 +155,7 @@ namespace Data
             if (!characterStatScalingData.HasValue)
                 return 0.0f;
 
-            return Mathf.Pow(1f + characterStatScalingData.Value.ScalingFactor, m_Level - 1) * characterStatScalingData.Value.BaseValue;
+            return characterStatScalingData.Value.BonusValue + Mathf.Pow(1f + characterStatScalingData.Value.ScalingFactor, m_Level - 1) * characterStatScalingData.Value.BaseValue;
         }
 
         public int GetInt(EStateEffectProperty property)
@@ -150,6 +172,30 @@ namespace Data
             }
 
             return null;
+        }
+
+        #endregion
+
+
+        #region Checkers
+
+        public static bool CheckIsInt(string property)
+        {
+            if (!Enum.TryParse(property, out EStateEffectProperty propertyValue))
+                return false;
+
+            return INT_PROPERTIES.Contains(propertyValue);
+        }
+
+        public static bool CheckIsPercentageValue(string property)
+        {
+            return property.EndsWith("Perc")
+                || property == EStateEffectProperty.BonusLifeSteal.ToString()
+                || property == EStateEffectProperty.AttackSpeed.ToString()
+                || property == EStateEffectProperty.CastSpeed.ToString()
+                || property == EStateEffectProperty.LifeSteal.ToString()
+                || property == EStateEffectProperty.SpeedBonus.ToString()
+                ;
         }
 
         #endregion

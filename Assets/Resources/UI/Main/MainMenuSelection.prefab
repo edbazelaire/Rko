@@ -92,7 +92,7 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 0
+    m_Top: 20
     m_Bottom: 0
   m_ChildAlignment: 4
   m_Spacing: 0
@@ -161,15 +161,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2392157, g: 0.2901961, b: 0.35686275, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 2a34d0dd0de0ecf4484036ffcd8af33a, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: -2498806587977027519, guid: 43aed823f41a713428cba37ca8df31cc, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -300,26 +300,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 2794941983891442374, guid: 464383e1543fb4743b619bdd4dc3907c, type: 3}
-      propertyPath: m_BackgroundColorActivated.a
-      value: 0.65882355
-      objectReference: {fileID: 0}
-    - target: {fileID: 2794941983891442374, guid: 464383e1543fb4743b619bdd4dc3907c, type: 3}
-      propertyPath: m_BackgroundColorActivated.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2794941983891442374, guid: 464383e1543fb4743b619bdd4dc3907c, type: 3}
-      propertyPath: m_BackgroundColorActivated.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2794941983891442374, guid: 464383e1543fb4743b619bdd4dc3907c, type: 3}
-      propertyPath: m_BackgroundColorActivated.r
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5288881411437090263, guid: 464383e1543fb4743b619bdd4dc3907c, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 4d1e25cbdb6eec24cae88d9905ea5922, type: 3}
+      objectReference: {fileID: 3748109255859649066, guid: 7cb58f63591087d4883879a358294577, type: 3}
     - target: {fileID: 7430311314880235476, guid: 464383e1543fb4743b619bdd4dc3907c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -429,22 +413,6 @@ PrefabInstance:
     - target: {fileID: 292013318997433497, guid: 464383e1543fb4743b619bdd4dc3907c, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 2794941983891442374, guid: 464383e1543fb4743b619bdd4dc3907c, type: 3}
-      propertyPath: m_BackgroundColorActivated.a
-      value: 0.65882355
-      objectReference: {fileID: 0}
-    - target: {fileID: 2794941983891442374, guid: 464383e1543fb4743b619bdd4dc3907c, type: 3}
-      propertyPath: m_BackgroundColorActivated.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2794941983891442374, guid: 464383e1543fb4743b619bdd4dc3907c, type: 3}
-      propertyPath: m_BackgroundColorActivated.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2794941983891442374, guid: 464383e1543fb4743b619bdd4dc3907c, type: 3}
-      propertyPath: m_BackgroundColorActivated.r
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5288881411437090263, guid: 464383e1543fb4743b619bdd4dc3907c, type: 3}
       propertyPath: m_Sprite

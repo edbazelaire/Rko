@@ -18,9 +18,9 @@ namespace Menu.MainMenu.MainTab
         [SerializeField] protected GameObject   m_Knob;
         [SerializeField] protected GameObject   m_Line;
 
-        [SerializeField] protected Color        ColorCompleted;
-        [SerializeField] protected Color        ColorCurrent;
-        [SerializeField] protected Color        ColorNotDone;
+        [SerializeField] protected Sprite       m_KnobCompleted;
+        [SerializeField] protected Sprite       m_KnobCurrent;
+        [SerializeField] protected Sprite       m_KnobNotDone;
 
         // ================================================================================
         // GameObejcts & Components
@@ -93,31 +93,31 @@ namespace Menu.MainMenu.MainTab
             // Check Arena Level first
             if (m_Level < m_CurrentLevel)
             {
-                m_Knobs[index].color = ColorCompleted;
+                m_Knobs[index].sprite = m_KnobCompleted;
                 return;
             }
 
             if (m_Level > m_CurrentLevel)
             {
-                m_Knobs[index].color = ColorNotDone;
+                m_Knobs[index].sprite = m_KnobNotDone;
                 return;
             }
 
             // Check index of CURRENT STAGE
             if (index < m_CurrentStage)
             {
-                m_Knobs[index].color = ColorCompleted;
+                m_Knobs[index].sprite = m_KnobCompleted;
                 return;
             }
 
             if (index > m_CurrentStage)
             {
-                m_Knobs[index].color = ColorNotDone;
+                m_Knobs[index].sprite = m_KnobNotDone;
                 return;
             }
 
             // DISPLAY as current
-            m_Knobs[index].color = ColorCurrent;
+            m_Knobs[index].sprite = m_KnobCurrent;
 
             var pulse = m_Knobs[index].gameObject.AddComponent<Pulse>();
             pulse.Initialize(CURRENT_STAGE_ANIMATION, -1f, 0.9f, 1.1f, pulseDuration: 1.5f, pauseDuration: 0f);

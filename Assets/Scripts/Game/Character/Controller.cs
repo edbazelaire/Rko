@@ -7,6 +7,7 @@ using Game;
 using Game.Character;
 using Game.Loaders;
 using Managers;
+using Save;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
@@ -34,7 +35,7 @@ public class Controller : NetworkBehaviour
     NetworkVariable<bool>                   m_IsInitialized     = new NetworkVariable<bool>(false);
 
     // -- Server Variable
-    RuneData m_RuneData;
+    RuneData[] m_RuneData;
 
     // -- local variables
     bool m_GameRunning = false;
@@ -61,7 +62,7 @@ public class Controller : NetworkBehaviour
     public string           PlayerName          => m_PlayerName.Value.ToString();
     public ECharacter       Character           => m_Character.Value;
     public int              CharacterLevel      => m_CharacterLevel.Value;
-    public RuneData         RuneData            => m_RuneData;
+    public RuneData[]       RuneData            => m_RuneData;
     public int              Team                => m_Team.Value;
     public bool             IsPlayer            => m_IsPlayer.Value;
     public ulong            PlayerId            => IsPlayer ? OwnerClientId : GameManager.BOT_CLIENT_ID;
@@ -212,8 +213,15 @@ public class Controller : NetworkBehaviour
         m_PlayerName.Value      = playerData.PlayerName;
         m_Character.Value       = playerData.Character;
         m_CharacterLevel.Value  = playerData.CharacterLevel;
-        m_RuneData              = SpellLoader.GetRuneData(playerData.Rune);
-        
+
+        // set all RuneData depending on activation type
+        m_RuneData = new RuneData[playerData.Runes.Length];
+        for (int i = 0; i < playerData.Runes.Length; i++)
+        {
+            m_RuneData[i] = SpellLoader.GetRuneData(playerData.Runes[i], m_CharacterLevel.Value);
+            m_RuneData[i].SetActivation(CharacterBuildsCloudData.GetRuneActivationFromIndex(i));
+        }
+     
         CharacterData characterData = CharacterLoader.GetCharacterData(playerData.Character, playerData.CharacterLevel, destroy: true);
         characterData.AddBonusStats(GetBonusStats());
 
@@ -224,7 +232,7 @@ public class Controller : NetworkBehaviour
         m_Movement.Initialize(characterData.Speed);
 
         // initialize StateHandler with character data
-        m_StateHandler.Initialize(characterData.Character, characterData.Level);
+        m_StateHandler.Initialize(characterData);
 
         // init health and energy
         m_Life.Initialize(characterData.MaxHealth, characterData.GetInt(EStateEffectProperty.Shield));
@@ -275,18 +283,6 @@ public class Controller : NetworkBehaviour
     #endregion
 
 
-    private void Update()
-    {
-        if (!m_GameRunning || GameManager.IsGameOver)
-            return;
-
-        if (m_StateHandler == null || m_StateHandler.IsDestroyed())
-        {
-            ErrorHandler.Error("StateHandler disconnected during the game");
-        }
-    }
-
-
     #region Bonus Stats & Trigger Effects
 
     List<SCharacterStatScaling> GetBonusStats()
@@ -299,14 +295,17 @@ public class Controller : NetworkBehaviour
             return bonusStats;
         }
 
-        if (m_RuneData is BuffRune rune)
-            bonusStats.AddRange(rune.BonusStats);
+        foreach (RuneData data in m_RuneData)
+        {
+            bonusStats.AddRange(data.GetBonusStats());
+        }
 
         return bonusStats;
     }
 
     List<STriggerEffect> GetTriggerEffects()
     {
+        // get base raw list of trigger effects
         var list = m_PlayerData.Value.TriggerEffects.ToList();
 
         if (m_RuneData == null)
@@ -316,14 +315,9 @@ public class Controller : NetworkBehaviour
         }
 
         // set level of trigger effects = to character level and add it to list of trigger effects
-        if (m_RuneData is TriggerRune rune)
+        foreach (RuneData data in m_RuneData)
         {
-            for (int i = 0; i < rune.TriggerEffects.Count; i++)
-            {
-                var triggerEffect = rune.TriggerEffects[i];
-                triggerEffect.Level = m_CharacterLevel.Value;
-                list.Add(triggerEffect);
-            }
+            list.AddRange(data.GetTriggerEffects());
         }
 
         return list;
@@ -360,8 +354,6 @@ public class Controller : NetworkBehaviour
             m_BehaviorTree.Activate(true);
         }
     }
-
-
 
     #endregion
 

@@ -20,7 +20,6 @@ namespace Game.Character
         // [Client Data]
         int m_MovementInput = 0;
         float m_SpeedBonus = 0f;
-
         float m_InitialSpeed;
 
         public NetworkVariable<int> MoveX => m_MoveX;
@@ -267,7 +266,9 @@ namespace Game.Character
 
         private void OnSpeedBonusValueChanged(float oldValue, float newValue)
         {
-            m_SpeedBonus = (float)newValue - 1f;
+            m_SpeedBonus = newValue;
+
+            Debug.Log("New Speed : " + m_SpeedBonus);
         }
 
         #endregion
