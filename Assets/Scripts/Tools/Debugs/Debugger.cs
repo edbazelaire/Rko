@@ -409,6 +409,12 @@ namespace Tools
             }
         }
 
+        [Command(KeyCode.V)]
+        public void ToggleCursor()
+        {
+            Cursor.visible = !Cursor.visible;
+        }
+
         [Command]
         public void Monitors()
         {

@@ -1,6 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using Enums;
+using Game.Background;
+using Network;
+using System.Collections.Generic;
 using Tools;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Game
 {
@@ -11,17 +15,19 @@ namespace Game
 
         static ArenaManager s_Instance;
 
-        const string c_PlateformPrefix = "Plateform_";
-        const string c_SpawnerPrefix = "SpawnPoint_";
-        const string c_TargettableAreaPrefix = "TargettableArea_";
-        const string c_Arena = "Arena";
-        const string c_TargetHight = "TargetHight";
-        const int c_NumTeams = 2;
+        const string c_PlateformPrefix          = "Plateform_";
+        const string c_SpawnerPrefix            = "SpawnPoint_";
+        const string c_TargettableAreaPrefix    = "TargettableArea_";
+        const string c_Arena                    = "Arena";
+        const string c_TargetHight              = "TargetHight";
+        const int c_NumTeams                    = 2;
 
         GameObject              m_Arena;
         Transform               m_TargetHight;
         List<Transform>         m_TargettableAreas;
         List<List<Transform>>   m_Spawns;
+
+        ArenaBackground         m_ArenaBackground;
 
         float                   m_TargettableAreaSize;
 
@@ -29,49 +35,44 @@ namespace Game
         public List<List<Transform>>    Spawns                  => m_Spawns;
         public Transform                TargetHight             => m_TargetHight;
         public float                    TargettableAreaSize     => m_TargettableAreaSize;
+        public ArenaBackground          ArenaBackground         => m_ArenaBackground;
 
         #endregion
 
 
         #region Inherited Manipulators
 
-        void Awake()
-        {
-            if (s_Instance != null)
-            {
-                Destroy(gameObject);
-                return;
-            }
+        //void Awake()
+        //{
+        //    if (s_Instance != null)
+        //    {
+        //        Destroy(gameObject);
+        //        return;
+        //    }
 
-            s_Instance = this;
-            Initialize();
-        }
+        //    Initialize();
+        //}
 
         #endregion
 
 
         #region Private Manipulators
 
-        void Initialize()
+        void FindComponents()
         {
-            InitializeArena();
-            InitializeSpawns();
-            InitializeTargetabbleArea();
+            m_Arena = gameObject;
+            m_ArenaBackground = Finder.FindComponent<ArenaBackground>(gameObject);
+            m_TargetHight = Finder.FindComponent<Transform>(m_Arena, c_TargetHight);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        void InitializeArena()
+        public void Initialize()
         {
-            m_Arena = GameObject.Find(c_Arena);
-            if (!Checker.NotNull(Arena))
-            {
-                ErrorHandler.FatalError("Arena not found");
-                return;
-            }
+            FindComponents();
 
-            m_TargetHight = Finder.FindComponent<Transform>(m_Arena, c_TargetHight);
+            InitializeSpawns();
+            InitializeTargetabbleArea();
+
+            s_Instance = this;
         }
 
         /// <summary>
@@ -175,27 +176,27 @@ namespace Game
         public static bool IsInVoid(float x)
         {
             return x > Instance.m_TargettableAreas[0].transform.position.x + Instance.TargettableAreaSize / 2
-                || x < Instance.m_TargettableAreas[1].transform.position.x - Instance.TargettableAreaSize / 2;
+                && x < Instance.m_TargettableAreas[1].transform.position.x - Instance.TargettableAreaSize / 2;
         }
  
         /// <summary>
         /// 
         /// </summary>
-        public static ArenaManager Instance
+        public static ArenaManager Instance => s_Instance;
+
+        public static void Clear()
         {
-            get
+            ArenaManager arenaManager = s_Instance;
+            if (arenaManager == null)
             {
-                if (s_Instance != null)
-                    return s_Instance;
-
-                s_Instance = FindFirstObjectByType<ArenaManager>();
-
-                if (s_Instance == null)
-                    return null;
-
-                s_Instance.Initialize();
-                return s_Instance;
+                arenaManager = FindAnyObjectByType<ArenaManager>();
             }
+
+            if (arenaManager == null)
+                return;
+
+            s_Instance = null;
+            Destroy(arenaManager.gameObject);
         }
 
         #endregion

@@ -47,8 +47,15 @@ namespace Game.Spells
 
         protected virtual void ApplyEndHits()
         {
+            // calculate spell damages
+            var damages = GetInt(EStateEffectProperty.EndDamages);
+
+            // add special bonus damages
+            if (StateEffectName == EStateEffect.Burn.ToString())
+                damages += m_Caster.StateHandler.GetInt(EStateEffectProperty.BonusBurnDamages);
+
             // hit
-            var damages = m_Controller.Life.Hit(GetInt(EStateEffectProperty.EndDamages));
+            damages = m_Controller.Life.Hit(damages);
 
             // apply lifesteal (on caster)
             m_Caster.Life.Heal((int)Mathf.Round(damages * FinalLifeSteal));

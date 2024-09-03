@@ -54,19 +54,10 @@ namespace Menu.PopUps
 
         public void Initialize(Enum enumValue, int level, bool infoOnly = false)
         {
-            base.Initialize();
-
+            SetupCollectable(enumValue, level);
             m_InfoOnly = infoOnly;
 
-            // load data of the item
-            if (enumValue.GetType() == typeof(ECharacter))
-                m_Data = CharacterLoader.GetCharacterData((ECharacter)enumValue, level, destroy: false);
-                
-            else if (enumValue.GetType() == typeof(ESpell))
-                m_Data = SpellLoader.GetSpellData((ESpell)enumValue, level, destroy: false);
-                            
-            else if (enumValue.GetType() == typeof(ERune))
-                m_Data = SpellLoader.GetRuneData((ERune)enumValue, level, destroy: false);
+            base.Initialize();
         }
 
         protected override void FindComponents()
@@ -74,7 +65,7 @@ namespace Menu.PopUps
             base.FindComponents();
 
             m_PreviewContainer      = Finder.Find(m_WindowContent, "PreviewContainer");
-            m_InfosContent          = Finder.Find(m_WindowContent, "InfosContent");
+            m_InfosContent          = Finder.Find(m_WindowContent, "InfosContent", false);
 
             m_UpgradeButton         = Finder.FindComponent<Button>(m_Buttons, "UpgradeSubButton", false);
             if (m_UpgradeButton != null)
@@ -113,6 +104,19 @@ namespace Menu.PopUps
 
 
         #region GUI Manipulators
+
+        protected virtual void SetupCollectable(Enum enumValue, int level)
+        {
+            // load data of the item
+            if (enumValue.GetType() == typeof(ECharacter))
+                m_Data = CharacterLoader.GetCharacterData((ECharacter)enumValue, level, destroy: false);
+
+            else if (enumValue.GetType() == typeof(ESpell))
+                m_Data = SpellLoader.GetSpellData((ESpell)enumValue, level, destroy: false);
+
+            else if (enumValue.GetType() == typeof(ERune))
+                m_Data = SpellLoader.GetRuneData((ERune)enumValue, level, destroy: false);
+        }
 
         protected override void AdjustAspectRatio()
         {
@@ -168,6 +172,9 @@ namespace Menu.PopUps
         /// </summary>
         protected virtual void SetUpAllInfoRows()
         {
+            if (m_InfosContent == null)
+                return;
+
             // clean previous content
             UIHelper.CleanContent(m_InfosContent);
             m_InfoRows = new();

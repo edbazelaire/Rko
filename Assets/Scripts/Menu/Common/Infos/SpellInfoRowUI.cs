@@ -15,7 +15,7 @@ namespace Menu.Common.Infos
         TMP_Text    m_Value;
         TMP_Text    m_BonusValue;
 
-        bool m_IsPerc;
+        string m_PropertyName;
 
         #endregion
 
@@ -43,7 +43,7 @@ namespace Menu.Common.Infos
             // by default, deactivate bonus value
             m_BonusValue.gameObject.SetActive(false);
             // is the value a percentage value ?
-            m_IsPerc = CheckIsPercentageValue(name);
+            m_PropertyName = name;
 
             // handles special cases
             switch (name)
@@ -97,7 +97,7 @@ namespace Menu.Common.Infos
 
         public void RefreshValue(float value, float? newValue = null)
         {
-            m_Value.text = FormatValue(value, m_IsPerc);
+            m_Value.text = TextHandler.FormatPropertyValue(value, m_PropertyName);
 
             if (newValue == null || newValue.Value - value == 0)
             {
@@ -107,7 +107,7 @@ namespace Menu.Common.Infos
 
             float bonus = newValue.Value - value;
             m_BonusValue.gameObject.SetActive(true);
-            m_BonusValue.text = (bonus > 0 ? "+" : "") + FormatValue(bonus, m_IsPerc);
+            m_BonusValue.text = (bonus > 0 ? "+" : "") + TextHandler.FormatPropertyValue(bonus, m_PropertyName);
             m_BonusValue.color = bonus > 0 ? Color.green : Color.red;
         }
 
@@ -116,29 +116,7 @@ namespace Menu.Common.Infos
 
         #region Format
 
-        public static string FormatValue(float value, bool isPerc)
-        {
-            if (isPerc)
-                return FormatPercValue(value);
-
-            return value.ToString(Mathf.Round(value) == value ? "0" : "F2");
-        }
-
-        public static string FormatPercValue(float value)
-        {
-            return (value >= 0.01 ? Mathf.Round(value * 100).ToString("0") : (Mathf.Round(value * 1000) / 10).ToString("F1")) + "%";
-        }
-
-        public static bool CheckIsPercentageValue(string property)
-        {
-            return property.EndsWith("Perc")
-                || property == EStateEffectProperty.BonusLifeSteal.ToString()
-                || property == EStateEffectProperty.AttackSpeed.ToString()
-                || property == EStateEffectProperty.CastSpeed.ToString()
-                || property == EStateEffectProperty.LifeSteal.ToString()
-                || property == EStateEffectProperty.SpeedBonus.ToString()
-                ;
-        }
+        
 
         #endregion
     }

@@ -25,8 +25,6 @@ namespace Game.Character
         Controller              m_Controller;
         /// <summary> animator of the Character </summary>
         Animator                m_Animator;
-        /// <summary> particles displayed with the animation </summary>
-        List<GameObject>        m_AnimationPrefabs;
 
         #endregion
 
@@ -42,7 +40,6 @@ namespace Game.Character
 
             m_Controller = GetComponent<Controller>();
             m_Animator = animator;
-            m_AnimationPrefabs = new List<GameObject>();
 
             m_Controller.StateHandler.StateEffectList.OnListChanged         += OnStateEffectListChanged;
             m_Controller.StateHandler.SpeedBonus.OnValueChanged             += OnSpeedBonusValueChanged;
@@ -94,7 +91,6 @@ namespace Game.Character
             m_Animator.SetTrigger(win ? EAnimation.Win.ToString() : EAnimation.Loss.ToString());
         }
 
-
         #endregion
 
 
@@ -127,6 +123,12 @@ namespace Game.Character
         void MoveAnimation(bool isMoving)
         {
             m_Animator.SetBool("IsMoving", isMoving);
+        }
+
+        [ClientRpc]
+        public void CancelCastAnimationClientRpc(EAnimation animation = EAnimation.None)
+        {
+            CancelCastAnimation(animation);
         }
 
         public void CancelCastAnimation(EAnimation animation = EAnimation.None)

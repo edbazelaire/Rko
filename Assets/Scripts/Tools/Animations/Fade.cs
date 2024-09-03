@@ -11,6 +11,7 @@ namespace Tools.Animations
         #region Members
 
         List<(Image Image, float BaseOpacity)>          m_Images;
+        List<(RawImage Image, float BaseOpacity)>       m_RawImages;
         List<(SpriteRenderer Image, float BaseOpacity)> m_Sprites;
         List<TMP_Text>                                  m_Texts;
 
@@ -93,6 +94,14 @@ namespace Tools.Animations
             foreach (Image image in images)
             {
                 m_Images.Add((image, image.color.a));
+            }
+
+            // add Raw Images
+            m_RawImages = new();
+            RawImage[] rawImages = Finder.FindComponents<RawImage>(gameObject).ToArray();
+            foreach (RawImage image in rawImages)
+            {
+                m_RawImages.Add((image, image.color.a));
             }
 
             // add sprites

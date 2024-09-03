@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fa8a57d0a9cfc440895df3503c97316, type: 3}
   m_Name: BerserkerRune
   m_EditorClassIdentifier: 
-  m_Description: 
-  m_DescriptionVariables: 
+  m_Description: Increase your Damages by {0}, your Movement Speed by {1} and your
+    Attack Speed by {2}. Also, heal for {3} of the damages delt. The effectiveness
+    of the boosts is multiply by the percentage of missing health
+  m_DescriptionVariables: 08000000030000001000000009000000
   m_StateEffectType: 0
   m_VisualEffects:
   - Prefab: {fileID: 8992406793559661190, guid: 0a4d304b385159340bf3a0d4e7535924, type: 3}
@@ -55,28 +57,31 @@ MonoBehaviour:
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 0
   m_DefaultState: 0
+  m_Priority: 0
   m_Duration: -1
+  m_IsInstantanious: 0
   m_MaxStacks: 1
-  m_SpeedBonus: 0.1
+  m_StackDecay: -1
+  m_SpeedBonus: 0.2
   m_CastSpeed: 0
-  m_AttackSpeed: 0.15
+  m_AttackSpeed: 0.1
   m_CooldownReduction: 0
   m_CooldownReductionPerc: 0
   m_Shield: 0
   m_ResistanceFix: 0
   m_ResistancePerc: 0
   m_BonusDamages: 0
-  m_BonusDamagesPerc: 0.2
-  m_BonusLifeSteal: 0.2
+  m_BonusDamagesPerc: 0.1
+  m_BonusLifeSteal: 0.1
+  m_BonusBurnDamages: 0
+  m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel:
-  - StateEffectProperty: 1
-    ScalingFactor: 0.05
   - StateEffectProperty: 9
-    ScalingFactor: 0.1
+    ScalingFactor: 0.05
   - StateEffectProperty: 8
-    ScalingFactor: 0.1
+    ScalingFactor: 0.05
   - StateEffectProperty: 16
     ScalingFactor: 0.05
   m_StateEffectScalingStacks: []

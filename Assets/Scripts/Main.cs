@@ -26,9 +26,6 @@ using Menu.PopUps.PopUps.MessagePopUps;
 using Unity.Services.Friends.Models;
 
 
-
-
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -97,6 +94,7 @@ namespace Assets
                 AchievementLoader.Initialize();
                 ItemLoader.Initialize();
                 RSDManager.Intialize();
+                ErrorHandler.IsActivated = PlayerPrefsHandler.GetDebug(EDebugOption.ErrorHandler);
 
                 // init settings
                 InitializeSettings();
@@ -218,6 +216,13 @@ namespace Assets
                     return;
             }
 
+            // ===============================================================
+            // SPECIAL CASE (remove when this system is replaced by real friends system) 
+            // keep people waiting for ranked games as ONLINE
+            if (state == EAppState.Lobby && LobbyHandler.Instance.GameMode == EGameMode.Ranked)
+                availability = Availability.Online;
+            // ===============================================================
+
             if (FriendsHandler.CurrentActivity != null && availability.ToString() == FriendsHandler.CurrentActivity.Status)
                 return;
 
@@ -261,7 +266,7 @@ namespace Assets
             }
 
             // instantiate object in the canvas
-            var obj = Instantiate(AssetLoader.Load<GameObject>(popUpPath + popUpState.ToString()));
+            var obj = Instantiate(AssetLoader.Load<GameObject>(popUpState.ToString(), popUpPath));
             if (obj == null)
             {
                 ErrorHandler.Error("Unable to find popup : " + popUpState.ToString());
@@ -312,6 +317,10 @@ namespace Assets
                     obj.GetComponent<SpellInfoPopUp>().Initialize((ESpell)args[0], (int)args[1], infoOnly);
                     break;
 
+                case EPopUpState.RuneInfoPopUp:
+                    obj.GetComponent<RuneInfoPopUp>().Initialize((ERune)args[0], (int)args[1], args.Count() >= 3 ? (ERuneActivation)args[2] : ERuneActivation.None);
+                    break;
+
                 case EPopUpState.CollectableInfoPopUp:
                 case EPopUpState.CharacterInfoPopUp:
                     obj.GetComponent<CollectableInfoPopUp>().Initialize((ECharacter)args[0], (int)args[1]);
@@ -319,10 +328,6 @@ namespace Assets
 
                 case EPopUpState.StateEffectPopUp:
                     obj.GetComponent<StateEffectPopUp>().Initialize((SStateEffectData)args[0], (int)args[1]);
-                    break;
-
-                case EPopUpState.RuneSelectionPopUp:
-                    obj.GetComponent<RuneSelectionPopUp>().Initialize();
                     break;
 
                 case EPopUpState.TriggerEffectPopUp:

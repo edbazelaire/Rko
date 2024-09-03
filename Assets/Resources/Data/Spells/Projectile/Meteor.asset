@@ -43,6 +43,23 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 
+  - Prefab: {fileID: 2272309172655654138, guid: 95898a1957756fa4887c04c98e45b439, type: 3}
+    MaterialEffect: {fileID: 0}
+    GFXLifetime:
+      StartSpellPart: 1
+      EndSpellPart: 2
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0.2
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 0
+    BodyPart: 7
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
   - Prefab: {fileID: 130346, guid: 07bf9ced87963e24299c2c2a22bfeeb6, type: 3}
     MaterialEffect: {fileID: 0}
     GFXLifetime:
@@ -96,7 +113,7 @@ MonoBehaviour:
   PersistanceAfterEnd: 0
   Animation: 6
   IsCancellable: 0
-  AnimationTimer: 0.6
+  AnimationTimer: 0.8
   m_Cooldown: 45
   Trajectory: 3
   m_StopOnTargetPos: 0

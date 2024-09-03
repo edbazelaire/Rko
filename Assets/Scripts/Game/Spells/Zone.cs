@@ -218,9 +218,6 @@ namespace Game.Spells
                 }
             }
 
-            if (IsAutoAttack && m_Controller.RuneData.GetType() == typeof(AutoAttackRune))
-                ((AutoAttackRune)m_Controller.RuneData).ApplyOnHit(ref controller, m_Controller);
-
             // apply state effects specifics to enemies
             ApplyEnemyStateEffects(controller);
 

@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class GameManager : OvNetworkBehavior
+    public class GameManager : MNetworkBehavior
     {
         #region Members
 
@@ -95,7 +95,7 @@ namespace Game
 
         #region Initialization & End
 
-        void Initialize()
+        public void Initialize()
         {
             ErrorHandler.Log("Initialize()", ELogTag.GameSystem);
 
@@ -113,13 +113,24 @@ namespace Game
             // set number of max players equal to number of players in the lobby
             m_NPlayers.Value = 2;
 
-            // set that the GameManager is initialized to avoid re-initialization
-            m_Initialized = true;
-
-            // set GameManager is Instantiated and is waiting for players connections
-            SetState(EGameState.WaitingForConnection);
+            StartCoroutine(CheckInitialized());
 
             return;
+        }
+
+        IEnumerator CheckInitialized()
+        {
+            TimeErrorWrapper.Instance.New(TIME_WRAPPER_ID, 30f, OnInitializingTimeLimit);
+
+            while (GameUIManager.Instance != null && ! GameUIManager.Initialized)
+            {
+                yield return null;
+            }
+
+            TimeErrorWrapper.Instance.Cancel(TIME_WRAPPER_ID);
+
+            // GameManager is Initialized and ready to receive connections
+            SetState(EGameState.WaitingForConnection);
         }
 
         /// <summary>
@@ -350,11 +361,10 @@ namespace Game
                 if (cameraAdjuster == null)
                 {
                     ErrorHandler.Error("No CameraAdjuster was found for client " + OwnerClientId);
+                    return;
                 }
-                else
-                {
-                    cameraAdjuster.Initialize();
-                }
+
+                cameraAdjuster.Initialize();
             }
            
             foreach (Controller controller in m_Controllers.Values)
@@ -377,6 +387,7 @@ namespace Game
             foreach (Controller player in m_Controllers.Values)
             {
                 player.Movement.Shake();
+                player.Movement.ShakeClientRPC();
             }
         }
 
@@ -656,7 +667,6 @@ namespace Game
             if (checkSpawned && !instance.IsSpawned)
                 return false;
 
-            instance.Initialize();
             s_Instance = instance;
             return true;
         }
@@ -720,6 +730,21 @@ namespace Game
             CheckGameEnd();
         }
 
+        void OnRelayDisconnected()
+        {
+            ErrorHandler.Warning("Relay connection lost. Returning to Main Menu.");
+
+            // ====================================
+            // TODO : Handle disconnection, such as saving game state or showing a message to the player
+            // ====================================
+
+            // Load the Main Menu scene
+            SceneLoader.Instance.LoadScene("MainMenu");
+
+            // shutdown the GameManager
+            Shutdown();
+        }
+
         #endregion
 
 
@@ -727,11 +752,25 @@ namespace Game
 
         void ExitWithError(string message)
         {
+            // set up error Message display
             ErrorHandler.Error(message);
-
             Main.AddStoredEvent(EAppState.MainMenu, () => Main.SetPopUp(EPopUpState.MessagePopUp, message));
+
+            // close Lobby and GameManager
             GameManager.Instance.Shutdown();
+            LobbyHandler.Instance.LeaveLobby();
+            
+            // load MainMenuy scene
             SceneLoader.Instance.LoadScene("MainMenu");
+        }
+
+        void OnInitializingTimeLimit()
+        {
+            ExitWithError(
+                "An error has occured while creating " + LobbyHandler.Instance.GameMode + " game mode : "
+                    + "\n   + Game State : " + m_State
+                    + "\n   + Reason : Initializing game has reached time limit"
+            );
         }
 
         void OnPreparingGameTimeLimit()

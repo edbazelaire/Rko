@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
-using UnityEngine.Animations;
-using UnityEngine.UIElements;
 
 
 namespace Data
@@ -162,14 +160,9 @@ namespace Data
             
             if (! go.TryGetComponent(out SpellGFX spellGfx))
             {
-                // NO SPECIFIC COMPONENT : add default spell graphix component
+                // NO SPECIFIC COMPONENT : add default spell graphics component
                 spellGfx = go.AddComponent<SpellGFX>();
             }
-
-            //else if (go.TryGetComponent(out SpellPreview spellPreview))
-            //{
-            //    spellPreview.Intialize(controller);
-            //}
 
             spellGfx.Initialize(this.SpawnTarget != ESpawnTarget.Target ? caster : targetController, spellData, spell, stateEffectName, this);
             return spellGfx;

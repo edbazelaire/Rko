@@ -5,7 +5,6 @@ using System;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 namespace Game.Spells
 {
@@ -70,9 +69,12 @@ namespace Game.Spells
         {
             base.End();
 
+            if (! IsServer) 
+                return;
+
             // force pos to original Y
             var pos = m_Controller.transform.position;
-            pos.y = m_OriginalPosition.y;
+            pos.y = 0;
             m_Controller.transform.position = pos;
 
             // re activate collider
@@ -90,6 +92,7 @@ namespace Game.Spells
             base.OnDestroy();
 
             // reset player position
+            m_OriginalPosition.y = 0;
             m_Controller.transform.position = m_OriginalPosition;
 
             // reset jump state

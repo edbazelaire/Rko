@@ -62,7 +62,7 @@ namespace Data
         /// </summary>
         /// <returns></returns>
         /// 
-        public override List<GameObject> SpawnOnCastPrefabs(Transform ownerTransform, Vector3 target)
+        public override List<GameObject> SpawnOnCastPrefabs(Vector3 target)
         {
             List<GameObject> gameObjects = new List<GameObject>();
             // spawn on cast particles
@@ -72,7 +72,8 @@ namespace Data
 
                 float delay = Delay;
                 if (m_Speed > 0)
-                    delay += Math.Abs(target.x - ownerTransform.position.x) / Speed;
+                    //delay += Math.Abs(target.x - ownerTransform.position.x) / Speed;
+                    delay += 5f / Speed;
 
                 var size = Size;
                 if (OnHit.Count > 0 && OnHit[0].SpellType == ESpellType.Aoe)

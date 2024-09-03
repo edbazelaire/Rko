@@ -4,6 +4,7 @@ using System.Linq;
 using TMPro;
 using Tools;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 
 namespace Menu.Common.Filters
@@ -14,13 +15,13 @@ namespace Menu.Common.Filters
 
         // =============================================================================================
         // Constants
+        public const string CLEAR_VALUE = "Clear";
         public const string NO_FILTER_VALUE = "No Filter";
 
         // =============================================================================================
         // Data
         [SerializeField] protected FilterIcon m_IconTemplate;
         protected Type m_EnumType;
-        protected List<string> m_CurrentValues = new();
 
         // =============================================================================================
         // GameObjects & Components
@@ -62,7 +63,10 @@ namespace Menu.Common.Filters
             m_Text.gameObject.SetActive(true);
             m_ValuesContainer.SetActive(false);
 
-            UIHelper.SetUpMultiDropdown(m_Dropdown, Enum.GetNames(EnumType).ToList(), "", OnValueChanged);
+            List<string> values = new List<string>() { CLEAR_VALUE };
+            values.AddRange(Enum.GetNames(EnumType).ToList());
+
+            UIHelper.SetUpDropdown(m_Dropdown, values, CLEAR_VALUE, OnValueChanged);
         }
 
         #endregion
@@ -72,18 +76,19 @@ namespace Menu.Common.Filters
 
         public List<T> GetValues<T>()
         {
-            List<T> enumValues = new();
-            foreach (string value in m_CurrentValues)
-            {
-                if (!Enum.TryParse(typeof(T), value, out object enumValue))
-                {
-                    ErrorHandler.Error("Unable to parse " + value + " in " + typeof(T));
-                    continue;
-                }
+            var enumValues = new List<T>();
 
-                enumValues.Add((T)enumValue);
+            string value = m_Dropdown.options[m_Dropdown.value].text;
+            if (value == CLEAR_VALUE)
+                return enumValues;
+
+            if (! Enum.TryParse(typeof(T), value, out object enumValue))
+            {
+                ErrorHandler.Error("Unable to parse " + value + " in " + typeof(T));
+                return enumValues;
             }
 
+            enumValues.Add((T)enumValue);
             return enumValues;
         }
 
@@ -95,7 +100,6 @@ namespace Menu.Common.Filters
         protected virtual void ClearContent()
         {
             UIHelper.CleanContent(m_ValuesContainer);
-            m_CurrentValues.Clear();
             m_Text.gameObject.SetActive(true);
             m_ValuesContainer.SetActive(false);
             return;
@@ -131,9 +135,9 @@ namespace Menu.Common.Filters
             base.UnRegisterListeners();
         }
 
-        protected virtual void OnValueChanged(List<string> newValues)
+        protected virtual void OnValueChanged(string newValue)
         {
-            if (newValues.Count == 0)
+            if (newValue == CLEAR_VALUE)
             {
                 ClearContent();
                 return;
@@ -141,18 +145,13 @@ namespace Menu.Common.Filters
 
             UIHelper.CleanContent(m_ValuesContainer);
 
-            if (m_CurrentValues.Count == 0)
+            if (m_Dropdown.value != 0)
             {
                 m_Text.gameObject.SetActive(false);
                 m_ValuesContainer.SetActive(true);
             }
 
-            foreach (string value in newValues)
-            {
-                AddFilterIcon(value);
-            }
-
-            m_CurrentValues = newValues;
+            AddFilterIcon(newValue);
         }
 
          #endregion

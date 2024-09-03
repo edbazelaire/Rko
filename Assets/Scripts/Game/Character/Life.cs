@@ -89,6 +89,9 @@ public class Life : NetworkBehaviour
         // calculate damages after shield
         damage = HitShield(damage);
 
+        if (damage == 0)
+            return damage;
+
         // apply damages (after shield)
         m_Hp.Value -= damage;
 

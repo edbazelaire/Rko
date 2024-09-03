@@ -215,11 +215,11 @@ namespace Game.Character
         #region Client RPC
 
         [ClientRpc]
-        void SpellCastedClientRPC(ESpell spell)
+        void SpellCastedClientRPC(ESpell spell, Vector3 target)
         {
             OnSpellCasted?.Invoke(spell);
 
-            GetSpellData(spell).SpawnOnCastPrefabs(m_Controller.transform, m_TargetPos.Value);
+            GetSpellData(spell).SpawnOnCastPrefabs(target);
         }
 
         #endregion
@@ -345,6 +345,14 @@ namespace Game.Character
             {
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
                     ErrorHandler.Log("Spell cast (" + spell + ") BLOCKED : HasStateBlockingCast()", ELogTag.SpellHandler);
+                return false;
+            }
+
+            // performing a special animation : cant cast or move
+            if (m_Controller.StateHandler.HasState(EStateEffect.SpecialAnimation))
+            {
+                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
+                    ErrorHandler.Log("Spell cast (" + spell + ") BLOCKED : Has state 'SpecialAnimation'", ELogTag.SpellHandler);
                 return false;
             }
 
@@ -487,11 +495,14 @@ namespace Game.Character
             Cast(spell);
             m_Controller.Movement.CancelMovement(false);
 
-            m_Controller.AnimationHandler.CancelCastAnimation();
+            // ===================================================================================
+            // TODO : REMOVE ? (handle in Cast() method)
+            //m_Controller.AnimationHandler.CancelCastAnimationClientRpc();
 
-            m_IsCasting.Value = false;
-            m_IsCurrentSpellCancellable = true;
-            m_CastCoroutine = null;
+            //m_IsCasting.Value = false;
+            //m_IsCurrentSpellCancellable = true;
+            //m_CastCoroutine = null;
+            // ===================================================================================
 
             // reset spell selection
             TrySelectSpell(m_NextSelectedSpell);
@@ -516,7 +527,7 @@ namespace Game.Character
             StartCoroutine(spellData.CastDelay(m_Controller.PlayerId, m_TargetPos.Value, m_SpellSpawn.position, m_SpellSpawn.rotation, recalculateTarget: false));
 
             // cast spell on client side
-            SpellCastedClientRPC(spell);
+            SpellCastedClientRPC(spell, m_TargetPos.Value);
 
             // spend the energy of the spell
             if (spellData.EnergyCost > 0)
@@ -525,7 +536,9 @@ namespace Game.Character
             // inform that casting is done
             CallSpellEventClientRPC(spellData.name, ESpellEvent.OnCast);
             m_IsCasting.Value = false;
-            m_Controller.AnimationHandler.CancelCastAnimation();
+            m_Controller.AnimationHandler.CancelCastAnimationClientRpc();
+            m_IsCurrentSpellCancellable = true;
+            m_CastCoroutine = null;
 
             // setup global cooldown
             m_GlobalCooldown.Value = c_GlobalCooldown;
@@ -550,7 +563,7 @@ namespace Game.Character
             m_IsCurrentSpellCancellable = true;
 
             // cancel cast animation
-            m_Controller.AnimationHandler.CancelCastAnimation();
+            m_Controller.AnimationHandler.CancelCastAnimationClientRpc();
 
             // call PreSpellEvent
             CallSpellEventClientRPC(m_SelectedSpell.ToString(), ESpellEvent.OnEnd);
@@ -701,9 +714,9 @@ namespace Game.Character
             return GetSpellData(spell).IsAutoTarget;
         }
 
-        public float GetCastSpeed(ESpell spell)
+        public float GetCastSpeed(string spell)
         {
-            return Mathf.Max(0.01f, spell == AutoAttack ? Settings.AutoAttackSpeedFactor * m_Controller.StateHandler.GetFloat(EStateEffectProperty.AttackSpeed) : Settings.CastSpeedFactor * m_Controller.StateHandler.GetFloat(EStateEffectProperty.CastSpeed));
+            return Mathf.Max(0.01f, spell == AutoAttack.ToString() ? Settings.AutoAttackSpeedFactor * m_Controller.StateHandler.GetFloat(EStateEffectProperty.AttackSpeed) : Settings.CastSpeedFactor * m_Controller.StateHandler.GetFloat(EStateEffectProperty.CastSpeed));
         }
 
         public float CalculateCooldown(float baseCooldown)
@@ -839,7 +852,7 @@ namespace Game.Character
 
         public bool IsAutoAttack => m_SelectedSpell == AutoAttack;
 
-        public float CurrentCastSpeedFactor => GetCastSpeed(m_SelectedSpell);
+        public float CurrentCastSpeedFactor => GetCastSpeed(m_SelectedSpell.ToString());
 
         #endregion
     }

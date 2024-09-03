@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.AdaptivePerformance;
-using UnityEngine.Rendering;
 
 namespace Tools
 {
@@ -58,6 +56,18 @@ namespace Tools
 
             // check if the local mouse position is within the bounds of the game object
             return RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition, Camera.main);
+        }
+
+        public static string FindContext(Transform transform)
+        {
+            string context = transform.name;
+            while (transform.parent != null)
+            {
+                transform = transform.parent;
+                context = transform.name + "." + context;
+            }
+
+            return context;
         }
 
         #endregion

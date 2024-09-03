@@ -1,5 +1,6 @@
 ﻿using Assets;
 using Enums;
+using Game.Spells;
 using Menu.Common.Buttons;
 using System;
 using Tools;
@@ -87,13 +88,16 @@ namespace Menu.MainMenu.MainTab.GameSection.Training
         {
             UIHelper.CleanContent(m_RunePreviewContainer);
 
-            ERune rune = PlayerPrefsHandler.GetString<ERune>(EPlayerPref.TrainingRune);
+            for (int index = 0; index < 3; index++)
+            {
+                ERune rune = PlayerPrefsHandler.GetString<ERune>(EPlayerPref.TrainingRune, index);
 
-            var runeItem = Instantiate(AssetLoader.LoadTemplateItem(rune), m_RunePreviewContainer.transform).GetComponent<TemplateRuneItemUI>();
-            runeItem.Initialize(rune, asIconOnly: true);
-            runeItem.Button.interactable = true;
-            runeItem.Button.onClick.RemoveAllListeners();
-            runeItem.Button.onClick.AddListener(() => Main.SetCollectableSelectionPopUp<ERune>(OnRuneSelected, false));
+                var runeItem = Instantiate(AssetLoader.LoadTemplateItem(rune), m_RunePreviewContainer.transform).GetComponent<TemplateRuneItemUI>();
+                runeItem.Initialize(rune, asIconOnly: true);
+                runeItem.Button.interactable = true;
+                runeItem.Button.onClick.RemoveAllListeners();
+                runeItem.Button.onClick.AddListener(() => Main.SetCollectableSelectionPopUp<ERune>(OnRuneSelectedCallback(runeItem, index), false));
+            }
         }
 
         #endregion
@@ -125,10 +129,16 @@ namespace Menu.MainMenu.MainTab.GameSection.Training
             RefreshCharacterPreview();
         }
 
-        void OnRuneSelected(ERune rune)
+        Action<ERune> OnRuneSelectedCallback(TemplateRuneItemUI template, int index)
         {
-            PlayerPrefs.SetString("TrainingRune", rune.ToString());
-            RefreshRunePreview();
+            return (ERune rune) =>
+            {
+                template.SetUpCollectable(rune, true);
+                template.SetBottomOverlay("Level 9");
+                template.Button.interactable = true;
+
+                PlayerPrefsHandler.SetString(EPlayerPref.TrainingRune, rune.ToString(), index);
+            };
         }
 
         Action<ESpell> OnSpellSelectedCallback(TemplateSpellItemUI template, int index)

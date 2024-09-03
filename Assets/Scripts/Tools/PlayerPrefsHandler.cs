@@ -206,7 +206,7 @@ namespace Tools
 
         public static bool GetDebug(EDebugOption option)
         {
-            return PlayerPrefs.GetInt(option.ToString(), option == EDebugOption.ErrorHandler ? 1 : 0) == 1;
+            return PlayerPrefs.GetInt(option.ToString(), 0) == 1;
         }
 
         public static ESpell[] GetTrainingSpells()
@@ -216,6 +216,15 @@ namespace Tools
                 GetString<ESpell>(EPlayerPref.TrainingSpell, 1),
                 GetString<ESpell>(EPlayerPref.TrainingSpell, 2),
                 GetString<ESpell>(EPlayerPref.TrainingSpell, 3),
+            };
+        }
+
+        public static ERune[] GetTrainingRunes()
+        {
+            return new ERune[] {
+                GetString<ERune>(EPlayerPref.TrainingRune, 0),
+                GetString<ERune>(EPlayerPref.TrainingRune, 1),
+                GetString<ERune>(EPlayerPref.TrainingRune, 2),
             };
         }
 

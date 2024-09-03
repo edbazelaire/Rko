@@ -16,7 +16,6 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 public class EndGameUI : MObject
 {
     #region Members
@@ -266,7 +265,7 @@ public class EndGameUI : MObject
                     win,
                     character:          StaticPlayerData.Character,
                     playerLevel:        StaticPlayerData.CharacterLevel,
-                    rune:               StaticPlayerData.Rune,
+                    runes:              StaticPlayerData.Runes,
                     spells:             StaticPlayerData.Spells.ToList(),
                     spellLevels:        StaticPlayerData.SpellLevels.ToList(),
                     arenaType:          PlayerPrefsHandler.GetArenaType(),
@@ -281,7 +280,7 @@ public class EndGameUI : MObject
                     win, 
                     character:      StaticPlayerData.Character, 
                     characterLevel: StaticPlayerData.CharacterLevel,
-                    rune:           StaticPlayerData.Rune,
+                    runes:          StaticPlayerData.Runes,
                     spells:         StaticPlayerData.Spells.ToList(),
                     spellLevels:    StaticPlayerData.SpellLevels.ToList(),
                     gameId:         PlayerPrefs.GetString(EPlayerPref.CurrentGameId.ToString()),
@@ -339,8 +338,6 @@ public class EndGameUI : MObject
                 ErrorHandler.Error($"LOSS : currentLevel ({currentStage}) == previousLevel ({previousLevel}) BUT currentLevel != 0 ");
             }
         }
-
-        Debug.Log($"Checked : current stage ({currentStage}) - previous level ({previousLevel})");
     }
 
     #endregion

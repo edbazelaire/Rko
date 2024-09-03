@@ -152,7 +152,6 @@ namespace Save
         public static void UpdateLeagueValue(bool up, int nTimes = 1, bool save = true)
         {
             var leagueCloudData = LeagueCloudData;
-            bool hasChanged = false;
 
             // Check that nTimes is only 1 or 2, other cases should not occure
             if (nTimes != 1 && nTimes != 2)
@@ -171,25 +170,30 @@ namespace Save
                     if (leagueCloudData.CurrentStage == 0)
                         break;
 
-                    hasChanged = true;
                     leagueCloudData.CurrentStage--;
                 }
 
                 else
                 {
-                    hasChanged = true;
                     SLeagueData leagueData = Main.LeagueDataConfig.CurrentLeagueData;
 
                     // ADD stage level
                     if (leagueCloudData.CurrentStage == leagueData.LevelData[CurrentLeagueLevel].NStages)
+                    {
                         UpgradeLeagueLevel(false);
-                    else
-                        leagueCloudData.CurrentStage++;
+                        continue;
+                    }
+                    
+                    leagueCloudData.CurrentStage++;
                 }
+
+                // update league data (locally)
+                SetLeagueData(leagueCloudData, false);
             }
 
-            if (save && hasChanged)
-                SaveLeagueData(leagueCloudData);
+            // save after each modifications is completed
+            if (save)
+                Instance.SaveValue(KEY_LEAGUE);
         }
 
         public static void UpgradeLeagueLevel(bool save = true)
@@ -208,8 +212,7 @@ namespace Save
             leagueCloudData.CurrentStage = 0;
             leagueCloudData.CurrentLevel++;
 
-            if (save)
-                SaveLeagueData(leagueCloudData);
+            SetLeagueData(leagueCloudData, save);
         }
 
         public static void UpgradeLeague(bool save = true)
@@ -226,14 +229,15 @@ namespace Save
             leagueCloudData.CurrentLevel = 0;
             leagueCloudData.CurrentLeague = newLeague;
 
-            if (save)
-                SaveLeagueData(leagueCloudData);
+            SetLeagueData(leagueCloudData, save);
         }
 
-        public static void SaveLeagueData(SLeagueCloudData leagueCloudData)
+        public static void SetLeagueData(SLeagueCloudData leagueCloudData, bool save = true)
         {
             Instance.m_Data[KEY_LEAGUE] = leagueCloudData;
-            Instance.SaveValue(KEY_LEAGUE);
+
+            if (save)
+                Instance.SaveValue(KEY_LEAGUE);
 
             LeagueDataChangedEvent?.Invoke();
         }

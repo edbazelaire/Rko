@@ -1,7 +1,7 @@
 using Assets.Scripts.Managers.Sound;
 using Enums;
 using Game;
-using Game.Backgroud;
+using Game.Background;
 using Game.UI;
 using Managers;
 using Network;
@@ -16,15 +16,12 @@ public class GameUIManager : MonoBehaviour
     #region Members
 
     static GameUIManager s_Instance;
-
-    [SerializeField] Canvas m_BackgroundCanvas;
+    private bool m_Initialized;
+    public static bool Initialized => s_Instance != null && s_Instance.m_Initialized;
 
     private IntroGameUI    m_IntroGameUI;
     private EndGameUI      m_EndGameUI;
     private ErrorGameUI    m_ErrorGameUI;
-
-    GameObject m_Background;
-    //[SerializeField] private Image          m_Background;
 
     const string        c_PlayerUIContainerPrefix   = "PlayerUIContainer_";
     const string        c_SpellsContainer           = "SpellsContainer";
@@ -64,7 +61,7 @@ public class GameUIManager : MonoBehaviour
     public static ErrorGameUI ErrorGameUI               => Instance.m_ErrorGameUI;
     public static bool LeftMovementButtonPressed        => Instance.m_LeftMovementButtonPressed;
     public static bool RightMovementButtonPressed       => Instance.m_RightMovementButtonPressed;
-   
+
     #endregion
 
 
@@ -92,7 +89,9 @@ public class GameUIManager : MonoBehaviour
         m_EndGameUI.Initialize();
         m_ErrorGameUI.gameObject.SetActive(false);
 
-        SetUpBackground();
+        LoadArena();
+
+        m_Initialized = true;
     }
 
     /// <summary>
@@ -140,54 +139,6 @@ public class GameUIManager : MonoBehaviour
     void DeleteGameUI()
     {
         Destroy(gameObject);
-    }
-
-    #endregion
-
-
-    #region GUI Manipulators
-
-    void SetUpBackground()
-    {
-        UIHelper.CleanContent(m_BackgroundCanvas.gameObject);
-        m_Background = Instantiate(AssetLoader.Load<GameObject>("NightSkyBackground", AssetLoader.c_ArenaBackgroundsPath), m_BackgroundCanvas.transform);
-        m_Background.GetComponent<NightSkyBackground>().Initialize();
-    }
-
-    public void RescaleBackground(float scale)
-    {
-        if (m_Background == null)
-        {
-            ErrorHandler.Error("No Background to rescale");
-            return;
-        }
-
-        if (scale <= 0)
-        {
-            ErrorHandler.Error("Bad scale provided : " + scale);
-            return;
-        }
-
-        var canvasScaler = m_BackgroundCanvas.GetComponent<CanvasScaler>();
-        if (canvasScaler == null) 
-        {
-            ErrorHandler.Error("Trying to rescale background without CanvasScaler component");
-            return;
-        }
-
-        canvasScaler.scaleFactor = scale;
-    }
-
-    Sprite GetBackgroundImage()
-    {
-        if (LobbyHandler.Instance.GameMode == EGameMode.Arena)
-        {
-            var sprite =  AssetLoader.Load<Sprite>(LobbyHandler.Instance.ArenaType.ToString(), AssetLoader.c_ArenaBackgroundsImagePath);
-            if (sprite != null) 
-                return sprite;
-        }
-
-        return AssetLoader.Load<Sprite>("Default", AssetLoader.c_ArenaBackgroundsImagePath);
     }
 
     #endregion
@@ -281,6 +232,30 @@ public class GameUIManager : MonoBehaviour
         }
 
         return playerDataDict;
+    }
+
+    public void LoadArena()
+    {
+        // clean previous arena manager if any
+        ArenaManager.Clear();
+
+        ArenaManager arenaManager;
+        switch (LobbyHandler.Instance.GameMode)
+        {
+            case EGameMode.Arena:
+                arenaManager = AssetLoader.LoadArena(LobbyHandler.Instance.ArenaType.ToString());
+                break;
+
+            default:
+                arenaManager = AssetLoader.LoadArena("DefaultArena");
+                break;
+        }
+
+        if (arenaManager == null)
+            return;
+
+        arenaManager = Instantiate(arenaManager);
+        arenaManager.Initialize();
     }
 
     #endregion

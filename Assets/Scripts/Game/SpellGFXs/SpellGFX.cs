@@ -20,6 +20,7 @@ namespace Game.SpellGFXs
         protected EBodyPart         m_BodyPart;
 
         protected Coroutine         m_EndCoroutine;
+        protected bool              m_EndStarted = false;
         protected float             m_PersistanceTimer = -1f;
         protected float             m_Duration;
 
@@ -40,6 +41,9 @@ namespace Game.SpellGFXs
             m_StateEffectName   = stateEffectName;
             m_PrefabSpawn       = prefabSpawn;
             m_BodyPart          = bodyPart;
+
+            if (prefabSpawn.Prefab != null && ArenaManager.IsInVoid(transform.position.x))
+                ErrorHandler.Error("Spell GFX spawned in void : " + m_Name + " - " + prefabSpawn.Prefab.name);
 
             // find components if any
             FindComponents();
@@ -90,11 +94,19 @@ namespace Game.SpellGFXs
         /// </summary>
         public virtual void End()
         {
+            if (m_EndStarted)
+                return;
+
             ErrorHandler.Log("ENDED SPELL GFX : " + this.name, ELogTag.SpellGFX);
+
+            m_EndStarted = true;
 
             // stop the animation
             if (m_PrefabSpawn.Animation != EAnimation.None)
                 m_Controller.AnimationHandler.CancelCastAnimation(m_PrefabSpawn.Animation);
+
+            // remove the state effects of the animation
+            RemoveStateEffects();
 
             // remove listeners
             UnRegisterListeners();
@@ -127,9 +139,6 @@ namespace Game.SpellGFXs
                 m_PersistanceTimer -= Time.deltaTime;
                 yield return null;
             }
-
-            // remove the state effects of the animation
-            RemoveStateEffects();
 
             // remove material applied
             RemoveMaterial();
@@ -310,7 +319,7 @@ namespace Game.SpellGFXs
         /// <returns></returns>
         float CalculateCastTime()
         {
-            return m_SpellData.AnimationTimer / m_Controller.SpellHandler.GetCastSpeed(m_SpellData.Spell);
+            return m_SpellData.AnimationTimer / m_Controller.SpellHandler.GetCastSpeed(m_SpellData.Spell.ToString());
         }
 
         #endregion

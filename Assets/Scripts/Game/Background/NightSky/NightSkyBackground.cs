@@ -2,9 +2,9 @@
 using Tools;
 
 
-namespace Game.Backgroud
+namespace Game.Background
 {
-    public class NightSkyBackground : MObject
+    public class NightSkyBackground : ArenaBackground
     {
         #region Members
 

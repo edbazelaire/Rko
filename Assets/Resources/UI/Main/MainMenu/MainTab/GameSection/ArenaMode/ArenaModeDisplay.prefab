@@ -111,7 +111,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: Option A
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 1ba5b045205208d4e82bdffcb4eef89e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   m_sharedMaterial: {fileID: 7658495151606355865, guid: 1ba5b045205208d4e82bdffcb4eef89e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -177,7 +177,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &543768116654948996
@@ -785,8 +785,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Hard Core
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 1ba5b045205208d4e82bdffcb4eef89e, type: 2}
-  m_sharedMaterial: {fileID: 7658495151606355865, guid: 1ba5b045205208d4e82bdffcb4eef89e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -984,8 +984,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 1ba5b045205208d4e82bdffcb4eef89e, type: 2}
-  m_sharedMaterial: {fileID: 7658495151606355865, guid: 1ba5b045205208d4e82bdffcb4eef89e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: f2dcf029949142e28b974630369c8b4e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1656,6 +1656,10 @@ PrefabInstance:
       propertyPath: m_fontSize
       value: 72
       objectReference: {fileID: 0}
+    - target: {fileID: 1554982960371977300, guid: a6fe3ccd64c0b3345bfb8b14d77b6922, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: f2dcf029949142e28b974630369c8b4e, type: 2}
     - target: {fileID: 2596905845299022074, guid: a6fe3ccd64c0b3345bfb8b14d77b6922, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

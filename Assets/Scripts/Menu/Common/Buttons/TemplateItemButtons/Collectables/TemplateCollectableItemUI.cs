@@ -2,6 +2,8 @@
 using Data.GameManagement;
 using Enums;
 using Inventory;
+using Menu.Common.Buttons.TemplateItemButtons.Collectables;
+using Menu.MainMenu;
 using Save;
 using System;
 using Tools;
@@ -22,16 +24,19 @@ namespace Menu.Common.Buttons
         #region Members
         /// <summary> event that the button has been clicked </summary>
         public static Action<Enum> ButtonClickedEvent;
+        public Action ThisButtonClickedEvent;
 
         // GameObjects & Components
+        protected CollectablesSubButtons m_SubButtons = null;
         protected CollectionFillBar m_CollectionFillBar = null;
-
         protected SCollectableCloudData m_CollectableCloudData;
 
         protected Enum m_Collectable                        => m_CollectableCloudData.GetCollectable();
         protected int m_Level                               => m_CollectableCloudData.Level;
         public SCollectableCloudData CollectableCloudData   => m_CollectableCloudData;
         public CollectionFillBar CollectionFillBar          => m_CollectionFillBar;
+
+        public Enum Collectable => m_Collectable;
 
         #endregion
 
@@ -42,6 +47,7 @@ namespace Menu.Common.Buttons
         {
             base.FindComponents();
 
+            m_SubButtons = Finder.FindComponent<CollectablesSubButtons>(gameObject, throwError: false);
             m_Border = Finder.FindComponent<Image>(gameObject, "IconContainer");
             m_CollectionFillBar = Finder.FindComponent<CollectionFillBar>(gameObject, throwError: false);
         }
@@ -51,6 +57,9 @@ namespace Menu.Common.Buttons
             base.Initialize();
 
             SetUpCollectable(collectable, asIconOnly);
+
+            if (m_SubButtons != null && !asIconOnly) 
+                m_SubButtons.Initialize(this);
         }
 
         #endregion
@@ -169,6 +178,17 @@ namespace Menu.Common.Buttons
             m_CollectionFillBar?.gameObject.SetActive(!activate);
         }
 
+        /// <summary>
+        /// Switch display between SubButtons and CollectionFillBar
+        /// </summary>
+        protected virtual void ToggleSubButtons()
+        {
+            if (m_SubButtons == null)
+                return;
+            
+            m_SubButtons.Toggle();
+        }
+
         #endregion
 
 
@@ -194,10 +214,17 @@ namespace Menu.Common.Buttons
         {
             base.OnClick();
 
-            if (m_State == EButtonState.Locked)
+            // normal behavior
+            switch (m_State)
             {
-                OnClickLocked();
-                return;
+                case EButtonState.Locked:
+                    OnClickLocked();
+                    break;
+
+                case EButtonState.Normal:
+                case EButtonState.Updatable:
+                    ToggleSubButtons();
+                    break;
             }
 
             ButtonClickedEvent?.Invoke(m_Collectable);
@@ -230,9 +257,6 @@ namespace Menu.Common.Buttons
             // for character and runes -> set directly
             if (m_Collectable is ECharacter character)
                 CharacterBuildsCloudData.SetSelectedCharacter(character);
-
-            else if (m_Collectable is ERune rune)
-                CharacterBuildsCloudData.SetCurrentRune(rune);
         }
 
         #endregion

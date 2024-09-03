@@ -13,10 +13,65 @@ MonoBehaviour:
   m_Name: ResurrectionRune
   m_EditorClassIdentifier: 
   Rarety: 3
-  Description: On death, resurrect your character with 500 hp
+  Description: 
+  m_MinorPower:
+    Description: '[TriggerEffect.0]'
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_IsOverwritten: 0
+    m_TriggerEffects:
+    - SpellDataName: _TriggerResurrection
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 3
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NActivations: 1
+      Cooldown: 0
+    m_BonusStats: []
+  m_MajorPower:
+    Description: '[TriggerEffect.0]'
+    m_DescriptionVariables: []
+    m_BonusLevel: 6
+    m_IsOverwritten: 0
+    m_TriggerEffects:
+    - SpellDataName: _TriggerResurrection
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 3
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NActivations: 1
+      Cooldown: 0
+    m_BonusStats: []
+  m_PrimalPower:
+    Description: '[TriggerEffect.0]'
+    m_DescriptionVariables: []
+    m_BonusLevel: 12
+    m_IsOverwritten: 0
+    m_TriggerEffects:
+    - SpellDataName: _TriggerResurrection
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 3
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NActivations: 1
+      Cooldown: 0
+    m_BonusStats: []
   m_TriggerEffects:
   - SpellDataName: _TriggerResurrection
     Level: 0
+    Target: 0
     SpellActivationEvent: 3
     ActivationTreshold: 0
     SpellDeactivationEvent: 0

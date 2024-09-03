@@ -7,7 +7,6 @@ using System.Collections;
 using System.Linq;
 using Tools;
 using Unity.Netcode;
-using UnityEditor;
 using UnityEngine;
 
 namespace Data.DataStructures
@@ -23,6 +22,7 @@ namespace Data.DataStructures
     {
         public  string                  SpellDataName;
         public  int                     Level;
+        public  ESpellTarget            Target;
         
         public  ESpellActivationEvent   SpellActivationEvent;
         public  float                   ActivationTreshold;
@@ -51,6 +51,7 @@ namespace Data.DataStructures
         {
             serializer.SerializeValue(ref SpellDataName);
             serializer.SerializeValue(ref Level);
+            serializer.SerializeValue(ref Target);
             serializer.SerializeValue(ref SpellActivationEvent);
             serializer.SerializeValue(ref ActivationTreshold);
 
@@ -68,12 +69,18 @@ namespace Data.DataStructures
             if (m_IsActivated)
                 return;
 
-            m_IsActivated = true;
-            m_Controller = controller;
+            if (controller == null)
+            {
+                ErrorHandler.Error("Provided Controller is null for " + SpellDataName);
+                return;
+            }
+
+            m_IsActivated   = true;
+            m_Controller    = controller;
 
             if (StateEffectEvent == EStateEffectEvent.None)
             {
-                ActivateEffect(controller);
+                ActivateEffect(CalculateTarget());
                 return;
             }
 
@@ -85,14 +92,20 @@ namespace Data.DataStructures
             if (!IsActivable())
                 return;
 
+            if (controller == null)
+            {
+                ErrorHandler.Error("Provided Controller is null");
+                return;
+            }
+
+            Debug.LogWarning("TRIGGER EFFECT : " + SpellDataName);
+
             m_NActivationsCtr++;
             if (Cooldown > 0)
             {
                 m_CooldownTimer = Cooldown;
                 controller.StartCoroutine(UpdateCooldownTimer());
             }
-
-            Debug.LogWarning("ACTIVATE : " + SpellDataName);
 
             if (SpellLoader.SpellExists(SpellDataName))
             {
@@ -107,7 +120,9 @@ namespace Data.DataStructures
             }
 
             else if (SpellLoader.StateEffectExists(SpellDataName))
-                controller.StateHandler.AddStateEffect(SpellLoader.GetStateEffect(SpellDataName, Level), controller);
+            {
+                controller.StateHandler.AddStateEffect(SpellLoader.GetStateEffect(SpellDataName, Level), m_Controller);
+            }
 
             else
                 ErrorHandler.Error(SpellDataName + " not recognize either as Spell or StateEffect");
@@ -118,7 +133,7 @@ namespace Data.DataStructures
 
         #region Deactivation
 
-        public void Deactivate(Controller controller)
+        public void Deactivate()
         {
             if (!m_IsActivated)
                 return;
@@ -126,8 +141,14 @@ namespace Data.DataStructures
             m_IsActivated = false;
             StateEffect.StateEffectEvent -= OnStateEffectEvent;
 
+            if (m_Controller == null)
+            {
+                ErrorHandler.Error("Unable to find controller when deactivating " + SpellDataName);
+                return;
+            }
+
             if (SpellLoader.StateEffectExists(SpellDataName))
-                controller.StateHandler.RemoveStateEffect(SpellDataName);
+                m_Controller.StateHandler.RemoveStateEffect(SpellDataName);
         }
 
         #endregion
@@ -154,6 +175,31 @@ namespace Data.DataStructures
             return StateEffectName.Split(",").Contains(stateEffectName);
         }
 
+        Controller CalculateTarget(ulong? targetId = null)
+        {
+            switch (Target)
+            {
+                case ESpellTarget.None:
+                case ESpellTarget.Self:
+                    return m_Controller;
+
+                case ESpellTarget.CurrentTarget:
+                    if (targetId.HasValue)
+                        return GameManager.Instance.GetPlayer(targetId.Value);
+                    return GameManager.Instance.GetFirstEnemy(m_Controller.Team);
+
+                case ESpellTarget.FirstEnemy:
+                    return GameManager.Instance.GetFirstEnemy(m_Controller.Team);
+
+                case ESpellTarget.FirstAlly:
+                    return GameManager.Instance.GetFirstAlly(m_Controller.Team, m_Controller.PlayerId);
+
+                default:
+                    ErrorHandler.Warning("Unhandled case : " + Target);
+                    return m_Controller;
+            }
+        }
+
         #endregion
 
 
@@ -161,6 +207,12 @@ namespace Data.DataStructures
 
         void OnStateEffectEvent(string stateEffectName, EStateEffectEvent stateEffectEvent, ulong targetId, ulong casterId)
         {
+            if (m_Controller == null)
+            {
+                ErrorHandler.Error("Provided Controller is null for state effect : " + stateEffectName + " - at event " + stateEffectEvent);
+                return;
+            }
+
             if (! HasStateEffect(stateEffectName))
                 return;
 
@@ -170,7 +222,7 @@ namespace Data.DataStructures
             if (casterId != m_Controller.PlayerId)
                 return;
 
-            ActivateEffect(m_Controller);
+            ActivateEffect(CalculateTarget(targetId));
         }
 
         #endregion

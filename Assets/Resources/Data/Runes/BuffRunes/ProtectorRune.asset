@@ -9,16 +9,65 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f0b58ae9491f61429ad93245e719b38, type: 3}
+  m_Script: {fileID: 11500000, guid: a402882a257d18548a281b17574b3711, type: 3}
   m_Name: ProtectorRune
   m_EditorClassIdentifier: 
   Rarety: 1
-  Description: Gain a bonus of {0} hp and {1} resistance fix
-  m_DescriptionVariables: 6f00000005000000
-  m_BonusStats:
-  - StateEffectProperty: 111
-    BaseValue: 300
-    ScalingFactor: 0.1
-  - StateEffectProperty: 5
-    BaseValue: 5
-    ScalingFactor: 0.1
+  Description: 
+  m_MinorPower:
+    Description: Gain {0} hp and +{1} resistances
+    m_DescriptionVariables:
+    - Name: Hp
+      WithIcon: 1
+    - Name: ResistanceFix
+      WithIcon: 1
+    m_BonusLevel: 0
+    m_IsOverwritten: 0
+    m_TriggerEffects: []
+    m_BonusStats:
+    - StateEffectProperty: 111
+      BaseValue: 150
+      BonusValue: 0
+      ScalingFactor: 0.1
+    - StateEffectProperty: 5
+      BaseValue: 3
+      BonusValue: 0
+      ScalingFactor: 0.05
+  m_MajorPower:
+    Description: Gain {0} hp and +{1} resistances
+    m_DescriptionVariables:
+    - Name: Hp
+      WithIcon: 1
+    - Name: ResistanceFix
+      WithIcon: 1
+    m_BonusLevel: 0
+    m_IsOverwritten: 0
+    m_TriggerEffects: []
+    m_BonusStats:
+    - StateEffectProperty: 111
+      BaseValue: 300
+      BonusValue: 0
+      ScalingFactor: 0.1
+    - StateEffectProperty: 5
+      BaseValue: 5
+      BonusValue: 0
+      ScalingFactor: 0.05
+  m_PrimalPower:
+    Description: Gain {0} hp and +{1} resistances
+    m_DescriptionVariables:
+    - Name: Hp
+      WithIcon: 1
+    - Name: ResistanceFix
+      WithIcon: 1
+    m_BonusLevel: 0
+    m_IsOverwritten: 0
+    m_TriggerEffects: []
+    m_BonusStats:
+    - StateEffectProperty: 111
+      BaseValue: 500
+      BonusValue: 0
+      ScalingFactor: 0.1
+    - StateEffectProperty: 5
+      BaseValue: 10
+      BonusValue: 0
+      ScalingFactor: 0.05

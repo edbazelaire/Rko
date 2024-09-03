@@ -8,6 +8,7 @@ namespace Menu
     {
         SpellsTab,
         CharactersTab,
+        RunesTab,
     }
 
     public class ItemsTabManager: TabsManager

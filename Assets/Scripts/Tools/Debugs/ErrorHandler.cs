@@ -1,5 +1,6 @@
 ﻿using Enums;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Tools
 {
@@ -8,11 +9,13 @@ namespace Tools
         #region Members
 
         /// <summary> Is Error Handler activated ? </summary>
-        public static bool IsActivated => PlayerPrefsHandler.GetDebug(EDebugOption.ErrorHandler);
+        public static bool IsActivated = false;
         /// <summary> check if application is currently closing </summary>
         public static bool IsExiting = false;
         /// <summary> list of errors </summary>
         public static List<Error> Errors = new List<Error>();
+
+        public static Dictionary<string, int> RegisteredObjects = new ();
 
         #endregion
 
@@ -22,6 +25,7 @@ namespace Tools
         public static void Toggle()
         {
             PlayerPrefsHandler.SetDebug(EDebugOption.ErrorHandler, !IsActivated);
+            IsActivated = !IsActivated;
 
             if (!IsActivated)
                 Reset();
@@ -103,6 +107,39 @@ namespace Tools
         public static void Reset()
         {
             Errors = new List<Error>();
+        }
+
+        #endregion
+
+
+        #region Object & Method & Events registration
+
+        public static void Register(string context)
+        {
+            if (! RegisteredObjects.ContainsKey(context))
+            {
+                RegisteredObjects[context] = 0;
+            }
+
+            RegisteredObjects[context]++;
+
+            Debug.Log(" ++ Register : " + context);
+        }
+
+        public static void Unregister(string context)
+        {
+            if (! RegisteredObjects.ContainsKey(context))
+            {
+                Warning("Trying to unregister context that is not registered : " + context);
+                return;
+            }
+
+            RegisteredObjects[context]--;
+
+            if (RegisteredObjects[context] == 0)
+                RegisteredObjects.Remove(context);
+
+            Debug.Log(" -- Unregister : " + context);
         }
 
         #endregion

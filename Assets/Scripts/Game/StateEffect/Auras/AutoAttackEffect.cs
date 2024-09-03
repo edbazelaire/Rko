@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Game.Spells
 {
-    [CreateAssetMenu(fileName = "AutoAttackEffect", menuName = "Game/StateEffects/AutoAttackEffect")]
+    [CreateAssetMenu(fileName = "AutoAttackEffect", menuName = "Game/StateEffects/Aura/AutoAttackEffect")]
     public class AutoAttackEffect : SpellEffect
     {
         [Header("Auto Attack")]
