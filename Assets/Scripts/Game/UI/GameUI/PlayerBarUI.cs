@@ -29,13 +29,13 @@ public class PlayerBarUI : MonoBehaviour
         UpdateChanges();
     }
 
-    public void OnValueChanged(int oldValue, int newValue)
+    public void OnValueChanged(int _, int newValue)
     {
         SetValue(newValue);
         UpdateChanges();
     }
 
-    public void OnMaxValueChanged(int oldValue, int newValue)
+    public void OnMaxValueChanged(int _, int newValue)
     {
         SetMaxValue(newValue);
         UpdateChanges();

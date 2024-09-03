@@ -32,6 +32,12 @@ namespace Game.Character
 
         public virtual void Activate(bool activate)
         {
+            if (m_Controller == null)
+            {
+                ErrorHandler.Error("Provided Controller is null");
+                return;
+            }
+
             if (activate) 
             {
                 OnGameStartEffect();
@@ -153,7 +159,7 @@ namespace Game.Character
 
                 if (effect.SpellDeactivationEvent == ESpellActivationEvent.Hp && effect.DeactivationTreshold >= (float)newValue / m_Controller.Life.MaxHp.Value)
                 {
-                    effect.Deactivate(m_Controller);
+                    effect.Deactivate();
                     m_TriggerEffects[i] = effect;
                 }
             }
@@ -173,7 +179,7 @@ namespace Game.Character
 
                 if (effect.SpellDeactivationEvent == ESpellActivationEvent.Shield && ((effect.DeactivationTreshold == 1 && currentShield > 0) || (effect.DeactivationTreshold == 0 && currentShield <= 0)))
                 {
-                    effect.Deactivate(m_Controller);
+                    effect.Deactivate();
                     m_TriggerEffects[i] = effect;
                 }
             }

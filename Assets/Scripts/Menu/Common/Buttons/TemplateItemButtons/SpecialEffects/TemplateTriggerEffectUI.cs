@@ -1,13 +1,7 @@
 ﻿using Assets;
 using Data.DataStructures;
 using Enums;
-using Game.Loaders;
-using System;
-using System.Collections;
-using TMPro;
 using Tools;
-using UnityEngine;
-using UnityEngine.UI;
 
 
 namespace Menu.Common.Buttons.TemplateItemButtons

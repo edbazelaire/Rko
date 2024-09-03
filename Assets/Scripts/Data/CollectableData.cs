@@ -65,8 +65,8 @@ namespace Data
 
         protected virtual void OnDestroy()
         {
-            if (ErrorHandler.IsExiting)
-                ErrorHandler.Error("Unhandled Destroy() Data : " + Name);
+            //if (ErrorHandler.IsExiting)
+            //    ErrorHandler.Error("Unhandled Destroy() Data : " + Name);
         }
 
         #endregion

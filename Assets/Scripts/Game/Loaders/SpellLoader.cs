@@ -26,6 +26,7 @@ namespace Game.Loaders
         Dictionary<ERune, RuneData>         m_RunesData;
 
         public static List<ESpell> Spells => Instance.m_Spells.Keys.ToList();
+        public static List<ERune> Runes => Instance.m_RunesData.Keys.ToList();
 
         #endregion
 
@@ -284,6 +285,14 @@ namespace Game.Loaders
             var infos = spellData.GetInfos();
             Destroy(spellData);
             return infos;
+        }
+
+        public static bool IsInstantanious(string stateEffectName)
+        {
+            var data = GetStateEffect(stateEffectName);
+            bool isInst = data.IsInstantanious;
+            Destroy(data);
+            return isInst;
         }
 
         public static bool IsLinked(string spellName)

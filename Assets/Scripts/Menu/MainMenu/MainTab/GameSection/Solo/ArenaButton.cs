@@ -37,7 +37,6 @@ public class ArenaButton : MObject
         base.Initialize();
 
         m_NotificationDisplay.Initialize(Finder.FindComponent<Image>(gameObject, "Background"), Vector2.one * 2);
-
         CheckNotificationActivation();
     }
 

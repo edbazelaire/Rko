@@ -13,5 +13,48 @@ MonoBehaviour:
   m_Name: CurseRune
   m_EditorClassIdentifier: 
   Rarety: 1
-  Description: Add a Cursed effect on auto attack
+  Description: 
+  m_MinorPower:
+    Description: Add a stack of [Cursed] on every auto attack
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_IsOverwritten: 0
+    m_TriggerEffects:
+    - SpellDataName: _CurseRuneMinor
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 0
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NActivations: 0
+      Cooldown: 0
+    m_BonusStats: []
+  m_MajorPower:
+    Description: Add a stack of [Cursed] on every hit
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_IsOverwritten: 0
+    m_TriggerEffects: []
+    m_BonusStats: []
+  m_PrimalPower:
+    Description: 
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_IsOverwritten: 0
+    m_TriggerEffects:
+    - SpellDataName: _CurseRunePrimal
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 3
+      StateEffectName: Cursed
+      NActivations: 0
+      Cooldown: 0
+    m_BonusStats: []
   StateEffect: 13

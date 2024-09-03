@@ -123,7 +123,7 @@ namespace Data
 
                 // cancel animation only if blocked during the animation
                 if (m_IsBlocking)
-                    controller.AnimationHandler.CancelCastAnimation();
+                    controller.AnimationHandler.CancelCastAnimationClientRpc();
 
                 if (m_IsCancelled)
                 {

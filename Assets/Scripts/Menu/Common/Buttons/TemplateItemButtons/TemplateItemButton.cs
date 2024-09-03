@@ -24,6 +24,7 @@ namespace Menu.Common.Buttons
         protected Button        m_Button;
 
         // -- icon & border
+        protected GameObject    m_Content;
         protected GameObject    m_LockState;
         protected Image         m_Icon;
         protected Image         m_Border;
@@ -44,6 +45,8 @@ namespace Menu.Common.Buttons
         // Public Accessors
         public Button Button => m_Button;
         public GameObject IconObject => m_Border.gameObject;
+        public EButtonState State => m_State;
+
         public string Path
         {
             get
@@ -67,6 +70,7 @@ namespace Menu.Common.Buttons
         protected virtual void FindComponents()
         {
             // Init GameObjects & Components
+            m_Content           = Finder.Find(gameObject, "Content", false);
             m_Button            = Finder.FindComponent<Button>(gameObject);
             m_LockState         = Finder.Find(gameObject, "LockState", false);
             m_Border            = Finder.FindComponent<Image>(gameObject);

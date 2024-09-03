@@ -38,8 +38,10 @@ MonoBehaviour:
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 2
   m_DefaultState: 6
-  m_Duration: 0.01
+  m_Duration: 0
+  m_IsInstantanious: 1
   m_MaxStacks: 1
+  m_StackDecay: -1
   m_SpeedBonus: 0
   m_CastSpeed: 0
   m_AttackSpeed: 0

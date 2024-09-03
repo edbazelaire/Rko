@@ -1,7 +1,7 @@
 ﻿using Assets.Scripts.Menu.MainMenu.InventoryTab;
 using Enums;
 using Save;
-using System.Linq;
+using System;
 using Tools;
 using UnityEngine;
 
@@ -20,7 +20,7 @@ namespace Menu.MainMenu
         SelectedSpellWindow m_SelecetedSpellWindow;
         SpellItemContainerUI[] m_SpellItemContainers;
 
-        public static ESpell? CurrentSelectedCard = null;
+        public static Enum CurrentSelectedItem = null;
 
         #endregion
 
@@ -48,15 +48,15 @@ namespace Menu.MainMenu
 
         #region Spell Management
 
-        public static void SetCurrentSelectedCard(ESpell? spell)
+        public static void SetCurrentSelectedItem(Enum collectable)
         {
             // if already have a spell selected, check if this spell should be displayed 
-            if (spell.HasValue)
-                Instance.m_SelecetedSpellWindow.Activate(spell.Value);
+            if (collectable != null)
+                Instance.m_SelecetedSpellWindow.Activate(collectable);
             else
                 Instance.m_SelecetedSpellWindow.Deactivate();
 
-            CurrentSelectedCard = spell;
+            CurrentSelectedItem = collectable;
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace Menu.MainMenu
                 if (spellItemContainer.Spell == null)
                 {
                     spellItemContainer.SetSpell(spell);
-                    SetCurrentSelectedCard(null);
+                    SetCurrentSelectedItem(null);
                     return true;
                 }
             }
@@ -97,14 +97,14 @@ namespace Menu.MainMenu
         }
 
         /// <summary>
-        /// Replace a spell wi
+        /// Replace a spell with current selected item
         /// </summary>
         /// <param name="spell"></param>
         public static void ReplaceSpell(ESpell spell)
         {
-            if (CurrentSelectedCard == null)
+            if (CurrentSelectedItem == null)
             {
-                ErrorHandler.Error("Trying to replace spell but the CurrentlyUsedSpell is not set");
+                ErrorHandler.Error("Trying to replace spell but the CurrentSelectedItem is not set");
                 return;
             }
 
@@ -112,8 +112,8 @@ namespace Menu.MainMenu
             {
                 if (spellItemContainer.Spell == spell)
                 {
-                    spellItemContainer.SetSpell(CurrentSelectedCard.Value);
-                    SetCurrentSelectedCard(null);
+                    spellItemContainer.SetSpell((ESpell)CurrentSelectedItem);
+                    SetCurrentSelectedItem(null);
                     return;
                 }
             }

@@ -181,7 +181,6 @@ namespace Game.Character
 
         #region Spell GFX
 
-
         public List<SpellGFX> SpawnSpellGFX(string spellName, ESpellEvent spellEvent)
         {
             var spellData = SpellLoader.GetSpellData(spellName);

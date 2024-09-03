@@ -11,30 +11,14 @@ PrefabInstance:
     - target: {fileID: 1463020792999187535, guid: f912daaacc43e9342be227de542ee4a6, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 70ce67e982fddb74289530c17f57aac3, type: 3}
-    - target: {fileID: 3043226314578276405, guid: f912daaacc43e9342be227de542ee4a6, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: -74.7697
-      objectReference: {fileID: 0}
-    - target: {fileID: 3043226314578276405, guid: f912daaacc43e9342be227de542ee4a6, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: -58.9458
-      objectReference: {fileID: 0}
-    - target: {fileID: 3043226314578276405, guid: f912daaacc43e9342be227de542ee4a6, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -2.5993958
-      objectReference: {fileID: 0}
-    - target: {fileID: 3043226314578276405, guid: f912daaacc43e9342be227de542ee4a6, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 15.049599
-      objectReference: {fileID: 0}
+      objectReference: {fileID: -2807729775319136722, guid: f58ceca8ed5d5e24e8159ced1c658f72, type: 3}
     - target: {fileID: 4524256659671724885, guid: f912daaacc43e9342be227de542ee4a6, type: 3}
       propertyPath: m_text
       value: Collect
       objectReference: {fileID: 0}
     - target: {fileID: 4524256659671724885, guid: f912daaacc43e9342be227de542ee4a6, type: 3}
       propertyPath: m_fontSize
-      value: 91.7
+      value: 99
       objectReference: {fileID: 0}
     - target: {fileID: 4524256659671724885, guid: f912daaacc43e9342be227de542ee4a6, type: 3}
       propertyPath: m_fontSizeMax
@@ -42,7 +26,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6303049363997839542, guid: f912daaacc43e9342be227de542ee4a6, type: 3}
       propertyPath: m_Name
-      value: CollectButton Variant 1
+      value: CollectButton
       objectReference: {fileID: 0}
     - target: {fileID: 6303049363997839542, guid: f912daaacc43e9342be227de542ee4a6, type: 3}
       propertyPath: m_IsActive
@@ -131,5 +115,25 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6303049363997839542, guid: f912daaacc43e9342be227de542ee4a6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -3330975091984949496}
   m_SourcePrefab: {fileID: 100100000, guid: f912daaacc43e9342be227de542ee4a6, type: 3}
+--- !u!1 &2947743197197155890 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6303049363997839542, guid: f912daaacc43e9342be227de542ee4a6, type: 3}
+  m_PrefabInstance: {fileID: 9192008268104691332}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &-3330975091984949496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2947743197197155890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8afd46f524ae77499a1bd051bd88a1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

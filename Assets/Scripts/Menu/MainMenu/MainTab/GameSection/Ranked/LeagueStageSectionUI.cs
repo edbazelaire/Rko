@@ -33,13 +33,13 @@ namespace Menu.MainMenu.MainTab
             // Check League first
             if (m_League < ProgressionCloudData.CurrentLeague)
             {
-                m_Knobs[index].color = ColorCompleted;
+                m_Knobs[index].sprite = m_KnobCompleted;
                 return;
             }
 
             if (m_League > ProgressionCloudData.CurrentLeague)
             {
-                m_Knobs[index].color = ColorNotDone;
+                m_Knobs[index].sprite = m_KnobNotDone;
                 return;
             }
 

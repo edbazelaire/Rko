@@ -23,14 +23,15 @@ namespace Menu.MainMenu
 
         GameObject              m_CharacterPreviewContainer;
         Button                  m_CharacterPreviewButton;
-        RectTransform           m_CharacterPreviewRectTransform;
         TMP_Text                m_CharacterName; 
         CollectionFillBar       m_XpBar;
-        TMP_Text                m_CharacterLevel;
+        TMP_Text                m_CharacterLevelText;
 
         // -- left side
         GameObject              m_LeftSide;
-        TemplateRuneItemUI      m_TemplateRuneButton;
+        TemplateRuneItemUI      m_TemplateRuneButtonPrimal;
+        TemplateRuneItemUI      m_TemplateRuneButtonMajor;
+        TemplateRuneItemUI      m_TemplateRuneButtonMinor;
         Button                  m_UpgradeSubButton;
 
         // -- spells container
@@ -50,10 +51,9 @@ namespace Menu.MainMenu
         {
             m_CharacterPreviewContainer         = Finder.Find(gameObject, "CharacterPreviewContainer");
             m_CharacterPreviewButton            = Finder.FindComponent<Button>(m_CharacterPreviewContainer);
-            m_CharacterPreviewRectTransform     = Finder.FindComponent<RectTransform>(m_CharacterPreviewContainer);
             m_CharacterName                     = Finder.FindComponent<TMP_Text>(gameObject, "CharacterName");
             m_XpBar                             = Finder.FindComponent<CollectionFillBar>(gameObject, "CharacterExperienceFillbar");
-            m_CharacterLevel                    = Finder.FindComponent<TMP_Text>(m_XpBar.gameObject, "LevelValue");
+            m_CharacterLevelText                = Finder.FindComponent<TMP_Text>(m_XpBar.gameObject, "LevelValue");
 
             // init xp bar with current character cloud data
             m_XpBar.Initialize(InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter));
@@ -63,6 +63,7 @@ namespace Menu.MainMenu
             SetUpLeftSideUI();
 
             // register listeners
+            m_CharacterPreviewButton.onClick.AddListener(OnCharacterButtonClicked);
             CharacterBuildsCloudData.SelectedCharacterChangedEvent  += OnSelectedCharacterChanged;
             CharacterBuildsCloudData.CurrentBuildIndexChangedEvent  += OnCurrentRuneChanged;
             CharacterBuildsCloudData.CurrentRuneChangedEvent        += OnCurrentRuneChanged;
@@ -114,28 +115,29 @@ namespace Menu.MainMenu
             if (m_LeftSide == null)
                 return;
 
-            m_TemplateRuneButton = Finder.FindComponent<TemplateRuneItemUI>(m_LeftSide, throwError: false);
-            m_UpgradeSubButton = Finder.FindComponent<Button>(m_LeftSide, "UpgradeSubButton", throwError: false);
-
-            if (m_TemplateRuneButton != null)
-            {
-                m_TemplateRuneButton.Initialize(CharacterBuildsCloudData.CurrentRune);
-                m_TemplateRuneButton.Button.onClick.AddListener(OnRuneIconButtonClicked);
-            }
-
-            if (m_UpgradeSubButton != null)
-                m_UpgradeSubButton.onClick.AddListener(OnUpgradeButtonClicked);
+            m_TemplateRuneButtonPrimal = Finder.FindComponent<TemplateRuneItemUI>(m_LeftSide, "TemplateRuneItemPrimal");
+            m_TemplateRuneButtonMajor = Finder.FindComponent<TemplateRuneItemUI>(m_LeftSide, "TemplateRuneItemMajor");
+            m_TemplateRuneButtonMinor = Finder.FindComponent<TemplateRuneItemUI>(m_LeftSide, "TemplateRuneItemMinor");
+           
+            RefreshRuneIcons();
         }
 
         /// <summary>
         /// Refresh icon of the rune to display current one
         /// </summary>
-        void RefreshRuneIcon()
+        void RefreshRuneIcons()
         {
-            if (m_TemplateRuneButton == null)
+            if (m_LeftSide == null)
                 return;
 
-            m_TemplateRuneButton.RefreshRune(CharacterBuildsCloudData.CurrentRune);
+            m_TemplateRuneButtonPrimal.Initialize(CharacterBuildsCloudData.CurrentRunes[0]);
+            m_TemplateRuneButtonPrimal.SetIndex(0);
+
+            m_TemplateRuneButtonMajor.Initialize(CharacterBuildsCloudData.CurrentRunes[1]);
+            m_TemplateRuneButtonMajor.SetIndex(1);
+
+            m_TemplateRuneButtonMinor.Initialize(CharacterBuildsCloudData.CurrentRunes[2]);
+            m_TemplateRuneButtonMinor.SetIndex(2);
         }
 
         /// <summary>
@@ -186,7 +188,7 @@ namespace Menu.MainMenu
             var charData = InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter);
 
             // update char level display
-            m_CharacterLevel.text = charData.Level.ToString();
+            m_CharacterLevelText.text = charData.Level.ToString();
 
             // refresh xp bar with new xp and max required xp
             m_XpBar.RefreshCloudData(InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter));
@@ -238,7 +240,7 @@ namespace Menu.MainMenu
             UpdateCharSpells();
            
             // refresh rune icon of current build
-            RefreshRuneIcon();
+            RefreshRuneIcons();
 
             // spawn preview
             SpawnCharPreview();
@@ -246,10 +248,10 @@ namespace Menu.MainMenu
 
         void OnCurrentRuneChanged()
         {
-            if (m_TemplateRuneButton == null)
+            if (m_TemplateRuneButtonPrimal == null)
                 return;
 
-            RefreshRuneIcon();
+            RefreshRuneIcons();
         }
 
         /// <summary>
@@ -290,12 +292,7 @@ namespace Menu.MainMenu
                 RefreshXpBarUI();
         }
 
-        void OnRuneIconButtonClicked()
-        {
-            Main.SetPopUp(EPopUpState.RuneSelectionPopUp);
-        }
-
-        void OnUpgradeButtonClicked()
+        void OnCharacterButtonClicked()
         {
             Main.SetPopUp(EPopUpState.CollectableInfoPopUp, CharacterBuildsCloudData.SelectedCharacter, InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter).Level);
         }

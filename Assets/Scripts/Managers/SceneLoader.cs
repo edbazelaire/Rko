@@ -18,10 +18,12 @@ public class SceneLoader : MonoBehaviour
     static SceneLoader s_Instance;
 
     [SerializeField] LoadingScreen m_LoadingScreen;
+    [SerializeField] GameManager m_GameManager;
 
     string m_SceneLoading = "";
     public string SceneLoading => m_SceneLoading;
     public bool IsLoading => m_SceneLoading != "";
+    public GameManager GameManager => m_GameManager;
 
     private void Awake()
     {
@@ -90,17 +92,12 @@ public class SceneLoader : MonoBehaviour
 
             case "Arena":
                 // waiting for GameManager to be created
-                while (! GameManager.Exists)
-                {
-                    yield return null;
-                }
-
                 while (LobbyHandler.Instance.State <= ELobbyState.WaitingGameManager)
                 {
                     yield return null;
                 }
 
-                while (GameManager.Instance != null && ! GameManager.Instance.IsGameLoaded)
+                while (! GameManager.Instance.IsGameLoaded)
                 {
                     progress = 1/nSteps + GameManager.Instance.ProgressGameStart.Value / nSteps;
                     m_LoadingScreen.SetProgress(Mathf.Clamp01(progress));

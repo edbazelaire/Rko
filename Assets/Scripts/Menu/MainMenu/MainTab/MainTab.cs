@@ -19,7 +19,6 @@ namespace Menu.MainMenu.MainTab
         const string            c_Dropdown                          = "Dropdown";
 
         CharacterPreviewSectionUI   m_CharacterPreviewSection;
-        CharacterSelectionWindow    m_CharacterSelection;
         GameSectionUI               m_GameSectionUI;
         Button                      m_PlayButton;
         TMP_Dropdown                m_GameTypeDropDown;
@@ -34,7 +33,6 @@ namespace Menu.MainMenu.MainTab
             base.FindComponents(); 
 
             m_CharacterPreviewSection           = Finder.FindComponent<CharacterPreviewSectionUI>(gameObject, c_CharacterPreviewSection);
-            m_CharacterSelection                = Finder.FindComponent<CharacterSelectionWindow>(gameObject, "CharacterSelectionWindow");
             m_GameSectionUI                     = Finder.FindComponent<GameSectionUI>(gameObject, "GameSection");
             m_PlayButton                        = Finder.FindComponent<Button>(gameObject, c_PlayButton);
             m_GameTypeDropDown                  = Finder.FindComponent<TMP_Dropdown>(gameObject, c_Dropdown);
@@ -47,10 +45,6 @@ namespace Menu.MainMenu.MainTab
             // initialize GameSectionUI
             m_GameSectionUI.Initialize();
 
-            // create all buttons for characters
-            m_CharacterSelection.Initialize();
-            m_CharacterSelection.gameObject.SetActive(false);
-
             // set game modes
             UIHelper.SetUpDropdown<EGameMode>(m_GameTypeDropDown, PlayerPrefsHandler.GetGameMode(), OnDropDown);
 
@@ -59,8 +53,6 @@ namespace Menu.MainMenu.MainTab
 
             // initialize character preview section (with a delay to avoid issue with size)
             CoroutineManager.DelayMethod(m_CharacterPreviewSection.Initialize);
-            // delay register method by one frame (to avoid issue with Awake() order)
-            CoroutineManager.DelayMethod(() => { m_CharacterPreviewSection.CharacterPreviewButton.onClick.AddListener(ToggleCharacterSelection); });
 
             // check if player is in a game currently
             CheckCurrentGameId();
@@ -83,15 +75,6 @@ namespace Menu.MainMenu.MainTab
             base.Activate(activate);
 
             m_CharacterPreviewSection.Activate(activate);
-
-            if (!activate)
-                OnDeactivation();
-        }
-
-        void OnDeactivation()
-        {
-            if (m_CharacterSelection.IsOpened)
-                m_CharacterSelection.Close();
         }
 
         #endregion
@@ -163,22 +146,6 @@ namespace Menu.MainMenu.MainTab
 
 
         #region Event Listeners
-
-        /// <summary>
-        /// Activate / Deactivate character selection
-        /// </summary>
-        public void ToggleCharacterSelection()
-        {
-            if (m_CharacterSelection == null)
-                return;
-
-            SoundFXManager.PlayOnce(SoundFXManager.ClickButtonSoundFX);
-
-            if (!m_CharacterSelection.gameObject.activeInHierarchy)
-                m_CharacterSelection.Open();
-            else
-                m_CharacterSelection.Close();
-        }
 
         /// <summary>
         /// Action enabled when the play button is clicked : quick / leave lobby

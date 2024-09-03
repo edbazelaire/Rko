@@ -2,6 +2,7 @@
 using Enums;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Tools;
 using Unity.Services.CloudSave.Models;
@@ -15,15 +16,15 @@ namespace Save
     {
         public int CurrentBuildIndex { get; set; }
         public ESpell[][] Builds;
-        public ERune[] Runes;
+        public ERune[][] Runes;
 
-        public SCharacterBuildData(int index = 0, ESpell[][] builds = default, ERune[] runes = default)
+        public SCharacterBuildData(int index = 0, ESpell[][] builds = default, ERune[][] runes = default)
         {
             if (builds == default)
                 builds = new ESpell[CharacterBuildsCloudData.N_BUILDS][] { CharacterBuildsCloudData.DEFAULT_BUILD, CharacterBuildsCloudData.DEFAULT_BUILD, CharacterBuildsCloudData.DEFAULT_BUILD };
 
             if (runes == default)
-                runes = CharacterBuildsCloudData.DEFAULT_RUNES;
+                runes = new ERune[CharacterBuildsCloudData.N_BUILDS][] { CharacterBuildsCloudData.DEFAULT_RUNES, CharacterBuildsCloudData.DEFAULT_RUNES, CharacterBuildsCloudData.DEFAULT_RUNES };
 
             CurrentBuildIndex = index;
             Builds = builds;
@@ -53,30 +54,32 @@ namespace Save
         // ===============================================================================================
         // CONSTANTS
         /// <summary> max allowed number of builds for each characters </summary>
-        public const    int                 N_BUILDS                = 3;
+        public const int N_BUILDS = 3;
         /// <summary> number of spells in one build </summary>
-        public const    int                 N_SPELLS_IN_BUILDS      = 4;
+        public const int N_SPELLS_IN_BUILDS = 4;
+        /// <summary> number of runes in one build </summary>
+        public const int N_RUNE_IN_BUILDS = 3;
 
         /// <summary> default Character on loading </summary>
-        public static ECharacter            DEFAULT_CHARACTER       => ECharacter.Alexander;
+        public static ECharacter DEFAULT_CHARACTER => ECharacter.Alexander;
         /// <summary> default Rune on loading </summary>
-        public static ERune                 DEFAULT_RUNE            => ERune.None;
+        public static ERune DEFAULT_RUNE => ERune.None;
         /// <summary> default build if none was created by the player </summary>
-        public static ESpell[]              DEFAULT_BUILD           => new ESpell[N_SPELLS_IN_BUILDS]    { ESpell.RockShower, ESpell.Heal, ESpell.Blizzard, ESpell.ScorchedEarth }; 
+        public static ESpell[] DEFAULT_BUILD => new ESpell[] { ESpell.RockShower, ESpell.Heal, ESpell.Blizzard, ESpell.ScorchedEarth };
         /// <summary> defualt list of None runes when initializing a new character data </summary>
-        public static ERune[]               DEFAULT_RUNES           => new ERune[N_BUILDS]               { ERune.None, ERune.None, ERune.None }; 
+        public static ERune[] DEFAULT_RUNES => new ERune[] { ERune.None, ERune.None, ERune.None };
 
         // KEYS ------------------------------------
-        public const    string              KEY_SELECTED_CHARACTER  = "SelectedCharacter";
-        public const    string              KEY_BUILDS              = "Builds";
+        public const string KEY_SELECTED_CHARACTER = "SelectedCharacter";
+        public const string KEY_BUILDS = "Builds";
 
         // ===============================================================================================
         // EVENTS
         /// <summary> action fired when the amount of gold changed </summary>
-        public static   Action              SelectedCharacterChangedEvent;
-        public static   Action              CurrentBuildIndexChangedEvent;
-        public static   Action              CurrentBuildValueChangedEvent;
-        public static   Action              CurrentRuneChangedEvent;
+        public static Action SelectedCharacterChangedEvent;
+        public static Action CurrentBuildIndexChangedEvent;
+        public static Action CurrentBuildValueChangedEvent;
+        public static Action CurrentRuneChangedEvent;
 
         // ===============================================================================================
         // DATA
@@ -89,15 +92,15 @@ namespace Save
         // ===============================================================================================
         // DEPENDENT STATIC ACCESSORS
         /// <summary> get currently selected character </summary>
-        public static ECharacter    SelectedCharacter                       => (ECharacter)Instance.m_Data[KEY_SELECTED_CHARACTER];
+        public static ECharacter        SelectedCharacter                       => (ECharacter)Instance.m_Data[KEY_SELECTED_CHARACTER];
         /// <summary> get all builds of all characters </summary>
-        public static Dictionary<ECharacter, SCharacterBuildData> Builds    => Instance.m_Data[KEY_BUILDS] as Dictionary<ECharacter, SCharacterBuildData>;
+        public static Dictionary<ECharacter, SCharacterBuildData> Builds        => Instance.m_Data[KEY_BUILDS] as Dictionary<ECharacter, SCharacterBuildData>;
         /// <summary> get selected character's currently selected build's index </summary>
-        public static int           CurrentBuildIndex                       => Builds[SelectedCharacter].CurrentBuildIndex;
+        public static int               CurrentBuildIndex                       => Builds[SelectedCharacter].CurrentBuildIndex;
         /// <summary> get current build of the currently seleceted characters </summary>
-        public static ESpell[]      CurrentBuild                            => Builds[SelectedCharacter].CurrentBuild;
+        public static ESpell[]          CurrentBuild                            => Builds[SelectedCharacter].CurrentBuild;
         /// <summary> get current rune of the currently seleceted characters </summary>
-        public static ERune         CurrentRune                             => Builds[SelectedCharacter].Runes[CurrentBuildIndex];
+        public static ERune[]           CurrentRunes                            => Builds[SelectedCharacter].Runes[CurrentBuildIndex];
 
         #endregion
 
@@ -134,6 +137,55 @@ namespace Save
 
 
         #region Current Selected Data Manipulator
+
+        public static void SetInCurrentBuild(Enum collectable, int index)
+        {
+            if (collectable.GetType() == typeof(ECharacter))
+            {
+                SetSelectedCharacter((ECharacter)collectable);
+                return;
+            }
+
+            if (collectable.GetType() == typeof(ESpell))
+            {
+                SetSpellInCurrentBuild((ESpell)collectable, index);
+                return;
+            }
+
+            if (collectable.GetType() == typeof(ERune))
+            {
+                SetCurrentRune((ERune)collectable, index);
+                return;
+            }
+
+            ErrorHandler.Error("Unhandled case : " + collectable);
+        }
+
+        /// <summary>
+        /// Check if provided collectable is used in current build
+        /// </summary>
+        /// <param name="collectable"></param>
+        /// <returns></returns>
+        public static bool IsInCurrentBuild(Enum collectable)
+        {
+            if (collectable.GetType() == typeof(ECharacter))
+            {
+                return SelectedCharacter == (ECharacter)collectable;
+            }
+
+            if (collectable.GetType() == typeof(ESpell))
+            {
+                return CurrentBuild.Contains((ESpell)collectable);
+            }
+
+            if (collectable.GetType() == typeof(ERune))
+            {
+                return CurrentRunes.Contains((ERune)collectable);
+            }
+
+            ErrorHandler.Error("Unhandled case : " + collectable);
+            return false;
+        }
 
         public static void SetSelectedCharacter(ECharacter character)
         {
@@ -187,15 +239,103 @@ namespace Save
         /// Set Rune of the current build
         /// </summary>
         /// <param name="rune"></param>
-        public static void SetCurrentRune(ERune rune)
+        public static void SetCurrentRune(ERune rune, ERuneActivation runeActivation)
         {
+            SetCurrentRune(rune, GetRuneActivationIndex(runeActivation));
+        }
+
+        /// <summary>
+        /// Set Rune of the current build
+        /// </summary>
+        /// <param name="rune"></param>
+        public static void SetCurrentRune(ERune rune, int index)
+        {
+            if (index < 0 || index > CurrentRunes.Length)
+            {
+                ErrorHandler.Error("Trying to set rune " + rune + " at wrong index : " + index);
+                return;
+            }
+
             // update the value
             SCharacterBuildData characterBuildData = Builds[SelectedCharacter];
-            characterBuildData.Runes[characterBuildData.CurrentBuildIndex] = rune;
+            characterBuildData.Runes[characterBuildData.CurrentBuildIndex][index] = rune;
             Builds[SelectedCharacter] = characterBuildData;
 
             Instance.SaveValue(KEY_BUILDS);
             CurrentRuneChangedEvent?.Invoke();  
+        }
+
+        /// <summary>
+        /// Try to find the rune in the build and get the Activation depending on index
+        /// </summary>
+        /// <param name="rune"></param>
+        /// <param name="runeActivation"></param>
+        /// <returns></returns>
+        public static bool TryGetRuneActivationInBuild(ERune rune, out ERuneActivation runeActivation)
+        {
+            runeActivation = ERuneActivation.None;
+            foreach (ERuneActivation activation in Enum.GetValues(typeof(ERuneActivation)))
+            {
+                if (activation == ERuneActivation.None)
+                    continue;
+
+                if (CurrentRunes[GetRuneActivationIndex(activation)] == rune)
+                {
+                    runeActivation = activation;
+                    return true;
+                }
+            }
+
+            // rune not found in build
+            return false;
+        }
+
+        /// <summary>
+        /// Get index of the corresponding rune Activation
+        /// </summary>
+        /// <param name="runeActivation"></param>
+        /// <returns></returns>
+        public static int GetRuneActivationIndex(ERuneActivation runeActivation)
+        {
+            switch (runeActivation)
+            {
+                case ERuneActivation.Primal:
+                    return 0;
+
+                case ERuneActivation.Major: 
+                    return 1;
+
+                case ERuneActivation.Minor:
+                    return 2;
+
+                default:
+                    ErrorHandler.Error("Unhandled case " + runeActivation);
+                    return -1;
+            }
+        }
+
+        /// <summary>
+        /// Get index of the corresponding rune Activation
+        /// </summary>
+        /// <param name="runeActivation"></param>
+        /// <returns></returns>
+        public static ERuneActivation GetRuneActivationFromIndex(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    return ERuneActivation.Primal;
+
+                case 1: 
+                    return ERuneActivation.Major;
+
+                case 2:
+                    return ERuneActivation.Minor;
+
+                default:
+                    ErrorHandler.Error("Unhandled case " + index);
+                    return ERuneActivation.Minor;
+            }
         }
 
         #endregion
@@ -364,7 +504,7 @@ namespace Save
             str += "\n SelectedCharacter : "    + TextHandler.ToString(SelectedCharacter);
             str += "\n CurrentBuildIndex : "    + TextHandler.ToString(CurrentBuildIndex);
             str += "\n CurrentBuild : "         + TextHandler.ToString(CurrentBuild);
-            str += "\n CurrentRune : "          + TextHandler.ToString(CurrentRune);
+            str += "\n CurrentRunes : "         + TextHandler.ToString(CurrentRunes);
             return str;
         }
 

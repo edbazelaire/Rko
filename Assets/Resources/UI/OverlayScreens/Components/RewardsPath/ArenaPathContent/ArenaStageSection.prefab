@@ -108,12 +108,16 @@ PrefabInstance:
       propertyPath: m_fontSize
       value: 72
       objectReference: {fileID: 0}
-    - target: {fileID: 4147247410866747807, guid: 514f808b9b2999d4aaccf1bd444996af, type: 3}
-      propertyPath: m_ChildControlWidth
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4147247410866747807, guid: 514f808b9b2999d4aaccf1bd444996af, type: 3}
-      propertyPath: m_ChildForceExpandWidth
+    - target: {fileID: 4010146114100398447, guid: 514f808b9b2999d4aaccf1bd444996af, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
+    - target: {fileID: 4010146114100398447, guid: 514f808b9b2999d4aaccf1bd444996af, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
+    - target: {fileID: 4010146114100398447, guid: 514f808b9b2999d4aaccf1bd444996af, type: 3}
+      propertyPath: m_hasFontAssetChanged
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4662882274739391642, guid: 514f808b9b2999d4aaccf1bd444996af, type: 3}
@@ -256,6 +260,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Knob: {fileID: 1556735347994820005, guid: 855aad19f14a9ea4d94386719d957553, type: 3}
   m_Line: {fileID: 0}
-  ColorCompleted: {r: 0.9622642, g: 0.6308336, b: 0.022694906, a: 1}
-  ColorCurrent: {r: 1, g: 0.896285, b: 0.10849059, a: 1}
-  ColorNotDone: {r: 0.20754719, g: 0.20754719, b: 0.20754719, a: 1}
+  m_KnobCompleted: {fileID: 21300000, guid: ab82a8fb8bf3bc441ae64b94dce36135, type: 3}
+  m_KnobCurrent: {fileID: 21300000, guid: 1b7707f447d870e4e8530d91a6833f5c, type: 3}
+  m_KnobNotDone: {fileID: 21300000, guid: fdb27aa4ba771ca439cfebd0fda2efb5, type: 3}

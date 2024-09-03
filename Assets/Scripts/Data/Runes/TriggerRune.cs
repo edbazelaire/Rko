@@ -1,4 +1,5 @@
 ﻿using Data.DataStructures;
+using Enums;
 using Game.Loaders;
 using Save;
 using System.Collections.Generic;
@@ -22,9 +23,9 @@ namespace Data
 
         #region Infos
 
-        public override string GetDescription()
+        public override string GetDescription(ERuneActivation runeActivation)
         {
-            var description = base.GetDescription();
+            var description = base.GetDescription(runeActivation);
 
             if (description == "")
                 description = "[TriggerEffect.0]";

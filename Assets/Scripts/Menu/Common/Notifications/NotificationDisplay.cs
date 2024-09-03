@@ -1,7 +1,4 @@
-﻿using Menu.Common.Displayers;
-using System;
-using System.Collections;
-using Tools;
+﻿using Tools;
 using Tools.Animations;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +11,7 @@ namespace Menu.Common.Notifications
 
         bool                m_IsActivated;
         Vector2             m_Size;
+        bool                m_WasEnabledBackground;
 
         Image               m_Background;
         ParticlesAnimation  m_ParticleAnimations;
@@ -27,8 +25,7 @@ namespace Menu.Common.Notifications
         public void Initialize(Image background, Vector2 size)
         {
             m_Size = size;
-
-            m_Background = background;
+            m_Background = background;  
             m_ParticleAnimations = null;
             m_BaseBackgroundColor = m_Background.color;
 
@@ -46,12 +43,25 @@ namespace Menu.Common.Notifications
                 return;
 
             m_IsActivated = true;
+            m_WasEnabledBackground = false;
 
-            if (ColorUtility.TryParseHtmlString("#f4c633", out Color color))
+            if (m_Background != null)
             {
-                // Set color in settings
-                color.a = 0.75f;
-                m_Background.color = color;
+                if (! m_Background.gameObject.activeSelf)
+                {
+                    m_Background.gameObject.SetActive(true);
+                }
+                else
+                {
+                    m_WasEnabledBackground = true;
+                }
+
+                if (ColorUtility.TryParseHtmlString("#f4c633", out Color color))
+                {
+                    // Set color in settings
+                    color.a = 0.75f;
+                    m_Background.color = color;
+                }
             }
 
             CoroutineManager.DelayMethod(AddNotificationParticles);
@@ -68,7 +78,13 @@ namespace Menu.Common.Notifications
             if (m_ParticleAnimations != null)
                 m_ParticleAnimations.End();
 
-            m_Background.color = m_BaseBackgroundColor;
+            if (m_Background != null)
+            {
+                m_Background.color = m_BaseBackgroundColor;
+
+                if (!m_WasEnabledBackground)
+                    m_Background.gameObject.SetActive(false);
+            }
         }
 
         void AddNotificationParticles()

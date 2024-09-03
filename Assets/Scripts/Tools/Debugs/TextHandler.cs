@@ -7,9 +7,11 @@ using Save;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using UnityEngine;
 
 namespace Tools
 {
@@ -21,6 +23,11 @@ namespace Tools
         /// <summary> when put in a text, all lignes will with this tag will have enought spaces to match alignement </summary>
         public const string TAG_ALIGNMENT = "%%ALIGNMENT%%";
 
+        public static List<string> IGNORED_ICONS => new()
+        {
+            EStateEffectProperty.Tick.ToString(),
+            ESpellProperty.Size.ToString(),
+        };
 
         #region Cleaning 
 
@@ -124,6 +131,22 @@ namespace Tools
             return char.ToUpper(output[0]) + output.Substring(1);
         }
 
+        public static string FormatPropertyValue(float value, string propertyName)
+        {
+            if (CharacterData.CheckIsInt(propertyName))
+                return value.ToString("0");
+
+            if (CharacterData.CheckIsPercentageValue(propertyName))
+                return FormatPercValue(value);
+
+            return value.ToString(Mathf.Round(value) == value ? "0" : "F2");
+        }
+
+        public static string FormatPercValue(float value)
+        {
+            return (value >= 0.01 ? Mathf.Round(value * 100).ToString("0") : (Mathf.Round(value * 1000) / 10).ToString("F1")) + "%";
+        }
+
         public static string FormatNumericalString(int number, string separator = " ")
         {
             string MyString = number.ToString();
@@ -183,10 +206,30 @@ namespace Tools
         /// <param name="stateEffectName"></param>
         /// <param name="withIcon"></param>
         /// <returns></returns>
-        public static string FormatStateEffectIcon(string stateEffectName, bool withIcon = true)
+        public static string FormatStateEffectIcon(string stateEffectName, bool withIcon = true, bool withPropertyName = true)
         {
-            string iconTag = withIcon ? $" <sprite name=\"{"Ic_" + stateEffectName}\">" : "";
-            return $"<i>{stateEffectName}</i> {iconTag}";
+            string formatedString = "";
+
+            if (withPropertyName)
+                formatedString += $"<i>{stateEffectName}</i>";
+
+            if (withIcon && !IGNORED_ICONS.Contains(stateEffectName))
+                formatedString += $" <sprite name=\"{"Ic_" + stateEffectName}\">";
+
+            return formatedString;
+        }
+
+        public static string FormatActivatedText(string text, bool isActivated, bool isOverwritten)
+        {
+            if (! isActivated)
+                text = "<i><color=#FF000088>" + text + "</color></i>";
+
+            if (isOverwritten)
+                text = "<s>" + text + "</s>";
+
+            return text;
+
+            
         }
 
         #endregion
@@ -219,13 +262,13 @@ namespace Tools
             // description of the Rune is the description of the Trigger Effect (at the level of the current character)
             if (SpellLoader.SpellExists(triggerEffect.SpellDataName))
             {
-                return SpellLoader.GetSpellDescription(triggerEffect.SpellDataName, InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter).Level);
+                return SpellLoader.GetSpellDescription(triggerEffect.SpellDataName, triggerEffect.Level);
             }
 
             // description of the Rune is the description of the Trigger Effect (at the level of the current character)
             else if (SpellLoader.StateEffectExists(triggerEffect.SpellDataName))
             {
-                return SpellLoader.GetStateEffectDescription(triggerEffect.SpellDataName, InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter).Level);
+                return SpellLoader.GetStateEffectDescription(triggerEffect.SpellDataName, triggerEffect.Level);
             }
 
             ErrorHandler.Error("Unable to find description for trigger effect " + triggerEffect.SpellDataName);

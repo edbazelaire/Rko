@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
+using static Unity.Collections.Unicode;
 
 namespace Data.GameManagement
 {
@@ -108,11 +109,11 @@ namespace Data.GameManagement
         /// <returns></returns>
         public SPlayerData CreatePlayerData()
         {
-            ERune rune;
+            ERune[] runes;
             switch (ArenaType)
             {
                 case EArenaType.FireArena:
-                    rune = ERune.FireRune;
+                    runes = new ERune[] { ERune.FireRune, ERune.None, ERune.None };
                     break;
 
                 //case EArenaType.FrostArena:
@@ -120,7 +121,7 @@ namespace Data.GameManagement
                 //    break;
 
                 default:
-                    rune = ERune.None;
+                    runes = new ERune[] { ERune.None, ERune.None, ERune.None };
                     break;
             }
 
@@ -137,7 +138,7 @@ namespace Data.GameManagement
                 playerName:     CurrentStageData.Character.ToString(),
                 characterLevel: CurrentStageData.CharacterLevel,
                 character:      CurrentStageData.Character,
-                rune:           rune,
+                runes:          runes,
                 spells:         CurrentArenaLevelData.Spells.ToArray(),
                 spellLevels:    spellLevels.ToArray(),
                 profileData:    CreateProfileData(),

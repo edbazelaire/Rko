@@ -44,7 +44,7 @@ namespace Managers
         public FixedString32Bytes           PlayerName;
         public int                          CharacterLevel;
         public ECharacter                   Character;
-        public ERune                        Rune;
+        public ERune[]                      Runes;
         public ESpell[]                     Spells;
         public int[]                        SpellLevels;
         public SProfileDataNetwork          ProfileData;
@@ -53,12 +53,12 @@ namespace Managers
         public SCharacterStatScaling[]      BonusStats; 
         public SBotData                     BotData; 
 
-        public SPlayerData(FixedString32Bytes playerName, int characterLevel, ECharacter character, ERune rune, ESpell[] spells, int[] spellLevels, SProfileDataNetwork profileData, bool isPlayer, STriggerEffect[] triggerEffects = default, SCharacterStatScaling[] bonusStats = default, SBotData botData = default)
+        public SPlayerData(FixedString32Bytes playerName, int characterLevel, ECharacter character, ERune[] runes, ESpell[] spells, int[] spellLevels, SProfileDataNetwork profileData, bool isPlayer, STriggerEffect[] triggerEffects = default, SCharacterStatScaling[] bonusStats = default, SBotData botData = default)
         {
             PlayerName      = playerName;
             CharacterLevel  = characterLevel;
             Character       = character;
-            Rune            = rune;
+            Runes           = runes;
             Spells          = spells;
             SpellLevels     = spellLevels;
             ProfileData     = profileData;
@@ -74,7 +74,7 @@ namespace Managers
             serializer.SerializeValue(ref PlayerName);
             serializer.SerializeValue(ref CharacterLevel);
             serializer.SerializeValue(ref Character);
-            serializer.SerializeValue(ref Rune);
+            serializer.SerializeValue(ref Runes);
             serializer.SerializeValue(ref IsPlayer);
 
             // Sub - serialization
@@ -104,6 +104,18 @@ namespace Managers
             for (int i = 0; i < length; i++)
             {
                 serializer.SerializeValue(ref SpellLevels[i]);
+            }
+
+            // -- Runes
+            length = Runes != null ? Runes.Length : 0;
+            serializer.SerializeValue(ref length);
+            if (serializer.IsReader)
+            {
+                Runes = new ERune[length];
+            }
+            for (int i = 0; i < length; i++)
+            {
+                serializer.SerializeValue(ref Runes[i]);
             }
 
             // -- TriggerEffects
@@ -149,7 +161,7 @@ namespace Managers
         public static string        PlayerName      => ProfileCloudData.GamerTag;
         public static int           CharacterLevel  => InventoryCloudData.Instance.GetCollectable(Character).Level;
         public static ECharacter    Character       => CharacterBuildsCloudData.SelectedCharacter;
-        public static ERune         Rune            => CharacterBuildsCloudData.CurrentRune;
+        public static ERune[]       Runes           => CharacterBuildsCloudData.CurrentRunes;
         public static ESpell[]      Spells          => CharacterBuildsCloudData.CurrentBuild;
         public static int[]         SpellLevels
         {
@@ -174,7 +186,7 @@ namespace Managers
         /// <returns></returns>
         public static SPlayerData ToStruct()
         {
-            return new SPlayerData(PlayerName, CharacterLevel, Character, Rune, Spells, SpellLevels, ProfileCloudData.CurrentProfileData.AsNetworkSerializable(), true);
+            return new SPlayerData(PlayerName, CharacterLevel, Character, Runes, Spells, SpellLevels, ProfileCloudData.CurrentProfileData.AsNetworkSerializable(), true);
         }
 
         /// <summary>
@@ -186,9 +198,6 @@ namespace Managers
             return new Dictionary<string, PlayerDataObject> {
                 { KEY_PLAYER_NAME,          new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, StaticPlayerData.PlayerName) },
                 { KEY_CHARACTER,            new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, ((int)Character).ToString()) },
-                { KEY_RUNE,                 new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, ((int)Rune).ToString()) },
-                { KEY_SPELLS,               new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, Spells.ToString()) },
-                { KEY_SPELL_LEVELS,         new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, SpellLevels.ToString()) },
             };
         }
 

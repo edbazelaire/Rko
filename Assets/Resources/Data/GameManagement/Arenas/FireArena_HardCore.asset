@@ -18,8 +18,12 @@ MonoBehaviour:
     TriggerEffects:
     - SpellDataName: ShieldRune
       Level: 7
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     BonusStats: []
@@ -48,8 +52,12 @@ MonoBehaviour:
     TriggerEffects:
     - SpellDataName: _TriggerHeal
       Level: 7
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     BonusStats: []
@@ -81,14 +89,22 @@ MonoBehaviour:
     TriggerEffects:
     - SpellDataName: ShieldRune
       Level: 7
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _TriggerHeal
       Level: 7
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.25
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     BonusStats: []
@@ -114,20 +130,32 @@ MonoBehaviour:
     TriggerEffects:
     - SpellDataName: ShieldRune
       Level: 7
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _CometsRain
       Level: 3
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.25
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _TriggerHeal
       Level: 7
       SpellActivationEvent: 2
       ActivationTreshold: 0.25
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     BonusStats: []
@@ -157,26 +185,42 @@ MonoBehaviour:
     TriggerEffects:
     - SpellDataName: _CometsRain
       Level: 5
-      SpellActivationEvent: 0
+      SpellActivationEvent: 1
       ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: ShieldRune
       Level: 9
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _TriggerHeal
       Level: 9
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.25
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _CometsRain
       Level: 5
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.25
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     BonusStats:
@@ -209,26 +253,42 @@ MonoBehaviour:
     TriggerEffects:
     - SpellDataName: _CometsRain
       Level: 7
-      SpellActivationEvent: 0
+      SpellActivationEvent: 1
       ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: ShieldRune
       Level: 9
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _TriggerHeal
       Level: 9
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.25
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _Heat
       Level: 7
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.25
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     BonusStats:
@@ -261,26 +321,42 @@ MonoBehaviour:
     TriggerEffects:
     - SpellDataName: _CometsRain
       Level: 9
-      SpellActivationEvent: 0
+      SpellActivationEvent: 1
       ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 1
       Cooldown: 0
     - SpellDataName: _TriggerHeal
       Level: 11
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 1
       Cooldown: 0
     - SpellDataName: _TriggerHeal
       Level: 11
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.25
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 1
       Cooldown: 0
     - SpellDataName: _Heat
       Level: 9
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.25
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 1
       Cooldown: 0
     BonusStats:
@@ -313,26 +389,42 @@ MonoBehaviour:
     TriggerEffects:
     - SpellDataName: _CometsRain
       Level: 9
-      SpellActivationEvent: 0
+      SpellActivationEvent: 1
       ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 1
       Cooldown: 0
     - SpellDataName: ShieldRune
       Level: 9
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 1
       Cooldown: 0
     - SpellDataName: InfernalHealing
       Level: 7
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 1
       Cooldown: 0
     - SpellDataName: _Heat
       Level: 7
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 1
       Cooldown: 0
     BonusStats:
@@ -371,32 +463,52 @@ MonoBehaviour:
     TriggerEffects:
     - SpellDataName: _CometsRain
       Level: 9
-      SpellActivationEvent: 0
+      SpellActivationEvent: 1
       ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: ShieldRune
       Level: 9
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _Heat
       Level: 9
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _TriggerHeal
       Level: 15
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.25
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _MeteorRain
       Level: 1
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.25
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     BonusStats:
@@ -435,26 +547,42 @@ MonoBehaviour:
     TriggerEffects:
     - SpellDataName: ShieldRune
       Level: 20
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.75
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _MeteorRain
       Level: 4
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.75
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _TriggerHeal
       Level: 10
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.25
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _Heat
       Level: 9
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.25
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     BonusStats:
@@ -493,26 +621,32 @@ MonoBehaviour:
     TriggerEffects:
     - SpellDataName: ShieldRune
       Level: 20
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.75
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: InfernalHealing
       Level: 6
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.75
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _MonarqueOfFlames
       Level: 9
-      SpellActivationEvent: 4
+      SpellActivationEvent: 5
       ActivationTreshold: 0
-      NActivations: 0
-      Cooldown: 0
-    - SpellDataName: _TriggerHeal
-      Level: 50
-      SpellActivationEvent: 4
-      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     BonusStats:
@@ -551,32 +685,42 @@ MonoBehaviour:
     TriggerEffects:
     - SpellDataName: _MeteorRain
       Level: 7
-      SpellActivationEvent: 0
+      SpellActivationEvent: 1
       ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: ShieldRune
       Level: 20
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.75
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: InfernalHealing
       Level: 12
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.75
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _MonarqueOfFlames
       Level: 9
-      SpellActivationEvent: 4
+      SpellActivationEvent: 5
       ActivationTreshold: 0
-      NActivations: 0
-      Cooldown: 0
-    - SpellDataName: _TriggerHeal
-      Level: 50
-      SpellActivationEvent: 4
-      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     BonusStats:
@@ -613,46 +757,84 @@ MonoBehaviour:
       CharacterLevel: 15
   - Spells: 20000000030000001100000001000000
     TriggerEffects:
+    - SpellDataName: _MonarqueOfFlames
+      Level: 1
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NActivations: 0
+      Cooldown: 0
     - SpellDataName: _MeteorRain
       Level: 14
-      SpellActivationEvent: 0
+      SpellActivationEvent: 1
       ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: ShieldRune
       Level: 30
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.75
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: InfernalHealing
       Level: 14
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.75
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _TriggerHeal
       Level: 50
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _MonarqueOfFlames
       Level: 9
-      SpellActivationEvent: 0
+      SpellActivationEvent: 5
       ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _Heat
       Level: 14
-      SpellActivationEvent: 4
+      SpellActivationEvent: 5
       ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _CometsRain
       Level: 14
-      SpellActivationEvent: 4
+      SpellActivationEvent: 5
       ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     BonusStats:
@@ -689,40 +871,54 @@ MonoBehaviour:
       CharacterLevel: 15
   - Spells: 200000001b0000000300000001000000
     TriggerEffects:
-    - SpellDataName: _MonarqueOfFlames
-      Level: 15
-      SpellActivationEvent: 0
-      ActivationTreshold: 0
-      NActivations: 0
-      Cooldown: 0
     - SpellDataName: _Heat
       Level: 15
-      SpellActivationEvent: 2
+      SpellActivationEvent: 3
       ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _MonarqueOfFlames
       Level: 15
-      SpellActivationEvent: 4
+      SpellActivationEvent: 5
       ActivationTreshold: 0
-      NActivations: 2
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NActivations: 0
       Cooldown: 0
     - SpellDataName: _TriggerHeal
       Level: 50
-      SpellActivationEvent: 4
+      SpellActivationEvent: 5
       ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 3
       Cooldown: 0
     - SpellDataName: InfernalHealing
       Level: 15
-      SpellActivationEvent: 4
+      SpellActivationEvent: 5
       ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 2
       Cooldown: 0
     - SpellDataName: _MeteorRain
       Level: 15
-      SpellActivationEvent: 4
+      SpellActivationEvent: 5
       ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
       NActivations: 2
       Cooldown: 0
     BonusStats:
