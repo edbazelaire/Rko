@@ -164,10 +164,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 4361639432508654299}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 69.6433}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 250, y: -327.59882}
+  m_SizeDelta: {x: 500, y: 69.6433}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6618962463067517695
 CanvasRenderer:
@@ -379,10 +379,10 @@ RectTransform:
   - {fileID: 6786273405570285827}
   m_Father: {fileID: 4361639432508654299}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 174.4573}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 250, y: -489.6491}
+  m_SizeDelta: {x: 500, y: 174.4573}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &4224558762362111572
 GameObject:
@@ -968,11 +968,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2439457239475878054, guid: c0f93325818f0fd41b9be5ab565ceb54, type: 3}
       propertyPath: m_fontSize
-      value: 53.8
+      value: 51.8
       objectReference: {fileID: 0}
     - target: {fileID: 2658723423129874997, guid: c0f93325818f0fd41b9be5ab565ceb54, type: 3}
       propertyPath: m_Name
       value: TemplateCurrencyIcon
+      objectReference: {fileID: 0}
+    - target: {fileID: 2658723423129874997, guid: c0f93325818f0fd41b9be5ab565ceb54, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3392824219662667032, guid: c0f93325818f0fd41b9be5ab565ceb54, type: 3}
       propertyPath: m_Pivot.x
@@ -1088,7 +1092,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7950574289599313039, guid: c0f93325818f0fd41b9be5ab565ceb54, type: 3}
       propertyPath: m_fontSize
-      value: 31.6
+      value: 31.65
       objectReference: {fileID: 0}
     - target: {fileID: 8695083764463239108, guid: c0f93325818f0fd41b9be5ab565ceb54, type: 3}
       propertyPath: m_AnchoredPosition.x

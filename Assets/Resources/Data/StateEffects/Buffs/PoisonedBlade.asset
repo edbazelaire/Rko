@@ -21,8 +21,11 @@ MonoBehaviour:
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 0
   m_DefaultState: 0
-  m_Duration: 10
+  m_Priority: 0
+  m_Duration: 8
+  m_IsInstantanious: 0
   m_MaxStacks: 1
+  m_StackDecay: -1
   m_SpeedBonus: 0
   m_CastSpeed: 0
   m_AttackSpeed: 0
@@ -34,16 +37,23 @@ MonoBehaviour:
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
   m_BonusLifeSteal: 0
+  m_BonusBurnDamages: 0
+  m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel:
   - StateEffectProperty: 1
-    ScalingFactor: 0.1
+    ScalingFactor: 0.05
   m_StateEffectScalingStacks: []
+  m_SpellEffectType: 0
+  m_AllowedSpellTypes: 
   m_OnHits: []
   m_AllyStateEffects: []
   m_EnemyStateEffects:
   - StateEffect: 9
+    Stacks: 1
+    OverridingProperties: []
+  - StateEffect: 24
     Stacks: 1
     OverridingProperties: []
   m_ReplacementData: {fileID: 0}

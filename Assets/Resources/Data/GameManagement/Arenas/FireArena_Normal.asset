@@ -128,8 +128,11 @@ MonoBehaviour:
         Qty: 100
       - Currency: 3
         Qty: 350
-      Chests: 01000000
-      Collectables: []
+      Chests: 
+      Collectables:
+      - CollectableType: 3
+        CollectableName: InfernalProtectionRune
+        Qty: 1
       AchievementRewards: []
     StageData:
     - Character: 1
@@ -361,6 +364,7 @@ MonoBehaviour:
     TriggerEffects:
     - SpellDataName: ShieldRune
       Level: 7
+      Target: 0
       SpellActivationEvent: 3
       ActivationTreshold: 0.5
       SpellDeactivationEvent: 0

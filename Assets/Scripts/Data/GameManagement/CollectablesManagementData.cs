@@ -42,6 +42,8 @@ namespace Data.GameManagement
         public List<SLevelData> CharacterLevelData;
         [Description("Quantity and Golds required for each level up")]
         public List<SLevelData> SpellLevelData;
+        [Description("Quantity and Golds required for each level up")]
+        public List<SLevelData> RuneLevelData;
 
         public static CollectablesManagementData s_Instance;
 
@@ -238,8 +240,12 @@ namespace Data.GameManagement
                 return GetCharacterLevelData(level);
 
             // Rune & Spells have same level up data
-            if (collectable.GetType() == typeof(ESpell) || collectable.GetType() == typeof(ERune))
+            if (collectable.GetType() == typeof(ESpell))
                 return GetSpellLevelData(level, GetRaretyData(collectable).Rarety);
+
+            // Rune & Spells have same level up data
+            if ( collectable.GetType() == typeof(ERune))
+                return GetRuneLevelData(level, GetRaretyData(collectable).Rarety);
 
             ErrorHandler.Error("unable to find level data for " + collectable);
             return default;
@@ -289,6 +295,30 @@ namespace Data.GameManagement
             }
 
             return new SLevelData(Instance.SpellLevelData[level - 1].RequiredGolds, Instance.SpellLevelData[levelIndex].RequiredQty);
+        }
+
+        /// <summary>
+        /// Get the Spell Level Up data depending on the rarety and the level of the spell
+        /// </summary>
+        /// <param name="level"></param>
+        /// <param name="rarety"></param>
+        /// <returns></returns>
+        public static SLevelData GetRuneLevelData(int level, ERarety? rarety = null)
+        {
+            int levelIndex = level - 1;
+            if (rarety.HasValue)
+            {
+                SRaretyData raretyData = GetRaretyData(rarety.Value);
+                levelIndex = level - raretyData.StartLevel;
+            }
+
+            if (levelIndex < 0 || levelIndex >= Instance.SpellLevelData.Count)
+            {
+                ErrorHandler.Error($"bad level index ({levelIndex}) for rarety ({rarety})");
+                levelIndex = 0;
+            }
+
+            return new SLevelData(Instance.RuneLevelData[level - 1].RequiredGolds, Instance.RuneLevelData[levelIndex].RequiredQty);
         }
 
         #endregion

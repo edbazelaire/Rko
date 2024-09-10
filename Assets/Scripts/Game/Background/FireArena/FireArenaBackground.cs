@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game.Background
 {
-    public class FireArenaBackground : MObject
+    public class FireArenaBackground : ArenaBackground
     {
         #region Members
 

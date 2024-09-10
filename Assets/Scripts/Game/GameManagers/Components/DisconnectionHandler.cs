@@ -16,7 +16,7 @@ namespace Game.GameManagers.Components
         ServerDown,
     }
 
-    public class DisconnectionHandler : NetworkBehaviour
+    public class DisconnectionHandler : MonoBehaviour
     {
         [SerializeField] float      m_ReconnectionTimeout   = 5f; // Timeout period in seconds
         [SerializeField] string     m_ServerDownMessage     = "The server went down for unexpected reasons"; 
@@ -46,10 +46,8 @@ namespace Game.GameManagers.Components
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
         }
 
-        public override void OnDestroy()
+        public void OnDestroy()
         {
-            base.OnDestroy();
-
             if (NetworkManager.Singleton == null) 
                 return;
 
@@ -79,15 +77,21 @@ namespace Game.GameManagers.Components
                     StartCoroutine(WaitForClientReconnection());
                     break;
 
+                // ========================================================================
+                // OLD METHOD (remove ?) not working because GameObject is destroyed when ServerDown
+                //case EErrorType.ServerDown:
+                //    NotifyPlayers(m_ServerDownMessage);
+                //    StartCoroutine(WaitServerRestart());
+                //    break;
+                // ========================================================================
+
                 case EErrorType.ServerDown:
-                    NotifyPlayers(m_ServerDownMessage);             
-                    StartCoroutine(WaitServerRestart());
-                    break;
+                    GameManager.ExitWithError(m_ServerDownMessage);
+                    return;
 
                 default:
                     ErrorHandler.Error("Unhandled case : " + errorType);
                     return;
-
             }
 
             // stop time scale
@@ -116,6 +120,8 @@ namespace Game.GameManagers.Components
         {
             Debug.Log("WaitForHostReconnection()");
 
+            // =====================================================================================
+            // Not working because GameManager is destroyed when the server goes down
             float timePassed = Time.unscaledTime - m_DisconnectionTimestamp;
             while (timePassed < m_ReconnectionTimeout)
             {
@@ -130,6 +136,7 @@ namespace Game.GameManagers.Components
                 ErrorGameUI.SetSubMessage(string.Format(m_CountdownMessage, Mathf.Ceil(m_ReconnectionTimeout - timePassed)));
                 yield return null;
             }
+            // =====================================================================================
 
             ErrorGameUI.Hide();
 
@@ -144,20 +151,20 @@ namespace Game.GameManagers.Components
         {
             Debug.Log("WaitServerRestart()");
 
-            float timePassed = Time.unscaledTime - m_DisconnectionTimestamp;
-            while (timePassed < m_ReconnectionTimeout)
+            float timePassed;
+            do
             {
-                timePassed = Time.unscaledTime - m_DisconnectionTimestamp;
-                if (! m_IsWaitingServer)
+                if (!m_IsWaitingServer)
                 {
-                    // Host has reconnected
+                    // Server is back
                     ResumeGame();
                     yield break;
                 }
 
+                timePassed = Time.unscaledTime - m_DisconnectionTimestamp;
                 ErrorGameUI.SetSubMessage(string.Format(m_CountdownMessage, Mathf.Ceil(m_ReconnectionTimeout - timePassed)));
                 yield return null;
-            }
+            } while (timePassed < m_ReconnectionTimeout);
 
             ErrorGameUI.Hide();
 

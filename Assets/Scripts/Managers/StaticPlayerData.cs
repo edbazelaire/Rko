@@ -45,6 +45,7 @@ namespace Managers
         public int                          CharacterLevel;
         public ECharacter                   Character;
         public ERune[]                      Runes;
+        public int[]                        RuneLevels;
         public ESpell[]                     Spells;
         public int[]                        SpellLevels;
         public SProfileDataNetwork          ProfileData;
@@ -53,12 +54,13 @@ namespace Managers
         public SCharacterStatScaling[]      BonusStats; 
         public SBotData                     BotData; 
 
-        public SPlayerData(FixedString32Bytes playerName, int characterLevel, ECharacter character, ERune[] runes, ESpell[] spells, int[] spellLevels, SProfileDataNetwork profileData, bool isPlayer, STriggerEffect[] triggerEffects = default, SCharacterStatScaling[] bonusStats = default, SBotData botData = default)
+        public SPlayerData(FixedString32Bytes playerName, int characterLevel, ECharacter character, ERune[] runes, int[] runeLevels, ESpell[] spells, int[] spellLevels, SProfileDataNetwork profileData, bool isPlayer, STriggerEffect[] triggerEffects = default, SCharacterStatScaling[] bonusStats = default, SBotData botData = default)
         {
             PlayerName      = playerName;
             CharacterLevel  = characterLevel;
             Character       = character;
             Runes           = runes;
+            RuneLevels      = runeLevels;
             Spells          = spells;
             SpellLevels     = spellLevels;
             ProfileData     = profileData;
@@ -74,7 +76,6 @@ namespace Managers
             serializer.SerializeValue(ref PlayerName);
             serializer.SerializeValue(ref CharacterLevel);
             serializer.SerializeValue(ref Character);
-            serializer.SerializeValue(ref Runes);
             serializer.SerializeValue(ref IsPlayer);
 
             // Sub - serialization
@@ -116,6 +117,18 @@ namespace Managers
             for (int i = 0; i < length; i++)
             {
                 serializer.SerializeValue(ref Runes[i]);
+            }
+
+            // -- RuneLevels
+            length = RuneLevels != null ? RuneLevels.Length : 0;
+            serializer.SerializeValue(ref length);
+            if (serializer.IsReader)
+            {
+                RuneLevels = new int[length];
+            }
+            for (int i = 0; i < length; i++)
+            {
+                serializer.SerializeValue(ref RuneLevels[i]);
             }
 
             // -- TriggerEffects
@@ -163,6 +176,19 @@ namespace Managers
         public static ECharacter    Character       => CharacterBuildsCloudData.SelectedCharacter;
         public static ERune[]       Runes           => CharacterBuildsCloudData.CurrentRunes;
         public static ESpell[]      Spells          => CharacterBuildsCloudData.CurrentBuild;
+        public static int[] RuneLevels
+        {
+            get
+            {
+                int[] runeLevels = new int[Runes.Length];
+                for (int i = 0; i < Runes.Length; i++)
+                {
+                    runeLevels[i] = InventoryCloudData.Instance.GetCollectable(Runes[i]).Level;
+                }
+
+                return runeLevels;
+            }
+        }
         public static int[]         SpellLevels
         {
             get
@@ -186,7 +212,17 @@ namespace Managers
         /// <returns></returns>
         public static SPlayerData ToStruct()
         {
-            return new SPlayerData(PlayerName, CharacterLevel, Character, Runes, Spells, SpellLevels, ProfileCloudData.CurrentProfileData.AsNetworkSerializable(), true);
+            return new SPlayerData(
+                playerName:     PlayerName, 
+                characterLevel: CharacterLevel, 
+                character:      Character, 
+                runes:          Runes, 
+                runeLevels:     RuneLevels, 
+                spells:         Spells, 
+                spellLevels:    SpellLevels, 
+                profileData:    ProfileCloudData.CurrentProfileData.AsNetworkSerializable(), 
+                isPlayer:       true
+            );
         }
 
         /// <summary>

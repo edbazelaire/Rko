@@ -1,10 +1,8 @@
 ﻿using Data.DataStructures;
 using Enums;
-using Menu.Common.Infos;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using Tools;
 using UnityEngine;
 
@@ -132,10 +130,11 @@ namespace Data
     [CreateAssetMenu(fileName = "RuneData", menuName = "Game/Runes/Default")]
     public class RuneData : CollectableData
     {
-        protected override Type m_EnumType => typeof(ERune);
-
         [Description("Description informations of the Rune")]
         public string Description;
+
+        [Description("List of Element catagories of the spell")]
+        [SerializeField] protected List<ESpellElement> m_SpellElements;
 
         [SerializeField, Tooltip("Default power of the Rune")]
         protected SRunePower m_MinorPower;
@@ -146,6 +145,12 @@ namespace Data
 
         /// <summary> current activation of the rune </summary>
         protected ERuneActivation m_RuneActivation = ERuneActivation.Primal;
+
+        // ==========================================================================
+        // DEPENDENT PROPERTIES
+        protected override Type m_EnumType => typeof(ERune);
+        public ERune Rune => Enum.TryParse(Name, out ERune rune) ? rune : ERune.None;
+        public List<ESpellElement> SpellElements => m_SpellElements;
 
 
         #region Rune Power Activation

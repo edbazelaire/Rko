@@ -11,8 +11,6 @@ namespace Game.Background
     {
         #region Members
 
-        CanvasScaler m_CanvasScaler;
-
         #endregion
 
 
@@ -21,8 +19,6 @@ namespace Game.Background
         protected override void FindComponents()
         {
             base.FindComponents();
-
-            m_CanvasScaler = Finder.FindComponent<CanvasScaler>(gameObject);
         }
 
         #endregion
@@ -37,13 +33,6 @@ namespace Game.Background
                 ErrorHandler.Error("Bad scale provided : " + scale);
                 return;
             }
-
-            //if (m_CanvasScaler == null)
-            //{
-            //    ErrorHandler.Error("Trying to rescale background without CanvasScaler component");
-            //    return;
-            //}
-            //m_CanvasScaler.scaleFactor = scale;
 
             transform.localScale = Vector3.one * scale;
         }
