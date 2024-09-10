@@ -13,7 +13,6 @@ using System.Collections;
 using System.Linq;
 using Data.GameManagement;
 using System.Reflection;
-using Menu.Common.Infos;
 using MyBox;
 
 namespace Data
@@ -227,6 +226,9 @@ namespace Data
 
             // backpropagate the spell intialization to the client (for the preview)
             spell.InitializeClientRpc(clientId, target, Name, m_Level);
+
+            // call event that spell spawned
+            GameManager.Instance.GetPlayer(clientId).SpellHandler.CallSpellEvent(Name, ESpellEvent.OnSpawn);
         }
 
         /// <summary>
@@ -288,6 +290,32 @@ namespace Data
             // get the component of the preview and initialize it
             var component = Finder.FindComponent<SpellPreview>(preview);
             component.Initialize(GetTargettableArea(controller.Team), Distance, Size);
+        }
+
+        #endregion
+
+
+        #region Spell GFX
+
+        /// <summary>
+        /// Check if this spell has GFX event linked to this event
+        /// </summary>
+        /// <param name="spellEvent"></param>
+        /// <returns></returns>
+        public bool HasGfxEventAt(ESpellEvent spellEvent)
+        {
+            foreach (var action in SpellEventActions)
+            {
+                // is starting
+                if (action.GFXLifetime.StartSpellPart == spellEvent)
+                    return true;
+
+                // spell has "End" event and current event is this event or higher
+                if (action.GFXLifetime.EndSpellPart != ESpellEvent.None && spellEvent >= action.GFXLifetime.EndSpellPart)
+                    return true;
+            }
+
+            return false;
         }
 
         #endregion

@@ -1,12 +1,9 @@
 ﻿using Analytics.Events;
 using Data.GameManagement;
 using Enums;
-using Game.Loaders;
 using Save;
 using System;
-using System.Collections.Generic;
 using Tools;
-using static UnityEngine.Rendering.DebugUI;
 
 namespace Inventory
 {

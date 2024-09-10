@@ -231,20 +231,12 @@ namespace Menu.Common
         protected override void RegisterListeners()
         {
             base.RegisterListeners();
-
-            if (m_CollectableCloudData.HasValue && m_CollectableCloudData.Value.CollectableName == "Nagini")
-                ErrorHandler.Register(UIHelper.FindContext(transform) + " - Nagini");
-
             InventoryCloudData.CollectableDataChangedEvent += OnCollectableCloudDataChanged;
         }
 
         protected override void UnRegisterListeners()
         {
-            base.UnRegisterListeners();
-
-            if (m_CollectableCloudData.HasValue && m_CollectableCloudData.Value.CollectableName == "Nagini" && m_Initialized)
-                ErrorHandler.Unregister(UIHelper.FindContext(transform) + " - Nagini");
-
+            base.UnRegisterListeners(); 
             InventoryCloudData.CollectableDataChangedEvent -= OnCollectableCloudDataChanged;
         }
 

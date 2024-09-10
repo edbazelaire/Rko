@@ -51,6 +51,8 @@ public class GameUIManager : MonoBehaviour
     bool                m_RightMovementButtonPressed;
     bool                m_PreventiveLossApplied;
 
+    public bool PreventiveLossApplied => m_PreventiveLossApplied;
+
     // DEBUG - Remove (?)
     public int PreviousStage;
     // DEBUG - Remove (?)

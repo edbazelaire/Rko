@@ -107,6 +107,10 @@ namespace Menu.PopUps
 
         protected virtual void SetupCollectable(Enum enumValue, int level)
         {
+            // destroy previous data
+            if (m_Data != null)
+                Destroy(m_Data);
+
             // load data of the item
             if (enumValue.GetType() == typeof(ECharacter))
                 m_Data = CharacterLoader.GetCharacterData((ECharacter)enumValue, level, destroy: false);
@@ -116,6 +120,12 @@ namespace Menu.PopUps
 
             else if (enumValue.GetType() == typeof(ERune))
                 m_Data = SpellLoader.GetRuneData((ERune)enumValue, level, destroy: false);
+
+            if (m_Data == null)
+            {
+                ErrorHandler.Error("Unable to retrieve collectable data : " + enumValue + " - of type : " + enumValue.GetType());
+                Exit();                     // leave popup because of the Error
+            }
         }
 
         protected override void AdjustAspectRatio()
@@ -219,6 +229,17 @@ namespace Menu.PopUps
             RefreshUpgradeButtonUI();
         }
 
+        #endregion
+
+
+        #region Refresh UI
+
+        protected virtual void RefreshUI()
+        {
+            RefreshInfoRows();
+            RefreshUpgradeButtonUI();
+        }
+
         /// <summary>
         /// Refresh all spell info rows with new value
         /// </summary>
@@ -226,7 +247,7 @@ namespace Menu.PopUps
         {
             // -- get new data if spell is updatable
             Dictionary<string, object> newSpelLDataInfos = null;
-            if (! m_IsMaxedLevel)
+            if (!m_IsMaxedLevel)
             {
                 var newSpell = m_Data.Clone(m_Level + 1);
                 newSpelLDataInfos = newSpell.GetInfos();
@@ -275,6 +296,9 @@ namespace Menu.PopUps
             
             else if (enumValue.GetType() == typeof(ESpell))
                 return SpellLoader.GetSpellData((ESpell)enumValue, level, destroy: destroy);
+            
+            else if (enumValue.GetType() == typeof(ERune))
+                return SpellLoader.GetRuneData((ERune)enumValue, level, destroy: destroy);
 
             ErrorHandler.Error("Unknown CollectionDataType for enum : " + enumValue);
 
@@ -343,15 +367,11 @@ namespace Menu.PopUps
             if (! collectable.Equals(m_Collectable))
                 return;
 
-            // destroy previous data
-            Destroy(m_Data);
-
             // reload data
-            m_Data = LoadCollectionData(collectable, level, false);
+            SetupCollectable(collectable, level);
 
             // refresh UI
-            RefreshUpgradeButtonUI();
-            RefreshInfoRows();
+            RefreshUI();
         }
 
         #endregion

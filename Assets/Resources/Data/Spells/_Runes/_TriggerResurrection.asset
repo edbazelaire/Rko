@@ -25,17 +25,17 @@ MonoBehaviour:
     MaterialEffect: {fileID: 0}
     GFXLifetime:
       StartSpellPart: 2
-      EndSpellPart: 0
+      EndSpellPart: 3
       StartAt: 0
       EndAt: 0
-      Persistance: 2
+      Persistance: 0
     Size: 1.5
     OrderInLayer: 0
     SpawnTarget: 1
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 0
-    Offset: {x: 0, y: 0.5}
+    Offset: {x: 0, y: 0.2}
     Animation: 8
     StateEffects: 15000000
   - Prefab: {fileID: 8992406793559661190, guid: c01f2fa072864b440a8d1352708bcbbe, type: 3}
@@ -53,7 +53,7 @@ MonoBehaviour:
     BodyPart: 0
     IsFollowing: 0
     Offset: {x: 0, y: 0.5}
-    Animation: 12
+    Animation: 0
     StateEffects: 
   Preview: {fileID: 0}
   OnAnimation: []

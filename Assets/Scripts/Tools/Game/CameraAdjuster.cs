@@ -71,8 +71,16 @@ public class CameraAdjuster : MObject
         // rescale the background to match Height or Width
         if (ArenaManager.Instance != null)
         {
-            float backgroundScale = Mathf.Max(Screen.width / m_BaseReferenceWidth, Screen.height / m_BaseReferenceHeight);
+            float backgroundScale;
+            if (differenceInAspectRatio > 1)
+                backgroundScale = differenceInAspectRatio;
+            else
+                backgroundScale = 1 / differenceInAspectRatio;
+
             ArenaManager.Instance.ArenaBackground.Rescale(backgroundScale);
+        } else
+        {
+            ErrorHandler.Error("ArenaManager instance not found");
         }
     }
 

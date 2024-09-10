@@ -6,6 +6,7 @@ using Externals;
 using Game.Loaders;
 using Managers;
 using Network;
+using Save;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -140,11 +141,6 @@ namespace Game
         {
             // unregister from each events
             m_State.OnValueChanged -= OnStateValueChanged;
-
-            if (IsServer)
-            {
-                m_ProgressGameStart.Value = 0f;
-            }
 
             // cancel methods in TimeWrapper
             TimeErrorWrapper.Instance.Cancel(TIME_WRAPPER_ID);
@@ -504,6 +500,30 @@ namespace Game
             }
         }
 
+        public static void RefundGame()
+        {
+            switch (LobbyHandler.Instance.GameMode)
+            {
+                case EGameMode.Arena:
+                    ErrorHandler.Log("RefundGame() : Loading Arena Data : " + PlayerPrefsHandler.GetArenaType().ToString(), ELogTag.GameSystem);
+                    ProgressionCloudData.UpdateStageValue(PlayerPrefsHandler.GetArenaType(), true);
+                    break;
+
+                case EGameMode.Ranked:
+                    ErrorHandler.Log("RefundGame() : Ranked game", ELogTag.GameSystem);
+                    ProgressionCloudData.UpdateLeagueValue(true);
+                    break;
+
+                // no progression on training game
+                case EGameMode.Training:
+                    break;
+
+                default:
+                    ErrorHandler.Error("Unhandled case : " + LobbyHandler.Instance.GameMode);
+                    break;
+            }
+        }
+
         #endregion
 
 
@@ -750,15 +770,23 @@ namespace Game
 
         #region Error Management
 
-        void ExitWithError(string message)
+        public static void ExitWithError(string message, bool refund = true)
         {
             // set up error Message display
             ErrorHandler.Error(message);
             Main.AddStoredEvent(EAppState.MainMenu, () => Main.SetPopUp(EPopUpState.MessagePopUp, message));
 
-            // close Lobby and GameManager
-            GameManager.Instance.Shutdown();
-            LobbyHandler.Instance.LeaveLobby();
+            // check if game has started and needs refund
+            if (refund && GameUIManager.Instance.PreventiveLossApplied)
+                RefundGame();
+
+            // shutdown GameManager
+            if (Instance != null)
+                GameManager.Instance.Shutdown();
+
+            // exit Lobby
+            if (LobbyHandler.Instance != null && LobbyHandler.Instance.IsActive) 
+                LobbyHandler.Instance.LeaveLobby();
             
             // load MainMenuy scene
             SceneLoader.Instance.LoadScene("MainMenu");
@@ -829,15 +857,15 @@ namespace Game
         }
 
         [Command(KeyCode.M)]
-        public void RemoveLife()
+        public void HitSelf()
         {
-            Owner.Life.Hit(50);
+            Owner.Life.Hit(500);
         }
 
         [Command(KeyCode.L)]
-        public void RemoveLifeEnemy()
+        public void Hit()
         {
-            GetFirstEnemy(Owner.Team).Life.Hit(50);
+            GetFirstEnemy(Owner.Team).Life.Hit(500);
         }
 
         /// <summary>

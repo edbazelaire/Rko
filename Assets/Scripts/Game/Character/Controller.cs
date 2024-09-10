@@ -13,9 +13,7 @@ using System.Linq;
 using Tools;
 using Unity.Collections;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.AdaptivePerformance.VisualScripting;
 
 public class Controller : NetworkBehaviour
 {
@@ -218,7 +216,21 @@ public class Controller : NetworkBehaviour
         m_RuneData = new RuneData[playerData.Runes.Length];
         for (int i = 0; i < playerData.Runes.Length; i++)
         {
-            m_RuneData[i] = SpellLoader.GetRuneData(playerData.Runes[i], m_CharacterLevel.Value);
+            // safety check
+            if (i >= playerData.Runes.Length)
+            {
+                ErrorHandler.Error("Bad index (" + i + ") for provided Runes of length : " + playerData.Runes.Length);
+                break;
+            }
+
+            // safety check
+            if (i >= playerData.RuneLevels.Length)
+            {
+                ErrorHandler.Error("Bad index (" + i + ") for provided RuneLevels of length : " + playerData.RuneLevels.Length);
+                break;
+            }
+
+            m_RuneData[i] = SpellLoader.GetRuneData(playerData.Runes[i], playerData.RuneLevels[i]);
             m_RuneData[i].SetActivation(CharacterBuildsCloudData.GetRuneActivationFromIndex(i));
         }
      

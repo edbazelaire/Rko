@@ -3,6 +3,7 @@ using Enums;
 using System;
 using TMPro;
 using Tools;
+using Unity.Services.CloudSave.Models.Data.Player;
 
 namespace Menu.PopUps
 {
@@ -58,6 +59,12 @@ namespace Menu.PopUps
 
 
         #region UIManipulators
+
+        protected override void RefreshUI()
+        {
+            base.RefreshUI();
+            SetUpDescription();
+        }
 
         protected override void SetupCollectable(Enum enumValue, int level)
         {

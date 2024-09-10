@@ -14,11 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rarety: 2
   Description: 
+  m_SpellElements: 01000000
   m_MinorPower:
     Description: Increase [Burn] explosion damages by {0}
     m_DescriptionVariables:
     - Name: BonusBurnDamages
       WithIcon: 0
+    m_BonusLevel: 0
     m_IsOverwritten: 0
     m_TriggerEffects: []
     m_BonusStats:
@@ -29,6 +31,7 @@ MonoBehaviour:
   m_MajorPower:
     Description: Apply [Burn]  on every auto attack
     m_DescriptionVariables: []
+    m_BonusLevel: 0
     m_IsOverwritten: 0
     m_TriggerEffects:
     - SpellDataName: _FireRuneMajor
@@ -46,6 +49,7 @@ MonoBehaviour:
   m_PrimalPower:
     Description: When a [Burn] effect is consumed, re-apply it.
     m_DescriptionVariables: []
+    m_BonusLevel: 0
     m_IsOverwritten: 0
     m_TriggerEffects:
     - SpellDataName: Burn

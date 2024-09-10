@@ -116,10 +116,6 @@ namespace Data.GameManagement
                     runes = new ERune[] { ERune.FireRune, ERune.None, ERune.None };
                     break;
 
-                //case EArenaType.FrostArena:
-                //    rune = ERune.FrostRune;
-                //    break;
-
                 default:
                     runes = new ERune[] { ERune.None, ERune.None, ERune.None };
                     break;
@@ -139,10 +135,12 @@ namespace Data.GameManagement
                 characterLevel: CurrentStageData.CharacterLevel,
                 character:      CurrentStageData.Character,
                 runes:          runes,
+                runeLevels:     spellLevels.ToArray(),      // same level as spells, and character
                 spells:         CurrentArenaLevelData.Spells.ToArray(),
                 spellLevels:    spellLevels.ToArray(),
                 profileData:    CreateProfileData(),
                 isPlayer:       false,
+
                 triggerEffects: CurrentArenaLevelData.TriggerEffects.ToArray(),
                 bonusStats:     CurrentArenaLevelData.BonusStats.ToArray(),
                 botData :       new SBotData(

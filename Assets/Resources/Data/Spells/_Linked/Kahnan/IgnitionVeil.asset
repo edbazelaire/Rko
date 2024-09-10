@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0eac928962cb2b8498d5234d56207800, type: 3}
-  m_Name: Counter
+  m_Name: IgnitionVeil
   m_EditorClassIdentifier: 
   Rarety: 0
   m_Description: Blocks the next attack and shoots a FireBomb, dealing damages and
@@ -18,11 +18,12 @@ MonoBehaviour:
   m_DescriptionVariables:
   - Name: Scorched
     WithIcon: 1
+  m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 0}
   SpellEventActions:
   - Prefab: {fileID: 7053385775836331393, guid: bcf8a61165d173843972fded041563af, type: 3}
-    MaterialEffect: {fileID: 0}
+    MaterialEffect: {fileID: 2100000, guid: 94acca08a7c3e0b4592422efdf5ceabc, type: 2}
     GFXLifetime:
       StartSpellPart: 3
       EndSpellPart: 5
@@ -79,7 +80,11 @@ MonoBehaviour:
   m_Cooldown: 20
   CounterType: 1
   CounterActivation: 0
+  m_SpawnOffset: {x: 0, y: 0}
+  m_IsFollowing: 1
+  m_SpawnLocation: 1
   IsBlockingMovement: 1
   IsBlockingCast: 1
+  m_DamageConversionEffects: []
   OnCounterProc: {fileID: 11400000, guid: d8ac52d6489ed3f4baa78178a01ecd4a, type: 2}
   ColorSwap: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 1}

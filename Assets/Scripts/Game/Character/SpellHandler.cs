@@ -469,7 +469,7 @@ namespace Game.Character
             m_AnimationTimer = spellData.AnimationTimer / CurrentCastSpeedFactor;
 
             // call for the spell animation
-            CallSpellEventClientRPC(spellData.name, ESpellEvent.OnStartCast);
+            CallSpellEvent(spellData.name, ESpellEvent.OnStartCast);
             m_Controller.AnimationHandler.PlayAnimationClientRPC(spellData.Animation, m_AnimationTimer);
 
             // wait for animation to finish (if not already)
@@ -534,7 +534,7 @@ namespace Game.Character
                 m_Controller.EnergyHandler.SpendEnergy(spellData.EnergyCost);
 
             // inform that casting is done
-            CallSpellEventClientRPC(spellData.name, ESpellEvent.OnCast);
+            CallSpellEvent(spellData.name, ESpellEvent.OnCast);
             m_IsCasting.Value = false;
             m_Controller.AnimationHandler.CancelCastAnimationClientRpc();
             m_IsCurrentSpellCancellable = true;
@@ -566,7 +566,7 @@ namespace Game.Character
             m_Controller.AnimationHandler.CancelCastAnimationClientRpc();
 
             // call PreSpellEvent
-            CallSpellEventClientRPC(m_SelectedSpell.ToString(), ESpellEvent.OnEnd);
+            CallSpellEvent(m_SelectedSpell.ToString(), ESpellEvent.OnEnd);
 
             // check Coroutine
             if (m_CastCoroutine != null)
@@ -786,6 +786,17 @@ namespace Game.Character
 
 
         #region Listeners
+
+        public void CallSpellEvent(string spellName, ESpellEvent spellEvent)
+        {
+            var spellData = SpellLoader.GetSpellData(spellName, destroy: true);
+            
+            // check has effect linked to that event
+            if (! spellData.HasGfxEventAt(spellEvent))
+                return;
+
+            CallSpellEventClientRPC(spellName, spellEvent);
+        }
 
         [ClientRpc]
         public void CallSpellEventClientRPC(string spellName, ESpellEvent spellEvent)
