@@ -333,6 +333,16 @@ namespace Game.Loaders
             return spells;
         }
 
+        /// <summary>
+        /// Get a spell matching provided filters
+        /// </summary>
+        /// <param name="raretyFilters"></param>
+        /// <param name="spellTypeFilters"></param>
+        /// <param name="spellElementFilters"></param>
+        /// <param name="stateEffectFilters"></param>
+        /// <param name="notAllowedSpellsFilter"></param>
+        /// <param name="unlocked"></param>
+        /// <returns></returns>
         public static SpellData GetRandomSpell(List<ERarety> raretyFilters = default, List<ESpellType> spellTypeFilters = default, List<ESpellElement> spellElementFilters = default, List<EStateEffect> stateEffectFilters = default, List<ESpell> notAllowedSpellsFilter = default, bool? unlocked = null)
         {
             var spells = FilterSpells(raretyFilters, spellTypeFilters, spellElementFilters, stateEffectFilters, notAllowedSpellsFilter, unlocked);
@@ -500,6 +510,95 @@ namespace Game.Loaders
 
             return data;
         }
+
+        /// <summary>
+        /// Get a spell matching provided filters
+        /// </summary>
+        /// <param name="raretyFilters"></param>
+        /// <param name="spellTypeFilters"></param>
+        /// <param name="spellElementFilters"></param>
+        /// <param name="stateEffectFilters"></param>
+        /// <param name="notAllowedSpellsFilter"></param>
+        /// <param name="unlocked"></param>
+        /// <returns></returns>
+        public static RuneData GetRandomRune(List<ERarety> raretyFilter = default, List<ESpellElement> elementsFilter = default, List<ERune> notAllowedFilter = default, bool? unlocked = null, string containsName = "")
+        {
+            var runes = FilterRunes(raretyFilter, elementsFilter, notAllowedFilter, unlocked, containsName);
+            if (runes.Count == 0)
+                return null;
+
+            int randomIndex = UnityEngine.Random.Range(0, runes.Count);
+            return runes[randomIndex];
+        }
+
+        /// <summary>
+        /// Return a list of spells that can be filtered by :
+        ///     - Rarety
+        ///     - Type 
+        ///     - State Effects
+        /// </summary>
+        /// <param name="raretyFilter">        allowed types of rarety for the runes                           </param>
+        /// <param name="elementsFilter">  allowed elements of the runes                                   </param>
+        /// <param name="notAllowedFilter">     list of not runes that are not allowed to be in the return data </param>
+        /// <returns></returns>
+        public static List<RuneData> FilterRunes(List<ERarety> raretyFilter = default, List<ESpellElement> elementsFilter = default, List<ERune> notAllowedFilter = default, bool? unlocked = null, string containsName = "")
+        {
+            List<RuneData> runes = new List<RuneData>();
+            foreach (var runeData in Instance.m_RunesData.Values)
+            {
+                // CHECK : is None
+                if (runeData.Rune == ERune.None)
+                    continue;
+
+                // CHECK : not in not allowed spells
+                if (notAllowedFilter != null && notAllowedFilter.Contains(runeData.Rune))
+                    continue;
+
+                // CHECK : rarety
+                if (raretyFilter != null && raretyFilter.Count > 0 && !raretyFilter.Contains(runeData.Rarety))
+                    continue;
+
+                // CHECK : Spell Element
+                if (elementsFilter != null && elementsFilter.Count > 0)
+                {
+                    if (runeData.SpellElements == null || runeData.SpellElements.Count == 0)
+                    {
+                        // CHECK : NEUTRAL type
+                        if (!elementsFilter.Contains(ESpellElement.Neutral))
+                            continue;
+                    }
+
+                    // CHECK : has at least one of required elements
+                    else if (runeData.SpellElements.Where(element => elementsFilter.Contains(element)).ToList().Count() == 0)
+                        continue;
+                }
+
+                // FILTER : not in not allowed spells
+                if (notAllowedFilter != null && notAllowedFilter.Contains(runeData.Rune))
+                    continue;
+
+                // FILTER : is owned
+                if (unlocked != null)
+                {
+                    // if UNLOCKED is required : check that spell is already unlocked
+                    if (unlocked.Value && InventoryCloudData.Instance.GetCollectable(runeData.Rune).Level == 0)
+                        continue;
+
+                    // if NOT UNLOCKED is required : check that spell is not already unlocked
+                    if (!unlocked.Value && InventoryCloudData.Instance.GetCollectable(runeData.Rune).Level > 0)
+                        continue;
+                }
+
+                // FILTER : name contains string
+                if (!string.IsNullOrEmpty(containsName) && !runeData.Rune.ToString().ToLower().Contains(containsName.ToLower()))
+                    continue;
+
+                runes.Add(runeData);
+            }
+
+            return runes;
+        }
+
 
         #endregion
     }

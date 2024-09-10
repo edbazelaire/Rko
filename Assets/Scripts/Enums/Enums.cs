@@ -77,7 +77,7 @@
         Fireball,
         FireBomb,
         Heal,
-        Counter,
+        IgnitionVeil,
         Invisibility,
         AxeThrow,
         Erasement,
@@ -709,6 +709,7 @@
         Gold,
         Platinium,
         Diamond,
+        Master,
         Champion
     }
 
@@ -736,6 +737,7 @@
         Lone_Wolf,
         Pyro_Master,
         Glacial_Conqueror,
+        Heal_Checker,
     }
 
     public enum EAvatar
@@ -753,6 +755,7 @@
         ChibiTao        = 9,
         Snowman         = 10,
         FrostMaster     = 11,
+        FirstWin        = 12,
 
         BlueFlameChibi  = 101,
         CosmicChibi     = 102,
@@ -778,7 +781,8 @@
         //LeaguePlatinium = 4,
         //LeagueRubis     = 5,
         //LeagueDiamant   = 6,
-        //LeagueLegend    = 7,
+        //LeagueMaster    = 7,
+        //LeagueLegend    = 8,
 
         // Special ranking border
         Rank1 = 11,
@@ -801,11 +805,15 @@
         Wins        = 2,
         Damages     = 3,
         Heals       = 4,
+        // -- speciaux
+        DamageDealer = 50,
+        HeartOfFire = 51,
+
         // -- pvp
         PvpGamesWon = 100,
         // -- solo
-        SoloGames   = 201,
-        LoneWolf    = 202,
+        SoloGames       = 201,
+        LoneWolf        = 202,
 
         // Collectables
         GoldCollector   = 501,

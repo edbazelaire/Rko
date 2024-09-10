@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Xml.Linq;
 using Tools;
 using UnityEngine;
 
@@ -190,7 +189,7 @@ namespace Data
         public SCurrencyDistributionData[] Currencies;
         [Description("Total Number of spells in the chest")]
         public SExtraCardData ExtraCardData;
-        [Description("Distrinution of spells in that chest")]
+        [Description("Distribution of spells in that chest")]
         public SSpellDistributionData[] SpellsDistribution;
 
         [Header("Filters")]
@@ -249,6 +248,9 @@ namespace Data
 
             // EXTRA CARD
             rewards.AddRange(GenerateExtraCardsRewards(ExtraCardData.ExtraCards, ExtraCardData.ToDict()));
+
+            // RUNE
+            rewards.AddRange(GenerateRuneData(1, ExtraCardData.ToDict()));
 
             return rewards;
         }
@@ -316,6 +318,113 @@ namespace Data
 
             return rewards.Values.ToList();
         } 
+
+        List<SReward> GenerateRuneData(int qty, Dictionary<ERarety, float> raretyPerc)
+        {
+            List<ERune> usedRunes = new List<ERune>();
+            RuneData runeData;
+            var rewards = new Dictionary<ERarety, SReward>();
+            for (int i = 0; i < qty; i++)
+            {
+                var randValue = UnityEngine.Random.Range(0f, 100f);
+
+                foreach (var item in raretyPerc.Reverse())
+                {
+                    if (item.Value < randValue)
+                        continue;
+
+                    // rarety exists already : add one more qty
+                    if (rewards.ContainsKey(item.Key))
+                    {
+                        var reward = rewards[item.Key];
+                        reward.Qty++;
+                        rewards[item.Key] = reward;
+                        break;
+                    }
+
+                    bool success = false;
+                    do
+                    {
+                        try
+                        {
+                            if (usedRunes == null)
+                            {
+                                ErrorHandler.Error("UsedSpells is null");
+                                usedRunes = new List<ERune>();
+                            }
+
+                            if (SpellElements == null)
+                            {
+                                ErrorHandler.Error("SpellElements is null");
+                                SpellElements = new ESpellElement[0];
+                            }
+
+                            // GET RANDOM RUNE matching provided filters of the chest
+                            bool unlockedOnly = UnlockedOnly();
+                            runeData = SpellLoader.GetRandomRune(
+                                raretyFilter: new List<ERarety>() { item.Key },
+                                elementsFilter: SpellElements.ToList(),
+                                unlocked: unlockedOnly
+                            );
+
+                            // NO RUNE FOUND : remove unlocked only filter
+                            if (unlockedOnly && runeData == null)
+                            {
+                                runeData = SpellLoader.GetRandomRune(
+                                    raretyFilter: new List<ERarety>() { item.Key },
+                                    elementsFilter: SpellElements.ToList(),
+                                    unlocked: false                         // allow not unlocked only
+                                );
+                            }
+
+                            // NO RUNE FOUND : remove all filters
+                            if (runeData == null)
+                            {
+                                runeData = SpellLoader.GetRandomRune();
+                            }
+
+                            // ERRROR : no rune found
+                            if (runeData == null)
+                            {
+                                ErrorHandler.Error("runeData is null");
+                                continue;
+                            }
+
+                            rewards.Add(item.Key, new SReward(
+                                typeof(ERune),
+                                runeData.Name,
+                                1
+                            ));
+
+                            success = true;
+                        }
+                        catch (Exception e)
+                        {
+                            ErrorHandler.Error(e.Message);
+                            ErrorHandler.Error(TextHandler.ToString(new Dictionary<string, string>() {
+                                { "item.Key",           item.Key.ToString() },
+                                { "usedSpells",         TextHandler.ToString(usedRunes) },
+                                { "SpellElements",      TextHandler.ToString(SpellElements.ToList()) },
+                            }));
+                        }
+                    } while (!success);
+                    
+                    break;
+                }
+            }
+
+            return rewards.Values.ToList();
+        } 
+
+        /// <summary>
+        /// Check if should get only unlocked collectables
+        /// </summary>
+        /// <param name="unlockedPerc"></param>
+        /// <returns></returns>
+        bool UnlockedOnly(float unlockedPerc = 0.5f)
+        {
+            return Mathf.Clamp01(unlockedPerc) >= UnityEngine.Random.Range(0f, 1f);
+        }
 
         #endregion
 

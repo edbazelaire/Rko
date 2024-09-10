@@ -17,7 +17,7 @@ namespace Save
     {
         public string   CollectableName;
         public int      Level;
-        public int Qty;
+        public int      Qty;
 
         [NonSerialized]
         private Enum m_Collectable;

@@ -558,12 +558,6 @@ namespace Game.Spells
             int boostedValue        = m_Controller.StateHandler.ApplyBonusInt(baseValue, property);                                                              // Bonus values applied to the property
             float stacksFactor      = stateEffectScalingStacks.StateEffectProperty == property ? Stacks * stateEffectScalingStacks.ScalingFactor : 1f;                  // apply Stack bonus 
 
-            ErrorHandler.Log("GetInt() : " + property, ELogTag.StateEffects);
-            ErrorHandler.Log("      + Final Value : " + (int)Mathf.Round(boostedValue * stacksFactor), ELogTag.StateEffects);
-            ErrorHandler.Log("      + baseValue : " + baseValue, ELogTag.StateEffects);
-            ErrorHandler.Log("      + boostedValue : " + boostedValue, ELogTag.StateEffects);
-            ErrorHandler.Log("      + stacksFactor : " + stacksFactor, ELogTag.StateEffects);
-
             // return boosted valye
             return (int)Mathf.Round(boostedValue * stacksFactor);    
         }
@@ -580,14 +574,8 @@ namespace Game.Spells
             // if is a slow, check the bonus from the caster bonus slow 
             if (property == EStateEffectProperty.SpeedBonus && baseValue < 0 && m_Caster != null)
             {
-                Debug.Log("GET SPEED BONUS : ");
-                Debug.Log("     + baseValue : " + baseValue);
-                Debug.Log("     + BonuSlowPerc : " + m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusSlowPerc));
-
                 // ADD : && baseValue < 0
                 baseValue *= Mathf.Max(0, m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusSlowPerc));
-
-                Debug.Log("     + finalValue : " + baseValue);
             }
 
             float boostedValue = m_Controller.StateHandler.ApplyBonus(baseValue, property);

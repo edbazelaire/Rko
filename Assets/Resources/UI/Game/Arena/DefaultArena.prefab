@@ -88,9 +88,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1068632150724931465, guid: 5de4afa3ff8175a4b82bc804dffb6040, type: 3}
+      propertyPath: m_OverrideSorting
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2802363362580776987, guid: 5de4afa3ff8175a4b82bc804dffb6040, type: 3}
       propertyPath: m_Name
-      value: Arena
+      value: DefaultArena
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276726246549014575, guid: 5de4afa3ff8175a4b82bc804dffb6040, type: 3}
+      propertyPath: m_SortingLayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8276726246549014575, guid: 5de4afa3ff8175a4b82bc804dffb6040, type: 3}
+      propertyPath: m_SortingLayerID
+      value: -1204665219
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

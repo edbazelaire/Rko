@@ -89,6 +89,7 @@ namespace Network
         public int              NPlayers    => m_JoinedLobby != null ? m_JoinedLobby.Players.Count : 0;
         public int              MaxPlayers  => m_MaxPlayers;
         public ELobbyState      State       => m_State;
+        public bool             IsActive    => m_State != ELobbyState.Inactive;
 
         #endregion
 
@@ -239,7 +240,8 @@ namespace Network
             } 
             catch (Exception e)
             {
-                OnErrorCallback("Unhandled LobbyState : " + m_State, e.Message).Invoke();
+                Debug.LogException(e);
+                OnErrorCallback("Error at LobbyState : " + m_State, e.Message).Invoke();
             }
         }
 
@@ -557,6 +559,7 @@ namespace Network
                         9,
                         trainingCharacter,
                         PlayerPrefsHandler.GetTrainingRunes(),
+                        new int[] { 9, 9, 9 },
                         PlayerPrefsHandler.GetTrainingSpells(),
                         new int[] { 9, 9, 9, 9 },
                         new SProfileCurrentData(gamerTag: trainingCharacter.ToString()).AsNetworkSerializable(),
@@ -574,6 +577,7 @@ namespace Network
                         1,
                         character,
                         new ERune[] { ERune.None, ERune.None, ERune.None },
+                        new int[] { 1, 1, 1 },
                         new ESpell[] { ESpell.Heal, ESpell.RockShower },
                         new int[] { 1, 1 },
                         new SProfileCurrentData(

@@ -169,16 +169,6 @@ namespace Game.Character
         #endregion
 
 
-        #region Particles
-
-        public void SpawnVisualEffect(GameObject visualEffect, EBodyPart bodyPart)
-        {
-
-        }
-
-        #endregion
-
-
         #region Spell GFX
 
         public List<SpellGFX> SpawnSpellGFX(string spellName, ESpellEvent spellEvent)
@@ -323,9 +313,19 @@ namespace Game.Character
 
 
         #region Listeners
-
+        
+        /// <summary>
+        /// Handle the graphics effects for a spell at a specific event (cast, spawn, ...)
+        /// </summary>
+        /// <param name="spellName"></param>
+        /// <param name="spellEvent"></param>
         void OnPreSpellEvent(string spellName, ESpellEvent spellEvent)
         {
+            // FILTER : handle on event before spell spawn (post-spell spawning is handled by the spell itself)
+            // except "OnEnd" that can be called when the cast is cancelled
+            if (spellEvent >= ESpellEvent.OnSpawn && spellEvent != ESpellEvent.OnEnd)
+                return;
+
             ErrorHandler.Log(spellName + " OnPreSpellEvent : " + spellEvent, ELogTag.SpellGFX);
             SpawnSpellGFX(spellName, spellEvent);   
         }
