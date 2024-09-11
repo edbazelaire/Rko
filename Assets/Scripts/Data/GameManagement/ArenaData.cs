@@ -109,6 +109,8 @@ namespace Data.GameManagement
         /// <returns></returns>
         public SPlayerData CreatePlayerData()
         {
+            int maxLevel = CollectablesManagementData.GetMaxLevel(ESpell.AxeThrow);
+
             ERune[] runes;
             switch (ArenaType)
             {
@@ -121,12 +123,20 @@ namespace Data.GameManagement
                     break;
             }
 
+            // set rune levels equal to character level
+            int[] runeLevels = new int[runes.Length];
+            for (int i = 0; i < runes.Length; i++)
+            {
+                // make sure that character level is not > to max spell level
+                runeLevels[i] = Math.Min(CurrentStageData.CharacterLevel, maxLevel);
+            }
+
             // set spell levels equal to character level
-            List<int> spellLevels = new List<int>();
+            int[] spellLevels = new int[CurrentArenaLevelData.Spells.Count];
             for (int i = 0; i < CurrentArenaLevelData.Spells.Count; i++)
             {
                 // make sure that character level is not > to max spell level
-                spellLevels.Add(Math.Min(CurrentStageData.CharacterLevel, CollectablesManagementData.GetMaxLevel(ESpell.AxeThrow)));
+                spellLevels[i] = Math.Min(CurrentStageData.CharacterLevel, maxLevel);
             }
 
             // create & return PlayerData
@@ -135,9 +145,9 @@ namespace Data.GameManagement
                 characterLevel: CurrentStageData.CharacterLevel,
                 character:      CurrentStageData.Character,
                 runes:          runes,
-                runeLevels:     spellLevels.ToArray(),      // same level as spells, and character
+                runeLevels:     runeLevels,      
                 spells:         CurrentArenaLevelData.Spells.ToArray(),
-                spellLevels:    spellLevels.ToArray(),
+                spellLevels:    spellLevels,
                 profileData:    CreateProfileData(),
                 isPlayer:       false,
 
