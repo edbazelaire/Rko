@@ -755,15 +755,15 @@
         ChibiTao        = 9,
         Snowman         = 10,
         FrostMaster     = 11,
-        FirstWin        = 12,
 
         BlueFlameChibi  = 101,
         CosmicChibi     = 102,
         DemonicChibi    = 103,
         FireChibi       = 104,
         ChibiFrostDemon = 105,
+        FirstWinChibi   = 106,
 
-        Alexander       = 1000,
+        Alexander = 1000,
         YoungAlexander  = 1001,
         Marcus          = 1010,
         Kahnan          = 1030,
