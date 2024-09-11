@@ -224,13 +224,13 @@ public class Controller : NetworkBehaviour
             }
 
             // safety check
+            int runeLevel = 1;
             if (i >= playerData.RuneLevels.Length)
-            {
                 ErrorHandler.Error("Bad index (" + i + ") for provided RuneLevels of length : " + playerData.RuneLevels.Length);
-                break;
-            }
+            else
+                runeLevel = playerData.RuneLevels[i];
 
-            m_RuneData[i] = SpellLoader.GetRuneData(playerData.Runes[i], playerData.RuneLevels[i]);
+            m_RuneData[i] = SpellLoader.GetRuneData(playerData.Runes[i], runeLevel);
             m_RuneData[i].SetActivation(CharacterBuildsCloudData.GetRuneActivationFromIndex(i));
         }
      
