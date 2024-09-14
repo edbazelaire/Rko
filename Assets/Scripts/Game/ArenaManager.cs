@@ -67,8 +67,6 @@ namespace Game
 
         public void Initialize()
         {
-            Debug.LogWarning("Arena Manager : Initialize()");
-
             FindComponents();
 
             m_ArenaBackground.Initialize();

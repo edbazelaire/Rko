@@ -19,6 +19,11 @@ namespace Assets.Scripts.Tools
 
         #region Init & End
 
+        private void Start()
+        {
+            DontDestroyOnLoad(s_Instance);
+        }
+
         #endregion
 
 
@@ -44,6 +49,12 @@ namespace Assets.Scripts.Tools
             m_Coroutines.Remove(id);
         }
 
+        /// <summary>
+        /// Create a new TimeWrapper that will throw an Error on time limit reached
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="timer"></param>
+        /// <param name="onTimerEnd"></param>
         public void New(string id, float timer, Action onTimerEnd)
         {
             if (timer < 0)
@@ -67,6 +78,10 @@ namespace Assets.Scripts.Tools
             m_Coroutines[id] = StartCoroutine(WrapCoroutine(id, timer, onTimerEnd));
         }
 
+        /// <summary>
+        /// Stop a time wrapper with a specific ID
+        /// </summary>
+        /// <param name="id"></param>
         public void Cancel(string id)
         {
             if (! m_Coroutines.ContainsKey(id))
@@ -87,12 +102,14 @@ namespace Assets.Scripts.Tools
         {
             get
             {
-                if (s_Instance == null)
-                {
-                    s_Instance = GameObject.Instantiate(AssetLoader.LoadManager<TimeErrorWrapper>());
-                    DontDestroyOnLoad(s_Instance);
-                }
+                if (s_Instance != null)
+                    return s_Instance;
 
+                s_Instance = FindFirstObjectByType<TimeErrorWrapper>();
+                if (s_Instance != null)
+                    return s_Instance;
+
+                s_Instance = GameObject.Instantiate(AssetLoader.LoadManager<TimeErrorWrapper>());
                 return s_Instance;
             }
         }  

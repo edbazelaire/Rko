@@ -4,6 +4,7 @@ using Assets.Scripts.Tools;
 using Enums;
 using Externals;
 using Game.Loaders;
+using Game.UI;
 using Managers;
 using Network;
 using Save;
@@ -399,11 +400,25 @@ namespace Game
             if (!IsServer)
                 return;
 
+            //if (! ProfileCloudData.TutoDone)
+            //    StartTuto();
+            //else
             StartCoroutine(PlayIntro());
+        }
+
+        void StartTuto()
+        {
+            // deactivate INTRO UI
+            GameUIManager.IntroGameUI.gameObject.SetActive(false);
+
+            // activate TUTO
+            TutoGameManager.Instance.Activate(m_Controllers[0], m_Controllers[1]);
         }
 
         IEnumerator PlayIntro()
         {
+            GameUIManager.IntroGameUI.gameObject.SetActive(true);
+
             // call clients to start intro animation
             PlayIntroAnimationClientRPC();
             yield return new WaitForSeconds(2.5f);
@@ -615,7 +630,7 @@ namespace Game
         /// Set the state of the game
         /// </summary>
         /// <param name="state"></param>
-        void SetState(EGameState state)
+        public void SetState(EGameState state)
         {
             if (!IsServer)
             {
@@ -731,12 +746,13 @@ namespace Game
                     break;
 
                 case EGameState.Intro:
+                    float timer = ProfileCloudData.TutoDone ? 45f : 300f;
                     TimeErrorWrapper.Instance.New(TIME_WRAPPER_ID, 45f, OnGameRunningTimeLimit);
                     StartIntro();
                     break;
 
                 case EGameState.GameRunning:
-                    TimeErrorWrapper.Instance.New(TIME_WRAPPER_ID, 5*60f, OnGameRunningTimeLimit);
+                    TimeErrorWrapper.Instance.Cancel(TIME_WRAPPER_ID);
                     break;
 
                 case EGameState.GameOver:
@@ -748,21 +764,6 @@ namespace Game
         void OnPlayerDied()
         {
             CheckGameEnd();
-        }
-
-        void OnRelayDisconnected()
-        {
-            ErrorHandler.Warning("Relay connection lost. Returning to Main Menu.");
-
-            // ====================================
-            // TODO : Handle disconnection, such as saving game state or showing a message to the player
-            // ====================================
-
-            // Load the Main Menu scene
-            SceneLoader.Instance.LoadScene("MainMenu");
-
-            // shutdown the GameManager
-            Shutdown();
         }
 
         #endregion

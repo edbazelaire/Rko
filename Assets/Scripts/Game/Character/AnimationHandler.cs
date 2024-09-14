@@ -9,7 +9,6 @@ using Tools;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Game.Character
 {

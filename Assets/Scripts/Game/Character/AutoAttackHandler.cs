@@ -10,7 +10,7 @@ namespace Game.Character
         Controller m_Controller;
 
         bool m_IsMoving     = false;
-        bool m_IsCasting    = false;
+        bool m_IsCasting    => m_Controller.SpellHandler.IsCasting;
 
         #endregion
 
@@ -20,9 +20,15 @@ namespace Game.Character
         public override void OnNetworkSpawn()
         {
             m_Controller = Finder.FindComponent<Controller>(gameObject);
-
             m_Controller.Movement.MoveX.OnValueChanged          += OnMovementValueChanged;
-            m_Controller.SpellHandler.IsCasting.OnValueChanged  += OnCastingValueChanged;
+        }
+        
+        public void Activate(bool activate)
+        {
+            if (!activate)
+                StopAllCoroutines();
+
+            this.enabled = activate;
         }
 
         #endregion
@@ -56,7 +62,7 @@ namespace Game.Character
             get
             {
                 return m_Controller.Movement.MoveX.Value == 0
-                    && ! m_Controller.SpellHandler.IsCasting.Value;
+                    && ! m_Controller.SpellHandler.IsCasting;
             }
         }
 
@@ -68,11 +74,6 @@ namespace Game.Character
         void OnMovementValueChanged(int old, int newValue)
         {
             m_IsMoving = newValue != 0;
-        }
-
-        void OnCastingValueChanged(bool old, bool newValue)
-        {
-            m_IsCasting = newValue;
         }
 
         #endregion

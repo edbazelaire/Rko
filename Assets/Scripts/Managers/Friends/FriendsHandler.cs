@@ -13,7 +13,6 @@ using Assets.Scripts.Network;
 
 namespace Managers.Friends
 {
-
     public class FriendsHandler : MonoBehaviour
     {
         #region Members
@@ -25,6 +24,10 @@ namespace Managers.Friends
         {
             get
             {
+                if (s_Instance != null)
+                    return s_Instance;
+
+                s_Instance = FindAnyObjectByType<FriendsHandler>();
                 if (s_Instance != null)
                     return s_Instance;
 
@@ -159,8 +162,6 @@ namespace Managers.Friends
         public static async void AcceptAllCurrentRequests()
         {
             List<Member> requests = Instance.GetRequests();
-
-            Debug.Log("Found : " + requests.Count + " friend requests");
             foreach (Member member in requests)
             {
                 await Instance.AcceptRequest(member.Profile.Name);

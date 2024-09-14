@@ -222,7 +222,8 @@ namespace Game.Spells
             ApplyEnemyStateEffects(controller);
 
             // call spell event that spell has touched something
-            CallSpellEvent(ESpellEvent.OnHit, controller);
+            if (m_SpellData.HasGfxEventAt(ESpellEvent.OnHit, checkEnd: false)) 
+                CallSpellEventClientRPC(ESpellEvent.OnHit, controller.PlayerId);
 
             return true;
         }

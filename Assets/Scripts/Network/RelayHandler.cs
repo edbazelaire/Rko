@@ -85,24 +85,16 @@ namespace Assets.Scripts.Network
 
         public async Task JoinRelay(string joinCode)
         {
-            try
-            {
-                ErrorHandler.Log("Joining relay with code " + joinCode, ELogTag.System);
+            ErrorHandler.Log("Joining relay with code " + joinCode, ELogTag.System);
 
-                JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
-                RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
+            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+            RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
 
-                NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 
-                NetworkManager.Singleton.StartClient();
+            NetworkManager.Singleton.StartClient();
 
-                ErrorHandler.Log("Client started with local id : " + NetworkManager.Singleton.LocalClientId, ELogTag.System);
-
-            }
-            catch (RelayServiceException e)
-            {
-                Debug.LogError(e.Message);
-            }
+            ErrorHandler.Log("Client started with local id : " + NetworkManager.Singleton.LocalClientId, ELogTag.System);
         }
 
         #endregion

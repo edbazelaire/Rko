@@ -79,6 +79,7 @@ namespace Tools
         // -- UI
         public const string c_UISpritesPath                 = c_SpritesPath + "UI/";
         public const string c_RaysPath                      = c_UISpritesPath + "Rays/";
+        public const string c_TutoUIPath                      = c_UISpritesPath + "Tuto/";
         
         // -- Backgrounds
         public const string c_BackgroundsImagePath         = c_SpritesPath + "Backgrounds/";
@@ -94,7 +95,7 @@ namespace Tools
         public const string c_BadgesPath                    = c_ProfilePath + "Badges/";
         
         // -- Icons
-        public const string c_IconPath                      = "Sprites/Icons/";
+        public const string c_IconPath                      = c_SpritesPath + "Icons/";
         public const string c_IconCharactersPath            = c_IconPath + "Characters/";
         public const string c_IconSpellsPath                = c_IconPath + "Spells/";
         public const string c_IconStateEffectsPath          = c_IconSpellsPath + "StateEffects/";
@@ -330,6 +331,16 @@ namespace Tools
         public static LeagueBannerButton LoadLeagueButton()
         {
             return Load<LeagueBannerButton>("LeagueBannerButton", c_RankedModeUIPath);
+        }
+
+        #endregion
+
+
+        #region Tutorial Sprites
+
+        public static Sprite LoadCaption(ECaptionType captionType)
+        {
+            return Load<Sprite>("Caption_" + captionType.ToString(), c_TutoUIPath);
         }
 
         #endregion

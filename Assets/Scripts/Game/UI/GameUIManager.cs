@@ -19,9 +19,10 @@ public class GameUIManager : MonoBehaviour
     private bool m_Initialized;
     public static bool Initialized => s_Instance != null && s_Instance.m_Initialized;
 
-    private IntroGameUI    m_IntroGameUI;
-    private EndGameUI      m_EndGameUI;
-    private ErrorGameUI    m_ErrorGameUI;
+    private IntroGameUI     m_IntroGameUI;
+    private EndGameUI       m_EndGameUI;
+    private ErrorGameUI     m_ErrorGameUI;
+    private TutoGameUI      m_TutoGameUI;
 
     const string        c_PlayerUIContainerPrefix   = "PlayerUIContainer_";
     const string        c_SpellsContainer           = "SpellsContainer";
@@ -61,6 +62,8 @@ public class GameUIManager : MonoBehaviour
     // Public Accessors
     public static IntroGameUI IntroGameUI               => Instance.m_IntroGameUI;
     public static ErrorGameUI ErrorGameUI               => Instance.m_ErrorGameUI;
+    public static TutoGameUI TutoGameUI                 => Instance.m_TutoGameUI;
+    public static List<SpellItemUI> SpellItems          => Instance.m_SpellItems;
     public static bool LeftMovementButtonPressed        => Instance.m_LeftMovementButtonPressed;
     public static bool RightMovementButtonPressed       => Instance.m_RightMovementButtonPressed;
 
@@ -71,9 +74,10 @@ public class GameUIManager : MonoBehaviour
 
     void FindComponents()
     {
-        m_IntroGameUI   = Finder.FindComponent<IntroGameUI>(transform.parent.gameObject, "IntroGameUI");
-        m_EndGameUI     = Finder.FindComponent<EndGameUI>(transform.parent.gameObject, "EndGameUI");
-        m_ErrorGameUI   = Finder.FindComponent<ErrorGameUI>(transform.parent.gameObject, "ErrorGameUI");
+        m_IntroGameUI   = Finder.FindComponent<IntroGameUI>(transform.parent.gameObject,    "IntroGameUI");
+        m_EndGameUI     = Finder.FindComponent<EndGameUI>(transform.parent.gameObject,      "EndGameUI");
+        m_ErrorGameUI   = Finder.FindComponent<ErrorGameUI>(transform.parent.gameObject,    "ErrorGameUI");
+        m_TutoGameUI    = Finder.FindComponent<TutoGameUI>(transform.parent.gameObject,     "TutoGameUI");
 
         FindMovementButtons();
         FindPlayerUIContainers();
@@ -89,7 +93,9 @@ public class GameUIManager : MonoBehaviour
         m_SpellItems = new List<SpellItemUI>();
 
         m_EndGameUI.Initialize();
+        m_EndGameUI.gameObject.SetActive(false);
         m_ErrorGameUI.gameObject.SetActive(false);
+        m_TutoGameUI.gameObject.SetActive(false);
 
         LoadArena();
 
@@ -137,7 +143,6 @@ public class GameUIManager : MonoBehaviour
         ClearSpells();
     }
 
-
     void DeleteGameUI()
     {
         Destroy(gameObject);
@@ -153,9 +158,7 @@ public class GameUIManager : MonoBehaviour
     /// </summary>
     public void SetPlayersUI(ulong ClientId, int team)
     {
-        bool ally = GameManager.Instance.Owner.Team == team;
-
-        PlayerUI playerUI = Finder.FindComponent<PlayerUI>(Instantiate(m_PlayerUITemplate, m_PlayerUIContainers[ally ? 0 : 1].transform));
+        PlayerUI playerUI = Finder.FindComponent<PlayerUI>(Instantiate(m_PlayerUITemplate, m_PlayerUIContainers[GameManager.Instance.Owner.Team == team ? 0 : 1].transform));
         playerUI.Initialize(ClientId);
     }
 

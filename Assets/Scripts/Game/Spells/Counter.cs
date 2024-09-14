@@ -159,7 +159,7 @@ namespace Game.Spells
             Destroy(enemySpell.gameObject);
 
             // Call "OnHit" event for the Counter
-            CallSpellEvent(ESpellEvent.OnHit);
+            CallSpellEventClientRPC(ESpellEvent.OnHit);
             
             // Check MaxHit
             m_HittedPlayerId.Add(0);

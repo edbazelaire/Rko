@@ -15,30 +15,17 @@ namespace Game.Character
         NetworkVariable<int> m_Energy       = new(0);
 
         // ===================================================================================
-        // PRIVATE VARIABLES
-        /// <summary> Controller of the Owner</summary>
-        Controller m_Controller;
-
-        // ===================================================================================
         // PUBLIC ACCESSORS 
         /// <summary> Current health points </summary>
-        public NetworkVariable<int> Energy { get { return m_Energy; } }
+        public NetworkVariable<int> Energy => m_Energy;
 
         /// <summary> Initial hp of the player </summary>
-        public NetworkVariable<int> MaxEnergy { get { return m_MaxEnergy; } }
+        public NetworkVariable<int> MaxEnergy => m_MaxEnergy;
 
         #endregion
 
 
         #region Initialization
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public override void OnNetworkSpawn()
-        {
-            m_Controller = GetComponent<Controller>();
-        }
 
         public void Initialize(int energy, int maxEnergy)
         {

@@ -68,7 +68,7 @@ public class TaskAttack : Node
 
         ErrorHandler.Log("===================================================================", ELogTag.AITaskAttack);
         ErrorHandler.Log("TaskAttack.Evaluate()", ELogTag.AITaskAttack);
-        if (m_Controller.SpellHandler.IsCasting.Value)
+        if (m_Controller.SpellHandler.IsCasting)
         {
             ErrorHandler.Log("     + IsCasting     : true",     ELogTag.AITaskAttack);
             ErrorHandler.Log("     + State         : RUNNING",  ELogTag.AITaskAttack);
