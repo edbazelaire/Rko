@@ -24,9 +24,9 @@ namespace Data.DataStructures
         public  int                     Level;
         public  ESpellTarget            Target;
         
-        public  ESpellActivationEvent   SpellActivationEvent;
+        public  ESpellActivation   SpellActivationEvent;
         public  float                   ActivationTreshold;
-        public  ESpellActivationEvent   SpellDeactivationEvent;
+        public  ESpellActivation   SpellDeactivationEvent;
         public  float                   DeactivationTreshold;
 
         public  EStateEffectEvent       StateEffectEvent;

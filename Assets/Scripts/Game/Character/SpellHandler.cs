@@ -23,14 +23,10 @@ namespace Game.Character
 
         // ===================================================================================
         // NETWORK VARIABLES       
-        /// <summary> list of cooldowns that links spellID to its cooldown <summary>
-        NetworkList<float>                  m_CooldownsNet;
         /// <summary> list of spells that links spellID to spellValue <summary>
         NetworkList<int>                    m_SpellsNet;
         /// <summary> list of spells that links spellID to spellValue <summary>
         NetworkList<int>                    m_SpellLevelsNet;        
-        /// <summary> which spells are set as autotarget and which are not </summary>
-        NetworkList<bool>                   m_IsAutoTarget;
         /// <summary> global cooldown when a spell is cast </summary>
         NetworkVariable<float>              m_GlobalCooldown        = new NetworkVariable<float>(0);
         /// <summary> currently selected spell </summary>
@@ -39,8 +35,6 @@ namespace Game.Character
         NetworkVariable<Vector3>            m_TargetPos             = new NetworkVariable<Vector3>(default);
         /// <summary> is cast forced to "not allowed" ? </summary>
         NetworkVariable<bool>               m_CastBlocked           = new NetworkVariable<bool>(false);
-        /// <summary> is the player currently casting a spell ? </summary>
-        NetworkVariable<bool>               m_IsCasting             = new NetworkVariable<bool>(false);
 
         // ===================================================================================
         // PRIVATE VARIABLES    
@@ -56,6 +50,12 @@ namespace Game.Character
         ESpell                              m_Ultimate;
         /// <summary> overriding spell data (in case of replacement or someting) </summary>
         Dictionary<ESpell, SpellData>       m_OverridingSpellData;
+        /// <summary> is the player currently casting a spell ? </summary>
+        bool                                m_IsCasting;
+        /// <summary> list of cooldowns that links spellID to its cooldown <summary>
+        List<float>                         m_Cooldowns;
+        /// <summary> association of spells and current selection state </summary>
+        Dictionary<ESpell, ESpellSelectionState> m_SpellSelectionStates;
         /// <summary> base spawn position of the spell </summary>
         Transform                           m_SpellSpawn;
         /// <summary> spell that will be selected at the end of the current one </summary>
@@ -65,16 +65,11 @@ namespace Game.Character
         /// <summary> is current spell casted can be cancelled ? </summary>
         bool                                m_IsCurrentSpellCancellable    = true;
 
-        // -- Client Side
-        /// <summary> is currently selected spell an AutoTarget ? </summary>
-        bool                                m_IsSelectedAutoTarget = false;
-
         // ===================================================================================
         // PUBLIC ACCESSORS
         public NetworkVariable<int>         SelectedSpellNet        => m_SelectedSpellNet;
-        public NetworkList<float>           CooldownsNet            => m_CooldownsNet;
-        public NetworkVariable<bool>        IsCasting               => m_IsCasting;
-        public bool                         IsCastingUncancellable  => m_IsCasting.Value && ! m_IsCurrentSpellCancellable;
+        public bool                         IsCasting               => m_IsCasting;
+        public bool                         IsCastingUncancellable  => m_IsCasting && ! m_IsCurrentSpellCancellable;
         public float                        AnimationTimer          => m_AnimationTimer;
         public ESpell                       SelectedSpell           => m_SelectedSpell;
         public ESpell                       AutoAttack              => m_AutoAttack;
@@ -85,8 +80,8 @@ namespace Game.Character
 
         // ===================================================================================
         // EVENTS
-        public Action<ESpell> OnSpellCasted;
         public Action<string, ESpellEvent> OnPreSpellEvent;
+        public Action<ESpell, ESpellSelectionState> SpellSelectionEvent;
 
         #endregion
 
@@ -97,8 +92,9 @@ namespace Game.Character
         {
             m_SpellsNet         = new NetworkList<int>(default);
             m_SpellLevelsNet    = new NetworkList<int>(default);
-            m_CooldownsNet      = new NetworkList<float>(default);
-            m_IsAutoTarget      = new NetworkList<bool>(default);
+            
+            m_Cooldowns            = new List<float>();
+            m_SpellSelectionStates = new();
         }
 
         public override void OnNetworkSpawn()
@@ -106,15 +102,15 @@ namespace Game.Character
             m_Controller = Finder.FindComponent<Controller>(gameObject);
             m_SpellSpawn = Finder.FindComponent<Transform>(gameObject, c_SpellSpawn);
             m_OverridingSpellData = new Dictionary<ESpell, SpellData>();
-
-            m_SelectedSpellNet.OnValueChanged += OnSelectedSpellChanged;
         }
 
         void Update()
         {
             // only server can update cooldowns
-            if (IsServer)
-                UpdateCooldowns();
+            if (!IsServer)
+                return;
+            
+            UpdateCooldowns();
         }
 
         #endregion
@@ -142,25 +138,24 @@ namespace Game.Character
             spellLevels.Insert(1, m_Controller.CharacterLevel);
             extraSpells.Insert(2, ultimate);
             spellLevels.Insert(2, m_Controller.CharacterLevel);
-            
+
             // setup spells, spell levels and isAutoTarget 
             for (int i=0; i < extraSpells.Count; i++)
             {
                 m_SpellsNet.Add((int)extraSpells[i]);
                 m_SpellLevelsNet.Add(spellLevels[i]);
-
-                // ==================================================================================================================
-                // TODO : Handle with IsPlayer (caus AI is always autotarget) + PlayerPrefs from config (not implemented yet)
-                //m_IsAutoTarget.Add(m_Controller.IsPlayer ? SpellLoader.GetSpellData(extraSpells[i]).IsAutoTarget : true);
-                m_IsAutoTarget.Add(true);   
-                // ==================================================================================================================
-               
-                m_CooldownsNet.Add(0);
+                m_Cooldowns.Add(0);
+                m_SpellSelectionStates[extraSpells[i]] = ESpellSelectionState.None;
             }
 
+            // set ultimate to inactive by default
+            m_SpellSelectionStates[ultimate] = ESpellSelectionState.Inactive;
+
             // set auto attack as default selected spell and next selected spell if not auto target
-            m_SelectedSpell = IsAutoTarget(autoAttack) ? autoAttack : ESpell.Count;
-            m_NextSelectedSpell = IsAutoTarget(autoAttack) ? autoAttack : ESpell.Count;
+            m_SelectedSpell = ESpell.Count;
+            m_NextSelectedSpell = ESpell.Count;
+
+            RegisterListeners();
         }
 
         public void Activate(bool activate)
@@ -169,6 +164,18 @@ namespace Game.Character
                 StopAllCoroutines();
 
             this.enabled = activate;
+        }
+
+        #endregion
+
+
+        #region End
+
+        public override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            UnRegisterListeners();
         }
 
         #endregion
@@ -212,19 +219,6 @@ namespace Game.Character
         #endregion
 
 
-        #region Client RPC
-
-        [ClientRpc]
-        void SpellCastedClientRPC(ESpell spell, Vector3 target)
-        {
-            OnSpellCasted?.Invoke(spell);
-
-            GetSpellData(spell).SpawnOnCastPrefabs(target);
-        }
-
-        #endregion
-
-
         #region Spell Selection
 
         /// <summary>
@@ -237,7 +231,7 @@ namespace Game.Character
             if (spell == ESpell.Count)
                 return true;
 
-            return GetCooldown(spell) <= 0f                                                                    // spell not on cooldown 
+            return GetCooldown(spell) <= 0f                                                        // spell not on cooldown 
                 && GetSpellData(spell).EnergyCost <= m_Controller.EnergyHandler.Energy.Value;      // check enought energy
         }
 
@@ -259,11 +253,11 @@ namespace Game.Character
             if (spell != ESpell.Count && spell != AutoAttack)
             {
                 ErrorHandler.Log("TrySelectSpell " + spell, ELogTag.SpellHandler);
-                ErrorHandler.Log("     -- CHECK : is already Casting (" + m_SelectedSpell + ") : " + m_IsCasting.Value, ELogTag.SpellHandler);
+                ErrorHandler.Log("     -- CHECK : is already Casting (" + m_SelectedSpell + ") : " + m_IsCasting, ELogTag.SpellHandler);
             }
 
             // set in queue if possible 
-            if ((m_IsCasting.Value || m_CastCoroutine != null) && ! SpellLoader.GetSpellData(m_SelectedSpell).IsCancellable)
+            if ((m_IsCasting || m_CastCoroutine != null) && ! SpellLoader.GetSpellData(m_SelectedSpell).IsCancellable)
             {
                 ErrorHandler.Log("     -- Setting spell (" + spell + ") as m_NextSelectedSpell", ELogTag.SpellHandler);
                 m_NextSelectedSpell = spell;
@@ -277,18 +271,40 @@ namespace Game.Character
             if (spell == ESpell.Count)
                 return true;
 
-            if (IsAutoTarget(spell))
-            {
-                bool success = TryStartCastSpell(spell);
+            bool success = TryStartCastSpell(spell);
 
-                if (m_Controller.IsPlayer)
-                    ErrorHandler.Log("TryStartCastSpell "+spell+" success : " + success, ELogTag.SpellHandler);
+            if (m_Controller.IsPlayer)
+                ErrorHandler.Log("TryStartCastSpell " + spell + " success : " + success, ELogTag.SpellHandler);
 
-                if (!success)
-                    ErrorHandler.Log("Trying to cast spell " + spell + " on selection but was not able", ELogTag.SpellHandler);
-            }
+            if (!success)
+                ErrorHandler.Log("Trying to cast spell " + spell + " on selection but was not able", ELogTag.SpellHandler);
 
             return true;
+        }
+
+        /// <summary>
+        /// Refresh the state of the spell selection and fire event on change
+        /// </summary>
+        /// <param name="spell"></param>
+        void RefreshSpellSelectionState(ESpell spell)
+        {
+            ESpellSelectionState spellSelectionState = ESpellSelectionState.None;
+            if (GetCooldown(spell) > 0)
+                spellSelectionState = ESpellSelectionState.Cooldown;
+            else if (GetSpellData(spell).EnergyCost > m_Controller.EnergyHandler.Energy.Value)
+                spellSelectionState = ESpellSelectionState.Inactive;
+
+            SetSpellSelection(spell, spellSelectionState);
+        }
+
+        public void SetSpellSelection(ESpell spell, ESpellSelectionState spellSelectionState)
+        {
+            // NO CHANGES - skip
+            if (m_SpellSelectionStates[spell] == spellSelectionState)
+                return;
+
+            m_SpellSelectionStates[spell] = spellSelectionState;
+            SpellActionvationEventClientRPC(spell, spellSelectionState);
         }
 
         #endregion
@@ -357,7 +373,7 @@ namespace Game.Character
             }
 
             // check : is casting an other spell
-            if (m_IsCasting.Value && ! m_IsCurrentSpellCancellable)
+            if (m_IsCasting && ! m_IsCurrentSpellCancellable)
             {
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
                     ErrorHandler.Log("Spell cast (" + spell + ") BLOCKED : is casting an other spell", ELogTag.SpellHandler);
@@ -402,8 +418,7 @@ namespace Game.Character
         public bool CheckEnemyTargetable(ESpell spell)
         {
             SpellData spellData = GetSpellData(spell);
-            if (IsAutoTarget(spell))
-                spellData.ForceAutoTarget();
+            spellData.ForceAutoTarget();
 
             if (spellData.SpellTarget != ESpellTarget.FirstEnemy)
                 return true;
@@ -427,7 +442,7 @@ namespace Game.Character
                 return false;
 
             // if curently casting another spell, cancel it
-            if (m_IsCasting.Value)
+            if (m_IsCasting)
                 CancelCast();
 
             m_SelectedSpell = spell;
@@ -460,7 +475,7 @@ namespace Game.Character
 
             // SETUP : casting data
             m_IsCurrentSpellCancellable = spellData.IsCancellable;
-            m_IsCasting.Value = true;
+            m_IsCasting = true;
 
             // cancel current movement
             m_Controller.Movement.CancelMovement(true);
@@ -495,15 +510,6 @@ namespace Game.Character
             Cast(spell);
             m_Controller.Movement.CancelMovement(false);
 
-            // ===================================================================================
-            // TODO : REMOVE ? (handle in Cast() method)
-            //m_Controller.AnimationHandler.CancelCastAnimationClientRpc();
-
-            //m_IsCasting.Value = false;
-            //m_IsCurrentSpellCancellable = true;
-            //m_CastCoroutine = null;
-            // ===================================================================================
-
             // reset spell selection
             TrySelectSpell(m_NextSelectedSpell);
         }
@@ -526,16 +532,13 @@ namespace Game.Character
             // get spawn position and cast the spell
             StartCoroutine(spellData.CastDelay(m_Controller.PlayerId, m_TargetPos.Value, m_SpellSpawn.position, m_SpellSpawn.rotation, recalculateTarget: false));
 
-            // cast spell on client side
-            SpellCastedClientRPC(spell, m_TargetPos.Value);
-
             // spend the energy of the spell
             if (spellData.EnergyCost > 0)
                 m_Controller.EnergyHandler.SpendEnergy(spellData.EnergyCost);
 
             // inform that casting is done
             CallSpellEvent(spellData.name, ESpellEvent.OnCast);
-            m_IsCasting.Value = false;
+            m_IsCasting = false;
             m_Controller.AnimationHandler.CancelCastAnimationClientRpc();
             m_IsCurrentSpellCancellable = true;
             m_CastCoroutine = null;
@@ -559,7 +562,7 @@ namespace Game.Character
             m_AnimationTimer = 0f;
 
             // stop casting
-            m_IsCasting.Value = false;
+            m_IsCasting = false;
             m_IsCurrentSpellCancellable = true;
 
             // cancel cast animation
@@ -583,8 +586,7 @@ namespace Game.Character
 
         void LockTarget(SpellData spellData)
         {
-            if (IsAutoTarget(spellData.Name))
-                spellData.ForceAutoTarget();
+            spellData.ForceAutoTarget();
 
             // recalculate target depending on spell and conditions (autocast, ...)
             var target = m_TargetPos.Value;
@@ -609,6 +611,7 @@ namespace Game.Character
             {
                 if (GetCooldown(spell) <= 0f)
                     continue;
+
                 SetCooldown(spell, GetCooldown(spell) - Time.deltaTime);
             }
         }
@@ -634,9 +637,9 @@ namespace Game.Character
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="spellType"></param>
+        /// <param name="spell"></param>
         /// <returns></returns>
-        public void SetCooldown(ESpell spellType, float cooldown)
+        public void SetCooldown(ESpell spell, float cooldown)
         {
             // only server can change a cooldown value
             if (!IsServer)
@@ -645,7 +648,9 @@ namespace Game.Character
             if (cooldown < 0f)
                 cooldown = 0f;
 
-            m_CooldownsNet[GetSpellIndex(spellType)] = cooldown;
+            m_Cooldowns[GetSpellIndex(spell)] = cooldown;
+
+            RefreshSpellSelectionState(spell);
         }
 
         /// <summary>
@@ -657,7 +662,7 @@ namespace Game.Character
         {
             if (! NetworkManager.Singleton.IsConnectedClient || GameManager.IsGameOver)
                 return 0f;
-            return m_CooldownsNet[GetSpellIndex(spellType)];
+            return m_Cooldowns[GetSpellIndex(spellType)];
         }
 
         public void ResetCooldowns()
@@ -683,36 +688,6 @@ namespace Game.Character
 
 
         #region Target Management
-
-        /// <summary>
-        /// Is the spell an auto target type ?
-        /// </summary>
-        /// <param name="spell"></param>
-        /// <returns></returns>
-        public bool IsAutoTarget(ESpell spell)
-        {
-            if (spell == ESpell.Count)
-                return false;
-
-            return m_IsAutoTarget[GetSpellIndex(spell)];
-        }
-
-        /// <summary>
-        /// Is the spell an auto target type ?
-        /// </summary>
-        /// <param name="spell"></param>
-        /// <returns></returns>
-        public bool IsAutoTarget(string spellName)
-        {
-            if (Enum.TryParse(spellName, out ESpell spell))
-            {
-                var index = GetSpellIndex(spell);
-                if (index >= 0)
-                    return m_IsAutoTarget[index];
-            }
-
-            return GetSpellData(spell).IsAutoTarget;
-        }
 
         public float GetCastSpeed(string spell)
         {
@@ -787,6 +762,33 @@ namespace Game.Character
 
         #region Listeners
 
+        void RegisterListeners()
+        {
+            m_Controller.EnergyHandler.Energy.OnValueChanged += OnEnergyChanged;
+        }
+
+        void UnRegisterListeners()
+        {
+            m_Controller.EnergyHandler.Energy.OnValueChanged -= OnEnergyChanged;
+        }
+
+        public void OnEnergyChanged(int _, int newValue)
+        {
+            if (GameManager.IsGameOver)
+                return;
+
+            foreach (var spell in Spells)
+            {
+                RefreshSpellSelectionState(spell);
+            }
+        }
+
+        [ClientRpc]
+        void SpellActionvationEventClientRPC(ESpell spell, ESpellSelectionState spellActivation)
+        {
+            SpellSelectionEvent?.Invoke(spell, spellActivation);
+        }
+
         public void CallSpellEvent(string spellName, ESpellEvent spellEvent)
         {
             var spellData = SpellLoader.GetSpellData(spellName, destroy: true);
@@ -802,11 +804,6 @@ namespace Game.Character
         public void CallSpellEventClientRPC(string spellName, ESpellEvent spellEvent)
         {
             OnPreSpellEvent?.Invoke(spellName, spellEvent);
-        }
-
-        void OnSelectedSpellChanged(int oldValue, int newValue)
-        {
-            m_IsSelectedAutoTarget = IsAutoTarget(m_SelectedSpell);
         }
         
         #endregion

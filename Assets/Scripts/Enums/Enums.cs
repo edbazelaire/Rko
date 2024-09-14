@@ -148,6 +148,15 @@
         Void,
     }
 
+    public enum ESpellSelectionState
+    {
+        None,       // no specific activation state
+
+        Inactive,   // spell is deactivated
+        Cooldown,   // spell is in cooldown
+        Brillance,  // spell has a special visual effect
+    }
+
     public enum ERarety
     {
         Common,
@@ -222,7 +231,15 @@
         GameOver,
     }
 
-    public enum ESpellActivationEvent
+    public enum ETutoState
+    {
+        Presentation,
+        Move,
+        ClickSpell,
+        Heal,
+    }
+
+    public enum ESpellActivation
     {
         None = 0, 
 
@@ -841,5 +858,13 @@
         MasterVolume,
         SoundEffectsVolume,
         MusicVolume,
+    }
+
+    public enum ECaptionType
+    {
+        None,
+
+        Normal,
+        Exclamation
     }
 }

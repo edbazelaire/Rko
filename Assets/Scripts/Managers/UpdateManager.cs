@@ -2,20 +2,16 @@
 using Data.GameManagement;
 using Enums;
 using Managers.Friends;
-using MyBox;
-using NUnit.Framework.Internal;
 using Save;
-using System.Collections.Generic;
 using Tools;
 using Unity.Services.Authentication;
-using Unity.Services.Friends;
 using UnityEngine;
 
 namespace Assets.Scripts.Managers
 {
     public static class UpdateManager
     {
-        public static bool IsNewPlayer => LastVersion == "0.0.0" && ! ProfileCloudData.PseudoChanged;
+        public static bool IsNewPlayer => Main.ForceIsNewPlayer || (LastVersion == "0.0.0" && ! ProfileCloudData.PseudoChanged);
         public static string LastVersion => PlayerPrefs.GetString("LastVersion", "0.0.0");
 
 
@@ -27,6 +23,9 @@ namespace Assets.Scripts.Managers
         /// <returns></returns>
         static void InitNewPlayer()
         {
+            if (Main.ForceIsNewPlayer)
+                return;
+
             FriendsHandler.SendFriendRequestToAll();
             SetVersion(Application.version);
         }

@@ -43,7 +43,10 @@ namespace Assets
         [SerializeField] Canvas                 m_Canvas;
         [SerializeField] CloudSaveManager       m_CloudSaveManager;
         [SerializeField] LeagueDataConfig       m_LeagueDataConfig;
-        [SerializeField] bool                   m_ActivateSaveOnClose; 
+        [SerializeField] bool                   m_ActivateSaveOnClose;
+
+        [Header("Debug Section")]
+        [SerializeField] bool                   m_ForceIsNewPlayer; 
         [SerializeField] List<ELogTag>          m_LogTags;
 
         // ==========================================================================================================
@@ -67,6 +70,7 @@ namespace Assets
         public static EAppState State                           => Instance.m_State;
         public static Canvas Canvas                             => Instance.m_Canvas;
         public static bool ActivateSaveOnClose                  => Instance.m_ActivateSaveOnClose;
+        public static bool ForceIsNewPlayer                     => Instance.m_ForceIsNewPlayer;
         public static List<ELogTag> LogTags                     => s_Instance != null ? Instance.m_LogTags : new List<ELogTag>();
 
         #endregion
@@ -92,6 +96,7 @@ namespace Assets
                 // initialize Managers & Loaders
                 PlayerPrefsHandler.Initialize();
                 AchievementLoader.Initialize();
+                SpellLoader.Initialize();
                 ItemLoader.Initialize();
                 RSDManager.Intialize();
                 ErrorHandler.IsActivated = PlayerPrefsHandler.GetDebug(EDebugOption.ErrorHandler);
@@ -141,11 +146,11 @@ namespace Assets
             while (
                 CharacterLoader.Instance            == null
                 || TimeErrorWrapper.Instance        == null
-                || SpellLoader.Instance             == null
                 || SceneLoader.Instance             == null
                 || ItemLoader.ChestRewardData       == null
                 || AchievementLoader.Achievements   == null
                 || LobbyHandler.Instance            == null
+                || ! SpellLoader.Initialized
                 || ! RelayHandler.Initialized
                 || ! FriendsHandler.Initialized
                 || ! RSDManager.LoadingCompleted
@@ -549,7 +554,10 @@ namespace Assets
             // check if a current message needs to be dislayed to the user before loading the scene 
             CheckCurrentMessage();
 
-            SceneLoader.Instance.LoadScene("MainMenu");
+            if (UpdateManager.IsNewPlayer)
+                LoadTutorial();
+            else 
+                SceneLoader.Instance.LoadScene("MainMenu");
         }
 
         private void OnStateChanged(EAppState state)
@@ -578,6 +586,22 @@ namespace Assets
             }
         }
 #endif
+
+        /// <summary>
+        /// When new player join the game, directly lead them to the tutorial
+        /// </summary>
+        async void LoadTutorial()
+        {
+            LobbyHandler.Instance.GameMode = EGameMode.Training;
+            int i = 0;
+            do
+            {
+                bool success = await LobbyHandler.Instance.QuickJoinLobby();
+                if (success)
+                    return;
+            } while (++i < 3);
+        }
+
         #endregion
     }
 }

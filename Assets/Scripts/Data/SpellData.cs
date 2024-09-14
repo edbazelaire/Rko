@@ -78,7 +78,7 @@ namespace Data
 
         [Header("Stats")]
         [Description("Type of targetting for the spell")]
-        public ESpellTarget                 SpellTarget         = ESpellTarget.EnemyZone;
+        public ESpellTarget                 SpellTarget         = ESpellTarget.FirstEnemy;
         [Description("Type of targetting for the spell")]
         public ESpellEvent                  LockTargetAt        = ESpellEvent.OnCast;
         [Description("Maximum number of target that this spell can hit")]
@@ -175,15 +175,21 @@ namespace Data
             if (recalculateTarget)
                 CalculateTarget(ref target, clientId);
 
+            // start spawning on cast prefabs
+            SpawnOnCastPrefabs(target);
+
+            // wait end of delay
             while (delay > 0f)
             {
                 delay -= Time.deltaTime;
                 yield return null;
             }
 
+            // if gameOver : exit
             if (GameManager.IsGameOver)
                 yield break;
 
+            // cast the spell at the end of the delay
             Cast(clientId, target, position, rotation, recalculateTarget: false);
         }
 
@@ -302,16 +308,16 @@ namespace Data
         /// </summary>
         /// <param name="spellEvent"></param>
         /// <returns></returns>
-        public bool HasGfxEventAt(ESpellEvent spellEvent)
+        public bool HasGfxEventAt(ESpellEvent spellEvent, bool checkStart = true, bool checkEnd = true)
         {
             foreach (var action in SpellEventActions)
             {
                 // is starting
-                if (action.GFXLifetime.StartSpellPart == spellEvent)
+                if (checkStart && action.GFXLifetime.StartSpellPart == spellEvent)
                     return true;
 
                 // spell has "End" event and current event is this event or higher
-                if (action.GFXLifetime.EndSpellPart != ESpellEvent.None && spellEvent >= action.GFXLifetime.EndSpellPart)
+                if (checkEnd && action.GFXLifetime.EndSpellPart != ESpellEvent.None && spellEvent >= action.GFXLifetime.EndSpellPart)
                     return true;
             }
 
