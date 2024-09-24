@@ -151,7 +151,7 @@ namespace Data
             return GameManager.Instance.GetPlayer(clientId).transform;
         }
 
-        protected override void RecalculatePosition(ref Vector3 position, Vector3 target, ulong clientId)
+        public override void RecalculatePosition(ref Vector3 position, Vector3 target, ulong clientId)
         {
             // init position to target position
             switch (m_SpawnLocation)

@@ -23,6 +23,7 @@ namespace Menu.MainMenu
 
         GameObject              m_CharacterPreviewContainer;
         Button                  m_CharacterPreviewButton;
+        CharacterInfoButton     m_CharacterInfoButton;
         TMP_Text                m_CharacterName; 
         CollectionFillBar       m_XpBar;
         TMP_Text                m_CharacterLevelText;
@@ -51,19 +52,22 @@ namespace Menu.MainMenu
         {
             m_CharacterPreviewContainer         = Finder.Find(gameObject, "CharacterPreviewContainer");
             m_CharacterPreviewButton            = Finder.FindComponent<Button>(m_CharacterPreviewContainer);
+            m_CharacterInfoButton               = Finder.FindComponent<CharacterInfoButton>(gameObject, "CharacterInfoButton");
             m_CharacterName                     = Finder.FindComponent<TMP_Text>(gameObject, "CharacterName");
             m_XpBar                             = Finder.FindComponent<CollectionFillBar>(gameObject, "CharacterExperienceFillbar");
             m_CharacterLevelText                = Finder.FindComponent<TMP_Text>(m_XpBar.gameObject, "LevelValue");
 
             // init xp bar with current character cloud data
             m_XpBar.Initialize(InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter));
+            // init CharacterInfoButton with current character cloud data
+            m_CharacterInfoButton.Initialize(CharacterBuildsCloudData.SelectedCharacter);
 
             // specials components 
             SetUpCharacterSpells();
             SetUpLeftSideUI();
 
             // register listeners
-            m_CharacterPreviewButton.onClick.AddListener(OnCharacterButtonClicked);
+            m_CharacterInfoButton.Button.onClick.AddListener(OnCharacterInfoButtonClicked);
             CharacterBuildsCloudData.SelectedCharacterChangedEvent  += OnSelectedCharacterChanged;
             CharacterBuildsCloudData.CurrentBuildIndexChangedEvent  += OnCurrentRuneChanged;
             CharacterBuildsCloudData.CurrentRuneChangedEvent        += OnCurrentRuneChanged;
@@ -81,7 +85,7 @@ namespace Menu.MainMenu
 
         private void OnDestroy()
         {
-            m_CharacterPreviewButton.onClick.RemoveAllListeners();
+            m_CharacterInfoButton.Button.onClick.RemoveAllListeners();
             CharacterBuildsCloudData.SelectedCharacterChangedEvent  -= OnSelectedCharacterChanged;
             CharacterBuildsCloudData.CurrentBuildIndexChangedEvent  -= OnCurrentRuneChanged;
             CharacterBuildsCloudData.CurrentRuneChangedEvent        -= OnCurrentRuneChanged;
@@ -242,6 +246,9 @@ namespace Menu.MainMenu
             // refresh rune icon of current build
             RefreshRuneIcons();
 
+            // refresh the info button UI
+            m_CharacterInfoButton.RefreshUI(CharacterBuildsCloudData.SelectedCharacter);
+
             // spawn preview
             SpawnCharPreview();
         }
@@ -263,6 +270,9 @@ namespace Menu.MainMenu
         {
             if (currency != ECurrency.Xp)
                 return;
+
+            // refresh the info button UI
+            m_CharacterInfoButton.RefreshUI(CharacterBuildsCloudData.SelectedCharacter);
 
             if (m_Activated && xp <= m_XpBar.CurrentCollection) 
             {
@@ -290,11 +300,14 @@ namespace Menu.MainMenu
             else
                 // instant refresh xp bar
                 RefreshXpBarUI();
+
+            // refresh the info button UI
+            m_CharacterInfoButton.RefreshUI(CharacterBuildsCloudData.SelectedCharacter);
         }
 
-        void OnCharacterButtonClicked()
+        void OnCharacterInfoButtonClicked()
         {
-            Main.SetPopUp(EPopUpState.CollectableInfoPopUp, CharacterBuildsCloudData.SelectedCharacter, InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter).Level);
+            Main.SetPopUp(EPopUpState.CharacterInfoPopUp, CharacterBuildsCloudData.SelectedCharacter, InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter).Level);
         }
 
         #endregion

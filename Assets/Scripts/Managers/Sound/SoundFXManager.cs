@@ -142,7 +142,7 @@ namespace Assets.Scripts.Managers.Sound
             audioSource.clip = audioClip;
 
             // assign volume
-            audioSource.volume = GetVolume(EVolumeOption.SoundEffectsVolume);
+            AdjustVolume(ref audioSource);
 
             // play sound
             audioSource.Play();
@@ -151,13 +151,15 @@ namespace Assets.Scripts.Managers.Sound
             return audioSource;
         }
 
-        public static void PlayOnce(AudioClip audioClip)
+        public static void PlayOnce(AudioClip audioClip, float duration = -1)
         {
             if (audioClip == null) 
                 return;
 
-            var audioSource = PlaySoundFXClip(audioClip, null);
+            var audioSource = PlaySoundFXClip(audioClip);
             audioSource.loop = false;
+            if (duration > 0)
+                AdjustDuration(ref audioSource, duration);
 
             Destroy(audioSource.gameObject, audioClip.length);
         }
@@ -181,12 +183,45 @@ namespace Assets.Scripts.Managers.Sound
             Instance.m_AudioSource.volume = GetVolume(EVolumeOption.MusicVolume);
         }
 
-        static float GetVolume(EVolumeOption volumeOption)
+        public static float GetVolume(EVolumeOption volumeOption)
         {
             if (PlayerPrefsHandler.GetMuted(volumeOption) || PlayerPrefsHandler.GetMuted(EVolumeOption.MasterVolume))
                 return 0f;
 
             return PlayerPrefsHandler.GetVolume(EVolumeOption.MasterVolume) * PlayerPrefsHandler.GetVolume(volumeOption);
+        }
+
+        #endregion
+
+
+        #region Adjustements
+
+        public static void AdjustVolume(ref AudioSource audioSource)
+        {
+            audioSource.volume *= SoundFXManager.GetVolume(EVolumeOption.SoundEffectsVolume);
+        }
+
+        public static void AdjustDuration(ref AudioSource audioSource, float duration)
+        {
+            if (audioSource == null)
+            {
+                ErrorHandler.Error("audioSource is null");
+                return;
+            }
+
+            if (audioSource.loop)
+            {
+                ErrorHandler.Error("trying to adjust duration while audioSource is looping");
+                return;
+            }
+
+            if (duration < 0f)
+            {
+                ErrorHandler.Error("bad duration provided : " + duration);
+                return;
+            }
+
+            audioSource.pitch = audioSource.clip.length / duration;
         }
 
         #endregion

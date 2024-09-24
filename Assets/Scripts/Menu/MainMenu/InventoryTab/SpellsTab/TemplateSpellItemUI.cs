@@ -30,22 +30,22 @@ namespace Menu.MainMenu
                 m_SubButtons.gameObject.SetActive(false);
         }
 
-        protected override void RegisterListeners()
-        {
-            base.RegisterListeners();
+        //protected override void RegisterListeners()
+        //{
+        //    base.RegisterListeners();
 
-            InventoryCloudData.SpellDataChangedEvent        += OnCollectableDataChanged;
-        }
+        //    InventoryCloudData.SpellDataChangedEvent        += OnCollectableDataChanged;
+        //}
 
-        protected override void UnRegisterListeners()
-        {
-           if (! m_IsInitialized)
-                return;
+        //protected override void UnRegisterListeners()
+        //{
+        //   if (! m_IsInitialized)
+        //        return;
 
-            base.UnRegisterListeners();
+        //    base.UnRegisterListeners();
 
-            InventoryCloudData.SpellDataChangedEvent    -= OnCollectableDataChanged;
-        }
+        //    InventoryCloudData.SpellDataChangedEvent    -= OnCollectableDataChanged;
+        //}
 
         #endregion
 

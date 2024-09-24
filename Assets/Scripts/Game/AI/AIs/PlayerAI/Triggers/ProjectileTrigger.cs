@@ -4,12 +4,8 @@ using Enums;
 using Game;
 using Game.Spells;
 using System.Collections.Generic;
-using Tools;
-using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEngine.GraphicsBuffer;
 
 public class ProjectileTrigger : Sensor
 {
@@ -211,6 +207,7 @@ public class ProjectileTrigger : Sensor
                 break;
 
             case ESpellTrajectory.Diagonal:
+            case ESpellTrajectory.DiagonalMiddle:
             case ESpellTrajectory.Curve:
                 // get first X where the height of the character is not in the trajectory of the 
                 startX -= characterHeight * projectile.transform.position.x / projectile.transform.position.y;

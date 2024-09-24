@@ -14,12 +14,16 @@ namespace Data.GameManagement
         SpellSpeedFactor,
         AutoAttackSpeedFactor,
         CastSpeedFactor,
+        SpellFixedDistance,
     }
 
     [CreateAssetMenu(fileName = "Settings", menuName = "Game/Management/Settings")]
     public class Settings : ScriptableObject
     {
         #region Members
+
+        public const float SPELL_HIGHT_POS_Y    = 4f;
+        public const float SPELL_DIAGONAL_POS_Y = 4f;
 
         // GAME Speed & Size
         [Header("Game Speed & Size")]
@@ -30,12 +34,16 @@ namespace Data.GameManagement
         [SerializeField] float m_AutoAttackSpeedFactor;
         [SerializeField] float m_CastSpeedFactor;
 
+        [Header("Distances")]
+        [SerializeField] float m_SpellFixedDistance = 7f;
+
         public static float CharacterSizeFactor     { get => Get(ESettings.CharacterSizeFactor);    }
         public static float CharacterSpeedFactor    { get => Get(ESettings.CharacterSpeedFactor);   }
         public static float SpellSizeFactor         { get => Get(ESettings.SpellSizeFactor);        }
         public static float SpellSpeedFactor        { get => Get(ESettings.SpellSpeedFactor);       }
         public static float AutoAttackSpeedFactor   { get => Get(ESettings.AutoAttackSpeedFactor);  }
         public static float CastSpeedFactor         { get => Get(ESettings.CastSpeedFactor);        }
+        public static float SpellFixedDistance      { get => Get(ESettings.SpellFixedDistance);     }
 
         #endregion
 
@@ -106,6 +114,9 @@ namespace Data.GameManagement
                     break;
                 case ESettings.CastSpeedFactor:
                     defaultValue = Instance.m_CastSpeedFactor;
+                    break;
+                case ESettings.SpellFixedDistance:
+                    defaultValue = Instance.m_SpellFixedDistance;
                     break;
 
                 default:

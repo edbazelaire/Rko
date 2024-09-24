@@ -1,9 +1,11 @@
 using Assets;
 using Assets.Scripts.Managers.Sound;
 using Assets.Scripts.Tools;
+using Data;
 using Enums;
 using Externals;
 using Game.Loaders;
+using Game.Spells;
 using Game.UI;
 using Managers;
 using Network;
@@ -142,6 +144,8 @@ namespace Game
         {
             // unregister from each events
             m_State.OnValueChanged -= OnStateValueChanged;
+            StateEffect.StateEffectEvent = null;    // reset all registeries to the StateEffect static event
+            Spell.OnSpellSpawn = null;              // reset all registeries to the Spell static event
 
             // cancel methods in TimeWrapper
             TimeErrorWrapper.Instance.Cancel(TIME_WRAPPER_ID);
@@ -544,6 +548,9 @@ namespace Game
 
         #region Music & Sound
 
+
+        // ==============================================================================
+        // TODO : REMOVE
         [ClientRpc]
         public void PlaySoundClientRPC(string spellName, ESpellEvent spellAction)
         {
@@ -574,7 +581,46 @@ namespace Game
 
             SoundFXManager.PlayOnce(audioClip);
         }
+        // ==============================================================================
 
+        [ClientRpc]
+        public void PlayCastSoundClientRPC(string spellName)
+        {
+            var spellData = SpellLoader.GetSpellData(spellName, destroy: true);
+            AudioClip audioClip = spellData.CastSoundFX != null ? spellData.CastSoundFX : SoundFXManager.DefaultCastSoundFX;
+            SoundFXManager.PlayOnce(audioClip);
+        }
+
+        [ClientRpc]
+        public void PlayCastWaveSoundClientRPC(string spellName)
+        {
+            try
+            {
+                var spellData = (MultiProjectilesData)SpellLoader.GetSpellData(spellName, destroy: true);
+                if (spellData.OnCastWaveSoundFX == null)
+                    return;
+                SoundFXManager.PlayOnce(spellData.OnCastWaveSoundFX);
+            }
+            catch
+            {
+                ErrorHandler.Error("Unable to convert " + spellName + " as MultiProjectilesData");
+            }
+        }
+
+        [ClientRpc]
+        public void PlayCastProjectileSoundClientRPC(string spellName)
+        {
+            try
+            {
+                var spellData = (MultiProjectilesData)SpellLoader.GetSpellData(spellName, destroy: true);
+                if (spellData.OnCastProjectileSoundFX == null)
+                    return;
+                SoundFXManager.PlayOnce(spellData.OnCastProjectileSoundFX);
+            } catch 
+            {
+                ErrorHandler.Error("Unable to convert " + spellName + " as MultiProjectilesData");
+            }
+        }
 
         [ClientRpc]
         void PlayStateMusicClientRPC(EGameState state)
@@ -889,17 +935,6 @@ namespace Game
         {
             Owner.EnergyHandler.AddEnergy(100);
             Owner.SpellHandler.ResetCooldowns();
-        }
-
-        /// <summary>
-        /// Rescale all characters after changing size factor from the DebugSettings 
-        /// </summary>
-        public void RescaleCharacters()
-        {
-            foreach (Controller controller in m_Controllers.Values)
-            {
-                controller.SetSize();
-            }
         }
 
         #endregion

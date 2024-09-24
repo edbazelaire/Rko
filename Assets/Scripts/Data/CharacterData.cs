@@ -80,6 +80,9 @@ namespace Data
 
         // ===============================================================================================================
         // PUBLIC / SERIALIZABLE FIELDS
+        [Header("Description")]
+        [SerializeField] string m_Description;
+
         [Header("Spells")]
         public ESpell           AutoAttack;
         public ESpell           SpecialAbility;
@@ -202,6 +205,11 @@ namespace Data
 
 
         #region Infos
+
+        public string GetDescription()
+        {
+            return m_Description;
+        }
 
         public override Dictionary<string, object> GetInfos()
         {

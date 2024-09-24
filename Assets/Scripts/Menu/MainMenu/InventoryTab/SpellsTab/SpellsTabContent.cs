@@ -67,27 +67,28 @@ namespace Menu.MainMenu
             m_SpellFiltersSection.SearchInputField.onValueChanged.AddListener(OnSearchValueChanged);
 
             m_SpellItems = new Dictionary<ESpell, TemplateSpellItemUI>();
-            foreach (ESpell spell in SpellLoader.Spells)
+            var allSpellsData = SpellLoader.OrderSpells(SpellLoader.SpellsData, EOrderBy.Rarety);
+            foreach (SpellData spellData in allSpellsData)
             {
                 // skip if spell is linked to a character
-                if (SpellLoader.GetSpellData(spell, destroy: true).Linked)
+                if (spellData.Linked)
                     continue;
 
                 // check if is unlocked or not
-                bool isUnlocked = InventoryCloudData.Instance.GetSpell(spell).Level > 0;
+                bool isUnlocked = InventoryCloudData.Instance.GetSpell(spellData.Spell).Level > 0;
                 var parent = isUnlocked ? m_SpellItemContainer.transform : m_LockedSpellItemContainer.transform;
 
                 // spawn and init ui of the spell
                 TemplateSpellItemUI spellUI = Instantiate(m_TemplateSpellItem, parent).GetComponent<TemplateSpellItemUI>();
-                spellUI.gameObject.name = string.Format(SPELL_ITEM_NAME_FORMAT, spell.ToString());
-                spellUI.Initialize(spell);
+                spellUI.gameObject.name = string.Format(SPELL_ITEM_NAME_FORMAT, spellData.Name);
+                spellUI.Initialize(spellData.Spell);
                 spellUI.CollectionFillBar?.gameObject.SetActive(isUnlocked);
 
                 if (isUnlocked)
-                    m_SpellItems.Add(spell, spellUI);
+                    m_SpellItems.Add(spellData.Spell, spellUI);
 
                 // hide if spell is in current build
-                if (CharacterBuildsCloudData.CurrentBuild.Contains(spell))
+                if (CharacterBuildsCloudData.CurrentBuild.Contains(spellData.Spell))
                     spellUI.gameObject.SetActive(false);
             }
         }

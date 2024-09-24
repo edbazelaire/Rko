@@ -22,7 +22,10 @@ namespace Game.Spells
 
         // ========================================================================================================
         // Actions
-        public Action<ESpellEvent>  OnSpellEvent;
+        /// <summary> static action allowing SpellGFX instantiated on client side from the SpellHandler to make the connection the sell on spawn </summary>
+        public static Action<Spell>         OnSpellSpawn;
+        /// <summary> action allowing SpellGFX to react at spell events </summary>
+        public Action<ESpellEvent>          OnSpellEvent;
 
         // ========================================================================================================
         // Data
@@ -124,10 +127,6 @@ namespace Game.Spells
             // visual ending effect
             SpawnOnHitPrefab();
 
-            // play sound effect
-            if (m_SpellData.OnEndSoundFX != null)
-                GameManager.Instance.PlaySoundClientRPC(m_SpellData.Name, ESpellEvent.OnEnd);
-
             // destroy the spell game object
             StartCoroutine(DestroySpell());
 
@@ -184,7 +183,12 @@ namespace Game.Spells
             if (m_SpellData.Graphics != null)
             {
                 ErrorHandler.Log("InitGraphics() : " + m_SpellData.Graphics + " with size " + m_SpellData.Size, ELogTag.Spells);
-                SwapColliders(Instantiate(m_SpellData.Graphics, m_GraphicsContainer.transform));
+                var gfx = Instantiate(m_SpellData.Graphics, m_GraphicsContainer.transform);
+                SwapColliders(gfx);
+
+                var audioSource = Finder.FindComponent<AudioSource>(gfx);
+                if (audioSource != null)
+                    SoundFXManager.AdjustVolume(ref audioSource);
             }
 
             transform.localScale = new Vector3(m_SpellData.Size, m_SpellData.Size, 1f);
@@ -303,14 +307,15 @@ namespace Game.Spells
             if (! CheckHitEnemy(controller) && ! CheckHitAlly(controller))
                 return;
 
+            // if spell has "OnHit" GFX : call on CLIENT that spell has touched something
+            if (m_SpellData.HasGfxEventAt(ESpellEvent.OnHit, checkEnd: false))
+                CallSpellEventClientRPC(ESpellEvent.OnHit, controller.PlayerId);
+
             // add plyer id to list of hitted players
             m_HittedPlayerId.Add(controller.OwnerClientId);
 
             // energy gain
             m_Controller.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
-
-            // play sound effect
-            GameManager.Instance.PlaySoundClientRPC(m_SpellData.Name, ESpellEvent.OnHit);
 
             // update hit count
             if (m_HittedPlayerId.Count <= m_SpellData.MaxHit && m_SpellData.MaxHit > 0)
@@ -366,10 +371,6 @@ namespace Game.Spells
 
             // apply state effects specifics to enemies
             ApplyEnemyStateEffects(controller);
-
-            // if spell has "OnHit" GFX : call on CLIENT that spell has touched something
-            if (m_SpellData.HasGfxEventAt(ESpellEvent.OnHit, checkEnd: false))
-                CallSpellEventClientRPC(ESpellEvent.OnHit, controller.PlayerId);
 
             return true;
         }
@@ -518,6 +519,7 @@ namespace Game.Spells
                 spawnPrefab.Spawn(m_Controller, m_SpellData, this, null, targetController, transform.position);
             }
 
+            OnSpellSpawn?.Invoke(this);
             OnSpellEvent?.Invoke(spellEvent);
         }
 

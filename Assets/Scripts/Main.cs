@@ -24,6 +24,8 @@ using Assets.Scripts.Managers;
 using Managers.Friends;
 using Menu.PopUps.PopUps.MessagePopUps;
 using Unity.Services.Friends.Models;
+using UnityEngine.SceneManagement;
+
 
 
 #if UNITY_EDITOR
@@ -161,7 +163,10 @@ namespace Assets
                 timer -= Time.deltaTime;
 
                 if (timer <= 0)
-                    ErrorHandler.FatalError("Unable to initilaize the App in less than 30 seconds");
+                {
+                    ErrorHandler.Error("Unable to initialize the App in less than 30 seconds");
+                    ReloadGame();
+                }
 
                 yield return null;
             }
@@ -173,6 +178,17 @@ namespace Assets
         {
             QualitySettings.vSyncCount = 0;         // Disable V-Sync
             Application.targetFrameRate = 120;      // Set desired frame rate
+        }
+
+        void ReloadGame()
+        {
+            Debug.Log("RELOADING");
+
+            // Stop all background processes if needed
+            StopAllCoroutines();
+
+            // Reload the active scene to restart from scratch
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
         #endregion

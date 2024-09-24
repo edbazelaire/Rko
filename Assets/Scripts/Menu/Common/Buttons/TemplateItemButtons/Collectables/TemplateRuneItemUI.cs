@@ -60,6 +60,7 @@ namespace Menu.Common.Buttons
         /// </summary>
         public virtual void RefreshRune(ERune rune)
         {
+            UnRegisterListeners();
             base.Initialize(rune);
         }
 

@@ -28,6 +28,9 @@ MonoBehaviour:
   SpellEventActions:
   - Prefab: {fileID: 458114271446715719, guid: a0691b7d658df354ea6923fa145aede0, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX:
+    - AudioClip: {fileID: 8300000, guid: 3e74f90f84b3f0141980e6961ec2fb23, type: 3}
+      SoundDuration: 2
     GFXLifetime:
       StartSpellPart: 1
       EndSpellPart: 2
@@ -45,15 +48,18 @@ MonoBehaviour:
     StateEffects: 
   - Prefab: {fileID: 168108, guid: 8ea15392430306241aaf3e02c6ed6b3b, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX:
+    - AudioClip: {fileID: 8300000, guid: 76f93a0ccb5bb7e4a8cbb37577895623, type: 3}
+      SoundDuration: 0
     GFXLifetime:
       StartSpellPart: 4
       EndSpellPart: 0
       StartAt: 0
       EndAt: 0
       Persistance: 1.5
-    Size: 1
+    Size: 1.5
     OrderInLayer: 0
-    SpawnTarget: 4
+    SpawnTarget: 2
     SpawnLocation: 0
     BodyPart: 5
     IsFollowing: 0
@@ -64,6 +70,7 @@ MonoBehaviour:
   OnAnimation:
   - Prefab: {fileID: 458114271446715719, guid: a0691b7d658df354ea6923fa145aede0, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
       StartSpellPart: 0
       EndSpellPart: 0
@@ -81,15 +88,15 @@ MonoBehaviour:
     StateEffects: 
   OnCastPrefabs: []
   OnHit: []
-  OnHitSpellSpawn: 1
+  OnHitSpellSpawn: 0
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: ba1394737a640e14d88ac9ce6dc22709, type: 3}
   PermanantSoundFX: {fileID: 0}
-  OnHitSoundFX: {fileID: 8300000, guid: 76f93a0ccb5bb7e4a8cbb37577895623, type: 3}
+  OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 1
   LockTargetAt: 2
-  MaxHit: 1
+  MaxHit: 0
   EnergyGain: 0
   EnergyCost: 100
   m_Damage: 140

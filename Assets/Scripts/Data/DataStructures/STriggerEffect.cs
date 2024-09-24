@@ -20,13 +20,15 @@ namespace Data.DataStructures
     [Serializable]
     public struct STriggerEffect : INetworkSerializable, ITriggerEffect
     {
-        public  string                  SpellDataName;
+        #region Members
+
+        public string                   SpellDataName;
         public  int                     Level;
         public  ESpellTarget            Target;
         
-        public  ESpellActivation   SpellActivationEvent;
+        public  ESpellActivation        SpellActivationEvent;
         public  float                   ActivationTreshold;
-        public  ESpellActivation   SpellDeactivationEvent;
+        public  ESpellActivation        SpellDeactivationEvent;
         public  float                   DeactivationTreshold;
 
         public  EStateEffectEvent       StateEffectEvent;
@@ -40,12 +42,10 @@ namespace Data.DataStructures
         float       m_CooldownTimer;
         bool        m_IsActivated;
 
-        public bool IsActivable()
-        {
-            return (NActivations == -1                  // infinite activations
-                || m_NActivationsCtr < (NActivations >= 1 ? NActivations : 1)) // OR below min activation 
-            && m_CooldownTimer <= 0;            // cooldown must be done
-        }
+        #endregion
+
+
+        #region Network Serialization
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
@@ -62,7 +62,17 @@ namespace Data.DataStructures
             serializer.SerializeValue(ref Cooldown);
         }
 
+        #endregion
+
+
         #region Activation
+
+        public bool IsActivable()
+        {
+            return (NActivations == -1          // infinite activations
+                || m_NActivationsCtr < (NActivations >= 1 ? NActivations : 1)) // OR below min activation 
+            && m_CooldownTimer <= 0;            // cooldown must be done
+        }
 
         public void Activate(Controller controller)
         {
@@ -98,8 +108,6 @@ namespace Data.DataStructures
                 return;
             }
 
-            Debug.LogWarning("TRIGGER EFFECT : " + SpellDataName);
-
             m_NActivationsCtr++;
             if (Cooldown > 0)
             {
@@ -131,7 +139,15 @@ namespace Data.DataStructures
         #endregion
 
 
-        #region Deactivation
+        #region Deactivation / End
+
+        public void End()
+        {
+            if (StateEffectEvent != EStateEffectEvent.None)
+            {
+                StateEffect.StateEffectEvent -= OnStateEffectEvent;
+            }
+        }
 
         public void Deactivate()
         {

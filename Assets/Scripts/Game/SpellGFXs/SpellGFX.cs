@@ -1,10 +1,11 @@
-﻿using Data;
+﻿using Assets.Scripts.Managers.Sound;
+using Data;
 using Enums;
 using Game.Spells;
 using System.Collections;
-using System.Runtime.CompilerServices;
 using Tools;
 using UnityEngine;
+
 
 namespace Game.SpellGFXs
 {
@@ -12,6 +13,12 @@ namespace Game.SpellGFXs
     {
         #region Members
 
+        // ======================================================================================
+        // Compontents & GameObjects
+        protected AudioSource       m_AudioSource;
+        
+        // ======================================================================================
+        // Data
         protected Controller        m_Controller;
         protected SpellData         m_SpellData;
         protected Spell             m_Spell;
@@ -31,7 +38,10 @@ namespace Game.SpellGFXs
 
         #region Init
 
-        protected virtual void FindComponents() { }
+        protected virtual void FindComponents() 
+        {
+            m_AudioSource = Finder.FindComponent<AudioSource>(gameObject);
+        }
 
         public virtual void Initialize(Controller controller, SpellData spellData, Spell spell, string stateEffectName, SPrefabSpawn prefabSpawn, EBodyPart bodyPart = EBodyPart.None)
         {
@@ -59,6 +69,12 @@ namespace Game.SpellGFXs
             {
                 controller.AnimationHandler.PlayAnimation(prefabSpawn.Animation);
             }
+
+            // make controller play animation if any
+            AdjustSoundFX();
+
+            // make controller play animation if any
+            PlayExtraSoundFX();
 
             // apply material of the effect on the target bodyparts
             ApplyMaterial();
@@ -99,6 +115,7 @@ namespace Game.SpellGFXs
 
             ErrorHandler.Log("ENDED SPELL GFX : " + this.name, ELogTag.SpellGFX);
 
+            // call that end has already started
             m_EndStarted = true;
 
             // stop the animation
@@ -111,6 +128,7 @@ namespace Game.SpellGFXs
             // remove listeners
             UnRegisterListeners();
 
+            // start the delayed end (if has persistant timer)
             StartCoroutine(EndCoroutine());
         }
 
@@ -222,7 +240,6 @@ namespace Game.SpellGFXs
                     }
                     return spell.transform;
 
-
                 default:
                     ErrorHandler.Warning("SPrefabSpawn::Spawn() - Unhandled spawn Target " + prefabSpawn.SpawnTarget + " for prefab " + prefabSpawn.Prefab.name);
                     return null;
@@ -237,14 +254,14 @@ namespace Game.SpellGFXs
         /// <param name="controller"></param>
         /// <param name="callFromPosition"></param>
         /// <returns></returns>
-        public static Vector3 CalculatePosition(Transform parent, SPrefabSpawn prefabSpawn, Controller controller, Vector3 callFromPosition)
+        public static Vector3 CalculatePosition(Transform parent, SPrefabSpawn prefabSpawn, Controller controller, Vector3 callFromPosition, Vector3 targetPosition)
         {
             Vector3 basePos = callFromPosition;
             if (parent != null)
                 basePos = parent.transform.position;
 
             else if (prefabSpawn.SpawnTarget == ESpawnTarget.TargetPos)
-                basePos = controller.SpellHandler.TargetPos;
+                basePos = targetPosition;
 
             switch (prefabSpawn.SpawnLocation)
             {
@@ -278,20 +295,20 @@ namespace Game.SpellGFXs
 
         #region Duration
 
+        protected virtual float GetDuration()
+        {
+            if (m_Duration == 0)
+                CalculateDuration();
+
+            return m_Duration;
+        }
+
         protected virtual void CalculateDuration()
         {
+            if (m_Duration != 0)
+                return;
+
             m_Duration = Mathf.Max(0, m_PrefabSpawn.GFXLifetime.Persistance);
-            if (m_PrefabSpawn.GFXLifetime.EndSpellPart <= m_PrefabSpawn.GFXLifetime.StartSpellPart)
-            {
-                if (m_PrefabSpawn.GFXLifetime.Persistance <= 0)
-                {
-                    ErrorHandler.Warning("GFXLifetime of " + name + " is set with incoherent values");
-                    ErrorHandler.Warning("      + StartSpellPart : " + m_PrefabSpawn.GFXLifetime.StartSpellPart);
-                    ErrorHandler.Warning("      + EndSpellPart : " + m_PrefabSpawn.GFXLifetime.EndSpellPart);
-                    ErrorHandler.Warning("      + Persistance : " + 0);
-                    return;
-                }
-            }
 
             if (IsGFXAlive(ESpellEvent.OnStartCast))
                 m_Duration += CalculateCastTime();
@@ -310,7 +327,7 @@ namespace Game.SpellGFXs
         /// <returns></returns>
         bool IsGFXAlive(ESpellEvent spellEvent)
         {
-            return m_PrefabSpawn.GFXLifetime.StartSpellPart >= spellEvent && spellEvent < m_PrefabSpawn.GFXLifetime.EndSpellPart;
+            return m_PrefabSpawn.GFXLifetime.StartSpellPart <= spellEvent && spellEvent < m_PrefabSpawn.GFXLifetime.EndSpellPart;
         }
 
         /// <summary>
@@ -320,6 +337,58 @@ namespace Game.SpellGFXs
         float CalculateCastTime()
         {
             return m_SpellData.AnimationTimer / m_Controller.SpellHandler.GetCastSpeed(m_SpellData.Spell.ToString());
+        }
+
+        #endregion
+
+
+        #region Audio
+        
+        /// <summary>
+        /// Adjust the sound effect of the Spell AudioSource
+        /// </summary>
+        protected virtual void AdjustSoundFX()
+        {
+            if (m_AudioSource == null)
+                return;
+
+            m_AudioSource.volume *= SoundFXManager.GetVolume(EVolumeOption.SoundEffectsVolume);
+
+            if (! m_AudioSource.loop)
+            {
+                if (GetDuration() <= 0)
+                    return;
+
+                SoundFXManager.AdjustDuration(ref m_AudioSource, m_Duration);
+            }
+        }
+
+        /// <summary>
+        /// Play each extra sound FX
+        /// </summary>
+        protected virtual void PlayExtraSoundFX()
+        {
+            foreach (SSoundFX soundFX in m_PrefabSpawn.SoundFX)
+            {
+                switch (soundFX.SoundDuration)
+                {
+                    case ESoundDuration.PlayOnce:
+                        SoundFXManager.PlayOnce(soundFX.AudioClip);
+                        break;
+
+                    case ESoundDuration.Loop:
+                        SoundFXManager.PlaySoundFXClip(soundFX.AudioClip);
+                        break;
+
+                    case ESoundDuration.Fit:
+                        SoundFXManager.PlayOnce(soundFX.AudioClip, GetDuration());
+                        break;
+
+                    default:
+                        ErrorHandler.Warning("Unhandled case : " + soundFX.SoundDuration);
+                        break;
+                }
+            }
         }
 
         #endregion
@@ -378,6 +447,10 @@ namespace Game.SpellGFXs
             if (m_PrefabSpawn.GFXLifetime.StartSpellPart < ESpellEvent.OnSpawn)
                 m_Controller.SpellHandler.OnPreSpellEvent += OnPreSpellEvent;
 
+            // if starts before spawn and end after spawns : link to static OnSpellSpawnEvent
+            if (m_PrefabSpawn.GFXLifetime.StartSpellPart < ESpellEvent.OnSpawn && m_PrefabSpawn.GFXLifetime.EndSpellPart >= ESpellEvent.OnSpawn)
+                Spell.OnSpellSpawn += OnSpellSpawn;
+
             if (m_Spell != null)
                 m_Spell.OnSpellEvent += OnSpellEvent;
 
@@ -392,9 +465,37 @@ namespace Game.SpellGFXs
 
             if (m_Spell != null)
                 m_Spell.OnSpellEvent -= OnSpellEvent;
-            
+
             if (m_StateEffectName != null)
                 m_Controller.StateHandler.OnStateEffectEvent -= OnStateEffectEvent;
+
+            Spell.OnSpellSpawn -= OnSpellSpawn;
+        }
+
+        protected virtual void OnSpellSpawn(Spell spell)
+        {
+            if (m_SpellData == null)
+            {
+                ErrorHandler.Warning("SpellGFX registered to OnSpellSpawn() event but has no SpellData");
+                return;
+            }
+
+            if (m_Controller == null)
+            {
+                ErrorHandler.Warning("SpellGFX registered to OnSpellSpawn() event but has no Controller");
+                return;
+            }
+
+            // check if is same name and same player
+            if (m_SpellData.Name != spell.SpellData.Name || m_Controller.PlayerId != spell.Controller.PlayerId)
+                return;
+
+            // register to events of the provided spell
+            m_Spell = spell;
+            m_Spell.OnSpellEvent += OnSpellEvent;
+
+            // unregister this listener
+            Spell.OnSpellSpawn -= OnSpellSpawn;
         }
 
         protected virtual void OnPreSpellEvent(string spellName, ESpellEvent spellEvent)

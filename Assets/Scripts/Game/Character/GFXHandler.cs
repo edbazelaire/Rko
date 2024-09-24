@@ -1,10 +1,13 @@
-﻿using Data;
+﻿using Assets.Scripts.Managers.Sound;
+using Data;
+using Data.GameManagement;
 using Enums;
 using Game.Loaders;
 using Game.SpellGFXs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Tools;
 using Unity.Collections;
 using Unity.Netcode;
@@ -18,16 +21,13 @@ namespace Game.Character
 
         // ===========================================================================
         // DATA
-        List<SPrefabSpawn> m_PrefabSpawns = new List<SPrefabSpawn>();
-
-        /// <summary> list of visual effects proc by state effects</summary>
-        Dictionary<string, List<SpellGFX>> m_StateEffectGraphics;
         /// <summary> list of colors of the state effect </summary>
         Dictionary<EBodyPart, List<Color>> m_Colors;
         /// <summary> list of colors of the state effect </summary>
         Dictionary<EBodyPart, List<Material>> m_Materials;
         /// <summary> default material of sprites </summary>
         Material m_DefaultMaterial;
+        float m_CharacterSize;
 
         // ===========================================================================
         // Private Components
@@ -44,6 +44,7 @@ namespace Game.Character
         // PUBLIC ACCESSORS
         public GameObject CharacterPreview => m_CharacterPreview;
         public Dictionary<EBodyPart, GameObject> BodyParts => m_BodyParts;
+        public float CharacterSize => m_CharacterSize;
 
         #endregion
 
@@ -53,8 +54,6 @@ namespace Game.Character
         public override void OnNetworkSpawn()
         {
             m_Controller = Finder.FindComponent<Controller>(gameObject);
-
-            m_Controller.SpellHandler.OnPreSpellEvent += OnPreSpellEvent;
         }
 
         public void Initialize(ECharacter character)
@@ -64,8 +63,8 @@ namespace Game.Character
             m_SpriteRenderers = Finder.FindComponents<SpriteRenderer>(m_CharacterPreview);
 
             FindBodyParts();
+            SetSize(characterData.Size);
 
-            m_StateEffectGraphics = new();
             m_Colors = new();
             m_Materials = new();
             foreach (EBodyPart bodyPart in Enum.GetValues(typeof(EBodyPart)))
@@ -75,15 +74,27 @@ namespace Game.Character
             }
             m_DefaultMaterial = m_SpriteRenderers[0].material;
 
+            m_Controller.SpellHandler.OnPreSpellEvent               += OnPreSpellEvent;
             m_Controller.StateHandler.StateEffectList.OnListChanged += OnStateEffectListChanged;
         }
 
-        public void Activate(bool activate)
+        public override void OnDestroy()
         {
-            if (activate)
-                return;
+            m_Controller.StateHandler.StateEffectList.OnListChanged -= OnStateEffectListChanged;
+        }
 
-            // TODO : end all prefab spawns
+        #endregion
+
+
+        #region Size
+
+        /// <summary>
+        /// Initialize size of the character
+        /// </summary>
+        public void SetSize(float size)
+        {
+            m_CharacterSize = Settings.CharacterSizeFactor * size;
+            transform.localScale = m_CharacterSize * Vector3.one;
         }
 
         #endregion
@@ -171,17 +182,36 @@ namespace Game.Character
 
         #region Spell GFX
 
-        public List<SpellGFX> SpawnSpellGFX(string spellName, ESpellEvent spellEvent)
+        /// <summary>
+        /// [LOCAL CLIENT]
+        /// Spawn all spell graphics linked to the provided SpellEvent
+        /// </summary>
+        /// <param name="spellName">    name of the spell                                   </param>
+        /// <param name="spellEvent">   event called by the spell (cast, spawn, onHit, ...) </param>
+        /// <param name="targetPos">    position targeted by the spell                      </param>
+        public void SpawnSpellGFX(string spellName, ESpellEvent spellEvent, Vector3 targetPos = default)
         {
+            // FILTER : handle on event before spell spawn (post-spell spawning is handled by the spell itself)
+            // except "OnEnd" that can be called when the cast is cancelled
+            if (spellEvent >= ESpellEvent.OnSpawn && spellEvent != ESpellEvent.OnEnd)
+                return;
+
+            ErrorHandler.Log(spellName + " SpawnSpellGFX : " + spellEvent, ELogTag.SpellGFX);
+
             var spellData = SpellLoader.GetSpellData(spellName);
-            List<SpellGFX> listSpellGFX = new();
             foreach (SPrefabSpawn prefabSpawn in spellData.SpellEventActions)
             {
-                if (prefabSpawn.GFXLifetime.StartSpellPart == spellEvent)
-                    prefabSpawn.Spawn(m_Controller, spellData, null);
+                if (prefabSpawn.GFXLifetime.StartSpellPart != spellEvent)
+                    continue;
+
+                prefabSpawn.Spawn(
+                    caster:     m_Controller, 
+                    spellData:  spellData,
+                    targetPos:  targetPos
+                );
             }
 
-            return listSpellGFX;
+            return;
         }
 
         #endregion
@@ -313,22 +343,13 @@ namespace Game.Character
 
 
         #region Listeners
-        
-        /// <summary>
-        /// Handle the graphics effects for a spell at a specific event (cast, spawn, ...)
-        /// </summary>
-        /// <param name="spellName"></param>
-        /// <param name="spellEvent"></param>
+
         void OnPreSpellEvent(string spellName, ESpellEvent spellEvent)
         {
-            // FILTER : handle on event before spell spawn (post-spell spawning is handled by the spell itself)
-            // except "OnEnd" that can be called when the cast is cancelled
-            if (spellEvent >= ESpellEvent.OnSpawn && spellEvent != ESpellEvent.OnEnd)
-                return;
-
-            ErrorHandler.Log(spellName + " OnPreSpellEvent : " + spellEvent, ELogTag.SpellGFX);
-            SpawnSpellGFX(spellName, spellEvent);   
-        }
+            SpellData spellData = SpellLoader.GetSpellData(spellName, destroy: true);
+            if (spellEvent == ESpellEvent.OnCast && spellData.CastSoundFX != null)
+                SoundFXManager.PlayOnce(spellData.CastSoundFX);
+        } 
 
         /// <summary>
         /// When a state effect is added or removed

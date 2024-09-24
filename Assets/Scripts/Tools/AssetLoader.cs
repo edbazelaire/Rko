@@ -78,8 +78,9 @@ namespace Tools
         
         // -- UI
         public const string c_UISpritesPath                 = c_SpritesPath + "UI/";
+        public const string c_ButtonsPath                   = c_UISpritesPath + "Buttons/";
         public const string c_RaysPath                      = c_UISpritesPath + "Rays/";
-        public const string c_TutoUIPath                      = c_UISpritesPath + "Tuto/";
+        public const string c_TutoUIPath                    = c_UISpritesPath + "Tuto/";
         
         // -- Backgrounds
         public const string c_BackgroundsImagePath         = c_SpritesPath + "Backgrounds/";

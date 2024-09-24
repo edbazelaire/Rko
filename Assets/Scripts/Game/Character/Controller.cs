@@ -167,9 +167,6 @@ public class Controller : NetworkBehaviour
         // setup character preview
         m_GFXHandler.Initialize(character);
 
-        // setup local client size
-        SetSize();
-
         // get animator
         Animator animator       = Finder.FindComponent<Animator>(m_GFXHandler.CharacterPreview);
         m_AnimationHandler.Initialize(animator);
@@ -382,14 +379,6 @@ public class Controller : NetworkBehaviour
     public void ActivateColliderClientRPC(bool on)
     {
         m_Collider.enabled = on;
-    }
-
-    /// <summary>
-    /// Initialize size of the character
-    /// </summary>
-    public void SetSize()
-    {
-        transform.localScale = Settings.CharacterSizeFactor * CharacterLoader.GetCharacterData(m_Character.Value, destroy: true).Size * Vector3.one;
     }
 
     #endregion

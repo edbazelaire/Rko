@@ -3,7 +3,6 @@ using Enums;
 using System;
 using Tools;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace Game.Spells
 {
@@ -46,6 +45,7 @@ namespace Game.Spells
 
                 case ESpellTrajectory.Hight:
                 case ESpellTrajectory.Diagonal:
+                case ESpellTrajectory.DiagonalMiddle:
                     break;
 
                 default:
@@ -142,6 +142,10 @@ namespace Game.Spells
 
                 case ESpellTrajectory.Curve:
                     offset = 0.2f;
+                    break;
+
+                case ESpellTrajectory.DiagonalMiddle:
+                    offset = 0.5f;
                     break;
 
                 case ESpellTrajectory.Diagonal:

@@ -25,13 +25,16 @@ MonoBehaviour:
   SpellEventActions:
   - Prefab: {fileID: 4510707380993797748, guid: e740832f2d2d6544e84874fb474964fd, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX:
+    - AudioClip: {fileID: 8300000, guid: 3316f30260731cb4b87aecbb008ae76d, type: 3}
+      SoundDuration: 2
     GFXLifetime:
       StartSpellPart: 1
       EndSpellPart: 2
       StartAt: 0
       EndAt: 0
       Persistance: 0
-    Size: 0
+    Size: 1
     OrderInLayer: 0
     SpawnTarget: 1
     SpawnLocation: 0
@@ -42,6 +45,7 @@ MonoBehaviour:
     StateEffects: 
   - Prefab: {fileID: 1873985756121678, guid: dac7861a5b9b8674d97168aa93cd504c, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
       StartSpellPart: 4
       EndSpellPart: 0

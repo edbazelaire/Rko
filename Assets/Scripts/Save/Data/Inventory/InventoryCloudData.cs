@@ -99,7 +99,7 @@ namespace Save
         
         public bool IsMaxLevel()
         {
-            return Level >= CollectablesManagementData.GetMaxLevel(m_Collectable);
+            return Level >= CollectablesManagementData.GetMaxLevel(GetCollectable());
         }
 
         public bool HasEnoughQty()
@@ -180,8 +180,6 @@ namespace Save
         /// <summary> event fired when reset called in the database </summary>
         public static Action<ECollectableType>      ResetCollectableEvent;
 
-        /// <summary> SPECIFIC EVENT : for collectable data changed of type "Spell" : (remove ?) </summary>
-        public static Action<SCollectableCloudData> SpellDataChangedEvent;
         /// <summary> SPECIFIC EVENT : for collectable data changed of type "Character" : (remove ?) </summary>
         public static Action<SCollectableCloudData> CharacterDataChangedEvent;
 
@@ -276,13 +274,9 @@ namespace Save
             // Save & Fire event of the change
             if (save)
                 Instance.SaveValue(key);
-            CollectableDataChangedEvent?.Invoke(collectableData);
 
-            // Specific versions of this event
-            if (key == KEY_CHARACTERS)
-                CharacterDataChangedEvent?.Invoke(collectableData);
-            else if (key == KEY_SPELLS)
-                SpellDataChangedEvent?.Invoke(collectableData);
+            // call event of the changes
+            CollectableDataChangedEvent?.Invoke(collectableData);
         }
 
         /// <summary>
@@ -555,13 +549,6 @@ namespace Save
 
         public bool AddCollectableData(Enum collectable, bool unlock)
         {
-            // =================================================================
-            // =================================================================
-            // TODO : REMOVE (this is just for beta testing)
-            unlock = true;
-            // =================================================================
-            // =================================================================
-
             if (IGNORED_COLLECTABLES.Contains(collectable))
                 return false;
 

@@ -3,6 +3,7 @@ using Enums;
 using System.Collections.Generic;
 using Tools;
 using Unity.Netcode;
+using Unity.VisualScripting;
 
 namespace Game.Character
 {
@@ -30,6 +31,26 @@ namespace Game.Character
             m_TriggerEffects = triggerEffects;
         }
 
+        public override void OnNetworkDespawn()
+        {
+            base.OnNetworkDespawn();
+            if (!IsServer || m_TriggerEffects == null)
+                return;
+
+            foreach(var triggerEffect in m_TriggerEffects)
+            {
+                triggerEffect.End();
+            }
+
+            // Clear the collection to remove all trigger effects
+            m_TriggerEffects.Clear();
+        }
+
+        #endregion
+
+
+        #region Activation
+
         public virtual void Activate(bool activate)
         {
             if (m_Controller == null)
@@ -38,11 +59,12 @@ namespace Game.Character
                 return;
             }
 
-            if (activate) 
+            if (activate)
             {
                 OnGameStartEffect();
                 RegisterListeners();
-            } else
+            }
+            else
             {
                 UnRegisterListeners();
             }
