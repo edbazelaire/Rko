@@ -164,11 +164,12 @@ namespace Game.Spells
             if (!CheckHitEnemyTick(controller) && !CheckHitAllyTick(controller))
                 return;
 
+            // call spell event that spell has touched something
+            if (m_SpellData.HasGfxEventAt(ESpellEvent.OnHit, checkEnd: false))
+                CallSpellEventClientRPC(ESpellEvent.OnHit, controller.PlayerId);
+
             // energy gain
             m_Controller.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
-
-            // play sound effect
-            GameManager.Instance.PlaySoundClientRPC(m_SpellData.Name, ESpellEvent.OnHit);
 
             // add player to affected players
             if (m_SpellData.DurationTick > 0)
@@ -220,9 +221,6 @@ namespace Game.Spells
 
             // apply state effects specifics to enemies
             ApplyEnemyStateEffects(controller);
-
-            // call spell event that spell has touched something
-            CallSpellEvent(ESpellEvent.OnHit, controller);
 
             return true;
         }

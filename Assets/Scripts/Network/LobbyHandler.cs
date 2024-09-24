@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Managers.Tuto;
 using Assets.Scripts.Network;
 using Assets.Scripts.Tools;
 using Data.GameManagement;
@@ -13,10 +14,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tools;
 using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
+using Unity.Networking.Transport.Relay;
 using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
+using Unity.Services.Relay.Models;
+using Unity.Services.Relay;
 using UnityEngine;
+using Unity.Services.Core;
 
 namespace Network
 {
@@ -58,12 +64,12 @@ namespace Network
         const float LOBBY_ERROR_TIMER       = 15f;
 
         // Update & Heartbeat management
-        const string KEY_GAME_MODE          = "GameMode";
-        const string KEY_REGION             = "Region";
-        const string KEY_SUB_REGION         = "SubRegion";
-        const string KEY_RELAY_CODE         = "RelayCode";
-        const float HEARTBEAT_TIMER         = 15f;
-        const float UPDATE_LOBBY_TIMER      = 1.5f;
+        const string    KEY_GAME_MODE          = "GameMode";
+        const string    KEY_REGION             = "Region";
+        const string    KEY_SUB_REGION         = "SubRegion";
+        const string    KEY_RELAY_CODE         = "RelayCode";
+        const float     HEARTBEAT_TIMER         = 15f;
+        const float     UPDATE_LOBBY_TIMER      = 1.5f;
 
         public Action<ulong, ECharacter> OnRelayJoined;
 
@@ -71,6 +77,7 @@ namespace Network
         private Lobby       m_HostLobby;
         private Lobby       m_JoinedLobby;
         private string      m_RelayCode;
+        private bool        m_CancelRetry;
 
         private EGameMode m_GameMode    = EGameMode.Arena;
         private EArenaType m_ArenaType  = EArenaType.FireArena;
@@ -94,7 +101,7 @@ namespace Network
         #endregion
 
 
-        #region Initialize & End
+        #region Initialize
 
         private void Initialize()
         {
@@ -116,12 +123,24 @@ namespace Network
             m_HostLobby = null;
             m_JoinedLobby = null;
             m_RelayCode = "";
+            m_CancelRetry = false;
 
             StopAllCoroutines();
 
             m_CurrentCoroutine = null;
 
             SetState(ELobbyState.Inactive);
+        }
+
+        #endregion
+
+
+        #region End & Exit
+
+        void ExitScene()
+        {
+            ResetLobby();
+            SceneLoader.Instance.LoadScene("MainMenu");
         }
 
         #endregion
@@ -303,12 +322,13 @@ namespace Network
         IEnumerator WaitRelayCodeCoroutine()
         {
             // if relay code not provided yet : return
-            while (m_JoinedLobby.Data[KEY_RELAY_CODE].Value == "")
+            while (m_JoinedLobby.Data[KEY_RELAY_CODE].Value == "" || m_JoinedLobby.Data[KEY_RELAY_CODE].Value == m_RelayCode)
             {
                 UpdateLobbyData();
                 yield return null;
             }
 
+            m_RelayCode = m_JoinedLobby.Data[KEY_RELAY_CODE].Value;
             NextState();
         }
 
@@ -330,15 +350,12 @@ namespace Network
             try
             {
                 await LobbyService.Instance.SendHeartbeatPingAsync(m_HostLobby.Id);
-
             }
             catch (LobbyServiceException e)
             {
                 Debug.LogWarning(e);
                 m_HeartbeatTimer = 0f;        // set timer back to 0 to send an other one
             }
-
-
         }
 
         async void UpdateLobbyData()
@@ -372,7 +389,7 @@ namespace Network
         {
             Main.SetState(EAppState.Lobby);
 
-            bool success = await JoinLobby();
+            bool success = await JoinFirstLobby();
 
             if (!success)
                 success = await CreateLobby();
@@ -427,7 +444,7 @@ namespace Network
         /// <summary>
         /// Join the first lobby found
         /// </summary>
-        public async Task<bool> JoinLobby()
+        public async Task<bool> JoinFirstLobby()
         {
             try
             {
@@ -513,9 +530,50 @@ namespace Network
             m_RelayCode = await RelayHandler.Instance.CreateRelay();
         }
 
-        async Task JoinRelay()
+        async Task<bool> JoinRelay()
         {
-            await RelayHandler.Instance.JoinRelay(m_JoinedLobby.Data[KEY_RELAY_CODE].Value);
+            try
+            {
+                await RelayHandler.Instance.JoinRelay(m_JoinedLobby.Data[KEY_RELAY_CODE].Value);
+                return true;
+            }
+
+            catch (RelayServiceException e)
+            {
+                Debug.LogError(e.Message);
+                switch(e.ErrorCode)
+                {
+                    // GET BACK to previous stage
+                    case CommonErrorCodes.TransportError:
+                    case CommonErrorCodes.TokenExpired:
+                    case CommonErrorCodes.RequestRejected:
+                    case CommonErrorCodes.NotFound:
+                        m_CancelRetry = true;
+                        SetState(ELobbyState.WaitingRelayCode);
+                        return false;
+
+                    // RETRY
+                    case CommonErrorCodes.ServiceUnavailable:
+                    case CommonErrorCodes.Timeout:
+                    case CommonErrorCodes.ApiMissing:
+                    case CommonErrorCodes.TooManyRequests:
+                        return false;
+
+                    // ERROR - exit
+                    case CommonErrorCodes.Forbidden:
+                    case CommonErrorCodes.InvalidRequest:
+                    case CommonErrorCodes.ProjectPolicyAccessDenied:
+                    case CommonErrorCodes.PlayerPolicyAccessDenied:
+                    case CommonErrorCodes.Conflict:
+                        OnErrorCallback("Lobby Error ("+ e.ErrorCode + ") : Unable to join relay", e.Message)?.Invoke();
+                        return false;
+
+                    default:
+                        ErrorHandler.Error("Unhandled error code : " + e.ErrorCode + " - " + e.Message);
+                        OnErrorCallback("Lobby Error ("+ e.ErrorCode + ") : Unable to join relay", e.Message)?.Invoke();
+                        return false;
+                }
+            }
         }
 
         #endregion
@@ -552,8 +610,23 @@ namespace Network
                 // ================================================================================================
                 // TRAINING MODE : based on provided one in the Training tab
                 case EGameMode.Training:
+                    if (TutoManager.IsActivated)
+                    {
+                        return new SPlayerData(
+                            ECharacter.Alexander.ToString(),
+                            1,
+                            ECharacter.Alexander,
+                            PlayerPrefsHandler.GetTrainingRunes(),
+                            new int[] { 1, 1, 1 },
+                            PlayerPrefsHandler.GetTrainingSpells(),
+                            new int[] { 1, 1, 1, 1 },
+                            new SProfileCurrentData(gamerTag: ECharacter.Alexander.ToString()).AsNetworkSerializable(),
+                            isPlayer: false,
+                            botData: new SBotData(1f, 1f)
+                        );
+                    }
+                   
                     ECharacter trainingCharacter = PlayerPrefsHandler.GetString<ECharacter>(EPlayerPref.TrainingCharacter);
-
                     return new SPlayerData(
                         trainingCharacter.ToString(),
                         9,
@@ -707,12 +780,18 @@ namespace Network
 
         async Task<bool> Retry(Func<Task> method, int nTimes = 3)
         {
+            m_CancelRetry = false;
+
             try
             {
                 await method();
             }
             catch (Exception e)
             {
+                // if state is back to inactive or a cancel of retry has been asked => stop retrying
+                if (m_CancelRetry || m_State == ELobbyState.Inactive)
+                    return false;
+
                 nTimes--;
 
                 if (nTimes > 0)
@@ -849,7 +928,7 @@ namespace Network
 
                 Main.AddStoredEvent(EAppState.MainMenu, () => Main.SetPopUp(EPopUpState.MessagePopUp, message));
                 LeaveLobby();
-                SceneLoader.Instance.LoadScene("MainMenu");
+                ExitScene();
             };
         }
 

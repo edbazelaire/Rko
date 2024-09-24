@@ -208,14 +208,8 @@ namespace Game.Character
         /// </summary>
         public void Shake()
         {
-            Debug.Log("Shake()");
-            Debug.Log("     + old position : " + transform.position);
-
             transform.position += new Vector3(0.15f, 0, 0);
             transform.rotation = Quaternion.Euler(0f, 0f, 0.1f);
-
-            Debug.Log("     + new position : " + transform.position);
-
             ResetRotation();
         }
 
@@ -224,7 +218,6 @@ namespace Game.Character
         {
             if (transform.position.x == 0)
             {
-                Debug.Log("ShakeClientRPC()");
                 Shake();
             }
         }
@@ -260,15 +253,12 @@ namespace Game.Character
 
         void OnMoveXChanged(int oldValue, int moveX)
         {
-            Debug.Log("OnMoveXChanged : " + moveX);
             UpdateRotation(moveX);
         }
 
         private void OnSpeedBonusValueChanged(float oldValue, float newValue)
         {
             m_SpeedBonus = newValue;
-
-            Debug.Log("New Speed : " + m_SpeedBonus);
         }
 
         #endregion

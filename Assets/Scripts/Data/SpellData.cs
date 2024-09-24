@@ -14,6 +14,7 @@ using System.Linq;
 using Data.GameManagement;
 using System.Reflection;
 using MyBox;
+using UnityEngine.UIElements;
 
 namespace Data
 {
@@ -78,7 +79,7 @@ namespace Data
 
         [Header("Stats")]
         [Description("Type of targetting for the spell")]
-        public ESpellTarget                 SpellTarget         = ESpellTarget.EnemyZone;
+        public ESpellTarget                 SpellTarget         = ESpellTarget.FirstEnemy;
         [Description("Type of targetting for the spell")]
         public ESpellEvent                  LockTargetAt        = ESpellEvent.OnCast;
         [Description("Maximum number of target that this spell can hit")]
@@ -175,16 +176,20 @@ namespace Data
             if (recalculateTarget)
                 CalculateTarget(ref target, clientId);
 
+            // wait end of delay
             while (delay > 0f)
             {
                 delay -= Time.deltaTime;
                 yield return null;
             }
 
+            // if gameOver : exit
             if (GameManager.IsGameOver)
                 yield break;
 
-            Cast(clientId, target, position, rotation, recalculateTarget: false);
+            // cast the spell at the end of the delay
+            bool recalculateOnCast = LockTargetAt == ESpellEvent.OnSpawn;
+            Cast(clientId, target, position, rotation, recalculateTarget: recalculateOnCast);
         }
 
         /// <summary>
@@ -198,9 +203,6 @@ namespace Data
         public virtual void Cast(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default, bool recalculateTarget = true, bool recalculatePosition = true)
         {
             ErrorHandler.Log("Casting spell : " + Name, ELogTag.Spells);
-
-            // Play SoundEffect
-            GameManager.Instance.PlaySoundClientRPC(Name, ESpellEvent.OnCast);
 
             // recalculate target if required
             if (recalculateTarget)
@@ -229,25 +231,6 @@ namespace Data
 
             // call event that spell spawned
             GameManager.Instance.GetPlayer(clientId).SpellHandler.CallSpellEvent(Name, ESpellEvent.OnSpawn);
-        }
-
-        /// <summary>
-        /// Spawn the prefabs that are displayed when the spell is casted
-        /// </summary>
-        /// <returns></returns>
-        /// 
-        public virtual List<GameObject> SpawnOnCastPrefabs(Vector3 target)
-        {
-            List<GameObject> gameObjects = new List<GameObject>();
-            // spawn on cast particles
-            foreach (var prefab in OnCastPrefabs)
-            {
-                GameObject go = GameObject.Instantiate(prefab);
-                Finder.FindComponent<OnCastAoe>(go).Initialize(target, Size, Delay);
-                gameObjects.Add(go);
-            }
-
-            return gameObjects;
         }
 
         /// <summary>
@@ -302,16 +285,33 @@ namespace Data
         /// </summary>
         /// <param name="spellEvent"></param>
         /// <returns></returns>
-        public bool HasGfxEventAt(ESpellEvent spellEvent)
+        public bool HasGfxEventAt(ESpellEvent spellEvent, bool checkStart = true, bool checkEnd = true)
         {
             foreach (var action in SpellEventActions)
             {
                 // is starting
-                if (action.GFXLifetime.StartSpellPart == spellEvent)
+                if (checkStart && action.GFXLifetime.StartSpellPart == spellEvent)
                     return true;
 
                 // spell has "End" event and current event is this event or higher
-                if (action.GFXLifetime.EndSpellPart != ESpellEvent.None && spellEvent >= action.GFXLifetime.EndSpellPart)
+                if (checkEnd && action.GFXLifetime.EndSpellPart != ESpellEvent.None && spellEvent >= action.GFXLifetime.EndSpellPart)
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check if this spell has GFX event requesting the target position
+        /// </summary>
+        /// <param name="spellEvent"></param>
+        /// <returns></returns>
+        public bool HasTargetGfxEventAt(ESpellEvent spellEvent)
+        {
+            foreach (var action in SpellEventActions)
+            {
+                // is starting
+                if (action.GFXLifetime.StartSpellPart == spellEvent && action.SpawnTarget == ESpawnTarget.TargetPos)
                     return true;
             }
 
@@ -436,7 +436,7 @@ namespace Data
 
                 case ESpellTarget.Fixed:
                     direction = ArenaManager.GetAreaMovementDirection(controller.Team, true);
-                    target = new Vector4(controller.transform.position.x + direction * 7f, target.y, 0f);
+                    target = new Vector4(controller.transform.position.x + direction * Settings.SpellFixedDistance, target.y, 0f);
                     break;
 
                 default:
@@ -479,7 +479,7 @@ namespace Data
 
         #region Position
 
-        protected virtual void RecalculatePosition(ref Vector3 position, Vector3 target, ulong clientId) { }
+        public virtual void RecalculatePosition(ref Vector3 position, Vector3 target, ulong clientId) { }
 
 
         #endregion

@@ -1,4 +1,5 @@
-﻿using Tools;
+﻿using MyBox;
+using Tools;
 using Tools.Animations;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,18 +17,44 @@ namespace Menu.Common.Notifications
         Image               m_Background;
         ParticlesAnimation  m_ParticleAnimations;
         Color               m_BaseBackgroundColor;
+        Color?              m_ReplacementColor = null;
 
         #endregion
 
 
         #region Init & End
 
-        public void Initialize(Image background, Vector2 size)
+        public static NotificationDisplay Add(GameObject gameObject, Image background, Vector2 size, string colorHexa = "#f4c633", float alpha = 0.75f)
+        {
+            if (!gameObject.TryGetComponent<NotificationDisplay>(out var notificationDisplay))
+                notificationDisplay = gameObject.AddComponent<NotificationDisplay>();
+
+            notificationDisplay.Initialize(background, size, colorHexa, alpha);
+            notificationDisplay.Activate();
+
+            return notificationDisplay;
+        }
+
+        public static void Remove(GameObject gameObject)
+        {
+            if (!gameObject.TryGetComponent<NotificationDisplay>(out var notificationDisplay))
+                return;
+
+            notificationDisplay.Deactivate();
+        }
+
+        public void Initialize(Image background, Vector2 size, string colorHexa = "#f4c633", float alpha = 0.75f)
         {
             m_Size = size;
             m_Background = background;  
             m_ParticleAnimations = null;
-            m_BaseBackgroundColor = m_Background.color;
+
+            if (! string.IsNullOrEmpty(colorHexa) && ColorUtility.TryParseHtmlString(colorHexa, out Color color))
+            {
+                m_BaseBackgroundColor = m_Background.color;
+                color.a = Mathf.Clamp01(alpha);
+                m_ReplacementColor = color;
+            }
 
             base.Initialize();
         }
@@ -56,12 +83,8 @@ namespace Menu.Common.Notifications
                     m_WasEnabledBackground = true;
                 }
 
-                if (ColorUtility.TryParseHtmlString("#f4c633", out Color color))
-                {
-                    // Set color in settings
-                    color.a = 0.75f;
-                    m_Background.color = color;
-                }
+                if (m_ReplacementColor != null)
+                    m_Background.color = m_ReplacementColor.Value;
             }
 
             CoroutineManager.DelayMethod(AddNotificationParticles);
@@ -70,7 +93,7 @@ namespace Menu.Common.Notifications
         public void Deactivate()
         {
             if (! m_IsActivated)
-                return;
+                return; 
 
             m_IsActivated = false;
 
@@ -80,7 +103,8 @@ namespace Menu.Common.Notifications
 
             if (m_Background != null)
             {
-                m_Background.color = m_BaseBackgroundColor;
+                if (m_ReplacementColor != null)
+                    m_Background.color = m_BaseBackgroundColor;
 
                 if (!m_WasEnabledBackground)
                     m_Background.gameObject.SetActive(false);

@@ -28,6 +28,7 @@ MonoBehaviour:
   SpellEventActions:
   - Prefab: {fileID: 7995130027969150761, guid: d60cd1a3612c8b3419590f61b7f34c63, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
       StartSpellPart: 1
       EndSpellPart: 2
@@ -45,6 +46,7 @@ MonoBehaviour:
     StateEffects: 
   - Prefab: {fileID: 2272309172655654138, guid: 95898a1957756fa4887c04c98e45b439, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
       StartSpellPart: 1
       EndSpellPart: 2
@@ -60,18 +62,19 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 
-  - Prefab: {fileID: 130346, guid: 07bf9ced87963e24299c2c2a22bfeeb6, type: 3}
+  - Prefab: {fileID: 610942752557020422, guid: 5b4133700e2d9e64da91e802ba2e660d, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
-      StartSpellPart: 5
-      EndSpellPart: 0
+      StartSpellPart: 1
+      EndSpellPart: 5
       StartAt: 0
       EndAt: 0
-      Persistance: 1
-    Size: 0
+      Persistance: 0
+    Size: 2
     OrderInLayer: 0
-    SpawnTarget: 3
-    SpawnLocation: 0
+    SpawnTarget: 4
+    SpawnLocation: 2
     BodyPart: 0
     IsFollowing: 0
     Offset: {x: 0, y: 0}
@@ -84,12 +87,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e25d3d0af6674a548ada02e4bebf16d7, type: 2}
   OnHitSpellSpawn: 2
   AnimationSoundFX: {fileID: 0}
-  CastSoundFX: {fileID: 8300000, guid: 3ecced41c79ec3840824bd3813604df2, type: 3}
+  CastSoundFX: {fileID: 8300000, guid: acded229ef27b08438e9aec48559a382, type: 3}
   PermanantSoundFX: {fileID: 8300000, guid: 577f26342b4f5734489f177e64140b0e, type: 3}
-  OnHitSoundFX: {fileID: 8300000, guid: 3ecced41c79ec3840824bd3813604df2, type: 3}
-  OnEndSoundFX: {fileID: 8300000, guid: 558d15c5b70506140981d3a6e220ff74, type: 3}
+  OnHitSoundFX: {fileID: 0}
+  OnEndSoundFX: {fileID: 0}
   SpellTarget: 1
-  LockTargetAt: 2
+  LockTargetAt: 1
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
@@ -99,7 +102,7 @@ MonoBehaviour:
   Distance: -1
   OverrideOnHitProperties: 
   m_Duration: 0
-  Delay: 0
+  Delay: 0.5
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
@@ -115,6 +118,6 @@ MonoBehaviour:
   IsCancellable: 0
   AnimationTimer: 0.8
   m_Cooldown: 45
-  Trajectory: 3
+  Trajectory: 4
   m_StopOnTargetPos: 0
-  m_Speed: 8
+  m_Speed: 7

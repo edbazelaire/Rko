@@ -7,6 +7,7 @@ using Save;
 using TMPro;
 using Tools;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 
 
@@ -131,6 +132,10 @@ namespace Menu.Common.Buttons.TemplateItemButtons.Collectables
                 // deactivate UpgradeButton
                 m_UpgradeButton.gameObject.SetActive(false);
             }
+
+            // always hide REMOVE button for characters
+            if (m_CollectableItemUI.Collectable.GetType() == typeof(ECharacter))
+                m_RemoveButton.gameObject.SetActive(false);
         }
 
         #endregion
@@ -188,6 +193,13 @@ namespace Menu.Common.Buttons.TemplateItemButtons.Collectables
                 CurrentBuildDisplayUI.SetCurrentSelectedItem(m_CollectableItemUI.Collectable);
                 return;
             }
+
+            if (m_CollectableItemUI.Collectable.GetType() == typeof(ECharacter))
+            {
+                // if no empty slot, set card as current selected
+                CharacterBuildsCloudData.SetSelectedCharacter((ECharacter)m_CollectableItemUI.Collectable);
+                return;
+            }
         }
 
         /// <summary>
@@ -243,7 +255,7 @@ namespace Menu.Common.Buttons.TemplateItemButtons.Collectables
             if (m_CollectableItemUI.Collectable.GetType() == typeof(ECharacter))
             {
                 // display info
-                Main.SetPopUp(EPopUpState.CharacterInfoPopUp, (ERune)m_CollectableItemUI.Collectable, m_CollectableItemUI.CollectableCloudData.Level);
+                Main.SetPopUp(EPopUpState.CharacterInfoPopUp, (ECharacter)m_CollectableItemUI.Collectable, m_CollectableItemUI.CollectableCloudData.Level);
                 return;
             }
         }

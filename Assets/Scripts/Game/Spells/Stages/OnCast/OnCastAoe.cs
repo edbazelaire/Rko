@@ -1,21 +1,19 @@
-﻿using System.Threading;
+﻿using Game.SpellGFXs;
+using System.Collections;
 using Tools;
 using UnityEngine;
 
 namespace Game.Spells
 {
-    public class OnCastAoe : MonoBehaviour
+    public class OnCastAoe : SpellGFX
     {
         #region Members
 
-        const string c_BaseArea         = "BaseArea";
         const string c_GrowingArea      = "GrowingArea";
 
         GameObject  m_GrowingArea;
         Vector3     m_GrowingAreaBaseScale;
 
-        /// <summary> duration of the aoe to proc </summary>
-        float m_Duration;
         /// <summary> curent value of the timer </summary>
         float m_Timer;
 
@@ -26,30 +24,18 @@ namespace Game.Spells
 
         #region Init & End
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="radius"></param>
-        public virtual void Initialize(Vector3 target, float radius, float duration)
+        protected override void FindComponents()
         {
+            base.FindComponents();
+
             m_GrowingArea = Finder.Find(gameObject, c_GrowingArea);
-
-            // init position
-            transform.position = new Vector3(target.x, 0f, 0f);
-
-            // init scale
-            transform.localScale                = new Vector3(radius, radius, transform.localScale.z);
-            m_GrowingAreaBaseScale              = m_GrowingArea.transform.localScale;
-            m_GrowingArea.transform.localScale  = Vector3.zero;
-
-            // init timer
-            m_Duration = duration;
-            m_Timer = duration;
+            m_GrowingAreaBaseScale = m_GrowingArea.transform.localScale;
         }
 
-        public virtual void End()
+        protected override void ApplyPostProcessing()
         {
-            Destroy(gameObject);
+            base.ApplyPostProcessing();
+            CalculateDuration();
         }
 
         #endregion
@@ -57,16 +43,29 @@ namespace Game.Spells
 
         #region Update Manipulators
 
-        public virtual void Update()
+        protected override void StartAnimation()
         {
-            m_Timer -= Time.deltaTime;
-            if (m_Timer < 0)
+            // init scale
+            transform.localScale = new Vector3(m_SpellData.Size, m_SpellData.Size, transform.localScale.z);
+            m_GrowingArea.transform.localScale = Vector3.zero;
+
+            // init timer
+            m_Timer = m_Duration;
+
+            // start animation
+            StartCoroutine(AnimationCoroutine());
+        }
+
+        protected virtual IEnumerator AnimationCoroutine()
+        {
+            while (m_Timer > 0 && ! m_EndStarted)
             {
-                End();
-                return;
+                m_Timer -= Time.deltaTime;
+                m_GrowingArea.transform.localScale = m_GrowingAreaBaseScale * (1 - (m_Timer / m_Duration));
+                yield return null;
             }
 
-            m_GrowingArea.transform.localScale = m_GrowingAreaBaseScale * (1 - (m_Timer / m_Duration));
+            End();
         }
 
         #endregion

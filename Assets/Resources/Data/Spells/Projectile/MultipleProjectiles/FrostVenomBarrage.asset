@@ -29,7 +29,27 @@ MonoBehaviour:
   m_SpellElements: 0200000003000000
   Linked: 0
   Graphics: {fileID: 4510707380993797748, guid: 2f8def97db0868f42a5bf121916615be, type: 3}
-  SpellEventActions: []
+  SpellEventActions:
+  - Prefab: {fileID: 4924508274929071776, guid: bb631e47d796e1a47889dcd4102220fc, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX:
+    - AudioClip: {fileID: 8300000, guid: 5519ffa556e20764d864887b83e27951, type: 3}
+      SoundDuration: 0
+    GFXLifetime:
+      StartSpellPart: 4
+      EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1.2
+    Size: 0.7
+    OrderInLayer: 0
+    SpawnTarget: 3
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
@@ -87,3 +107,5 @@ MonoBehaviour:
   m_DelayBetweenLaunches: 0
   m_NWaves: 3
   m_DelayBetweenWaves: 0.5
+  OnCastWaveSoundFX: {fileID: 8300000, guid: 908148495fc63c745b3f12903a3cac3b, type: 3}
+  OnCastProjectileSoundFX: {fileID: 0}

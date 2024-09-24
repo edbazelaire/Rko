@@ -1,4 +1,5 @@
 ﻿using Data;
+using Data.GameManagement;
 using Enums;
 using Game.Loaders;
 using Inventory;
@@ -65,26 +66,25 @@ namespace Menu.MainMenu
             InitFilters();
 
             m_Items = new ();
-            foreach (ERune rune in SpellLoader.Runes)
+            List<RuneData> runesData = CollectablesManagementData.OrderCollectable(SpellLoader.RunesData, EOrderBy.Rarety);
+            foreach (RuneData runeData in runesData)
             {
-                if (rune == ERune.None)
+                if (runeData.Rune == ERune.None)
                     continue;
 
                 // check if is unlocked or not
-                bool isUnlocked = InventoryCloudData.Instance.GetCollectable(rune).Level > 0;
+                bool isUnlocked = InventoryCloudData.Instance.GetCollectable(runeData.Rune).Level > 0;
                 var parent = isUnlocked ? m_ItemContainer.transform : m_LockedItemContainer.transform;
 
                 // spawn and init ui of the spell
                 TemplateRuneItemUI collectableUI = Instantiate(m_TemplateItem, parent);
-                collectableUI.gameObject.name = string.Format(RUNE_ITEM_NAME_FORMAT, rune.ToString());
-                collectableUI.Initialize(rune);
-                collectableUI.CollectionFillBar?.gameObject.SetActive(isUnlocked);
-
-                if (isUnlocked)
-                    m_Items.Add(rune, collectableUI);
+                collectableUI.gameObject.name = string.Format(RUNE_ITEM_NAME_FORMAT, runeData.Rune.ToString());
+                collectableUI.Initialize(runeData.Rune);
+                collectableUI.gameObject.SetActive(isUnlocked);
+                m_Items.Add(runeData.Rune, collectableUI);
 
                 // hide if spell is in current build
-                if (CharacterBuildsCloudData.CurrentRunes.Contains(rune))
+                if (CharacterBuildsCloudData.CurrentRunes.Contains(runeData.Rune))
                     collectableUI.gameObject.SetActive(false);
             }
         }

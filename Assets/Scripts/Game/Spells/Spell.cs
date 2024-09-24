@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Tools;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Game.Spells
@@ -21,7 +22,10 @@ namespace Game.Spells
 
         // ========================================================================================================
         // Actions
-        public Action<ESpellEvent>  OnSpellEvent;
+        /// <summary> static action allowing SpellGFX instantiated on client side from the SpellHandler to make the connection the sell on spawn </summary>
+        public static Action<Spell>         OnSpellSpawn;
+        /// <summary> action allowing SpellGFX to react at spell events </summary>
+        public Action<ESpellEvent>          OnSpellEvent;
 
         // ========================================================================================================
         // Data
@@ -66,6 +70,10 @@ namespace Game.Spells
         {
             base.OnDestroy();
 
+            // call an end on client side (this method happens localy so no need to get throught RPC)
+            CallSpellEvent(ESpellEvent.OnEnd);
+
+            // destroy data (to avoid charging memory)
             Destroy(m_SpellData);
 
             if (GameManager.Exists)
@@ -119,10 +127,6 @@ namespace Game.Spells
             // visual ending effect
             SpawnOnHitPrefab();
 
-            // play sound effect
-            if (m_SpellData.OnEndSoundFX != null)
-                GameManager.Instance.PlaySoundClientRPC(m_SpellData.Name, ESpellEvent.OnEnd);
-
             // destroy the spell game object
             StartCoroutine(DestroySpell());
 
@@ -139,9 +143,6 @@ namespace Game.Spells
                 m_PersistanceTimer -= Time.deltaTime;
                 yield return null;
             }
-
-            // call an end on client side
-            CallSpellEvent(ESpellEvent.OnEnd);
 
             // destroy the spell
             Destroy(gameObject);
@@ -182,7 +183,12 @@ namespace Game.Spells
             if (m_SpellData.Graphics != null)
             {
                 ErrorHandler.Log("InitGraphics() : " + m_SpellData.Graphics + " with size " + m_SpellData.Size, ELogTag.Spells);
-                SwapColliders(Instantiate(m_SpellData.Graphics, m_GraphicsContainer.transform));
+                var gfx = Instantiate(m_SpellData.Graphics, m_GraphicsContainer.transform);
+                SwapColliders(gfx);
+
+                var audioSource = Finder.FindComponent<AudioSource>(gfx);
+                if (audioSource != null)
+                    SoundFXManager.AdjustVolume(ref audioSource);
             }
 
             transform.localScale = new Vector3(m_SpellData.Size, m_SpellData.Size, 1f);
@@ -301,14 +307,15 @@ namespace Game.Spells
             if (! CheckHitEnemy(controller) && ! CheckHitAlly(controller))
                 return;
 
+            // if spell has "OnHit" GFX : call on CLIENT that spell has touched something
+            if (m_SpellData.HasGfxEventAt(ESpellEvent.OnHit, checkEnd: false))
+                CallSpellEventClientRPC(ESpellEvent.OnHit, controller.PlayerId);
+
             // add plyer id to list of hitted players
             m_HittedPlayerId.Add(controller.OwnerClientId);
 
             // energy gain
             m_Controller.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
-
-            // play sound effect
-            GameManager.Instance.PlaySoundClientRPC(m_SpellData.Name, ESpellEvent.OnHit);
 
             // update hit count
             if (m_HittedPlayerId.Count <= m_SpellData.MaxHit && m_SpellData.MaxHit > 0)
@@ -364,9 +371,6 @@ namespace Game.Spells
 
             // apply state effects specifics to enemies
             ApplyEnemyStateEffects(controller);
-
-            // call spell event that spell has touched something
-            CallSpellEvent(ESpellEvent.OnHit, controller);
 
             return true;
         }
@@ -463,10 +467,50 @@ namespace Game.Spells
         #endregion
 
 
-        #region Spell Events
+        #region Spell Event
 
+        /// <summary>
+        /// From SERVER to CLIENT, call for the CallSpellEvent() method
+        /// </summary>
+        /// <param name="spellEvent"></param>
+        /// <param name="clientID"></param>
+        [ClientRpc]
+        protected virtual void CallSpellEventClientRPC(ESpellEvent spellEvent)
+        {
+            CallSpellEvent(spellEvent, null);
+        }
+
+        /// <summary>
+        /// From SERVER to CLIENT, call for the CallSpellEvent() method
+        ///     -> surcharge with a clientID (if necessary)
+        /// </summary>
+        /// <param name="spellEvent"></param>
+        /// <param name="clientID"></param>
+        [ClientRpc]
+        protected virtual void CallSpellEventClientRPC(ESpellEvent spellEvent, ulong clientID)
+        {
+            CallSpellEvent(spellEvent, GameManager.Instance.GetPlayer(clientID));
+        }
+
+        /// <summary>
+        /// Spell event : instantiate/destroy the graphics matching the event of the spell
+        /// </summary>
+        /// <param name="spellEvent"></param>
+        /// <param name="targetController"></param>
         protected virtual void CallSpellEvent(ESpellEvent spellEvent, Controller targetController = null)
         {
+            if (gameObject == null || gameObject.IsDestroyed())
+            {
+                ErrorHandler.Warning("Unable to display graphism for spell event " + spellEvent + " : GameObject is destroyed");
+                return;
+            }
+
+            if (m_SpellData == null)
+            {
+                ErrorHandler.Warning("Unable to display graphism for spell event " + spellEvent + " : SpellData is null");
+                return;
+            }
+
             foreach (var spawnPrefab in m_SpellData.SpellEventActions)
             {
                 if (spawnPrefab.GFXLifetime.StartSpellPart != spellEvent)
@@ -475,6 +519,7 @@ namespace Game.Spells
                 spawnPrefab.Spawn(m_Controller, m_SpellData, this, null, targetController, transform.position);
             }
 
+            OnSpellSpawn?.Invoke(this);
             OnSpellEvent?.Invoke(spellEvent);
         }
 

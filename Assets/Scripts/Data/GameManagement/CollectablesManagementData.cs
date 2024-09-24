@@ -3,6 +3,7 @@ using Game.Loaders;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Tools;
 using UnityEngine;
 
@@ -319,6 +320,41 @@ namespace Data.GameManagement
             }
 
             return new SLevelData(Instance.RuneLevelData[level - 1].RequiredGolds, Instance.RuneLevelData[levelIndex].RequiredQty);
+        }
+
+        #endregion
+
+
+        #region Order & Filters
+
+        /// <summary>
+        /// Order collectables by a specific metric
+        /// </summary>
+        /// <typeparam name="T">Type of collectable (or a derived class of CollectableData)</typeparam>
+        /// <param name="collectables"></param>
+        /// <param name="orderBy"></param>
+        /// <returns>Ordered list of collectables</returns>
+        public static List<T> OrderCollectable<T>(List<T> collectables, EOrderBy orderBy = EOrderBy.Rarety) where T : CollectableData
+        {
+            switch (orderBy)
+            {
+                case EOrderBy.Rarety:
+                    // Sort by rarety first, then by level in case of ties
+                    return collectables.OrderBy(collectable => collectable.Rarety)
+                                   .ThenBy(collectable => collectable.Level)
+                                   .ToList();
+
+                case EOrderBy.Level:
+                    // Sort by level first, then by rarety in case of ties
+                    return collectables.OrderByDescending(collectable => collectable.Level)
+                                   .ThenBy(collectable => collectable.Rarety)
+                                   .ToList();
+
+                case EOrderBy.None:
+                default:
+                    // No sorting if EOrderBy.None is selected
+                    return collectables;
+            }
         }
 
         #endregion

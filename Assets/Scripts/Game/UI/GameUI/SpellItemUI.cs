@@ -5,7 +5,10 @@ using Menu.Common.Buttons;
 using Save;
 using TMPro;
 using Tools;
+using Unity.Collections;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
 
 namespace Game.UI
 {
@@ -13,8 +16,6 @@ namespace Game.UI
     {
         #region Members
 
-        /// <summary> when a cooldown is set, wait 0.2 sec before asking the server if spell is on cooldown </summary>
-        const float TIME_BEFORE_ASK_SERVER = 0.2f;
         /// <summary> name of the GameObject containing the cooldown counter </summary>
         const string    c_CooldownCtr   = "CooldownCtr";
 
@@ -24,12 +25,12 @@ namespace Game.UI
         /// <summary> TextMeshPro of the cooldown counter </summary>
         TMP_Text        m_CooldownCtr;
 
+        // ============================================================================================================
+        // LOCAL DATA
         /// <summary> base cooldown of the spell </summary>
         float m_BaseCooldown;
         /// <summary> client side cooldown that handles spell cooldown display (to avoid spamming server and delays) </summary>
         float m_CooldownTimer;
-        /// <summary> time to wait before asking the server if spell is on cooldown  </summary>
-        float m_TimerBeforeAskServer;
 
         ESpell m_Spell => (ESpell)m_CollectableCloudData.GetCollectable();
         bool m_IsUltimateSpell => m_Owner.SpellHandler.Ultimate == m_Spell;
@@ -52,8 +53,7 @@ namespace Game.UI
             // not locked -> skip update
             if (m_State != EButtonState.Locked)
                 return;
-
-            UpdateState();
+            
             UpdateCooldown();            
         }
 
@@ -75,30 +75,26 @@ namespace Game.UI
         /// <param name="spell"></param>
         public void Initialize(ESpell spell, int level)
         {
-            base.Initialize();
-
-            m_CollectableCloudData = new SCollectableCloudData(spell, level);
-           
-            // setup ui elements (icon, collection fillbar, ...)
-            SetUpUI(true);
-
+            // init data
             m_CollectableCloudData = new SCollectableCloudData(spell, level);
             m_Owner = GameManager.Instance.Owner;
 
             SpellData spellData = SpellLoader.GetSpellData(m_Spell, level, destroy: true);
-            m_BaseCooldown      = spellData.Cooldown;
-            m_CooldownTimer     = 0;
+            m_BaseCooldown = spellData.Cooldown;
+            m_CooldownTimer = 0;
+
+            // call base init 
+            base.Initialize();
+
+            // setup ui elements (icon, collection fillbar, ...)
+            SetUpUI(true);
 
             // set initial UI of Cooldowns
             SetupCooldown();
 
             // set initial state
-            SetState(m_Owner.SpellHandler.CanSelect(m_Spell) ? EButtonState.Normal : EButtonState.Locked);
+            SetState(spellData.EnergyCost <= 0 ? EButtonState.Normal : EButtonState.Locked);
             m_BottomText.text = string.Format(LEVEL_FORMAT, m_CollectableCloudData.Level);
-
-            // listeners
-            m_Owner.SpellHandler.SelectedSpellNet.OnValueChanged    += OnSpellSelected;
-            m_Owner.SpellHandler.OnSpellCasted                      += OnSpellCasted;
         }
 
         protected override void OnDestroy()
@@ -107,9 +103,6 @@ namespace Game.UI
 
            if (m_Owner == null || m_Owner.SpellHandler == null)
                 return;
-
-            m_Owner.SpellHandler.SelectedSpellNet.OnValueChanged    -= OnSpellSelected;
-            m_Owner.SpellHandler.OnSpellCasted                      -= OnSpellCasted;
         }
 
         /// <summary> 
@@ -141,19 +134,6 @@ namespace Game.UI
             }
         }
 
-
-        protected override void UpdateState()
-        {
-            // wait a bit of time before asking server if its ok to select the spell (to avoid calling too soon)
-            m_TimerBeforeAskServer -= Time.deltaTime;
-            if (m_TimerBeforeAskServer > 0 && m_CooldownTimer > 0)
-                return;
-
-            if (m_Owner.SpellHandler.CanSelect(m_Spell))
-                SetState(EButtonState.Normal);  
-        }
-        
-        /// <summary>
         /// When the cooldown changes, update the cooldown if needed
         /// </summary>
         /// <param name="changeEvent"></param>
@@ -179,19 +159,36 @@ namespace Game.UI
             m_CooldownCtr.text = m_CooldownTimer.ToString("0");
         }
 
-
+        protected override void UpdateState() { }
 
         #endregion
 
 
         #region Listeners
 
+        protected override void RegisterListeners()
+        {
+            base.RegisterListeners();
+
+            // listeners
+            m_Owner.SpellHandler.SelectedSpellNet.OnValueChanged    += OnSpellSelected;
+            m_Owner.SpellHandler.SpellSelectionEvent                += OnSpellSelectionStateChanged;
+        }
+
+        protected override void UnRegisterListeners()
+        {
+            base.UnRegisterListeners();
+
+            m_Owner.SpellHandler.SelectedSpellNet.OnValueChanged    -= OnSpellSelected;
+            m_Owner.SpellHandler.SpellSelectionEvent                -= OnSpellSelectionStateChanged;
+        }
+
         /// <summary>
         /// Ask for spell selection to the server
         /// </summary>
         protected override void OnClick()
         {
-            if (! m_Owner.SpellHandler.CanSelect(m_Spell))
+            if (m_State != EButtonState.Normal)
                 // TODO : CantSelectSpellFeedback()
                 return;
 
@@ -210,20 +207,36 @@ namespace Game.UI
         }
 
         /// <summary>
-        /// When the spell selection changes, update the border if needed
+        /// When spell selection state changed, display the corresponding UI
         /// </summary>
-        /// <param name="oldValue"></param>
-        /// <param name="newValue"></param>
-        void OnSpellCasted(ESpell spell)
+        /// <param name="spell"></param>
+        /// <param name="spellSelectionState"></param>
+        void OnSpellSelectionStateChanged(ESpell spell, ESpellSelectionState spellSelectionState)
         {
             if (spell != m_Spell)
                 return;
 
-            m_CooldownTimer = m_Owner.SpellHandler.CalculateCooldown(m_BaseCooldown);
-            m_TimerBeforeAskServer = TIME_BEFORE_ASK_SERVER;
+            switch (spellSelectionState)
+            {
+                case ESpellSelectionState.None:
+                    SetState(EButtonState.Normal);
+                    break;
 
-            SetState(EButtonState.Locked);
-            m_CooldownCtr.gameObject.SetActive(true);
+                case ESpellSelectionState.Inactive:
+                    SetState(EButtonState.Locked);
+                    m_CooldownCtr.gameObject.SetActive(false);
+                    break;
+
+                case ESpellSelectionState.Cooldown:
+                    SetState(EButtonState.Locked);
+                    m_CooldownTimer = m_Owner.SpellHandler.CalculateCooldown(m_BaseCooldown);
+                    m_CooldownCtr.gameObject.SetActive(true);
+                    break;
+
+                default:
+                    ErrorHandler.Warning("Unhandled case : " + spellSelectionState);
+                    break;
+            }
         }
 
         #endregion

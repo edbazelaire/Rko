@@ -347,6 +347,7 @@ namespace Save
         public static List<char> FORBIDDEN_CHARACTERS => new (){ '#', ' ' };
 
         // KEYS ------------------------------------
+        public const string KEY_TUTO_DONE               = "TutoDone";
         public const string KEY_PSEUDO_CHANGED          = "PseudoChanged";
         public const string KEY_GAMER_TAG               = "GamerTag";
         public const string KEY_TAG                     = "Tag";
@@ -372,6 +373,7 @@ namespace Save
 
         /// <summary> default data for the Inventory </summary>
         protected override Dictionary<string, object> m_Data { get; set; } = new Dictionary<string, object>() {
+            { KEY_TUTO_DONE,                false                                               },
             { KEY_PSEUDO_CHANGED,           false                                               },
             { KEY_GAMER_TAG,                ""                                                  },
             { KEY_TAG,                      ""                                                  },
@@ -392,6 +394,7 @@ namespace Save
         public static string                PlayerName          => GamerTag + Tag;
         public static string                GamerTag            => (string)Instance.m_Data[KEY_GAMER_TAG];
         public static string                Tag                 => (string)Instance.m_Data[KEY_TAG];
+        public static bool                  TutoDone            => (bool)Instance.m_Data[KEY_TUTO_DONE];
         public static bool                  PseudoChanged       => (bool)Instance.m_Data[KEY_PSEUDO_CHANGED];
         public static string                Token               => (string)Instance.m_Data[KEY_TOKEN];
         public static string                Region              => (string)Instance.m_Data[KEY_REGION];

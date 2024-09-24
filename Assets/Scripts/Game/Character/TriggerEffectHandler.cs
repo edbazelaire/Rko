@@ -3,6 +3,7 @@ using Enums;
 using System.Collections.Generic;
 using Tools;
 using Unity.Netcode;
+using Unity.VisualScripting;
 
 namespace Game.Character
 {
@@ -30,6 +31,26 @@ namespace Game.Character
             m_TriggerEffects = triggerEffects;
         }
 
+        public override void OnNetworkDespawn()
+        {
+            base.OnNetworkDespawn();
+            if (!IsServer || m_TriggerEffects == null)
+                return;
+
+            foreach(var triggerEffect in m_TriggerEffects)
+            {
+                triggerEffect.End();
+            }
+
+            // Clear the collection to remove all trigger effects
+            m_TriggerEffects.Clear();
+        }
+
+        #endregion
+
+
+        #region Activation
+
         public virtual void Activate(bool activate)
         {
             if (m_Controller == null)
@@ -38,11 +59,12 @@ namespace Game.Character
                 return;
             }
 
-            if (activate) 
+            if (activate)
             {
                 OnGameStartEffect();
                 RegisterListeners();
-            } else
+            }
+            else
             {
                 UnRegisterListeners();
             }
@@ -62,17 +84,17 @@ namespace Game.Character
 
             foreach (var effect in m_TriggerEffects)
             {
-                if (effect.SpellActivationEvent == ESpellActivationEvent.GameStart)
+                if (effect.SpellActivationEvent == ESpellActivation.GameStart)
                 {
                     effect.Activate(m_Controller);
                 }
 
-                else if (effect.SpellActivationEvent == ESpellActivationEvent.Hp && effect.ActivationTreshold >= (float)m_Controller.Life.Hp.Value / m_Controller.Life.MaxHp.Value)
+                else if (effect.SpellActivationEvent == ESpellActivation.Hp && effect.ActivationTreshold >= (float)m_Controller.Life.Hp.Value / m_Controller.Life.MaxHp.Value)
                 {
                     effect.Activate(m_Controller);
                 }
 
-                else if (effect.SpellActivationEvent == ESpellActivationEvent.Shield && effect.ActivationTreshold == 1 && m_Controller.Life.Shield.Value > 0)
+                else if (effect.SpellActivationEvent == ESpellActivation.Shield && effect.ActivationTreshold == 1 && m_Controller.Life.Shield.Value > 0)
                 {
                     effect.Activate(m_Controller);
                 }
@@ -88,7 +110,7 @@ namespace Game.Character
             for (int i = 0; i < m_TriggerEffects.Count; i++)
             {
                 var effect = m_TriggerEffects[i];
-                if (effect.SpellActivationEvent != ESpellActivationEvent.Death)
+                if (effect.SpellActivationEvent != ESpellActivation.Death)
                     continue;
 
                 if (! effect.IsActivable())
@@ -120,14 +142,14 @@ namespace Game.Character
             foreach (var effect in m_TriggerEffects)
             {
                 // make sure to only link once to HP and only link if necessary
-                if ((effect.SpellActivationEvent == ESpellActivationEvent.Hp || effect.SpellActivationEvent == ESpellActivationEvent.Hp) && !linkedToHp)
+                if ((effect.SpellActivationEvent == ESpellActivation.Hp || effect.SpellActivationEvent == ESpellActivation.Hp) && !linkedToHp)
                 {
                     m_Controller.Life.Hp.OnValueChanged += OnHpChanged;
                     linkedToHp = true;
                 }
 
                 // make sure to only link once to SHIELD and only link if necessary
-                if ((effect.SpellActivationEvent == ESpellActivationEvent.Shield || effect.SpellActivationEvent == ESpellActivationEvent.Shield) && !linkedToShield)
+                if ((effect.SpellActivationEvent == ESpellActivation.Shield || effect.SpellActivationEvent == ESpellActivation.Shield) && !linkedToShield)
                 {
                     m_Controller.Life.Shield.OnValueChanged                     += OnShieldChanged;
                     m_Controller.StateHandler.RemainingShield.OnValueChanged    += OnShieldChanged;
@@ -151,13 +173,13 @@ namespace Game.Character
             for (int i = 0; i < m_TriggerEffects.Count; i++)
             {
                 var effect = m_TriggerEffects[i];
-                if (effect.SpellActivationEvent == ESpellActivationEvent.Hp && effect.ActivationTreshold >= (float)newValue / m_Controller.Life.MaxHp.Value)
+                if (effect.SpellActivationEvent == ESpellActivation.Hp && effect.ActivationTreshold >= (float)newValue / m_Controller.Life.MaxHp.Value)
                 {
                     effect.Activate(m_Controller);
                     m_TriggerEffects[i] = effect;
                 }
 
-                if (effect.SpellDeactivationEvent == ESpellActivationEvent.Hp && effect.DeactivationTreshold >= (float)newValue / m_Controller.Life.MaxHp.Value)
+                if (effect.SpellDeactivationEvent == ESpellActivation.Hp && effect.DeactivationTreshold >= (float)newValue / m_Controller.Life.MaxHp.Value)
                 {
                     effect.Deactivate();
                     m_TriggerEffects[i] = effect;
@@ -171,13 +193,13 @@ namespace Game.Character
             for (int i = 0; i < m_TriggerEffects.Count; i++)
             {
                 var effect = m_TriggerEffects[i];
-                if (effect.SpellActivationEvent == ESpellActivationEvent.Shield && ((effect.ActivationTreshold == 1 && currentShield > 0) || (effect.ActivationTreshold == 0 && currentShield <= 0)))
+                if (effect.SpellActivationEvent == ESpellActivation.Shield && ((effect.ActivationTreshold == 1 && currentShield > 0) || (effect.ActivationTreshold == 0 && currentShield <= 0)))
                 {
                     effect.Activate(m_Controller);
                     m_TriggerEffects[i] = effect;
                 }
 
-                if (effect.SpellDeactivationEvent == ESpellActivationEvent.Shield && ((effect.DeactivationTreshold == 1 && currentShield > 0) || (effect.DeactivationTreshold == 0 && currentShield <= 0)))
+                if (effect.SpellDeactivationEvent == ESpellActivation.Shield && ((effect.DeactivationTreshold == 1 && currentShield > 0) || (effect.DeactivationTreshold == 0 && currentShield <= 0)))
                 {
                     effect.Deactivate();
                     m_TriggerEffects[i] = effect;

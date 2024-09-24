@@ -148,6 +148,15 @@
         Void,
     }
 
+    public enum ESpellSelectionState
+    {
+        None,       // no specific activation state
+
+        Inactive,   // spell is deactivated
+        Cooldown,   // spell is in cooldown
+        Brillance,  // spell has a special visual effect
+    }
+
     public enum ERarety
     {
         Common,
@@ -189,6 +198,14 @@
         AncientAegisRune,
     }
 
+    public enum EOrderBy
+    {
+        None,
+
+        Rarety,
+        Level,
+    }
+
     public enum EAppState
     {
         /// <summary> entry point </summary>
@@ -222,7 +239,15 @@
         GameOver,
     }
 
-    public enum ESpellActivationEvent
+    public enum ETutoState
+    {
+        Presentation,
+        Move,
+        ClickSpell,
+        Heal,
+    }
+
+    public enum ESpellActivation
     {
         None = 0, 
 
@@ -258,10 +283,11 @@
 
     public enum ESpellTrajectory 
     {
-        Hight,
-        Curve,
-        Straight,
-        Diagonal,
+        Hight           = 0,
+        Curve           = 1,
+        Straight        = 2,
+        Diagonal        = 3,
+        DiagonalMiddle  = 4,
 
         Count
     }
@@ -616,6 +642,13 @@
         Ready
     }
 
+    public enum ESoundDuration
+    {
+        PlayOnce,       // play once, no adjustements
+        Loop,           // loop the sound until the end
+        Fit,            // play once but adjuste the duration to match the animation
+    }
+
     public enum EAnimationUI
     {
         None,
@@ -841,5 +874,13 @@
         MasterVolume,
         SoundEffectsVolume,
         MusicVolume,
+    }
+
+    public enum ECaptionType
+    {
+        None,
+
+        Normal,
+        Exclamation
     }
 }

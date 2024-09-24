@@ -30,6 +30,9 @@ public class SceneLoader : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
+
+    #region Scene Loading
+
     public void LoadScene(string sceneName)
     {
         // can not load scene while an other scene is loading
@@ -46,7 +49,7 @@ public class SceneLoader : MonoBehaviour
     {
         m_SceneLoading = sceneName;
 
-        if (Main.State != EAppState.Release) 
+        if (Main.State != EAppState.Release)
             SoundFXManager.PlayStateMusic(EAppState.LoadingScreen);
 
         Main.SetState(EAppState.LoadingScreen);
@@ -97,9 +100,9 @@ public class SceneLoader : MonoBehaviour
                     yield return null;
                 }
 
-                while (! GameManager.Instance.IsGameLoaded)
+                while (!GameManager.Instance.IsGameLoaded)
                 {
-                    progress = 1/nSteps + GameManager.Instance.ProgressGameStart.Value / nSteps;
+                    progress = 1 / nSteps + GameManager.Instance.ProgressGameStart.Value / nSteps;
                     m_LoadingScreen.SetProgress(Mathf.Clamp01(progress));
                     yield return null;
                 }
@@ -126,6 +129,8 @@ public class SceneLoader : MonoBehaviour
         Main.Canvas.worldCamera = Camera.main;
         m_SceneLoading = "";
     }
+
+    #endregion
 
     public static SceneLoader Instance
     {

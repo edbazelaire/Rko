@@ -7,43 +7,44 @@ using Save;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Tools;
 using UnityEngine;
 
 namespace Game.Loaders
 {
-    public class SpellLoader : MonoBehaviour
+    public static class SpellLoader
     {
         #region Members
 
-        static SpellLoader s_Instance;
+        public static bool Initialized { get; private set; }
 
-        Dictionary<string, GameObject>      m_SpellsPrefabs;
-        Dictionary<ESpell, SpellData>       m_Spells;
-        Dictionary<string, SpellData>       m_OnHitSpellData;
-        Dictionary<string, StateEffect>     m_StateEffects;
-        Dictionary<ERune, RuneData>         m_RunesData;
+        static Dictionary<string, GameObject>      m_SpellsPrefabs;
+        static Dictionary<ESpell, SpellData>       m_Spells;
+        static Dictionary<string, SpellData>       m_OnHitSpellData;
+        static Dictionary<string, StateEffect>     m_StateEffects;
+        static Dictionary<ERune, RuneData>         m_RunesData;
 
-        public static List<ESpell> Spells => Instance.m_Spells.Keys.ToList();
-        public static List<ERune> Runes => Instance.m_RunesData.Keys.ToList();
+        public static List<ESpell> Spells => m_Spells.Keys.ToList();
+        public static List<SpellData> SpellsData => m_Spells.Values.ToList();
+        public static List<ERune> Runes => m_RunesData.Keys.ToList();
+        public static List<RuneData> RunesData => m_RunesData.Values.ToList();
 
         #endregion
 
 
         #region Initialization
 
-        void Initialize()
+        public static void Initialize()
         {
             InitializeSpellPrefabs();
             InitializeSpells();
             InitializeStateEffects();
             InitializeRuneData();
 
-            DontDestroyOnLoad(s_Instance.gameObject);
+            Initialized = true;
         }
 
-        void InitializeSpellPrefabs()
+        static void InitializeSpellPrefabs()
         {
             m_SpellsPrefabs = new Dictionary<string, GameObject>();
 
@@ -54,7 +55,7 @@ namespace Game.Loaders
             }
         }
 
-        void InitializeSpells()
+        static void InitializeSpells()
         {
             SpellData[] spellList = LoadSpells();
 
@@ -76,7 +77,7 @@ namespace Game.Loaders
             }
         }
 
-        void InitializeStateEffects()
+        static void InitializeStateEffects()
         {
             StateEffect[] allData = LoadStateEffects();
 
@@ -88,7 +89,7 @@ namespace Game.Loaders
             }
         }
 
-        void InitializeRuneData()
+        static void InitializeRuneData()
         {
             RuneData[] allData = LoadRunesData();
 
@@ -115,17 +116,17 @@ namespace Game.Loaders
             }
         }
 
-        SpellData[] LoadSpells()
+        static SpellData[] LoadSpells()
         {
            return Resources.LoadAll<SpellData>("Data/Spells");
         }
 
-        StateEffect[] LoadStateEffects()
+        static StateEffect[] LoadStateEffects()
         {
            return Resources.LoadAll<StateEffect>("Data/StateEffects");
         }
 
-        RuneData[] LoadRunesData()
+        static RuneData[] LoadRunesData()
         {
            return Resources.LoadAll<RuneData>("Data/Runes");
         }
@@ -142,7 +143,7 @@ namespace Game.Loaders
 
         public static SRaretyData GetRaretyData(ESpell spell)
         {
-            return CollectablesManagementData.GetRaretyData(Instance.m_Spells[spell].Rarety);
+            return CollectablesManagementData.GetRaretyData(m_Spells[spell].Rarety);
         }
 
         public static SLevelData GetSpellLevelData(ESpell spell)
@@ -150,7 +151,7 @@ namespace Game.Loaders
             SCollectableCloudData data = InventoryManager.GetSpellData(spell);
             if (data.Level == 0)
                 InventoryManager.Unlock(ref data);
-            return CollectablesManagementData.GetSpellLevelData(data.Level, Instance.m_Spells[spell].Rarety);
+            return CollectablesManagementData.GetSpellLevelData(data.Level, m_Spells[spell].Rarety);
         }
 
         #endregion
@@ -159,32 +160,13 @@ namespace Game.Loaders
         #region Static Manipulators
 
         /// <summary>
-        /// 
-        /// </summary>
-        public static SpellLoader Instance
-        {
-            get
-            {
-                if (s_Instance == null)
-                {
-                    s_Instance = FindFirstObjectByType<SpellLoader>();
-                    if (s_Instance == null)
-                        return null;
-                    s_Instance.Initialize();
-                }
-
-                return s_Instance;
-            }
-        }
-
-        /// <summary>
         /// Check if spell exists
         /// </summary>
         /// <param name="spellName"></param>
         /// <returns></returns>
         public static bool SpellExists(string name)
         {
-            return Enum.TryParse(name, out ESpell _) || Instance.m_OnHitSpellData.ContainsKey(name);
+            return Enum.TryParse(name, out ESpell _) || m_OnHitSpellData.ContainsKey(name);
         }
 
         /// <summary>
@@ -194,7 +176,7 @@ namespace Game.Loaders
         /// <returns></returns>
         public static bool StateEffectExists(string name)
         {
-            return Enum.TryParse(name, out EStateEffect _) || Instance.m_StateEffects.ContainsKey(name);
+            return Enum.TryParse(name, out EStateEffect _) || m_StateEffects.ContainsKey(name);
         }
 
         /// <summary>
@@ -209,15 +191,15 @@ namespace Game.Loaders
                 spellType = ESpellType.Projectile;
 
             // check for specific prefab of the spell
-            if (Instance.m_SpellsPrefabs.ContainsKey(spellName))
-                return Instance.m_SpellsPrefabs[spellName];
+            if (m_SpellsPrefabs.ContainsKey(spellName))
+                return m_SpellsPrefabs[spellName];
 
             // check that exists
-            if (! Instance.m_SpellsPrefabs.ContainsKey(spellType.ToString()))
+            if (! m_SpellsPrefabs.ContainsKey(spellType.ToString()))
                 ErrorHandler.FatalError("Unable to find default prefab for spell type " + spellType.ToString());
 
             // returns default prefab for spell type
-            return Instance.m_SpellsPrefabs[spellType.ToString()];
+            return m_SpellsPrefabs[spellType.ToString()];
         } 
 
         /// <summary>
@@ -227,13 +209,13 @@ namespace Game.Loaders
         /// <returns></returns>
         public static SpellData GetSpellData(ESpell spell, int level = 1, bool destroy = false)
         {
-            if (!Instance.m_Spells.ContainsKey(spell))
+            if (!m_Spells.ContainsKey(spell))
             {
                 ErrorHandler.Error($"SpellLoader : Spell {spell} not found");
                 return null;
             }
 
-            var spellData = Instance.m_Spells[spell].Clone(level, destroy);
+            var spellData = m_Spells[spell].Clone(level, destroy);
 
             return spellData;
         }
@@ -250,9 +232,9 @@ namespace Game.Loaders
                 return GetSpellData(spell, level, destroy);
             }
 
-            if (Instance.m_OnHitSpellData.ContainsKey(spellName))
+            if (m_OnHitSpellData.ContainsKey(spellName))
             {
-                return Instance.m_OnHitSpellData[spellName].Clone(level, destroy);
+                return m_OnHitSpellData[spellName].Clone(level, destroy);
             }
             
             ErrorHandler.Error($"SpellLoader : Spell {spellName} not found");
@@ -269,7 +251,7 @@ namespace Game.Loaders
         {
             var spellData = GetSpellData(spellName, level);
             string description = spellData.GetDescription();
-            Destroy(spellData);
+            GameObject.Destroy(spellData);
             return description;
         }
 
@@ -283,7 +265,7 @@ namespace Game.Loaders
         {
             var spellData = GetSpellData(spellName, level);
             var infos = spellData.GetInfos();
-            Destroy(spellData);
+            GameObject.Destroy(spellData);
             return infos;
         }
 
@@ -291,7 +273,7 @@ namespace Game.Loaders
         {
             var data = GetStateEffect(stateEffectName);
             bool isInst = data.IsInstantanious;
-            Destroy(data);
+            GameObject.Destroy(data);
             return isInst;
         }
 
@@ -299,7 +281,7 @@ namespace Game.Loaders
         {
             var spellData = GetSpellData(spellName);
             bool isLinked = spellData.Linked;
-            Destroy(spellData);
+            GameObject.Destroy(spellData);
             return isLinked;
         }
 
@@ -311,7 +293,7 @@ namespace Game.Loaders
         public static List<SpellData> GetSpellsFromRarety(ERarety rarety, bool? unlocked = null) 
         { 
             List<SpellData> spells = new List<SpellData>();
-            foreach (var spellData in Instance.m_Spells.Values)
+            foreach (var spellData in m_Spells.Values)
             {
                 if (spellData.Linked || spellData.Rarety != rarety)
                     continue;
@@ -369,7 +351,7 @@ namespace Game.Loaders
         public static List<SpellData> FilterSpells(List<ERarety> raretyFilters = default, List<ESpellType> spellTypeFilters = default, List<ESpellElement> spellElementFilters = default, List<EStateEffect> stateEffectFilters = default, List<ESpell> notAllowedSpellsFilter = default, bool? unlocked = null, string containsName = "")
         {
             List<SpellData> spells = new List<SpellData>();
-            foreach (var spellData in Instance.m_Spells.Values)
+            foreach (var spellData in m_Spells.Values)
             {
                 // CHECK : not linked
                 if (spellData.Linked)
@@ -447,6 +429,36 @@ namespace Game.Loaders
         }
 
         /// <summary>
+        /// Order spells by a specific metric
+        /// </summary>
+        /// <param name="spells"></param>
+        /// <param name="orderBy"></param>
+        public static List<SpellData> OrderSpells(List<SpellData> spells, EOrderBy orderBy = EOrderBy.Rarety)
+        {
+            switch (orderBy)
+            {
+                case EOrderBy.Rarety:
+                    // Sort by rarety first, then by level in case of ties
+                    return spells.OrderBy(spell => spell.Rarety)
+                                   .ThenBy(spell => spell.Level)
+                                   .ToList();
+
+                case EOrderBy.Level:
+                    // Sort by level first, then by rarety in case of ties
+                    return spells.OrderByDescending(spell => spell.Level)
+                                   .ThenBy(spell => spell.Rarety)
+                                   .ToList();
+
+                case EOrderBy.None:
+                default:
+                    // No sorting if EOrderBy.None is selected
+                    return spells;
+            }
+        }
+
+
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="stateEffectName"></param>
@@ -454,13 +466,13 @@ namespace Game.Loaders
         public static StateEffect GetStateEffect(string stateEffectName, int level = 1)
         {
             StateEffect stateEffect;
-            if (! Instance.m_StateEffects.ContainsKey(stateEffectName))
+            if (! m_StateEffects.ContainsKey(stateEffectName))
             {
                 stateEffect = ScriptableObject.CreateInstance<StateEffect>(); 
             } 
             else
             {
-                stateEffect = Instance.m_StateEffects[stateEffectName].Clone(level);
+                stateEffect = m_StateEffects[stateEffectName].Clone(level);
             }
 
             stateEffect.name = stateEffectName;
@@ -477,7 +489,7 @@ namespace Game.Loaders
         {
             StateEffect stateEffect = GetStateEffect(stateEffectName, level);
             string description = stateEffect.GetDescription();
-            Destroy(stateEffect);
+            GameObject.Destroy(stateEffect);
             return description;
         }
 
@@ -498,15 +510,15 @@ namespace Game.Loaders
         /// <returns></returns>
         public static RuneData GetRuneData(ERune rune, int level = 1, bool destroy = false)
         {
-            if (!Instance.m_RunesData.ContainsKey(rune))
+            if (!m_RunesData.ContainsKey(rune))
             {
                 ErrorHandler.Error("Rune not found in dict of RuneData : " + rune);
                 return default;
             }
 
-            var data = (RuneData)Instance.m_RunesData[rune].Clone(level);
+            var data = (RuneData)m_RunesData[rune].Clone(level);
             if (destroy)
-                CoroutineManager.DelayMethod(() => Destroy(data));
+                CoroutineManager.DelayMethod(() => GameObject.Destroy(data));
 
             return data;
         }
@@ -544,7 +556,7 @@ namespace Game.Loaders
         public static List<RuneData> FilterRunes(List<ERarety> raretyFilter = default, List<ESpellElement> elementsFilter = default, List<ERune> notAllowedFilter = default, bool? unlocked = null, string containsName = "")
         {
             List<RuneData> runes = new List<RuneData>();
-            foreach (var runeData in Instance.m_RunesData.Values)
+            foreach (var runeData in m_RunesData.Values)
             {
                 // CHECK : is None
                 if (runeData.Rune == ERune.None)
@@ -598,7 +610,6 @@ namespace Game.Loaders
 
             return runes;
         }
-
 
         #endregion
     }
