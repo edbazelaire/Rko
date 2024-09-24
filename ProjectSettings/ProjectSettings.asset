@@ -136,11 +136,8 @@ PlayerSettings:
   vulkanEnableLateAcquireNextImage: 0
   vulkanEnableCommandBufferRecycling: 1
   loadStoreDebugModeEnabled: 0
-  bundleVersion: 0.1.9
-  preloadedAssets:
-  - {fileID: -4846420906422244304, guid: 33cfbdbb5217dea449ea87d31a7a1232, type: 2}
-  - {fileID: 11400000, guid: c29c90874e0080b4e883fe46994ef592, type: 2}
-  - {fileID: 11400000, guid: 2a2d1b29454f0a14c91eaa9e4c1502b8, type: 2}
+  bundleVersion: 0.1.10
+  preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -171,7 +168,7 @@ PlayerSettings:
     Bratwurst: 0
     Standalone: 1
     VisionOS: 0
-    iPhone: 1
+    iPhone: 0
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
   AndroidBundleVersionCode: 1
@@ -264,7 +261,7 @@ PlayerSettings:
   useCustomGradlePropertiesTemplate: 0
   useCustomGradleSettingsTemplate: 0
   useCustomProguardFile: 0
-  AndroidTargetArchitectures: 3
+  AndroidTargetArchitectures: 1
   AndroidTargetDevices: 0
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
@@ -544,7 +541,7 @@ PlayerSettings:
   m_BuildTargetDefaultTextureCompressionFormat:
   - serializedVersion: 2
     m_BuildTarget: Android
-    m_Formats: 0500000003000000
+    m_Formats: 03000000
   - serializedVersion: 2
     m_BuildTarget: WebGL
     m_Formats: 03000000
