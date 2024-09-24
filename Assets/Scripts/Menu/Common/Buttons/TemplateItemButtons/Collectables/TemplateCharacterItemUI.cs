@@ -55,19 +55,6 @@ namespace Menu.Common.Buttons
             CharacterBuildsCloudData.SelectedCharacterChangedEvent  -= OnSelectedCharacterChanged;
         }
 
-        /// <summary>
-        /// Action happening when the button is clicked on - depending on button context
-        /// </summary>
-        protected override void OnClick()
-        {
-            base.OnClick();
-
-            if (m_State == EButtonState.Locked)
-                return;
-
-            CharacterBuildsCloudData.SetSelectedCharacter(m_Character);
-        }
-
         protected void OnSelectedCharacterChanged()
         {
             SetSelected(m_Character == CharacterBuildsCloudData.SelectedCharacter);

@@ -13,6 +13,12 @@ MonoBehaviour:
   m_Name: Marcus
   m_EditorClassIdentifier: 
   Rarety: 1
+  m_Description: "Marcus Frozenblade, the firstborn son of a once-mighty house, carries
+    the weight of a noble lineage now diminished. The Frozenblade family, once seated
+    in power and respect, was cast aside after the fall of the old regime, slowly
+    fading from the Empire\u2019s inner circle. Yet, a prophecy whispers of a Frozenblade
+    who will rise to reclaim the glory of their ancestors\\n\\nDriven by an unshakable
+    sense of honor, Marcus dedicates his life to restoring his family's lost prestige."
   AutoAttack: 22
   SpecialAbility: 38
   Ultimate: 20
@@ -24,7 +30,9 @@ MonoBehaviour:
   CharacterStatScaling:
   - StateEffectProperty: 7
     BaseValue: 10
+    BonusValue: 0
     ScalingFactor: 0.1
   - StateEffectProperty: 4
     BaseValue: 700
+    BonusValue: 0
     ScalingFactor: 0.1

@@ -13,6 +13,22 @@ MonoBehaviour:
   m_Name: Kahnan
   m_EditorClassIdentifier: 
   Rarety: 1
+  m_Description: "Kahnan, a fierce fire demon, burns with the fury of rebellion.
+    When the new demon king was crowned, many\u2014including Kahnan\u2014questioned
+    the legitimacy of his rule. The new monarch lacked the ancient Hitaro\u2014the
+    eyes of the demon kings passed down through generations\u2014and, more disturbingly,
+    could not wield the legendary Demon King's Sword. For Kahnan, and many other
+    tribes, this was a sign that the throne had fallen into unworthy hands. Refusing
+    to pledge loyalty, Kahnan went seeking a leader worth following.\\n\\nAccording
+    to the ancient legends of his people, there was once a forgotten king, the true
+    origin of demon royalty. This ancient ruler's power was said to have been stolen
+    by the current king's bloodline, imprisoning him in a dark dimension to erase
+    his existence. Kahnan\u2019s purpose is clear\u2014he will lead his people on
+    a quest to find this lost king and restore him to the throne. In doing so, he
+    believes the demons will regain their rightful strength and rise to victory under
+    a true, powerful ruler. Kahnan\u2019s resolve is unyielding; he will scorch every
+    obstacle in his path, be it demon or human, to see his mission fulfilled and
+    the true king restored."
   AutoAttack: 2
   SpecialAbility: 5
   Ultimate: 25
@@ -24,10 +40,13 @@ MonoBehaviour:
   CharacterStatScaling:
   - StateEffectProperty: 8
     BaseValue: 0.15
+    BonusValue: 0
     ScalingFactor: 0.05
   - StateEffectProperty: 17
     BaseValue: 0.1
+    BonusValue: 0
     ScalingFactor: 0.05
   - StateEffectProperty: 4
     BaseValue: 500
+    BonusValue: 0
     ScalingFactor: 0.1

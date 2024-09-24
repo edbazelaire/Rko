@@ -13,15 +13,34 @@ MonoBehaviour:
   m_Name: Alexander
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: "Alexander, the rightful King of Maedonis, is a legend of southern
+    lands. Cast away from the throne by his father at a young age, he grew up in
+    exile, hardened by the unforgiving world around him. His kingdom, torn by civil
+    war and the greed of corrupt nobles, teetered on the brink of ruin. But Alexander,
+    with strength surpassing any warrior, rose from the ashes of his past to reclaim
+    his birthright. His return was not just a battle for power but a quest to save
+    his people from chaos. \\n\\nNow, as the crown rests upon his brow, he stands
+    as a beacon of hope and stability. Though a fearsome warrior on the battlefield,
+    Alexander\u2019s heart beats for peace. His loyalty lies with the Emperor of
+    Humans, to whom he has sworn allegiance to secure his kingdom\u2019s place in
+    a world of uncertainty. Yet, his true allegiance is to his people, whom he would
+    protect at any cost. Noble in spirit, unwavering in resolve, Alexander rules
+    with the strength of a king and the compassion of a guardian, driven by the hope
+    of forging a lasting peace for Maedonis."
   AutoAttack: 7
   SpecialAbility: 37
   Ultimate: 8
   Size: 1.2
-  BaseSpeed: 0.95
+  BaseSpeed: 0.9
   BaseHealth: 1500
   MaxEnergy: 100
   HealthScaleFactor: 0.1
   CharacterStatScaling:
   - StateEffectProperty: 5
     BaseValue: 10
+    BonusValue: 0
     ScalingFactor: 0.1
+  - StateEffectProperty: 8
+    BaseValue: -0.1
+    BonusValue: 0
+    ScalingFactor: 0

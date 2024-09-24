@@ -389,7 +389,7 @@ namespace Network
         {
             Main.SetState(EAppState.Lobby);
 
-            bool success = await JoinLobby();
+            bool success = await JoinFirstLobby();
 
             if (!success)
                 success = await CreateLobby();
@@ -444,7 +444,7 @@ namespace Network
         /// <summary>
         /// Join the first lobby found
         /// </summary>
-        public async Task<bool> JoinLobby()
+        public async Task<bool> JoinFirstLobby()
         {
             try
             {
@@ -543,16 +543,34 @@ namespace Network
                 Debug.LogError(e.Message);
                 switch(e.ErrorCode)
                 {
+                    // GET BACK to previous stage
                     case CommonErrorCodes.TransportError:
-                        
+                    case CommonErrorCodes.TokenExpired:
+                    case CommonErrorCodes.RequestRejected:
+                    case CommonErrorCodes.NotFound:
+                        m_CancelRetry = true;
+                        SetState(ELobbyState.WaitingRelayCode);
                         return false;
 
+                    // RETRY
+                    case CommonErrorCodes.ServiceUnavailable:
                     case CommonErrorCodes.Timeout:
+                    case CommonErrorCodes.ApiMissing:
+                    case CommonErrorCodes.TooManyRequests:
+                        return false;
+
+                    // ERROR - exit
+                    case CommonErrorCodes.Forbidden:
+                    case CommonErrorCodes.InvalidRequest:
+                    case CommonErrorCodes.ProjectPolicyAccessDenied:
+                    case CommonErrorCodes.PlayerPolicyAccessDenied:
+                    case CommonErrorCodes.Conflict:
+                        OnErrorCallback("Lobby Error ("+ e.ErrorCode + ") : Unable to join relay", e.Message)?.Invoke();
                         return false;
 
                     default:
                         ErrorHandler.Error("Unhandled error code : " + e.ErrorCode + " - " + e.Message);
-                        OnErrorCallback("Unable to join relay", e.Message)?.Invoke();
+                        OnErrorCallback("Lobby Error ("+ e.ErrorCode + ") : Unable to join relay", e.Message)?.Invoke();
                         return false;
                 }
             }

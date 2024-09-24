@@ -7,7 +7,6 @@ using Save;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Tools;
 using UnityEngine;
 
@@ -26,7 +25,9 @@ namespace Game.Loaders
         static Dictionary<ERune, RuneData>         m_RunesData;
 
         public static List<ESpell> Spells => m_Spells.Keys.ToList();
+        public static List<SpellData> SpellsData => m_Spells.Values.ToList();
         public static List<ERune> Runes => m_RunesData.Keys.ToList();
+        public static List<RuneData> RunesData => m_RunesData.Values.ToList();
 
         #endregion
 
@@ -428,6 +429,36 @@ namespace Game.Loaders
         }
 
         /// <summary>
+        /// Order spells by a specific metric
+        /// </summary>
+        /// <param name="spells"></param>
+        /// <param name="orderBy"></param>
+        public static List<SpellData> OrderSpells(List<SpellData> spells, EOrderBy orderBy = EOrderBy.Rarety)
+        {
+            switch (orderBy)
+            {
+                case EOrderBy.Rarety:
+                    // Sort by rarety first, then by level in case of ties
+                    return spells.OrderBy(spell => spell.Rarety)
+                                   .ThenBy(spell => spell.Level)
+                                   .ToList();
+
+                case EOrderBy.Level:
+                    // Sort by level first, then by rarety in case of ties
+                    return spells.OrderByDescending(spell => spell.Level)
+                                   .ThenBy(spell => spell.Rarety)
+                                   .ToList();
+
+                case EOrderBy.None:
+                default:
+                    // No sorting if EOrderBy.None is selected
+                    return spells;
+            }
+        }
+
+
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="stateEffectName"></param>
@@ -579,7 +610,6 @@ namespace Game.Loaders
 
             return runes;
         }
-
 
         #endregion
     }

@@ -161,7 +161,9 @@ namespace Game.Character
         public void Activate(bool activate)
         {
             if (! activate)
+            {
                 StopAllCoroutines();
+            }
 
             this.enabled = activate;
         }
@@ -194,16 +196,6 @@ namespace Game.Character
                 return;
 
             TrySelectSpell(spell);
-        }
-
-        /// <summary>
-        /// Ask the server to select the given spell
-        /// </summary>
-        /// <param name="spell"></param>
-        [ServerRpc]
-        public void SetTargetPosServerRPC(Vector3 targetPos)
-        {
-            m_TargetPos.Value = targetPos;
         }
 
         [ServerRpc] 
@@ -616,19 +608,6 @@ namespace Game.Character
             }
         }
 
-        /// <summary>
-        /// display the preview of where the spell will land
-        /// </summary>
-        /// <param name="spellType"></param>
-        void DisplaySpellPreview()
-        {
-            if (m_SelectedSpell == ESpell.Count)
-                return;
-
-            SpellData spellData = SpellLoader.GetSpellData(m_SelectedSpell);
-            spellData.SpellPreview(m_Controller);
-        }
-
         #endregion
 
 
@@ -795,14 +774,36 @@ namespace Game.Character
             
             // check has effect linked to that event
             if (! spellData.HasGfxEventAt(spellEvent))
+            {
+                if (spellEvent == ESpellEvent.OnCast && spellData.CastSoundFX != null)
+                    GameManager.Instance.PlayCastSoundClientRPC(spellName);
                 return;
+            }
 
-            CallSpellEventClientRPC(spellName, spellEvent);
+            // check if one of the effects requests a spawn position
+            if (! spellData.HasTargetGfxEventAt(spellEvent))
+            {
+                // NO POSITION REQUESTED
+                CallSpellEventClientRPC(spellName, spellEvent);
+            }
+            else
+            {
+                // POSITION REQUESTED : add target pos to the variables
+                CallSpellEventClientRPC(spellName, spellEvent, m_TargetPos.Value);
+            }
         }
 
         [ClientRpc]
         public void CallSpellEventClientRPC(string spellName, ESpellEvent spellEvent)
         {
+            m_Controller.GFXHandler.SpawnSpellGFX(spellName, spellEvent);
+            OnPreSpellEvent?.Invoke(spellName, spellEvent);
+        }
+
+        [ClientRpc]
+        public void CallSpellEventClientRPC(string spellName, ESpellEvent spellEvent, Vector3 targetPos)
+        {
+            m_Controller.GFXHandler.SpawnSpellGFX(spellName, spellEvent, targetPos);
             OnPreSpellEvent?.Invoke(spellName, spellEvent);
         }
         

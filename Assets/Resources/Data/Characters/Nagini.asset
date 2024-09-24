@@ -13,6 +13,23 @@ MonoBehaviour:
   m_Name: Nagini
   m_EditorClassIdentifier: 
   Rarety: 3
+  m_Description: "Deep within the treacherous Laedon Undergrounds lies a creature
+    of myth and terror\u2014Nagini, the Guardian of the Emerald Veins. The caves
+    are home to eerie, green-glowing stones known as Vile Shards, whose malevolent
+    energy warps the very air into a toxic miasma. Legends say Nagini was once an
+    ordinary beast, but prolonged exposure to these shards transformed it into something
+    far more monstrous and deadly. Now, it lurks in the labyrinthine caves, fiercely
+    guarding the crystals as if they were its greatest treasure.\\n\\nAccording to
+    the tales, Nagini\u2019s blood has become a potent, agonizing poison that ravages
+    the creature from within, driving it to madness. The venom surges through its
+    body like fire, inflicting unbearable pain, and legend holds that this torment
+    fuels its insatiable hunger for fresh blood. It is said that Nagini seeks out
+    intruders, not just to defend its lair, but to ease its suffering by draining
+    their life force. Yet, no amount of blood can fully quench the torment of its
+    cursed existence.\\n\\nThough many have ventured into the Laedon Undergrounds,
+    seeking to uncover the truth of Nagini\u2019s nature, none have returned. Whether
+    cursed by the Vile Shards or simply a victim of a cruel fate, Nagini\u2019s legend
+    remains a grim warning to all who would dare seek it."
   AutoAttack: 11
   SpecialAbility: 34
   Ultimate: 12
@@ -24,7 +41,9 @@ MonoBehaviour:
   CharacterStatScaling:
   - StateEffectProperty: 101
     BaseValue: 0.1
+    BonusValue: 0
     ScalingFactor: 0
   - StateEffectProperty: 16
     BaseValue: 0.1
+    BonusValue: 0
     ScalingFactor: 0.05

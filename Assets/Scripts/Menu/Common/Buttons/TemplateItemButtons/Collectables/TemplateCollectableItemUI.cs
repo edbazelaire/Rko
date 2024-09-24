@@ -3,7 +3,6 @@ using Data.GameManagement;
 using Enums;
 using Inventory;
 using Menu.Common.Buttons.TemplateItemButtons.Collectables;
-using Menu.MainMenu;
 using Save;
 using System;
 using Tools;
@@ -47,9 +46,9 @@ namespace Menu.Common.Buttons
         {
             base.FindComponents();
 
-            m_SubButtons = Finder.FindComponent<CollectablesSubButtons>(gameObject, throwError: false);
-            m_Border = Finder.FindComponent<Image>(gameObject, "IconContainer");
-            m_CollectionFillBar = Finder.FindComponent<CollectionFillBar>(gameObject, throwError: false);
+            m_Border            = Finder.FindComponent<Image>(gameObject, "IconContainer");
+            m_SubButtons        = Finder.FindComponent<CollectablesSubButtons>(gameObject,  throwError: false);
+            m_CollectionFillBar = Finder.FindComponent<CollectionFillBar>(gameObject,       throwError: false);
         }
 
         public virtual void Initialize(Enum collectable, bool asIconOnly = false)
@@ -57,15 +56,7 @@ namespace Menu.Common.Buttons
             base.Initialize();
 
             SetUpCollectable(collectable, asIconOnly);
-
-            if (m_SubButtons != null && !asIconOnly) 
-                m_SubButtons.Initialize(this);
         }
-
-        #endregion
-
-
-        #region GUI Manipulators
 
         /// <summary>
         /// Set UI elements that wont change even if cloud data is updating (icon, color, ...)
@@ -78,7 +69,19 @@ namespace Menu.Common.Buttons
             SetIcon(AssetLoader.LoadIcon(m_Collectable));
             SetColor(CollectablesManagementData.GetRaretyData(m_Collectable).Color);
             SetUpCollectionFillBar(!asIconOnly);
+
+            if (m_SubButtons != null)
+            {
+                if (!asIconOnly)
+                    m_SubButtons.Initialize(this);
+                m_SubButtons.gameObject.SetActive(false);
+            }
         }
+
+        #endregion
+
+
+        #region GUI Manipulators
 
         /// <summary>
         /// Refresh UI that could have changed with cloud data (level, State, ...)

@@ -198,6 +198,14 @@
         AncientAegisRune,
     }
 
+    public enum EOrderBy
+    {
+        None,
+
+        Rarety,
+        Level,
+    }
+
     public enum EAppState
     {
         /// <summary> entry point </summary>
@@ -275,10 +283,11 @@
 
     public enum ESpellTrajectory 
     {
-        Hight,
-        Curve,
-        Straight,
-        Diagonal,
+        Hight           = 0,
+        Curve           = 1,
+        Straight        = 2,
+        Diagonal        = 3,
+        DiagonalMiddle  = 4,
 
         Count
     }
@@ -631,6 +640,13 @@
         Locked,
         Unlocking,
         Ready
+    }
+
+    public enum ESoundDuration
+    {
+        PlayOnce,       // play once, no adjustements
+        Loop,           // loop the sound until the end
+        Fit,            // play once but adjuste the duration to match the animation
     }
 
     public enum EAnimationUI

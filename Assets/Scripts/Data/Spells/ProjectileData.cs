@@ -1,7 +1,5 @@
 ﻿using Enums;
 using Game;
-using Game.Spells;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Tools;
@@ -46,6 +44,7 @@ namespace Data
                     break;
 
                 case ESpellTrajectory.Diagonal:
+                case ESpellTrajectory.DiagonalMiddle:
                 case ESpellTrajectory.Straight:
                     break;
 
@@ -57,50 +56,32 @@ namespace Data
             base.SpellPreview(controller, parent, offset);
         }
 
-        /// <summary>
-        /// Spawn the prefabs that are displayed when the spell is casted
-        /// </summary>
-        /// <returns></returns>
-        /// 
-        public override List<GameObject> SpawnOnCastPrefabs(Vector3 target)
-        {
-            List<GameObject> gameObjects = new List<GameObject>();
-            // spawn on cast particles
-            foreach (var prefab in OnCastPrefabs)
-            {
-                GameObject go = GameObject.Instantiate(prefab);
-
-                float delay = Delay;
-                if (m_Speed > 0)
-                    //delay += Math.Abs(target.x - ownerTransform.position.x) / Speed;
-                    delay += 5f / Speed;
-
-                var size = Size;
-                if (OnHit.Count > 0 && OnHit[0].SpellType == ESpellType.Aoe)
-                    size = OnHit[0].Size;
-
-                Finder.FindComponent<OnCastAoe>(go).Initialize(target, size, delay);
-                gameObjects.Add(go);
-            }
-
-            return gameObjects;
-        }
-
         #endregion
 
 
         #region Postion & Target
 
-        protected override void RecalculatePosition(ref Vector3 position, Vector3 target, ulong clientId)
+        public override void RecalculatePosition(ref Vector3 position, Vector3 target, ulong clientId)
         {
             Controller controller = GameManager.Instance.GetPlayer(clientId);
 
-            if (IsTrajectoryFromAbove)
-                position.y = 4;
+            // handle Y position
+            switch (Trajectory)
+            {
+                case ESpellTrajectory.Diagonal:
+                    position.y = Settings.SPELL_DIAGONAL_POS_Y;
+                    break;
 
+                case ESpellTrajectory.Hight:
+                case ESpellTrajectory.DiagonalMiddle:
+                    position.y = Settings.SPELL_HIGHT_POS_Y;
+                    break;
+            }
+                
             // bounds of the proc area
             (float Min, float Max) bounds = (0f, 0f);
-
+            
+            // handle X position
             switch (Trajectory)
             {
                 case ESpellTrajectory.Straight:
@@ -108,6 +89,10 @@ namespace Data
                 case ESpellTrajectory.Curve:
                     position += GetSpawnOffset(controller);
                     bounds = ArenaManager.GetAreaBounds(controller.Team, false);
+                    break;
+
+                case ESpellTrajectory.DiagonalMiddle:
+                    position.x = 0;
                     break;
 
                 case ESpellTrajectory.Hight:
@@ -138,10 +123,11 @@ namespace Data
             switch (Trajectory)
             {
                 case ESpellTrajectory.Straight:
+                case ESpellTrajectory.Diagonal:
                     return new Vector3(0, 0, 0);
 
                 case ESpellTrajectory.Curve:
-                case ESpellTrajectory.Diagonal:
+                case ESpellTrajectory.DiagonalMiddle:
                     return new Vector3(rotationFactor * 0.1f, 0.25f, 0);
 
                 case ESpellTrajectory.Hight:

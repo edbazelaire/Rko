@@ -39,6 +39,12 @@ namespace Data
         [Description("Delay between each waves")]
         [SerializeField] protected float m_DelayBetweenWaves = 0f;
 
+        [Header("MultiP Extra Sound Effects")]
+        [Description("Sound Effect on each wave casted")]
+        public AudioClip OnCastWaveSoundFX = null;
+        [Description("Sound Effect on each projectile casted")]
+        public AudioClip OnCastProjectileSoundFX = null;
+
         // ============================================================================================
         // Public Accessors
         public int NProjectiles => (int)Math.Floor(m_NProjectiles * GetSpellLevelFactor(ESpellProperty.NProjectiles));
@@ -145,6 +151,10 @@ namespace Data
 
         public IEnumerator CastWave(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default)
         {
+            // Play wave sound if any
+            if (OnCastWaveSoundFX != null)
+                GameManager.Instance.PlayCastWaveSoundClientRPC(Name);
+
             // block movement and cast until the end
             Controller controller = GameManager.Instance.GetPlayer(clientId);
 
@@ -172,6 +182,10 @@ namespace Data
 
         public void CastOneProjectile(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default)
         {
+            // Play wave sound if any
+            if (OnCastProjectileSoundFX != null)
+                GameManager.Instance.PlayCastProjectileSoundClientRPC(Name);
+
             // if specific projectile data are provided : use theme
             if (ProjectileData != null)
                 ProjectileData.Cast(clientId, target, position, rotation, false, true);

@@ -1,9 +1,12 @@
-﻿using Enums;
+﻿using Data.GameManagement;
+using Data;
+using Enums;
 using Game.Loaders;
 using Menu.Common.Buttons;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
+using System.Linq;
 
 
 public class CharacterSelectionUI : MObject
@@ -51,12 +54,13 @@ public class CharacterSelectionUI : MObject
         m_CharacterButtons = new Dictionary<ECharacter, TemplateCollectableItemUI>();
 
         // create buttons for each characters
-        foreach (ECharacter character in CharacterLoader.Instance.Characters.Keys)
+        List<CharacterData> charactersData = CollectablesManagementData.OrderCollectable(CharacterLoader.Instance.Characters.Values.ToList(), EOrderBy.Rarety);
+        foreach (CharacterData characterData in charactersData)
         {
             var characterButton = Instantiate(m_TemplateCharacterButton, m_ButtonsContainer.transform).GetComponent<TemplateCollectableItemUI>();
-            characterButton.Initialize(character);
+            characterButton.Initialize(characterData.Character);
             characterButton.SetUpCollectionFillBar(false);
-            m_CharacterButtons.Add(character, characterButton);
+            m_CharacterButtons.Add(characterData.Character, characterButton);
         }
     }
 

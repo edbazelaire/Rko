@@ -72,13 +72,20 @@ namespace Menu.Common.Filters
         {
             // Search Input Field overrides filters
             if (m_SearchInputField.text != "")
-                return SpellLoader.FilterSpells(unlocked: true, containsName: m_SearchInputField.text);
-
-            return SpellLoader.FilterSpells(
-                raretyFilters: m_RaretyDropdown.GetValues<ERarety>(),
-                spellElementFilters: m_ElementsDropdown.GetValues<ESpellElement>(),
-                unlocked: true
-            );
+            {
+                return SpellLoader.OrderSpells(SpellLoader.FilterSpells(
+                    unlocked: true, 
+                    containsName: m_SearchInputField.text
+                ), EOrderBy.Rarety);
+            }
+            else
+            {
+                return SpellLoader.OrderSpells(SpellLoader.FilterSpells(
+                    raretyFilters:          m_RaretyDropdown.GetValues<ERarety>(),
+                    spellElementFilters:    m_ElementsDropdown.GetValues<ESpellElement>(),
+                    unlocked:               true
+                ), EOrderBy.Rarety);
+            }
         }
 
         #endregion

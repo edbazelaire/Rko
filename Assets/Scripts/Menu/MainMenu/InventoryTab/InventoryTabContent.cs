@@ -1,5 +1,6 @@
 using Enums;
 using Menu.Common.Buttons;
+using Save;
 using System;
 using Tools;
 using UnityEngine;
@@ -30,9 +31,20 @@ namespace Menu.MainMenu
 
             // initialization
             m_ItemsTabManager.Initialize();
-            CoroutineManager.DelayMethod(m_CharacterPreviewSectionUI.Initialize);
+
+            // call late initialize
+            CoroutineManager.DelayMethod(DelayedInitialize);
+        }
+
+        /// <summary>
+        /// Initialization that takes place 1 frame after the init (to be sure every layouts are set properly)
+        /// </summary>
+        public void DelayedInitialize()
+        {
+            m_CharacterPreviewSectionUI.Initialize();
 
             // register listeners & buttons
+            m_CharacterPreviewSectionUI.CharacterPreviewButton.onClick.AddListener(() => SelectTab(CharacterBuildsCloudData.SelectedCharacter));
             TemplateCollectableItemUI.ButtonClickedEvent += SelectTab;
         }
 
@@ -47,6 +59,7 @@ namespace Menu.MainMenu
         {
             base.OnDestroy();
 
+            m_CharacterPreviewSectionUI.CharacterPreviewButton.onClick.RemoveAllListeners();
             TemplateCollectableItemUI.ButtonClickedEvent -= SelectTab;
         }
 
@@ -62,6 +75,9 @@ namespace Menu.MainMenu
 
             else if (collectable.GetType() == typeof(ERune))
                 m_ItemsTabManager.SelectTab(EInvetoryItemTab.RunesTab);
+
+            else if (collectable.GetType() == typeof(ECharacter))
+                m_ItemsTabManager.SelectTab(EInvetoryItemTab.CharactersTab);
         }
 
         #endregion

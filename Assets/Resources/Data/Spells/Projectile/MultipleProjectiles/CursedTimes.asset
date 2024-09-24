@@ -32,6 +32,7 @@ MonoBehaviour:
   SpellEventActions:
   - Prefab: {fileID: 1923825553450198, guid: 4ee5898ded2480d43b192d1d558be043, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
       StartSpellPart: 1
       EndSpellPart: 2
@@ -49,6 +50,7 @@ MonoBehaviour:
     StateEffects: 
   - Prefab: {fileID: 2272309172655654138, guid: e9ae7d157b10a2148aeaea79827b0295, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
       StartSpellPart: 2
       EndSpellPart: 2
@@ -66,6 +68,9 @@ MonoBehaviour:
     StateEffects: 
   - Prefab: {fileID: 1042534902773516, guid: cdf164d9a61e3cc49851994332a436ec, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX:
+    - AudioClip: {fileID: 8300000, guid: 01cc97220f578824281af20cf951c2c5, type: 3}
+      SoundDuration: 0
     GFXLifetime:
       StartSpellPart: 4
       EndSpellPart: 0
@@ -89,7 +94,7 @@ MonoBehaviour:
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 2d433fc235c1d3848abd1f356b4509fa, type: 3}
   PermanantSoundFX: {fileID: 0}
-  OnHitSoundFX: {fileID: 8300000, guid: 01cc97220f578824281af20cf951c2c5, type: 3}
+  OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 9
   LockTargetAt: 2

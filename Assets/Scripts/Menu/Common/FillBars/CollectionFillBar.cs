@@ -52,7 +52,6 @@ namespace Menu.Common
             base.Initialize();
 
             RefreshCloudData(collectableCloudData);
-            RegisterListeners();
         } 
 
         public void Initialize(float currentValue, float maxCollection)
