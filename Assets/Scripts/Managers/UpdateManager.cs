@@ -1,8 +1,10 @@
 ﻿using Analytics.Events;
+using Assets.Scripts.Tools;
 using Data.GameManagement;
 using Enums;
 using Managers.Friends;
 using Save;
+using System;
 using Tools;
 using Unity.Services.Authentication;
 using UnityEngine;
@@ -11,8 +13,9 @@ namespace Assets.Scripts.Managers
 {
     public static class UpdateManager
     {
-        public static bool IsNewPlayer => Main.ForceIsNewPlayer || (LastVersion == "0.0.0" && ! ProfileCloudData.PseudoChanged);
-        public static string LastVersion => PlayerPrefs.GetString("LastVersion", "0.0.0");
+        public static bool IsNewPlayer => Main.ForceIsNewPlayer || (LastVersion.ToString() == "0.0.0" && ! ProfileCloudData.PseudoChanged);
+        public static Version LastVersion => new Version(PlayerPrefs.GetString("LastVersion", "0.0.0"));
+        public static Version CurrentVersion => new Version(Application.version);
 
 
         #region Updates Manipulators
@@ -41,7 +44,7 @@ namespace Assets.Scripts.Managers
                 return;
             }
 
-            while (LastVersion != Application.version)
+            while (LastVersion != CurrentVersion)
             {
                 if (! UpdateVersion())
                 {
@@ -58,26 +61,26 @@ namespace Assets.Scripts.Managers
         public static bool UpdateVersion()
         {
             var test = true;
-            if (LastVersion.CompareTo(Application.version) == 0)
+            if (LastVersion.CompareTo(CurrentVersion) == 0)
                 return test;
 
             // reset PlayerPrefs settings on every new versions
             Settings.Reload();
 
-            if (LastVersion.CompareTo("0.1.5") == -1)
+            if (LastVersion.CompareTo(new Version("0.1.5")) == -1)
                 test = UpdateVersion_0_1_5();
 
-            if (LastVersion.CompareTo("0.1.6") == -1)
+            if (LastVersion.CompareTo(new Version("0.1.6")) == -1)
                 test = UpdateVersion_0_1_6();
 
-            if (LastVersion.CompareTo("0.1.7") == -1)
+            if (LastVersion.CompareTo(new Version("0.1.7")) == -1)
                 test = UpdateVersion_0_1_7();
 
-            if (LastVersion.CompareTo("0.1.8") == -1)
+            if (LastVersion.CompareTo(new Version("0.1.8")) == -1)
                 test = UpdateVersion_0_1_8();
 
             // if does not trigger any version until now, update to current version
-            if (LastVersion.CompareTo(Application.version) == -1)
+            if (LastVersion.CompareTo(CurrentVersion) == -1)
                 SetVersion(Application.version);
 
             return test;
@@ -90,14 +93,14 @@ namespace Assets.Scripts.Managers
         /// <returns></returns>
         static bool SetVersion(string version)
         {
-            if (LastVersion.CompareTo(version) >= 0)
+            if (LastVersion.CompareTo(new Version(version)) >= 0)
             {
                 ErrorHandler.Error($"Trying to set new version {version} wich is <= current version {LastVersion}");
                 return false;
             }
 
             Debug.Log($"Version Updated from {LastVersion} to {version}");
-            PlayerPrefs.SetString("LastVersion", Application.version);
+            PlayerPrefs.SetString("LastVersion", version);
             return true;
         }
 
