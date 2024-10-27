@@ -1,5 +1,7 @@
-﻿using Tools;
+﻿using System;
+using Tools;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace Game.Character
 {
@@ -7,10 +9,11 @@ namespace Game.Character
     {
         #region Members
 
-        Controller m_Controller;
+        public Action AutoAttackEvent;
 
-        bool m_IsMoving     = false;
-        bool m_IsCasting    => m_Controller.SpellHandler.IsCasting;
+        Controller m_Controller;
+        float m_Interval = 0f;
+        float m_IntervalTimer = 0f;
 
         #endregion
 
@@ -20,13 +23,25 @@ namespace Game.Character
         public override void OnNetworkSpawn()
         {
             m_Controller = Finder.FindComponent<Controller>(gameObject);
-            m_Controller.Movement.MoveX.OnValueChanged          += OnMovementValueChanged;
+            m_Interval = 0f;
         }
         
-        public void Activate(bool activate)
+        public void Activate(bool activate, float? interval = null)
         {
             if (!activate)
+            {
                 StopAllCoroutines();
+
+                // deactivate but is currently casting autoattack
+                if (!m_Controller.SpellHandler.IsCasting && m_Controller.SpellHandler.SelectedSpell == m_Controller.SpellHandler.AutoAttack)
+                    m_Controller.SpellHandler.CancelCast();
+            }
+            else
+            {
+                // set new interval
+                if (interval != null)
+                    m_Interval = interval.Value;
+            }
 
             this.enabled = activate;
         }
@@ -41,28 +56,37 @@ namespace Game.Character
             if (!IsServer)
                 return;
 
-            if (!m_Controller.GameRunning)
+            if (m_IntervalTimer > 0)
+            {
+                m_IntervalTimer -= Time.deltaTime;
                 return;
+            }
 
             if (!CanCastAutoAttack)
                 return;
 
-            if (m_IsMoving || m_IsCasting)
-            {
-                ErrorHandler.Error("CanCastAutoAttack okayed but m_IsMoving and m_IsCasting not set to false");
+            bool success = m_Controller.SpellHandler.TryStartCastSpell(m_Controller.SpellHandler.AutoAttack);
+            if (!success)
                 return;
-            }
 
-            m_Controller.SpellHandler.TryStartCastSpell(m_Controller.SpellHandler.AutoAttack);
+            m_IntervalTimer = m_Interval;
+            AutoAttackEvent?.Invoke();
         }
-
 
         bool CanCastAutoAttack
         {
             get
             {
-                return m_Controller.Movement.MoveX.Value == 0
-                    && ! m_Controller.SpellHandler.IsCasting;
+                if (!m_Controller.GameRunning)
+                    return false;
+
+                if (m_Controller.Movement.MoveX.Value != 0)
+                    return false;
+
+                if (m_Controller.SpellHandler.IsCasting)
+                    return false;
+
+                return true;
             }
         }
 
@@ -70,11 +94,6 @@ namespace Game.Character
 
 
         #region Listeners
-
-        void OnMovementValueChanged(int old, int newValue)
-        {
-            m_IsMoving = newValue != 0;
-        }
 
         #endregion
     }

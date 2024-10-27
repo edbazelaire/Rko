@@ -2,12 +2,86 @@
 using Enums;
 using Save;
 using System.Collections.Generic;
-using TMPro;
 using Tools;
+using Tools.Animations;
+using UnityEngine.UI;
 namespace Menu.MainMenu.MainTab
 {
     public class ArenaStageSectionUI : StageSectionUI
     {
+        #region Members
+
+        ArenaData m_ArenaData;
+
+        #endregion
+
+
+        #region Init & End
+
+        public virtual void Initialize(int level, ArenaData arenaData)
+        {
+            // if sup to max level : do not display anything
+            if (level > arenaData.MaxLevel)
+                return;
+
+            m_ArenaData = arenaData;
+
+            base.Initialize(level, m_ArenaData.CurrentLevel, m_ArenaData.CurrentStage, m_ArenaData.GetArenaLevelData(level).StageData.Count);
+        }
+
+        #endregion
+
+
+        #region Knobs
+
+        protected override void ResetPathDisplay()
+        {
+            UIHelper.CleanContent(m_PathDisplayContainer);
+            m_Knobs = new List<Image>();
+
+            for (int i = 0; i < m_NStages; i++)
+            {
+                m_Knobs.Add(Instantiate(m_Knob, m_PathDisplayContainer.transform).GetComponent<Image>());
+                SetKnobColor(i);
+            }
+        }
+
+        protected override void SetKnobColor(int index)
+        {
+            if (index < m_NStages - 1)
+            {
+                base.SetKnobColor(index);
+                return;
+            }
+
+            m_Knobs[index].sprite = AssetLoader.LoadBossHead(m_ArenaData.GetBoss(m_Level).ToString());
+
+            // Check Arena Level (for arena it is based on level only)
+            if (m_Level != m_CurrentLevel)
+                return;
+
+            // Check index of CURRENT STAGE
+            if (index != m_CurrentStage)
+                return;
+
+            var pulse = m_Knobs[index].gameObject.AddComponent<Pulse>();
+            pulse.Initialize(CURRENT_STAGE_ANIMATION, -1f, 0.9f, 1.1f, pulseDuration: 1.5f, pauseDuration: 0f);
+        }
+
+        #endregion
+
+
+        #region Helpers
+
+        protected override string GetLevelString()
+        {
+            return m_ArenaData.GetBoss(m_Level).ToString();
+        }
+
+
+        #endregion
+
+
         #region Listeners
 
         protected override void RegisterListeners()
@@ -15,7 +89,7 @@ namespace Menu.MainMenu.MainTab
             base.RegisterListeners();
 
             PlayerPrefsHandler.ArenaTypeChangedEvent    += OnArenaTypeChanged;
-            ProgressionCloudData.ArenaDataChangedEvent  += OnArenaDataChanged;
+            ProgressionCloudData.CurrentArenaDataChangedEvent  += OnArenaDataChanged;
         }
 
         protected override void UnRegisterListeners()
@@ -23,7 +97,7 @@ namespace Menu.MainMenu.MainTab
             base.UnRegisterListeners();
 
             PlayerPrefsHandler.ArenaTypeChangedEvent    -= OnArenaTypeChanged;
-            ProgressionCloudData.ArenaDataChangedEvent  -= OnArenaDataChanged;
+            ProgressionCloudData.CurrentArenaDataChangedEvent  -= OnArenaDataChanged;
         }
 
         void OnArenaTypeChanged(EArenaType arenaType)
@@ -37,7 +111,7 @@ namespace Menu.MainMenu.MainTab
             RefreshUI();
         }
 
-        void OnArenaDataChanged(EArenaType arenaType) 
+        void OnArenaDataChanged() 
         {
             RefreshUI();
         }

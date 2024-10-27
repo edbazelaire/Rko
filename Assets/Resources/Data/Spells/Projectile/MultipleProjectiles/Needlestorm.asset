@@ -109,8 +109,11 @@ MonoBehaviour:
   m_Speed: 12
   ProjectileData: {fileID: 0}
   MultiProjectileType: 2
+  m_IsBlocking: 0
   m_NProjectiles: 12
   m_ProjectileZoneSize: 3
   m_DelayBetweenLaunches: 0.2
   m_NWaves: 1
   m_DelayBetweenWaves: 0
+  OnCastWaveSoundFX: {fileID: 0}
+  OnCastProjectileSoundFX: {fileID: 0}

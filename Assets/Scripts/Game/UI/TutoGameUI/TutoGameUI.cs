@@ -1,4 +1,5 @@
-﻿using Managers.Tuto;
+﻿using Enums;
+using Managers.Tuto;
 using System.Collections;
 using Tools;
 using UnityEngine;
@@ -13,13 +14,20 @@ namespace Game.UI
 
         // ==========================================================================
         // GameObject & Components
-        Image m_Background;
-        Speaker m_Speaker;
-        Image m_Hand;
+        Image                       m_Background;
+        ObjectifDisplayerUI         m_ObjectifDisplayer;
+        Speaker                     m_Speaker;
+        Speaker                     m_SpeakerEnemy;
+        HandUI                      m_Hand;
+        ClickInteractor             m_ClickInteractor;
 
         // ==========================================================================
         // Data
-        ClickInteractor m_ClickInteractor;
+        public ObjectifDisplayerUI  ObjectifDisplayer       => m_ObjectifDisplayer;
+        public Speaker              Speaker                 => m_Speaker;
+        public Speaker              SpeakerEnemy            => m_SpeakerEnemy;
+        public HandUI               Hand                    => m_Hand;
+        public ClickInteractor      ClickInteractor         => m_ClickInteractor;
 
         #endregion
 
@@ -30,9 +38,11 @@ namespace Game.UI
         {
             base.FindComponents();
 
-            m_Background = Finder.FindComponent<Image>(gameObject, "Background");
-            m_Speaker = Finder.FindComponent<Speaker>(gameObject, "Speaker");
-            m_Hand = Finder.FindComponent<Image>(gameObject, "Hand");
+            m_Background        = Finder.FindComponent<Image>(gameObject, "Background");
+            m_ObjectifDisplayer = Finder.FindComponent<ObjectifDisplayerUI>(gameObject, "ObjectifDisplayer"); ;
+            m_Speaker           = Finder.FindComponent<Speaker>(gameObject, "Speaker");
+            m_SpeakerEnemy      = Finder.FindComponent<Speaker>(gameObject, "SpeakerEnemy");
+            m_Hand              = Finder.FindComponent<HandUI>(gameObject, "Hand");
         }
 
         public override void Initialize()
@@ -54,10 +64,14 @@ namespace Game.UI
             base.SetUpUI();
 
             m_Speaker.Initialize();
+            m_SpeakerEnemy.Initialize();
+            m_ObjectifDisplayer.Initialize();
+            m_Hand.Initialize();
 
             m_Background.gameObject.SetActive(false);
-            m_Hand.gameObject.SetActive(false);
-            m_Speaker.gameObject.SetActive(false);
+            m_Speaker.Activate(false);
+            m_SpeakerEnemy.Activate(false);
+            m_Hand.Activate(false);
             gameObject.SetActive(false);
         }
 
@@ -71,36 +85,18 @@ namespace Game.UI
             // activate background
             m_Background.gameObject.SetActive(true);
 
-            // activate speaker
-            m_Speaker.Activate(true);
-
-            // todo => Animation with Coroutine ?
-            m_Speaker.Caption.Write("Welcome to CrossFire Arena !");
-
-            // wait skip
-            yield return new WaitUntil(() => m_ClickInteractor.Skip);
-            m_ClickInteractor.Skip = false;
-
-            // todo => Animation with Coroutine ?
-            m_Speaker.Caption.Write("You are here to shit blood !");
-
-            // wait skip
-            yield return new WaitUntil(() => m_ClickInteractor.Skip);
-            m_ClickInteractor.Skip = false;
-
-            // deactivate speaker
-            m_Speaker.Activate(false);
-            m_Background.gameObject.SetActive(false);
+            // welcome text
+            yield return m_Speaker.Write("Welcome to CrossFire Arena !", ECaptionType.Exclamation, true);
         }
 
-        #endregion
-
-
-        #region Hand Movements
-
-        public void ClickOn(GameObject gameObject)
+        public IEnumerator MovementDialog()
         {
+            m_Background.gameObject.SetActive(false);
 
+            StartCoroutine(m_Speaker.Write("Use these buttons to move left and right", ECaptionType.Exclamation, false));
+            yield return m_Hand.ClickOn(GameUIManager.MovementButtonsContainer.RightMovementButton);
+
+            m_Speaker.Activate(false);
         }
 
         #endregion

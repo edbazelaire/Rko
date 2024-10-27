@@ -7,10 +7,12 @@ using Enums;
 using Game;
 using Game.Character;
 using Game.Loaders;
+using MyBox;
 using Tools;
+using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 
-enum ESpellCategory
+public enum ESpellCategory
 {
     Ultimate,
     Heal,
@@ -38,21 +40,23 @@ public class TaskAttack : Node
 
     #region Init & End
 
-    public TaskAttack(Controller controller)
+    public TaskAttack(Controller controller, List<ESpellCategory> allowedSpellCategories = default)
     {
         m_Controller = controller;
 
-        FilterSpells();
+        FilterSpells(allowedSpellCategories);
     }
 
-    void FilterSpells()
+    void FilterSpells(List<ESpellCategory> allowedSpellCategories = default)
     {
-        m_SpellCategories[ESpellCategory.Ultimate]              = new List<ESpell>() { m_SpellHandler.Ultimate };
-        m_SpellCategories[ESpellCategory.Heal]                  = FilterSpellsByProperty(ESpellProperty.Heal);
-        m_SpellCategories[ESpellCategory.Buff]                  = FilterSpellsByType(ESpellType.Buff);
-        m_SpellCategories[ESpellCategory.ConsumeStateEffect]    = FilterSpellsWithConsumeStateEffect();
-        m_SpellCategories[ESpellCategory.Damage]                = FilterSpellsByProperty(ESpellProperty.Damages);
-        m_SpellCategories[ESpellCategory.AutoAttack]            = new List<ESpell>() { m_SpellHandler.AutoAttack };
+        bool IsAllowed(ESpellCategory category) { return allowedSpellCategories.IsNullOrEmpty() || allowedSpellCategories.Contains(ESpellCategory.Ultimate); }
+        
+        m_SpellCategories[ESpellCategory.Ultimate]              = IsAllowed(ESpellCategory.Ultimate) ? new List<ESpell>() { m_SpellHandler.Ultimate } : new List<ESpell>() { };
+        m_SpellCategories[ESpellCategory.Heal]                  = IsAllowed(ESpellCategory.Heal) ? FilterSpellsByProperty(ESpellProperty.Heal) : new List<ESpell>() { };
+        m_SpellCategories[ESpellCategory.Buff]                  = IsAllowed(ESpellCategory.Buff) ? FilterSpellsByType(ESpellType.Buff) : new List<ESpell>() { };
+        m_SpellCategories[ESpellCategory.ConsumeStateEffect]    = IsAllowed(ESpellCategory.ConsumeStateEffect) ? FilterSpellsWithConsumeStateEffect() : new List<ESpell>() { };
+        m_SpellCategories[ESpellCategory.Damage]                = IsAllowed(ESpellCategory.Damage) ? FilterSpellsByProperty(ESpellProperty.Damages) : new List<ESpell>() { };
+        m_SpellCategories[ESpellCategory.AutoAttack]            = IsAllowed(ESpellCategory.AutoAttack) ? new List<ESpell>() { m_SpellHandler.AutoAttack } : new List<ESpell>() { };
     }
 
     #endregion
@@ -89,7 +93,7 @@ public class TaskAttack : Node
 
         // check if any spell can be casted
         ESpell spell = CheckSpellToSelect();
-        if (spell != ESpell.Count)
+        if (spell != ESpell.None)
         {
             m_Controller.SpellHandler.TryStartCastSpell(spell);
                 
@@ -121,7 +125,7 @@ public class TaskAttack : Node
     ESpell CheckSpellToSelect()
     {
         // init spell
-        ESpell spell = ESpell.Count;
+        ESpell spell = ESpell.None;
 
         // check : ULTIMATE
         CheckUltimate(ref spell);
@@ -160,7 +164,7 @@ public class TaskAttack : Node
     void CheckUltimate(ref ESpell spell)
     {
         // skip if a spell was already selected
-        if (spell != ESpell.Count)
+        if (spell != ESpell.None)
             return;
 
         ErrorHandler.Log("CheckUltimate()", ELogTag.AITaskAttack);
@@ -177,7 +181,7 @@ public class TaskAttack : Node
     void CheckHealingSpells(ref ESpell spell)
     {
         // skip if a spell was already selected
-        if (spell != ESpell.Count)
+        if (spell != ESpell.None)
             return;
 
         ErrorHandler.Log("CheckHealingSpells()", ELogTag.AITaskAttack);
@@ -195,7 +199,7 @@ public class TaskAttack : Node
     void CheckBuffs(ref ESpell spell)
     {
         // skip if a spell was already selected
-        if (spell != ESpell.Count)
+        if (spell != ESpell.None)
             return;
 
         ErrorHandler.Log("CheckBuffs()", ELogTag.AITaskAttack);
@@ -210,7 +214,7 @@ public class TaskAttack : Node
     void CheckStateEffectsConsum(ref ESpell spell)
     {
         // skip if a spell was already selected
-        if (spell != ESpell.Count)
+        if (spell != ESpell.None)
             return;
 
         ErrorHandler.Log("CheckStateEffectsConsum()", ELogTag.AITaskAttack);
@@ -245,7 +249,7 @@ public class TaskAttack : Node
     void CheckDamageSpells(ref ESpell spell)
     {
         // skip if a spell was already selected
-        if (spell != ESpell.Count)
+        if (spell != ESpell.None)
             return;
 
         ErrorHandler.Log("CheckDamageSpells()", ELogTag.AITaskAttack);

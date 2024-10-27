@@ -92,7 +92,7 @@ namespace Game.Spells
         /// <param name="spellName"></param>
         public virtual void Initialize(ulong clientId, Vector3 target, string spellName, int level)
         {
-            m_Controller        = GameManager.Instance.GetPlayer(clientId);
+            m_Controller = GameManager.Instance.GetPlayer(clientId);
             SetSpellData(spellName, level);
             m_HittedPlayerId    = new List<ulong>();
 
@@ -106,10 +106,14 @@ namespace Game.Spells
             // set the target
             SetTarget(target);
 
+            // post-processing for childrens
+            ApplyPostProcessing();
+
             // initialize graphics of the spell (whith delay if has any)
             InitGraphics();
 
             // call event that spell has spawn
+            OnSpellSpawn?.Invoke(this);
             CallSpellEvent(ESpellEvent.OnSpawn);
         }
 
@@ -124,7 +128,7 @@ namespace Game.Spells
             // set is over to true (in case of persistance of graphisme, to stop spell behavior)
             m_IsOver = true;
 
-            // visual ending effect
+            // ending effect
             SpawnOnHitPrefab();
 
             // destroy the spell game object
@@ -171,6 +175,8 @@ namespace Game.Spells
 
         #region On Init
 
+        protected virtual void ApplyPostProcessing() { }
+
         /// <summary>
         /// Instantiate the graphics of the spell
         /// </summary>
@@ -182,7 +188,6 @@ namespace Game.Spells
 
             if (m_SpellData.Graphics != null)
             {
-                ErrorHandler.Log("InitGraphics() : " + m_SpellData.Graphics + " with size " + m_SpellData.Size, ELogTag.Spells);
                 var gfx = Instantiate(m_SpellData.Graphics, m_GraphicsContainer.transform);
                 SwapColliders(gfx);
 
@@ -191,7 +196,7 @@ namespace Game.Spells
                     SoundFXManager.AdjustVolume(ref audioSource);
             }
 
-            transform.localScale = new Vector3(m_SpellData.Size, m_SpellData.Size, 1f);
+            transform.localScale = new Vector3(m_SpellData.Size, m_SpellData.Size, m_SpellData.Size);
 
             if (m_SpellData.PermanantSoundFX != null)
                 SoundFXManager.PlaySoundFXClip(m_SpellData.PermanantSoundFX, transform);
@@ -338,12 +343,7 @@ namespace Game.Spells
                 return false;
 
             // add bonus damages from state bonus & boosts 
-            int damages = m_SpellData.Damage;
-            if (m_SpellData.StateEffectStackFactor != EStateEffect.None)
-            {
-                damages *= controller.StateHandler.GetStacks(m_SpellData.StateEffectStackFactor);
-            }
-            damages = m_Controller.StateHandler.ApplyBonusDamages(damages);
+            int damages = GetBoostedDamages(controller);
 
             // check if target has counter(s)
             if (controller.CounterHandler.CheckCounters(this))
@@ -371,7 +371,7 @@ namespace Game.Spells
 
             // apply state effects specifics to enemies
             ApplyEnemyStateEffects(controller);
-
+            
             return true;
         }
 
@@ -385,17 +385,45 @@ namespace Game.Spells
             if (controller.Team != m_Controller.Team)
                 return false;
 
-            if (m_SpellData.Heal <= 0 && m_SpellData.AllyStateEffects.Count == 0)
-                return false;
+            bool test = false;
+            if (m_SpellData.Heal > 0)
+            {
+                controller.Life.Heal(m_SpellData.Heal);
 
-            controller.Life.Heal(m_SpellData.Heal);
-            
-            if (m_Controller.ClientAnalytics != null)
-                m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Heal, m_SpellData.Heal);
-            
-            ApplyAllyStateEffects(controller);
+                if (m_Controller.ClientAnalytics != null)
+                    m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Heal, m_SpellData.Heal);
 
-            return true;
+                test = true;
+            }
+
+            if (m_SpellData.Shield > 0)
+            {
+                controller.Life.AddShield(m_SpellData.Shield);
+
+                if (m_Controller.ClientAnalytics != null)
+                    m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Shield, m_SpellData.Shield);
+
+                test = true;
+            }
+
+            if (m_SpellData.AllyStateEffects.Count > 0)
+            {
+                ApplyAllyStateEffects(controller);
+                test = true;
+            }
+            
+            return test;
+        }
+
+        public virtual int GetBoostedDamages(Controller targetController)
+        {
+            int damages = m_SpellData.Damage;
+            if (m_SpellData.StateEffectStackFactor != EStateEffect.None)
+            {
+                damages *= targetController.StateHandler.GetStacks(m_SpellData.StateEffectStackFactor);
+            }
+
+            return m_Controller.StateHandler.ApplyBonusDamages(damages);
         }
 
         protected virtual void AddExtraEffects()
@@ -516,10 +544,9 @@ namespace Game.Spells
                 if (spawnPrefab.GFXLifetime.StartSpellPart != spellEvent)
                     continue;
 
-                spawnPrefab.Spawn(m_Controller, m_SpellData, this, null, targetController, transform.position);
+                spawnPrefab.Spawn(m_Controller, m_SpellData, this, null, targetController, transform.position, m_Target);
             }
 
-            OnSpellSpawn?.Invoke(this);
             OnSpellEvent?.Invoke(spellEvent);
         }
 

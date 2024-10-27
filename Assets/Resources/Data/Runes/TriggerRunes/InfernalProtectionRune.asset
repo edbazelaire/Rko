@@ -20,7 +20,6 @@ MonoBehaviour:
       : [TriggerEffect.0]'
     m_DescriptionVariables: []
     m_BonusLevel: 0
-    m_IsOverwritten: 0
     m_TriggerEffects:
     - SpellDataName: InfernalProtection
       Level: 0
@@ -39,7 +38,6 @@ MonoBehaviour:
       : [TriggerEffect.0]'
     m_DescriptionVariables: []
     m_BonusLevel: 6
-    m_IsOverwritten: 0
     m_TriggerEffects:
     - SpellDataName: InfernalProtection
       Level: 0
@@ -58,7 +56,6 @@ MonoBehaviour:
       : [TriggerEffect.0]'
     m_DescriptionVariables: []
     m_BonusLevel: 12
-    m_IsOverwritten: 0
     m_TriggerEffects:
     - SpellDataName: InfernalProtection
       Level: 0
@@ -72,15 +69,4 @@ MonoBehaviour:
       NActivations: -1
       Cooldown: 0
     m_BonusStats: []
-  m_TriggerEffects:
-  - SpellDataName: InfernalProtection
-    Level: 0
-    Target: 0
-    SpellActivationEvent: 1
-    ActivationTreshold: 0
-    SpellDeactivationEvent: 0
-    DeactivationTreshold: 0
-    StateEffectEvent: 3
-    StateEffectName: Burn
-    NActivations: -1
-    Cooldown: 0
+  m_TriggerEffects: []

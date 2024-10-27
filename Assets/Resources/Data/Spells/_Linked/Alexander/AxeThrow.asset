@@ -17,11 +17,13 @@ MonoBehaviour:
   m_DescriptionVariables:
   - Name: Damages
     WithIcon: 1
+  m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 2272309172655654138, guid: aea2ab7d92a4e1a4b8d3d1e595e034e8, type: 3}
   SpellEventActions:
   - Prefab: {fileID: 2272309172655654138, guid: aea2ab7d92a4e1a4b8d3d1e595e034e8, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
       StartSpellPart: 1
       EndSpellPart: 2
@@ -39,6 +41,7 @@ MonoBehaviour:
     StateEffects: 
   - Prefab: {fileID: 176804, guid: 4889039938a567444827eafcfbc2b267, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
       StartSpellPart: 4
       EndSpellPart: 0
@@ -54,7 +57,7 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 
-  Preview: {fileID: 7274605584167926077, guid: 0961e062c4a6d3b40b81e8e5e6da0eae, type: 3}
+  Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
   OnHit: []

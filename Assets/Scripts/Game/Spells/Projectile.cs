@@ -71,7 +71,21 @@ namespace Game.Spells
 
             // if spell hits a wall, end it
             if (collision.gameObject.layer == LayerMask.NameToLayer("Wall") || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
-                End();
+            {
+                // check if should apply on hit
+                if (!m_SpellData.ApplyIfNotHitting)
+                {
+                    End();
+                    return;
+                }
+
+                // if "ApplyIfNotHitting" : apply effects to every not hit targets
+                var allControllers = m_SpellData.IsEnemyTarget ? GameManager.Instance.GetAllEnemies(m_Controller.Team) : GameManager.Instance.GetAllAllies(m_Controller.Team);
+                foreach (Controller controller in allControllers)
+                {
+                    OnHitPlayer(controller);
+                }
+            }
 
             // if spell hits a player, hit it and end the spell
             else if (collision.gameObject.layer == LayerMask.NameToLayer("Player") && m_SpellData.TriggerPlayer)

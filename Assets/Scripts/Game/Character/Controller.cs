@@ -1,7 +1,7 @@
 using AI;
+using Assets.Scripts.Data.PowerUp;
 using Data;
 using Data.DataStructures;
-using Data.GameManagement;
 using Enums;
 using Game;
 using Game.Character;
@@ -26,7 +26,7 @@ public class Controller : NetworkBehaviour
     // -- Network Variables
     NetworkVariable<FixedString64Bytes>     m_PlayerName        = new NetworkVariable<FixedString64Bytes>("");
     NetworkVariable<SPlayerData>            m_PlayerData        = new NetworkVariable<SPlayerData>();
-    NetworkVariable<ECharacter>             m_Character         = new NetworkVariable<ECharacter>(ECharacter.Count);
+    NetworkVariable<FixedString64Bytes>     m_Character         = new NetworkVariable<FixedString64Bytes>(ECharacter.None.ToString());
     NetworkVariable<int>                    m_CharacterLevel    = new NetworkVariable<int>(1);
     NetworkVariable<int>                    m_Team              = new NetworkVariable<int>(-1);
     NetworkVariable<bool>                   m_IsPlayer          = new NetworkVariable<bool>(true);
@@ -58,7 +58,7 @@ public class Controller : NetworkBehaviour
     // -- Data
     public SPlayerData      PlayerData          => m_PlayerData.Value;
     public string           PlayerName          => m_PlayerName.Value.ToString();
-    public ECharacter       Character           => m_Character.Value;
+    public string           Character           => m_Character.Value.ToString();
     public int              CharacterLevel      => m_CharacterLevel.Value;
     public RuneData[]       RuneData            => m_RuneData;
     public int              Team                => m_Team.Value;
@@ -113,7 +113,7 @@ public class Controller : NetworkBehaviour
         m_BehaviorTree = Finder.FindComponent<BehaviorTree>(gameObject, throwError: false);
         
         // add event to call UI initialization after NetworkVariable update 
-        m_IsInitialized.OnValueChanged += OnInitializedChanged;
+        m_IsInitialized.OnValueChanged  += OnInitializedChanged;
 
         GameManager.GameStartedEvent    += OnGameStarted;
         m_Life.DiedEvent                += OnDied;
@@ -158,7 +158,7 @@ public class Controller : NetworkBehaviour
 
     public void InitializeUI()
     {
-        ECharacter character    = m_Character.Value;
+        string character        = m_Character.Value.ToString();
         int team                = m_Team.Value;
 
         // display the player's ui 
@@ -206,7 +206,7 @@ public class Controller : NetworkBehaviour
 
         m_PlayerData.Value      = playerData;
         m_PlayerName.Value      = playerData.PlayerName;
-        m_Character.Value       = playerData.Character;
+        m_Character.Value       = playerData.Character.ToString();
         m_CharacterLevel.Value  = playerData.CharacterLevel;
 
         // set all RuneData depending on activation type
@@ -231,7 +231,7 @@ public class Controller : NetworkBehaviour
             m_RuneData[i].SetActivation(CharacterBuildsCloudData.GetRuneActivationFromIndex(i));
         }
      
-        CharacterData characterData = CharacterLoader.GetCharacterData(playerData.Character, playerData.CharacterLevel, destroy: true);
+        CharacterData characterData = CharacterLoader.GetCharacterData(playerData.Character.ToString(), playerData.CharacterLevel, destroy: true);
         characterData.AddBonusStats(GetBonusStats());
 
         // initialize SpellHandler with character's spells
@@ -245,8 +245,8 @@ public class Controller : NetworkBehaviour
 
         // init health and energy
         m_Life.Initialize(characterData.MaxHealth, characterData.GetInt(EStateEffectProperty.Shield));
-        m_EnergyHandler.Initialize(10, characterData.MaxEnergy);
-        m_TriggerEffectHandler.Initialize(GetTriggerEffects());
+        m_EnergyHandler.Initialize(characterData.BaseEnergy, characterData.MaxEnergy);
+        m_TriggerEffectHandler.Initialize(GetTriggerEffects(), GetPowerUps());
 
         // init BehaviorTree
         if (m_BehaviorTree != null)
@@ -258,14 +258,14 @@ public class Controller : NetworkBehaviour
     /// </summary>
     public void SetupSpellUI()
     {
-        if (!IsOwner)
+        if (!IsOwner) 
             return;
 
         // clear the spell container (in case any spell was already there)
         GameUIManager.Instance.ClearSpells();
 
         // add linked spells
-        var characterData = CharacterLoader.GetCharacterData(m_Character.Value, destroy: true);
+        var characterData = CharacterLoader.GetCharacterData(m_Character.Value.ToString(), destroy: true);
         GameUIManager.Instance.CreateLinkedSpellTemplate(characterData.Ultimate, m_CharacterLevel.Value);
         GameUIManager.Instance.CreateLinkedSpellTemplate(characterData.SpecialAbility, m_CharacterLevel.Value);
 
@@ -309,6 +309,12 @@ public class Controller : NetworkBehaviour
             bonusStats.AddRange(data.GetBonusStats());
         }
 
+        var allPowerUpData = GetPowerUps();
+        foreach (PowerUpData data in allPowerUpData)
+        {
+            bonusStats.AddRange(data.GetBonusStats());
+        }
+
         return bonusStats;
     }
 
@@ -330,6 +336,17 @@ public class Controller : NetworkBehaviour
         }
 
         return list;
+    }
+
+    List<PowerUpData> GetPowerUps()
+    {
+        var data = new List<PowerUpData>();
+        foreach (var powerUpName in m_PlayerData.Value.PowerUps)
+        {
+            data.Add(SpellLoader.PowerUpsData[powerUpName.ToString()]);
+        }
+
+        return data;
     }
 
     #endregion
@@ -411,15 +428,16 @@ public class Controller : NetworkBehaviour
     /// <param name="active"></param>
     public void ActivateActionComponent(bool active)
     {
-        m_Movement.enabled              = active;
         m_StateHandler.enabled          = active;
         m_CounterHandler.enabled        = active;
 
         m_SpellHandler.Activate(active);
         m_TriggerEffectHandler.Activate(active);
 
+        m_Movement.Activate(active);
+
         if (m_AutoAttackHandler != null)
-            m_AutoAttackHandler.enabled     = active;
+            m_AutoAttackHandler.Activate(active);
 
         if (m_BehaviorTree != null)
         {

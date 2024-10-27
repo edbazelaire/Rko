@@ -15,16 +15,19 @@ MonoBehaviour:
   m_Description: If target has Burn effect, consume it, otherwise apply it
   m_DescriptionVariables: 
   m_StateEffectType: 0
+  m_IsDisplayed: 0
   m_VisualEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 8
   m_DefaultState: 8
+  m_Priority: 0
   m_Duration: 0
   m_IsInstantanious: 1
   m_MaxStacks: 1
   m_StackDecay: -1
+  m_BonusStats: []
   m_SpeedBonus: 0
   m_CastSpeed: 0
   m_AttackSpeed: 0
@@ -36,6 +39,8 @@ MonoBehaviour:
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
   m_BonusLifeSteal: 0
+  m_BonusBurnDamages: 0
+  m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel: []

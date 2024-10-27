@@ -1,11 +1,9 @@
 ﻿using Assets.Scripts.Managers.Sound;
 using Enums;
-using Game;
 using Game.SpellGFXs;
 using Game.Spells;
 using System;
 using System.Collections.Generic;
-using System.Xml.Linq;
 using Tools;
 using UnityEngine;
 
@@ -194,7 +192,7 @@ namespace Data
             {
                 PlaySoundOnly();
                 return null;
-            }    
+            }
 
             GameObject go;
             if (Prefab == null)

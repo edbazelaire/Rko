@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
+  m_Name: IceGolem
+  m_EditorClassIdentifier: 
+  Rarety: 0
+  m_Description: 
+  m_DescriptionVariables: []
+  m_AutoAttack: IceRock
+  m_SpecialAbility: Carapice
+  m_Ultimate: 
+  Size: 4.5
+  BaseSpeed: 0.25
+  BaseHealth: 3500
+  MaxEnergy: 100
+  HealthScaleFactor: 0.5
+  CharacterStatScaling:
+  - StateEffectProperty: 5
+    BaseValue: 25
+    BonusValue: 0
+    ScalingFactor: 0.5
+  - StateEffectProperty: 4
+    BaseValue: 1000
+    BonusValue: 0
+    ScalingFactor: 0.25

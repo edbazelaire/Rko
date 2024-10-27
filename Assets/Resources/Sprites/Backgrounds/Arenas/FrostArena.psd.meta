@@ -1,0 +1,439 @@
+fileFormatVersion: 2
+guid: 06c7b7e9de301874caa2386b356c1664
+importerOverride:
+  nativeImporterType: 2089858483
+  scriptedImporterType:
+    serializedVersion: 2
+    Hash: b10b55a1aa6a1aa32521bc0cab59632e
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: b2a9591990af98743ba3ff7cf1000886, type: 3}
+  textureImporterSettings:
+    alphaSource: 1
+    mipMapMode: 0
+    enableMipMap: 1
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+    convertToNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+    swizzle: 50462976
+    isReadable: 0
+    streamingMipmaps: 0
+    streamingMipmapsPriority: 0
+    vTOnly: 0
+    ignoreMipmapLimit: 0
+    nPOTScale: 1
+    sRGBTexture: 1
+    spriteMode: 2
+    spriteExtrude: 1
+    spriteMeshType: 1
+    alignment: 0
+    spritePivot: {x: 0.5, y: 0.5}
+    spritePixelsToUnits: 100
+    spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+    spriteGenerateFallbackPhysicsShape: 0
+    generateCubemap: 6
+    cubemapConvolution: 0
+    seamlessCubemap: 0
+    alphaIsTransparency: 1
+    spriteTessellationDetail: -1
+    textureType: 8
+    textureShape: 1
+    singleChannelComponent: 0
+    flipbookRows: 0
+    flipbookColumns: 0
+    ignorePngGamma: 0
+    cookieMode: 0
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 0
+    wrapV: 0
+    wrapW: 0
+    normalMap: 0
+    textureFormat: 0
+    maxTextureSize: 0
+    lightmap: 0
+    compressionQuality: 0
+    linearTexture: 0
+    grayScaleToAlpha: 0
+    rGBM: 0
+    cubemapConvolutionSteps: 0
+    cubemapConvolutionExponent: 0
+    maxTextureSizeSet: 0
+    compressionQualitySet: 0
+    textureFormatSet: 0
+    applyGammaDecoding: 0
+  singleSpriteImportData:
+  - name: 
+    originalName: 
+    pivot: {x: 0, y: 0}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    spriteID: 53b847093da54d34a83ae9cb7996a030
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 0, y: 0}
+    spritePosition: {x: 0, y: 0}
+  multiSpriteImportData: []
+  layeredSpriteImportData:
+  - name: Moon
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 1903
+      y: 684
+      width: 115
+      height: 114
+    spriteID: 9f98f52b7f4718c488debfd92a415e72
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 1903, y: 684}
+    spritePosition: {x: 877, y: 504}
+  - name: IceWall_01
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 1099
+      width: 103
+      height: 595
+    spriteID: 7375998679366704b81637d6dd40cfba
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 4, y: 1099}
+    spritePosition: {x: 0, y: 0}
+  - name: IceRokcs_02
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 115
+      y: 1099
+      width: 178
+      height: 114
+    spriteID: d27cec0f818db4f49a9fe03a8db476d7
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 115, y: 1099}
+    spritePosition: {x: 538, y: 20}
+  - name: IceRokcs_01
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 301
+      y: 1099
+      width: 178
+      height: 114
+    spriteID: e3661e8bb691b9f47ae62c26a8baa37b
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 301, y: 1099}
+    spritePosition: {x: 236, y: 40}
+  - name: IcePlateform_01
+    originalName: 
+    pivot: {x: 0.907068, y: 0.99694693}
+    alignment: 9
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 1212
+      y: 684
+      width: 683
+      height: 230
+    spriteID: fe122f8d48644344e824f61aad6d0cac
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 1212, y: 651}
+    spritePosition: {x: 0, y: 33}
+  - name: IceWall_02
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 1836
+      y: 4
+      width: 193
+      height: 669
+    spriteID: 56e80e09b7d9df84794f5344258f7e3e
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 1836, y: 4}
+    spritePosition: {x: 1007, y: 0}
+  - name: IcePlateform_02
+    originalName: 
+    pivot: {x: 0.0020000904, y: 0.9924867}
+    alignment: 9
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 1212
+      y: 4
+      width: 616
+      height: 271
+    spriteID: bd9418cdc6cf0904781a9d99b6b4d5bd
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 1212, y: 4}
+    spritePosition: {x: 584, y: 0}
+  - name: FrostArenaBackground_Front
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 684
+      width: 1200
+      height: 407
+    spriteID: 26ecb0892dca3b64e9641d39067a5041
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 4, y: 684}
+    spritePosition: {x: 0, y: 0}
+  - name: FrostArenaBackground
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 4
+      width: 1200
+      height: 672
+    spriteID: b748cdccc1ce4164fbda8300627955e0
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 4, y: 4}
+    spritePosition: {x: 0, y: 0}
+  spriteImportData: []
+  rigSpriteImportData: []
+  sharedRigSpriteImportData: []
+  mosaicSpriteImportData: []
+  sharedRigCharacterData:
+    bones: []
+    parts: []
+    dimension: {x: 0, y: 0}
+    characterGroups: []
+    pivot: {x: 0, y: 0}
+    boneReadOnly: 0
+  characterData:
+    bones: []
+    parts: []
+    dimension: {x: 0, y: 0}
+    characterGroups: []
+    pivot: {x: 0, y: 0}
+    boneReadOnly: 0
+  platformSettings: []
+  mosaicLayers: 1
+  characterMode: 1
+  documentPivot: {x: 0, y: 0}
+  documentAlignment: 7
+  importHiddenLayers: 0
+  layerMappingOption: 2
+  generatePhysicsShape: 0
+  paperDollMode: 0
+  keepDupilcateSpriteName: 1
+  padding: 4
+  spriteSizeExpand: 0
+  skeletonAssetReferenceID: 
+  spriteCategoryList:
+    categories: []
+  spritePackingTag: 
+  resliceFromLayer: 0
+  pSDLayerImportSetting: []
+  psdLayers:
+  - name: Moon
+    spriteName: Moon
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 9f98f52b7f4718c488debfd92a415e72
+    layerID: 8
+    mosaicPosition: {x: 1903, y: 684}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  - name: IceWall_01
+    spriteName: IceWall_01
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 7375998679366704b81637d6dd40cfba
+    layerID: 6
+    mosaicPosition: {x: 4, y: 1099}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  - name: IceRokcs_02
+    spriteName: IceRokcs_02
+    isGroup: 0
+    parentIndex: -1
+    spriteID: d27cec0f818db4f49a9fe03a8db476d7
+    layerID: 16
+    mosaicPosition: {x: 115, y: 1099}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  - name: IceRokcs_01
+    spriteName: IceRokcs_01
+    isGroup: 0
+    parentIndex: -1
+    spriteID: e3661e8bb691b9f47ae62c26a8baa37b
+    layerID: 7
+    mosaicPosition: {x: 301, y: 1099}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  - name: IcePlateform_01
+    spriteName: IcePlateform_01
+    isGroup: 0
+    parentIndex: -1
+    spriteID: fe122f8d48644344e824f61aad6d0cac
+    layerID: 3
+    mosaicPosition: {x: 1212, y: 684}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  - name: IceWall_02
+    spriteName: IceWall_02
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 56e80e09b7d9df84794f5344258f7e3e
+    layerID: 5
+    mosaicPosition: {x: 1836, y: 4}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  - name: IcePlateform_02
+    spriteName: IcePlateform_02
+    isGroup: 0
+    parentIndex: -1
+    spriteID: bd9418cdc6cf0904781a9d99b6b4d5bd
+    layerID: 4
+    mosaicPosition: {x: 1212, y: 4}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  - name: FrostArenaBackground_Front
+    spriteName: FrostArenaBackground_Front
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 26ecb0892dca3b64e9641d39067a5041
+    layerID: 9
+    mosaicPosition: {x: 4, y: 684}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  - name: Cloud_01
+    spriteName: Cloud_01
+    isGroup: 0
+    parentIndex: -1
+    spriteID: 97dd374a78e65a04f90720439f49cf68
+    layerID: 12
+    mosaicPosition: {x: 4, y: 684}
+    flatten: 0
+    isImported: 0
+    isVisible: 0
+  - name: FrostArenaBackground
+    spriteName: FrostArenaBackground
+    isGroup: 0
+    parentIndex: -1
+    spriteID: b748cdccc1ce4164fbda8300627955e0
+    layerID: 14
+    mosaicPosition: {x: 4, y: 4}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  mosaicPSDLayers: []
+  rigPSDLayers: []
+  sharedRigPSDLayers: []
+  importFileNodeState: 1
+  platformSettingsDirtyTick: 0
+  spriteSizeExpandChanged: 0
+  generateGOHierarchy: 0
+  textureAssetName: 
+  prefabAssetName: 
+  spriteLibAssetName: 
+  skeletonAssetName: 
+  secondarySpriteTextures: []

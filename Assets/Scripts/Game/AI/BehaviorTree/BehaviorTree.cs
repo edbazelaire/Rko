@@ -20,6 +20,7 @@ namespace AI
         
         protected float m_DecisionTimer = 0f;
 
+        public Controller Controller => m_Controller;
         public bool IsActivated => m_IsActivated;
         public float Randomness => m_Randomness;
         public float DecisionRefresh => m_DecisionRefresh;
@@ -29,7 +30,7 @@ namespace AI
 
         #region Init & End
 
-        public void Initialize(SBotData botData)
+        public virtual void Initialize(SBotData botData)
         {
             m_Controller = Finder.FindComponent<Controller>(gameObject);
             m_Root = SetupTree();
@@ -40,7 +41,7 @@ namespace AI
             m_IsActivated = false;
         }
 
-        public void Activate(bool activated = true)
+        public virtual void Activate(bool activated = true)
         {
             m_IsActivated = activated;
             m_Controller.AutoAttackHandler.enabled = activated;
@@ -54,7 +55,7 @@ namespace AI
 
         #endregion
 
-        private void Update()
+        protected virtual void Update()
         {
             if (!m_IsActivated || !IsServer)
                 return;

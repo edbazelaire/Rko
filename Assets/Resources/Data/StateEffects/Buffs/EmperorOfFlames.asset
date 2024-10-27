@@ -18,6 +18,7 @@ MonoBehaviour:
   m_VisualEffects:
   - Prefab: {fileID: 7582611277444767761, guid: cc4df8b01aee30c4ba31169713fdbd40, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
       StartSpellPart: 3
       EndSpellPart: 5
@@ -35,6 +36,7 @@ MonoBehaviour:
     StateEffects: 
   - Prefab: {fileID: 0}
     MaterialEffect: {fileID: 2100000, guid: eb0147d123ec56c4db582cf54099840b, type: 2}
+    SoundFX: []
     GFXLifetime:
       StartSpellPart: 3
       EndSpellPart: 5
@@ -55,9 +57,12 @@ MonoBehaviour:
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 0
   m_DefaultState: 0
+  m_Priority: 0
   m_Duration: 5
+  m_IsInstantanious: 0
   m_MaxStacks: 1
   m_StackDecay: -1
+  m_BonusStats: []
   m_SpeedBonus: 0
   m_CastSpeed: 0.1
   m_AttackSpeed: 0
@@ -69,6 +74,8 @@ MonoBehaviour:
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0.1
   m_BonusLifeSteal: 0
+  m_BonusBurnDamages: 0
+  m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel:
@@ -79,6 +86,8 @@ MonoBehaviour:
   - StateEffectProperty: 8
     ScalingFactor: 0.1
   m_StateEffectScalingStacks: []
+  m_SpellEffectType: 0
+  m_AllowedSpellTypes: 
   m_OnHits: []
   m_AllyStateEffects: []
   m_EnemyStateEffects:

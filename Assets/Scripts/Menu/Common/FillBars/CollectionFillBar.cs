@@ -132,16 +132,24 @@ namespace Menu.Common
                 return;
             }
 
+            if (m_CollectionFill == null)
+            {
+                ErrorHandler.Error("Unable to find m_CollectionFill");
+                return;
+            }
+
             m_CollectionFill.fillAmount = Mathf.Clamp(m_CurrentCollection / m_MaxCollection, 0, 1);
             if (m_CurrentCollection >= m_MaxCollection)
             {
                 m_CollectionFill.color = m_FullColor;
-                m_Glow.SetActive(true);
+                if (m_Glow != null)
+                    m_Glow.SetActive(true);
             }
             else
             {
                 m_CollectionFill.color = m_BaseColor;
-                m_Glow.SetActive(false);
+                if (m_Glow != null)
+                    m_Glow.SetActive(false);
             }
 
             DisplayText();

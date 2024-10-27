@@ -1,4 +1,5 @@
-﻿using Data;
+﻿using Assets.Scripts.Data.PowerUp;
+using Data;
 using Data.GameManagement;
 using Enums;
 using Game.Spells;
@@ -22,12 +23,15 @@ namespace Game.Loaders
         static Dictionary<ESpell, SpellData>       m_Spells;
         static Dictionary<string, SpellData>       m_OnHitSpellData;
         static Dictionary<string, StateEffect>     m_StateEffects;
-        static Dictionary<ERune, RuneData>         m_RunesData;
+        static Dictionary<ERune, RuneData>         m_Runes;
+        static Dictionary<string, PowerUpData>     m_PowerUps;
 
         public static List<ESpell> Spells => m_Spells.Keys.ToList();
         public static List<SpellData> SpellsData => m_Spells.Values.ToList();
-        public static List<ERune> Runes => m_RunesData.Keys.ToList();
-        public static List<RuneData> RunesData => m_RunesData.Values.ToList();
+        public static List<ERune> Runes => m_Runes.Keys.ToList();
+        public static List<RuneData> RunesData => m_Runes.Values.ToList();
+        public static List<string> PowerUps => m_PowerUps.Keys.ToList();
+        public static Dictionary<string, PowerUpData> PowerUpsData => m_PowerUps;
 
         #endregion
 
@@ -40,6 +44,7 @@ namespace Game.Loaders
             InitializeSpells();
             InitializeStateEffects();
             InitializeRuneData();
+            InitializePowerUpsData();
 
             Initialized = true;
         }
@@ -71,7 +76,13 @@ namespace Game.Loaders
                 }
 
                 if (spell.AnimationTimer < 0)
-                    ErrorHandler.FatalError($"SpellLoader : AnimationTimer {spell.Spell} < 0");
+                    ErrorHandler.Error($"SpellLoader : AnimationTimer {spell.Spell} < 0");
+
+                if (spell.Spell == ESpell.None)
+                {
+                    ErrorHandler.Error("Unable to parse " + spell.Name + " as Spell");
+                    continue;
+                }
 
                 m_Spells.Add(spell.Spell, spell);
             }
@@ -93,7 +104,7 @@ namespace Game.Loaders
         {
             RuneData[] allData = LoadRunesData();
 
-            m_RunesData = new Dictionary<ERune, RuneData>();
+            m_Runes = new Dictionary<ERune, RuneData>();
 
             foreach (RuneData data in allData)
             {
@@ -103,16 +114,28 @@ namespace Game.Loaders
                     continue;
                 }
 
-                m_RunesData.Add(rune, data);
+                m_Runes.Add(rune, data);
             }
 
             // check all runes have been loaded
             foreach (ERune rune in Enum.GetValues(typeof(ERune)))
             {
-                if (! m_RunesData.ContainsKey(rune))
+                if (! m_Runes.ContainsKey(rune))
                 {
                     ErrorHandler.Warning("missing RuneData for rune " + rune);
                 }
+            }
+        }
+
+        static void InitializePowerUpsData()
+        {
+            PowerUpData[] allData = AssetLoader.LoadAll<PowerUpData>(AssetLoader.c_PowerUpsPath);
+
+            m_PowerUps = new Dictionary<string, PowerUpData>();
+
+            foreach (PowerUpData data in allData)
+            {
+                m_PowerUps.Add(data.Name, data);
             }
         }
 
@@ -456,8 +479,6 @@ namespace Game.Loaders
             }
         }
 
-
-
         /// <summary>
         /// 
         /// </summary>
@@ -510,13 +531,13 @@ namespace Game.Loaders
         /// <returns></returns>
         public static RuneData GetRuneData(ERune rune, int level = 1, bool destroy = false)
         {
-            if (!m_RunesData.ContainsKey(rune))
+            if (!m_Runes.ContainsKey(rune))
             {
                 ErrorHandler.Error("Rune not found in dict of RuneData : " + rune);
                 return default;
             }
 
-            var data = (RuneData)m_RunesData[rune].Clone(level);
+            var data = (RuneData)m_Runes[rune].Clone(level);
             if (destroy)
                 CoroutineManager.DelayMethod(() => GameObject.Destroy(data));
 
@@ -556,7 +577,7 @@ namespace Game.Loaders
         public static List<RuneData> FilterRunes(List<ERarety> raretyFilter = default, List<ESpellElement> elementsFilter = default, List<ERune> notAllowedFilter = default, bool? unlocked = null, string containsName = "")
         {
             List<RuneData> runes = new List<RuneData>();
-            foreach (var runeData in m_RunesData.Values)
+            foreach (var runeData in m_Runes.Values)
             {
                 // CHECK : is None
                 if (runeData.Rune == ERune.None)
@@ -610,6 +631,64 @@ namespace Game.Loaders
 
             return runes;
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="raretyFilter"></param>
+        /// <param name="elementsFilter"></param>
+        /// <param name="notAllowedFilter"></param>
+        /// <param name="unlocked"></param>
+        /// <param name="containsName"></param>
+        /// <returns></returns>
+        public static PowerUpData GetRandomPowerUp(List<ERarety> raretyFilter = default, List<string> notAllowedFilter = default,string containsName = "")
+        {
+            var powerUps = FilterPowerUps(raretyFilter, notAllowedFilter, containsName);
+            if (powerUps.Count == 0)
+                return null;
+
+            int randomIndex = UnityEngine.Random.Range(0, powerUps.Count);
+            return powerUps[randomIndex];
+        }
+
+        /// <summary>
+        /// Return a list of spells that can be filtered by :
+        ///     - Rarety
+        ///     - Type 
+        ///     - State Effects
+        /// </summary>
+        /// <param name="raretyFilter">        allowed types of rarety for the runes                           </param>
+        /// <param name="elementsFilter">  allowed elements of the runes                                   </param>
+        /// <param name="notAllowedFilter">     list of not runes that are not allowed to be in the return data </param>
+        /// <returns></returns>
+        public static List<PowerUpData> FilterPowerUps(List<ERarety> raretyFilter = default, List<string> notAllowedFilter = default, string containsName = "")
+        {
+            List<PowerUpData> filteredData = new List<PowerUpData>();
+            foreach (var data in m_PowerUps.Values)
+            {
+                // CHECK : not in not allowed spells
+                if (notAllowedFilter != null && notAllowedFilter.Contains(data.Name))
+                    continue;
+
+                // CHECK : rarety
+                if (raretyFilter != null && raretyFilter.Count > 0 && !raretyFilter.Contains(data.Rarety))
+                    continue;
+
+                // FILTER : not in not allowed spells
+                if (notAllowedFilter != null && notAllowedFilter.Contains(data.Name))
+                    continue;
+
+                // FILTER : name contains string
+                if (!string.IsNullOrEmpty(containsName) && !data.Name.ToLower().Contains(containsName.ToLower()))
+                    continue;
+
+                filteredData.Add(data);
+            }
+
+            return filteredData;
+        }
+
 
         #endregion
     }

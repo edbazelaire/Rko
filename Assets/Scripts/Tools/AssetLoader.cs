@@ -1,8 +1,10 @@
 ﻿using Data.GameManagement;
 using Enums;
 using Game;
+using Game.UI.EndGameUI;
 using Menu.Common.Buttons;
 using Save;
+using System.Linq;
 using UnityEngine;
 
 namespace Tools
@@ -19,6 +21,7 @@ namespace Tools
         public const string c_CharacterDataPath             = c_DataPath + "Characters/";
         public const string c_SpellDataPath                 = c_DataPath + "Spells/";
         public const string c_StateEffectDataPath           = c_DataPath + "StateEffects/";
+        public const string c_PowerUpsPath                  = c_DataPath + "PowerUps/";
         public const string c_ItemsDataPath                 = c_DataPath + "Items/";
         public const string c_AchievementsDataPath          = c_DataPath + "Achievements/";
         public const string c_ChestsDataPath                = c_ItemsDataPath + "Chests/";
@@ -36,10 +39,12 @@ namespace Tools
         public const string c_ArenaBackgroundsPath          = c_BackgroundsPath + "Arenas/";
         // ---- Characters 
         public const string c_CharactersPreviewPath         = c_PrefabsPath + "Characters/";
+        public const string c_BossesPreviewPath             = c_PrefabsPath + "Bosses/";
         // ---- Spells 
         public const string c_SpellsPrefabsPath             = c_PrefabsPath + "Spells/";
         // ---- Items 
         public const string c_ItemsPrefabPath               = c_PrefabsPath + "Items/";
+        public const string c_ParticlesPrefabPath           = c_PrefabsPath + "Particles/";
 
         // =============================================================================================================
         // UI 
@@ -48,6 +53,7 @@ namespace Tools
         public const string c_TemplatesUIPath               = c_UIPath  + "Templates/";
         public const string c_TemplatesShopPath             = c_TemplatesUIPath + "Shop/";
         public const string c_AchievementsTemplatesPath     = c_TemplatesUIPath + "Achievements/";
+        public const string c_PowerUpsTemplatesPath         = c_TemplatesUIPath + "PowerUps/";
         // ---- Commons
         public const string c_CommonPath                    = c_UIPath + "Common/";
         public const string c_ButtonPath                    = c_CommonPath + "Buttons/";
@@ -61,6 +67,7 @@ namespace Tools
         // ---- Arena Background
         public const string c_GameContentPath               = c_UIPath + "Game/";
         public const string c_ArenaBackgroundPath           = c_GameContentPath + "Arena/";
+        public const string c_TutoGameObjectsPath           = c_GameContentPath + "Tuto/";
         // ---- solo mode ui
         public const string c_GameSectionPath               = c_MainTabPath + "GameSection/";
         public const string c_ArenaModeUIPath               = c_GameSectionPath + "ArenaMode/";
@@ -81,6 +88,7 @@ namespace Tools
         public const string c_ButtonsPath                   = c_UISpritesPath + "Buttons/";
         public const string c_RaysPath                      = c_UISpritesPath + "Rays/";
         public const string c_TutoUIPath                    = c_UISpritesPath + "Tuto/";
+        public const string c_CaptionsPath                  = c_TutoUIPath + "Captions/";
         
         // -- Backgrounds
         public const string c_BackgroundsImagePath         = c_SpritesPath + "Backgrounds/";
@@ -98,6 +106,7 @@ namespace Tools
         // -- Icons
         public const string c_IconPath                      = c_SpritesPath + "Icons/";
         public const string c_IconCharactersPath            = c_IconPath + "Characters/";
+        public const string c_IconBossesHeadsPath           = c_IconCharactersPath + "BossesHeads/";
         public const string c_IconSpellsPath                = c_IconPath + "Spells/";
         public const string c_IconStateEffectsPath          = c_IconSpellsPath + "StateEffects/";
         public const string c_IconRunesPath                 = c_IconPath + "Runes/";
@@ -176,11 +185,16 @@ namespace Tools
 
         #region Data Loading
 
-        public static ArenaData LoadArenaData(EArenaType arena, EArenaDifficulty? arenaDifficulty = null)
+        public static ArenaData LoadArenaData(EArenaType arena, SArenaDifficulty? arenaDifficulty = null)
         {
             if (! arenaDifficulty.HasValue)
-                arenaDifficulty = ProgressionCloudData.GetArenaDifficulty(arena);
-            return Load<ArenaData>(arena.ToString() + "_" + arenaDifficulty.Value.ToString(), c_ArenaDataPath);
+            {
+                arenaDifficulty = ProgressionCloudData.GetUnlockedArenaDifficulty(arena);
+            }
+
+            var arenaData = Load<ArenaData>(arena.ToString() + "_" + arenaDifficulty.Value.Difficulty.ToString(), c_ArenaDataPath);
+            arenaData.SetDifficultyLevel(arenaDifficulty.Value.Level);
+            return arenaData;
         }
 
 
@@ -211,9 +225,13 @@ namespace Tools
 
         #region Character & Spells Prefabs Loading
 
-        public static GameObject LoadCharacterPreview(ECharacter character)
+        public static GameObject LoadCharacterPreview(string character)
         {
-            return Load<GameObject>(character.ToString() + "Preview", c_CharactersPreviewPath + character.ToString() + "/");
+            GameObject prefab = Load<GameObject>(character + "Preview", c_CharactersPreviewPath + character + "/", false);
+            if (prefab == null)
+                prefab = Load<GameObject>(character + "Preview", c_BossesPreviewPath + character + "/", false);
+
+            return prefab;
         }
 
         public static GameObject[] LoadSpellPrefabs()
@@ -334,15 +352,41 @@ namespace Tools
             return Load<LeagueBannerButton>("LeagueBannerButton", c_RankedModeUIPath);
         }
 
+        public static PowerUpItem LoadPowerUpItem(ERarety rarety)
+        {
+            return Load<PowerUpItem>("PowerUpItem_" + rarety.ToString(), c_PowerUpsTemplatesPath);
+        }
+
         #endregion
 
 
         #region Tutorial Sprites
 
-        public static Sprite LoadCaption(ECaptionType captionType)
+        public static Sprite LoadCaption(ECaptionType captionType, ECaptionColor color = ECaptionColor.None)
         {
-            return Load<Sprite>("Caption_" + captionType.ToString(), c_TutoUIPath);
+            // Load all sprites from the given path
+            var allCaptions = LoadAll<Sprite>(c_CaptionsPath);
+
+            // get start name
+            string startsWith = "Caption";
+            if (captionType != ECaptionType.None)
+                startsWith += "_" + captionType.ToString();
+            if (color != ECaptionColor.None)
+                startsWith += "_" + color.ToString();
+
+            // Filter the sprites that match the prefix
+            var filteredCaptions = allCaptions
+                                    .Where(sprite => sprite.name.StartsWith(startsWith))
+                                    .ToArray(); // Convert the result to an array for random access
+
+            // If no sprites match the criteria, return null to avoid errors
+            if (filteredCaptions.Length == 0)
+                return null;
+
+            // Return a random sprite from the filtered list
+            return filteredCaptions[Random.Range(0, filteredCaptions.Length)];
         }
+
 
         #endregion
 
@@ -388,7 +432,7 @@ namespace Tools
                     ErrorHandler.Error("Unhandled type of enum " + iconType + " for icon " + itemName + " - skipping");
                 
                 // no specific found : load any icon 
-                return Load<Sprite>("c_IconPrefix" + itemName, c_IconPath);
+                return Load<Sprite>(c_IconPrefix + itemName, c_IconPath);
             }
             return Load<Sprite>(path + c_IconPrefix + itemName);
         }
@@ -398,9 +442,14 @@ namespace Tools
             return LoadIcon(value.ToString(), value.GetType());
         }
 
-        public static Sprite LoadCharacterIcon(ECharacter character)
+        public static Sprite LoadCharacterIcon(string character)
         {
-            return Load<Sprite>(c_IconCharactersPath + c_IconPrefix + character.ToString());
+            return Load<Sprite>(c_IconCharactersPath + c_IconPrefix + character);
+        }
+
+        public static Sprite LoadBossHead(string boss)
+        {
+            return Load<Sprite>(c_IconBossesHeadsPath + boss + "_Head");
         }
 
         /// <summary>

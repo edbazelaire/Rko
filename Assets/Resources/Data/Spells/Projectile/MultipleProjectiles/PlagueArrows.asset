@@ -28,6 +28,7 @@ MonoBehaviour:
   SpellEventActions:
   - Prefab: {fileID: 8404073712820093283, guid: 7c07f264d7b379c4d9e0c8d9238115f4, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
       StartSpellPart: 2
       EndSpellPart: 0
@@ -45,6 +46,9 @@ MonoBehaviour:
     StateEffects: 
   - Prefab: {fileID: 5138121657292497717, guid: ceef5902ada59ee458474fef9111c2fc, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX:
+    - AudioClip: {fileID: 8300000, guid: ab7f421ad803a894fb4f2fae8fa250a4, type: 3}
+      SoundDuration: 0
     GFXLifetime:
       StartSpellPart: 4
       EndSpellPart: 0
@@ -105,8 +109,11 @@ MonoBehaviour:
   m_Speed: 8
   ProjectileData: {fileID: 0}
   MultiProjectileType: 1
+  m_IsBlocking: 0
   m_NProjectiles: 5
   m_ProjectileZoneSize: -1
   m_DelayBetweenLaunches: 0.5
   m_NWaves: 1
   m_DelayBetweenWaves: 0
+  OnCastWaveSoundFX: {fileID: 0}
+  OnCastProjectileSoundFX: {fileID: 0}

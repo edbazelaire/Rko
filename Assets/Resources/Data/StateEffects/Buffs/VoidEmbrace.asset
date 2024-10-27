@@ -16,14 +16,35 @@ MonoBehaviour:
     for {0} seconds
   m_DescriptionVariables: 01000000
   m_StateEffectType: 0
-  m_VisualEffects: []
+  m_VisualEffects:
+  - Prefab: {fileID: 2910976597878939058, guid: a4c395f28b6718c49802ad4358a5ca72, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      StartSpellPart: 3
+      EndSpellPart: 5
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 6
+    OrderInLayer: 0
+    SpawnTarget: 2
+    SpawnLocation: 0
+    BodyPart: 7
+    IsFollowing: 1
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 0
   m_DefaultState: 0
+  m_Priority: 0
   m_Duration: 6
+  m_IsInstantanious: 0
   m_MaxStacks: 1
+  m_StackDecay: -1
   m_SpeedBonus: 0
   m_CastSpeed: 0
   m_AttackSpeed: 0
@@ -35,12 +56,16 @@ MonoBehaviour:
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
   m_BonusLifeSteal: 0
+  m_BonusBurnDamages: 0
+  m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel:
   - StateEffectProperty: 1
     ScalingFactor: 0.05
   m_StateEffectScalingStacks: []
+  m_SpellEffectType: 0
+  m_AllowedSpellTypes: 
   m_OnHits: []
   m_AllyStateEffects: []
   m_EnemyStateEffects:

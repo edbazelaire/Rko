@@ -188,7 +188,7 @@ namespace Inventory
                 // get all other characters to level up
                 foreach (ECharacter character in Enum.GetValues(typeof(ECharacter)))
                 {
-                    if (character == ECharacter.Count)
+                    if (character == ECharacter.None)
                         continue;
 
                     SCollectableCloudData charData = InventoryCloudData.Instance.GetCollectable(character);

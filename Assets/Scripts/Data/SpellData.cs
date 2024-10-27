@@ -14,7 +14,6 @@ using System.Linq;
 using Data.GameManagement;
 using System.Reflection;
 using MyBox;
-using UnityEngine.UIElements;
 
 namespace Data
 {
@@ -43,9 +42,8 @@ namespace Data
     {
         #region Members
 
-        [SerializeField] protected string m_Description = "";
-        [SerializeField] protected List<SDescriptionVariable>   m_DescriptionVariables = new List<SDescriptionVariable>();
-
+        // ===========================================================================
+        // Serialized Data
         [Description("List of Element catagories of the spell")]
         [SerializeField] protected List<ESpellElement> m_SpellElements;
         [Description("Is this spell linked to a specific character")]
@@ -82,24 +80,28 @@ namespace Data
         public ESpellTarget                 SpellTarget         = ESpellTarget.FirstEnemy;
         [Description("Type of targetting for the spell")]
         public ESpellEvent                  LockTargetAt        = ESpellEvent.OnCast;
+        [Description("Is the spell effect applied when NOT hitting the target ?")]
+        public bool                         ApplyIfNotHitting   = false;
         [Description("Maximum number of target that this spell can hit")]
         public int                          MaxHit              = 1;
         [Description("Energy gained when this spell hits his target")]
         public int                          EnergyGain          = 10;
         [Description("Request amount on energy to be able to cast this spell")]
         public int                          EnergyCost          = 0;
-        [Description("Damage of the spell")]
-        [SerializeField] public int         m_Damage            = 0;
-        [Description("Heals provided to the target")]
-        [SerializeField] public int         m_Heal              = 0;
-        [Description("Percentage of damages healed on hit")]
-        [SerializeField] protected float    m_LifeSteal         = 0f;
+        [SerializeField, Description("Damage of the spell")]
+        public int                          m_Damage            = 0;
+        [SerializeField, Description("Heals provided to the target")]
+        public int                          m_Heal              = 0;
+        [SerializeField, Description("Quantity of (permanant) shield provided to the target")] 
+        public int                          m_Shield            = 0;
+        [SerializeField, Description("Percentage of damages healed on hit")]
+        protected float                     m_LifeSteal         = 0f;
         [Description("Max distance of the spell")]
         public float                        Distance            = -1f;
         [Description("List of properties that are overriten on the <OnHit> spells")]
         public List<ESpellProperty>         OverrideOnHitProperties;
-        [Description("Duration of the spell")]
-        [SerializeField] public float       m_Duration          = 0f;
+        [SerializeField, Description("Duration of the spell")]
+        public float                        m_Duration          = 0f;
         [Description("Delay of the spell to be instantiated after cast")]
         public float                        Delay               = 0f;
 
@@ -143,7 +145,7 @@ namespace Data
         public virtual ESpellType SpellType => ESpellType.InstantSpell;
         public float Size => m_Size >= 0 ? m_Size * Settings.SpellSizeFactor : ArenaManager.Instance.TargettableAreaSize;
         protected override Type m_EnumType => typeof(ESpell);
-        public ESpell Spell => (ESpell)Id;
+        public ESpell Spell => Id == null ? ESpell.None : (ESpell)Id;
 
         // ===========================================================================
         // Level Dependent Members
@@ -151,8 +153,11 @@ namespace Data
         public virtual float Cooldown           => Mathf.Max(Mathf.Round(100f * m_Cooldown / GetSpellLevelFactor(ESpellProperty.Cooldowns)) / 100f, 0f);
         public virtual int Damage               => (int)Math.Round(m_Damage * GetSpellLevelFactor(ESpellProperty.Damages));
         public virtual int Heal                 => (int)Math.Round(m_Heal * GetSpellLevelFactor(ESpellProperty.Heal));
+        public virtual int Shield               => (int)Math.Round(m_Shield * GetSpellLevelFactor(ESpellProperty.Shield));
         public virtual float LifeSteal          => m_LifeSteal * GetSpellLevelFactor(ESpellProperty.LifeSteal);
         public virtual float Duration           => m_Duration * GetSpellLevelFactor(ESpellProperty.Duration);
+        /// <summary> is the "IsCasting" over once the spell has been casted (before delay) ? </summary>
+        public virtual bool IsCompletedOnCast   => true;
 
         #endregion
 
@@ -179,17 +184,17 @@ namespace Data
             // wait end of delay
             while (delay > 0f)
             {
+                // if gameOver : exit
+                if (GameManager.IsGameOver)
+                    yield break;
+
                 delay -= Time.deltaTime;
                 yield return null;
             }
 
-            // if gameOver : exit
-            if (GameManager.IsGameOver)
-                yield break;
-
             // cast the spell at the end of the delay
             bool recalculateOnCast = LockTargetAt == ESpellEvent.OnSpawn;
-            Cast(clientId, target, position, rotation, recalculateTarget: recalculateOnCast);
+            Cast(clientId, target, position, rotation, recalculateTarget: recalculateOnCast && recalculateTarget);
         }
 
         /// <summary>
@@ -200,16 +205,17 @@ namespace Data
         /// <param name="position"></param>
         /// <param name="rotation"></param>
         /// <param name="recalculateTarget"></param>
-        public virtual void Cast(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default, bool recalculateTarget = true, bool recalculatePosition = true)
+        public virtual void Cast(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default, bool recalculateTarget = true, bool recalculatePosition = true, bool recalculateRotation = true)
         {
-            ErrorHandler.Log("Casting spell : " + Name, ELogTag.Spells);
-
             // recalculate target if required
             if (recalculateTarget)
                 CalculateTarget(ref target, clientId);
 
             if (recalculatePosition)
                 RecalculatePosition(ref position, target, clientId);
+
+            if (recalculateRotation)
+                RecalculateRotation(ref rotation);
 
             // instantiate the prefab of the spell
             GameObject spellGO = GameObject.Instantiate(GetSpellPrefab(), position, rotation);
@@ -431,12 +437,12 @@ namespace Data
                     break;
 
                 case ESpellTarget.Mirror:
-                    target = new Vector4(-controller.transform.position.x, target.y, 0f);
+                    target = new Vector3(-controller.transform.position.x, target.y, 0f);
                     break;
 
                 case ESpellTarget.Fixed:
                     direction = ArenaManager.GetAreaMovementDirection(controller.Team, true);
-                    target = new Vector4(controller.transform.position.x + direction * Settings.SpellFixedDistance, target.y, 0f);
+                    target = new Vector3(controller.transform.position.x + direction * Settings.SpellFixedDistance, target.y, 0f);
                     break;
 
                 default:
@@ -480,6 +486,10 @@ namespace Data
         #region Position
 
         public virtual void RecalculatePosition(ref Vector3 position, Vector3 target, ulong clientId) { }
+        public virtual void RecalculateRotation(ref Quaternion rotation)
+        {
+            rotation = Quaternion.identity;
+        }
 
 
         #endregion
@@ -694,54 +704,26 @@ namespace Data
         }
 
         /// <summary>
-        /// Get Description info of the StateEffect
+        /// Convert a description variable into a string implemented into the description
         /// </summary>
         /// <returns></returns>
-        public virtual string GetDescription()
+        public override string ConvertDescriptionVariable(SDescriptionVariable descriptionVariable, Dictionary<string, object> infos = default)
         {
-            List<string> values = new List<string>();
-            var infos = GetInfos();
-
-            foreach (SDescriptionVariable descriptionVariable in m_DescriptionVariables)
+            if (Enum.TryParse(descriptionVariable.Name, out ESpellProperty property))
             {
-                if (Enum.TryParse(descriptionVariable.Name, out EStateEffect _))
+                if (!TryGetProperty(property, out object value))
                 {
-                    values.Add(TextHandler.FormatStateEffectIcon(descriptionVariable.Name, descriptionVariable.WithIcon));
+                    ErrorHandler.Error("Unable to find property " + property + " in spell " + Name);
+                    return "<b>UNDEFINED</b>";
                 }
 
-                else if (infos.ContainsKey(descriptionVariable.Name))
-                {
-                    string value = infos[descriptionVariable.Name].ToString();
-                    if (float.TryParse(value, out float floatValue)) 
-                        value = TextHandler.FormatPropertyValue(floatValue, descriptionVariable.Name);
-                    
-                    string iconTag = descriptionVariable.WithIcon ? $" <sprite name=\"{"Ic_" + descriptionVariable.Name}\">" : "";
-                    values.Add($"<b>{value}</b>{iconTag}");
-                }
+                if (float.TryParse(value.ToString(), out float floatValue))
+                    value = TextHandler.FormatPropertyValue(floatValue, descriptionVariable.Name);
 
-                else if (Enum.TryParse(descriptionVariable.Name, out ESpellProperty property))
-                {
-                    if (! TryGetProperty(property, out object value))
-                    {
-                        ErrorHandler.Error("Unable to find property " + property + " in spell " + Name);
-                        values.Add("<b>UNDEFINED</b>");
-                        continue;
-                    }
-
-                    if (float.TryParse(value.ToString(), out float floatValue))
-                        value = TextHandler.FormatPropertyValue(floatValue, descriptionVariable.Name);
-
-                    values.Add($"<b>{value}</b>");
-                }
-
-                else
-                {
-                    ErrorHandler.Error("Unable to find property " + descriptionVariable.Name + " in info dict of spell " + Name);
-                    values.Add("<b>UNDEFINED</b>");
-                }
+                return $"<b>{value}</b>";
             }
 
-            return string.Format(m_Description, values.ToArray());
+            return base.ConvertDescriptionVariable(descriptionVariable, infos);
         }
 
         /// <summary>
@@ -877,9 +859,6 @@ namespace Data
 
         public void ForceAutoTarget()
         {
-            if (IsAutoTarget)
-                return;
-
             switch (SpellTarget)
             {
                 case (ESpellTarget.None):
@@ -898,10 +877,7 @@ namespace Data
         {
             get
             {
-                return SpellTarget != ESpellTarget.None
-                    && SpellTarget != ESpellTarget.EnemyZone
-                    && SpellTarget != ESpellTarget.AllyZone
-                    && SpellTarget != ESpellTarget.Free;
+                return true;
             }
         }
 

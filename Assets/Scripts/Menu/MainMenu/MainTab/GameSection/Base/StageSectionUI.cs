@@ -45,10 +45,10 @@ namespace Menu.MainMenu.MainTab
             base.FindComponents();
 
             m_PathDisplayContainer = Finder.Find(gameObject, "PathDisplayContainer");
-            m_CurrentStageDisplay = Finder.FindComponent<TMP_Text>(gameObject, "CurrentStageText");
+            m_CurrentStageDisplay = Finder.FindComponent<TMP_Text>(gameObject, "CurrentStageText", false);
         }
 
-        public void Initialize(int level, int currentLevel, int currentStage, int nStages)
+        public virtual void Initialize(int level, int currentLevel, int currentStage, int nStages)
         {
             base.Initialize();
 
@@ -73,6 +73,8 @@ namespace Menu.MainMenu.MainTab
 
         protected virtual void RefreshTitle()
         {
+            if (m_CurrentStageDisplay == null)
+                return;
             m_CurrentStageDisplay.text = GetLevelString();
         }
 

@@ -15,7 +15,6 @@ using Unity.Services.Authentication;
 using Unity.Services.CloudSave;
 using Unity.Services.CloudSave.Models;
 using Unity.Services.CloudSave.Models.Data.Player;
-using Unity.Services.Relay.Models;
 using Unity.VisualScripting;
 
 namespace Save
@@ -884,7 +883,9 @@ namespace Save
             {
                 // Make KEY_PSEUDO_CHANGED un-resetable
                 case KEY_PSEUDO_CHANGED:
-                    //Instance.m_Data[key] = false;
+                    break;
+
+                case KEY_TUTO_DONE:
                     break;
 
                 case KEY_CURRENT_PROFILE_DATA:

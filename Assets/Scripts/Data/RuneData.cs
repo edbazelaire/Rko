@@ -20,9 +20,6 @@ namespace Data
         [SerializeField, Tooltip("When set : gain the effects of the previous Rune value with a BonusLevel")]
         int m_BonusLevel;
 
-        [SerializeField, Tooltip("Is Rune getting overwritten by the next rune ?")]
-        bool m_IsOverwritten;
-
         [SerializeField, Tooltip("List of effects that gets triggered while Rune is active")]
         List<STriggerEffect> m_TriggerEffects;
 
@@ -33,7 +30,6 @@ namespace Data
 
         public readonly int Level => m_Level;
         public readonly int BonusLevel => m_BonusLevel;
-        public readonly bool IsOverwritten => m_IsOverwritten;
         public readonly List<STriggerEffect> TriggerEffects => m_TriggerEffects;
         public readonly List<SCharacterStatScaling> BonusStats => m_BonusStats;
 

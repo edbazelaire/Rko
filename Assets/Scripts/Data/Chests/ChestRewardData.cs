@@ -284,13 +284,11 @@ namespace Data
                         {
                             if (usedSpells == null)
                             {
-                                ErrorHandler.Error("UsedSpells is null");
                                 usedSpells = new List<ESpell>();
                             }
 
                             if (SpellElements == null)
                             {
-                                ErrorHandler.Error("SpellElements is null");
                                 SpellElements = new ESpellElement[0];
                             }
 
@@ -360,7 +358,7 @@ namespace Data
                             }
 
                             // GET RANDOM RUNE matching provided filters of the chest
-                            bool unlockedOnly = UnlockedOnly();
+                            bool unlockedOnly = IsUnlockedOnly();
                             runeData = SpellLoader.GetRandomRune(
                                 raretyFilter: new List<ERarety>() { item.Key },
                                 elementsFilter: SpellElements.ToList(),
@@ -373,6 +371,15 @@ namespace Data
                                 runeData = SpellLoader.GetRandomRune(
                                     raretyFilter: new List<ERarety>() { item.Key },
                                     elementsFilter: SpellElements.ToList(),
+                                    unlocked: false                         // allow not unlocked only
+                                );
+                            }
+
+                            // NO RUNE FOUND : remove unlocked only filter and SpellElement filter
+                            if (runeData == null)
+                            {
+                                runeData = SpellLoader.GetRandomRune(
+                                    raretyFilter: new List<ERarety>() { item.Key },
                                     unlocked: false                         // allow not unlocked only
                                 );
                             }
@@ -403,7 +410,7 @@ namespace Data
                             ErrorHandler.Error(e.Message);
                             ErrorHandler.Error(TextHandler.ToString(new Dictionary<string, string>() {
                                 { "item.Key",           item.Key.ToString() },
-                                { "usedSpells",         TextHandler.ToString(usedRunes) },
+                                { "usedRunes",          TextHandler.ToString(usedRunes) },
                                 { "SpellElements",      TextHandler.ToString(SpellElements.ToList()) },
                             }));
                         }
@@ -421,7 +428,7 @@ namespace Data
         /// </summary>
         /// <param name="unlockedPerc"></param>
         /// <returns></returns>
-        bool UnlockedOnly(float unlockedPerc = 0.5f)
+        bool IsUnlockedOnly(float unlockedPerc = 0.5f)
         {
             return Mathf.Clamp01(unlockedPerc) >= UnityEngine.Random.Range(0f, 1f);
         }

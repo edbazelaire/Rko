@@ -1,4 +1,5 @@
-﻿using Data.GameManagement;
+﻿using Assets;
+using Data.GameManagement;
 using Enums;
 using Save;
 using System;
@@ -18,9 +19,11 @@ namespace Menu.PopUps
         ArenaData   m_ArenaData;
 
         Image                   m_Background;
+        Canvas                  m_OverlayCanvas;
         GameObject              m_ScrollContent;
         GameObject              m_Viewport;
         ArenaStageDisplayUI     m_StageDisplayUIPrefab;
+        ArenaInfoSidebar        m_ArenaInfoSidebar;
 
         List<ArenaStageDisplayUI> m_Stages;
 
@@ -29,30 +32,36 @@ namespace Menu.PopUps
 
         #region Init & End
 
-        public void Initialize(EArenaType arenaType)
-        {
-            m_ArenaType = arenaType;
-            m_ArenaData = AssetLoader.LoadArenaData(arenaType, ProgressionCloudData.GetArenaDifficulty(arenaType));
-
-            base.Initialize();
-        }
-
         protected override void FindComponents()
         {
             base.FindComponents();
 
             m_StageDisplayUIPrefab = AssetLoader.Load<ArenaStageDisplayUI>("ArenaStageDisplay", AssetLoader.c_UIPath + "OverlayScreens/Components/RewardsPath/ArenaPathContent/");
+            m_ArenaInfoSidebar = Finder.FindComponent<ArenaInfoSidebar>(gameObject, "ArenaInfoSidebar");
 
             m_Background = Finder.FindComponent<Image>(gameObject, "Background");
+            m_OverlayCanvas = Finder.FindComponent<Canvas>(gameObject, "OverlayCanvas");
             m_ScrollContent = Finder.Find(gameObject, "ScrollContent");
             m_Viewport = Finder.Find(gameObject, "Viewport");
+        }
+
+        public void Initialize(EArenaType arenaType, SArenaDifficulty arenaDifficulty)
+        {
+            m_ArenaType = arenaType;
+            m_ArenaData = AssetLoader.LoadArenaData(arenaType, arenaDifficulty);
+
+            base.Initialize();
         }
 
         protected override void OnPrefabLoaded()
         {
             base.OnPrefabLoaded();
 
-            SetupStagesDisplay();
+            // rescale canvas to be above the rest
+            m_OverlayCanvas.sortingLayerName = "Overlay";
+            m_OverlayCanvas.sortingOrder = OverlayScreen.OrderInLayer + 100;
+
+            RefreshUI();
         }
 
         protected override void OnInitializationCompleted()
@@ -72,12 +81,30 @@ namespace Menu.PopUps
 
         #region GUI Manipulators
 
+        void RefreshUI()
+        {
+            SetupArenaInfoSidebar();
+            SetupStagesDisplay();
+        }
+
+        void SetupArenaInfoSidebar()
+        {
+            if (ProgressionCloudData.HasArenaInProgress)
+            {
+                m_ArenaInfoSidebar.Initialize();
+            }
+            else
+            {
+                m_ArenaInfoSidebar.gameObject.SetActive(false);
+            }
+        }
+
         void SetupStagesDisplay()
         {
             UIHelper.CleanContent(m_ScrollContent);
             m_Stages = new List<ArenaStageDisplayUI>();
             
-            for (int i = 0; i < m_ArenaData.MaxLevel; i++)
+            for (int i = 0; i < m_ArenaData.MaxLevel + 1; i++)
             {
                 var stageDisplayUI = Instantiate(m_StageDisplayUIPrefab, m_ScrollContent.transform);
                 stageDisplayUI.Initialize(m_ArenaData, i, m_ArenaType);
@@ -125,36 +152,43 @@ namespace Menu.PopUps
         protected override void RegisterListeners()
         {
             base.RegisterListeners();
-
-            ProgressionCloudData.ArenaDataChangedEvent += OnArenaDataChanged;
+            if (ProgressionCloudData.HasArenaInProgress)
+                m_ArenaInfoSidebar.AbandonButton.onClick.AddListener(OnAbandonButtonClicked);
+            ProgressionCloudData.CurrentArenaDataChangedEvent += OnCurrentArenaDataChanged;
         }
 
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
 
-            ProgressionCloudData.ArenaDataChangedEvent -= OnArenaDataChanged;
+            if (ProgressionCloudData.HasArenaInProgress)
+                m_ArenaInfoSidebar.AbandonButton.onClick.RemoveListener(OnAbandonButtonClicked);
+            ProgressionCloudData.CurrentArenaDataChangedEvent -= OnCurrentArenaDataChanged;
         }
 
         /// <summary>
         /// 
         /// </summary>
-        protected void OnArenaDataChanged(EArenaType arenaType)
+        protected void OnCurrentArenaDataChanged()
         {
-            // check is same type
-            if (m_ArenaData.ArenaType == arenaType)
-                return;
-
-            // check that the difficulty has changed
-            if (m_ArenaData.ArenaDifficulty == ProgressionCloudData.GetArenaDifficulty(m_ArenaType))
-                return;
-
-              ///////////////////////////////////////
-             // TODO : Animation Hard Core mode ? //
-            ///////////////////////////////////////
-
             // Refresh the interface with the new data
-            Initialize(m_ArenaType);
+            RefreshUI();
+        }
+
+        void OnAbandonButtonClicked()
+        {
+            Main.ConfirmPopUp(
+                message: "Do you really want to end this game ? All progression will be loss",
+                title: "",
+                onValidate: OnAbandonValidated,
+                onCancel: null
+            );
+        }
+
+        void OnAbandonValidated()
+        {
+            ProgressionCloudData.EndCurrentArena();
+            Exit();
         }
 
         #endregion

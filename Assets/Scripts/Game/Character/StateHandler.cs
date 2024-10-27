@@ -2,7 +2,6 @@
 using Enums;
 using Game.Loaders;
 using Game.Spells;
-using MyBox;
 using System;
 using System.Collections.Generic;
 using Tools;
@@ -20,13 +19,13 @@ namespace Game.Character
         // -- Network Variables
         MNetworkList<FixedString64Bytes>    m_StateEffectList;
         NetworkVariable<float>              m_SpeedBonus = new(1f);
-        NetworkVariable<int>                m_RemainingShield = new(0);
         NetworkVariable<EAnimation>         m_AnimationState = new(EAnimation.None);
 
         // -- SERVER SIDE
         Controller              m_Controller;
         CharacterData           m_CharacterData;
         List<StateEffect>       m_StateEffects;
+        int                     m_RemainingShield = 0;
 
         // ==============================================================================================
         // PUBLIC ACCESSORS
@@ -41,20 +40,26 @@ namespace Game.Character
             || m_StateEffectList.Contains(EStateEffect.Malediction.ToString());
 
         public bool IsInvulnerable => m_StateEffectList.Contains(EStateEffect.Invulnerable.ToString())
+            || m_StateEffectList.Contains(EStateEffect.Vanish.ToString())
             || m_StateEffectList.Contains(EStateEffect.SpecialAnimation.ToString());
 
         public bool IsUncontrollable => m_StateEffectList.Contains(EStateEffect.Uncontrollable.ToString())
-            || m_StateEffectList.Contains(EStateEffect.SpecialAnimation.ToString());
+            || m_StateEffectList.Contains(EStateEffect.Vanish.ToString())
+            || m_StateEffectList.Contains(EStateEffect.SpecialAnimation.ToString())
+            || CharacterLoader.IsBoss(m_Controller.Character);
 
         public bool IsUnTargetable => m_StateEffectList.Contains(EStateEffect.UnTargettable.ToString())
             || m_StateEffectList.Contains(EStateEffect.SpecialAnimation.ToString())
+            || m_StateEffectList.Contains(EStateEffect.Vanish.ToString())
             || m_StateEffectList.Contains(EStateEffect.Jump.ToString())
             || m_StateEffectList.Contains(EStateEffect.Invisible.ToString());
 
-        public bool IsImmuneToEffects => HasState(EStateEffect.SpecialAnimation);
+        public bool IsImmuneToEffects => HasState(EStateEffect.SpecialAnimation)
+            || m_StateEffectList.Contains(EStateEffect.Vanish.ToString())
+;
 
         public NetworkVariable<float> SpeedBonus            => m_SpeedBonus;
-        public NetworkVariable<int> RemainingShield         => m_RemainingShield;
+        public int RemainingShield         => m_RemainingShield;
         public NetworkVariable<EAnimation> AnimationState   => m_AnimationState;
 
         // ==============================================================================================
@@ -82,13 +87,6 @@ namespace Game.Character
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-        }
-
-        public override void OnNetworkDespawn()
-        {
-            if (!GameManager.IsGameOver)
-                ErrorHandler.Error("Calling OnNetworkDespawn() while game not over");
-            base.OnNetworkDespawn();
         }
 
         public void Initialize(CharacterData characterData)
@@ -211,7 +209,7 @@ namespace Game.Character
             damages = Math.Max(0, damages + GetInt(EStateEffectProperty.BonusDamages));
 
             // apply res fix first
-            return (int)Mathf.Round(damages * GetFloat(EStateEffectProperty.BonusDamagesPerc));   
+            return Math.Max(0, (int)Mathf.Round(damages * GetFloat(EStateEffectProperty.BonusDamagesPerc)));   
         }
 
         public int ApplyBonusHeal(int heal)
@@ -220,7 +218,7 @@ namespace Game.Character
             heal = Math.Max(0, heal + GetInt(EStateEffectProperty.BonusHeal));
 
             // apply res fix first
-            return (int)Mathf.Round(heal * GetFloat(EStateEffectProperty.BonusHealPerc));   
+            return Math.Max(0, (int)Mathf.Round(heal * GetFloat(EStateEffectProperty.BonusHealPerc)));   
         }
 
         public float ApplyBonus(float baseValue, EStateEffectProperty stateEffectProperty)
@@ -284,13 +282,16 @@ namespace Game.Character
 
             m_SpeedBonus.Value  = GetFloat(EStateEffectProperty.SpeedBonus);
 
+            int previousShield = m_Controller.Life.FinalShield;
             int baseValue = 0;
             foreach (var effect in m_StateEffects)
             {
                 baseValue += effect.RemainingShield;
             }
 
-            m_RemainingShield.Value = baseValue;
+            m_RemainingShield = baseValue;
+
+            m_Controller.Life.RecheckShield(previousShield);
         }
 
         /// <summary>
@@ -487,12 +488,17 @@ namespace Game.Character
 
         public int GetStacks(EStateEffect state)
         {
+            return GetStacks(state.ToString());
+        }
+
+        public int GetStacks(string state)
+        {
             if (! HasState(state))
                 return 0;
 
             foreach (var stateEffect in m_StateEffects)
             {
-                if (stateEffect.StateEffectName == state.ToString())
+                if (stateEffect.StateEffectName == state)
                 {
                     return stateEffect.Stacks;
                 }
@@ -522,7 +528,7 @@ namespace Game.Character
         /// <returns></returns>
         public int HitShield(int damages)
         {
-            if (m_RemainingShield.Value == 0)
+            if (m_RemainingShield == 0)
                 return damages;
 
             foreach (var effect in m_StateEffects)
@@ -556,7 +562,7 @@ namespace Game.Character
 
             foreach (var effect in m_StateEffects)
             {
-                if (! effect.HasProperty(property))
+                if (! effect.HasEffectProperty(property))
                     continue;
                 baseValue += effect.GetFloat(property);
             }
@@ -576,7 +582,7 @@ namespace Game.Character
             // add EXTRA VALUE from StateEffects
             foreach (var effect in m_StateEffects)
             {
-                if (!effect.HasProperty(property.ToString()))
+                if (!effect.HasEffectProperty(property))
                     continue;
                 baseValue += effect.GetInt(property);
             }

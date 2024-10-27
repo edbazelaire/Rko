@@ -1,8 +1,8 @@
-﻿using Enums;
+﻿using Data.GameManagement;
+using Enums;
 using Game;
 using Game.Loaders;
 using Game.Spells;
-using MyBox;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -126,12 +126,8 @@ namespace Data
         [SerializeField] protected List<SDamageConversionEffects> m_DamageConversionEffects;
 
         [Description("Spell Casted when the counter procs")]
-        [ConditionalField("CounterType", false, ECounterType.Proc)]
+        [MyBox.ConditionalField("CounterType", false, ECounterType.Proc)]
         public SpellData OnCounterProc;
-
-        [Header("Counter Extra Graphics")]
-        [Description("Change of character color")]
-        public Color ColorSwap;
 
 
         // ===================================================================================
@@ -164,6 +160,11 @@ namespace Data
                 case ESpawnLocation.Ground:
                     position = GameManager.Instance.GetPlayer(clientId).transform.position;
                     position.y = 0;
+                    break;
+
+                case ESpawnLocation.Hight:
+                    position = GameManager.Instance.GetPlayer(clientId).transform.position;
+                    position.y = Settings.SPELL_DIAGONAL_POS_Y;
                     break;
 
                 case ESpawnLocation.Sky:

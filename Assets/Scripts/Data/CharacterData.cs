@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Tools;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Data
@@ -80,19 +81,17 @@ namespace Data
 
         // ===============================================================================================================
         // PUBLIC / SERIALIZABLE FIELDS
-        [Header("Description")]
-        [SerializeField] string m_Description;
-
         [Header("Spells")]
-        public ESpell           AutoAttack;
-        public ESpell           SpecialAbility;
-        public ESpell           Ultimate;
+        [SerializeField] protected string   m_AutoAttack;
+        [SerializeField] protected string   m_SpecialAbility;
+        [SerializeField] protected string   m_Ultimate;
 
         [Header("Stats")]
-        public float            Size        = 1f;
-        public float            BaseSpeed   = 1f;
-        public int              BaseHealth  = 1000;
-        public int              MaxEnergy   = 100;
+        public float            Size            = 1f;
+        public float            BaseSpeed       = 1f;
+        public int              BaseHealth      = 1000;
+        public int              MaxEnergy       = 100;
+        public int              BaseEnergy      = 10;
 
         [Header("Bonus Stats")]
         [SerializeField] public float           HealthScaleFactor = 0.1f;
@@ -100,10 +99,13 @@ namespace Data
 
         // ===============================================================================================================
         // DEPENDENT ACCESSORS
-        protected override Type m_EnumType => typeof(ECharacter);
-        public ECharacter Character => (ECharacter)Id;
-        public int MaxHealth => (int)Math.Round(BaseHealth * Math.Pow(1 + HealthScaleFactor, m_Level - 1)) + (int)GetValue(EStateEffectProperty.Hp);
-        public float Speed => BaseSpeed + GetValue(EStateEffectProperty.SpeedBonus);
+        protected override Type m_EnumType  => typeof(ECharacter);
+        public ECharacter Character         => (ECharacter)Id;
+        public ESpell AutoAttack            => ParseSpell(m_AutoAttack);
+        public ESpell SpecialAbility        => ParseSpell( m_SpecialAbility);
+        public ESpell Ultimate              => ParseSpell(m_Ultimate);
+        public int MaxHealth                => (int)Math.Round(BaseHealth * Math.Pow(1 + HealthScaleFactor, m_Level - 1)) + (int)GetValue(EStateEffectProperty.Hp);
+        public float Speed                  => BaseSpeed + GetValue(EStateEffectProperty.SpeedBonus);
 
         #endregion
 
@@ -112,8 +114,27 @@ namespace Data
 
         public GameObject InstantiateCharacterPreview(GameObject parent)
         {
-            var go = GameObject.Instantiate(AssetLoader.LoadCharacterPreview(Character), parent.transform);
+            if (parent == null || parent.IsDestroyed())
+                return null;
+
+            var go = GameObject.Instantiate(AssetLoader.LoadCharacterPreview(Name), parent.transform);
             return go;
+        }
+
+        ESpell ParseSpell(string spellName)
+        {
+            if (spellName == "")
+            {
+                return ESpell.None;
+            }
+
+            if (!Enum.TryParse(spellName, out ESpell spell))
+            {
+                ErrorHandler.Error("Unable to parse " + spellName + " into spell");
+                return ESpell.None;
+            }
+
+            return spell;
         }
 
         #endregion
@@ -138,7 +159,7 @@ namespace Data
                 if (index < 0)
                 {
                     CharacterStatScaling.Add(characterStatScaling.AsBonus(m_Level));
-                    return;
+                    continue;
                 }
 
                 var current = CharacterStatScaling[index];

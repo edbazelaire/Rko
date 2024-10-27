@@ -20,9 +20,11 @@
         SpellInfoPopUp,
         StateEffectPopUp,
         TriggerEffectPopUp,
+        PowerUpInfoScreen,
 
         // -- message PopUps
         MessagePopUp,
+        ConfirmPopUp,
         PseudoPopUp,
         ErrorMessagePopUp,
         ConfirmBuyPopUp,
@@ -31,6 +33,7 @@
 
         // -- config popup
         SettingsPopUp,
+        MessageriePopUp,
     }
 
     public enum EScreenAspect
@@ -49,8 +52,10 @@
 
     public enum EArenaType
     {
+        None = -1,
+
         FireArena,
-        //FrostArena,
+        FrostArena,
     }
 
     public enum EArenaDifficulty
@@ -61,17 +66,34 @@
 
     public enum ECharacter
     {
+        None = -1,
+
         Kahnan,
         Alexander,
         Srug,
         Marcus,
         Nagini,
+    }
 
-        Count
+    public enum EBoss
+    {
+        None = -1,
+
+        IceGolem = 0,
+        MaiHau = 1,
+        Atassut = 2,
+
+        Zorg = 10,
+
+        // ======================================================================
+        // Mobs
+        Lunassian = 1000,
     }
 
     public enum ESpell
     {
+        None = -1,
+
         RockShower,
         Blazeburst,
         Fireball,
@@ -121,21 +143,38 @@
         Vortex,
         Shardrot,
 
-        Count
+        // ======================================================================
+        // BOSSES ABILITIES
+        // -- IceGolem
+        IceRock         = 10001,
+        Carapice        = 10002,
+        // -- MaiHau
+        Slicide         = 10101,
+        SlIceBreaker    = 10102,
+        PoisonDarts     = 10103,
+        // -- Atassut
+        Scythefall      = 10201,
+        Nightveil       = 10202,
+
+        // -- Lunassian
+        FerociousBite = 100001,
     }
 
     public enum ESpellType
     {
-        Projectile,
-        InstantSpell,
-        Aoe,
-        Counter,
-        Jump,
-        Zone,
-        Buff,
-        MultiProjectiles,
+        None = -1,
 
-        Count
+        Projectile          = 0,
+        InstantSpell        = 1,
+        Aoe                 = 2,
+        Counter             = 3,
+        Jump                = 4,
+        Zone                = 5,
+        Buff                = 6,
+        MultiProjectiles    = 7,
+        Teleportation       = 8,
+        MultiSpellData      = 9,
+        Mine                = 10,
     }
 
     public enum ESpellElement
@@ -328,6 +367,8 @@
 
         Line,
         Random,
+        RandomArea,
+        RandomLine,
     }
 
     public enum EJumpType
@@ -369,6 +410,7 @@
 
         Center,                 // spawn at the Center of the provided position
         Ground,                 // spawn on the ground (y = 0) at the X requested position
+        Hight,                  // spawn in the "Hight" at the X requested position
         Sky,                    // spawn in the sky at the X requested position
     }
 
@@ -426,6 +468,7 @@
         Combustion,
         Airborn,
         Infection,
+        Vanish,
     }
 
     public enum EStateEffectType
@@ -456,6 +499,7 @@
         TickDamages,
         TickHeal,
         TickShield,
+        Shield,
     }
 
     public enum EStateEffectProperty
@@ -522,6 +566,7 @@
         Silenced,
         CastHight,
         Airborn,
+        Self,                       // animation would be the name of the spell (for special spells)
     }
 
     public enum ECounterType
@@ -531,7 +576,7 @@
         Proc,
         Block,
         Reflect,
-        ApplyStateEffect
+        ApplyStateEffect,
     }
 
     public enum ECounterActivation
@@ -583,6 +628,8 @@
         AITaskMove          = 204,
         AITaskJump          = 205,
         AITaskCounter       = 206,
+        AITaskAutoAttack    = 207,
+        AITaskUseSpell      = 208,
 
         // CloudData
         CloudData           = 300,
@@ -729,7 +776,8 @@
     {
         Damage,
         Heal,
-        LifeSteal
+        LifeSteal,
+        Shield,
     }
 
     public enum ELeague
@@ -771,6 +819,7 @@
         Pyro_Master,
         Glacial_Conqueror,
         Heal_Checker,
+        Alpha_Tester,
     }
 
     public enum EAvatar
@@ -882,5 +931,12 @@
 
         Normal,
         Exclamation
+    }
+
+    public enum ECaptionColor
+    {
+        None,
+        White,
+        Black,
     }
 }

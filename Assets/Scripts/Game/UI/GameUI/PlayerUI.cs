@@ -23,6 +23,7 @@ namespace Game.UI
             EStateEffect.UnTargettable.ToString(), 
             EStateEffect.Jump.ToString(),
             EStateEffect.SpecialAnimation.ToString(),
+            EStateEffect.Vanish.ToString(),
         };
 
         Controller m_Controller = null;
@@ -67,9 +68,8 @@ namespace Game.UI
 
             // HealthBar
             m_ShieldBar = Finder.FindComponent<PlayerBarUI>(gameObject, "ShieldBar");
-            m_ShieldBar.Initialize(controller.StateHandler.RemainingShield.Value + controller.Life.Shield.Value, controller.Life.MaxHp.Value);
-            controller.Life.Shield.OnValueChanged                   += OnShieldChanged;
-            controller.StateHandler.RemainingShield.OnValueChanged  += OnShieldChanged;
+            m_ShieldBar.Initialize(controller.Life.FinalShield, controller.Life.MaxHp.Value);
+            controller.Life.FinalShieldChangedEvent                 += OnShieldChanged;
 
             // Energy Bar
             m_EnergyBar = Finder.FindComponent<PlayerBarUI>(gameObject, c_EnergyBar);
@@ -91,11 +91,12 @@ namespace Game.UI
 
             m_Controller.Life.MaxHp.OnValueChanged                      -= m_HealthBar.OnMaxValueChanged;
             m_Controller.Life.Hp.OnValueChanged                         -= m_HealthBar.OnValueChanged;
+            m_Controller.Life.FinalShieldChangedEvent                   -= m_ShieldBar.OnValueChanged;
             m_Controller.EnergyHandler.MaxEnergy.OnValueChanged         -= m_EnergyBar.OnMaxValueChanged;
             m_Controller.EnergyHandler.Energy.OnValueChanged            -= m_EnergyBar.OnValueChanged;
-            m_Controller.Life.MaxHp.OnValueChanged                      -= m_ShieldBar.OnMaxValueChanged;
-            m_Controller.StateHandler.RemainingShield.OnValueChanged    -= m_ShieldBar.OnValueChanged;
             m_Controller.StateHandler.OnStateEvent                      -= OnStateEvent;
+
+            //m_Controller.StateHandler.RemainingShield.OnValueChanged -= m_ShieldBar.OnValueChanged;
         }
 
         #endregion
@@ -161,7 +162,7 @@ namespace Game.UI
 
         void OnShieldChanged(int _, int newValue)
         {
-            m_ShieldBar.OnValueChanged(0, m_Controller.Life.Shield.Value + m_Controller.StateHandler.RemainingShield.Value);
+            m_ShieldBar.OnValueChanged(0, newValue);
         }
 
         #endregion

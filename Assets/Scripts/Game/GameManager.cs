@@ -6,13 +6,13 @@ using Enums;
 using Externals;
 using Game.Loaders;
 using Game.Spells;
-using Game.UI;
 using Managers;
 using Network;
 using Save;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Tools;
 using Unity.Netcode;
 using Unity.VisualScripting;
@@ -63,6 +63,7 @@ namespace Game
         List<ulong> m_ClientsInitialized = new();
         /// <summary> [CLIENT] used to check if the initialization is completed on the client side (to avoid sending multiple time the validation to the server) </summary>
         bool m_InitOnClientSide = false;
+        bool m_IsTuto = false;
 
         // ===================================================================================
         // PUBLIC ACCESSORS 
@@ -77,6 +78,7 @@ namespace Game
         public bool IsGameStarted => m_State.Value > EGameState.Intro;
         /// <summary> game is over </summary>
         public static bool IsGameOver => s_Instance == null || Instance.m_State.Value >= EGameState.GameOver || ErrorHandler.IsExiting;
+
 
         #endregion
 
@@ -109,6 +111,7 @@ namespace Game
 
             m_Controllers = new Dictionary<ulong, Controller>();
             m_InitOnClientSide = false;
+            m_IsTuto = Main.ForceIsNewPlayer || !ProfileCloudData.TutoDone;
 
             // instantiate listeners
             m_ProgressGameStart.OnValueChanged  += OnProgressGameStartChanged;
@@ -126,7 +129,7 @@ namespace Game
         {
             TimeErrorWrapper.Instance.New(TIME_WRAPPER_ID, 30f, OnInitializingTimeLimit);
 
-            while (GameUIManager.Instance != null && ! GameUIManager.Initialized)
+            while (GameUIManager.Instance == null || ! GameUIManager.Initialized)
             {
                 yield return null;
             }
@@ -152,6 +155,9 @@ namespace Game
 
             // reset value of static Instance, so the Initialize() would be re-called
             s_Instance = null;
+
+            if (m_IsTuto)
+                Destroy(TutoGameManager.Instance.gameObject);
 
             // destroy this GameManager
             Destroy(gameObject);
@@ -234,7 +240,7 @@ namespace Game
             else
             {
                 // create an AI prefab and spawn it
-                playerPrefab = Instantiate(CharacterLoader.Instance.PlayerAIPrefab, ArenaManager.Instance.transform);
+                playerPrefab = Instantiate(m_IsTuto ? CharacterLoader.Instance.PlayerTutoAIPrefab : CharacterLoader.Instance.PlayerAIPrefab, ArenaManager.Instance.transform);
                 playerPrefab.GetComponent<NetworkObject>().Spawn();
             }
            
@@ -309,9 +315,6 @@ namespace Game
             // once every one is initialized, setup the UI 
             SetupUIClientRPC();
 
-            // do a little shake of player position to be sure that everything is synchronized
-            ShakePlayers();
-
             // goto intro
             SetState(EGameState.Intro);
         }
@@ -377,21 +380,6 @@ namespace Game
             GameUIManager.Instance.SetUpIntroScreen();
         }
 
-        /// <summary>
-        /// Do a little position shake to make sure everything is synchronized for clients
-        /// </summary>
-        void ShakePlayers()
-        {
-            if (!IsServer)
-                return;
-
-            foreach (Controller player in m_Controllers.Values)
-            {
-                player.Movement.Shake();
-                player.Movement.ShakeClientRPC();
-            }
-        }
-
         #endregion
 
 
@@ -404,10 +392,10 @@ namespace Game
             if (!IsServer)
                 return;
 
-            //if (! ProfileCloudData.TutoDone)
-            //    StartTuto();
-            //else
-            StartCoroutine(PlayIntro());
+            if (m_IsTuto)
+                StartTuto();
+            else
+                StartCoroutine(PlayIntro());
         }
 
         void StartTuto()
@@ -416,7 +404,8 @@ namespace Game
             GameUIManager.IntroGameUI.gameObject.SetActive(false);
 
             // activate TUTO
-            TutoGameManager.Instance.Activate(m_Controllers[0], m_Controllers[1]);
+            if (IsServer)
+                TutoGameManager.Instance.Activate(m_Controllers[0], m_Controllers[BOT_CLIENT_ID]);
         }
 
         IEnumerator PlayIntro()
@@ -525,7 +514,7 @@ namespace Game
             {
                 case EGameMode.Arena:
                     ErrorHandler.Log("RefundGame() : Loading Arena Data : " + PlayerPrefsHandler.GetArenaType().ToString(), ELogTag.GameSystem);
-                    ProgressionCloudData.UpdateStageValue(PlayerPrefsHandler.GetArenaType(), true);
+                    ProgressionCloudData.AddArenaLoss(-1, true);
                     break;
 
                 case EGameMode.Ranked:
@@ -548,9 +537,6 @@ namespace Game
 
         #region Music & Sound
 
-
-        // ==============================================================================
-        // TODO : REMOVE
         [ClientRpc]
         public void PlaySoundClientRPC(string spellName, ESpellEvent spellAction)
         {
@@ -581,7 +567,6 @@ namespace Game
 
             SoundFXManager.PlayOnce(audioClip);
         }
-        // ==============================================================================
 
         [ClientRpc]
         public void PlayCastSoundClientRPC(string spellName)
@@ -659,6 +644,16 @@ namespace Game
 
             // none found -> return self
             return GetPlayer(slefId);
+        }
+
+        public List<Controller> GetAllEnemies(int team)
+        {
+            return m_Controllers.Values.Where(controller => controller.Team != team).ToList();
+        }
+
+        public List<Controller> GetAllAllies(int team)
+        {
+            return m_Controllers.Values.Where(controller => controller.Team == team).ToList();
         }
 
         public bool HasPlayer(ulong clientId)
@@ -809,6 +804,10 @@ namespace Game
 
         void OnPlayerDied()
         {
+            // END of the game is handled by the Tutorial Manager
+            if (m_IsTuto)
+                return;
+
             CheckGameEnd();
         }
 

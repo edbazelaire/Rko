@@ -81,7 +81,7 @@ namespace Menu.MainMenu.MainTab.GameSection.Training
 
         void RefreshCharacterPreview()
         {
-            UIHelper.SpawnCharacter(PlayerPrefsHandler.GetString<ECharacter>(EPlayerPref.TrainingCharacter), m_CharacterPreviewContainer);
+            UIHelper.SpawnCharacter(PlayerPrefs.GetString(EPlayerPref.TrainingCharacter.ToString()), m_CharacterPreviewContainer);
         }
 
         void RefreshRunePreview()

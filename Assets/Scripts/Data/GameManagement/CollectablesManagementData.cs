@@ -37,6 +37,8 @@ namespace Data.GameManagement
     {
         #region Members
 
+        public const int MAX_LEVEL = 14;
+
         [Description("Specific data for each rarety type of spells")]
         public List<SRaretyData> RaretyData;
         [Description("Quantity and Golds required for each character level up")]

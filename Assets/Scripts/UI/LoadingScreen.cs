@@ -24,6 +24,9 @@ namespace Assets.Scripts.UI
 
         public void SetProgress(float progress)
         {
+            if (m_LoadingBar == null)
+                return;
+
             m_LoadingBar.fillAmount = progress;
         }
 

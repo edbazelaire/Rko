@@ -51,7 +51,8 @@ namespace Menu.Common.Buttons
         protected override void RefreshUI()
         {
             base.RefreshUI();
-            m_BottomOverlay.gameObject.SetActive(m_Rune != ERune.None);
+            if (m_BottomOverlay != null)
+                m_BottomOverlay.gameObject.SetActive(m_Rune != ERune.None);
             CheckReplacementImage();
         }
 

@@ -3,11 +3,9 @@ using Data;
 using Data.GameManagement;
 using Enums;
 using Game.Loaders;
-using Game.SpellGFXs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Tools;
 using Unity.Collections;
 using Unity.Netcode;
@@ -56,7 +54,7 @@ namespace Game.Character
             m_Controller = Finder.FindComponent<Controller>(gameObject);
         }
 
-        public void Initialize(ECharacter character)
+        public void Initialize(string character)
         {
             CharacterData characterData = CharacterLoader.GetCharacterData(character, destroy: true);
             m_CharacterPreview = characterData.InstantiateCharacterPreview(gameObject);
@@ -370,6 +368,12 @@ namespace Game.Character
                     opacity = IsOwner ? 0.5f : 0f;
 
                 SetColor(new Color(1f, 1f, 1f, opacity));
+                return;
+            }
+            
+            if (changeEvent.Value == EStateEffect.Vanish.ToString())
+            {
+                HideCharacter(changeEvent.Type != NetworkListEvent<FixedString64Bytes>.EventType.RemoveAt);
                 return;
             }
         }

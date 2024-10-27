@@ -25,6 +25,22 @@ namespace Game.Spells
         }
     }
 
+    [Serializable]
+    public struct SBonusStats
+    {
+        public EStateEffectProperty StateEffectProperty;
+        public float BaseValue;
+        public float LevelScalingFactor;
+        public float StackScalingFactor;
+
+        public SBonusStats(EStateEffectProperty stateEffectProperty, float baseValue = 0f, float levelScalingFactor = 0.1f, float stackScalingFactor = 0.1f)
+        {
+            StateEffectProperty = stateEffectProperty;
+            BaseValue           = baseValue;
+            LevelScalingFactor  = levelScalingFactor;
+            StackScalingFactor  = stackScalingFactor;
+        }
+    }
 
     [CreateAssetMenu(fileName = "StateEffect", menuName = "Game/StateEffects/Default")]
     [System.Serializable]
@@ -32,7 +48,7 @@ namespace Game.Spells
     {
         #region Members
 
-        /// <summary> Event that is fired when, </summary>
+        /// <summary> Event fired at each state effect state </summary>
         public static Action<string, EStateEffectEvent, ulong, ulong> StateEffectEvent;
 
         // =========================================================================================
@@ -42,6 +58,7 @@ namespace Game.Spells
         [SerializeField] protected      EStateEffectType            m_StateEffectType = EStateEffectType.Default;
 
         [Header("Graphics")]
+        [SerializeField] protected      bool                        m_IsDisplayed = true;
         [SerializeField] protected      List<SPrefabSpawn>          m_VisualEffects;
         [SerializeField] protected      EAnimation                  m_Animation;
         [SerializeField] protected      AudioClip                   m_OnApplySoundFX;
@@ -60,6 +77,7 @@ namespace Game.Spells
         [SerializeField] protected      int                         m_StackDecay            = -1;   // number of stacks decaying at the end of the duration (-1 = all stacks)
 
         [Header("General Boosts")]
+        [SerializeField] protected      List<SBonusStats>           m_BonusStats;
         [SerializeField] protected      float                       m_SpeedBonus            = 0f;
         [SerializeField] protected      float                       m_CastSpeed             = 0f;
         [SerializeField] protected      float                       m_AttackSpeed           = 0f;
@@ -406,7 +424,6 @@ namespace Game.Spells
 
             // make sure that original level is copied
             clone.m_Level = m_Level;
-
             clone.SetLevel(level);
 
             return clone;
@@ -466,8 +483,16 @@ namespace Game.Spells
 
         #region Reflection Methods
 
-        public bool HasProperty(EStateEffectProperty property)
+        /// <summary>
+        /// Check if state effect has expected property
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        public bool HasEffectProperty(EStateEffectProperty property)
         {
+            if (! m_BonusStats.IsNullOrEmpty() && m_BonusStats.Any(value => value.StateEffectProperty == property))
+                return true;
+
             return TryGetPropertyInfo(property, out _, throwError: false);
         }
 
@@ -515,6 +540,9 @@ namespace Game.Spells
         /// <returns></returns>
         public virtual object GetProperty(EStateEffectProperty property)
         {
+            if (TryGetBonusStat(property, out float value))
+                return value;
+
             if (!TryGetPropertyInfo(property, out FieldInfo propertyInfo))
                 return null;
 
@@ -543,8 +571,39 @@ namespace Game.Spells
 
         #region Data Accessors
 
+        public virtual bool TryGetBonusStat(EStateEffectProperty property, out float value)
+        {
+            value = 0f;
+            
+            // check if bonus stats provided
+            if (m_BonusStats.IsNullOrEmpty())
+                return false;
+            
+            // check that bonus stats has requested value
+            if (! m_BonusStats.Any(value => value.StateEffectProperty == property))
+                return false;
+
+            // get bonus stats
+            SBonusStats bonusStats = m_BonusStats.FirstOrDefault(value => value.StateEffectProperty == property);
+
+            // calculate scaling factors (levels and stacks)
+            float levelFactor = (float)Math.Pow(1 + bonusStats.LevelScalingFactor, Math.Max(Level - 1, 0));
+            float stacksFactor = (float)Math.Pow(1 + bonusStats.StackScalingFactor, Math.Max(Stacks, 0));
+
+            value = bonusStats.BaseValue * levelFactor;
+            if (m_Controller == null)
+                return true;
+
+            value = m_Controller.StateHandler.ApplyBonus(value, property);      // Bonus values applied to the property
+            value *= Stacks * stacksFactor;                                     // apply Stack bonus 
+            return true;
+        }
+
         public virtual int GetInt(EStateEffectProperty property) 
         {
+            if (TryGetBonusStat(property, out float value))
+                return (int)Mathf.Round(value);
+
             SStateEffectScaling stateEffectScalingStacks = m_StateEffectScalingStacks.FirstOrDefault(effect => effect.StateEffectProperty == property);
 
             int baseValue = GetProperty<int>(property);                                             // Base Value of the property
@@ -564,6 +623,9 @@ namespace Game.Spells
 
         public virtual float GetFloat(EStateEffectProperty property) 
         {
+            if (TryGetBonusStat(property, out float value))
+                return value;
+
             SStateEffectScaling stateEffectScaling = m_StateEffectScalingStacks.FirstOrDefault(effect => effect.StateEffectProperty == property);
 
             float baseValue = GetProperty<float>(property);
@@ -583,7 +645,7 @@ namespace Game.Spells
             // check that a scaling value was provided
             if (stateEffectScaling.StateEffectProperty != property || stateEffectScaling.ScalingFactor == 0)
                 return baseValue;
-                                                        // Bonus values applied to the property
+            // Bonus values applied to the property
             float stacksFactor = stateEffectScaling.StateEffectProperty == property ? Stacks * stateEffectScaling.ScalingFactor : 1f;                  // apply Stack bonus 
 
             return Mathf.Round(100 * boostedValue * stacksFactor) / 100;
@@ -611,7 +673,7 @@ namespace Game.Spells
                     continue;
 
                 if (propertyInfo.FieldType == typeof(float))
-                {
+                { 
                     float value = GetProperty<float>(property);
                     if (value != 0)
                         infosDict.Add(property.ToString(), value);

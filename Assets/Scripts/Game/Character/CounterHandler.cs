@@ -1,5 +1,6 @@
 ﻿using Enums;
 using Game.Spells;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
@@ -21,6 +22,20 @@ namespace Game.Character
         public NetworkVariable<bool> IsBlockingMovement => m_IsBlockingMovement;
         public NetworkVariable<bool> IsBlockingCast => m_IsBlockingCast;
         public NetworkVariable<bool> HasCounter => m_HasCounter;
+
+        public int RemainingShield
+        {
+            get
+            {
+                var shield = 0;
+                foreach (var counter in m_Counters)
+                {
+                    shield += Math.Max(0, counter.Shield);
+                }
+
+                return shield;
+            }
+        }
 
         #endregion
 

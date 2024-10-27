@@ -5,7 +5,9 @@ using Data.GameManagement;
 using Enums;
 using Menu.Common.Buttons.TemplateItemButtons;
 using Menu.MainMenu;
+using Menu.MainMenu.MainTab;
 using Save;
+using System.Linq;
 using Tools;
 using UnityEngine;
 
@@ -14,7 +16,7 @@ namespace Menu.PopUps
     public class ArenaStageDisplayUI : StageDisplayUI
     {
         #region Members
-       
+        
         ArenaData           m_ArenaData;
         SArenaLevelData     m_ArenaLevelData;
         int                 m_ArenaLevel;
@@ -26,6 +28,8 @@ namespace Menu.PopUps
         GameObject          m_EffectsContainer;
         /// <summary> layout container for spells </summary>
         GameObject          m_SpellsContainer;
+        /// <summary> display the boss of this stage </summary>
+        BossPreviewDisplay  m_BossPreviewDisplay;
 
         #endregion
 
@@ -39,6 +43,7 @@ namespace Menu.PopUps
             m_EffectsSection                = Finder.Find(gameObject, "EffectsSection");
             m_EffectsContainer              = Finder.Find(gameObject, "EffectsContainer");
             m_SpellsContainer               = Finder.Find(gameObject, "SpellsContainer");
+            m_BossPreviewDisplay            = Finder.FindComponent<BossPreviewDisplay>(gameObject, "BossPreviewDisplay");
         }
 
         public void Initialize(ArenaData arenaData, int arenaLevel, EArenaType arenaType)
@@ -53,12 +58,13 @@ namespace Menu.PopUps
 
         protected override void SetUpUI()
         {
-            m_StageSectionUI.Initialize(m_ArenaLevel, m_ArenaData.CurrentLevel, m_ArenaData.CurrentStage, m_ArenaLevelData.StageData.Count);
+            ((ArenaStageSectionUI)m_StageSectionUI).Initialize(m_ArenaLevel, m_ArenaData);
 
             base.SetUpUI();
 
             SetUpEffects();
             SetUpSpells();
+            SetUpBossPreview();
         }
 
         #endregion
@@ -95,13 +101,13 @@ namespace Menu.PopUps
         void SetUpSpells()
         {
             UIHelper.CleanContent(m_SpellsContainer);
-            foreach (ESpell spell in m_ArenaLevelData.Spells)
+            foreach (ESpell spell in m_ArenaLevelData.StageData.LastOrDefault().Spells)
             {
                 TemplateSpellItemUI spellItemUI = Instantiate(AssetLoader.LoadTemplateItem(spell), m_SpellsContainer.transform).GetComponent<TemplateSpellItemUI>();
                 spellItemUI.Initialize(spell, asIconOnly: true);
 
                 // TODO : later
-                int spellLevel = m_ArenaLevelData.StageData[0].CharacterLevel;
+                int spellLevel = m_ArenaLevelData.StageData[0].Level;
                 spellItemUI.SetBottomOverlay("Level " + spellLevel);
 
                 // display informations of the spell on click
@@ -109,6 +115,11 @@ namespace Menu.PopUps
                 spellItemUI.Button.onClick.RemoveAllListeners();
                 spellItemUI.Button.onClick.AddListener(() => { Main.SetPopUp(EPopUpState.SpellInfoPopUp, spell, spellLevel, true); });
             }
+        }
+
+        void SetUpBossPreview()
+        {
+            m_BossPreviewDisplay.Initialize(m_ArenaData.GetBoss(m_ArenaLevel), (int)m_ArenaData.ArenaDifficulty + 1);
         }
 
         #endregion
@@ -124,7 +135,7 @@ namespace Menu.PopUps
                 return;
             }
 
-            if (m_ArenaLevel < ProgressionCloudData.SoloArenas[m_ArenaType].CurrentLevel)
+            if (m_ArenaLevel < ProgressionCloudData.CurrentArena.Level)
             {
                 SetState(EStageRewardState.Collected);
                 return;
@@ -141,26 +152,6 @@ namespace Menu.PopUps
         protected override SRewardsData GetRewards() 
         {
             return m_ArenaLevelData.RewardsData;
-        }
-        
-        protected override void CollectReward()
-        {
-            base.CollectReward();
-
-            if (!NotificationCloudData.CollectArenaReward(m_ArenaType, m_ArenaLevel))
-                return;
-
-            bool isLastReward = 
-                ProgressionCloudData.IsArenaDifficultyCompleted(m_ArenaType)        // the current difficulty is finished
-                && ! ProgressionCloudData.IsArenaCompleted(m_ArenaType)             // this is not the last difficulty level
-                && ! NotificationCloudData.HasRewardsForArenaType(m_ArenaType);     // this was the last reward to collect for this arena type
-
-            Main.DisplayRewards(m_ArenaLevelData.RewardsData, ERewardContext.ArenaReward.ToString(), isLastReward ? OnCollectingLastReward : null);
-        }
-
-        protected void OnCollectingLastReward() 
-        {
-            ProgressionCloudData.UpgradeArenaDifficulty(m_ArenaType);
         }
 
         #endregion

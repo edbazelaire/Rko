@@ -14,6 +14,11 @@ namespace Data
         public ERarety Rarety;
 
         // ===================================================================================================
+        // Protected Serialize Data
+        [SerializeField] protected string m_Description = "";
+        [SerializeField] protected List<SDescriptionVariable> m_DescriptionVariables = new List<SDescriptionVariable>();
+
+        // ===================================================================================================
         // Private Data
         protected int m_Level = 1;
         protected virtual Type m_EnumType => null;
@@ -102,6 +107,48 @@ namespace Data
         public virtual Dictionary<string, object> GetInfos()
         {
             return new Dictionary<string, object>();
+        }
+
+        /// <summary>
+        /// Get Description info of the StateEffect
+        /// </summary>
+        /// <returns></returns>
+        public virtual string GetDescription()
+        {
+            List<string> values = new List<string>();
+            var infos = GetInfos();
+
+            foreach (SDescriptionVariable descriptionVariable in m_DescriptionVariables)
+            {
+                values.Add(ConvertDescriptionVariable(descriptionVariable, infos));
+            }
+
+            return string.Format(m_Description, values.ToArray());
+        }
+
+        /// <summary>
+        /// Convert a description variable into a string implemented into the description
+        /// </summary>
+        /// <returns></returns>
+        public virtual string ConvertDescriptionVariable(SDescriptionVariable descriptionVariable, Dictionary<string, object> infos = default)
+        {
+            if (Enum.TryParse(descriptionVariable.Name, out EStateEffect _))
+            {
+                return TextHandler.FormatStateEffectIcon(descriptionVariable.Name, descriptionVariable.WithIcon);
+            }
+
+            if (infos.ContainsKey(descriptionVariable.Name))
+            {
+                string value = infos[descriptionVariable.Name].ToString();
+                if (float.TryParse(value, out float floatValue))
+                    value = TextHandler.FormatPropertyValue(floatValue, descriptionVariable.Name);
+
+                string iconTag = descriptionVariable.WithIcon ? $" <sprite name=\"{"Ic_" + descriptionVariable.Name}\">" : "";
+                return $"<b>{value}</b>{iconTag}";
+            }
+
+            ErrorHandler.Error("Unable to find property " + descriptionVariable.Name + " in info dict of spell " + Name);
+            return "<b>UNDEFINED</b>";
         }
 
         #endregion

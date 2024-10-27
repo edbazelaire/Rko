@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0d197c74cc8b8244a866e84f0afdf96, type: 3}
+  m_Name: Vitality_Common
+  m_EditorClassIdentifier: 
+  Rarety: 0
+  m_Description: Increase your Hp by {0}
+  m_DescriptionVariables:
+  - Name: Hp
+    WithIcon: 1
+  m_Target: 4
+  m_SpellActivationEvent: 1
+  m_BonusStats:
+  - StateEffectProperty: 111
+    BaseValue: 150
+    BonusValue: 0
+    ScalingFactor: 0.1

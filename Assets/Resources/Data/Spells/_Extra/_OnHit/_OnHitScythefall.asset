@@ -1,0 +1,98 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c134d41ca291c244b96cfda56a7e83fd, type: 3}
+  m_Name: _OnHitScythefall
+  m_EditorClassIdentifier: 
+  Rarety: 0
+  m_Description: 
+  m_DescriptionVariables: []
+  m_SpellElements: 0200000004000000
+  Linked: 0
+  Graphics: {fileID: 1209601309875748, guid: ea6b1d8312f383c47a887a8a9cabdd92, type: 3}
+  SpellEventActions:
+  - Prefab: {fileID: 933594856461618600, guid: 875df6ceae412ba4089ed1c801891359, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      StartSpellPart: 3
+      EndSpellPart: 5
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 1
+    OrderInLayer: 0
+    SpawnTarget: 3
+    SpawnLocation: 2
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
+  Preview: {fileID: 0}
+  OnAnimation: []
+  OnCastPrefabs: []
+  OnHit: []
+  OnHitSpellSpawn: 1
+  AnimationSoundFX: {fileID: 0}
+  CastSoundFX: {fileID: 0}
+  PermanantSoundFX: {fileID: 0}
+  OnHitSoundFX: {fileID: 0}
+  OnEndSoundFX: {fileID: 0}
+  SpellTarget: 6
+  LockTargetAt: 2
+  MaxHit: -1
+  EnergyGain: 3
+  EnergyCost: 0
+  m_Damage: 0
+  m_Heal: 0
+  m_Shield: 0
+  m_LifeSteal: 0
+  Distance: -1
+  OverrideOnHitProperties: 
+  m_Duration: 8
+  Delay: 0
+  m_SpellsScalingLevel:
+  - Property: 2
+    Value: 0.1
+  - Property: 1
+    Value: 0.1
+  - Property: 3
+    Value: 0.05
+  m_Size: 8
+  TriggerPlayer: 1
+  EnemyStateEffects:
+  - StateEffect: 6
+    Stacks: 1
+    OverridingProperties: []
+  - StateEffect: 13
+    Stacks: 1
+    OverridingProperties: []
+  AllyStateEffects: []
+  StateEffectStackFactor: 0
+  PersistanceAfterEnd: 1
+  Animation: 0
+  IsCancellable: 0
+  AnimationTimer: 0
+  m_Cooldown: 0
+  m_SpellSpawn: 1
+  DurationTick: 0.25
+  m_TickDamages: 0
+  m_TickHeal: 0
+  m_TickShield: 0
+  GrowSizeFactor: 0
+  MaxSizeAt: 1
+  PersistentStateEffects:
+  - StateEffect: 7
+    Stacks: 1
+    OverridingProperties:
+    - StateEffectProperty: 3
+      Value: -0.35

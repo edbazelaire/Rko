@@ -18,6 +18,7 @@ MonoBehaviour:
   m_VisualEffects:
   - Prefab: {fileID: 7582611277444767761, guid: 8ddc8be4a7ed547469653f61fdeca5d8, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
       StartSpellPart: 3
       EndSpellPart: 5
@@ -35,6 +36,7 @@ MonoBehaviour:
     StateEffects: 
   - Prefab: {fileID: 0}
     MaterialEffect: {fileID: 2100000, guid: c1aa0c6f776d0dc45a3000e95178e814, type: 2}
+    SoundFX: []
     GFXLifetime:
       StartSpellPart: 3
       EndSpellPart: 5
@@ -55,8 +57,28 @@ MonoBehaviour:
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 13
   m_DefaultState: 0
+  m_Priority: 0
   m_Duration: 6
+  m_IsInstantanious: 0
   m_MaxStacks: 100
+  m_StackDecay: -1
+  m_BonusStats:
+  - StateEffectProperty: 16
+    BaseValue: 0.01
+    LevelScalingFactor: 0
+    StackScalingFactor: 1
+  - StateEffectProperty: 7
+    BaseValue: 5
+    LevelScalingFactor: 0.1
+    StackScalingFactor: 1
+  - StateEffectProperty: 8
+    BaseValue: 0.01
+    LevelScalingFactor: 0.1
+    StackScalingFactor: 1
+  - StateEffectProperty: 9
+    BaseValue: 0.01
+    LevelScalingFactor: 0.1
+    StackScalingFactor: 1
   m_SpeedBonus: 0
   m_CastSpeed: 0
   m_AttackSpeed: 0.01
@@ -68,18 +90,14 @@ MonoBehaviour:
   m_BonusDamages: 5
   m_BonusDamagesPerc: 0.01
   m_BonusLifeSteal: 0.01
+  m_BonusBurnDamages: 0
+  m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel:
   - StateEffectProperty: 13
     ScalingFactor: 0.1
   - StateEffectProperty: 4
-    ScalingFactor: 0.1
-  - StateEffectProperty: 7
-    ScalingFactor: 0.1
-  - StateEffectProperty: 8
-    ScalingFactor: 0.1
-  - StateEffectProperty: 9
     ScalingFactor: 0.1
   m_StateEffectScalingStacks:
   - StateEffectProperty: 4

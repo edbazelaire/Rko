@@ -1,6 +1,8 @@
 ﻿using Data;
 using Enums;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Tools;
 using Unity.Netcode;
 using UnityEngine;
@@ -42,7 +44,7 @@ namespace Game.Spells
         {
             base.Initialize(clientId, target, spellName, level);
 
-            transform.localScale = new Vector3(m_SpellData.Size, m_SpellData.Size, 1f);
+            transform.localScale = new Vector3(m_SpellData.Size, m_SpellData.Size, m_SpellData.Size);
 
             if (!IsServer)
                 return;
@@ -102,23 +104,26 @@ namespace Game.Spells
         /// 
         /// </summary>
         /// <param name="collision"></param>
-        protected virtual void OnCollision(Collider2D collision)
+        protected virtual bool CheckCollision(Collider2D collision, out Controller controller)
         {
+            controller = null;
+
             if (!IsServer)
-                return;
+                return false;
 
-            if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
+            if (collision.gameObject.layer != LayerMask.NameToLayer("Player"))
+                return false;
+
+            // check that players has controller 
+            controller = Finder.FindComponent<Controller>(collision.gameObject);
+            if (controller == null)
             {
-                // check that players has controller 
-                var controller = Finder.FindComponent<Controller>(collision.gameObject);
-                if (controller == null)
-                {
-                    ErrorHandler.Error("Controller not found for player " + collision.gameObject.name);
-                    return;
-                }
-
-                OnCollisionController(controller);
+                ErrorHandler.Error("Controller not found for player " + collision.gameObject.name);
+                return false;
             }
+
+            return true;
+            
         }
 
         protected virtual void OnCollisionController(Controller controller)
@@ -132,10 +137,28 @@ namespace Game.Spells
             // Check for collisions within a circle with variableRadius radius
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, m_Radius.Value);
 
-            // Iterate through all colliders found
+            // Gat all controllers touched by the 2D collision circle
+            var hitControllers = new List<Controller>();
             foreach (Collider2D collider in colliders)
             {
-                OnCollision(collider);
+                if (!CheckCollision(collider, out Controller controller))
+                    continue;
+                hitControllers.Add(controller);
+            }
+
+            // if "ApplyIfNotHitting" : set hitControllers to be the list of ALL controllers NOT HIT
+            if (m_SpellData.ApplyIfNotHitting)
+            {
+                var allControllers = m_SpellData.IsEnemyTarget ? GameManager.Instance.GetAllEnemies(m_Controller.Team) : GameManager.Instance.GetAllAllies(m_Controller.Team);
+                hitControllers = allControllers.Where(
+                    controller => hitControllers.Any(hitController => hitController.PlayerId == controller.PlayerId)
+                ).ToList();
+            }
+
+            // Apply OnHit effect on each Controllers
+            foreach (var controller in hitControllers)
+            {
+                OnCollisionController(controller);
             }
         }
 

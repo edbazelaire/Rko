@@ -188,24 +188,19 @@ namespace Menu.MainMenu
         /// <param name="spell"></param>
         void OnUnlocked(Enum collectable)
         {
-            if (collectable.GetType() != typeof(ESpell))
+            if (collectable.GetType() != typeof(ERune))
                 return;
 
-            // find the item
-            TemplateRuneItemUI collectableItemUI = Finder.FindComponent<TemplateRuneItemUI>(m_LockedItemContainer, string.Format(RUNE_ITEM_NAME_FORMAT, collectable.ToString()));
-            if (collectableItemUI == null)
+            // find the game object
+            if (m_Items.ContainsKey((ERune)collectable))
+            {
+                ErrorHandler.Error("Unable to find rune " + collectable + " in list of items");
                 return;
-
-            // change parent
-            collectableItemUI.transform.SetParent(m_ItemContainer.transform);
-            collectableItemUI.CollectionFillBar?.gameObject.SetActive(true);
+            }
+            m_Items[(ERune)collectable].gameObject.SetActive(true);
 
             // Force layout rebuild for both containers
-            LayoutRebuilder.ForceRebuildLayoutImmediate(m_LockedItemContainer.GetComponent<RectTransform>());
             LayoutRebuilder.ForceRebuildLayoutImmediate(m_ItemContainer.GetComponent<RectTransform>());
-
-            // add CollectableUI to dict of current UIs
-            m_Items.Add(collectableItemUI.Rune, collectableItemUI);
         }
 
         void OnSearchValueChanged(string value)

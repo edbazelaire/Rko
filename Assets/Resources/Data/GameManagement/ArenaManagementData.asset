@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e39ada9443758704e946c1a6a68d07e7, type: 3}
+  m_Name: ArenaManagementData
+  m_EditorClassIdentifier: 
+  m_NDifficultyLevels: 4
+  m_PowerUpDropRates:
+  - Common: 0.28
+    Epic: 0.62
+    Legendary: 0.1
+  - Common: 0.35
+    Epic: 0.45
+    Legendary: 0.2
+  - Common: 0.06
+    Epic: 0.74
+    Legendary: 0.2
+  - Common: 0
+    Epic: 0.7
+    Legendary: 0.3

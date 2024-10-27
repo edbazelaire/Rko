@@ -75,7 +75,6 @@ namespace Data.GameManagement
             Chests              ??= new List<EChest>();
             Collectables        ??= new List<SCollectableReward>();
             AchievementRewards  ??= new List<SAchievementReward>();
-
         }
 
         public void Add(Enum item, int qty)

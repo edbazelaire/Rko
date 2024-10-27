@@ -1,0 +1,112 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2413bf9bea7a81d44a0b645bca9d69f8, type: 3}
+  m_Name: IceRock
+  m_EditorClassIdentifier: 
+  Rarety: 0
+  m_Description: 
+  m_DescriptionVariables: []
+  m_SpellElements: 02000000
+  Linked: 1
+  Graphics: {fileID: 8617118645599596134, guid: 3ac822d0cd164454c8a18a46d9c59c47, type: 3}
+  SpellEventActions:
+  - Prefab: {fileID: 8617118645599596134, guid: a27f25647296b16498dfb932ad1179ea, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX:
+    - AudioClip: {fileID: 8300000, guid: 0118b8bcfdeffea4092f2bcad9104b75, type: 3}
+      SoundDuration: 0
+    GFXLifetime:
+      StartSpellPart: 1
+      EndSpellPart: 2
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 2
+    BodyPart: 0
+    IsFollowing: 1
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
+  - Prefab: {fileID: 1364846237022580, guid: 22c789d4aeb32564fb89f8f010588840, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX:
+    - AudioClip: {fileID: 8300000, guid: 20a4974705b8d5642bb2ebfc243b2b5d, type: 3}
+      SoundDuration: 0
+    GFXLifetime:
+      StartSpellPart: 5
+      EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1.5
+    Size: 1
+    OrderInLayer: 0
+    SpawnTarget: 3
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
+  Preview: {fileID: 0}
+  OnAnimation: []
+  OnCastPrefabs: []
+  OnHit: []
+  OnHitSpellSpawn: 1
+  AnimationSoundFX: {fileID: 0}
+  CastSoundFX: {fileID: 0}
+  PermanantSoundFX: {fileID: 0}
+  OnHitSoundFX: {fileID: 0}
+  OnEndSoundFX: {fileID: 0}
+  SpellTarget: 6
+  LockTargetAt: 2
+  MaxHit: 1
+  EnergyGain: 0
+  EnergyCost: 0
+  m_Damage: 100
+  m_Heal: 0
+  m_Shield: 0
+  m_LifeSteal: 0
+  Distance: -1
+  OverrideOnHitProperties: 
+  m_Duration: 0
+  Delay: 0
+  m_SpellsScalingLevel:
+  - Property: 2
+    Value: 0.1
+  - Property: 1
+    Value: 0.1
+  - Property: 3
+    Value: 0.05
+  m_Size: 8
+  TriggerPlayer: 1
+  EnemyStateEffects:
+  - StateEffect: 16
+    Stacks: 1
+    OverridingProperties: []
+  - StateEffect: 1
+    Stacks: 1
+    OverridingProperties:
+    - StateEffectProperty: 1
+      Value: 2
+  AllyStateEffects: []
+  StateEffectStackFactor: 0
+  PersistanceAfterEnd: 0
+  Animation: 16
+  IsCancellable: 0
+  AnimationTimer: 2.5
+  m_Cooldown: 8
+  Trajectory: 1
+  m_StopOnTargetPos: 0
+  m_Speed: 5

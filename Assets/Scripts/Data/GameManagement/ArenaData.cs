@@ -4,26 +4,56 @@ using Managers;
 using Save;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Tools;
 using UnityEngine;
-using static Unity.Collections.Unicode;
 
 namespace Data.GameManagement
 {
     [Serializable]
     public struct SStageData
     {
-        public ECharacter Character;
-        public int CharacterLevel;
+        [SerializeField] EBoss m_Boss;
+        [SerializeField] int m_Level;
+        [SerializeField] List<ESpell> m_Spells;
+        [SerializeField] List<STriggerEffect> m_TriggerEffects;
+        [SerializeField] List<SCharacterStatScaling> m_BonusStats;
+
+        int m_ArenaDifficultyLevel;
+
+        public readonly EBoss                   Boss            => m_Boss;
+        public readonly int                     Level           => m_Level + (m_ArenaDifficultyLevel - 1);
+        public readonly List<ESpell>            Spells          => m_Spells;
+        public readonly List<STriggerEffect>    TriggerEffects
+        {
+            get
+            {
+                var triggerEffects = new List<STriggerEffect>();
+                foreach (var effect in m_TriggerEffects)
+                {
+                    var duplicateEffect = effect;
+                    duplicateEffect.Level += 2 * (m_ArenaDifficultyLevel - 1);
+                    triggerEffects.Add(duplicateEffect);
+                }
+
+                return triggerEffects;
+            }
+        }
+
+        public readonly List<SCharacterStatScaling>  BonusStats      => m_BonusStats;
+
+        public SStageData SetArenaDifficultyLevel(int arenaDifficultyLevel)
+        {
+            m_ArenaDifficultyLevel = arenaDifficultyLevel;
+            return this;
+        }
     }
 
     [Serializable]
     public struct SArenaLevelData
     {
-        public List<ESpell>                 Spells;
-        public List<STriggerEffect>         TriggerEffects;
-        public List<SCharacterStatScaling>  BonusStats;
         public SRewardsData                 RewardsData;
+        public List<STriggerEffect>         TriggerEffects;
         public List<SStageData>             StageData;
     }
 
@@ -33,31 +63,47 @@ namespace Data.GameManagement
     {
         #region Members
 
+        // ===============================================================================================
+        // ACTIONS 
         public static Action<EArenaType, int> ArenaLevelCompletedEvent;
 
+        // ===============================================================================================
+        // CONSTANTS
+        public const int MAX_LOSSES = 3;
+
+        // ===============================================================================================
+        // DATA
         [Header("AI stats")]
         [SerializeField] int m_BotPerfLevelCeiling                  = 10;
-        [SerializeField] (float Min, float Max) m_DecisionRefresh   = (0.05f, 0.75f);
+        [SerializeField] (float Min, float Max) m_DecisionRefresh   = (0.05f, 0.05f);
         [SerializeField] (float Min, float Max) m_Randomness        = (0f, 1f);
 
         [Header("Arena Data")]
         [SerializeField] List<SArenaLevelData> m_ArenaLevelData;
 
-        public int CurrentLevel => ProgressionCloudData.SoloArenas[ArenaType].CurrentLevel;
-        public int CurrentStage => ProgressionCloudData.SoloArenas[ArenaType].CurrentStage;
+        protected int m_ArenaDifficultyLevel;
+
+        public int CurrentLevel => ProgressionCloudData.CurrentArena.Level;
+        public int CurrentStage => ProgressionCloudData.CurrentArena.Stage;
         public float CurrentRewardMultiplicator => (1 + (int)ArenaDifficulty * 10) * (1 + CurrentStage * 0.5f + CurrentLevel * 0.05f);
 
         public EArenaType               ArenaType               => Enum.TryParse(name.Split("_")[0], out EArenaType arenaType) ? arenaType : EArenaType.FireArena;
         public EArenaDifficulty         ArenaDifficulty         => Enum.TryParse(name.Split("_")[1], out EArenaDifficulty arenaDifficulty) ? arenaDifficulty : EArenaDifficulty.Normal;
+        public int                      ArenaDifficultyLevel    => m_ArenaDifficultyLevel;
         public List<SArenaLevelData>    ArenaLevelData          => m_ArenaLevelData;
         public SArenaLevelData          CurrentArenaLevelData   => GetArenaLevelData(CurrentLevel);
         public SStageData               CurrentStageData        => GetStageData(CurrentLevel, CurrentStage);
-        public int                      MaxLevel                => m_ArenaLevelData.Count;
+        public int                      MaxLevel                => m_ArenaLevelData.Count - 1;
 
         #endregion
 
 
         #region Accessors
+
+        public void SetDifficultyLevel(int level)
+        {
+            m_ArenaDifficultyLevel = level;
+        }
 
         /// <summary>
         /// Get data of the requested level
@@ -72,7 +118,23 @@ namespace Data.GameManagement
                 arenaLevel = 0;
             }
 
-            return m_ArenaLevelData[arenaLevel];
+            var arenaLevelData = m_ArenaLevelData[arenaLevel];
+
+            var triggerEffects = new List<STriggerEffect>();
+            foreach (var effect in arenaLevelData.TriggerEffects)
+            {
+                var duplicateEffect = effect;
+                duplicateEffect.Level += 2 * (m_ArenaDifficultyLevel - 1);
+                triggerEffects.Add(duplicateEffect);
+            }
+            arenaLevelData.TriggerEffects = triggerEffects;
+
+            for (int i = 0; i < m_ArenaLevelData[arenaLevel].StageData.Count; i++)
+            {
+                arenaLevelData.StageData[i].SetArenaDifficultyLevel(m_ArenaDifficultyLevel);
+            }
+
+            return arenaLevelData;
         }
 
         /// <summary>
@@ -90,12 +152,25 @@ namespace Data.GameManagement
                 stage = 0;
             }
 
-            return stageDataList[stage];
+            return stageDataList[stage].SetArenaDifficultyLevel(m_ArenaDifficultyLevel);
         }
 
-        public void UpdateStageValue(bool up)
+        public EBoss GetBoss(int arenaLevel)
         {
-            ProgressionCloudData.UpdateStageValue(ArenaType, up);
+            if (arenaLevel > m_ArenaLevelData.Count)
+            {
+                ErrorHandler.Error("Trying to get boss for arena level " + arenaLevel + " with arena max level beeing " + m_ArenaLevelData.Count);
+                return EBoss.None;
+            }
+            return m_ArenaLevelData[arenaLevel].StageData.LastOrDefault().Boss;
+        }
+
+        public SRewardsData GetCurrentRewards()
+        {
+            if (ProgressionCloudData.CurrentArena.Level == 0)
+                return new SRewardsData();
+
+            return GetArenaLevelData(ProgressionCloudData.CurrentArena.Level - 1).RewardsData;
         }
 
         #endregion
@@ -111,51 +186,43 @@ namespace Data.GameManagement
         {
             int maxLevel = CollectablesManagementData.GetMaxLevel(ESpell.AxeThrow);
 
-            ERune[] runes;
-            switch (ArenaType)
-            {
-                case EArenaType.FireArena:
-                    runes = new ERune[] { ERune.FireRune, ERune.None, ERune.None };
-                    break;
-
-                default:
-                    runes = new ERune[] { ERune.None, ERune.None, ERune.None };
-                    break;
-            }
+            ERune[] runes = new ERune[] { ERune.None, ERune.None, ERune.None };
 
             // set rune levels equal to character level
             int[] runeLevels = new int[runes.Length];
             for (int i = 0; i < runes.Length; i++)
             {
                 // make sure that character level is not > to max spell level
-                runeLevels[i] = Math.Min(CurrentStageData.CharacterLevel, maxLevel);
+                runeLevels[i] = Math.Min(CurrentStageData.Level, maxLevel);
             }
 
             // set spell levels equal to character level
-            int[] spellLevels = new int[CurrentArenaLevelData.Spells.Count];
-            for (int i = 0; i < CurrentArenaLevelData.Spells.Count; i++)
+            int[] spellLevels = new int[CurrentStageData.Spells.Count];
+            for (int i = 0; i < CurrentStageData.Spells.Count; i++)
             {
                 // make sure that character level is not > to max spell level
-                spellLevels[i] = Math.Min(CurrentStageData.CharacterLevel, maxLevel);
+                spellLevels[i] = Math.Min(CurrentStageData.Level, maxLevel);
             }
 
             // create & return PlayerData
+            var triggerEffects = CurrentArenaLevelData.TriggerEffects;
+            triggerEffects.AddRange(CurrentStageData.TriggerEffects);
             return new SPlayerData(
-                playerName:     CurrentStageData.Character.ToString(),
-                characterLevel: CurrentStageData.CharacterLevel,
-                character:      CurrentStageData.Character,
+                playerName:     CurrentStageData.Boss.ToString(),
+                characterLevel: CurrentStageData.Level,
+                character:      CurrentStageData.Boss.ToString(),
                 runes:          runes,
                 runeLevels:     runeLevels,      
-                spells:         CurrentArenaLevelData.Spells.ToArray(),
+                spells:         CurrentStageData.Spells.ToArray(),
                 spellLevels:    spellLevels,
                 profileData:    CreateProfileData(),
                 isPlayer:       false,
 
-                triggerEffects: CurrentArenaLevelData.TriggerEffects.ToArray(),
-                bonusStats:     CurrentArenaLevelData.BonusStats.ToArray(),
+                triggerEffects: triggerEffects.ToArray(),
+                bonusStats:     CurrentStageData.BonusStats.ToArray(),
                 botData :       new SBotData(
-                    GetDecisionRefresh(CurrentStageData.CharacterLevel), 
-                    GetRandomness(CurrentStageData.CharacterLevel)
+                    GetDecisionRefresh(CurrentStageData.Level), 
+                    GetRandomness(CurrentStageData.Level)
                 )
             );
         }
@@ -167,8 +234,8 @@ namespace Data.GameManagement
         public SProfileDataNetwork CreateProfileData()
         {
             return new SProfileDataNetwork(
-                gamerTag: CurrentStageData.Character.ToString(),
-                avatar: CurrentStageData.Character.ToString(),
+                gamerTag: CurrentStageData.Boss.ToString(),
+                avatar: CurrentStageData.Boss.ToString(),
                 border: GetBorder().ToString(),
                 title: ETitle.None.ToString()
             );
@@ -190,17 +257,20 @@ namespace Data.GameManagement
         /// <returns></returns>
         public EBorder GetBorder()
         {
-            if (CurrentLevel == 0)
+            if (ArenaDifficulty == EArenaDifficulty.Normal)
                 return EBorder.None;
 
-            if (CurrentLevel == 1)
-                return EBorder.LeagueBronze;
+            //if (ArenaDifficulty == EArenaDifficulty.HardCore)
+            //    return EBorder.LeagueBronze;
 
-            if (CurrentLevel == 2)
-                return EBorder.LeagueSilver;
+            //if (ArenaDifficulty == EArenaDifficulty.Normal)
+            //    return EBorder.LeagueSilver;
 
-            if (CurrentLevel == 3)
-                return EBorder.LeagueGold;
+            //if (ArenaDifficulty == EArenaDifficulty.Normal)
+            //    return EBorder.LeagueGold;
+
+            if (ArenaDifficulty == EArenaDifficulty.HardCore)
+                return EBorder.Frost;
 
             return EBorder.Rank1;
         }

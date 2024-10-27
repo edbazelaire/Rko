@@ -22,7 +22,7 @@ namespace Data.DataStructures
     {
         #region Members
 
-        public string                   SpellDataName;
+        public  string                  SpellDataName;
         public  int                     Level;
         public  ESpellTarget            Target;
         
@@ -33,14 +33,19 @@ namespace Data.DataStructures
 
         public  EStateEffectEvent       StateEffectEvent;
         public  string                  StateEffectName;
-        
+
+        public  float                   Delay;
+        public  float                   Duration;
         public  int                     NActivations;
         public  float                   Cooldown;
 
         Controller  m_Controller;
+        Coroutine   m_Coroutine;
         int         m_NActivationsCtr;
         float       m_CooldownTimer;
         bool        m_IsActivated;
+
+        public bool IsActivated => m_IsActivated;
 
         #endregion
 
@@ -54,10 +59,14 @@ namespace Data.DataStructures
             serializer.SerializeValue(ref Target);
             serializer.SerializeValue(ref SpellActivationEvent);
             serializer.SerializeValue(ref ActivationTreshold);
+            serializer.SerializeValue(ref SpellDeactivationEvent);
+            serializer.SerializeValue(ref DeactivationTreshold);
 
             serializer.SerializeValue(ref StateEffectEvent);
             serializer.SerializeValue(ref StateEffectName);
 
+            serializer.SerializeValue(ref Delay);
+            serializer.SerializeValue(ref Duration);
             serializer.SerializeValue(ref NActivations);
             serializer.SerializeValue(ref Cooldown);
         }
@@ -79,6 +88,8 @@ namespace Data.DataStructures
             if (m_IsActivated)
                 return;
 
+            Debug.Log("Activated TriggerEffect : " + SpellDataName);
+
             if (controller == null)
             {
                 ErrorHandler.Error("Provided Controller is null for " + SpellDataName);
@@ -88,13 +99,32 @@ namespace Data.DataStructures
             m_IsActivated   = true;
             m_Controller    = controller;
 
+            m_Coroutine = m_Controller.StartCoroutine(ActivationDelay());
+        }
+
+        IEnumerator ActivationDelay()
+        {
+            yield return new WaitForSeconds(Delay);
+
             if (StateEffectEvent == EStateEffectEvent.None)
             {
                 ActivateEffect(CalculateTarget());
-                return;
+            } 
+            else
+            {
+                StateEffect.StateEffectEvent += OnStateEffectEvent;
             }
 
-            StateEffect.StateEffectEvent += OnStateEffectEvent;
+            // activate duration coroutine
+            if (Duration > 0)
+                m_Coroutine = m_Controller.StartCoroutine(DurationCoroutine());
+        }
+
+        IEnumerator DurationCoroutine()
+        {
+            yield return new WaitForSeconds(Duration);
+
+            End();
         }
 
         void ActivateEffect(Controller controller)
@@ -146,6 +176,11 @@ namespace Data.DataStructures
             if (StateEffectEvent != EStateEffectEvent.None)
             {
                 StateEffect.StateEffectEvent -= OnStateEffectEvent;
+            }
+
+            if (m_Coroutine != null)
+            {
+                m_Controller.StopCoroutine(m_Coroutine);
             }
         }
 

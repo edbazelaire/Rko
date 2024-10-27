@@ -1,5 +1,4 @@
 ﻿using Assets;
-using Assets.Scripts.Managers.Tuto;
 using Assets.Scripts.Network;
 using Assets.Scripts.Tools;
 using Data.GameManagement;
@@ -14,12 +13,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tools;
 using Unity.Netcode;
-using Unity.Netcode.Transports.UTP;
-using Unity.Networking.Transport.Relay;
 using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
-using Unity.Services.Relay.Models;
 using Unity.Services.Relay;
 using UnityEngine;
 using Unity.Services.Core;
@@ -79,8 +75,8 @@ namespace Network
         private string      m_RelayCode;
         private bool        m_CancelRetry;
 
-        private EGameMode m_GameMode    = EGameMode.Arena;
-        private EArenaType m_ArenaType  = EArenaType.FireArena;
+        private EGameMode m_GameMode                = EGameMode.Arena;
+        private EArenaType m_ArenaType              = EArenaType.FireArena;
 
         private float m_HeartbeatTimer    = 0.0f;
         private float m_UpdateLobbyTimer  = 0.0f;
@@ -91,8 +87,8 @@ namespace Network
         bool IsHost => m_HostLobby != null && m_JoinedLobby != null && m_HostLobby.Id == m_JoinedLobby.Id;
         int m_MaxPlayers => m_GameMode == EGameMode.Ranked ? 2 : 1;
 
-        public EGameMode        GameMode    { get => m_GameMode; set => m_GameMode = value; }
-        public EArenaType       ArenaType   { get => m_ArenaType; set => m_ArenaType = value; }
+        public EGameMode        GameMode            { get => m_GameMode; set => m_GameMode = value; }
+        public EArenaType       ArenaType           { get => m_ArenaType; set => m_ArenaType = value; }
         public int              NPlayers    => m_JoinedLobby != null ? m_JoinedLobby.Players.Count : 0;
         public int              MaxPlayers  => m_MaxPlayers;
         public ELobbyState      State       => m_State;
@@ -234,9 +230,13 @@ namespace Network
                         return;
 
                     case ELobbyState.SendingPlayerData:
+                        var playerData = StaticPlayerData.ToStruct();
+                        if (GameMode == EGameMode.Arena)
+                            playerData.SetPowerUps(ProgressionCloudData.CurrentArena.PowerUps);
+
                         GameManager.Instance.AddPlayerDataServerRPC(
                             NetworkManager.Singleton.LocalClientId,
-                            StaticPlayerData.ToStruct()
+                            playerData
                         );
 
                         SendBotsData();
@@ -604,31 +604,31 @@ namespace Network
                 // ================================================================================================
                 // ARENA MODE : based on current stage values
                 case EGameMode.Arena:
-                    ArenaData arenaData = AssetLoader.LoadArenaData(LobbyHandler.Instance.ArenaType);
+                    ArenaData arenaData = AssetLoader.LoadArenaData(ProgressionCloudData.CurrentArena.ArenaType, ProgressionCloudData.CurrentArena.SArenaDifficulty);
                     return arenaData.CreatePlayerData();
 
                 // ================================================================================================
                 // TRAINING MODE : based on provided one in the Training tab
                 case EGameMode.Training:
-                    if (TutoManager.IsActivated)
+                    if (Main.ForceIsNewPlayer || ! ProfileCloudData.TutoDone)
                     {
                         return new SPlayerData(
-                            ECharacter.Alexander.ToString(),
+                            ECharacter.Kahnan.ToString(),
                             1,
-                            ECharacter.Alexander,
-                            PlayerPrefsHandler.GetTrainingRunes(),
+                            ECharacter.Kahnan.ToString(),
+                            default,
                             new int[] { 1, 1, 1 },
-                            PlayerPrefsHandler.GetTrainingSpells(),
-                            new int[] { 1, 1, 1, 1 },
-                            new SProfileCurrentData(gamerTag: ECharacter.Alexander.ToString()).AsNetworkSerializable(),
+                            new ESpell[] { ESpell.FireBarrage, ESpell.FireBomb },
+                            new int[] { 1, 1 },
+                            new SProfileCurrentData(gamerTag: ECharacter.Kahnan.ToString()).AsNetworkSerializable(),
                             isPlayer: false,
                             botData: new SBotData(1f, 1f)
                         );
                     }
-                   
-                    ECharacter trainingCharacter = PlayerPrefsHandler.GetString<ECharacter>(EPlayerPref.TrainingCharacter);
+
+                    string trainingCharacter = PlayerPrefsHandler.GetString<ECharacter>(EPlayerPref.TrainingCharacter).ToString();
                     return new SPlayerData(
-                        trainingCharacter.ToString(),
+                        TextHandler.SplitCamelCase(trainingCharacter),
                         9,
                         trainingCharacter,
                         PlayerPrefsHandler.GetTrainingRunes(),
@@ -648,7 +648,7 @@ namespace Network
                     return new SPlayerData(
                         character.ToString(),
                         1,
-                        character,
+                        character.ToString(),
                         new ERune[] { ERune.None, ERune.None, ERune.None },
                         new int[] { 1, 1, 1 },
                         new ESpell[] { ESpell.Heal, ESpell.RockShower },
@@ -752,12 +752,13 @@ namespace Network
             }
         }
 
-        async void UpdatePlayerData(string playerName = "", ECharacter character = ECharacter.Count)
+        async void UpdatePlayerData(string playerName = "", ECharacter character = ECharacter.None)
         {
             var data = new Dictionary<string, PlayerDataObject>();
             if (playerName != "")
                 data.Add(StaticPlayerData.KEY_PLAYER_NAME, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, playerName));
-            if ( character != ECharacter.Count )
+
+            if ( character != ECharacter.None)
                 data.Add(StaticPlayerData.KEY_CHARACTER, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, ((int)character).ToString()));
 
             try

@@ -1,10 +1,12 @@
 ﻿using Assets.Scripts.Managers.Sound;
 using Data;
+using Data.GameManagement;
 using Enums;
 using Game.Spells;
 using System.Collections;
 using Tools;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 
 namespace Game.SpellGFXs
@@ -45,6 +47,12 @@ namespace Game.SpellGFXs
 
         public virtual void Initialize(Controller controller, SpellData spellData, Spell spell, string stateEffectName, SPrefabSpawn prefabSpawn, EBodyPart bodyPart = EBodyPart.None)
         {
+            if (controller == null)
+            {
+                ErrorHandler.Error("Controller is null");
+                return;
+            }
+
             m_Controller        = controller;
             m_SpellData         = spellData;
             m_Spell             = spell;
@@ -60,6 +68,9 @@ namespace Game.SpellGFXs
 
             // set Parent & Position based on provided data
             transform.localScale *= prefabSpawn.Size > 0 ? prefabSpawn.Size : (spellData != null ? spellData.Size : 1);
+
+            // adjust rotation depending on team
+            transform.rotation = Quaternion.Euler(0f, controller.Team == 0 ? 0f : 180f, 0f); 
 
             // adjuste order and size of the elements
             AdjustOrderInLayer(prefabSpawn.OrderInLayer);
@@ -273,12 +284,24 @@ namespace Game.SpellGFXs
                     basePos.y = 0;
                     break;
 
+                case ESpawnLocation.Hight:
+                    basePos.y = Settings.SPELL_DIAGONAL_POS_Y;
+                    break;
+
+                case ESpawnLocation.Sky:
+                    basePos.y = Settings.SPELL_HIGHT_POS_Y;
+                    break;
+
                 default:
                     Debug.LogError("SPrefabSpawn::Spawn() - Unknown spawn location " + prefabSpawn.SpawnLocation + " for prefab " + prefabSpawn.Prefab.name);
                     break;
             }
 
-            return basePos + new Vector3(prefabSpawn.Offset.x, prefabSpawn.Offset.y, 0);
+            int direction = 1;
+            if (controller != null && controller.Team == 1)
+                direction = -1; 
+
+            return basePos + new Vector3(direction * prefabSpawn.Offset.x, prefabSpawn.Offset.y, 0);
 
         }
 
@@ -286,8 +309,12 @@ namespace Game.SpellGFXs
         {
             if (orderInLayer == 0)
                 return;
-            
-            // TODO
+
+            var particles = Finder.FindComponents<ParticleSystemRenderer>(gameObject);
+            foreach (var particle in particles)
+            {
+                particle.sortingOrder = orderInLayer;
+            }
         }
 
         #endregion
