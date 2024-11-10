@@ -1,10 +1,11 @@
 using AI;
+using Enums;
 using Game.AI.BehaviorTrees;
 using Tools;
 
 public class CharacterBT : BehaviorTree
 {
-    protected override Node SetupTree()
+    protected override Node SetupTree(EArenaDifficulty arenaDifficulty)
     {
         if (m_Controller == null)
         {
@@ -12,6 +13,6 @@ public class CharacterBT : BehaviorTree
             return new Node();
         }
 
-        return BTLoader.LoadTree(m_Controller, m_Controller.Character);
+        return BTLoader.LoadTree(m_Controller, m_Controller.Character, arenaDifficulty);
     }
 }

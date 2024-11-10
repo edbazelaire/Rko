@@ -2,6 +2,7 @@
 using Data;
 using Enums;
 using Game.Loaders;
+using Game.Spells.SpecialEffects;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -109,6 +110,10 @@ namespace Game.Spells
             // post-processing for childrens
             ApplyPostProcessing();
 
+            // Add special component
+            if (IsServer)
+                AddSpecialComponent();
+
             // initialize graphics of the spell (whith delay if has any)
             InitGraphics();
 
@@ -135,6 +140,15 @@ namespace Game.Spells
             StartCoroutine(DestroySpell());
 
             ErrorHandler.Log("End of spell : " + m_SpellData, ELogTag.Spells);
+        }
+
+        public virtual bool TryEnd()
+        {
+            if (m_IsOver)
+                return false;
+
+            End();
+            return true;
         }
 
         public virtual IEnumerator DestroySpell()
@@ -175,7 +189,32 @@ namespace Game.Spells
 
         #region On Init
 
+        /// <summary>
+        /// Allow children to apply post processing effects (change target, position, ...) during initialization
+        /// </summary>
         protected virtual void ApplyPostProcessing() { }
+
+        /// <summary>
+        /// If spell has a special component (server side) : add it
+        /// </summary>
+        protected virtual void AddSpecialComponent() 
+        {
+            // Construct the full type name including the namespace
+            string spellComponentFullName = $"Game.Spells.SpecialEffects.{m_SpellData.Name}";
+
+            // Try to get the Type from the fully qualified name
+            Type componentType = Type.GetType(spellComponentFullName);
+
+            // Check if the Type is valid and is a MonoBehaviour
+            if (componentType == null || !componentType.IsSubclassOf(typeof(SpecialEffect)))
+                return;
+
+            // Add the component to this GameObject
+            SpecialEffect specialEffect = (SpecialEffect)gameObject.AddComponent(componentType);
+            specialEffect.Initialize(m_SpellData.Level);
+
+            Debug.Log($"Added component {spellComponentFullName} to {gameObject.name}");
+        }
 
         /// <summary>
         /// Instantiate the graphics of the spell
@@ -298,14 +337,14 @@ namespace Game.Spells
         /// Check if a Player has been hit
         /// </summary>
         /// <param name="controller"></param>
-        protected virtual void OnHitPlayer(Controller controller)
+        protected virtual void OnHit(Controller controller)
         {
             // not alive : skip
             if (!controller.Life.IsAlive)
                 return;
 
             // already hit
-            if (m_HittedPlayerId.Contains(controller.OwnerClientId))
+            if (m_HittedPlayerId.Contains(controller.PlayerId))
                 return;
 
             // apply effects on ally or enemy : if none, skip
@@ -503,7 +542,7 @@ namespace Game.Spells
         /// <param name="spellEvent"></param>
         /// <param name="clientID"></param>
         [ClientRpc]
-        protected virtual void CallSpellEventClientRPC(ESpellEvent spellEvent)
+        public virtual void CallSpellEventClientRPC(ESpellEvent spellEvent)
         {
             CallSpellEvent(spellEvent, null);
         }
@@ -515,7 +554,7 @@ namespace Game.Spells
         /// <param name="spellEvent"></param>
         /// <param name="clientID"></param>
         [ClientRpc]
-        protected virtual void CallSpellEventClientRPC(ESpellEvent spellEvent, ulong clientID)
+        public virtual void CallSpellEventClientRPC(ESpellEvent spellEvent, ulong clientID)
         {
             CallSpellEvent(spellEvent, GameManager.Instance.GetPlayer(clientID));
         }
@@ -564,21 +603,7 @@ namespace Game.Spells
             if (! SpellData.IsAutoTarget)
                 return null;
 
-            switch (SpellData.SpellTarget)
-            {
-                case ESpellTarget.Self:
-                    return m_Controller;
-
-                case ESpellTarget.FirstAlly:
-                    return GameManager.Instance.GetFirstAlly(m_Controller.Team, OwnerClientId);
-
-                case ESpellTarget.FirstEnemy:
-                    return GameManager.Instance.GetFirstEnemy(m_Controller.Team);
-
-                default:
-                    ErrorHandler.Error("Unhandled case : " + SpellData.SpellTarget);
-                    return null;
-            }
+            return m_SpellData.GetTargetController(m_Controller.PlayerId);
         }
 
         protected virtual void RecalculateTarget(ref Transform baseTarget)

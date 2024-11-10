@@ -9,7 +9,6 @@ using Game.Character;
 using Game.Loaders;
 using MyBox;
 using Tools;
-using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 
 public enum ESpellCategory

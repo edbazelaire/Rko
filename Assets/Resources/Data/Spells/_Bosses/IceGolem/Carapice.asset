@@ -23,8 +23,8 @@ MonoBehaviour:
     MaterialEffect: {fileID: 2100000, guid: fab50d5bc46d85e49b038d885d4b647e, type: 2}
     SoundFX: []
     GFXLifetime:
-      StartSpellPart: 1
-      EndSpellPart: 3
+      m_StartSpellPart: 100
+      m_EndSpellPart: 400
       StartAt: 0
       EndAt: 0
       Persistance: 0
@@ -37,9 +37,24 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
+  - Prefab: {fileID: 152564, guid: 4ab45d63db2ac6448a1bd863420410b7, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 400
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1.5
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -48,7 +63,8 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 4
-  LockTargetAt: 1
+  LockTarget: 300
+  ApplyIfNotHitting: 0
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
@@ -71,6 +87,6 @@ MonoBehaviour:
   PersistanceAfterEnd: 0
   Animation: 9
   IsCancellable: 0
-  AnimationTimer: 6
+  AnimationTimer: 5
   m_Cooldown: 0
   IsAttachedToTarget: 0

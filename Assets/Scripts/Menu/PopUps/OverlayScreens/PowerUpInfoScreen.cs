@@ -1,6 +1,5 @@
 ﻿using Assets.Scripts.Data.PowerUp;
-using Game.UI.EndGameUI;
-using System.Collections;
+using Data;
 using Tools;
 using UnityEngine;
 
@@ -11,8 +10,8 @@ namespace Menu.PopUps.OverlayScreens
     {
         #region Members
 
-        PowerUpData m_PowerUpData;
-        GameObject m_Container;
+        SRunePower m_PowerUpData;
+        GameObject  m_Container;
 
         #endregion
 
@@ -26,7 +25,7 @@ namespace Menu.PopUps.OverlayScreens
             m_Container = Finder.Find(gameObject, "Container");
         }
 
-        public virtual void Initialize(PowerUpData powerUpData)
+        public virtual void Initialize(SRunePower powerUpData)
         {
             m_PowerUpData = powerUpData;
             base.Initialize();
@@ -37,7 +36,7 @@ namespace Menu.PopUps.OverlayScreens
             base.OnPrefabLoaded();
 
             UIHelper.CleanContent(m_Container);
-            Instantiate(AssetLoader.LoadPowerUpItem(m_PowerUpData.Rarety), m_Container.transform).Initialize(m_PowerUpData); 
+            Instantiate(AssetLoader.LoadPowerUpItem(m_PowerUpData.RuneActivation), m_Container.transform).Initialize(m_PowerUpData); 
         }
 
         #endregion

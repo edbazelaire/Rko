@@ -18,6 +18,12 @@ namespace AI
         {
             foreach (Node node in (m_IsRandom ? m_Children.ShuffleClone() : m_Children))
             {
+                if (!node.IsActivated)
+                {
+                    m_State = NodeState.FAILURE;
+                    return m_State;
+                }
+
                 switch (node.Evaluate())
                 {
                     case NodeState.FAILURE:

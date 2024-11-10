@@ -10,18 +10,18 @@ namespace Assets.Scripts.Data.GameManagement
     [Serializable]
     public struct SPowerUpDropRate
     {
-        public float Common;
-        public float Epic;
-        public float Legendary;
+        public float Minor;
+        public float Major;
+        public float Primal;
 
-        public Dictionary<ERarety, float> Get() => new Dictionary<ERarety, float>()
+        public Dictionary<ERuneActivation, float> Get() => new Dictionary<ERuneActivation, float>()
         {
-            { ERarety.Common, Common },
-            { ERarety.Epic, Epic },
-            { ERarety.Legendary, Legendary },
+            { ERuneActivation.Minor, Minor },
+            { ERuneActivation.Major, Major },
+            { ERuneActivation.Primal, Primal },
         };
 
-        public ERarety SelectRandomRarety()
+        public ERuneActivation SelectRandomRarety()
         {
             var rareties = Get();
             var currentPercentage = 0f;
@@ -34,7 +34,7 @@ namespace Assets.Scripts.Data.GameManagement
             }
 
             ErrorHandler.Error("Unable to find random rarety, percentages have been set wrong");
-            return ERarety.Epic;
+            return ERuneActivation.Major;
         }
     }
 
@@ -45,7 +45,7 @@ namespace Assets.Scripts.Data.GameManagement
 
         static ArenaManagementData s_Instance;
 
-        [SerializeField] private int m_NDifficultyLevels = 4;
+        [SerializeField] private int m_NDifficultyLevels = 2;
         [SerializeField] private List<SPowerUpDropRate> m_PowerUpDropRates;
 
         public static List<SPowerUpDropRate> PowerUpDropRates => Instance.m_PowerUpDropRates;
@@ -56,7 +56,7 @@ namespace Assets.Scripts.Data.GameManagement
 
         #region PowerUp DropRates
 
-        public static ERarety SelectRandomRarety(int level)
+        public static ERuneActivation SelectRandomActivation(int level)
         {
             if (level < 0)
             {

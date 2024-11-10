@@ -67,18 +67,24 @@ namespace Game.UI.EndGameUI
             m_PowerUpItems.Clear();
 
             // select a rarety for the PowerUps
-            var rarety = ArenaManagementData.SelectRandomRarety(ProgressionCloudData.CurrentArena.Level - 1);
+            var runeActivation = ArenaManagementData.SelectRandomActivation(ProgressionCloudData.CurrentArena.Level - 1);
 
             List<string> usedPowerUpData = new();       // init list of already used power up data
-            var template = AssetLoader.LoadPowerUpItem(rarety);  // load template of PowerUpItem
+            var template = AssetLoader.LoadPowerUpItem(runeActivation);  // load template of PowerUpItem
             for (int i = 0; i < NUM_POWER_UPS; i++)
             {
                 // choose a random powerup filling criteria
-                var powerUpData = SpellLoader.GetRandomPowerUp(new List<ERarety>() { rarety }, notAllowedFilter: usedPowerUpData);
+                var powerUpData = SpellLoader.GetRandomPowerUp(new List<ERuneActivation>() { runeActivation }, notAllowedFilter: usedPowerUpData);
                 if (powerUpData == null)
                 {
-                    ErrorHandler.Error("Unable to find powerUp data for rarety " + rarety + " at index " +  i);
+                    ErrorHandler.Error("Unable to find powerUp data for rarety " + runeActivation + " at index " +  i);
                     continue;
+                }
+
+                // set first PowerUpValue as default PowerUp
+                if (i == 0)
+                {
+                    ProgressionCloudData.AddCurrentArenaPowerUp(powerUpData.Name);
                 }
 
                 // add to list of already selected power ups
@@ -167,7 +173,7 @@ namespace Game.UI.EndGameUI
         {
             return () =>
             {
-                ProgressionCloudData.AddCurrentArenaPowerUp(m_PowerUpItems[index].PowerUpData);
+                ProgressionCloudData.AddCurrentArenaPowerUp(m_PowerUpItems[index].PowerUpData.Name);
                 StartCoroutine(SelectPowerUpAnimation(index));
             };
             

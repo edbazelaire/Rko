@@ -51,7 +51,7 @@ namespace Game.Character
 
         public void Update()
         {
-            if (!m_Initialized)
+            if (!m_Initialized || m_Animator == null)
                 return;
 
             MoveAnimation(m_Controller.Movement.IsMoving);
@@ -136,6 +136,9 @@ namespace Game.Character
 
         void MoveAnimation(bool isMoving)
         {
+            if (m_Animator.runtimeAnimatorController == null)
+                return;
+
             m_Animator.SetBool("IsMoving", isMoving);
         }
 

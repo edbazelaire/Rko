@@ -8,8 +8,6 @@ namespace Game.Spells
         protected override void OnStart()
         {
             base.OnStart();
-
-
         }
     }
 }

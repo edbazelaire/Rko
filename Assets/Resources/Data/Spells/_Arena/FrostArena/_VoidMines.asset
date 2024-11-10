@@ -13,15 +13,16 @@ MonoBehaviour:
   m_Name: _VoidMines
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: 
-  m_DescriptionVariables: []
+  m_Description: After [SubSpellData.Delay] seconds, creates a Void Mine on the character.\nThe
+    VoidMine gets triggered in contact with a player and explodes dealing {0} damages,
+    and applying [Frost] and 20 [Cursed] stacks
+  m_DescriptionVariables:
+  - Name: Damages
+    WithIcon: 1
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions: []
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -29,9 +30,13 @@ MonoBehaviour:
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
-  SpellTarget: 9
-  LockTargetAt: 2
+  SpellTarget: 6
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
   ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
@@ -61,13 +66,16 @@ MonoBehaviour:
   AnimationTimer: 0
   m_Cooldown: 0
   SubSpellData: {fileID: 11400000, guid: 4cb757eac4751af408b83945c54851d6, type: 2}
-  MultiProjectileType: 3
+  MultiProjectileType: 0
+  m_YMinMax:
+    Min: 0.3
+    Max: 0.3
   m_IsBlocking: 0
   m_NProjectiles: 1
   m_NBreakPoints: 1
   m_ProjectileZoneSize: -1
   m_DelayBetweenLaunches: 0
   m_NWaves: 99999
-  m_DelayBetweenWaves: 5
+  m_DelayBetweenWaves: 8
   OnCastWaveSoundFX: {fileID: 0}
   OnCastProjectileSoundFX: {fileID: 0}

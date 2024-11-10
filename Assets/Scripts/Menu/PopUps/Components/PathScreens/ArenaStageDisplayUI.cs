@@ -1,8 +1,12 @@
 ﻿using Assets;
+using Assets.Scripts.Data.PowerUp;
 using Assets.Scripts.Managers.Sound;
+using Data;
 using Data.DataStructures;
 using Data.GameManagement;
 using Enums;
+using Game.Loaders;
+using Menu.Common.Buttons;
 using Menu.Common.Buttons.TemplateItemButtons;
 using Menu.MainMenu;
 using Menu.MainMenu.MainTab;
@@ -63,7 +67,7 @@ namespace Menu.PopUps
             base.SetUpUI();
 
             SetUpEffects();
-            SetUpSpells();
+            SetUpSpells();        // TODO : Remove ? (if spells are no longer displayed)
             SetUpBossPreview();
         }
 
@@ -78,7 +82,7 @@ namespace Menu.PopUps
             UIHelper.CleanContent(m_EffectsContainer);
 
             // no trigger effects : deactivate and return
-            if (m_ArenaLevelData.TriggerEffects.Count == 0)
+            if (m_ArenaLevelData.TriggerEffects.Count == 0 && m_ArenaLevelData.PowerUps.Count == 0)
             {
                 m_EffectsSection.SetActive(false);
                 return;
@@ -96,11 +100,24 @@ namespace Menu.PopUps
                 TemplateTriggerEffectUI triggerEffectUI = Instantiate(template, m_EffectsContainer.transform);
                 triggerEffectUI.Initialize(triggerEffect);
             }
+
+            // add UI for each trigger effects
+            TemplateRunePowerUI templateRune = AssetLoader.LoadTemplateItem<TemplateRunePowerUI>();
+            foreach (string powerName in m_ArenaLevelData.PowerUps)
+            {
+                SRunePower runePower = SpellLoader.GetPowerUp(powerName);
+                TemplateRunePowerUI runeItemUI = Instantiate(templateRune, m_EffectsContainer.transform);
+                runeItemUI.Initialize(runePower);
+            }
         }
 
         void SetUpSpells()
         {
             UIHelper.CleanContent(m_SpellsContainer);
+            return;
+
+            // =========================================================================
+            // TODO : Remove ?
             foreach (ESpell spell in m_ArenaLevelData.StageData.LastOrDefault().Spells)
             {
                 TemplateSpellItemUI spellItemUI = Instantiate(AssetLoader.LoadTemplateItem(spell), m_SpellsContainer.transform).GetComponent<TemplateSpellItemUI>();

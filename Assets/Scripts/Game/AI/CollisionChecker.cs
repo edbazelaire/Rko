@@ -16,13 +16,14 @@ namespace Game.AI
         InvisibleWall,
         Spell,
         SpellSpawn,
+        Structure,
     }
 
     public static class CollisionChecker
     {
         #region Members
 
-        public static List<ELayer> OBSTACLES_LAYERS => new() { ELayer.Wall, ELayer.InvisibleWall };
+        public static List<ELayer> OBSTACLES_LAYERS => new() { ELayer.Wall, ELayer.InvisibleWall, ELayer.Structure };
 
         #endregion
 

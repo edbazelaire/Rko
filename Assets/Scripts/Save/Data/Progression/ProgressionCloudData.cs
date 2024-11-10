@@ -1,8 +1,10 @@
 ﻿using Assets;
 using Assets.Scripts.Data.GameManagement;
 using Assets.Scripts.Data.PowerUp;
+using Data;
 using Data.GameManagement;
 using Enums;
+using Game.Loaders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +23,7 @@ namespace Save
         public int              Stage;
         public int              Losses;
         public float            Erosion;
-        public List<string>     PowerUps;
+        public string[]         PowerUps;
         private bool            m_IsOver;
 
         public readonly EArenaDifficulty GetArenaDifficulty() => SArenaDifficulty.Difficulty;
@@ -29,7 +31,7 @@ namespace Save
         public readonly bool IsOver() => m_IsOver || Losses >= ArenaData.MAX_LOSSES || Level > AssetLoader.LoadArenaData(ArenaType, SArenaDifficulty).MaxLevel;
         public readonly bool IsBoss() => Stage == AssetLoader.LoadArenaData(ArenaType, SArenaDifficulty).GetArenaLevelData(Level).StageData.Count - 1;
 
-        public SCurrentArenaCloudData(EArenaType arenaType, SArenaDifficulty sArenaDifficulty = default, int level = 0, int stage = 0, int losses = 0, float erosion = 0f, List<string> powerUps = default, bool isOver = false)
+        public SCurrentArenaCloudData(EArenaType arenaType, SArenaDifficulty sArenaDifficulty = default, int level = 0, int stage = 0, int losses = 0, float erosion = 0f, string[] powerUps = default, bool isOver = false)
         {
             if (losses < 0)
             {
@@ -43,13 +45,82 @@ namespace Save
             Stage                   = stage;
             Losses                  = losses;
             Erosion                 = erosion;
-            PowerUps                = powerUps == default ? new List<string>() : powerUps;
+            PowerUps                = powerUps;
             m_IsOver                = false;
         }
 
         public void SetIsOver(bool isOver)
         {
             m_IsOver = isOver;
+        }
+
+        public List<string> GetActivePowerUps()
+        {
+            // security check
+            if (PowerUps == null || PowerUps.Length == 0)
+                return new List<string>();
+
+            var powerUpList = PowerUps.ToList().Where(powerUpName => powerUpName != "");
+
+            // check that list is not null
+            if (powerUpList == null)
+                return new List<string>();
+
+            // return as list
+            return powerUpList.ToList();
+        }
+
+        public bool CheckPowerUps()
+        {
+            var test = true;
+
+            // =====================================================================================
+            // check is default
+            if (PowerUps == default)
+            {
+                PowerUps = ProgressionCloudData.DEFAULT_POWER_UPS;
+                return false;
+            }
+
+            // =====================================================================================
+            // check LENGTH
+            if (PowerUps.Length != ProgressionCloudData.DEFAULT_POWER_UPS.Length)
+            {
+                // set default values
+                string[] basePowerUps = ProgressionCloudData.DEFAULT_POWER_UPS;
+
+                for (int i = 0; i < ProgressionCloudData.DEFAULT_POWER_UPS.Length; i++)
+                {
+                    if (PowerUps.Length <= i)
+                        break;
+
+                    // overwritte with previous data if possible
+                    basePowerUps[i] = PowerUps[i];
+                }
+
+                // set powerUps as overriten default powerUps
+                PowerUps = basePowerUps;
+                test = false;
+            }
+
+            // =====================================================================================
+            // check EXISTS
+            for (int i=0; i < PowerUps.Length; i++)
+            {
+                string powerUpName = PowerUps[i];
+
+                if (PowerUps[i] == "")
+                    continue;
+
+                // if no longer exists : reset value
+                if (! SRunePower.TrySplitPowerUpName(powerUpName, out string _, out ERuneActivation _))
+                {
+                    PowerUps[i] = "";
+                    test = false;
+                }
+            }
+
+            return test;
         }
     }
 
@@ -65,12 +136,12 @@ namespace Save
             Level = level;
         }
 
-        public override string ToString() => Difficulty + " " + TextHandler.ToRoman(Level);
+        public override string ToString() => Difficulty + " " + new string('+', Level);
 
         public SArenaDifficulty FromString(string str)
         {
             var splits = str.Split(" ");
-            if (splits.Length != 2 )
+            if (splits.Length != 2)
             {
                 ErrorHandler.Error("Bad SArenaDifficulty string : " + str);
                 return this;
@@ -82,7 +153,7 @@ namespace Save
                 return this;
             }
 
-            Level = TextHandler.FromRoman(splits[1]);
+            Level = splits[1].Count(f => f == '+'); ;
 
             return this;
         }
@@ -167,6 +238,8 @@ namespace Save
         public const string KEY_CURRENT_ARENA   = "CurrentArena";
         public const string KEY_UNLOCKED_ARENAS = "UnlockedArenas";
 
+        public static string[] DEFAULT_POWER_UPS => new string[4] { "", "", "", "" };
+
         // ===============================================================================================
         // ACTIONS
         public static Action LeagueDataChangedEvent;
@@ -190,7 +263,7 @@ namespace Save
         public static SCurrentArenaCloudData                    CurrentArena            => (SCurrentArenaCloudData)Instance.m_Data[KEY_CURRENT_ARENA];
         public static bool                                      HasArenaInProgress      => CurrentArena.InProgress();
         public static Dictionary<EArenaType, SArenaDifficulty>  UnlockedArenas          => Instance.m_Data[KEY_UNLOCKED_ARENAS] as Dictionary<EArenaType, SArenaDifficulty>;
-        public static SArenaDifficulty                          MaxArenaDifficulty      => new SArenaDifficulty(((EArenaDifficulty[])Enum.GetValues(typeof(EArenaDifficulty))).Last(), ArenaManagementData.NDifficultyLevels);
+        public static SArenaDifficulty                          MaxArenaDifficulty      => new SArenaDifficulty(((EArenaDifficulty[])Enum.GetValues(typeof(EArenaDifficulty))).Last(), ArenaManagementData.NDifficultyLevels - 1);
 
         #endregion
 
@@ -397,9 +470,35 @@ namespace Save
             UpdateCurrentArena(losses: Math.Clamp(CurrentArena.Losses + nLoss, 0, ArenaData.MAX_LOSSES), erosion: 0f, save: save);
         }
 
-        public static void AddCurrentArenaPowerUp(PowerUpData powerUpData, bool save = true)
+        public static void AddCurrentArenaPowerUp(string powerUpName, bool save = true)
         {
-            CurrentArena.PowerUps.Add(powerUpData.Name);
+            SetCurrentArenaPowerUp(powerUpName, CurrentArena.Level - 1 , save);
+        }
+
+        public static void SetCurrentArenaPowerUp(string powerUpName, int index, bool save = true)
+        {
+            var currentArena = CurrentArena;
+
+            if (index < 0)
+            {
+                ErrorHandler.Error("Bad index PowerUpData index : " + index);
+                return;
+            }
+
+            if (CurrentArena.PowerUps == null)
+            {
+                ErrorHandler.Error("No PowerUpData provided to CurrentArena");
+                currentArena.PowerUps = DEFAULT_POWER_UPS;
+            }
+
+            if (index >= currentArena.PowerUps.Length)
+            {
+                ErrorHandler.Error("Bad index PowerUpData index (" + index + ") : PowerUp max length is " + CurrentArena.PowerUps.Length);
+                return;
+            }
+
+            currentArena.PowerUps[index] = powerUpName;
+            Instance.m_Data[KEY_CURRENT_ARENA] = currentArena;
 
             if (save)
                 Instance.SaveValue(KEY_CURRENT_ARENA);
@@ -430,14 +529,14 @@ namespace Save
             if (arenaDifficulty >= MaxArenaDifficulty)
                 return;
 
-            if (arenaDifficulty.Level < ArenaManagementData.NDifficultyLevels)
+            if (arenaDifficulty.Level < ArenaManagementData.NDifficultyLevels - 1)
             {
                 arenaDifficulty.Level += 1;
             }
             else
             {
                 arenaDifficulty.Difficulty += 1;
-                arenaDifficulty.Level = 1;
+                arenaDifficulty.Level = 0;
             }
 
             UnlockedArenas[arenaType] = arenaDifficulty;
@@ -549,19 +648,22 @@ namespace Save
             bool save = false;
             var currentArena = CurrentArena;
 
-            if (CurrentArena.SArenaDifficulty.Level < 1)
+            if (CurrentArena.SArenaDifficulty.Level < 0)
             {
-                ErrorHandler.Error($"CurrentArena data has level ({CurrentArena.SArenaDifficulty.Level}) < 1");
-                currentArena.SArenaDifficulty.Level = 1;
+                ErrorHandler.Error($"CurrentArena data has level ({CurrentArena.SArenaDifficulty.Level}) < 0");
+                currentArena.SArenaDifficulty.Level = 0;
                 save = true;
             }
 
-            if (currentArena.SArenaDifficulty.Level > ArenaManagementData.NDifficultyLevels)
+            if (currentArena.SArenaDifficulty.Level >= ArenaManagementData.NDifficultyLevels)
             {
-                ErrorHandler.Error($"CurrentArena data : has level ({currentArena.SArenaDifficulty.Level}) > " + ArenaManagementData.NDifficultyLevels);
+                ErrorHandler.Error($"CurrentArena data : has level ({currentArena.SArenaDifficulty.Level}) >= " + ArenaManagementData.NDifficultyLevels);
                 currentArena.SArenaDifficulty.Level = ArenaManagementData.NDifficultyLevels;
                 save = true;
             }
+
+            if (! currentArena.CheckPowerUps())
+                save = true;
 
             if (save)
                 Instance.SetData(KEY_CURRENT_ARENA, currentArena);
@@ -595,15 +697,14 @@ namespace Save
                     UnlockedArenas[arenaType] = new SArenaDifficulty(EArenaDifficulty.Normal, level: 1);
                     save = true;
                 }
-
-                if (UnlockedArenas[arenaType].Level < 1)
+                if (UnlockedArenas[arenaType].Level < 0)
                 {
-                    ErrorHandler.Error($"UnlockedArenas {arenaType} data : has level ({UnlockedArenas[arenaType].Level}) < 1");
-                    UnlockedArenas[arenaType] = new SArenaDifficulty(EArenaDifficulty.Normal, level: 1);
+                    ErrorHandler.Error($"UnlockedArenas {arenaType} data : has level ({UnlockedArenas[arenaType].Level}) < 0");
+                    UnlockedArenas[arenaType] = new SArenaDifficulty(EArenaDifficulty.Normal, level: 0);
                     save = true;
                 }
 
-                if (UnlockedArenas[arenaType].Level > ArenaManagementData.NDifficultyLevels)
+                if (UnlockedArenas[arenaType].Level >= ArenaManagementData.NDifficultyLevels)
                 {
                     ErrorHandler.Error($"UnlockedArenas {arenaType} data : has level ({UnlockedArenas[arenaType].Level}) > " + ArenaManagementData.NDifficultyLevels);
                     UnlockedArenas[arenaType] = new SArenaDifficulty(UnlockedArenas[arenaType].Difficulty, ArenaManagementData.NDifficultyLevels);

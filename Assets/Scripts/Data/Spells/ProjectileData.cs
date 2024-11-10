@@ -28,34 +28,7 @@ namespace Data
         public float Speed => Settings.SpellSpeedFactor * m_Speed;
         public bool StopOnTargetPos => m_StopOnTargetPos;
         public bool IsTrajectoryFromAbove => Trajectory == ESpellTrajectory.Hight || Trajectory == ESpellTrajectory.Diagonal;
-        #endregion
-
-
-        #region Inherited Spawning Members
-
-        public override void SpellPreview(Controller controller, Transform parent = default, Vector3 offset = default)
-        {
-            offset = GetSpawnOffset(controller);
-            switch (Trajectory)
-            {
-                case ESpellTrajectory.Curve:
-                case ESpellTrajectory.Hight:
-                    parent = ArenaManager.Instance.Arena.transform;
-                    break;
-
-                case ESpellTrajectory.Diagonal:
-                case ESpellTrajectory.DiagonalMiddle:
-                case ESpellTrajectory.Straight:
-                    break;
-
-                default:
-                    Debug.LogError($"Trajectory {Trajectory} not implemented");
-                    break;
-            }
-
-            base.SpellPreview(controller, parent, offset);
-        }
-
+      
         #endregion
 
 

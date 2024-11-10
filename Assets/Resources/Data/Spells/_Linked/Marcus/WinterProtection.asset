@@ -18,14 +18,16 @@ MonoBehaviour:
   m_DescriptionVariables:
   - Name: Frost
     WithIcon: 1
+  m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 0}
   SpellEventActions:
   - Prefab: {fileID: 7053385775836331393, guid: 70ba052d061d342418be501ab1418439, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
-      StartSpellPart: 3
-      EndSpellPart: 5
+      m_StartSpellPart: 400
+      m_EndSpellPart: 1000
       StartAt: 0
       EndAt: 0
       Persistance: 0
@@ -38,9 +40,6 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -49,12 +48,14 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 4
-  LockTargetAt: 2
+  LockTarget: 300
+  ApplyIfNotHitting: 0
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 0
   m_Heal: 0
+  m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
@@ -77,7 +78,10 @@ MonoBehaviour:
   m_Cooldown: 30
   CounterType: 1
   CounterActivation: 0
+  m_SpawnOffset: {x: 0, y: 0}
+  m_IsFollowing: 1
+  m_SpawnLocation: 1
   IsBlockingMovement: 1
   IsBlockingCast: 1
+  m_DamageConversionEffects: []
   OnCounterProc: {fileID: 11400000, guid: 9446e1f6ed7bcfb47b7fcde576be6d56, type: 2}
-  ColorSwap: {r: 1, g: 1, b: 1, a: 1}

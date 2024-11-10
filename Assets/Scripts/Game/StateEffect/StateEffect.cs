@@ -1,13 +1,18 @@
-﻿using Assets.Scripts.Managers.Sound;
+﻿using Assets.Scripts.Data.DataStructures;
+using Assets.Scripts.Managers.Sound;
 using Data;
 using Enums;
 using Game.Loaders;
+using Game.SpellGFXs;
+using Game.UI;
 using MyBox;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Tools;
+using Unity.Collections;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Game.Spells
@@ -59,7 +64,7 @@ namespace Game.Spells
 
         [Header("Graphics")]
         [SerializeField] protected      bool                        m_IsDisplayed = true;
-        [SerializeField] protected      List<SPrefabSpawn>          m_VisualEffects;
+        [SerializeField] protected      List<SpellPrefabSpawn>      m_VisualEffects;
         [SerializeField] protected      EAnimation                  m_Animation;
         [SerializeField] protected      AudioClip                   m_OnApplySoundFX;
         [SerializeField] protected      AudioClip                   m_PermanantSoundFX;
@@ -68,6 +73,8 @@ namespace Game.Spells
         [SerializeField] protected EStateEffect                     m_ConsumeState;
         [ConditionalField("ConsumeState", true, EStateEffect.None)]
         [SerializeField] protected EStateEffect                     m_DefaultState;
+        [SerializeField] protected List<SStateEffectData>           m_SubStateEffects;
+        [SerializeField] protected List<string>                     m_HoldingStateEffects;
 
         [Header("General Stats")]
         [SerializeField] protected      int                         m_Priority              = 0;
@@ -123,6 +130,7 @@ namespace Game.Spells
 
         protected int                   m_Stacks = 1;   
         protected int                   m_RemainingShield;
+        protected bool                  m_IsHolding = false;
         protected float                 m_Timer;
 
         // =========================================================================================
@@ -132,8 +140,10 @@ namespace Game.Spells
         // =========================================================================================
         // DEPENDENT MEMBERS  
         public virtual EStateEffectType StateEffectType     => m_StateEffectType;
+        public List<SStateEffectData>   SubStateEffects     => m_SubStateEffects;
+
         public bool                     IsUnique            => StateEffectType == EStateEffectType.Incarnation || StateEffectType == EStateEffectType.AutoAttackBuff;
-        public List<SPrefabSpawn>       VisualEffects       => m_VisualEffects;
+        public List<SpellPrefabSpawn>   VisualEffects       => m_VisualEffects;
         public EAnimation               Animation           => m_Animation;
         public EStateEffect             Type                => Enum.TryParse(name, out EStateEffect type) ? type : m_Type ;
         public virtual int              Stacks              => m_Stacks;
@@ -174,7 +184,7 @@ namespace Game.Spells
 
             m_Controller = controller;
             m_Caster = caster;
-            m_Stacks = stateEffectData.HasValue ? stateEffectData.Value.Stacks : 1;
+            m_Stacks = stateEffectData.HasValue ? stateEffectData.Value.GetStacks() : 1;
 
             // check if has overriding data
             if (stateEffectData.HasValue && stateEffectData.Value.OverridingProperties != null && stateEffectData.Value.OverridingProperties.Count > 0)
@@ -192,7 +202,10 @@ namespace Game.Spells
             // if spell is instantanious do not proceed after initalization in state handler
             if (m_IsInstantanious)
                 return false;
-            
+
+            m_IsHolding = m_Controller.StateHandler.IsHolding(StateEffectName);
+            m_Controller.StateHandler.HoldingStateEffects.OnListChanged += RecheckIsHolding;
+
             return true;
         }
 
@@ -214,35 +227,13 @@ namespace Game.Spells
             return m_Stacks > 0;
         }
 
-        /// <summary>
-        /// Check if player has required "ConsumeState"
-        /// </summary>
-        /// <returns></returns>
-        protected virtual int ApplyConsumeState(int stacks = 1)
-        {
-            // if has state to consume 
-            if (m_Controller.StateHandler.HasState(m_ConsumeState))
-            {
-                // consume "ConsumeState" state to apply current state
-                return m_Controller.StateHandler.RemoveStateEffect(m_ConsumeState, true, stacks);
-            }
-
-            // add DefaultState state (if any)
-            if (m_DefaultState != EStateEffect.None)
-                m_Controller.StateHandler.AddStateEffect(m_DefaultState, m_Caster);
-
-            // return that no stacks has been 
-            return 0;
-        }
-
         protected virtual void OnStart()
         {
-            foreach (var stateEffect in m_OnStartStateEffect)
-            {
-                var clone = stateEffect.Clone(m_Level);
-                clone.m_Duration = m_Duration;
-                m_Controller.StateHandler.AddStateEffect(clone, m_Caster);
-            }
+            ActivateHoldingStateEffects(true);
+
+            ApplySubStateEffect();
+
+            ApplyOnStartStateEffects();
 
             // call state effect 
             StateEffectEvent?.Invoke(StateEffectName, EStateEffectEvent.OnApplied, m_Controller.PlayerId, m_Caster.PlayerId);
@@ -285,6 +276,7 @@ namespace Game.Spells
             if (! IsInstantanious)
                 m_Controller.StateHandler.RemoveStateEffect(StateEffectName, true);
 
+            ActivateHoldingStateEffects(false);
             StateEffectEvent?.Invoke(StateEffectName, EStateEffectEvent.OnRemoved, m_Controller.PlayerId, m_Caster.PlayerId);
         }
 
@@ -322,6 +314,9 @@ namespace Game.Spells
         public virtual void Update()
         {
             if (IsInfinite)
+                return;
+
+            if (m_IsHolding)
                 return;
 
             m_Timer -= Time.deltaTime;
@@ -394,6 +389,64 @@ namespace Game.Spells
         #endregion
 
 
+        #region Activation & Application
+
+        /// <summary>
+        /// Check if player has required "ConsumeState"
+        /// </summary>
+        /// <returns></returns>
+        protected virtual int ApplyConsumeState(int stacks = 1)
+        {
+            // if has state to consume 
+            if (m_Controller.StateHandler.HasState(m_ConsumeState))
+            {
+                // consume "ConsumeState" state to apply current state
+                return m_Controller.StateHandler.RemoveStateEffect(m_ConsumeState, true, stacks);
+            }
+
+            // add DefaultState state (if any)
+            if (m_DefaultState != EStateEffect.None)
+                m_Controller.StateHandler.AddStateEffect(m_DefaultState, m_Caster);
+
+            // return that no stacks has been 
+            return 0;
+        }
+
+        protected virtual void ActivateHoldingStateEffects(bool activate)
+        {
+            if (activate)
+                m_Controller.StateHandler.AddHoldingStateEffects(m_HoldingStateEffects);
+            else
+                m_Controller.StateHandler.RemoveHoldingStateEffects(m_HoldingStateEffects);
+        }
+
+        void ApplySubStateEffect()
+        {
+            if (m_SubStateEffects == null)
+                return;
+            
+            foreach (var subStateEffect in m_SubStateEffects)
+            {
+                m_Controller.StateHandler.AddStateEffect(subStateEffect, m_Controller, level: m_Level);
+            }
+        }
+
+        protected virtual void ApplyOnStartStateEffects()
+        {
+            if (m_OnStartStateEffect == null)
+                return;
+
+            foreach (var stateEffect in m_OnStartStateEffect)
+            {
+                var clone = stateEffect.Clone(m_Level);
+                clone.m_Duration = m_Duration;
+                m_Controller.StateHandler.AddStateEffect(clone, m_Controller);
+            }
+        }
+
+        #endregion
+
+
         #region Shield
 
         /// <summary>
@@ -433,6 +486,13 @@ namespace Game.Spells
         {
             ApplyNewLevelFactorAll(level);
             m_Level = level;
+
+            for (int i = 0; i < m_SubStateEffects.Count; i++)
+            {
+                var stateEffect = m_SubStateEffects[i];
+                stateEffect.SetLevel(level);
+                m_SubStateEffects[i] = stateEffect;
+            }
         }
 
         protected virtual void ApplyNewLevelFactorAll(int newLevel)
@@ -654,6 +714,19 @@ namespace Game.Spells
         #endregion
 
 
+        #region Listeners
+
+        void RecheckIsHolding(NetworkListEvent<FixedString64Bytes> changeEvent)
+        {
+            if (changeEvent.Value != StateEffectName.ToString())
+                return;
+
+            m_IsHolding = m_Controller.StateHandler.IsHolding(StateEffectName);
+        }
+
+        #endregion
+
+
         #region Infos
 
         public virtual Dictionary<string, object> GetInfos()
@@ -761,7 +834,9 @@ namespace Game.Spells
                 values.Add(stringValue);
             }
 
-            return TextHandler.ReplaceStateEffectTokens(string.Format(m_Description, values.ToArray()));
+            var description = TextHandler.ReplaceStateEffectTokens(string.Format(m_Description, values.ToArray()));
+            description = TextHandler.ReplaceSubStateEffects(description, m_SubStateEffects);
+            return description;
         }
 
         #endregion

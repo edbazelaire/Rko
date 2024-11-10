@@ -106,8 +106,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 604
-      y: 3
+      x: 4
+      y: 455
       width: 248
       height: 293
     spriteID: e6098ecd5fcd93144b476998b3dcb35a
@@ -118,7 +118,7 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 604, y: 4}
+    uvTransform: {x: 4, y: 456}
     spritePosition: {x: 46, y: 219}
   - name: PowerUpCard_IconBackground
     originalName: 
@@ -127,8 +127,8 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 4
-      y: 651
+      x: 574
+      y: 456
       width: 216
       height: 215
     spriteID: 1e06ad9d7b3d00147a15795d770a7ffe
@@ -139,7 +139,7 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 4, y: 651}
+    uvTransform: {x: 574, y: 456}
     spritePosition: {x: 63, y: 241}
   - name: PowerUpCard_Overlay
     originalName: 
@@ -169,7 +169,7 @@ ScriptedImporter:
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
-      x: 17
+      x: 273
       y: 456
       width: 293
       height: 187
@@ -181,7 +181,7 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
-    uvTransform: {x: 4, y: 456}
+    uvTransform: {x: 260, y: 456}
     spritePosition: {x: 11, y: 26}
   - name: PowerUpCard_Background
     originalName: 
@@ -204,6 +204,27 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 304, y: 4}
     spritePosition: {x: 25, y: 19}
+  - name: PowerUpCard_Background_BW
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    rect:
+      serializedVersion: 2
+      x: 604
+      y: 4
+      width: 292
+      height: 444
+    spriteID: f08c0068aa1708548abaad2e51f9e635
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 604, y: 4}
+    spritePosition: {x: 24, y: 19}
   spriteImportData: []
   rigSpriteImportData: []
   sharedRigSpriteImportData: []
@@ -247,7 +268,7 @@ ScriptedImporter:
     parentIndex: -1
     spriteID: e6098ecd5fcd93144b476998b3dcb35a
     layerID: 6
-    mosaicPosition: {x: 604, y: 4}
+    mosaicPosition: {x: 4, y: 456}
     flatten: 0
     isImported: 1
     isVisible: 1
@@ -257,7 +278,7 @@ ScriptedImporter:
     parentIndex: -1
     spriteID: 1e06ad9d7b3d00147a15795d770a7ffe
     layerID: 17
-    mosaicPosition: {x: 4, y: 651}
+    mosaicPosition: {x: 574, y: 456}
     flatten: 0
     isImported: 1
     isVisible: 1
@@ -277,7 +298,7 @@ ScriptedImporter:
     parentIndex: -1
     spriteID: e2dc2430bfb33e94c8a6a35cad7e24b0
     layerID: 10
-    mosaicPosition: {x: 4, y: 456}
+    mosaicPosition: {x: 260, y: 456}
     flatten: 0
     isImported: 1
     isVisible: 1
@@ -288,6 +309,16 @@ ScriptedImporter:
     spriteID: 50f0785abf2c5d84f930b7598b5d4adf
     layerID: 4
     mosaicPosition: {x: 304, y: 4}
+    flatten: 0
+    isImported: 1
+    isVisible: 1
+  - name: PowerUpCard_Background_BW
+    spriteName: PowerUpCard_Background_BW
+    isGroup: 0
+    parentIndex: -1
+    spriteID: f08c0068aa1708548abaad2e51f9e635
+    layerID: 18
+    mosaicPosition: {x: 604, y: 4}
     flatten: 0
     isImported: 1
     isVisible: 1

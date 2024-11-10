@@ -189,7 +189,7 @@ namespace Data
 
         #region Level Management
 
-        protected override void SetLevel(int level)
+        public override void SetLevel(int level)
         {
             base.SetLevel(level);
 

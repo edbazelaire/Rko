@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2413bf9bea7a81d44a0b645bca9d69f8, type: 3}
   m_Name: IceLance
   m_EditorClassIdentifier: 
-  Rarety: 2
+  Rarety: 1
   m_Description: Throw an ice lance in a straight line to your enemy dealing {0}
     damages to your target and applying {1}. If the target is {2} breaks the shield
     dealing a great amount of extra damages
@@ -31,8 +31,8 @@ MonoBehaviour:
     MaterialEffect: {fileID: 0}
     SoundFX: []
     GFXLifetime:
-      StartSpellPart: 4
-      EndSpellPart: 0
+      m_StartSpellPart: 500
+      m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
       Persistance: 1
@@ -45,9 +45,6 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -56,12 +53,18 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 1
-  LockTargetAt: 2
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 80
+  m_Damage: 50
   m_Heal: 0
+  m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
@@ -79,6 +82,7 @@ MonoBehaviour:
   EnemyStateEffects:
   - StateEffect: 16
     Stacks: 1
+    BonusStacksPerLevel: 0
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0

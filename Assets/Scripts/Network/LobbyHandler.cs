@@ -76,7 +76,7 @@ namespace Network
         private bool        m_CancelRetry;
 
         private EGameMode m_GameMode                = EGameMode.Arena;
-        private EArenaType m_ArenaType              = EArenaType.FireArena;
+        private EArenaType m_ArenaType              = EArenaType.FrostArena;
 
         private float m_HeartbeatTimer    = 0.0f;
         private float m_UpdateLobbyTimer  = 0.0f;
@@ -232,7 +232,7 @@ namespace Network
                     case ELobbyState.SendingPlayerData:
                         var playerData = StaticPlayerData.ToStruct();
                         if (GameMode == EGameMode.Arena)
-                            playerData.SetPowerUps(ProgressionCloudData.CurrentArena.PowerUps);
+                            playerData.SetPowerUps(ProgressionCloudData.CurrentArena.GetActivePowerUps());
 
                         GameManager.Instance.AddPlayerDataServerRPC(
                             NetworkManager.Singleton.LocalClientId,
@@ -622,7 +622,7 @@ namespace Network
                             new int[] { 1, 1 },
                             new SProfileCurrentData(gamerTag: ECharacter.Kahnan.ToString()).AsNetworkSerializable(),
                             isPlayer: false,
-                            botData: new SBotData(1f, 1f)
+                            botData: new SBotData(EArenaDifficulty.Normal, 1f, 1f)
                         );
                     }
 
@@ -637,7 +637,7 @@ namespace Network
                         new int[] { 9, 9, 9, 9 },
                         new SProfileCurrentData(gamerTag: trainingCharacter.ToString()).AsNetworkSerializable(),
                         isPlayer: false,
-                        botData: new SBotData(PlayerPrefs.GetFloat(EPlayerPref.TrainingDecisionRefresh.ToString(), 0.05f), PlayerPrefs.GetFloat(EPlayerPref.TrainingRandomness.ToString(), 0f))
+                        botData: new SBotData(EArenaDifficulty.Normal, PlayerPrefs.GetFloat(EPlayerPref.TrainingDecisionRefresh.ToString(), 0.05f), PlayerPrefs.GetFloat(EPlayerPref.TrainingRandomness.ToString(), 0f))
                     );
 
                 // ================================================================================================

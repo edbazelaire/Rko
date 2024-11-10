@@ -585,10 +585,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 160251221557196917}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 519.44, y: 0}
-  m_SizeDelta: {x: 1038.88, y: 205.01}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 511.94, y: 0}
+  m_SizeDelta: {x: 1023.88, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &4486370976120742771
 CanvasRenderer:
@@ -907,10 +907,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 160251221557196917}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 519.44, y: -410.02}
-  m_SizeDelta: {x: 1038.88, y: 205.01}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 511.94, y: 0}
+  m_SizeDelta: {x: 1023.88, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &4654771260588149654
 CanvasRenderer:
@@ -1331,10 +1331,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 160251221557196917}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 519.44, y: -205.01}
-  m_SizeDelta: {x: 1038.88, y: 205.01}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 511.94, y: 0}
+  m_SizeDelta: {x: 1023.88, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &236383024201417178
 CanvasRenderer:
@@ -4734,6 +4734,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6886135903628922514, guid: b70494458a6fed74690799a65350e34d, type: 3}
+      propertyPath: m_Spacing
+      value: 80
+      objectReference: {fileID: 0}
     - target: {fileID: 6902603601417429531, guid: b70494458a6fed74690799a65350e34d, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -5744,7 +5748,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3908648845884168357, guid: d46e2911829e1164dac04cc228c3f097, type: 3}
       propertyPath: m_fontSize
-      value: 46.15
+      value: 44.1
       objectReference: {fileID: 0}
     - target: {fileID: 7404561442817260505, guid: d46e2911829e1164dac04cc228c3f097, type: 3}
       propertyPath: m_Pivot.x
@@ -5828,7 +5832,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7497723374904151655, guid: d46e2911829e1164dac04cc228c3f097, type: 3}
       propertyPath: m_fontSize
-      value: 44.8
+      value: 41.7
       objectReference: {fileID: 0}
     - target: {fileID: 7868452780964463860, guid: d46e2911829e1164dac04cc228c3f097, type: 3}
       propertyPath: m_Name

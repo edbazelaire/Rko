@@ -19,6 +19,9 @@ namespace Game.AI.BehaviorTrees
                 // ULTIMATE
                 new TaskAttack(controller, allowedSpellCategories: new List<ESpellCategory> { ESpellCategory.Ultimate }),
 
+                // USE VORTEX
+                new TaskUseSpell(controller, ESpell.Vortex, delay: 15),
+
                 // USE SPECIAL ABILITY
                 new TaskUseSpell(controller, ESpell.Scythefall),
 

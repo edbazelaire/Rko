@@ -62,8 +62,8 @@ namespace Menu.PopUps
 
             m_RefreshLifeButton.gameObject.SetActive(ProfileCloudData.IsAdmin);
 
+            m_IsActive = true;
             RefreshUI();
-            Activate(true, false);
         }
 
         #endregion
@@ -78,35 +78,43 @@ namespace Menu.PopUps
 
         void Activate(bool activate = true, bool withAnimation = true)
         {
+            if (m_IsActive == activate)
+                return;
+
             m_IsActive = activate;
 
-            // cancel animation component (if any)
-            var animationComponent = Finder.FindComponent<MoveAnimation>(gameObject, throwError: false);
-            if (animationComponent != null)
-                Destroy(animationComponent);
-
-            // calculate desired end pos
-            var endPos = transform.position;
-            if (activate)
+            // Ensure the component is a RectTransform for UI elements
+            var rectTransform = GetComponent<RectTransform>();
+            if (rectTransform == null)
             {
-                endPos.x = 0;
-                m_DisplayButton.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-            }
-            else
-            {
-                endPos.x = -m_Width;
-                m_DisplayButton.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
-            }
-
-            // instant activation (no animation)
-            if (! withAnimation)
-            {
-                transform.position = endPos;
+                Debug.LogError("No RectTransform component found on this GameObject.");
                 return;
             }
 
+            // Cancel animation component (if any)
+            var animationComponent = Finder.FindComponent<MoveAnimation>(gameObject, throwError: false);
+            if (animationComponent != null)
+            {
+                Destroy(animationComponent);
+            }
+
+            // Calculate desired end position using anchoredPosition for UI elements
+            Vector2 endPos = rectTransform.anchoredPosition;
+            endPos.x = activate ? 0 : 25 - m_Width;
+
+            // Rotate the display button
+            m_DisplayButton.transform.rotation = Quaternion.Euler(0f, activate ? 0f : 180f, 0f);
+
+            // Instant activation without animation
+            if (!withAnimation)
+            {
+                rectTransform.anchoredPosition = endPos;
+                return;
+            }
+
+            // Add new MoveAnimation component and initialize it with anchored positions
             animationComponent = gameObject.AddComponent<MoveAnimation>();
-            animationComponent.Initialize("SideBar", 2.5f, transform.position, endPos);
+            animationComponent.Initialize("SideBar", 0.5f, rectTransform.anchoredPosition, endPos, checkRectTransform: true);
         }
 
         void RefreshUI()
@@ -119,13 +127,25 @@ namespace Menu.PopUps
         {
             for (int i = 0; i < m_PowerUpsSmallDisplayers.Count;  i++)
             {
-                if (ProgressionCloudData.CurrentArena.PowerUps.Count > i)
+                if (ProgressionCloudData.CurrentArena.Level > i)
                 {
-                    m_PowerUpsSmallDisplayers[i].Initialize(SpellLoader.PowerUpsData[ProgressionCloudData.CurrentArena.PowerUps[i]]);
-                    continue;
-                }
+                    string powerUpName = "";
+                    if (ProgressionCloudData.CurrentArena.PowerUps.Length <= i)
+                    {
+                        ErrorHandler.Error("Number of max PowerUps " + ProgressionCloudData.CurrentArena.PowerUps.Length + " is <= to expeted index " + i);
+                    }
+                    else
+                    {
+                        powerUpName = ProgressionCloudData.CurrentArena.PowerUps[i];
+                    }
 
-                m_PowerUpsSmallDisplayers[i].Initialize(null);
+                    var powerUpData = powerUpName == "" ? null : SpellLoader.GetPowerUp(powerUpName, InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter).Level);
+                    m_PowerUpsSmallDisplayers[i].Initialize(powerUpData, i);
+                } 
+                else
+                {
+                    m_PowerUpsSmallDisplayers[i].Initialize(null, i);
+                }
             }
         }
 

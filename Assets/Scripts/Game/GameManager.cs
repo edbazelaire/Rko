@@ -28,9 +28,10 @@ namespace Game
 
         public const string TIME_WRAPPER_ID = "Game";
 
-        public const int BOT_CLIENT_ID = 999;
-        public const int N_LOADING_STEPS = 3;
-        public const int DEFAULT_PVP_LEVEL = 9;
+        public const int BOT_CLIENT_ID      = 100;
+        public const int SPAWN_CLIENT_ID    = 1000;
+        public const int N_LOADING_STEPS    = 3;
+        public const int DEFAULT_PVP_LEVEL  = 9;
 
         // ===================================================================================
         // ACTIONS
@@ -54,7 +55,12 @@ namespace Game
         protected Dictionary<ulong, SPlayerData> m_PlayersData = new();
         /// <summary> [CLIENT/SERVER] dict matching a client id to a player controller </summary>
         protected Dictionary<ulong, Controller> m_Controllers = new();
-
+        /// <summary> [CLIENT/SERVER] dict matching a client id to a spawn controller </summary>
+        protected Dictionary<ulong, Controller> m_Spawns = new();
+        /// <summary> [SERVER] current BOT extra id (to add to base BOT_CLIENT_ID) </summary>
+        protected int m_BotId = 0;
+        /// <summary> [SERVER] current SPAWN extra id (to add to base SPAWN_CLIENT_ID) </summary>
+        protected int m_SpawnId = 0;
 
         // -- Initialization
         /// <summary> [CLIENT/SERVER] has the GameManager current Instance been initialized ? </summary>
@@ -109,9 +115,9 @@ namespace Game
             if (m_Initialized)
                 return;
 
-            m_Controllers = new Dictionary<ulong, Controller>();
-            m_InitOnClientSide = false;
-            m_IsTuto = Main.ForceIsNewPlayer || !ProfileCloudData.TutoDone;
+            m_Controllers               = new Dictionary<ulong, Controller>();
+            m_InitOnClientSide          = false;
+            m_IsTuto                    = Main.ForceIsNewPlayer || !ProfileCloudData.TutoDone;
 
             // instantiate listeners
             m_ProgressGameStart.OnValueChanged  += OnProgressGameStartChanged;
@@ -135,6 +141,10 @@ namespace Game
             }
 
             TimeErrorWrapper.Instance.Cancel(TIME_WRAPPER_ID);
+
+            // SERVER    -----------------------------------
+            if (!IsServer)
+                yield break;
 
             // GameManager is Initialized and ready to receive connections
             SetState(EGameState.WaitingForConnection);
@@ -297,6 +307,23 @@ namespace Game
         }
 
         /// <summary>
+        /// [LOCAL] Link client id to controllers
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <param name="controller"></param>
+        public void AddSpawnController(ulong clientId, Controller controller)
+        {
+            if (m_Spawns.ContainsKey(clientId))
+            {
+                ErrorHandler.Warning("Trying to add Spawn with id " + clientId + " but this id is already in list of controllers");
+                return;
+            }
+            m_Spawns.Add(clientId, controller);
+
+            controller.OnDestroyedEvent += () => m_Spawns.Remove(controller.PlayerId);
+        }
+
+        /// <summary>
         /// Wait for all clients to return that every controller are properly initilized
         /// </summary>
         /// <returns></returns>
@@ -378,6 +405,18 @@ namespace Game
 
             ErrorHandler.Log("SetupUIClientRPC()", ELogTag.GameSystem);
             GameUIManager.Instance.SetUpIntroScreen();
+        }
+
+        public ulong GetNextBotId()
+        {
+            m_BotId++;  
+            return (ulong)(BOT_CLIENT_ID + m_BotId);
+        }
+
+        public ulong GetNextSpawnId()
+        {
+            m_SpawnId++;  
+            return (ulong)(SPAWN_CLIENT_ID + m_SpawnId);
         }
 
         #endregion
@@ -620,10 +659,14 @@ namespace Game
 
         public Controller GetPlayer(ulong clientId)
         {
-            if (!m_Controllers.ContainsKey(clientId))
-                ErrorHandler.FatalError("Unable to find controller with client id : " + clientId);
+            if (m_Controllers.ContainsKey(clientId))
+                return m_Controllers[clientId];
 
-            return m_Controllers[clientId];
+            if (m_Spawns.ContainsKey(clientId))
+                return m_Spawns[clientId];
+
+            ErrorHandler.Error("Unable to find controller with client id : " + clientId);
+            return null;
         }
 
         public Controller GetFirstEnemy(int team)
@@ -659,6 +702,37 @@ namespace Game
         public bool HasPlayer(ulong clientId)
         {
             return GetPlayer(clientId) != null;
+        }
+
+        public bool TryFindSpellInArena(string spellName, out Spell spell, Controller controller = null)
+        {
+            spell = null;
+
+            // Finds all active Spell components in the scene
+            List<Spell> spells = FindObjectsByType<Spell>(FindObjectsSortMode.InstanceID).ToList();
+            spells = spells
+                .Where(s => s.SpellData.Name == spellName)
+                .ToList();
+
+            if (spells.Count == 0)
+                return false;
+
+            if (controller == null)
+            {
+                spell = spells.First(); 
+                return true;
+            }
+
+            foreach (Spell tempSpell in spells)
+            {
+                if (tempSpell.Controller == controller)
+                {
+                    spell = tempSpell;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
 
@@ -724,9 +798,8 @@ namespace Game
                         ErrorHandler.Error("GameManager not found");
                         return null;
                     }
-
-                    s_Instance.Initialize();
                 }
+
                 return s_Instance;
             }
         }
@@ -797,7 +870,7 @@ namespace Game
                     break;
 
                 case EGameState.GameOver:
-                    TimeErrorWrapper.Instance.New(TIME_WRAPPER_ID, 15f, OnGameOverTimeLimit);
+                    TimeErrorWrapper.Instance.Cancel(TIME_WRAPPER_ID);
                     break;
             }
         }
@@ -841,8 +914,8 @@ namespace Game
         void OnInitializingTimeLimit()
         {
             ExitWithError(
-                "An error has occured while creating " + LobbyHandler.Instance.GameMode + " game mode : "
-                    + "\n   + Game State : " + m_State
+                "An error has occured while creating " + LobbyHandler.Instance.GameMode.ToString() + " game mode : "
+                    + "\n   + Game State : " + m_State.ToString()
                     + "\n   + Reason : Initializing game has reached time limit"
             );
         }
@@ -850,8 +923,8 @@ namespace Game
         void OnPreparingGameTimeLimit()
         {
             ExitWithError(
-                "An error has occured while creating " + LobbyHandler.Instance.GameMode + " game mode : "
-                    + "\n   + Game State : " + m_State
+                "An error has occured while creating " + LobbyHandler.Instance.GameMode.ToString() + " game mode : "
+                    + "\n   + Game State : " + m_State.ToString()
                     + "\n   + Reason : Preparing game has reached time limit"
             );
         }
@@ -859,8 +932,8 @@ namespace Game
         void OnGameRunningTimeLimit()
         {
             ExitWithError(
-                "An error has occured while playing " + LobbyHandler.Instance.GameMode + " game mode : "
-                    + "\n   + Game State : " + m_State
+                "An error has occured while playing " + LobbyHandler.Instance.GameMode.ToString() + " game mode : "
+                    + "\n   + Game State : " + m_State.ToString()
                     + "\n   + Reason : Game has reached its safety time limit"
             );
         }

@@ -15,13 +15,14 @@ MonoBehaviour:
   m_Description: 
   m_DescriptionVariables: 
   m_StateEffectType: 1
+  m_IsDisplayed: 1
   m_VisualEffects:
   - Prefab: {fileID: 7582611277444767761, guid: 8ddc8be4a7ed547469653f61fdeca5d8, type: 3}
     MaterialEffect: {fileID: 0}
     SoundFX: []
     GFXLifetime:
-      StartSpellPart: 3
-      EndSpellPart: 5
+      m_StartSpellPart: 400
+      m_EndSpellPart: 1000
       StartAt: 0
       EndAt: 0
       Persistance: 0
@@ -38,8 +39,8 @@ MonoBehaviour:
     MaterialEffect: {fileID: 2100000, guid: c1aa0c6f776d0dc45a3000e95178e814, type: 2}
     SoundFX: []
     GFXLifetime:
-      StartSpellPart: 3
-      EndSpellPart: 5
+      m_StartSpellPart: 400
+      m_EndSpellPart: 400
       StartAt: 0
       EndAt: 0
       Persistance: 0

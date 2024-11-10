@@ -13,15 +13,17 @@ MonoBehaviour:
   m_Name: _FrostBites
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: 
-  m_DescriptionVariables: []
+  m_Description: Every {0} seconds, creates an area of frost that deals {1} damages
+    and applies [Frozen] effect
+  m_DescriptionVariables:
+  - Name: DelayBetweenWaves
+    WithIcon: 0
+  - Name: Damages
+    WithIcon: 1
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions: []
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -30,7 +32,8 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 6
-  LockTargetAt: 2
+  LockTarget: 300
+  ApplyIfNotHitting: 0
   MaxHit: 1
   EnergyGain: 0
   EnergyCost: 0
@@ -59,6 +62,9 @@ MonoBehaviour:
   m_Cooldown: 0
   SubSpellData: {fileID: 11400000, guid: cda23798a2db2284788f18c417ee15fe, type: 2}
   MultiProjectileType: 0
+  m_YMinMax:
+    Min: 0
+    Max: 0
   m_IsBlocking: 0
   m_NProjectiles: 1
   m_NBreakPoints: 1

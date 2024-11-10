@@ -22,9 +22,11 @@ namespace Game.AI
         protected ESpell m_Spell;
         protected float m_Delay;
         protected int m_NTimes;
+        protected int m_MaxTimes;
 
         protected float m_Timer;
         protected float m_NTimesCounter;
+        protected float m_MaxTimesCounter;
 
         ECastState m_CastState;
 
@@ -33,7 +35,7 @@ namespace Game.AI
 
         #region Init & End
 
-        public TaskUseSpell(Controller controller, ESpell spell, float delay = 0f, int nTimes = 1)
+        public TaskUseSpell(Controller controller, ESpell spell, float delay = 0f, int nTimes = 1, int maxTimes = -1)
         {
             m_CastState = ECastState.Inactive;
 
@@ -41,8 +43,12 @@ namespace Game.AI
             m_Spell = spell;
             m_Delay = delay;
             m_NTimes = nTimes;
+            m_MaxTimes = maxTimes;
 
             m_Timer = delay;
+
+            // check that spell exists to activate the node
+            m_IsActivated = controller.SpellHandler.Spells.Contains(m_Spell);
         }
 
         #endregion
@@ -52,8 +58,6 @@ namespace Game.AI
 
         public override NodeState Evaluate()
         {
-            m_State = NodeState.FAILURE;
-
             // Inactive : start timer
             if (m_CastState == ECastState.Inactive)
                 SetCastState(ECastState.TimerActivated);
@@ -69,6 +73,16 @@ namespace Game.AI
             // wait for the Controller to start the cast
             if (m_CastState == ECastState.Casting)
             {
+                // wait end of cooldown
+                if (m_Controller.SpellHandler.GetCooldown(m_Spell) > 0)
+                {
+                    m_State = NodeState.FAILURE;
+                    ErrorHandler.Log("TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : the spell is currently in cooldown", ELogTag.AITaskUseSpell);
+                    return m_State;
+                }
+
+                m_State = NodeState.RUNNING;
+
                 // NOT CASTING : try to cast the spell
                 if (! m_Controller.SpellHandler.IsCasting)
                 {
@@ -94,11 +108,15 @@ namespace Game.AI
             switch (castState)
             {
                 case ECastState.Inactive:
+                    m_State = NodeState.FAILURE;
+
                     // remove counter listener
                     m_Controller.SpellHandler.OnPreSpellEvent -= CountAttacks;
                     break;
 
                 case ECastState.TimerActivated:
+                    m_State = NodeState.FAILURE;
+
                     m_Controller.StartCoroutine(ActivateTimer());
                     break;
 
@@ -134,7 +152,8 @@ namespace Game.AI
                 return;
 
             m_NTimesCounter++;
-            ErrorHandler.Log("      -- TaskUseSpell() : m_NTimesCounter = " + m_NTimesCounter, ELogTag.AITaskUseSpell);
+            m_MaxTimesCounter++;
+            ErrorHandler.Log("      -- TaskUseSpell("+m_Spell.ToString()+") : m_NTimesCounter = " + m_NTimesCounter, ELogTag.AITaskUseSpell);
 
             // number of attacks reached 
             if (m_NTimesCounter >= m_NTimes)

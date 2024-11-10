@@ -17,9 +17,12 @@ namespace AI
         protected NodeState m_State;
 
         public Node m_Parent;
+        protected bool m_IsActivated = true;
         protected List<Node> m_Children = new List<Node>();
 
         private Dictionary<string, object> m_DataContext = new Dictionary<string, object>();
+
+        public bool IsActivated => m_IsActivated;
 
         public Node()
         {

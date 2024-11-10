@@ -23,20 +23,16 @@ namespace Game.Loaders
         static Dictionary<ESpell, SpellData>       m_Spells;
         static Dictionary<string, SpellData>       m_OnHitSpellData;
         static Dictionary<string, StateEffect>     m_StateEffects;
-        static Dictionary<ERune, RuneData>         m_Runes;
-        static Dictionary<string, PowerUpData>     m_PowerUps;
+        static Dictionary<string, RuneData>        m_RunesData;
 
-        public static List<ESpell> Spells => m_Spells.Keys.ToList();
-        public static List<SpellData> SpellsData => m_Spells.Values.ToList();
-        public static List<ERune> Runes => m_Runes.Keys.ToList();
-        public static List<RuneData> RunesData => m_Runes.Values.ToList();
-        public static List<string> PowerUps => m_PowerUps.Keys.ToList();
-        public static Dictionary<string, PowerUpData> PowerUpsData => m_PowerUps;
+        public static List<ESpell> Spells                       => m_Spells.Keys.ToList();
+        public static List<SpellData> SpellsData                => m_Spells.Values.ToList();
+        public static Dictionary<string, RuneData> RunesData    => m_RunesData;
 
         #endregion
 
 
-        #region Initialization
+        #region Initialization & Loading
 
         public static void Initialize()
         {
@@ -44,7 +40,6 @@ namespace Game.Loaders
             InitializeSpells();
             InitializeStateEffects();
             InitializeRuneData();
-            InitializePowerUpsData();
 
             Initialized = true;
         }
@@ -104,38 +99,10 @@ namespace Game.Loaders
         {
             RuneData[] allData = LoadRunesData();
 
-            m_Runes = new Dictionary<ERune, RuneData>();
-
+            m_RunesData = new Dictionary<string, RuneData>();
             foreach (RuneData data in allData)
             {
-                if (! Enum.TryParse(data.Name, out ERune rune))
-                {
-                    ErrorHandler.Warning(data.Name + " not found in list of runes enum : ERune - skipping");
-                    continue;
-                }
-
-                m_Runes.Add(rune, data);
-            }
-
-            // check all runes have been loaded
-            foreach (ERune rune in Enum.GetValues(typeof(ERune)))
-            {
-                if (! m_Runes.ContainsKey(rune))
-                {
-                    ErrorHandler.Warning("missing RuneData for rune " + rune);
-                }
-            }
-        }
-
-        static void InitializePowerUpsData()
-        {
-            PowerUpData[] allData = AssetLoader.LoadAll<PowerUpData>(AssetLoader.c_PowerUpsPath);
-
-            m_PowerUps = new Dictionary<string, PowerUpData>();
-
-            foreach (PowerUpData data in allData)
-            {
-                m_PowerUps.Add(data.Name, data);
+                m_RunesData.Add(data.Name, data);
             }
         }
 
@@ -151,7 +118,10 @@ namespace Game.Loaders
 
         static RuneData[] LoadRunesData()
         {
-           return Resources.LoadAll<RuneData>("Data/Runes");
+            var data = AssetLoader.LoadAll<RuneData>(AssetLoader.c_PowerUpsPath).ToList();
+            data.AddRange(Resources.LoadAll<RuneData>("Data/Runes"));
+            return data.ToArray();
+            
         }
 
         #endregion
@@ -175,6 +145,20 @@ namespace Game.Loaders
             if (data.Level == 0)
                 InventoryManager.Unlock(ref data);
             return CollectablesManagementData.GetSpellLevelData(data.Level, m_Spells[spell].Rarety);
+        }
+
+        public static List<RuneData> GetPlayerRunesData()
+        {
+            var runesData = new List<RuneData>();
+            foreach (var item in m_RunesData)
+            {
+                if (Enum.TryParse(item.Key, out ERune _))
+                {
+                    runesData.Add(item.Value);
+                }
+            }
+
+            return runesData;
         }
 
         #endregion
@@ -524,20 +508,25 @@ namespace Game.Loaders
             return GetStateEffect(stateEffect.ToString(), level);
         }
 
+        public static RuneData GetRuneData(ERune rune, int level = 1, bool destroy = false)
+        {
+            return GetRuneData(rune.ToString(), level, destroy);
+        }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="rune"></param>
         /// <returns></returns>
-        public static RuneData GetRuneData(ERune rune, int level = 1, bool destroy = false)
+        public static RuneData GetRuneData(string rune, int level = 1, bool destroy = false)
         {
-            if (!m_Runes.ContainsKey(rune))
+            if (!m_RunesData.ContainsKey(rune))
             {
                 ErrorHandler.Error("Rune not found in dict of RuneData : " + rune);
                 return default;
             }
 
-            var data = (RuneData)m_Runes[rune].Clone(level);
+            var data = (RuneData)m_RunesData[rune].Clone(level);
             if (destroy)
                 CoroutineManager.DelayMethod(() => GameObject.Destroy(data));
 
@@ -577,7 +566,7 @@ namespace Game.Loaders
         public static List<RuneData> FilterRunes(List<ERarety> raretyFilter = default, List<ESpellElement> elementsFilter = default, List<ERune> notAllowedFilter = default, bool? unlocked = null, string containsName = "")
         {
             List<RuneData> runes = new List<RuneData>();
-            foreach (var runeData in m_Runes.Values)
+            foreach (var runeData in m_RunesData.Values)
             {
                 // CHECK : is None
                 if (runeData.Rune == ERune.None)
@@ -632,6 +621,13 @@ namespace Game.Loaders
             return runes;
         }
 
+        public static SRunePower GetPowerUp(string powerUpName, int level = 1)
+        {
+            if (! SRunePower.TrySplitPowerUpName(powerUpName, out string runeName, out ERuneActivation runeActivation, throwError: true))
+                return null;
+
+            return GetRuneData(runeName, level).GetRunePower(runeActivation);
+        }
 
         /// <summary>
         /// 
@@ -642,9 +638,9 @@ namespace Game.Loaders
         /// <param name="unlocked"></param>
         /// <param name="containsName"></param>
         /// <returns></returns>
-        public static PowerUpData GetRandomPowerUp(List<ERarety> raretyFilter = default, List<string> notAllowedFilter = default,string containsName = "")
+        public static SRunePower GetRandomPowerUp(List<ERuneActivation> runeActivationFilter = default, List<string> notAllowedFilter = default,string containsName = "")
         {
-            var powerUps = FilterPowerUps(raretyFilter, notAllowedFilter, containsName);
+            var powerUps = FilterPowerUps(runeActivationFilter, notAllowedFilter, containsName);
             if (powerUps.Count == 0)
                 return null;
 
@@ -658,32 +654,44 @@ namespace Game.Loaders
         ///     - Type 
         ///     - State Effects
         /// </summary>
-        /// <param name="raretyFilter">        allowed types of rarety for the runes                           </param>
+        /// <param name="raretyFilter">        allowed types of rarety for the runes                       </param>
         /// <param name="elementsFilter">  allowed elements of the runes                                   </param>
         /// <param name="notAllowedFilter">     list of not runes that are not allowed to be in the return data </param>
         /// <returns></returns>
-        public static List<PowerUpData> FilterPowerUps(List<ERarety> raretyFilter = default, List<string> notAllowedFilter = default, string containsName = "")
+        public static List<SRunePower> FilterPowerUps(List<ERuneActivation> runeActivationFilter = default, List<string> notAllowedFilter = default, string containsName = "")
         {
-            List<PowerUpData> filteredData = new List<PowerUpData>();
-            foreach (var data in m_PowerUps.Values)
+            List<SRunePower> filteredData = new List<SRunePower>();
+
+            for (int i = 0; i < m_RunesData.Count; i++)
             {
-                // CHECK : not in not allowed spells
-                if (notAllowedFilter != null && notAllowedFilter.Contains(data.Name))
+                // clone the data to avoid overwritting
+                RuneData runeData = m_RunesData.Values.ToList()[i].Clone();
+
+                if (runeData.Name == "None")
                     continue;
 
-                // CHECK : rarety
-                if (raretyFilter != null && raretyFilter.Count > 0 && !raretyFilter.Contains(data.Rarety))
-                    continue;
+                // get throught each activation level to collect as SRunePower
+                foreach (ERuneActivation runeActivation in Enum.GetValues(typeof(ERuneActivation)))
+                {
+                    if (runeActivation == ERuneActivation.None)
+                        continue;
 
-                // FILTER : not in not allowed spells
-                if (notAllowedFilter != null && notAllowedFilter.Contains(data.Name))
-                    continue;
+                    SRunePower data = runeData.GetRunePower(runeActivation);
 
-                // FILTER : name contains string
-                if (!string.IsNullOrEmpty(containsName) && !data.Name.ToLower().Contains(containsName.ToLower()))
-                    continue;
+                    // CHECK : activation
+                    if (runeActivationFilter != null && runeActivationFilter.Count > 0 && ! runeActivationFilter.Contains(data.RuneActivation))
+                        continue;
 
-                filteredData.Add(data);
+                    // FILTER : not in not allowed spells
+                    if (notAllowedFilter != null && notAllowedFilter.Contains(data.Name))
+                        continue;
+
+                    // FILTER : name contains string
+                    if (!string.IsNullOrEmpty(containsName) && !data.Name.ToLower().Contains(containsName.ToLower()))
+                        continue;
+
+                    filteredData.Add(data);
+                }
             }
 
             return filteredData;

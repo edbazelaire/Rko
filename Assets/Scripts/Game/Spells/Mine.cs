@@ -1,6 +1,7 @@
 ﻿using Data;
-using Enums;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Tools;
 using Unity.Netcode;
 using UnityEngine;
@@ -15,7 +16,9 @@ namespace Game.Spells
         Armed,
         Trigerred,
         Activated,
-        Done,
+        InUse,
+
+        End,
     }
 
 
@@ -23,9 +26,11 @@ namespace Game.Spells
     {
         #region Members
 
-        NetworkVariable<EMineState> m_State;
+        NetworkVariable<EMineState> m_State = new NetworkVariable<EMineState>(EMineState.None);
 
+        public NetworkVariable<EMineState> State => m_State;
         MineData m_SpellData => m_BaseSpellData as MineData;
+        float m_Radius => m_SpellData.Size / 2;
 
         Coroutine       m_Coroutine;
         float           m_DurationTimer;
@@ -43,10 +48,10 @@ namespace Game.Spells
             if (!IsServer)
                 return;
 
-            Debug.Log("ApplyPostProcessing() : " + m_SpellData.Name);
-
             m_DurationTimer = m_SpellData.Duration;
             m_ActivationCounter = 0;
+
+            m_State.OnValueChanged += SpawnGFXPrefabs;
 
             SetState(EMineState.Inactive);
         }
@@ -72,6 +77,21 @@ namespace Game.Spells
                 End();
         }
 
+        protected void CreateCollisionCircle()
+        {
+            // Check for collisions within a circle with variableRadius radius
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, m_Radius);
+
+            foreach (Collider2D collider in colliders)
+            {
+                if (TryGetController(collider, out Controller _))
+                {
+                    SetState(EMineState.Trigerred);
+                    return;
+                }
+            }
+        }
+
         protected void OnTriggerEnter2D(Collider2D collider)
         {
             if (!IsServer)
@@ -81,7 +101,7 @@ namespace Game.Spells
             if (m_State.Value != EMineState.Armed)
                 return;
 
-            if (!TryGetController(collider, out Controller controller))
+            if (!TryGetController(collider, out Controller _))
                 return;
 
             SetState(EMineState.Trigerred);
@@ -96,7 +116,7 @@ namespace Game.Spells
             if (m_State.Value != EMineState.Trigerred)
                 return;
 
-            if (!TryGetController(collider, out Controller controller))
+            if (!TryGetController(collider, out Controller _))
                 return;
 
             SetState(EMineState.Armed);
@@ -114,8 +134,6 @@ namespace Game.Spells
             if (m_Coroutine != null)
                 StopCoroutine(m_Coroutine);
 
-            Debug.Log("SetState() " + m_SpellData.Name + " : " + state);
-
             switch (state)
             {
                 case EMineState.Inactive:
@@ -123,7 +141,7 @@ namespace Game.Spells
                     return;
                     
                 case EMineState.Armed:
-                    // waiting for activation
+                    CreateCollisionCircle();
                     return;
                     
                 case EMineState.Trigerred:
@@ -134,7 +152,7 @@ namespace Game.Spells
                     m_Coroutine = StartCoroutine(WaitForNextState(m_SpellData.ActivateTimer));
                     return;
                     
-                case EMineState.Done:
+                case EMineState.InUse:
                     if (m_SpellData.ActivationData == null)
                         ErrorHandler.Error("MineData set with no ActivationData");
                     else
@@ -171,6 +189,27 @@ namespace Game.Spells
         {
             transform.position = target;
             base.SetTarget(target);
+        }
+
+        #endregion
+
+
+        #region Spell Event
+
+        /// <summary>
+        /// Spell event : instantiate/destroy the graphics matching the event of the spell
+        /// </summary>
+        /// <param name="spellEvent"></param>
+        /// <param name="targetController"></param>
+        protected virtual void SpawnGFXPrefabs(EMineState previousState, EMineState mineState)
+        {
+            foreach (var spawnPrefab in m_SpellData.MineSpawnGFX)
+            {
+                if (spawnPrefab.GFXLifetime.StartSpellPart != mineState)
+                    continue;
+
+                spawnPrefab.Spawn(m_Controller, m_SpellData, this, null, null, transform.position, m_Target);
+            }
         }
 
         #endregion

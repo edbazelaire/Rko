@@ -1,5 +1,5 @@
 ﻿using Analytics.Events;
-using Assets.Scripts.Data.PowerUp;
+using Assets.Scripts.Tools;
 using Data.GameManagement;
 using Enums;
 using Game;
@@ -15,7 +15,6 @@ using TMPro;
 using Tools;
 using Tools.Animations;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -117,6 +116,9 @@ public class EndGameUI : MObject
 
         // activate game object
         gameObject.SetActive(true);
+
+        // cancel methods in TimeWrapper
+        TimeErrorWrapper.Instance.Cancel(GameManager.TIME_WRAPPER_ID);
 
         // go to IntroState
         SetState(EEndGameState.Intro);

@@ -27,6 +27,8 @@ namespace Data
         [Header("Multiple Projectiles Data")]
         [Description("Type of multiple projectile launch")]
         public EMultiProjectileType MultiProjectileType;
+        [SerializeField, Description("Min/Max height of spell spawn")]
+        protected SMinMax m_YMinMax;
         [SerializeField, Description("Is the chacter blocked until the end of the cast ?")]
         protected bool m_IsBlocking = true;
         [Description("Number of projectiles launched")]
@@ -198,7 +200,7 @@ namespace Data
             ));
 
             // spawn SubSpell - SpellGFX
-            foreach (SPrefabSpawn prefabSpawn in SubSpellData.SpellEventActions)
+            foreach (SPrefabSpawn<ESpellEvent> prefabSpawn in SubSpellData.SpellEventActions)
             {
                 if (prefabSpawn.GFXLifetime.StartSpellPart == ESpellEvent.OnCast)
                 {
@@ -267,17 +269,13 @@ namespace Data
                     target.x += ((team == 0 ? -1 : 1) * zoneSize / 2) + index * (team == 0 ? 1 : -1) * zoneSize / nBreakPoints;
                     break;
 
-                case (EMultiProjectileType.RandomArea):
-                    target.x += UnityEngine.Random.Range(-zoneSize / 2, zoneSize / 2);
-                    target.y = UnityEngine.Random.Range(0, 1f);
-                    break;
-
                 default:
                     ErrorHandler.Warning("Unhandled MultiProjectileType : " + MultiProjectileType);
                     break;
             }
 
             target.x = Mathf.Clamp(target.x, min, max);
+            target.y = UnityEngine.Random.Range(m_YMinMax.Min, m_YMinMax.Max);
 
             return target;
         }
@@ -307,7 +305,7 @@ namespace Data
 
         #region Level
 
-        protected override void SetLevel(int level)
+        public override void SetLevel(int level)
         {
             if (SubSpellData != null)
                 SubSpellData = SubSpellData.Clone(level);
@@ -319,6 +317,13 @@ namespace Data
 
 
         #region Info Display
+
+        public override string GetDescription()
+        {
+            string description = base.GetDescription();
+            description = TextHandler.ReplaceSubSpellData(description, SubSpellData);
+            return description;
+        }
 
         public override Dictionary<string, object> GetInfos()
         {

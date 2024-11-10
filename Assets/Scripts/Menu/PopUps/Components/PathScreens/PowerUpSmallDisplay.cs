@@ -1,8 +1,11 @@
 ﻿using Assets;
 using Assets.Scripts.Data.PowerUp;
+using Data;
 using Enums;
-using System.Collections;
+using Save;
 using Tools;
+using Tools.Animations;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,11 +15,14 @@ namespace Menu.PopUps
     {
         #region Members
 
-        PowerUpData m_PowerUpData;
+        SRunePower  m_RunePower;
+        int         m_Index;
 
-        Image m_Background;
-        Image m_Icon;
-        Button m_Button;
+        Image       m_Background;
+        Image       m_Icon;
+        Button      m_Button;
+
+        protected bool m_IsMissingData => m_Index < ProgressionCloudData.CurrentArena.Level && m_RunePower == null;
 
         #endregion
 
@@ -27,14 +33,16 @@ namespace Menu.PopUps
         {
             base.FindComponents();
 
-            m_Background = Finder.FindComponent<Image>(gameObject, "Background");
-            m_Icon = Finder.FindComponent<Image>(gameObject, "Icon");
-            m_Button = Finder.FindComponent<Button>(gameObject);
+            m_Background    = Finder.FindComponent<Image>(gameObject, "Background");
+            m_Icon          = Finder.FindComponent<Image>(gameObject, "Icon");
+            m_Button        = Finder.FindComponent<Button>(gameObject);
         }
 
-        public virtual void Initialize(PowerUpData powerUpData)
+        public virtual void Initialize(SRunePower powerUpData, int index)
         {
-            m_PowerUpData = powerUpData;
+            m_RunePower = powerUpData;
+            m_Index = index;
+
             base.Initialize();
         }
 
@@ -42,7 +50,7 @@ namespace Menu.PopUps
         {
             base.SetUpUI();
 
-            RefreshUI(m_PowerUpData);
+            RefreshUI(m_RunePower);
         }
 
         #endregion
@@ -50,9 +58,9 @@ namespace Menu.PopUps
 
         #region GUI Manipulators
 
-        public void RefreshUI(PowerUpData powerUpData)
+        public void RefreshUI(SRunePower powerUpData)
         {
-            m_PowerUpData = powerUpData;
+            m_RunePower = powerUpData;
 
             SetUpBackground();
             SetUpIcon();
@@ -60,7 +68,15 @@ namespace Menu.PopUps
 
         void SetUpBackground()
         {
-            if (m_PowerUpData == null)
+            if (m_IsMissingData)
+            {
+                m_Background.color = new Color(0.7f , 1f, 0.7f);
+                var animation = m_Background.AddComponent<Pulse>();
+                animation.Initialize();
+                return;
+            }
+
+            if (m_RunePower == null)
             {
                 m_Background.color = new Color(0.2f, 0.2f, 0.2f);
                 return;
@@ -71,14 +87,14 @@ namespace Menu.PopUps
 
         void SetUpIcon()
         {
-            if (m_PowerUpData == null)
+            if (m_RunePower == null)
             {
                 m_Icon.gameObject.SetActive(false);
                 return;
             }
 
             m_Icon.gameObject.SetActive(true);
-            m_Icon.sprite = AssetLoader.LoadIcon(m_PowerUpData.BaseName);
+            m_Icon.sprite = AssetLoader.LoadIcon(m_RunePower.RuneName);
         }
 
         #endregion
@@ -102,10 +118,19 @@ namespace Menu.PopUps
 
         protected void OnClickButton()
         {
-            if (m_PowerUpData == null)
+            // Do not have a PowerUp BUT SHOULD -> Display the Selection Screen
+            if (m_IsMissingData)
+            {
+                Main.SetPopUp(EPopUpState.PowerUpSelectionScreen);
                 return;
+            }
 
-            Main.SetPopUp(EPopUpState.PowerUpInfoScreen, m_PowerUpData);
+            // Has PowerUp -> Display the Info Screen
+            if (m_RunePower != null)
+            {
+                Main.SetPopUp(EPopUpState.PowerUpInfoScreen, m_RunePower);
+                return;
+            }
         }
 
         #endregion

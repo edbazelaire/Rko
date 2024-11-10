@@ -14,13 +14,13 @@ public class Life : NetworkBehaviour
     // ===================================================================================
     // EVENTS
     /// <summary> thrown when the character dies </summary>
-    public Action<int, int>         FinalShieldChangedEvent;
     public Action                   DiedEvent;
 
     // ===================================================================================
     // NETWORK VARIABLES
-    NetworkVariable<int>            m_MaxHp     = new (1);
-    NetworkVariable<int>            m_Hp        = new (0);
+    NetworkVariable<int>            m_MaxHp         = new (1);
+    NetworkVariable<int>            m_Hp            = new (0);
+    NetworkVariable<int>            m_FinalShield   = new (0);
 
     // ===================================================================================
     // PRIVATE VARIABLES
@@ -30,14 +30,15 @@ public class Life : NetworkBehaviour
 
     // ===================================================================================
     // PUBLIC ACCESSORS 
-    public NetworkVariable<int> MaxHp   => m_MaxHp;  
-    public NetworkVariable<int> Hp      => m_Hp;
-    
-    public int FinalShield => m_Shield + m_Controller.StateHandler.RemainingShield + m_Controller.CounterHandler.RemainingShield;
-    public int Shield  => m_Shield;
+    public NetworkVariable<int> MaxHp       => m_MaxHp;  
+    public NetworkVariable<int> Hp          => m_Hp;
+    public NetworkVariable<int> FinalShield => m_FinalShield;
+
+    public Controller Controller    => m_Controller;
+    public int Shield               => m_Shield;
 
     /// <summary> Is the character alive </summary>
-    public bool IsAlive => m_Hp.Value > 0;
+    public bool IsAlive             => m_Hp.Value > 0;
 
 
     #endregion
@@ -61,6 +62,8 @@ public class Life : NetworkBehaviour
         m_MaxHp.Value = hp;
         m_Hp.Value = hp;
         m_Shield = shield;
+
+        RecalculateShield();
     }
 
     #endregion
@@ -78,7 +81,7 @@ public class Life : NetworkBehaviour
         if (! IsServer || ! IsAlive)
             return 0;
 
-        if (m_Controller.StateHandler.IsInvulnerable)
+        if (m_Controller != null && m_Controller.StateHandler.IsInvulnerable)
             return 0;
 
         // calculate damages after resistance
@@ -90,8 +93,6 @@ public class Life : NetworkBehaviour
             Debug.LogError($"Damages ({damage}) < 0");
             return 0;
         }
-
-        int previousShield = FinalShield;
 
         // calculate damages after shield
         damage = HitShield(damage);
@@ -109,8 +110,6 @@ public class Life : NetworkBehaviour
                 DiedEvent?.Invoke();
             }
         }
-
-        RecheckShield(previousShield);
 
         return damage;
     }
@@ -148,11 +147,16 @@ public class Life : NetworkBehaviour
 
         m_Shield += shield;
 
+        RecalculateShield();
+
         return shield;
     }
 
     public int HitShield(int damages)
     {
+        if (m_Controller == null)
+            return damages;
+
         damages = m_Controller.StateHandler.HitShield(damages);
         if (damages == 0)
             return 0;
@@ -161,12 +165,17 @@ public class Life : NetworkBehaviour
             return damages;
 
         m_Shield -= damages;
+
         if (m_Shield >= 0)
+        {
+            RecalculateShield();
             return 0;
+        }
 
         damages = -m_Shield;
-        m_Shield = 0;
+        m_FinalShield.Value = 0;
 
+        RecalculateShield();
         return damages;
     }
 
@@ -175,20 +184,12 @@ public class Life : NetworkBehaviour
 
     #region Listeners & Events
 
-    public void RecheckShield(int previousShield)
+    public void RecalculateShield()
     {
-        int currentShield = FinalShield;
-        if (currentShield != previousShield)
-        {
-            FinalShieldChangedEvent?.Invoke(previousShield, currentShield);
-            FinalShieldChangedEventClientRPC(previousShield, currentShield);
-        }
-    }
+        if (m_Controller == null)
+            return;
 
-    [ClientRpc]
-    void FinalShieldChangedEventClientRPC(int oldValue, int newValue)
-    {
-        FinalShieldChangedEvent?.Invoke(oldValue, newValue);
+        m_FinalShield.Value = m_Shield + m_Controller.StateHandler.RemainingShield + m_Controller.CounterHandler.RemainingShield;
     }
 
     #endregion

@@ -19,7 +19,7 @@ MonoBehaviour:
   m_SpellElements: 02000000
   m_MinorPower:
     Description: 'While your character has shield [TriggerEffect.0].\n[TriggerEffect.1]
-      whenever your character procs [Frozen], [IceBreak] or [Burn]'
+      whenever your character procs [Frozen] or [IceBreak] '
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
@@ -52,7 +52,7 @@ MonoBehaviour:
     m_BonusStats: []
   m_MajorPower:
     Description: 'While your character has shield [TriggerEffect.0].\n[TriggerEffect.1]
-      whenever your character procs [Frozen], [IceBreak] or [Burn]'
+      whenever your character procs [Frozen] or [IceBreak] '
     m_DescriptionVariables: []
     m_BonusLevel: 6
     m_TriggerEffects:
@@ -84,8 +84,8 @@ MonoBehaviour:
       Cooldown: 0
     m_BonusStats: []
   m_PrimalPower:
-    Description: 'While your character has shield : [TriggerEffect.0].\n[TriggerEffect.1]
-      whenever your character procs [Frozen], [IceBreak] or [Burn]'
+    Description: 'While your character has shield [TriggerEffect.0].\n[TriggerEffect.1]
+      whenever your character procs [Frozen] or [IceBreak] '
     m_DescriptionVariables: []
     m_BonusLevel: 12
     m_TriggerEffects:
@@ -111,19 +111,6 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 1
       StateEffectName: Frozen,IceBreak
-      Delay: 0
-      Duration: 0
-      NActivations: -1
-      Cooldown: 0
-    - SpellDataName: AncientAegisShield
-      Level: 0
-      Target: 0
-      SpellActivationEvent: 1
-      ActivationTreshold: 0
-      SpellDeactivationEvent: 0
-      DeactivationTreshold: 0
-      StateEffectEvent: 3
-      StateEffectName: Burn
       Delay: 0
       Duration: 0
       NActivations: -1

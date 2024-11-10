@@ -12,17 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e39ada9443758704e946c1a6a68d07e7, type: 3}
   m_Name: ArenaManagementData
   m_EditorClassIdentifier: 
-  m_NDifficultyLevels: 4
+  m_NDifficultyLevels: 2
   m_PowerUpDropRates:
-  - Common: 0.28
-    Epic: 0.62
-    Legendary: 0.1
-  - Common: 0.35
-    Epic: 0.45
-    Legendary: 0.2
-  - Common: 0.06
-    Epic: 0.74
-    Legendary: 0.2
-  - Common: 0
-    Epic: 0.7
-    Legendary: 0.3
+  - Minor: 0.28
+    Major: 0.62
+    Primal: 0.1
+  - Minor: 0.35
+    Major: 0.45
+    Primal: 0.2
+  - Minor: 0.6
+    Major: 0.74
+    Primal: 0.2
+  - Minor: 0
+    Major: 0.75
+    Primal: 0.25

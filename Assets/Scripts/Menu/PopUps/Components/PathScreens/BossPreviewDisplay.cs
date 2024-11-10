@@ -31,7 +31,7 @@ namespace Menu.PopUps
             base.FindComponents();
 
             m_CharacterPreviewContainer = Finder.Find(gameObject, "CharacterPreviewContainer");
-            m_CharacterInfoButton       = Finder.FindComponent<Button>(gameObject, "CharacterInfoButton");
+            m_CharacterInfoButton       = Finder.FindComponent<Button>(gameObject, "CharacterInfoButton", false);
         }
 
         public virtual void Initialize(EBoss boss, int level)

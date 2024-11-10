@@ -15,6 +15,7 @@ MonoBehaviour:
   m_Description: Gain {0} resistance fix
   m_DescriptionVariables: 05000000
   m_StateEffectType: 0
+  m_IsDisplayed: 1
   m_VisualEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
@@ -37,7 +38,7 @@ MonoBehaviour:
   m_CooldownReduction: 0
   m_CooldownReductionPerc: 0
   m_Shield: 0
-  m_ResistanceFix: 3
+  m_ResistanceFix: 0
   m_ResistancePerc: 0
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
@@ -46,7 +47,5 @@ MonoBehaviour:
   m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
-  m_StateEffectScalingLevel:
-  - StateEffectProperty: 5
-    ScalingFactor: 0.1
+  m_StateEffectScalingLevel: []
   m_StateEffectScalingStacks: []

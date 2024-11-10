@@ -71,6 +71,20 @@ namespace Menu.MainMenu.MainTab
             // load data
             m_ArenaData = AssetLoader.LoadArenaData(m_ArenaType, m_ArenaDifficulty);
 
+            // HANDLE NO DATA
+            if (m_ArenaData == null)
+            {
+                if (ProgressionCloudData.HasArenaInProgress)
+                    ProgressionCloudData.ResetCurrentArena();
+                else
+                    PlayerPrefsHandler.SetArenaType(EArenaType.None);
+
+                m_ArenaType = PlayerPrefsHandler.GetArenaType();
+                m_ArenaDifficulty = ProgressionCloudData.GetUnlockedArenaDifficulty(m_ArenaType);
+
+                m_ArenaData = AssetLoader.LoadArenaData(m_ArenaType, m_ArenaDifficulty);
+            }
+
             // display UI with current data
             RefreshUI();
 
@@ -113,6 +127,7 @@ namespace Menu.MainMenu.MainTab
                 if (ProgressionCloudData.CurrentArena.Level == 0)
                 {
                     ProgressionCloudData.ResetCurrentArena();
+                    RefreshUI();
                     return;
                 }
 
@@ -153,7 +168,7 @@ namespace Menu.MainMenu.MainTab
             var values = new List<string>();
             foreach (EArenaDifficulty difficulty in Enum.GetValues(typeof(EArenaDifficulty)))
             {
-                for (int i = 1; i < ArenaManagementData.NDifficultyLevels + 1; i++)
+                for (int i = 0; i < ArenaManagementData.NDifficultyLevels; i++)
                 {
                     var arenaDifficulty = new SArenaDifficulty(difficulty, i);
 

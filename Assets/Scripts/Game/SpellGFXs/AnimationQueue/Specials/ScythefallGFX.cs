@@ -71,13 +71,14 @@ namespace Game.SpellGFXs
 
         IEnumerator Attack()
         {
+            // Track elapsed time
+            float duration = m_Duration * 0.5f;
+
+            m_Animator.SetFloat("AnimationSpeed", 1 / duration);
             m_Animator.Play("Attack");
 
             // Save the starting position (P0) at the beginning of the movement
             float startX = transform.position.x;
-
-            // Track elapsed time
-            float duration = m_Duration * 0.5f;
             float elapsedTime = 0f;
 
             // Run the loop for the duration of the animation

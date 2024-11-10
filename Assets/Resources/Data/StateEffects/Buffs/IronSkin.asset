@@ -15,19 +15,20 @@ MonoBehaviour:
   m_Description: 
   m_DescriptionVariables: 
   m_StateEffectType: 0
+  m_IsDisplayed: 1
   m_VisualEffects:
   - Prefab: {fileID: 0}
-    MaterialEffect: {fileID: 0}
+    MaterialEffect: {fileID: 2100000, guid: 18b3106c5877bbf488e4dac3f271b1cd, type: 2}
     SoundFX: []
     GFXLifetime:
-      StartSpellPart: 0
-      EndSpellPart: 0
+      m_StartSpellPart: 400
+      m_EndSpellPart: 1000
       StartAt: 0
       EndAt: 0
       Persistance: 0
     Size: 0
     OrderInLayer: 0
-    SpawnTarget: 1
+    SpawnTarget: 2
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 0

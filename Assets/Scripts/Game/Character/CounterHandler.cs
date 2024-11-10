@@ -105,16 +105,19 @@ namespace Game.Character
             CheckBlockingActions();
         }
 
-        public void RemoveCounter(Counter counterSpell)
+        public void RemoveCounter(Counter counter)
         {
             if (!IsServer)
+                return;
+
+            if (counter == null)
                 return;
 
             // find index
             int index = -1;
             for (int i = 0; i < m_Counters.Count; i++)
             {
-                if (m_Counters[i] == counterSpell)
+                if (m_Counters[i] == counter)
                 {
                     index = i;
                     break;
@@ -125,7 +128,7 @@ namespace Game.Character
             if (index >= 0)
                 m_Counters.RemoveAt(index);
             else
-                ErrorHandler.Error("Unable to find counter " + counterSpell.name + " in list of counters");
+                ErrorHandler.Error("Unable to find counter " + counter.name + " in list of counters");
 
             // now that this spell has been removed, check if there is still blocking actions
             CheckBlockingActions();

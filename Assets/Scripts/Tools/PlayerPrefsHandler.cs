@@ -35,6 +35,8 @@ namespace Tools
         public static Action<EGameMode> GameModeChangedEvent;
         public static Action<EArenaType> ArenaTypeChangedEvent;
 
+        public const EArenaType DEFAULT_ARENA_TYPE = EArenaType.FrostArena;
+
         #endregion
 
 
@@ -49,7 +51,7 @@ namespace Tools
                 PlayerPrefs.SetString(EPlayerPref.GameMode.ToString(), EGameMode.Arena.ToString());
 
             if (!Enum.TryParse(PlayerPrefs.GetString(EPlayerPref.ArenaType.ToString()), out EArenaType arena))
-                SetArenaType(EArenaType.FireArena);
+                SetArenaType(EArenaType.FrostArena);
 
             if (PlayerPrefs.GetInt(EPlayerPref.WarningMessageAccepted.ToString()) == 0)
                 SetWarningAccepted(false);
@@ -141,10 +143,10 @@ namespace Tools
 
         public static EArenaType GetArenaType()
         {
-            if (!Enum.TryParse(PlayerPrefs.GetString(EPlayerPref.ArenaType.ToString()), out EArenaType arenaType))
+            if (!Enum.TryParse(PlayerPrefs.GetString(EPlayerPref.ArenaType.ToString()), out EArenaType arenaType) || arenaType == EArenaType.None)
             {
                 ErrorHandler.Error("Unable to parse solo arena : " + PlayerPrefs.GetString(EPlayerPref.ArenaType.ToString()));
-                arenaType = EArenaType.FireArena;
+                arenaType = DEFAULT_ARENA_TYPE;
                 SetArenaType(arenaType);
             }
 

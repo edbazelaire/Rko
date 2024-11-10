@@ -20,7 +20,10 @@
         SpellInfoPopUp,
         StateEffectPopUp,
         TriggerEffectPopUp,
+        RunePowerPopUp,
         PowerUpInfoScreen,
+        PowerUpSelectionScreen,
+        BossInfoScreen,
 
         // -- message PopUps
         MessagePopUp,
@@ -54,14 +57,18 @@
     {
         None = -1,
 
-        FireArena,
-        FrostArena,
+        //FireArena = 0,
+        FrostArena = 1,
     }
 
     public enum EArenaDifficulty
     {
         Normal,
-        HardCore,
+        Hard,
+        Painfull,
+        //HardCore,
+        //Torment,
+        //Infernal,
     }
 
     public enum ECharacter
@@ -88,6 +95,14 @@
         // ======================================================================
         // Mobs
         Lunassian = 1000,
+    }
+
+    public enum ESpawn
+    {
+        None = -1,
+
+        Stalacmite  = 1,
+        DarkVeil    = 2,
     }
 
     public enum ESpell
@@ -142,16 +157,21 @@
         ExperimentalVial,
         Vortex,
         Shardrot,
+        SoulFreeze,
+        DarkVeil,
+        IceField,
 
         // ======================================================================
         // BOSSES ABILITIES
         // -- IceGolem
         IceRock         = 10001,
         Carapice        = 10002,
+        Stalacmite      = 10004,
         // -- MaiHau
         Slicide         = 10101,
         SlIceBreaker    = 10102,
         PoisonDarts     = 10103,
+        Crosslice       = 10104,
         // -- Atassut
         Scythefall      = 10201,
         Nightveil       = 10202,
@@ -175,6 +195,7 @@
         Teleportation       = 8,
         MultiSpellData      = 9,
         Mine                = 10,
+        Spawner           = 11,
     }
 
     public enum ESpellElement
@@ -224,10 +245,10 @@
     public enum ERune
     {
         None,
-        FrostRune = 1,
-        FireRune = 2,
-        PoisonRune = 3,
-        CurseRune = 4,
+        FrostRune   = 1,
+        FireRune    = 2,
+        PoisonRune  = 3,
+        CurseRune   = 4,
 
         ProtectorRune,
         BerserkerRune,
@@ -235,6 +256,10 @@
         ResurrectionRune,
         InfernalProtectionRune,
         AncientAegisRune,
+        HealRune,
+        SoulSiffonRune,
+        ShardcurseRune,
+        ToxicWaterRune,
     }
 
     public enum EOrderBy
@@ -295,17 +320,21 @@
         Hp                  = 3,        // activate effect when HP goes below a threshold
         Shield              = 4,        // activate effect when SHIELD foes below a threshold
         Death               = 5,        // activate effect when the player DIES
+        //TriggerEnter        = 6,        // activate effect when something ENTER collision with target
+        //TriggerExit         = 7,        // activate effect when something EXIT collision with target
     }
 
     public enum ESpellEvent
     {
-        None,
+        None = 0,
 
-        OnStartCast,
-        OnCast,
-        OnSpawn,
-        OnHit,
-        OnEnd,
+        OnStartCast     = 100,
+        OnCancelCast    = 200,
+        OnCast          = 300,
+        OnSpawn         = 400,
+        OnHit           = 500,
+
+        OnEnd           = 1000,
     }
 
     public enum EStateEffectEvent
@@ -365,10 +394,9 @@
     {
         None,
 
-        Line,
-        Random,
-        RandomArea,
-        RandomLine,
+        Line = 1,
+        Random = 2,
+        RandomLine = 4,
     }
 
     public enum EJumpType
@@ -428,7 +456,8 @@
         L_Arm,
         R_Arm,
         L_Leg,
-        R_Leg
+        R_Leg,
+        Weapon
     }
 
     public enum EStateEffect
@@ -469,6 +498,10 @@
         Airborn,
         Infection,
         Vanish,
+
+        // ======================================================================
+        // Special Effects (boss)
+        DarkRetribution = 10001
     }
 
     public enum EStateEffectType
@@ -500,6 +533,7 @@
         TickHeal,
         TickShield,
         Shield,
+        Delay,
     }
 
     public enum EStateEffectProperty

@@ -14,10 +14,12 @@ namespace Game.Character
     public class StateHandler : NetworkBehaviour
     {
         #region Members
+
         // ==============================================================================================
         // PRIVATE ACCESSORS
         // -- Network Variables
         MNetworkList<FixedString64Bytes>    m_StateEffectList;
+        MNetworkList<FixedString64Bytes>    m_HoldingStateEffects;
         NetworkVariable<float>              m_SpeedBonus = new(1f);
         NetworkVariable<EAnimation>         m_AnimationState = new(EAnimation.None);
 
@@ -30,6 +32,7 @@ namespace Game.Character
         // ==============================================================================================
         // PUBLIC ACCESSORS
         public NetworkList<FixedString64Bytes> StateEffectList => m_StateEffectList;
+        public NetworkList<FixedString64Bytes> HoldingStateEffects => m_HoldingStateEffects;
         public bool IsStunned => ! IsUncontrollable
             && (m_StateEffectList.Contains(EStateEffect.Stun.ToString()) 
             || m_StateEffectList.Contains(EStateEffect.Scorched.ToString())
@@ -45,8 +48,7 @@ namespace Game.Character
 
         public bool IsUncontrollable => m_StateEffectList.Contains(EStateEffect.Uncontrollable.ToString())
             || m_StateEffectList.Contains(EStateEffect.Vanish.ToString())
-            || m_StateEffectList.Contains(EStateEffect.SpecialAnimation.ToString())
-            || CharacterLoader.IsBoss(m_Controller.Character);
+            || m_StateEffectList.Contains(EStateEffect.SpecialAnimation.ToString());
 
         public bool IsUnTargetable => m_StateEffectList.Contains(EStateEffect.UnTargettable.ToString())
             || m_StateEffectList.Contains(EStateEffect.SpecialAnimation.ToString())
@@ -77,7 +79,8 @@ namespace Game.Character
         private void Awake()
         {
             // init network lists
-            m_StateEffectList = new MNetworkList<FixedString64Bytes>();
+            m_StateEffectList       = new MNetworkList<FixedString64Bytes>();
+            m_HoldingStateEffects   = new MNetworkList<FixedString64Bytes>();
 
             // init components 
             m_Controller = GetComponent<Controller>();
@@ -282,7 +285,6 @@ namespace Game.Character
 
             m_SpeedBonus.Value  = GetFloat(EStateEffectProperty.SpeedBonus);
 
-            int previousShield = m_Controller.Life.FinalShield;
             int baseValue = 0;
             foreach (var effect in m_StateEffects)
             {
@@ -290,8 +292,7 @@ namespace Game.Character
             }
 
             m_RemainingShield = baseValue;
-
-            m_Controller.Life.RecheckShield(previousShield);
+            m_Controller.Life.RecalculateShield();
         }
 
         /// <summary>
@@ -346,7 +347,7 @@ namespace Game.Character
                 return;
 
             var pastState = GetAnimationState();
-            int stacks = overridingData != null ? overridingData.Value.Stacks : 1;
+            int stacks = overridingData != null ? overridingData.Value.GetStacks() : 1;
 
             // if already in the list of state effects, refresh it
             if (HasState(stateEffect.StateEffectName))
@@ -541,6 +542,41 @@ namespace Game.Character
             RecalculateBonus();
 
             return damages;
+        }
+
+        #endregion
+
+
+        #region Holding State Effect
+
+        public bool IsHolding(string effect)
+        {
+            return m_HoldingStateEffects.Contains(effect);
+        }
+
+        public void AddHoldingStateEffects(List<string> stateEffects)
+        {
+            if (stateEffects == null || stateEffects.Count == 0)
+                return;
+
+            foreach (var effect in stateEffects)
+            {
+                m_HoldingStateEffects.Add(effect);
+            }
+        }
+
+        public void RemoveHoldingStateEffects(List<string> stateEffects)
+        {
+            if (stateEffects == null || stateEffects.Count == 0)
+                return;
+
+            foreach (var effect in stateEffects)
+            {
+                if (!m_HoldingStateEffects.Contains(effect))
+                    continue;
+                
+                m_HoldingStateEffects.Remove(effect);
+            }
         }
 
         #endregion

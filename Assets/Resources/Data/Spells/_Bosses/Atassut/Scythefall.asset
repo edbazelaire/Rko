@@ -16,15 +16,33 @@ MonoBehaviour:
   m_Description: 
   m_DescriptionVariables: []
   m_SpellElements: 0200000004000000
-  Linked: 0
+  Linked: 1
   Graphics: {fileID: 0}
   SpellEventActions:
+  - Prefab: {fileID: 610942752557020422, guid: 0c25d63d99d14fa439088e89c7123f03, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 300
+      m_EndSpellPart: 400
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 4
+    SpawnLocation: 2
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
   - Prefab: {fileID: 933594856461618600, guid: 169a1a71468b6da45addf126449ea5c0, type: 3}
     MaterialEffect: {fileID: 0}
     SoundFX: []
     GFXLifetime:
-      StartSpellPart: 1
-      EndSpellPart: 3
+      m_StartSpellPart: 100
+      m_EndSpellPart: 400
       StartAt: 0
       EndAt: 0
       Persistance: 0
@@ -37,9 +55,42 @@ MonoBehaviour:
     Offset: {x: 1, y: 0}
     Animation: 0
     StateEffects: 
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
+  - Prefab: {fileID: 9077719508894249685, guid: 9f8faec8933cf084f9c344f76d340ef2, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 100
+      m_EndSpellPart: 1000
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 2
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
+  - Prefab: {fileID: 1197010802093610, guid: e86ccc773d9c05c4a88f8a1984ea9279, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 500
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1.5
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 2
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
   OnHit:
   - {fileID: 11400000, guid: 571795489b731da46821152f08c2f4f0, type: 2}
   OnHitSpellSpawn: 1
@@ -49,7 +100,7 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 6
-  LockTargetAt: 2
+  LockTarget: 300
   ApplyIfNotHitting: 0
   MaxHit: 1
   EnergyGain: 10
@@ -61,7 +112,7 @@ MonoBehaviour:
   Distance: -1
   OverrideOnHitProperties: 
   m_Duration: 0
-  Delay: 4
+  Delay: 2
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
@@ -69,7 +120,7 @@ MonoBehaviour:
     Value: 0.1
   - Property: 3
     Value: 0.05
-  m_Size: 1
+  m_Size: 4
   TriggerPlayer: 1
   EnemyStateEffects:
   - StateEffect: 16
@@ -83,6 +134,6 @@ MonoBehaviour:
   PersistanceAfterEnd: 0
   Animation: 0
   IsCancellable: 0
-  AnimationTimer: 0
+  AnimationTimer: 2
   m_Cooldown: 15
   m_SpellSpawn: 1

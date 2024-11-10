@@ -22,14 +22,16 @@ MonoBehaviour:
     WithIcon: 1
   - Name: DurationTick
     WithIcon: 1
+  m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions:
   - Prefab: {fileID: 1939305563288243135, guid: 58fbc3d1f06ad854890aebf39f289e20, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
-      StartSpellPart: 3
-      EndSpellPart: 5
+      m_StartSpellPart: 400
+      m_EndSpellPart: 1000
       StartAt: 0
       EndAt: 0
       Persistance: 0
@@ -42,9 +44,6 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -53,12 +52,14 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 9
-  LockTargetAt: 2
+  LockTarget: 300
+  ApplyIfNotHitting: 0
   MaxHit: 0
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 25
   m_Heal: 0
+  m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 

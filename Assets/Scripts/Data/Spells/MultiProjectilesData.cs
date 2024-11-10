@@ -281,7 +281,7 @@ namespace Data
 
         #region Level
 
-        protected override void SetLevel(int level)
+        public override void SetLevel(int level)
         {
             if (ProjectileData != null)
                 ProjectileData = (ProjectileData)ProjectileData.Clone(level);

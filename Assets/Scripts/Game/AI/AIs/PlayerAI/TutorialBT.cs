@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class TutorialBT : BehaviorTree
 {
-    protected override Node SetupTree()
+    protected override Node SetupTree(EArenaDifficulty arenaDifficulty)
     {
         Node root = new Node();
         return root;

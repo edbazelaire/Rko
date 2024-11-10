@@ -1,4 +1,5 @@
-﻿using Enums;
+﻿using Data.DataStructures;
+using Enums;
 using Game;
 using System;
 using System.Collections.Generic;
@@ -92,10 +93,15 @@ namespace Data
         public int              BaseHealth      = 1000;
         public int              MaxEnergy       = 100;
         public int              BaseEnergy      = 10;
+        public bool             IsStructure     = false;
 
         [Header("Bonus Stats")]
         [SerializeField] public float           HealthScaleFactor = 0.1f;
         public List<SCharacterStatScaling>      CharacterStatScaling;
+
+        [Header("Trigger Effects")]
+        [SerializeField]
+        protected List<SRunePower> m_SpecialPowers = new();
 
         // ===============================================================================================================
         // DEPENDENT ACCESSORS
@@ -106,6 +112,7 @@ namespace Data
         public ESpell Ultimate              => ParseSpell(m_Ultimate);
         public int MaxHealth                => (int)Math.Round(BaseHealth * Math.Pow(1 + HealthScaleFactor, m_Level - 1)) + (int)GetValue(EStateEffectProperty.Hp);
         public float Speed                  => BaseSpeed + GetValue(EStateEffectProperty.SpeedBonus);
+        public List<SRunePower> SpecialPowers => m_SpecialPowers;
 
         #endregion
 
@@ -145,6 +152,15 @@ namespace Data
         public new CharacterData Clone(int level = 0, bool destroy = false)
         {
             return (CharacterData)base.Clone(level, destroy);
+        }
+
+        public override void SetLevel(int level)
+        {
+            base.SetLevel(level);
+            for (int i = 0; i < m_SpecialPowers.Count; i++)
+            {
+                m_SpecialPowers[i].SetLevel(level);
+            }
         }
 
         /// <summary>
@@ -226,11 +242,6 @@ namespace Data
 
 
         #region Infos
-
-        public string GetDescription()
-        {
-            return m_Description;
-        }
 
         public override Dictionary<string, object> GetInfos()
         {

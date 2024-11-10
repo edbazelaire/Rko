@@ -66,6 +66,8 @@ namespace Tools
         public const string c_ProfileTabPath                = c_MainMenuPath + "ProfileTab/";
         // ---- Arena Background
         public const string c_GameContentPath               = c_UIPath + "Game/";
+        public const string c_GameUIContentPath             = c_GameContentPath + "GameUI/";
+        public const string c_SpawnUIContentPath            = c_GameUIContentPath + "Spawns/";
         public const string c_ArenaBackgroundPath           = c_GameContentPath + "Arena/";
         public const string c_TutoGameObjectsPath           = c_GameContentPath + "Tuto/";
         // ---- solo mode ui
@@ -193,6 +195,10 @@ namespace Tools
             }
 
             var arenaData = Load<ArenaData>(arena.ToString() + "_" + arenaDifficulty.Value.Difficulty.ToString(), c_ArenaDataPath);
+
+            if (arenaData == null)
+                return null;
+
             arenaData.SetDifficultyLevel(arenaDifficulty.Value.Level);
             return arenaData;
         }
@@ -225,13 +231,9 @@ namespace Tools
 
         #region Character & Spells Prefabs Loading
 
-        public static GameObject LoadCharacterPreview(string character)
+        public static GameObject LoadCharacterPreview(string characterName)
         {
-            GameObject prefab = Load<GameObject>(character + "Preview", c_CharactersPreviewPath + character + "/", false);
-            if (prefab == null)
-                prefab = Load<GameObject>(character + "Preview", c_BossesPreviewPath + character + "/", false);
-
-            return prefab;
+            return Load<GameObject>(characterName + "Preview", c_CharactersPreviewPath);
         }
 
         public static GameObject[] LoadSpellPrefabs()
@@ -352,9 +354,9 @@ namespace Tools
             return Load<LeagueBannerButton>("LeagueBannerButton", c_RankedModeUIPath);
         }
 
-        public static PowerUpItem LoadPowerUpItem(ERarety rarety)
+        public static PowerUpItem LoadPowerUpItem(ERuneActivation runeActivation)
         {
-            return Load<PowerUpItem>("PowerUpItem_" + rarety.ToString(), c_PowerUpsTemplatesPath);
+            return Load<PowerUpItem>("PowerUpItem_" + runeActivation.ToString(), c_PowerUpsTemplatesPath);
         }
 
         #endregion

@@ -24,9 +24,10 @@ MonoBehaviour:
   SpellEventActions:
   - Prefab: {fileID: 7053385775836331393, guid: bcf8a61165d173843972fded041563af, type: 3}
     MaterialEffect: {fileID: 2100000, guid: 94acca08a7c3e0b4592422efdf5ceabc, type: 2}
+    SoundFX: []
     GFXLifetime:
-      StartSpellPart: 3
-      EndSpellPart: 5
+      m_StartSpellPart: 400
+      m_EndSpellPart: 1000
       StartAt: 0
       EndAt: 0
       Persistance: 0
@@ -39,9 +40,6 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -50,12 +48,14 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 4
-  LockTargetAt: 2
+  LockTarget: 300
+  ApplyIfNotHitting: 0
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 0
   m_Heal: 0
+  m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
@@ -87,4 +87,3 @@ MonoBehaviour:
   IsBlockingCast: 1
   m_DamageConversionEffects: []
   OnCounterProc: {fileID: 11400000, guid: d8ac52d6489ed3f4baa78178a01ecd4a, type: 2}
-  ColorSwap: {r: 0.21960786, g: 0.21960786, b: 0.21960786, a: 1}

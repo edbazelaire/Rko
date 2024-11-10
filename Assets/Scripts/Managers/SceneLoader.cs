@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Tools;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 
 public class SceneLoader : MonoBehaviour

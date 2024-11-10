@@ -30,8 +30,8 @@ MonoBehaviour:
     MaterialEffect: {fileID: 0}
     SoundFX: []
     GFXLifetime:
-      StartSpellPart: 1
-      EndSpellPart: 2
+      m_StartSpellPart: 100
+      m_EndSpellPart: 300
       StartAt: 0
       EndAt: 0
       Persistance: 0
@@ -48,8 +48,8 @@ MonoBehaviour:
     MaterialEffect: {fileID: 0}
     SoundFX: []
     GFXLifetime:
-      StartSpellPart: 1
-      EndSpellPart: 2
+      m_StartSpellPart: 300
+      m_EndSpellPart: 400
       StartAt: 0
       EndAt: 0
       Persistance: 0
@@ -66,8 +66,8 @@ MonoBehaviour:
     MaterialEffect: {fileID: 0}
     SoundFX: []
     GFXLifetime:
-      StartSpellPart: 1
-      EndSpellPart: 5
+      m_StartSpellPart: 300
+      m_EndSpellPart: 400
       StartAt: 0
       EndAt: 0
       Persistance: 0
@@ -80,9 +80,6 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit:
   - {fileID: 11400000, guid: e25d3d0af6674a548ada02e4bebf16d7, type: 2}
   OnHitSpellSpawn: 1
@@ -92,12 +89,14 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 1
-  LockTargetAt: 1
+  LockTarget: 300
+  ApplyIfNotHitting: 0
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 50
   m_Heal: 0
+  m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 

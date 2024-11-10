@@ -14,15 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Description: 
   m_DescriptionVariables: 
-  m_StateEffectType: 0
+  m_StateEffectType: 1
   m_IsDisplayed: 1
   m_VisualEffects:
   - Prefab: {fileID: 0}
-    MaterialEffect: {fileID: 2100000, guid: c1aa0c6f776d0dc45a3000e95178e814, type: 2}
+    MaterialEffect: {fileID: 2100000, guid: 811ec8534b97f234b8755309ae2f6864, type: 2}
     SoundFX: []
     GFXLifetime:
-      StartSpellPart: 3
-      EndSpellPart: 5
+      m_StartSpellPart: 400
+      m_EndSpellPart: 1000
       StartAt: 0
       EndAt: 0
       Persistance: 0
@@ -46,14 +46,6 @@ MonoBehaviour:
   m_MaxStacks: 1
   m_StackDecay: -1
   m_BonusStats:
-  - StateEffectProperty: 3
-    BaseValue: 0.2
-    LevelScalingFactor: 0.5
-    StackScalingFactor: 0
-  - StateEffectProperty: 20
-    BaseValue: 0.5
-    LevelScalingFactor: 0.15
-    StackScalingFactor: 0
   - StateEffectProperty: 5
     BaseValue: 99999
     LevelScalingFactor: 0

@@ -83,13 +83,22 @@ namespace Game.Spells
                 var allControllers = m_SpellData.IsEnemyTarget ? GameManager.Instance.GetAllEnemies(m_Controller.Team) : GameManager.Instance.GetAllAllies(m_Controller.Team);
                 foreach (Controller controller in allControllers)
                 {
-                    OnHitPlayer(controller);
+                    OnHit(controller);
                 }
             }
 
             // if spell hits a player, hit it and end the spell
-            else if (collision.gameObject.layer == LayerMask.NameToLayer("Player") && m_SpellData.TriggerPlayer)
-                OnHitPlayer(Finder.FindComponent<Controller>(collision.gameObject));
+            else if (
+                (collision.gameObject.layer == LayerMask.NameToLayer("Player") && m_SpellData.TriggerPlayer)
+                || collision.gameObject.layer == LayerMask.NameToLayer("Structure")
+                )
+            {
+                var controller = Finder.FindComponent<Controller>(collision.gameObject);
+                if (controller == null)
+                    return;
+
+                OnHit(controller);
+            }
         }
 
         /// <summary>

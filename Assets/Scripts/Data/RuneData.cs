@@ -1,5 +1,7 @@
-﻿using Data.DataStructures;
+﻿using Assets.Scripts.Data.PowerUp;
+using Data.DataStructures;
 using Enums;
+using Game.Loaders;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,8 +11,11 @@ using UnityEngine;
 namespace Data
 {
     [Serializable]
-    public struct SRunePower
+    public class SRunePower
     {
+        protected string            m_RuneName;
+        protected ERuneActivation   m_RuneActivation;
+
         [Description("Description informations of the Rune")]
         public string Description;
 
@@ -28,13 +33,22 @@ namespace Data
 
         int m_Level;
 
-        public readonly int Level => m_Level;
-        public readonly int BonusLevel => m_BonusLevel;
-        public readonly List<STriggerEffect> TriggerEffects => m_TriggerEffects;
-        public readonly List<SCharacterStatScaling> BonusStats => m_BonusStats;
+        public string Name => m_RuneName + " - " + m_RuneActivation.ToString();
+        public string                       RuneName        => m_RuneName;
+        public ERuneActivation              RuneActivation  => m_RuneActivation;
+        public int                          Level           => m_Level;
+        public int                          BonusLevel      => m_BonusLevel;
+        public List<STriggerEffect>         TriggerEffects  => m_TriggerEffects;
+        public List<SCharacterStatScaling>  BonusStats      => m_BonusStats;
 
 
-        #region Level Mananagement
+        #region Config Mananagement
+
+        public void SetName(string runeName, ERuneActivation runeActivation)
+        {
+            m_RuneName = runeName;
+            m_RuneActivation = runeActivation;
+        }
 
         public void SetLevel(int level)
         {
@@ -56,6 +70,45 @@ namespace Data
 
 
         #region Info
+
+        public static bool TrySplitPowerUpName(string baseName, out string runeName, out ERuneActivation runeActivation, bool throwError = true)
+        {
+            runeName = "";
+            runeActivation = ERuneActivation.None;
+
+            var split = baseName.Split("-");
+            if (split.Length != 2)
+            {
+                if (throwError)
+                    ErrorHandler.Error("Unable to format " + baseName + " as runeName - ERuneActivation");
+                return false;
+            }
+
+            runeName = split[0].Trim();
+
+            if (! SpellLoader.RunesData.ContainsKey(runeName))
+            {
+                if (throwError)
+                    ErrorHandler.Error("Unable to find rune named " + runeName + " for rune power named " + baseName);
+                return false;
+            }
+
+            if (! Enum.TryParse(split[1].Trim(), out runeActivation))
+            {
+                if (throwError)
+                    ErrorHandler.Error("Unable to parse " + split[1] + " as ERuneActivation for rune power named " + baseName);
+                return false;
+            }
+
+            if (! SpellLoader.RunesData[runeName].HasActivationPower(runeActivation))
+            {
+                if (throwError)
+                    ErrorHandler.Error("No " + runeActivation + " data was found for Rune " + runeName);
+                return false;
+            }
+
+            return true;
+        }
 
         bool TryGetProperty(EStateEffectProperty property, out float value, bool throwError = false)
         {
@@ -161,23 +214,36 @@ namespace Data
 
         #region Effects
 
-        SRunePower GetRunePower(ERuneActivation runeActivation)
+        public SRunePower GetRunePower(ERuneActivation runeActivation)
         {
+            SRunePower runePower;
+
             switch (runeActivation) 
             {
                 case ERuneActivation.Minor:
-                    return m_MinorPower;
+                    runePower = m_MinorPower;
+                    break;
 
                 case ERuneActivation.Major:
-                    return m_MajorPower;
+                    runePower = m_MajorPower;
+                    break;
 
                 case ERuneActivation.Primal:
-                    return m_PrimalPower;
+                    runePower = m_PrimalPower;
+                    break;
 
                 default:
                     ErrorHandler.Error("Unhandled RunePower : " + runeActivation);
                     return default;
             }
+
+            runePower.SetName(Name, runeActivation);
+            return runePower;
+        }
+
+        public bool HasActivationPower(ERuneActivation runeActivation)
+        {
+            return GetRunePower(runeActivation) != default;
         }
 
         bool IsPowerActive(ERuneActivation runeActivation)
@@ -243,7 +309,7 @@ namespace Data
 
         #region Level
 
-        protected override void SetLevel(int level)
+        public override void SetLevel(int level)
         {
             base.SetLevel(level);
 
@@ -256,6 +322,12 @@ namespace Data
         {
             return (RuneData)base.Clone(level, destroy);
         }
+
+        #endregion
+
+
+        #region Power Up conversion
+
 
         #endregion
     }

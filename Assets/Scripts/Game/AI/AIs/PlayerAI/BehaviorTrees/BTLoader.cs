@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using AI;
 using Enums;
-using Game.AI;
 using Tools;
 
 namespace Game.AI.BehaviorTrees
@@ -14,7 +13,7 @@ namespace Game.AI.BehaviorTrees
         /// <param name="controller"></param>
         /// <param name="characterName"></param>
         /// <returns></returns>
-        public static Node LoadTree(Controller controller, string characterName)
+        public static Node LoadTree(Controller controller, string characterName, EArenaDifficulty arenaDifficulty = EArenaDifficulty.Normal)
         {
             if (controller == null)
             {
@@ -23,7 +22,7 @@ namespace Game.AI.BehaviorTrees
             }
 
             if (characterName == EBoss.IceGolem.ToString())
-                return IceGolemBT.LoadTree(controller);  
+                return IceGolemBT.LoadTree(controller, arenaDifficulty);  
 
             if (characterName == EBoss.MaiHau.ToString())
                 return MaiHauBT.LoadTree(controller);  
@@ -32,12 +31,37 @@ namespace Game.AI.BehaviorTrees
                 return AtassutBT.LoadTree(controller);  
 
             if (characterName == EBoss.Lunassian.ToString())
-                return LunassianBT.LoadTree(controller);       
+                return LunassianBT.LoadTree(controller, arenaDifficulty);       
             
             return LoadBasicTree(controller);
         }
 
         public static Node LoadBasicTree(Controller controller)
+        {
+            return new Selector(new List<Node>
+            {
+                // Check Immadiat Threats (Zones & Projectiles)
+                new Sequence(new List<Node> {
+                    new CheckImmediatThreat(controller),
+                    new Selector(new List<Node>
+                    {
+                        new TaskCounter(controller),
+                        new TaskJump(controller),
+                    }),
+                }),
+
+                // Check if character is currently in a ZoneSpell
+                new Sequence(new List<Node> {
+                    new CheckInZone(controller),
+                    new TaskExitZone(controller),
+                }),
+
+                new TaskAttack(controller),
+                new TaskAutoAttack(controller),
+            });
+        }
+
+        public static Node LoadAdvancedTree(Controller controller)
         {
             return new Selector(new List<Node>
             {

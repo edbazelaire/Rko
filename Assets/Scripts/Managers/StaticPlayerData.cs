@@ -18,17 +18,20 @@ namespace Managers
     [Serializable]
     public struct SBotData : INetworkSerializable
     {
-        public float DecisionRefresh;
-        public float Randomness;
+        public EArenaDifficulty     ArenaDifficulty;
+        public float                DecisionRefresh;
+        public float                Randomness;
 
-        public SBotData(float decisionRefresh, float randomness)
+        public SBotData(EArenaDifficulty arenaDifficulty, float decisionRefresh, float randomness)
         {
-            DecisionRefresh = decisionRefresh;
-            Randomness = randomness;
+            ArenaDifficulty     = arenaDifficulty;
+            DecisionRefresh     = decisionRefresh;
+            Randomness          = randomness;
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
+            serializer.SerializeValue(ref ArenaDifficulty);
             serializer.SerializeValue(ref DecisionRefresh);
             serializer.SerializeValue(ref Randomness);
         }
@@ -54,20 +57,20 @@ namespace Managers
         public SCharacterStatScaling[]      BonusStats; 
         public SBotData                     BotData; 
 
-        public SPlayerData(FixedString32Bytes playerName, int characterLevel, FixedString32Bytes character, ERune[] runes, int[] runeLevels, ESpell[] spells, int[] spellLevels, SProfileDataNetwork profileData, bool isPlayer, STriggerEffect[] triggerEffects = default, FixedString32Bytes[] powerUps = default, SCharacterStatScaling[] bonusStats = default, SBotData botData = default)
+        public SPlayerData(FixedString32Bytes playerName, int characterLevel, FixedString32Bytes character, ERune[] runes = default, int[] runeLevels = default, ESpell[] spells = default, int[] spellLevels = default, SProfileDataNetwork profileData = default, bool isPlayer = false, STriggerEffect[] triggerEffects = default, FixedString32Bytes[] powerUps = default, SCharacterStatScaling[] bonusStats = default, SBotData botData = default)
         {
             PlayerName      = playerName;
             CharacterLevel  = characterLevel;
             Character       = character;
-            Runes           = runes;
-            RuneLevels      = runeLevels;
-            Spells          = spells;
-            SpellLevels     = spellLevels;
+            Runes           = runes             != default ? runes          : new ERune[0];
+            RuneLevels      = runeLevels        != default ? runeLevels     : new int[0];
+            Spells          = spells            != default ? spells         : new ESpell[0];
+            SpellLevels     = spellLevels       != default ? spellLevels    : new int[0];
             ProfileData     = profileData;
             IsPlayer        = isPlayer;
-            TriggerEffects  = triggerEffects;
-            PowerUps        = powerUps;
-            BonusStats      = bonusStats;
+            TriggerEffects  = triggerEffects    != default ? triggerEffects : new STriggerEffect[0];
+            PowerUps        = powerUps          != default ? powerUps       : new FixedString32Bytes[0];
+            BonusStats      = bonusStats        != default ? bonusStats     : new SCharacterStatScaling[0];
             BotData         = botData;
         }
 

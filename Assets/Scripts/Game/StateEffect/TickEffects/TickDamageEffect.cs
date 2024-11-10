@@ -1,6 +1,8 @@
-﻿using Data;
+﻿using Assets.Scripts.Data.DataStructures.SpellRequirement;
+using Data;
 using Enums;
 using System.Collections;
+using System.Collections.Generic;
 using Tools;
 using UnityEngine;
 
@@ -11,10 +13,12 @@ namespace Game.Spells
     {
         #region Members
 
-        [SerializeField] protected float    m_Tick;
-        [SerializeField] protected int      m_TickDamages;
-        [SerializeField] protected int      m_TickHeal;
-        [SerializeField] protected int      m_TickShield;
+        [Header("Tick")]
+        [SerializeField] protected float                    m_Tick;
+        [SerializeField] protected int                      m_TickDamages;
+        [SerializeField] protected int                      m_TickHeal;
+        [SerializeField] protected int                      m_TickShield;
+        [SerializeField] protected List<SpellRequirements>  m_TickSpellRequirements;
 
         private float m_TickTimer;
 
@@ -34,20 +38,40 @@ namespace Game.Spells
 
         public override void Update()
         {
+            base.Update();
+
             m_TickTimer -= Time.deltaTime;
 
-            if (m_TickTimer < 0 && m_Tick > 0)
+            if (m_TickTimer > 0 || m_Tick <= 0)
+                return;
+
+            ApplyTickEffects();
+            m_TickTimer = m_Tick;
+        }
+
+        protected bool TryApplySpellRequirements(List<SpellRequirements> allSpellRequirements)
+        {
+            if (allSpellRequirements.Count == 0)
+                return true;
+
+            // if at least one is true, requirements are met
+            foreach (var spellRequirements in allSpellRequirements)
             {
-                ApplyTickEffects();
-                m_TickTimer = m_Tick;
+                if (spellRequirements.TryApplyRequirements(m_Controller)) 
+                    return true;
             }
 
-            base.Update();
+            // none of the requirements met : failure
+            return false;
         }
 
         protected virtual void ApplyTickEffects()
         {
             ErrorHandler.Log($"Applying {name} with " + m_Stacks + " stacks", ELogTag.StateEffects);
+
+            // check if has spell requirements that need to be applied when applying effect
+            if (! TryApplySpellRequirements(m_TickSpellRequirements))
+                return;
 
             // ask state handler to fire the "OnHit" event to clients GFX
             StateEffectEvent?.Invoke(StateEffectName, EStateEffectEvent.OnTick, m_Controller.PlayerId, m_Caster.PlayerId);

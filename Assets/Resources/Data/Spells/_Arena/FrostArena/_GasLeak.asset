@@ -13,15 +13,14 @@ MonoBehaviour:
   m_Name: _GasLeak
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: 
-  m_DescriptionVariables: []
+  m_Description: 'Every {0} seconds, [SubSpellData.Description]'
+  m_DescriptionVariables:
+  - Name: DelayBetweenWaves
+    WithIcon: 0
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions: []
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -30,7 +29,12 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 7
-  LockTargetAt: 1
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 0
   EnergyCost: 0
@@ -59,6 +63,9 @@ MonoBehaviour:
   m_Cooldown: 0
   SubSpellData: {fileID: 11400000, guid: c26140eed9b6ecf48896809e99c93776, type: 2}
   MultiProjectileType: 4
+  m_YMinMax:
+    Min: 0
+    Max: 0
   m_IsBlocking: 0
   m_NProjectiles: 1
   m_NBreakPoints: 4

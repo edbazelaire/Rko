@@ -71,15 +71,15 @@ namespace Assets
 
         // ==========================================================================================================
         // PUBLIC DEPENDENT STATIC MEMBERS
-        public static Main Instance => s_Instance;
-        public static CloudSaveManager CloudSaveManager => Instance.m_CloudSaveManager;
-        public static LeagueDataConfig LeagueDataConfig => Instance.m_LeagueDataConfig;
-        public static EAppState State => Instance.m_State;
-        public static Canvas Canvas => Instance.m_Canvas;
-        public static bool ActivateSaveOnClose => Instance.m_ActivateSaveOnClose;
-        public static bool ForceIsNewPlayer => Instance.m_ForceIsNewPlayer;
-        public static bool IsNewPlayer => ForceIsNewPlayer && !ProfileCloudData.TutoDone;
-        public static List<ELogTag> LogTags => s_Instance != null ? Instance.m_LogTags : new List<ELogTag>();
+        public static Main              Instance                => s_Instance;
+        public static CloudSaveManager  CloudSaveManager        => Instance.m_CloudSaveManager;
+        public static LeagueDataConfig  LeagueDataConfig        => Instance.m_LeagueDataConfig;
+        public static EAppState         State                   => Instance.m_State;
+        public static Canvas            Canvas                  => Instance.m_Canvas;
+        public static bool              ActivateSaveOnClose     => Instance.m_ActivateSaveOnClose;
+        public static bool              ForceIsNewPlayer        => Instance.m_ForceIsNewPlayer;
+        public static bool              IsNewPlayer             => ForceIsNewPlayer && !ProfileCloudData.TutoDone;
+        public static List<ELogTag>     LogTags                 => s_Instance != null ? Instance.m_LogTags : new List<ELogTag>();
 
         #endregion
 
@@ -129,11 +129,11 @@ namespace Assets
                 AuthenticationService.Instance.SignedIn += OnSignedIn;
                 AuthenticationService.Instance.SignedIn += m_CloudSaveManager.LoadSave;
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
-
             }
+
             catch (Exception ex)
             {
-                ErrorHandler.Error(ex.Message);
+                Debug.LogError(ex.Message);
                 NReloading++;
 
                 if (NReloading <= 3)
@@ -161,7 +161,7 @@ namespace Assets
             LobbyHandler.Instance               != null,
             SpellLoader.Initialized,
             RelayHandler.Initialized,
-            FriendsHandler.Initialized,
+            //FriendsHandler.Initialized,
             RSDManager.LoadingCompleted,
             m_CloudSaveManager.LoadingCompleted,
             m_SignedIn
@@ -190,8 +190,11 @@ namespace Assets
         /// <returns></returns>
         IEnumerator CheckInitialization()
         {
+            ErrorHandler.Log("CheckInitialization()");
+
             // set a timer of 30s to avoid inf loop
-            TimeErrorWrapper.Instance.New("App Initialization", 30f, ReloadGame);      
+            if (TimeErrorWrapper.Instance != null)
+                TimeErrorWrapper.Instance.New("App Initialization", 30f, ReloadGame);      
 
             float percInit = 0f;    // init percentage of initialization
             do
@@ -219,8 +222,8 @@ namespace Assets
 
         void InitializeSettings()
         {
-            QualitySettings.vSyncCount = 0;         // Disable V-Sync
-            Application.targetFrameRate = 120;      // Set desired frame rate
+            QualitySettings.vSyncCount  = 0;            // Disable V-Sync
+            Application.targetFrameRate = 120;          // Set desired frame rate
         }
 
         void ReloadGame()
@@ -379,6 +382,14 @@ namespace Assets
                     obj.GetComponent<LevelUpScreen>().Initialize((ECharacter)args[0]);
                     break;
 
+                case EPopUpState.PowerUpInfoScreen:
+                    obj.GetComponent<PowerUpInfoScreen>().Initialize((SRunePower)args[0]);
+                    break;
+
+                case EPopUpState.PowerUpSelectionScreen:
+                    obj.GetComponent<PowerUpSelectionScreen>().Initialize();
+                    break;
+
                 // INFO POP UPS -------------------------------------------------------
                 case EPopUpState.SpellInfoPopUp:
                     bool infoOnly = args.Length > 2 && (bool)args[2];
@@ -402,8 +413,8 @@ namespace Assets
                     obj.GetComponent<TriggerEffectPopUp>().Initialize((STriggerEffect)args[0]);
                     break;
 
-                case EPopUpState.PowerUpInfoScreen:
-                    obj.GetComponent<PowerUpInfoScreen>().Initialize((PowerUpData)args[0]);
+                case EPopUpState.RunePowerPopUp:
+                    obj.GetComponent<RunePowerPopUp>().Initialize((SRunePower)args[0]);
                     break;
 
                 // SETTINGS & OPTIONS -------------------------------------------------------
@@ -623,7 +634,7 @@ namespace Assets
             // check that region has been provided
             CheckRegion();
 
-            // check if a current message needs to be dislayed to the user before loading the scene 
+            // check if a current message needs to be displayed to the user before loading the scene 
             CheckCurrentMessage();
 
             if (IsNewPlayer)

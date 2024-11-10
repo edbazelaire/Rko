@@ -15,10 +15,7 @@ namespace Tools
                 Debugger.Instance.StartCoroutine(DelayMethodByFrames(method, nFrames));
 
             else
-            {
-                ErrorHandler.Error("Unable to find any instance to play coroutines");
                 return;
-            }
         }
 
         static IEnumerator DelayMethodByFrames(Action method, int nFrames = 1)

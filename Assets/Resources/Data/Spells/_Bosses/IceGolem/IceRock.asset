@@ -25,8 +25,8 @@ MonoBehaviour:
     - AudioClip: {fileID: 8300000, guid: 0118b8bcfdeffea4092f2bcad9104b75, type: 3}
       SoundDuration: 0
     GFXLifetime:
-      StartSpellPart: 1
-      EndSpellPart: 2
+      m_StartSpellPart: 100
+      m_EndSpellPart: 300
       StartAt: 0
       EndAt: 0
       Persistance: 0
@@ -45,8 +45,8 @@ MonoBehaviour:
     - AudioClip: {fileID: 8300000, guid: 20a4974705b8d5642bb2ebfc243b2b5d, type: 3}
       SoundDuration: 0
     GFXLifetime:
-      StartSpellPart: 5
-      EndSpellPart: 0
+      m_StartSpellPart: 1000
+      m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
       Persistance: 1.5
@@ -59,9 +59,6 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -70,7 +67,12 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 6
-  LockTargetAt: 2
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 0
   EnergyCost: 0
@@ -84,19 +86,19 @@ MonoBehaviour:
   Delay: 0
   m_SpellsScalingLevel:
   - Property: 2
-    Value: 0.1
-  - Property: 1
-    Value: 0.1
+    Value: 0.2
   - Property: 3
-    Value: 0.05
+    Value: 0.1
   m_Size: 8
   TriggerPlayer: 1
   EnemyStateEffects:
   - StateEffect: 16
     Stacks: 1
+    BonusStacksPerLevel: 0
     OverridingProperties: []
   - StateEffect: 1
     Stacks: 1
+    BonusStacksPerLevel: 0
     OverridingProperties:
     - StateEffectProperty: 1
       Value: 2

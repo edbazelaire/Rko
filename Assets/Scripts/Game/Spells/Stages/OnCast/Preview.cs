@@ -37,15 +37,24 @@ namespace Game.Spells
             if (!m_UpdatePosition)
                 return;
 
-            switch(m_SpellData.SpellTarget)
+            var direction = ArenaManager.GetAreaMovementDirection(m_Controller.Team, true);
+            
+            switch (m_SpellData.SpellTarget)
             {
                 case ESpellTarget.Mirror:
                     transform.position = new Vector3(-m_Controller.transform.position.x, 0f, 0f);
                     break;
 
                 case ESpellTarget.Fixed:
-                    var direction = ArenaManager.GetAreaMovementDirection(m_Controller.Team, true);
                     transform.position = new Vector3(m_Controller.transform.position.x + direction * Settings.SpellFixedDistance, 0f, 0f);
+                    break;
+
+                case ESpellTarget.FirstEnemy:
+                    transform.position = new Vector3(GameManager.Instance.GetFirstEnemy(m_Controller.Team).transform.position.x, 0f, 0f);
+                    break;
+
+                case ESpellTarget.FirstAlly:
+                    transform.position = new Vector3(m_Controller.transform.position.x, 0f, 0f);
                     break;
 
                 default:
@@ -54,7 +63,7 @@ namespace Game.Spells
             }
 
             // add offset
-            transform.position += new Vector3(m_PrefabSpawn.Offset.x, m_PrefabSpawn.Offset.y, 0);
+            transform.position += new Vector3(direction * m_PrefabSpawn.Offset.x, m_PrefabSpawn.Offset.y, 0);
         }
 
         #endregion

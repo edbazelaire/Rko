@@ -64,17 +64,6 @@ namespace Game.SpellGFXs
             UpdateRotation();
         }
 
-        private IEnumerator NextAnimation(float timer = 0f)
-        {
-            if (m_AnimationQueue.Count == 0)
-                yield break;
-
-            yield return new WaitForSeconds(timer);
-
-            IEnumerator currentAnimation = m_AnimationQueue.Dequeue();
-            yield return StartCoroutine(currentAnimation);
-        }
-
         IEnumerator MoveToTarget()
         {
             // Save the starting position (P0) at the beginning of the movement

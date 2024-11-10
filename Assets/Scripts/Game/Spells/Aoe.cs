@@ -102,7 +102,7 @@ namespace Game.Spells
 
         /// <summary>
         /// 
-        /// </summary>
+        /// </summary>q
         /// <param name="collision"></param>
         protected virtual bool CheckCollision(Collider2D collision, out Controller controller)
         {
@@ -111,7 +111,7 @@ namespace Game.Spells
             if (!IsServer)
                 return false;
 
-            if (collision.gameObject.layer != LayerMask.NameToLayer("Player"))
+            if (collision.gameObject.layer != LayerMask.NameToLayer("Player") && collision.gameObject.layer != LayerMask.NameToLayer("Structure"))
                 return false;
 
             // check that players has controller 
@@ -129,7 +129,7 @@ namespace Game.Spells
         protected virtual void OnCollisionController(Controller controller)
         {
             // hit the player
-            OnHitPlayer(controller);
+            OnHit(controller);
         }
 
         protected void CreateCollisionCircle()

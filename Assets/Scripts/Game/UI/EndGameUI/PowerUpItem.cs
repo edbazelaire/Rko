@@ -1,10 +1,7 @@
-﻿using Assets.Scripts.Data.PowerUp;
-using Data.GameManagement;
-using Game.Loaders;
-using System.Collections;
+﻿using Data;
+using Save;
 using TMPro;
 using Tools;
-using UnityEngine;
 using UnityEngine.UI;
 
 
@@ -14,14 +11,14 @@ namespace Game.UI.EndGameUI
     {
         #region Members
 
-        PowerUpData m_PowerUpData;
+        SRunePower m_PowerUpData;
 
         TMP_Text    m_Title;
         TMP_Text    m_Description;
         Image       m_Icon;
         Button      m_Button;
 
-        public PowerUpData PowerUpData => m_PowerUpData;
+        public SRunePower PowerUpData => m_PowerUpData;
         public Button Button => m_Button;
 
         
@@ -40,8 +37,12 @@ namespace Game.UI.EndGameUI
             m_Button        = Finder.FindComponent<Button>(gameObject);
         }
 
-        public void Initialize(PowerUpData powerUpData)
+        public void Initialize(SRunePower powerUpData)
         {
+            // adapat level of the powerUp to level of the current character
+            powerUpData.SetLevel(InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter).Level);
+
+            // save powerUpData
             m_PowerUpData = powerUpData;
 
             base.Initialize();
@@ -51,9 +52,9 @@ namespace Game.UI.EndGameUI
         {
             base.SetUpUI();
 
-            m_Title.text        = TextHandler.SplitCamelCase(m_PowerUpData.BaseName);
+            m_Title.text        = TextHandler.SplitCamelCase(m_PowerUpData.RuneName) + " " + m_PowerUpData.RuneActivation;
             m_Description.text  = m_PowerUpData.GetDescription();
-            m_Icon.sprite       = AssetLoader.LoadIcon(m_PowerUpData.BaseName);
+            m_Icon.sprite       = AssetLoader.LoadIcon(m_PowerUpData.RuneName);
         }
 
         #endregion

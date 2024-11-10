@@ -4,7 +4,6 @@ using Enums;
 using System.Collections.Generic;
 using Tools;
 using Unity.Netcode;
-using Unity.VisualScripting;
 
 namespace Game.Character
 {
@@ -12,8 +11,8 @@ namespace Game.Character
     {
         #region Members
 
-        protected List<STriggerEffect>  m_TriggerEffects;
-        protected List<PowerUpData>     m_PowerUps;
+        protected List<STriggerEffect>      m_TriggerEffects;
+        protected List<PowerEffectData>     m_PowerEffects;     // TODO : Remove if not used (replacement to TriggerEffects)
 
         protected bool m_IsActivated = false;
         protected Controller m_Controller;
@@ -28,10 +27,9 @@ namespace Game.Character
             m_Controller = Finder.FindComponent<Controller>(gameObject);
         }
 
-        public void Initialize(List<STriggerEffect> triggerEffects, List<PowerUpData> powerUps) 
+        public void Initialize(List<STriggerEffect> triggerEffects) 
         {
             m_TriggerEffects = triggerEffects;
-            m_PowerUps = powerUps;
         }
 
         public override void OnNetworkDespawn()
@@ -97,7 +95,7 @@ namespace Game.Character
                     effect.Activate(m_Controller);
                 }
 
-                else if (effect.SpellActivationEvent == ESpellActivation.Shield && effect.ActivationTreshold == 1 && m_Controller.Life.FinalShield > 0)
+                else if (effect.SpellActivationEvent == ESpellActivation.Shield && effect.ActivationTreshold == 1 && m_Controller.Life.FinalShield.Value > 0)
                 {
                     effect.Activate(m_Controller);
                 }
@@ -141,7 +139,7 @@ namespace Game.Character
                 return;
 
             m_Controller.Life.Hp.OnValueChanged             += OnHpChanged;
-            m_Controller.Life.FinalShieldChangedEvent       += OnShieldChanged;
+            m_Controller.Life.FinalShield.OnValueChanged    += OnShieldChanged;
         }
 
         protected void UnRegisterListeners()
@@ -150,7 +148,7 @@ namespace Game.Character
                 return;
 
             m_Controller.Life.Hp.OnValueChanged             -= OnHpChanged;
-            m_Controller.Life.FinalShieldChangedEvent       -= OnShieldChanged;
+            m_Controller.Life.FinalShield.OnValueChanged    -= OnShieldChanged;
         }
 
         protected virtual void OnHpChanged(int oldValue, int newValue)

@@ -1,5 +1,4 @@
 ﻿using Analytics.Events;
-using Assets.Scripts.Menu.MainMenu.MainTab.Chests;
 using Data;
 using Data.GameManagement;
 using Enums;
@@ -82,6 +81,9 @@ namespace Assets.Scripts.Managers
 
             if (LastVersion.CompareTo(new Version("0.1.11")) == -1)
                 test = UpdateVersion_0_1_11();
+
+            if (LastVersion.CompareTo(new Version("0.1.12")) == -1)
+                test = UpdateVersion_0_1_12();
 
             // if does not trigger any version until now, update to current version
             if (LastVersion.CompareTo(CurrentVersion) == -1)
@@ -231,6 +233,25 @@ namespace Assets.Scripts.Managers
 
             // save version
             if (!SetVersion("0.1.11"))
+                test = false;
+
+            return test;
+        }
+
+        #endregion
+
+
+        #region v0.1.12
+
+        static bool UpdateVersion_0_1_12()
+        {
+            var test = true;
+
+            // set IsTutoDone to true
+            Main.CloudSaveManager.ResetAll();
+
+            // save version
+            if (! SetVersion("0.1.12"))
                 test = false;
 
             return test;

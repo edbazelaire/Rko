@@ -13,8 +13,15 @@ MonoBehaviour:
   m_Name: _MultiGasLeak
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: 
-  m_DescriptionVariables: []
+  m_Description: creates a GasLeak for {0} seconds that delas {1} damages, also [EnemyStateEffect.1]
+    and [Frost] each {2} seconds
+  m_DescriptionVariables:
+  - Name: Duration
+    WithIcon: 0
+  - Name: TickDamages
+    WithIcon: 1
+  - Name: DurationTick
+    WithIcon: 0
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 119840, guid: ee9d18cf0a994c84eb65e3b57aff11cd, type: 3}
@@ -23,8 +30,8 @@ MonoBehaviour:
     MaterialEffect: {fileID: 0}
     SoundFX: []
     GFXLifetime:
-      StartSpellPart: 2
-      EndSpellPart: 3
+      m_StartSpellPart: 300
+      m_EndSpellPart: 400
       StartAt: 0
       EndAt: 0
       Persistance: 0
@@ -37,9 +44,6 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -48,7 +52,12 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 6
-  LockTargetAt: 1
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 2
   EnergyCost: 0
@@ -72,9 +81,11 @@ MonoBehaviour:
   EnemyStateEffects:
   - StateEffect: 6
     Stacks: 1
+    BonusStacksPerLevel: 0
     OverridingProperties: []
   - StateEffect: 9
     Stacks: 1
+    BonusStacksPerLevel: 0.2
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0

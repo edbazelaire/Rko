@@ -15,7 +15,44 @@ MonoBehaviour:
   m_Description: 
   m_DescriptionVariables: 
   m_StateEffectType: 0
-  m_VisualEffects: []
+  m_IsDisplayed: 1
+  m_VisualEffects:
+  - Prefab: {fileID: 8992406793559661190, guid: 0a4d304b385159340bf3a0d4e7535924, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 400
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1.5
+    Size: 3
+    OrderInLayer: 0
+    SpawnTarget: 2
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 1}
+    Animation: 0
+    StateEffects: 
+  - Prefab: {fileID: 3907952559497218901, guid: c6e8443b2e3b7b6459f659de6ee2d6ce, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 400
+      m_EndSpellPart: 1000
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 2
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 1
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
   m_PermanantSoundFX: {fileID: 0}

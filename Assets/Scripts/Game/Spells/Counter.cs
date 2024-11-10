@@ -1,6 +1,6 @@
 ﻿using Data;
 using Enums;
-using NUnit.Framework.Internal;
+using System;
 using System.Linq;
 using Tools;
 using UnityEngine;
@@ -41,6 +41,9 @@ namespace Game.Spells
             m_CounterTimer = m_SpellData.Duration;
             m_Shield = m_SpellData.Shield;
 
+            // apply self state effects
+            ApplyAllyStateEffects(m_Controller);
+
             // TODO : BETTER - if spell is not impacting player by blocking movement or cast, and is not Trigger by player, do not add to list of Counters
             if (! m_SpellData.IsLinkedCounter)
                 return;
@@ -60,7 +63,7 @@ namespace Game.Spells
                     if (!m_Controller.StateHandler.HasState(stateEffect.StateEffect))
                         continue;
 
-                    m_Controller.StateHandler.RemoveStateEffect(stateEffect.StateEffect, true, stateEffect.Stacks);
+                    m_Controller.StateHandler.RemoveStateEffect(stateEffect.StateEffect, true, stateEffect.GetStacks());
                 }
             }
 
@@ -148,13 +151,10 @@ namespace Game.Spells
                 case ECounterType.Block:
                     if (m_SpellData.Shield > 0)
                     {
-                        int previousShield = m_Controller.Life.FinalShield;
-                        m_Shield -= enemySpell.GetBoostedDamages(m_Controller);
-                        if (m_Shield <= 0)
-                            End();
-
-                        m_Controller.Life.RecheckShield(previousShield);
+                        HitShield(enemySpell.GetBoostedDamages(m_Controller));
                     }
+
+                    enemySpell.CallSpellEventClientRPC(ESpellEvent.OnHit, m_Controller.PlayerId);
                     break;
 
                 // Recast the spell to the enemy
@@ -202,6 +202,44 @@ namespace Game.Spells
             {
                 effect.Apply(enemySpell, Controller);
             }
+        }
+
+        #endregion
+
+
+        #region Shield
+
+        public void HitShield(int damages)
+        {
+            if (damages < 0)
+            {
+                ErrorHandler.Warning("Trying to hit shield with negative damages : " + damages);
+                return;
+            }
+
+            if (damages == 0)
+                return;
+
+            m_Shield = Math.Max(0, m_Shield - damages);
+            if (m_Shield <= 0)
+                End();
+
+            m_Controller.Life.RecalculateShield();
+        }
+
+        public void AddShield(int shield)
+        {
+            if (shield < 0)
+            {
+                ErrorHandler.Warning("Trying to add negative shield : " + shield);
+                return;
+            } 
+            
+            if (shield == 0)
+                return;
+
+            m_Shield += shield;
+            m_Controller.Life.RecalculateShield();
         }
 
         #endregion

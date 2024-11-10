@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
+using Unity.Collections;
 using UnityEngine;
 
 namespace Data.GameManagement
@@ -13,16 +14,16 @@ namespace Data.GameManagement
     [Serializable]
     public struct SStageData
     {
-        [SerializeField] EBoss m_Boss;
-        [SerializeField] int m_Level;
-        [SerializeField] List<ESpell> m_Spells;
-        [SerializeField] List<STriggerEffect> m_TriggerEffects;
-        [SerializeField] List<SCharacterStatScaling> m_BonusStats;
+        [SerializeField] EBoss                          m_Boss;
+        [SerializeField] int                            m_Level;
+        [SerializeField] List<ESpell>                   m_Spells;
+        [SerializeField] List<STriggerEffect>           m_TriggerEffects;
+        [SerializeField] List<SCharacterStatScaling>    m_BonusStats;
 
         int m_ArenaDifficultyLevel;
 
         public readonly EBoss                   Boss            => m_Boss;
-        public readonly int                     Level           => m_Level + (m_ArenaDifficultyLevel - 1);
+        public readonly int                     Level           => m_Level + m_ArenaDifficultyLevel;
         public readonly List<ESpell>            Spells          => m_Spells;
         public readonly List<STriggerEffect>    TriggerEffects
         {
@@ -32,7 +33,7 @@ namespace Data.GameManagement
                 foreach (var effect in m_TriggerEffects)
                 {
                     var duplicateEffect = effect;
-                    duplicateEffect.Level += 2 * (m_ArenaDifficultyLevel - 1);
+                    duplicateEffect.Level += 2 * m_ArenaDifficultyLevel;
                     triggerEffects.Add(duplicateEffect);
                 }
 
@@ -54,7 +55,10 @@ namespace Data.GameManagement
     {
         public SRewardsData                 RewardsData;
         public List<STriggerEffect>         TriggerEffects;
+        [SerializeField] List<string>       m_PowerUps;
         public List<SStageData>             StageData;
+
+        public List<string> PowerUps => m_PowerUps;
     }
 
 
@@ -85,9 +89,9 @@ namespace Data.GameManagement
 
         public int CurrentLevel => ProgressionCloudData.CurrentArena.Level;
         public int CurrentStage => ProgressionCloudData.CurrentArena.Stage;
-        public float CurrentRewardMultiplicator => (1 + (int)ArenaDifficulty * 10) * (1 + CurrentStage * 0.5f + CurrentLevel * 0.05f);
+        public float CurrentRewardMultiplicator => 1 + (int)ArenaDifficulty * 0.5f + m_ArenaDifficultyLevel * 0.15f;
 
-        public EArenaType               ArenaType               => Enum.TryParse(name.Split("_")[0], out EArenaType arenaType) ? arenaType : EArenaType.FireArena;
+        public EArenaType               ArenaType               => Enum.TryParse(name.Split("_")[0], out EArenaType arenaType) ? arenaType : EArenaType.FrostArena;
         public EArenaDifficulty         ArenaDifficulty         => Enum.TryParse(name.Split("_")[1], out EArenaDifficulty arenaDifficulty) ? arenaDifficulty : EArenaDifficulty.Normal;
         public int                      ArenaDifficultyLevel    => m_ArenaDifficultyLevel;
         public List<SArenaLevelData>    ArenaLevelData          => m_ArenaLevelData;
@@ -124,7 +128,7 @@ namespace Data.GameManagement
             foreach (var effect in arenaLevelData.TriggerEffects)
             {
                 var duplicateEffect = effect;
-                duplicateEffect.Level += 2 * (m_ArenaDifficultyLevel - 1);
+                duplicateEffect.Level += 2 * m_ArenaDifficultyLevel;
                 triggerEffects.Add(duplicateEffect);
             }
             arenaLevelData.TriggerEffects = triggerEffects;
@@ -219,8 +223,10 @@ namespace Data.GameManagement
                 isPlayer:       false,
 
                 triggerEffects: triggerEffects.ToArray(),
+                powerUps:       CurrentArenaLevelData.PowerUps.Select(str => new FixedString32Bytes(str)).ToArray(),
                 bonusStats:     CurrentStageData.BonusStats.ToArray(),
                 botData :       new SBotData(
+                    ArenaDifficulty,
                     GetDecisionRefresh(CurrentStageData.Level), 
                     GetRandomness(CurrentStageData.Level)
                 )
@@ -260,19 +266,16 @@ namespace Data.GameManagement
             if (ArenaDifficulty == EArenaDifficulty.Normal)
                 return EBorder.None;
 
-            //if (ArenaDifficulty == EArenaDifficulty.HardCore)
-            //    return EBorder.LeagueBronze;
+            if (ArenaDifficulty == EArenaDifficulty.Hard)
+                return EBorder.LeagueBronze;
 
-            //if (ArenaDifficulty == EArenaDifficulty.Normal)
-            //    return EBorder.LeagueSilver;
+            if (ArenaDifficulty == EArenaDifficulty.Painfull)
+                return EBorder.LeagueSilver;
 
             //if (ArenaDifficulty == EArenaDifficulty.Normal)
             //    return EBorder.LeagueGold;
 
-            if (ArenaDifficulty == EArenaDifficulty.HardCore)
-                return EBorder.Frost;
-
-            return EBorder.Rank1;
+            return EBorder.Frost;
         }
 
         #endregion
