@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Game.SpellGFXs
 {
-    public class ShardrotChargeGFX : SpellGFX
+    public class ScythefallGFX : AnimationQueueGFX
     {
         #region Members
 
@@ -16,11 +16,6 @@ namespace Game.SpellGFXs
         GameObject m_Flash;
         GameObject m_Core;
         GameObject m_FatShard;
-
-        // ================================================================================
-        // Data
-        Queue<IEnumerator> m_AnimationQueue = new Queue<IEnumerator>();
-        float m_Timer;
 
         #endregion
 
@@ -40,36 +35,20 @@ namespace Game.SpellGFXs
             m_FatShard.SetActive(false);
         }
 
-        protected override void ApplyPostProcessing()
+        protected override void RegisterAnimations()
         {
-            base.ApplyPostProcessing();
+            base.RegisterAnimations();
 
-            // init timer data 
-            CalculateDuration();
-            m_Timer = m_Duration;
-
-            // re-adjust size to negate the character's size modification
-            transform.localScale /= m_Controller.GFXHandler.CharacterSize;
+            m_AnimationQueue.Enqueue(MoveFatShard());
+            m_AnimationQueue.Enqueue(Explosion());
         }
 
         protected override void StartAnimation()
         {
-            base.StartAnimation();
-
-            // Queue animations
-            m_AnimationQueue.Enqueue(MoveFatShard());
-            m_AnimationQueue.Enqueue(Explosion());
-
             // Start the Asynchrone Movement animation
             StartCoroutine(MoveToTarget());
 
-            // Start the first animation
-            StartCoroutine(NextAnimation());
-        }
-
-        public override void End()
-        {
-            base.End();
+            base.StartAnimation();
         }
 
         #endregion
@@ -77,26 +56,12 @@ namespace Game.SpellGFXs
 
         #region Animations
 
-        private void Update()
+        protected override void Update()
         {
-            m_Timer -= Time.deltaTime;
+            base.Update();
 
             // make sure game object is inclinated towards the target position
             UpdateRotation();
-
-            if (m_Timer < 0)
-                End();
-        }
-
-        private IEnumerator NextAnimation(float timer = 0f)
-        {
-            if (m_AnimationQueue.Count == 0)
-                yield break;
-
-            yield return new WaitForSeconds(timer);
-
-            IEnumerator currentAnimation = m_AnimationQueue.Dequeue();
-            yield return StartCoroutine(currentAnimation);
         }
 
         IEnumerator MoveToTarget()

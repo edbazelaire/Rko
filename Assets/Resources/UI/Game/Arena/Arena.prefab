@@ -156,7 +156,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2096663750472604501, guid: 86be7cfc00908824eb5fb0b00f399a64, type: 3}
       propertyPath: m_SortingLayer
-      value: -1
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 2096663750472604501, guid: 86be7cfc00908824eb5fb0b00f399a64, type: 3}
       propertyPath: m_SortingLayerID
@@ -386,18 +386,39 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4730473835535051250, guid: a66a205906872814db9a54b78e7adaea, type: 3}
       propertyPath: m_SortingLayer
-      value: -1
+      value: -2
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 9220636264271607918, guid: a66a205906872814db9a54b78e7adaea, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 50670363539456681, guid: a66a205906872814db9a54b78e7adaea, type: 3}
+      insertIndex: 1
+      addedObject: {fileID: 1080122111132522218}
   m_SourcePrefab: {fileID: 100100000, guid: a66a205906872814db9a54b78e7adaea, type: 3}
 --- !u!224 &495625675806926173 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3862402540849366144, guid: a66a205906872814db9a54b78e7adaea, type: 3}
   m_PrefabInstance: {fileID: 3709508452975665629}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &3733156599389528948 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 50670363539456681, guid: a66a205906872814db9a54b78e7adaea, type: 3}
+  m_PrefabInstance: {fileID: 3709508452975665629}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1080122111132522218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3733156599389528948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b3d1d2698352b2439d69505067ea0b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3955144601858605311
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -408,7 +429,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2096663750472604501, guid: 86be7cfc00908824eb5fb0b00f399a64, type: 3}
       propertyPath: m_SortingLayer
-      value: -1
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 3313618984980525670, guid: 86be7cfc00908824eb5fb0b00f399a64, type: 3}
       propertyPath: m_Name

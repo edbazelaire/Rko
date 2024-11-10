@@ -11,6 +11,7 @@ public class ArenaButton : MObject
     #region Members
 
     EArenaType m_ArenaType;
+    SArenaDifficulty m_ArenaDifficulty;
 
     NotificationDisplay m_NotificationDisplay;
     Button m_Button;
@@ -30,9 +31,10 @@ public class ArenaButton : MObject
         m_Button = Finder.FindComponent<Button>(gameObject);
     }
 
-    public void Initialize(EArenaType arenaType)
+    public void Initialize(EArenaType arenaType, SArenaDifficulty arenaDifficulty)
     {
         m_ArenaType = arenaType;
+        m_ArenaDifficulty = arenaDifficulty;
 
         base.Initialize();
 
@@ -58,7 +60,7 @@ public class ArenaButton : MObject
         base.RegisterListeners();
 
         m_Button.onClick.AddListener(OnArenaButtonClicked);
-        NotificationCloudData.ArenaRewardChangedEvent = OnArenaRewardChanged;
+        NotificationCloudData.ArenaRewardChangedEvent += OnArenaRewardChanged;
     }
 
     protected override void UnRegisterListeners()
@@ -76,7 +78,7 @@ public class ArenaButton : MObject
 
     void OnArenaButtonClicked()
     {
-        Main.SetPopUp(EPopUpState.ArenaPathScreen, m_ArenaType);
+        Main.SetPopUp(EPopUpState.ArenaPathScreen, m_ArenaType, m_ArenaDifficulty);
     }
 
     #endregion

@@ -130,7 +130,7 @@ namespace Menu.MainMenu
                     return null;
 
                 var spellData = CharacterBuildsCloudData.CurrentBuild[m_Index];
-                if (spellData == ESpell.Count)
+                if (spellData == ESpell.None)
                 {
                     m_Empty = true;
                     return null;

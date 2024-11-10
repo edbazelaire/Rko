@@ -1,15 +1,16 @@
 using Assets.Scripts.Managers.Sound;
 using Enums;
 using Game;
-using Game.Background;
+using Game.SpellGFXs;
+using Game.Spells;
 using Game.UI;
 using Managers;
+using Menu.Common.Buttons;
 using Network;
 using Save;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class GameUIManager : MonoBehaviour
 {
@@ -37,6 +38,8 @@ public class GameUIManager : MonoBehaviour
 
     // ==============================================================================================================
     // Game Objects & Components
+    /// <summary> container for MovementButtons </summary>
+    MovementButtonsContainer m_MovementButtonsContainer;
     /// <summary> container for SpellItemUI(s) </summary>
     GameObject          m_SpellContainer;
     /// <summary> container for SpellItemUI(s) of linked spells </summary>
@@ -64,6 +67,7 @@ public class GameUIManager : MonoBehaviour
     public static ErrorGameUI ErrorGameUI               => Instance.m_ErrorGameUI;
     public static TutoGameUI TutoGameUI                 => Instance.m_TutoGameUI;
     public static List<SpellItemUI> SpellItems          => Instance.m_SpellItems;
+    public static MovementButtonsContainer MovementButtonsContainer => Instance.m_MovementButtonsContainer;
     public static bool LeftMovementButtonPressed        => Instance.m_LeftMovementButtonPressed;
     public static bool RightMovementButtonPressed       => Instance.m_RightMovementButtonPressed;
 
@@ -127,9 +131,10 @@ public class GameUIManager : MonoBehaviour
     void FindMovementButtons()
     {
         var container = Finder.Find(gameObject, "MovementButtonsContainer");
+        m_MovementButtonsContainer = Finder.FindComponent<MovementButtonsContainer>(container);
 
         // link pressed button bools to pressed envents
-        Finder.FindComponent<MovementButtonsContainer>(container).MovementInputEvent += (int moveX) => { m_LeftMovementButtonPressed = moveX == -1; m_RightMovementButtonPressed = moveX == 1; };
+        m_MovementButtonsContainer.MovementInputEvent += (int moveX) => { m_LeftMovementButtonPressed = moveX == -1; m_RightMovementButtonPressed = moveX == 1; };
     }
 
     /// <summary>
@@ -146,6 +151,26 @@ public class GameUIManager : MonoBehaviour
     void DeleteGameUI()
     {
         Destroy(gameObject);
+    }
+
+    #endregion
+
+
+    #region Cleaners
+
+    public static void ClearAllSpells()
+    {
+        if (!GameManager.Instance.IsServer)
+            return;
+
+        var allSpells = FindObjectsByType<Spell>(FindObjectsSortMode.None);
+        var allSpellGfxs = FindObjectsByType<SpellGFX>(FindObjectsSortMode.None);
+
+        foreach (var temp in allSpells)
+            Destroy(temp);
+
+        foreach (var temp in allSpellGfxs)
+            Destroy(temp);
     }
 
     #endregion
@@ -200,7 +225,7 @@ public class GameUIManager : MonoBehaviour
     /// </summary>
     /// <param name="spell"></param>
     /// <returns></returns>
-    public SpellItemUI GetSpellUIItem(ESpell spell) 
+    public SpellItemUI GetSpellItemUI(ESpell spell) 
     {
         foreach (SpellItemUI spellItem in m_SpellItems)
         {
@@ -208,6 +233,22 @@ public class GameUIManager : MonoBehaviour
                 return spellItem;
         }
         return null;
+    }
+
+    public void LockAllSpellItems()
+    {
+        foreach (SpellItemUI spellItem in m_SpellItems)
+        {
+            spellItem.SetState(EButtonState.Locked);
+        }
+    }
+
+    public void UnlockAllSpellItems()
+    {
+        foreach (SpellItemUI spellItem in m_SpellItems)
+        {
+            spellItem.SetState(EButtonState.Normal);
+        }
     }
 
     #endregion
@@ -252,7 +293,9 @@ public class GameUIManager : MonoBehaviour
                 break;
 
             default:
-                arenaManager = AssetLoader.LoadArena("DefaultArena");
+                arenaManager = AssetLoader.LoadArena("VoidArena");
+                //arenaManager = AssetLoader.LoadArena("FrostArena");
+                //arenaManager = AssetLoader.LoadArena("DefaultArena");
                 break;
         }
 
@@ -298,7 +341,7 @@ public class GameUIManager : MonoBehaviour
             switch (LobbyHandler.Instance.GameMode)
             {
                 case EGameMode.Arena:
-                    PreviousStage = ProgressionCloudData.SoloArenas[LobbyHandler.Instance.ArenaType].CurrentStage;
+                    PreviousStage = ProgressionCloudData.CurrentArena.Stage;
                     break;
 
                 case EGameMode.Ranked:

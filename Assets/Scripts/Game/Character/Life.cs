@@ -1,5 +1,6 @@
 using Enums;
 using System;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -17,23 +18,28 @@ public class Life : NetworkBehaviour
 
     // ===================================================================================
     // NETWORK VARIABLES
-    NetworkVariable<int>            m_MaxHp     = new (1);
-    NetworkVariable<int>            m_Hp        = new (0);
-    NetworkVariable<int>            m_Shield    = new (0);
+    NetworkVariable<int>            m_MaxHp         = new (1);
+    NetworkVariable<int>            m_Hp            = new (0);
+    NetworkVariable<int>            m_FinalShield   = new (0);
 
     // ===================================================================================
     // PRIVATE VARIABLES
     /// <summary> Controller of the Owner</summary>
     Controller                      m_Controller;
+    int                             m_Shield =  0;
 
     // ===================================================================================
     // PUBLIC ACCESSORS 
-    public NetworkVariable<int> MaxHp   => m_MaxHp;  
-    public NetworkVariable<int> Hp      => m_Hp;
-    public NetworkVariable<int> Shield  => m_Shield;
+    public NetworkVariable<int> MaxHp       => m_MaxHp;  
+    public NetworkVariable<int> Hp          => m_Hp;
+    public NetworkVariable<int> FinalShield => m_FinalShield;
+
+    public Controller Controller    => m_Controller;
+    public int Shield               => m_Shield;
 
     /// <summary> Is the character alive </summary>
-    public bool IsAlive => m_Hp.Value > 0;
+    public bool IsAlive             => m_Hp.Value > 0;
+
 
     #endregion
 
@@ -55,7 +61,9 @@ public class Life : NetworkBehaviour
 
         m_MaxHp.Value = hp;
         m_Hp.Value = hp;
-        m_Shield.Value = shield;
+        m_Shield = shield;
+
+        RecalculateShield();
     }
 
     #endregion
@@ -73,7 +81,7 @@ public class Life : NetworkBehaviour
         if (! IsServer || ! IsAlive)
             return 0;
 
-        if (m_Controller.StateHandler.IsInvulnerable)
+        if (m_Controller != null && m_Controller.StateHandler.IsInvulnerable)
             return 0;
 
         // calculate damages after resistance
@@ -132,23 +140,56 @@ public class Life : NetworkBehaviour
         return heal;
     }
 
+    public int AddShield(int shield)
+    {
+        if (shield <= 0)
+            return 0;
+
+        m_Shield += shield;
+
+        RecalculateShield();
+
+        return shield;
+    }
+
     public int HitShield(int damages)
     {
+        if (m_Controller == null)
+            return damages;
+
         damages = m_Controller.StateHandler.HitShield(damages);
         if (damages == 0)
             return 0;
 
-        if (m_Shield.Value <= 0)
+        if (m_Shield <= 0)
             return damages;
 
-        m_Shield.Value -= damages;
-        if (m_Shield.Value >= 0)
+        m_Shield -= damages;
+
+        if (m_Shield >= 0)
+        {
+            RecalculateShield();
             return 0;
+        }
 
-        damages = -m_Shield.Value;
-        m_Shield.Value = 0;
+        damages = -m_Shield;
+        m_FinalShield.Value = 0;
 
+        RecalculateShield();
         return damages;
+    }
+
+    #endregion
+
+
+    #region Listeners & Events
+
+    public void RecalculateShield()
+    {
+        if (m_Controller == null)
+            return;
+
+        m_FinalShield.Value = m_Shield + m_Controller.StateHandler.RemainingShield + m_Controller.CounterHandler.RemainingShield;
     }
 
     #endregion

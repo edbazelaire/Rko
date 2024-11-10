@@ -6,6 +6,7 @@ using Game.AI;
 using Game.Character;
 using Game.Spells;
 using System.Collections.Generic;
+using Tools;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -24,6 +25,9 @@ public class TaskMove : BaseNode
 
     // =============================================================================
     // Data
+    protected bool m_CheckZones;
+    protected bool m_CheckProjectiles;
+
     // -- Serializable data (todo)
     protected float m_CheckObstaclesSize = 0.5f;
     protected float m_CheckZoneSize = 1f;
@@ -38,7 +42,11 @@ public class TaskMove : BaseNode
 
     #region Init & End
     
-    public TaskMove(Controller controller) : base(controller) { }
+    public TaskMove(Controller controller, bool checkZones = true, bool checkProjectiles = true) : base(controller) 
+    { 
+        m_CheckZones = checkZones;
+        m_CheckProjectiles = checkProjectiles;
+    }
 
     #endregion
 
@@ -51,10 +59,15 @@ public class TaskMove : BaseNode
         SelectMovement();
 
         if (m_State == NodeState.FAILURE)
+        {
+            ErrorHandler.Log("TaskMove - FAILURE", ELogTag.AITaskMove);
             return m_State;
+        }
 
-        // apply movement ((-1) because of team effect (remove ?))
+        // apply movement (-1) because of team effect
         m_Movement.SetMovement((-1) * m_CurrentMoveX);
+
+        ErrorHandler.Log("TaskMove - " + m_State, ELogTag.AITaskMove);
 
         return m_State;
     }
@@ -70,8 +83,12 @@ public class TaskMove : BaseNode
         m_AllowedMovements = new List<int> { -1, 1 };
 
         CheckObstacles();
-        CheckZones();
-        CheckProjectiles();
+
+        if (m_CheckZones)
+            CheckZones();
+
+        if (m_CheckProjectiles)
+            CheckProjectiles();
 
         if (m_AllowedMovements.Count == 0)
             m_CurrentMoveX = 0;
@@ -79,7 +96,7 @@ public class TaskMove : BaseNode
         else if (!m_AllowedMovements.Contains(m_CurrentMoveX))
             m_CurrentMoveX = m_AllowedMovements[0];
 
-        m_State = NodeState.RUNNING;
+        m_State = NodeState.SUCCESS;
     }
 
     #endregion
@@ -102,9 +119,12 @@ public class TaskMove : BaseNode
         // for each remaining allowed movements, check if there is obstacles in that direction
         foreach (int moveX in allowedMovement)
         {
-            Collider2D[] colliders = CollisionChecker.GetCollidersInDistance(m_Controller.transform.position.x, moveX * m_CheckObstaclesSize, CollisionChecker.OBSTACLES_LAYERS);
+            Collider2D[] colliders = CollisionChecker.GetCollidersInDistance(m_Controller.transform.position.x, moveX * m_CheckObstaclesSize * m_Controller.GFXHandler.CharacterSize, CollisionChecker.OBSTACLES_LAYERS);
             if (colliders.Length > 0)
+            {
+                ErrorHandler.Log("      -- TaskMove CheckObstacles() : removing movement " + moveX, ELogTag.AITaskMove);
                 m_AllowedMovements.Remove(moveX);
+            }
         }
     }
 
@@ -132,6 +152,7 @@ public class TaskMove : BaseNode
                 continue;
 
             // if any : un-allow movement
+            ErrorHandler.Log("      -- TaskMove CheckZones() : removing movement " + moveX, ELogTag.AITaskMove);
             m_AllowedMovements.Remove(moveX);
         }
     }
@@ -147,13 +168,11 @@ public class TaskMove : BaseNode
         // CHECK : straight line projectile
         if (m_AllowedMovements.Contains(-1) && m_ProjectileTrigger.CheckStraightProjectiles(out float xPos))
         {
-            Debug.LogWarning("-- STRAIGHT PROJECTILE DETECTED");
-
             // no straight projectile can reach us (add offset for safety)
             if (xPos + 0.5f <= m_Controller.transform.position.x)
                 return;
 
-            Debug.Log("     + Left Movement : canceled");
+            ErrorHandler.Log("      -- TaskMove CheckProjectiles() : removing movement -1 because of STRAIGHT PROJECTILE", ELogTag.AITaskMove);
 
             // otherwise : run the other direction
             m_AllowedMovements.Remove(-1);
@@ -169,6 +188,7 @@ public class TaskMove : BaseNode
             // force dodge first encoutered dodgeable projectile
             if (isThreat && isDodgeable && move != 0)
             {
+                ErrorHandler.Log("      -- TaskMove CheckProjectiles() : forcing movement "+move+" because of PROJECTILE", ELogTag.AITaskMove);
                 m_AllowedMovements = new List<int>() { move };
                 break;
             }

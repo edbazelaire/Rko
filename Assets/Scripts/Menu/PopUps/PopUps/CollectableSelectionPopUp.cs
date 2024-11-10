@@ -46,7 +46,7 @@ public class CollectableSelectionPopUp : PopUp
         UIHelper.CleanContent(m_ScrollerContent);
         foreach(Enum value in Enum.GetValues(m_CollectableType))
         {
-            if (value.ToString() == "Count")
+            if (value.ToString() == "None")
                 continue;
 
             if (InventoryCloudData.Instance.GetCollectable(value).Level <= 0 && m_UnlockedOnly)

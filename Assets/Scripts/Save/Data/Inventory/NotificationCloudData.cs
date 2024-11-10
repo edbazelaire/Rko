@@ -5,10 +5,29 @@ using System;
 using System.Collections.Generic;
 using Tools;
 using Unity.Services.CloudSave.Models;
-using UnityEngine;
 
 namespace Save
 {
+    public struct SMessage
+    {
+        public string           Id;
+        public int              Timestamp;
+        public string           Title;
+        public string           Content;
+        public SRewardsData     RewardsData;
+        public bool             Seen;
+
+        public SMessage(string id = "", int timestamp = 0, string title = "", string content = "", SRewardsData rewardsData = default, bool seen = false)
+        {
+            Id = id != "" ? id : IdHandler.GenerateRandomId();
+            Timestamp = timestamp > 0 ? timestamp : IdHandler.GetCurrentTimestamp();
+            Title = title;
+            Content = content;
+            RewardsData = rewardsData;
+            Seen = seen;
+        }
+    }
+
     public class NotificationCloudData : CloudData
     {
         #region Members
@@ -19,11 +38,13 @@ namespace Save
         // CONSTANTS
         public const string KEY_ARENA_REWARDS   = "ArenaRewards";
         public const string KEY_LEAGUE_REWARDS  = "LeagueRewards";
+        public const string KEY_MESSAGES        = "Messages";
 
         // ===============================================================================================
         // ACTION
-        public static Action ArenaRewardChangedEvent;
-        public static Action LeagueRewardChangedEvent;
+        public static Action            ArenaRewardChangedEvent;
+        public static Action            LeagueRewardChangedEvent;
+        public static Action<string>    MessageSeenEvent;
 
         // ===============================================================================================
         // DATA
@@ -31,12 +52,14 @@ namespace Save
         protected override Dictionary<string, object> m_Data { get; set; } = new Dictionary<string, object>() {
             { KEY_ARENA_REWARDS,            new Dictionary<EArenaType,  List<int>>() },
             { KEY_LEAGUE_REWARDS,           new Dictionary<ELeague,     List<int>>() },
+            { KEY_MESSAGES,                 new List<SMessage>() },
         };
 
         // ===============================================================================================
         // DEPENDENT STATIC ACCESSORS
-        public static Dictionary<EArenaType, List<int>> ArenaRewards => Instance.m_Data[KEY_ARENA_REWARDS] as Dictionary<EArenaType, List<int>>;
-        public static Dictionary<ELeague, List<int>> LeagueRewards => Instance.m_Data[KEY_LEAGUE_REWARDS] as Dictionary<ELeague, List<int>>;
+        public static Dictionary<EArenaType, List<int>> ArenaRewards    => Instance.m_Data[KEY_ARENA_REWARDS] as Dictionary<EArenaType, List<int>>;
+        public static Dictionary<ELeague, List<int>>    LeagueRewards   => Instance.m_Data[KEY_LEAGUE_REWARDS] as Dictionary<ELeague, List<int>>;
+        public static List<SMessage>                    Messages        => Instance.m_Data[KEY_MESSAGES] as List<SMessage>;
 
         #endregion
 
@@ -55,6 +78,9 @@ namespace Save
 
             if (m_Data[item.Key].GetType() == typeof(Dictionary<ELeague, List<int>>))
                 return item.Value.GetAs<Dictionary<ELeague, List<int>>>();
+            
+            if (m_Data[item.Key].GetType() == typeof(List<SMessage>))
+                return item.Value.GetAs<List<SMessage>>();
 
             return base.Convert(item);
         }
@@ -178,6 +204,37 @@ namespace Save
         #endregion
 
 
+        #region Messages
+
+        public static void AddMessage(SMessage message, bool save = true)
+        {
+            message.Id = IdHandler.GenerateRandomId();
+            message.Timestamp = IdHandler.GetCurrentTimestamp();
+            Messages.Insert(0, message);
+
+            if (save)
+                Instance.SaveValue(KEY_MESSAGES);
+        }
+
+        public static void SetMessageSeen(string id)
+        {
+            for (int i = 0; i < Messages.Count; i++) 
+            {
+                var message = Messages[i];
+                if (message.Id != id)
+                    continue;
+
+                message.Seen = true;
+                Messages[i] = message;
+            }
+
+            MessageSeenEvent?.Invoke(id);
+            Instance.SaveValue(KEY_MESSAGES);
+        }
+
+        #endregion
+
+
         #region Default Data
 
         public override void Reset(string key)
@@ -192,6 +249,10 @@ namespace Save
 
                 case KEY_LEAGUE_REWARDS:
                     m_Data[key] = new Dictionary<ELeague, List<int>>();
+                    break;
+
+                case KEY_MESSAGES:
+                    m_Data[key] = new List<SMessage>();
                     break;
             }
         }

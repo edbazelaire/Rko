@@ -1,0 +1,120 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a54727096f1b9a14e931ac401f233989, type: 3}
+  m_Name: _NeedlesStorm
+  m_EditorClassIdentifier: 
+  Rarety: 1
+  m_Description: Shoots {0} frost needles every {1} seconds, each dealing {2} damages
+    and applying {3}
+  m_DescriptionVariables:
+  - Name: Projectiles
+    WithIcon: 1
+  - Name: DelayBetweenWaves
+    WithIcon: 0
+  - Name: Damages
+    WithIcon: 1
+  - Name: Frost
+    WithIcon: 1
+  m_SpellElements: 02000000
+  Linked: 0
+  Graphics: {fileID: 2272309172655654138, guid: 764d75da0cfb93141ab26e32994e4d3d, type: 3}
+  SpellEventActions:
+  - Prefab: {fileID: 610942752557020422, guid: 3479c56f4bfbde34e90fd42b135b49f5, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 300
+      m_EndSpellPart: 400
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 4
+    SpawnLocation: 2
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
+  - Prefab: {fileID: 153912, guid: a625f15f05e0a114c924b974f4e4afec, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 500
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0.75
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 3
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
+  OnHit: []
+  OnHitSpellSpawn: 1
+  AnimationSoundFX: {fileID: 0}
+  CastSoundFX: {fileID: 8300000, guid: 3b0634fb8970b3646b290d3a85c0417c, type: 3}
+  PermanantSoundFX: {fileID: 0}
+  OnHitSoundFX: {fileID: 8300000, guid: 07532e25ab2bf0e4e9520610dfe2e0ce, type: 3}
+  OnEndSoundFX: {fileID: 0}
+  SpellTarget: 1
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  MaxHit: 1
+  EnergyGain: 3
+  EnergyCost: 0
+  m_Damage: 30
+  m_Heal: 0
+  m_Shield: 0
+  m_LifeSteal: 0
+  Distance: -1
+  OverrideOnHitProperties: 
+  m_Duration: 0
+  Delay: 0.5
+  m_SpellsScalingLevel:
+  - Property: 2
+    Value: 0.1
+  - Property: 9
+    Value: -0.05
+  - Property: 6
+    Value: 0.1
+  m_Size: 0.7
+  TriggerPlayer: 1
+  EnemyStateEffects:
+  - StateEffect: 16
+    Stacks: 1
+    OverridingProperties: []
+  AllyStateEffects: []
+  StateEffectStackFactor: 0
+  PersistanceAfterEnd: 0
+  Animation: 14
+  IsCancellable: 0
+  AnimationTimer: 1
+  m_Cooldown: 20
+  Trajectory: 0
+  m_StopOnTargetPos: 0
+  m_Speed: 6
+  ProjectileData: {fileID: 0}
+  MultiProjectileType: 2
+  m_IsBlocking: 0
+  m_NProjectiles: 2
+  m_ProjectileZoneSize: -1
+  m_DelayBetweenLaunches: 0.2
+  m_NWaves: 99999
+  m_DelayBetweenWaves: 1
+  OnCastWaveSoundFX: {fileID: 0}
+  OnCastProjectileSoundFX: {fileID: 0}

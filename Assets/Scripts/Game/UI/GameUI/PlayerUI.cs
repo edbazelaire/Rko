@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using Tools;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,6 +24,7 @@ namespace Game.UI
             EStateEffect.UnTargettable.ToString(), 
             EStateEffect.Jump.ToString(),
             EStateEffect.SpecialAnimation.ToString(),
+            EStateEffect.Vanish.ToString(),
         };
 
         Controller m_Controller = null;
@@ -67,9 +69,8 @@ namespace Game.UI
 
             // HealthBar
             m_ShieldBar = Finder.FindComponent<PlayerBarUI>(gameObject, "ShieldBar");
-            m_ShieldBar.Initialize(controller.StateHandler.RemainingShield.Value + controller.Life.Shield.Value, controller.Life.MaxHp.Value);
-            controller.Life.Shield.OnValueChanged                   += OnShieldChanged;
-            controller.StateHandler.RemainingShield.OnValueChanged  += OnShieldChanged;
+            m_ShieldBar.Initialize(controller.Life.FinalShield.Value, controller.Life.MaxHp.Value);
+            controller.Life.FinalShield.OnValueChanged += OnShieldChanged;
 
             // Energy Bar
             m_EnergyBar = Finder.FindComponent<PlayerBarUI>(gameObject, c_EnergyBar);
@@ -82,6 +83,7 @@ namespace Game.UI
             m_StateEffectsUI = new Dictionary<string, StateEffectUI>();
             UIHelper.CleanContent(m_StateDisplayer);
             controller.StateHandler.OnStateEvent += OnStateEvent;
+            controller.StateHandler.HoldingStateEffects.OnListChanged += OnHoldingStateEffectsChanged;
         }
 
         private void OnDestroy()
@@ -91,10 +93,9 @@ namespace Game.UI
 
             m_Controller.Life.MaxHp.OnValueChanged                      -= m_HealthBar.OnMaxValueChanged;
             m_Controller.Life.Hp.OnValueChanged                         -= m_HealthBar.OnValueChanged;
+            m_Controller.Life.FinalShield.OnValueChanged                -= m_ShieldBar.OnValueChanged;
             m_Controller.EnergyHandler.MaxEnergy.OnValueChanged         -= m_EnergyBar.OnMaxValueChanged;
             m_Controller.EnergyHandler.Energy.OnValueChanged            -= m_EnergyBar.OnValueChanged;
-            m_Controller.Life.MaxHp.OnValueChanged                      -= m_ShieldBar.OnMaxValueChanged;
-            m_Controller.StateHandler.RemainingShield.OnValueChanged    -= m_ShieldBar.OnValueChanged;
             m_Controller.StateHandler.OnStateEvent                      -= OnStateEvent;
         }
 
@@ -161,7 +162,15 @@ namespace Game.UI
 
         void OnShieldChanged(int _, int newValue)
         {
-            m_ShieldBar.OnValueChanged(0, m_Controller.Life.Shield.Value + m_Controller.StateHandler.RemainingShield.Value);
+            m_ShieldBar.OnValueChanged(0, newValue);
+        }
+
+        void OnHoldingStateEffectsChanged(NetworkListEvent<FixedString64Bytes> changeEvent)
+        {
+            foreach (string stateEffect in m_StateEffectsUI.Keys)
+            {
+                m_StateEffectsUI[stateEffect].SetIsHolding(m_Controller.StateHandler.IsHolding(stateEffect));
+            }
         }
 
         #endregion

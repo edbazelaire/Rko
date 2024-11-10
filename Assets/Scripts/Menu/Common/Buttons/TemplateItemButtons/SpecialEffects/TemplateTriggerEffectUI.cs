@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Data;
 using Data.DataStructures;
 using Enums;
 using Tools;
@@ -11,7 +12,7 @@ namespace Menu.Common.Buttons.TemplateItemButtons
         #region Members
 
         // Init Data
-        STriggerEffect m_TriggerEffect;
+        STriggerEffect  m_TriggerEffect;
 
         #endregion
 

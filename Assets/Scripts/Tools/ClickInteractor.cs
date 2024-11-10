@@ -17,7 +17,7 @@ namespace Tools
 
         public static ClickInteractor Create(bool activate = true)
         {
-            var ci = new GameObject().AddComponent<ClickInteractor>();
+            var ci = new GameObject("ClickInteractor").AddComponent<ClickInteractor>();
             ci.Refresh();
             ci.Activate(activate);
 

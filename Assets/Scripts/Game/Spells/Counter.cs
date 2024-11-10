@@ -1,6 +1,6 @@
 ﻿using Data;
 using Enums;
-using NUnit.Framework.Internal;
+using System;
 using System.Linq;
 using Tools;
 using UnityEngine;
@@ -16,7 +16,10 @@ namespace Game.Spells
         CounterData m_SpellData => m_BaseSpellData as CounterData;
         public new CounterData SpellData => m_SpellData;
 
+        int m_Shield;
         float m_CounterTimer;
+
+        public int Shield => m_Shield;
 
         #endregion
 
@@ -32,13 +35,14 @@ namespace Game.Spells
         {
             base.Initialize(clientId, target, spellName, level);
 
-            if (m_SpellData.ColorSwap != default)
-                m_Controller.GFXHandler.AddColorClientRPC(m_SpellData.ColorSwap);
-
             if (!IsServer)
                 return;
 
             m_CounterTimer = m_SpellData.Duration;
+            m_Shield = m_SpellData.Shield;
+
+            // apply self state effects
+            ApplyAllyStateEffects(m_Controller);
 
             // TODO : BETTER - if spell is not impacting player by blocking movement or cast, and is not Trigger by player, do not add to list of Counters
             if (! m_SpellData.IsLinkedCounter)
@@ -49,11 +53,19 @@ namespace Game.Spells
 
         protected override void End()
         {
-            if (m_SpellData.ColorSwap != default)
-                m_Controller.GFXHandler.RemoveColorClientRPC(m_SpellData.ColorSwap);
-
             if (m_SpellData.IsLinkedCounter)
                 m_Controller.CounterHandler.RemoveCounter(this);
+
+            if (m_SpellData.AllyStateEffects != null)
+            {
+                foreach (var stateEffect in m_SpellData.AllyStateEffects)
+                {
+                    if (!m_Controller.StateHandler.HasState(stateEffect.StateEffect))
+                        continue;
+
+                    m_Controller.StateHandler.RemoveStateEffect(stateEffect.StateEffect, true, stateEffect.GetStacks());
+                }
+            }
 
             base.End();
         }
@@ -71,6 +83,9 @@ namespace Game.Spells
             base.Update();
 
             if (!IsServer)
+                return;
+
+            if (m_SpellData.Duration <= 0)
                 return;
 
             m_CounterTimer -= Time.deltaTime;
@@ -134,6 +149,12 @@ namespace Game.Spells
 
                 // block the spell : do nothing
                 case ECounterType.Block:
+                    if (m_SpellData.Shield > 0)
+                    {
+                        HitShield(enemySpell.GetBoostedDamages(m_Controller));
+                    }
+
+                    enemySpell.CallSpellEventClientRPC(ESpellEvent.OnHit, m_Controller.PlayerId);
                     break;
 
                 // Recast the spell to the enemy
@@ -185,6 +206,43 @@ namespace Game.Spells
 
         #endregion
 
+
+        #region Shield
+
+        public void HitShield(int damages)
+        {
+            if (damages < 0)
+            {
+                ErrorHandler.Warning("Trying to hit shield with negative damages : " + damages);
+                return;
+            }
+
+            if (damages == 0)
+                return;
+
+            m_Shield = Math.Max(0, m_Shield - damages);
+            if (m_Shield <= 0)
+                End();
+
+            m_Controller.Life.RecalculateShield();
+        }
+
+        public void AddShield(int shield)
+        {
+            if (shield < 0)
+            {
+                ErrorHandler.Warning("Trying to add negative shield : " + shield);
+                return;
+            } 
+            
+            if (shield == 0)
+                return;
+
+            m_Shield += shield;
+            m_Controller.Life.RecalculateShield();
+        }
+
+        #endregion
 
     }
 }

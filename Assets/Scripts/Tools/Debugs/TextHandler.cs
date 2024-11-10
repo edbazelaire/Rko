@@ -2,12 +2,13 @@
 using Data.DataStructures;
 using Enums;
 using Game.Loaders;
+using Game.Spells;
+using Game.UI;
 using MyBox;
-using Save;
+using NUnit.Framework.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -22,11 +23,15 @@ namespace Tools
     {
         /// <summary> when put in a text, all lignes will with this tag will have enought spaces to match alignement </summary>
         public const string TAG_ALIGNMENT = "%%ALIGNMENT%%";
+        public const string UNDEFINED = "<b>UNDEFINED</b>";
 
         public static List<string> IGNORED_ICONS => new()
         {
             EStateEffectProperty.Tick.ToString(),
             ESpellProperty.Size.ToString(),
+            ESpellProperty.Delay.ToString(),
+            ESpellProperty.DelayBetweenLaunches.ToString(),
+            ESpellProperty.DelayBetweenWaves.ToString(),
         };
 
         #region Cleaning 
@@ -200,6 +205,27 @@ namespace Tools
             }
         }
 
+        public static int FromRoman(string number)
+        {
+            switch (number)
+            {
+                case "I":
+                    return 1;
+                case "II":
+                    return 2;
+                case "III":
+                    return 3;
+                case "IV":
+                    return 4;
+                case "V":
+                    return 5;
+
+                default:
+                    ErrorHandler.Error("Unable to transform " + number + " into roman value");
+                    return 0;
+            }
+        }
+
         /// <summary>
         /// Format description name of a state effect to add the icon if necessary
         /// </summary>
@@ -209,14 +235,36 @@ namespace Tools
         public static string FormatStateEffectIcon(string stateEffectName, bool withIcon = true, bool withPropertyName = true)
         {
             string formatedString = "";
+            stateEffectName = stateEffectName.Trim();
 
             if (withPropertyName)
                 formatedString += $"<i>{stateEffectName}</i>";
 
-            if (withIcon && !IGNORED_ICONS.Contains(stateEffectName))
-                formatedString += $" <sprite name=\"{"Ic_" + stateEffectName}\">";
+            if (withIcon)
+                formatedString += FormatIcon(stateEffectName);
 
             return formatedString;
+        }
+
+        public static string FormatPropertyIcon(string propertyName, object propertyValue, bool withIcon = true, bool withPropertyName = true)
+        {
+            string formatedString = $"<b>{propertyValue}</b>";
+
+            if (withPropertyName)
+                formatedString += $" <i>{propertyName}</i>";
+
+            if (withIcon)
+                formatedString += FormatIcon(propertyName);
+
+            return formatedString;
+        }
+
+        public static string FormatIcon(string propName)
+        {
+            if (IGNORED_ICONS.Contains(propName))
+                return "";
+            
+            return $" <sprite name=\"{"Ic_" + propName}\">";
         }
 
         public static string FormatActivatedText(string text, bool isActivated, bool isOverwritten)
@@ -257,6 +305,29 @@ namespace Tools
             return text;
         }
 
+        public static string ReplaceSubSpellData(string text, SpellData subSpellData)
+        {
+            // Define a regex to find tokens in the format [SubSpellData.PROPERTY_NAME]
+            string pattern = @"\[(SubSpellData\.[A-Za-z_][A-Za-z0-9_]*)\]";
+            MatchCollection matches = Regex.Matches(text, pattern);
+
+            foreach (Match match in matches)
+            {
+                string token = match.Value; // The full token, e.g., "[SubSpellData.PROPERTY_NAME]"
+
+                // Extract the property name from the token
+                string propertyName = token.Split('.')[1].TrimEnd(']');
+
+                // Replace token with the property value from ConvertDescriptionVariable
+                text = text.Replace(
+                    token,
+                    propertyName == "Description" ? subSpellData.GetDescription() : subSpellData.ConvertDescriptionVariable(new SDescriptionVariable(propertyName, true), subSpellData.GetInfos())
+                );
+            }
+
+            return text;
+        }
+
         public static string GetTriggerEffectDescription(STriggerEffect triggerEffect)
         {
             // description of the Rune is the description of the Trigger Effect (at the level of the current character)
@@ -273,6 +344,111 @@ namespace Tools
 
             ErrorHandler.Error("Unable to find description for trigger effect " + triggerEffect.SpellDataName);
             return "";
+        }
+
+        public static string ReplaceSpellRequirements(string text, SpellData spellData)
+        {
+            // Define a regex to find tokens in the format [SubSpellData.PROPERTY_NAME]
+            string pattern = @"\[(SpellRequirement\.[0-9]+)\]";
+            MatchCollection matches = Regex.Matches(text, pattern);
+
+            foreach (Match match in matches)
+            {
+                string token = match.Value; // The full token, e.g., "[SubSpellData.PROPERTY_NAME]"
+
+                // Extract the index and target from name
+                int index = int.Parse(token.Split('.')[1].TrimEnd(']'));
+                if (index < 0)
+                {
+                    ErrorHandler.Error("Error with token " + token + " : BAD index (" + index + ")");
+                    continue;
+                }
+
+                if (spellData.SpellRequirements.Count <= index)
+                {
+                    ErrorHandler.Error("Error with token " + token + " : index (" + index + ") is >= number of SpellRequirements (" + spellData.SpellRequirements.Count + ")" );
+                    continue;
+                }
+
+                // Replace token with the property value from ConvertDescriptionVariable
+                text = text.Replace(
+                    token,
+                    spellData.SpellRequirements[index].GetDescription()
+                );
+            }
+
+            return text;
+        }
+
+        public static string ReplaceSubStateEffects(string text, List<SStateEffectData> stateEffects)
+        {
+            // Define a regex to find tokens in the format [SubSpellData.PROPERTY_NAME]
+            string pattern = @"\[([a-zA-Z]*StateEffect\.[0-9]+)\]";
+            MatchCollection matches = Regex.Matches(text, pattern);
+
+            foreach (Match match in matches)
+            {
+                string token = match.Value; // The full token, e.g., "[SubSpellData.PROPERTY_NAME]"
+
+                // Extract the index and target from name
+                int index = int.Parse(token.Split('.')[1].TrimEnd(']'));
+
+                if (index < 0)
+                {
+                    ErrorHandler.Error("Error with token " + token + " : BAD index (" + index + ")");
+                    continue;
+                }
+
+                if (stateEffects.Count <= index)
+                {
+                    ErrorHandler.Error("Error with token " + token + " : index (" + index + ") is >= number of StateEffects (" + stateEffects.Count + ")" );
+                    continue;
+                }
+
+                // Replace token with the property value from ConvertDescriptionVariable
+                text = text.Replace(
+                    token,
+                    stateEffects[index].Description
+                );
+            }
+
+            return text;
+        }
+
+        public static string ReplaceSubStateEffects(string text, SpellData spellData)
+        {
+            // Define a regex to find tokens in the format [SubSpellData.PROPERTY_NAME]
+            string pattern = @"\[((Enemy|Ally)StateEffect\.[0-9]+)\]";
+            MatchCollection matches = Regex.Matches(text, pattern);
+
+            foreach (Match match in matches)
+            {
+                string token = match.Value; // The full token, e.g., "[SubSpellData.PROPERTY_NAME]"
+
+                // Extract the index and target from name
+                int index = int.Parse(token.Split('.')[1].TrimEnd(']'));
+                List<SStateEffectData> stateEffects = token.Split("StateEffect.")[0].EndsWith("Ally") ? spellData.AllyStateEffects : spellData.EnemyStateEffects;
+
+                if (index < 0)
+                {
+                    ErrorHandler.Error("Error with token " + token + " : BAD index (" + index + ")");
+                    continue;
+                }
+
+                if (stateEffects.Count <= index)
+                {
+                    ErrorHandler.Error("Error with token " + token + " : index (" + index + ") is >= number of StateEffects (" + stateEffects.Count + ")" );
+                    continue;
+                }
+
+                // Replace token with the property value from ConvertDescriptionVariable
+                text = text.Replace(
+                    token,
+                    stateEffects[index].Description
+                );
+            }
+
+            return text;
         }
 
         #endregion

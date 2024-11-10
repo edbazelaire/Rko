@@ -3,11 +3,9 @@ using Data;
 using Data.GameManagement;
 using Enums;
 using Game.Loaders;
-using Game.SpellGFXs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Tools;
 using Unity.Collections;
 using Unity.Netcode;
@@ -56,13 +54,16 @@ namespace Game.Character
             m_Controller = Finder.FindComponent<Controller>(gameObject);
         }
 
-        public void Initialize(ECharacter character)
+        public void Initialize(string character)
         {
             CharacterData characterData = CharacterLoader.GetCharacterData(character, destroy: true);
             m_CharacterPreview = characterData.InstantiateCharacterPreview(gameObject);
             m_SpriteRenderers = Finder.FindComponents<SpriteRenderer>(m_CharacterPreview);
 
             FindBodyParts();
+            SwapLayerMask(m_CharacterPreview);
+            SwapRigidBody(m_CharacterPreview);
+            SwapColliders(m_CharacterPreview);
             SetSize(characterData.Size);
 
             m_Colors = new();
@@ -95,6 +96,145 @@ namespace Game.Character
         {
             m_CharacterSize = Settings.CharacterSizeFactor * size;
             transform.localScale = m_CharacterSize * Vector3.one;
+        }
+
+        #endregion
+
+
+        #region Collider & RigidBody
+
+        protected virtual void SwapLayerMask(GameObject graphics)
+        {
+            if (graphics.layer == default)
+                return;
+
+            gameObject.layer = graphics.layer;
+        }
+
+        protected virtual void SwapRigidBody(GameObject graphics)
+        {
+            // Check if the graphics GameObject has a Rigidbody2D component
+            Rigidbody2D graphicsRb = graphics.GetComponent<Rigidbody2D>();
+            if (graphicsRb == null)
+                return;
+
+            // Destroy the existing Rigidbody2D on this GameObject (if any)
+            Rigidbody2D currentRb = gameObject.GetComponent<Rigidbody2D>();
+            if (currentRb == null)
+            {
+                // Add a new Rigidbody2D to this GameObject
+                currentRb = gameObject.AddComponent<Rigidbody2D>();
+
+                // check that the component was correctly added
+                if (currentRb == null)
+                {
+                    ErrorHandler.Error("Unable to either find a RigidBody on base prefab or add a new one");
+                    return;
+                }
+            }
+
+            // Copy properties from graphics Rigidbody2D to the new Rigidbody2D
+            CopyRigidbodyProperties(graphicsRb, ref currentRb);
+        
+            // Destroy the original Rigidbody2D on the graphics GameObject
+            Destroy(graphicsRb);
+        }
+
+        // Helper method to copy Rigidbody2D properties
+        private void CopyRigidbodyProperties(Rigidbody2D source, ref Rigidbody2D target)
+        {
+            target.bodyType                 = source.bodyType;
+            target.includeLayers            = source.includeLayers;
+            target.excludeLayers            = source.excludeLayers;
+            target.simulated                = source.simulated;
+
+            if (source.bodyType == RigidbodyType2D.Static)
+                return;
+            
+            target.mass                     = source.mass;
+            target.drag                     = source.drag;
+            target.angularDrag              = source.angularDrag;
+            target.gravityScale             = source.gravityScale;
+            target.collisionDetectionMode   = source.collisionDetectionMode;
+            target.interpolation            = source.interpolation;
+            target.constraints              = source.constraints;
+            target.sleepMode                = source.sleepMode;
+            target.useAutoMass              = source.useAutoMass;
+            target.isKinematic              = source.isKinematic;
+        }
+
+        /// <summary>
+        /// Swap default Collider with Graphics Collider if it has one
+        /// </summary>
+        protected virtual void SwapColliders(GameObject graphics)
+        {
+            // Check if the graphics GameObject has a enabled Collider2D component
+            Collider2D graphicsCollider = graphics.GetComponent<Collider2D>();
+            if (graphicsCollider == null || !graphicsCollider.enabled)
+                return;
+
+            // destroy the collider on the Spell before adding the new one
+            Destroy(this.GetComponent<Collider2D>());
+
+            // Get the type of the original collider
+            Type colliderType = graphicsCollider.GetType();
+
+            // Add a new collider of the same type to this GameObject
+            Collider2D newCollider = this.gameObject.AddComponent(colliderType) as Collider2D;
+
+            // Copy properties from the original collider to the new one
+            if (newCollider != null)
+            {
+                CopyColliderProperties(graphicsCollider, newCollider);
+            }
+
+            // Destroy the original collider on the graphics GameObject
+            Destroy(graphicsCollider);
+        }
+
+        /// <summary>
+        /// Copies properties from one collider to another.
+        /// </summary>
+        /// <param name="source">The original collider to copy from.</param>
+        /// <param name="destination">The new collider to copy to.</param>
+        private void CopyColliderProperties(Collider2D source, Collider2D destination)
+        {
+            if (source == null || destination == null)
+                return;
+
+            // General properties
+            destination.isTrigger   = source.isTrigger;
+            destination.offset      = source.offset;
+
+            // Specific properties for BoxCollider2D
+            if (source is BoxCollider2D sourceBoxCollider && destination is BoxCollider2D destinationBoxCollider)
+            {
+                destinationBoxCollider.size = sourceBoxCollider.size;
+            }
+            // Specific properties for CircleCollider2D
+            else if (source is CircleCollider2D sourceCircleCollider && destination is CircleCollider2D destinationCircleCollider)
+            {
+                destinationCircleCollider.radius = sourceCircleCollider.radius;
+            }
+            // Specific properties for CircleCollider2D
+            else if (source is CapsuleCollider2D capsuleCollider && destination is CapsuleCollider2D destinationCapsuleCollider)
+            {
+                destinationCapsuleCollider.size         = capsuleCollider.size;
+                destinationCapsuleCollider.offset       = capsuleCollider.offset;
+                destinationCapsuleCollider.direction    = capsuleCollider.direction;
+            }
+            // Specific properties for PolygonCollider2D
+            else if (source is PolygonCollider2D sourcePolygonCollider && destination is PolygonCollider2D destinationPolygonCollider)
+            {
+                destinationPolygonCollider.points = sourcePolygonCollider.points;
+            }
+            // Specific properties for EdgeCollider2D
+            else if (source is EdgeCollider2D sourceEdgeCollider && destination is EdgeCollider2D destinationEdgeCollider)
+            {
+                destinationEdgeCollider.points = sourceEdgeCollider.points;
+            }
+
+            // Add more collider types if necessary
         }
 
         #endregion
@@ -199,7 +339,7 @@ namespace Game.Character
             ErrorHandler.Log(spellName + " SpawnSpellGFX : " + spellEvent, ELogTag.SpellGFX);
 
             var spellData = SpellLoader.GetSpellData(spellName);
-            foreach (SPrefabSpawn prefabSpawn in spellData.SpellEventActions)
+            foreach (SPrefabSpawn<ESpellEvent> prefabSpawn in spellData.SpellEventActions)
             {
                 if (prefabSpawn.GFXLifetime.StartSpellPart != spellEvent)
                     continue;
@@ -231,7 +371,7 @@ namespace Game.Character
                     continue;
 
                 // check is the right body part
-                if (bodyPart != EBodyPart.None && bodyPart == tempBodyPart)
+                if (bodyPart != EBodyPart.None && bodyPart != tempBodyPart)
                     continue;
 
                 // att to list of materials
@@ -282,8 +422,24 @@ namespace Game.Character
         /// <param name="hidden"></param>
         public void HideCharacter(bool hidden)
         {
-            Color color = hidden ? new Color(0f, 0f, 0f, 0f) : Color.white;
-            SetColor(color);
+            Color color = new Color(0f, 0f, 0f, 0f);
+            if (hidden)
+                AddColor(color);
+            else
+                RemoveColor(color);
+        }
+
+        /// <summary>
+        /// Hide / show the character colors
+        /// </summary>
+        /// <param name="hidden"></param>
+        public void Hide(bool hidden, EBodyPart bodyPart = EBodyPart.None)
+        {
+            Color color = new Color(0f, 0f, 0f, 0f);
+            if (hidden)
+                AddColor(color, bodyPart);
+            else
+                RemoveColor(color, bodyPart);
         }
 
         void AddColor(Color color, EBodyPart bodyPart = EBodyPart.None)
@@ -328,12 +484,8 @@ namespace Game.Character
                 if (!Enum.TryParse(spriteRenderer.name, out EBodyPart tempBodyPart))
                     continue;
 
-                if (bodyPart != EBodyPart.None && bodyPart == tempBodyPart)
+                if (bodyPart != EBodyPart.None && bodyPart != tempBodyPart)
                     continue;
-
-                // do not apply if has a material
-                if (TextHandler.CleanMaterialName(spriteRenderer.material.name) != TextHandler.CleanMaterialName(m_DefaultMaterial.name))
-                   continue;
 
                 spriteRenderer.color = color;
             }
@@ -370,6 +522,12 @@ namespace Game.Character
                     opacity = IsOwner ? 0.5f : 0f;
 
                 SetColor(new Color(1f, 1f, 1f, opacity));
+                return;
+            }
+            
+            if (changeEvent.Value == EStateEffect.Vanish.ToString())
+            {
+                HideCharacter(changeEvent.Type != NetworkListEvent<FixedString64Bytes>.EventType.RemoveAt);
                 return;
             }
         }

@@ -81,7 +81,7 @@ namespace Menu.PopUps
         {
             switch (bname)
             {
-                case "Background":
+                case "RefuseButton":
                     OnCancelButton();
                     break;
 
@@ -114,6 +114,7 @@ namespace Menu.PopUps
         protected virtual void OnValidateButton()
         {
             m_OnValidate?.Invoke();
+            Exit();
         }
 
         #endregion

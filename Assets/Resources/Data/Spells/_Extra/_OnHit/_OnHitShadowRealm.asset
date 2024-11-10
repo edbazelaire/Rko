@@ -13,25 +13,12 @@ MonoBehaviour:
   m_Name: _OnHitShadowRealm
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: 
+  m_DescriptionVariables: []
+  m_SpellElements: 
   Linked: 0
-  Graphics: {fileID: 0}
-  SpellEventActions:
-  - Prefab: {fileID: 1197010802093610, guid: e3c59e6ba83598e4dabf105816ca9fd6, type: 3}
-    GFXLifetime:
-      StartSpellPart: 3
-      EndSpellPart: 0
-      StartAt: 0
-      EndAt: 0
-      Persistance: 1
-    Size: 0
-    OrderInLayer: 0
-    SpawnTarget: 3
-    SpawnLocation: 0
-    BodyPart: 0
-    IsFollowing: 0
-    Offset: {x: 0, y: 1}
-    Animation: 0
-    StateEffects: 
+  Graphics: {fileID: 153912, guid: 932046b7eaf3b554f8d74c81e2f00558, type: 3}
+  SpellEventActions: []
   Preview: {fileID: 0}
   OnAnimation: []
   OnCastPrefabs: []
@@ -61,7 +48,7 @@ MonoBehaviour:
     Value: 0.1
   - Property: 3
     Value: 0.05
-  m_Size: 6
+  m_Size: 5
   TriggerPlayer: 1
   EnemyStateEffects:
   - StateEffect: 14
@@ -74,7 +61,7 @@ MonoBehaviour:
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
-  PersistanceAfterEnd: 0.5
+  PersistanceAfterEnd: 1
   Animation: 0
   IsCancellable: 0
   AnimationTimer: 0

@@ -98,11 +98,19 @@ namespace Game.Spells
             if (!TryGetController(collider, out Controller controller))
                 return;
 
-            // apply collision effect
-            OnCollisionController(controller);
+            if (m_SpellData.ApplyIfNotHitting)
+            {
+                // remove persistant effects
+                RemovePersistentStateEffects(controller);
+            } 
+            else
+            {
+                // apply collision effect
+                OnCollisionController(controller);
 
-            // apply persistant effects
-            ApplyPersistentStateEffects(controller);
+                // apply persistant effects
+                ApplyPersistentStateEffects(controller);
+            }
         }
 
         protected void OnTriggerExit2D(Collider2D collider)
@@ -110,8 +118,19 @@ namespace Game.Spells
             if (!TryGetController(collider, out Controller controller))
                 return;
 
-            // remove persistant effects
-            RemovePersistentStateEffects(controller);
+            if (m_SpellData.ApplyIfNotHitting)
+            {
+                // apply collision effect
+                OnCollisionController(controller);
+
+                // apply persistant effects
+                ApplyPersistentStateEffects(controller);
+            }
+            else
+            {
+                // remove persistant effects
+                RemovePersistentStateEffects(controller);
+            }
         }
 
         #endregion

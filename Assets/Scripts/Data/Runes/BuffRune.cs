@@ -14,9 +14,6 @@ namespace Data
     {
         #region Members
 
-        [SerializeField] 
-        protected List<EStateEffectProperty> m_DescriptionVariables = new List<EStateEffectProperty>();
-
         [SerializeField]
         protected List<SCharacterStatScaling> m_BonusStats = new List<SCharacterStatScaling>();
 

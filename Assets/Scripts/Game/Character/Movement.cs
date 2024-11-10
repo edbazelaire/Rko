@@ -18,11 +18,15 @@ namespace Game.Character
         NetworkVariable<bool>       m_MovementBlocked       = new(false);
 
         // [Client Data]
-        int m_MovementInput = 0;
-        float m_SpeedBonus = 0f;
-        float m_InitialSpeed;
+        bool    m_IsActive          = false;
+        bool    m_CanMoveClient     = true;
+        int     m_MovementInput     = 0;
+        float   m_SpeedBonus        = 0f;
+        float   m_InitialSpeed;
 
         public NetworkVariable<int> MoveX => m_MoveX;
+        public float Speed => Math.Max(0, Settings.CharacterSpeedFactor * (m_InitialSpeed + m_SpeedBonus));
+        public bool IsMoving => m_MoveX.Value != 0;
 
         #endregion
 
@@ -39,7 +43,11 @@ namespace Game.Character
             if (IsServer)
                 return;
 
-            m_MoveX.OnValueChanged += OnMoveXChanged;
+            // CLIENT SIDE --------------------------------------------
+            if (IsOwner)
+                m_MoveX.OnValueChanged += OnMoveXChanged;
+
+            ShakeServerRpc();
         }
 
         /// <summary>
@@ -56,16 +64,29 @@ namespace Game.Character
             m_InitialSpeed = characterSpeed;
         }
 
+        public void Activate(bool activate)
+        {
+            if (! activate)
+            {
+                SetMovement(0);
+                ResetRotation();
+            }
+
+            m_IsActive = activate;
+        }
+
+
         void Update()
         {
-            if (! m_Controller.GameRunning)
+            if (! m_Controller.GameRunning || ! m_IsActive)
                 return;
 
             CheckInputs();
 
             if (!IsServer)
                 return;
-            
+
+            UpdateCanMove();
             UpdateMovement();
         }
 
@@ -125,6 +146,23 @@ namespace Game.Character
                 SetRotation(180f);
         }
 
+        /// <summary>
+        /// Check if movement allowed (on server side) is the same as most recent value provided to the Client.
+        /// If not -> send the correct value to the client
+        /// </summary>
+        void UpdateCanMove()
+        {
+            if (! IsServer) 
+                return;
+
+            bool canMove = CanMove;
+            if (m_CanMoveClient != canMove)
+            {
+                canMove = CanMove;
+                SetCanMoveClientRPC(canMove);
+            }
+        }
+
         void SetRotation(float y)
         {
             transform.rotation = Quaternion.Euler(0f, y, 0f);
@@ -173,7 +211,9 @@ namespace Game.Character
                 return;
 
             m_MovementInput = moveX;
-            UpdateRotation(m_Controller.Team == 0 ? moveX : -moveX);
+
+            if (m_CanMoveClient)
+                UpdateRotation(m_Controller.Team == 0 ? moveX : -moveX);
         }
 
         void UpdateRotation(int moveX)
@@ -193,6 +233,12 @@ namespace Game.Character
             ResetRotation();
         }
 
+        [ClientRpc]
+        void SetCanMoveClientRPC(bool value)
+        {
+            m_CanMoveClient = value;
+        }
+
         void ResetRotation()
         {
             SetRotation(m_Controller.Team == 0 ? 0f : -180f);
@@ -208,13 +254,16 @@ namespace Game.Character
         /// </summary>
         public void Shake()
         {
+            // apply small movement and rotation
             transform.position += new Vector3(0.15f, 0, 0);
-            transform.rotation = Quaternion.Euler(0f, 0f, 0.1f);
-            ResetRotation();
+            transform.rotation = Quaternion.Euler(0.1f, 0.1f, 0.1f);
+
+            // reset to default values next frame
+            CoroutineManager.DelayMethod(ResetRotation);
         }
 
-        [ClientRpc]
-        public void ShakeClientRPC()
+        [ServerRpc]
+        public void ShakeServerRpc()
         {
             if (transform.position.x == 0)
             {
@@ -265,19 +314,7 @@ namespace Game.Character
 
 
         #region Dependent Attributes
-
-        public float Speed
-        {
-            get 
-            {
-                return Math.Max(0, Settings.CharacterSpeedFactor * (m_InitialSpeed + m_SpeedBonus));
-            }
-        }
-
-        public bool IsMoving
-        {
-            get { return m_MoveX.Value != 0; }
-        }
+       
 
         public bool CanMove
         {

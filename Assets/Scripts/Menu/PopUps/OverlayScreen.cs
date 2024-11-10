@@ -10,7 +10,8 @@ namespace Menu.PopUps
 {
     public class OverlayScreen : MObject
     {
-        static int OrderInLayer = 0;
+        const int ADDING_ORDER_IN_LAYER = 1000;
+        public static int OrderInLayer = 0;
 
         protected Canvas m_Canvas;
         protected float m_EndingTimer = 0f;
@@ -20,7 +21,7 @@ namespace Menu.PopUps
 
         public override void Initialize()
         {
-            OrderInLayer++;
+            OrderInLayer += ADDING_ORDER_IN_LAYER;
 
             gameObject.SetActive(false);
 
@@ -42,7 +43,7 @@ namespace Menu.PopUps
         {
             PlaySoundFX();
 
-            OrderInLayer--;
+            OrderInLayer -= ADDING_ORDER_IN_LAYER;
             UnRegisterButtons();
             UnRegisterListeners();
         }
@@ -209,6 +210,7 @@ namespace Menu.PopUps
         {
             switch (bname)
             {
+                case "Background":
                 case "CancelButton":
                     OnCancelButton();
                     break;

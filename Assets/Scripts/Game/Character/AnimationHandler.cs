@@ -1,10 +1,6 @@
-﻿using Data;
-using Enums;
+﻿using Enums;
 using Game.Loaders;
 using Game.Spells;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Tools;
 using Unity.Collections;
 using Unity.Netcode;
@@ -55,7 +51,7 @@ namespace Game.Character
 
         public void Update()
         {
-            if (!m_Initialized)
+            if (!m_Initialized || m_Animator == null)
                 return;
 
             MoveAnimation(m_Controller.Movement.IsMoving);
@@ -101,6 +97,12 @@ namespace Game.Character
             PlayAnimation(animation, duration);
         }
 
+        [ClientRpc]
+        public void PlayAnimationClientRPC(FixedString32Bytes animationName, float duration = -1f)
+        {
+            PlayAnimation(animationName.ToString(), duration);
+        }
+
         public void PlayAnimation(EAnimation animation, float duration = -1f)
         {
             if (animation == EAnimation.None || duration == 0f)
@@ -114,6 +116,19 @@ namespace Game.Character
             m_Animator.SetTrigger(animation.ToString());
         }
 
+        public void PlayAnimation(string animation, float duration = -1f)
+        {
+            if (animation == EAnimation.None.ToString() || duration == 0f)
+                return;
+
+            ErrorHandler.Log(animation + " animation with a duration of " + duration, ELogTag.Animation);
+
+            // update speed of the animation
+            m_Animator.SetFloat("CastSpeed", duration <= 0f ? 1f : 1 / duration);
+
+            m_Animator.Play(animation);
+        }
+
         #endregion
 
 
@@ -121,6 +136,9 @@ namespace Game.Character
 
         void MoveAnimation(bool isMoving)
         {
+            if (m_Animator.runtimeAnimatorController == null)
+                return;
+
             m_Animator.SetBool("IsMoving", isMoving);
         }
 

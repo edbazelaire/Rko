@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: PoisonRune
   m_EditorClassIdentifier: 
   Rarety: 2
+  m_Description: 
+  m_DescriptionVariables: []
   Description: 
   m_SpellElements: 03000000
   m_MinorPower:
@@ -21,18 +23,16 @@ MonoBehaviour:
     - Name: BonusTickDamagesPerc
       WithIcon: 1
     m_BonusLevel: 0
-    m_IsOverwritten: 0
     m_TriggerEffects: []
     m_BonusStats:
     - StateEffectProperty: 101
-      BaseValue: 0.05
+      BaseValue: 0.1
       BonusValue: 0
       ScalingFactor: 0.05
   m_MajorPower:
     Description: Apply an extra [Poison] stack on every auto attack
     m_DescriptionVariables: []
     m_BonusLevel: 0
-    m_IsOverwritten: 0
     m_TriggerEffects:
     - SpellDataName: _PoisonRuneMajor
       Level: 0
@@ -43,7 +43,9 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
-      NActivations: 0
+      Delay: 0
+      Duration: 0
+      NActivations: -1
       Cooldown: 0
     m_BonusStats: []
   m_PrimalPower:
@@ -51,7 +53,6 @@ MonoBehaviour:
       already at max [Poison] stacks
     m_DescriptionVariables: []
     m_BonusLevel: 0
-    m_IsOverwritten: 0
     m_TriggerEffects:
     - SpellDataName: _PoisonRunePrimal
       Level: 0
@@ -62,6 +63,8 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      Delay: 0
+      Duration: 0
       NActivations: -1
       Cooldown: 0
     m_BonusStats: []

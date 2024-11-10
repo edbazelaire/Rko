@@ -15,7 +15,7 @@ namespace Game.Spells
 
         // ==============================================================================
         // DATA
-        protected ESpell m_ReplacedSpell = ESpell.Count;
+        protected ESpell m_ReplacedSpell = ESpell.None;
 
         // ==============================================================================
         // PUBLIC MANIPULATORS

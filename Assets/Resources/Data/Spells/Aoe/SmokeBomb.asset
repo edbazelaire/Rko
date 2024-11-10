@@ -32,7 +32,7 @@ MonoBehaviour:
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
-  CastSoundFX: {fileID: 0}
+  CastSoundFX: {fileID: 8300000, guid: c6d45d69015ca934fbd95932874c5b59, type: 3}
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
@@ -51,7 +51,7 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 3
     Value: 0.05
-  m_Size: 6
+  m_Size: 8
   TriggerPlayer: 1
   EnemyStateEffects: []
   AllyStateEffects: []

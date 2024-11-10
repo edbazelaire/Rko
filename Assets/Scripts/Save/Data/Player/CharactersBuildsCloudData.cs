@@ -65,7 +65,7 @@ namespace Save
         /// <summary> default Rune on loading </summary>
         public static ERune DEFAULT_RUNE => ERune.None;
         /// <summary> default build if none was created by the player </summary>
-        public static ESpell[] DEFAULT_BUILD => new ESpell[] { ESpell.RockShower, ESpell.Heal, ESpell.Blizzard, ESpell.ScorchedEarth };
+        public static ESpell[] DEFAULT_BUILD => new ESpell[] { ESpell.RockShower, ESpell.Heal, ESpell.Blizzard, ESpell.IronSkin };
         /// <summary> defualt list of None runes when initializing a new character data </summary>
         public static ERune[] DEFAULT_RUNES => new ERune[] { ERune.None, ERune.None, ERune.None };
 
@@ -229,7 +229,7 @@ namespace Save
         /// <param name="index"></param>
         public static void SetSpellInCurrentBuild(ESpell? spell, int index)
         {
-            CurrentBuild[index] = spell.HasValue ? spell.Value : ESpell.Count;
+            CurrentBuild[index] = spell.HasValue ? spell.Value : ESpell.None;
 
             Instance.SaveValue(KEY_BUILDS);
             CurrentBuildValueChangedEvent?.Invoke();
@@ -395,7 +395,7 @@ namespace Save
             // Check each character
             foreach (ECharacter character in Enum.GetValues(typeof(ECharacter)))
             {
-                if (character == ECharacter.Count)
+                if (character == ECharacter.None)
                     continue;
                 
                 if (!buildsDictionary.ContainsKey(character))
@@ -467,7 +467,7 @@ namespace Save
             {
                 foreach (ESpell spell in CurrentBuild)
                 {
-                    if (spell == ESpell.Count)
+                    if (spell == ESpell.None)
                         return false;
                 }
 

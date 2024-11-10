@@ -8,7 +8,6 @@ using System;
 using System.Collections;
 using System.Threading.Tasks;
 using Tools;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -132,6 +131,22 @@ public class SceneLoader : MonoBehaviour
 
     #endregion
 
+
+    #region Display Loading Screen only
+
+    public static void Display(bool activate, float atPercentage = 0f)
+    {
+        Instance.m_LoadingScreen.Display(activate);
+        Instance.m_LoadingScreen.SetProgress(atPercentage);
+    }
+
+    public static void UpdateProgress(float progress)
+    {
+        Instance.m_LoadingScreen.SetProgress(progress);
+    }
+
+    #endregion
+
     public static SceneLoader Instance
     {
         get
@@ -142,7 +157,7 @@ public class SceneLoader : MonoBehaviour
                 if (s_Instance == null)
                     ErrorHandler.FatalError("Unable to find SceneLoader");
 
-                s_Instance.m_LoadingScreen.Display(false);
+                Display(true, 0f);
             }
             return s_Instance;
         }

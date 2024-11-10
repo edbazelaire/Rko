@@ -151,7 +151,7 @@ namespace Save
         // CONSTANTS
         // -- Values
         public Type[] COLLECTABLE_TYPES                     => new Type[] { typeof(ECharacter), typeof(ESpell), typeof(ERune) };
-        public Enum[] IGNORED_COLLECTABLES                  => new Enum[] { ESpell.Count, ECharacter.Count };
+        public Enum[] IGNORED_COLLECTABLES                  => new Enum[] { ESpell.None, ECharacter.None };
 
         // -- Keys
         public const string KEY_GOLDS       = "Golds";
@@ -166,7 +166,7 @@ namespace Save
         {
             { typeof(ECharacter),   new SInfoCollectable(KEY_CHARACTERS,  new Enum[] { CharacterBuildsCloudData.DEFAULT_CHARACTER, ECharacter.Nagini, ECharacter.Kahnan, ECharacter.Srug, ECharacter.Marcus } ) },
             { typeof(ESpell),       new SInfoCollectable(KEY_SPELLS,      CharacterBuildsCloudData.DEFAULT_BUILD.Cast<Enum>().ToArray() ) },
-            { typeof(ERune),        new SInfoCollectable(KEY_RUNES,       new Enum[] { CharacterBuildsCloudData.DEFAULT_RUNE, ERune.PoisonRune, ERune.CurseRune, ERune.FireRune, ERune.FrostRune } ) }
+            { typeof(ERune),        new SInfoCollectable(KEY_RUNES,       new Enum[] { } ) }
         };
 
         // ===============================================================================================

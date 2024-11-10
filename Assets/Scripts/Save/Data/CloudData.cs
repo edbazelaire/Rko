@@ -89,13 +89,22 @@ namespace Save
             }
 
             // CONVERT value in expected type
-            var value = Convert(item);
-            if (value == null)
-                return;
+            try
+            {
+                var value = Convert(item);
+                if (value == null)
+                    return;
 
-            // set givent value (block saving)
-            SetData(key, value, false);
-            OnCloudDataKeyLoaded(key);
+                // set givent value (block saving)
+                SetData(key, value, false);
+                OnCloudDataKeyLoaded(key);
+            } 
+            catch (Exception ex)
+            {
+                ErrorHandler.Error("Unable to Convert " + key + " with value " + item);
+                ErrorHandler.Error(ex.Message);
+                return;
+            }
         }
 
         public virtual void Save()

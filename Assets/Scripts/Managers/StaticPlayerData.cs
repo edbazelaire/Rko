@@ -1,7 +1,6 @@
 ﻿using Data;
 using Data.DataStructures;
 using Enums;
-using Game;
 using Save;
 using System;
 using System.Collections.Generic;
@@ -19,17 +18,20 @@ namespace Managers
     [Serializable]
     public struct SBotData : INetworkSerializable
     {
-        public float DecisionRefresh;
-        public float Randomness;
+        public EArenaDifficulty     ArenaDifficulty;
+        public float                DecisionRefresh;
+        public float                Randomness;
 
-        public SBotData(float decisionRefresh, float randomness)
+        public SBotData(EArenaDifficulty arenaDifficulty, float decisionRefresh, float randomness)
         {
-            DecisionRefresh = decisionRefresh;
-            Randomness = randomness;
+            ArenaDifficulty     = arenaDifficulty;
+            DecisionRefresh     = decisionRefresh;
+            Randomness          = randomness;
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
+            serializer.SerializeValue(ref ArenaDifficulty);
             serializer.SerializeValue(ref DecisionRefresh);
             serializer.SerializeValue(ref Randomness);
         }
@@ -43,7 +45,7 @@ namespace Managers
     {
         public FixedString32Bytes           PlayerName;
         public int                          CharacterLevel;
-        public ECharacter                   Character;
+        public FixedString32Bytes           Character;
         public ERune[]                      Runes;
         public int[]                        RuneLevels;
         public ESpell[]                     Spells;
@@ -51,23 +53,37 @@ namespace Managers
         public SProfileDataNetwork          ProfileData;
         public bool                         IsPlayer;
         public STriggerEffect[]             TriggerEffects; 
+        public FixedString32Bytes[]         PowerUps; 
         public SCharacterStatScaling[]      BonusStats; 
         public SBotData                     BotData; 
 
-        public SPlayerData(FixedString32Bytes playerName, int characterLevel, ECharacter character, ERune[] runes, int[] runeLevels, ESpell[] spells, int[] spellLevels, SProfileDataNetwork profileData, bool isPlayer, STriggerEffect[] triggerEffects = default, SCharacterStatScaling[] bonusStats = default, SBotData botData = default)
+        public SPlayerData(FixedString32Bytes playerName, int characterLevel, FixedString32Bytes character, ERune[] runes = default, int[] runeLevels = default, ESpell[] spells = default, int[] spellLevels = default, SProfileDataNetwork profileData = default, bool isPlayer = false, STriggerEffect[] triggerEffects = default, FixedString32Bytes[] powerUps = default, SCharacterStatScaling[] bonusStats = default, SBotData botData = default)
         {
             PlayerName      = playerName;
             CharacterLevel  = characterLevel;
             Character       = character;
-            Runes           = runes;
-            RuneLevels      = runeLevels;
-            Spells          = spells;
-            SpellLevels     = spellLevels;
+            Runes           = runes             != default ? runes          : new ERune[0];
+            RuneLevels      = runeLevels        != default ? runeLevels     : new int[0];
+            Spells          = spells            != default ? spells         : new ESpell[0];
+            SpellLevels     = spellLevels       != default ? spellLevels    : new int[0];
             ProfileData     = profileData;
             IsPlayer        = isPlayer;
-            TriggerEffects  = triggerEffects;
-            BonusStats      = bonusStats;
+            TriggerEffects  = triggerEffects    != default ? triggerEffects : new STriggerEffect[0];
+            PowerUps        = powerUps          != default ? powerUps       : new FixedString32Bytes[0];
+            BonusStats      = bonusStats        != default ? bonusStats     : new SCharacterStatScaling[0];
             BotData         = botData;
+        }
+
+        public void SetPowerUps(List<string> powerUps)
+        {
+            PowerUps = new FixedString32Bytes[powerUps.Count];
+
+            // Iterate through the List<string> and convert each element to FixedString32Bytes
+            for (int i = 0; i < powerUps.Count; i++)
+            {
+                // Convert each string to FixedString32Bytes
+                PowerUps[i] = new FixedString32Bytes(powerUps[i]);  // Automatically truncates if string is longer than 32 bytes
+            }
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
@@ -143,6 +159,18 @@ namespace Managers
                 TriggerEffects[i].NetworkSerialize(serializer);
             }
 
+            // -- PowerUps
+            length = PowerUps != null ? PowerUps.Length : 0;
+            serializer.SerializeValue(ref length);
+            if (serializer.IsReader)
+            {
+                PowerUps = new FixedString32Bytes[length];
+            }
+            for (int i = 0; i < length; i++)
+            {
+                serializer.SerializeValue(ref PowerUps[i]);
+            }
+
             // -- BonusStats
             length = BonusStats != null ? BonusStats.Length : 0;
             serializer.SerializeValue(ref length);
@@ -215,7 +243,7 @@ namespace Managers
             return new SPlayerData(
                 playerName:     PlayerName, 
                 characterLevel: CharacterLevel, 
-                character:      Character, 
+                character:      Character.ToString(), 
                 runes:          Runes, 
                 runeLevels:     RuneLevels, 
                 spells:         Spells, 
@@ -233,7 +261,7 @@ namespace Managers
         {
             return new Dictionary<string, PlayerDataObject> {
                 { KEY_PLAYER_NAME,          new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, StaticPlayerData.PlayerName) },
-                { KEY_CHARACTER,            new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, ((int)Character).ToString()) },
+                { KEY_CHARACTER,            new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, Character.ToString()) },
             };
         }
 
@@ -245,7 +273,7 @@ namespace Managers
         {
             Debug.LogWarning("PlayerData =================================================");
             Debug.Log("     + " + KEY_PLAYER_NAME + " : " + PlayerName);
-            Debug.Log("     + " + KEY_CHARACTER + " : " + Character.ToString());
+            Debug.Log("     + " + KEY_CHARACTER + " : " + Character);
         }
 
         #endregion

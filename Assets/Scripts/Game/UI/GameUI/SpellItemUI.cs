@@ -5,10 +5,7 @@ using Menu.Common.Buttons;
 using Save;
 using TMPro;
 using Tools;
-using Unity.Collections;
-using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.SocialPlatforms;
 
 namespace Game.UI
 {
@@ -105,6 +102,30 @@ namespace Game.UI
                 return;
         }
 
+        #endregion
+
+
+        #region Activation / Deactivation
+
+        public void Activate(bool activate)
+        {
+            if (activate)
+            {
+                RegisterListeners();
+                RefreshState();
+                return;
+            }
+
+            // DEACTIVATE 
+            UnRegisterListeners();
+            SetState(EButtonState.Locked);
+        }
+
+        #endregion
+
+
+        #region Cooldowns
+
         /// <summary> 
         /// Setup the icon of the spell in the SpellItemContainer
         /// </summary>
@@ -115,6 +136,32 @@ namespace Game.UI
             if (m_IsUltimateSpell)
                 m_CooldownCtr.gameObject.SetActive(false);
         }
+
+        /// When the cooldown changes, update the cooldown if needed
+        /// </summary>
+        /// <param name="changeEvent"></param>
+        void UpdateCooldown()
+        {
+            if (m_CooldownTimer <= 0)
+            {
+                m_CooldownCtr.gameObject.SetActive(false);
+                return;
+            }
+
+            if (m_CooldownCtr == null || !m_CooldownCtr.isActiveAndEnabled)
+                return;
+
+            // update cooldown 
+            m_CooldownTimer -= Time.deltaTime;
+            if (m_CooldownTimer <= 0)
+                m_CooldownTimer = 0;        // cooldown over : wait for server to say its ok before changing state
+
+            if (m_IsUltimateSpell)
+                return;
+
+            m_CooldownCtr.text = m_CooldownTimer.ToString("0");
+        }
+
 
         #endregion
 
@@ -134,32 +181,12 @@ namespace Game.UI
             }
         }
 
-        /// When the cooldown changes, update the cooldown if needed
-        /// </summary>
-        /// <param name="changeEvent"></param>
-        void UpdateCooldown()
-        {
-            if (m_CooldownTimer <= 0)
-            {
-                m_CooldownCtr.gameObject.SetActive(false);
-                return;
-            }
-
-            if (m_CooldownCtr == null || ! m_CooldownCtr.isActiveAndEnabled)
-                return;
-
-            // update cooldown 
-            m_CooldownTimer -= Time.deltaTime; 
-            if (m_CooldownTimer <= 0)
-                m_CooldownTimer = 0;        // cooldown over : wait for server to say its ok before changing state
-
-            if (m_IsUltimateSpell)
-                return;
-
-            m_CooldownCtr.text = m_CooldownTimer.ToString("0");
-        }
-
         protected override void UpdateState() { }
+
+        protected void RefreshState()
+        {
+            OnSpellSelectionStateChanged(m_Spell, m_Owner.SpellHandler.GetSpellSelectionState(m_Spell));
+        }
 
         #endregion
 

@@ -1,13 +1,15 @@
 using AI;
+using Assets.Scripts.Data.PowerUp;
 using Data;
 using Data.DataStructures;
-using Data.GameManagement;
 using Enums;
 using Game;
 using Game.Character;
 using Game.Loaders;
 using Managers;
+using NUnit.Framework;
 using Save;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
@@ -19,14 +21,17 @@ public class Controller : NetworkBehaviour
 {
     #region Members      
 
+    public Action OnDestroyedEvent;
+
     [SerializeField] Collider2D m_Collider;
 
     // ===================================================================================
     // PRIVATE VARIABLES 
     // -- Network Variables
     NetworkVariable<FixedString64Bytes>     m_PlayerName        = new NetworkVariable<FixedString64Bytes>("");
+    NetworkVariable<ulong>                  m_PlayerId          = new NetworkVariable<ulong>(0);
     NetworkVariable<SPlayerData>            m_PlayerData        = new NetworkVariable<SPlayerData>();
-    NetworkVariable<ECharacter>             m_Character         = new NetworkVariable<ECharacter>(ECharacter.Count);
+    NetworkVariable<FixedString64Bytes>     m_Character         = new NetworkVariable<FixedString64Bytes>(ECharacter.None.ToString());
     NetworkVariable<int>                    m_CharacterLevel    = new NetworkVariable<int>(1);
     NetworkVariable<int>                    m_Team              = new NetworkVariable<int>(-1);
     NetworkVariable<bool>                   m_IsPlayer          = new NetworkVariable<bool>(true);
@@ -58,12 +63,13 @@ public class Controller : NetworkBehaviour
     // -- Data
     public SPlayerData      PlayerData          => m_PlayerData.Value;
     public string           PlayerName          => m_PlayerName.Value.ToString();
-    public ECharacter       Character           => m_Character.Value;
+    public string           Character           => m_Character.Value.ToString();
     public int              CharacterLevel      => m_CharacterLevel.Value;
     public RuneData[]       RuneData            => m_RuneData;
     public int              Team                => m_Team.Value;
     public bool             IsPlayer            => m_IsPlayer.Value;
-    public ulong            PlayerId            => IsPlayer ? OwnerClientId : GameManager.BOT_CLIENT_ID;
+    public ulong            PlayerId            => m_PlayerId.Value;
+    public bool             IsSpawn             => (int)PlayerId >= GameManager.SPAWN_CLIENT_ID;
     public bool             GameRunning         => m_GameRunning;
 
 
@@ -111,11 +117,11 @@ public class Controller : NetworkBehaviour
 
         // check behavior tree
         m_BehaviorTree = Finder.FindComponent<BehaviorTree>(gameObject, throwError: false);
+        if (! IsServer && m_BehaviorTree != null)
+            m_BehaviorTree.enabled = false;
         
         // add event to call UI initialization after NetworkVariable update 
-        m_IsInitialized.OnValueChanged += OnInitializedChanged;
-
-        GameManager.GameStartedEvent    += OnGameStarted;
+        m_IsInitialized.OnValueChanged  += OnInitializedChanged;
         m_Life.DiedEvent                += OnDied;
     }
 
@@ -126,15 +132,26 @@ public class Controller : NetworkBehaviour
     /// <param name="newValue"></param>
     void OnInitializedChanged(bool old, bool newValue)
     {
-        ErrorHandler.Log("==============================================================", ELogTag.GameSystem);
-        ErrorHandler.Log("Initialized : ", ELogTag.GameSystem);
-        ErrorHandler.Log("     + LocalClient : " + NetworkManager.Singleton.LocalClientId, ELogTag.GameSystem);
-        ErrorHandler.Log("     + Owner : " + OwnerClientId, ELogTag.GameSystem);
-        ErrorHandler.Log("==============================================================", ELogTag.GameSystem);
-
         // add controller on client side
-        if (newValue)
+        if (!newValue)
+            return;
+        
+        if (! IsSpawn)
+        {
             GameManager.Instance.AddController(PlayerId, this);
+        } else
+        {
+            GameManager.Instance.AddSpawnController(PlayerId, this);
+            InitializeUI();
+        }
+
+        // GAME STARTED ?
+        if (GameManager.Instance.IsGameStarted)
+            // GAME STARTER : call OnGameStarted() method
+            OnGameStarted();
+        else
+            // GAME NOT STARTED : register to event
+            GameManager.GameStartedEvent += OnGameStarted;
     }
 
     /// <summary>
@@ -147,32 +164,44 @@ public class Controller : NetworkBehaviour
 
         m_Team.Value            = team;
         m_IsPlayer.Value        = isPlayer;
+        m_PlayerId .Value       = IsPlayer ? OwnerClientId : GameManager.Instance.GetNextBotId();
 
         transform.position = ArenaManager.Instance.Spawns[team][0].position;
         transform.rotation = Quaternion.Euler(0f, team == 0 ? 0f : -180f, 0f);
 
         InitializeCharacterData(playerData);
 
+        gameObject.name = m_Character.Value.ToString() + "_" + PlayerId.ToString();
+        m_IsInitialized.Value = true;
+    }
+
+    public void InitializeSpawn(SPlayerData playerData, int team)
+    {
+        if (!IsServer)
+            return;
+
+        m_Team.Value = team;
+        m_IsPlayer.Value = false;
+        m_PlayerId.Value = GameManager.Instance.GetNextSpawnId();
+
+        InitializeCharacterData(playerData);
+
+        gameObject.name = m_Character.Value.ToString() + "_" + PlayerId.ToString();
         m_IsInitialized.Value = true;
     }
 
     public void InitializeUI()
     {
-        ECharacter character    = m_Character.Value;
         int team                = m_Team.Value;
+        
+        // init characte preview and animator
+        InitializeGraphics();
 
         // display the player's ui 
-        GameUIManager.Instance.SetPlayersUI(PlayerId, team);
-
-        // setup character preview
-        m_GFXHandler.Initialize(character);
-
-        // get animator
-        Animator animator       = Finder.FindComponent<Animator>(m_GFXHandler.CharacterPreview);
-        m_AnimationHandler.Initialize(animator);
-
-        // initialize base MovementSpeed
-        m_AnimationHandler.UpdateMovementSpeed();
+        if (!IsSpawn)
+            GameUIManager.Instance.SetPlayersUI(PlayerId, team);
+        else
+            AddSpawnHealthBar();
 
         // update personnal UI if is owner (and not an AI)
         if (!IsOwner || !IsPlayer)
@@ -196,6 +225,19 @@ public class Controller : NetworkBehaviour
             m_SpellHandler.AskSpellSelectionServerRPC(m_SpellHandler.AutoAttack);
     }
 
+    public void InitializeGraphics()
+    {
+        // setup character preview
+        m_GFXHandler.Initialize(m_Character.Value.ToString());
+
+        // get animator
+        Animator animator = Finder.FindComponent<Animator>(m_GFXHandler.CharacterPreview);
+        m_AnimationHandler.Initialize(animator);
+
+        // initialize base MovementSpeed
+        m_AnimationHandler.UpdateMovementSpeed();
+    }
+
     /// <summary>
     /// Implement all data related to the Character
     /// </summary>
@@ -206,12 +248,12 @@ public class Controller : NetworkBehaviour
 
         m_PlayerData.Value      = playerData;
         m_PlayerName.Value      = playerData.PlayerName;
-        m_Character.Value       = playerData.Character;
+        m_Character.Value       = playerData.Character.ToString();
         m_CharacterLevel.Value  = playerData.CharacterLevel;
 
         // set all RuneData depending on activation type
         m_RuneData = new RuneData[playerData.Runes.Length];
-        for (int i = 0; i < playerData.Runes.Length; i++)
+        for (int i = 0; i < m_RuneData.Length; i++)
         {
             // safety check
             if (i >= playerData.Runes.Length)
@@ -230,8 +272,8 @@ public class Controller : NetworkBehaviour
             m_RuneData[i] = SpellLoader.GetRuneData(playerData.Runes[i], runeLevel);
             m_RuneData[i].SetActivation(CharacterBuildsCloudData.GetRuneActivationFromIndex(i));
         }
-     
-        CharacterData characterData = CharacterLoader.GetCharacterData(playerData.Character, playerData.CharacterLevel, destroy: true);
+
+        CharacterData characterData = CharacterLoader.GetCharacterData(playerData.Character.ToString(), playerData.CharacterLevel, destroy: true);
         characterData.AddBonusStats(GetBonusStats());
 
         // initialize SpellHandler with character's spells
@@ -245,8 +287,8 @@ public class Controller : NetworkBehaviour
 
         // init health and energy
         m_Life.Initialize(characterData.MaxHealth, characterData.GetInt(EStateEffectProperty.Shield));
-        m_EnergyHandler.Initialize(10, characterData.MaxEnergy);
-        m_TriggerEffectHandler.Initialize(GetTriggerEffects());
+        m_EnergyHandler.Initialize(characterData.BaseEnergy, characterData.MaxEnergy);
+        m_TriggerEffectHandler.Initialize(GetTriggerEffects(characterData));
 
         // init BehaviorTree
         if (m_BehaviorTree != null)
@@ -258,14 +300,14 @@ public class Controller : NetworkBehaviour
     /// </summary>
     public void SetupSpellUI()
     {
-        if (!IsOwner)
+        if (!IsOwner) 
             return;
 
         // clear the spell container (in case any spell was already there)
         GameUIManager.Instance.ClearSpells();
 
         // add linked spells
-        var characterData = CharacterLoader.GetCharacterData(m_Character.Value, destroy: true);
+        var characterData = CharacterLoader.GetCharacterData(m_Character.Value.ToString(), destroy: true);
         GameUIManager.Instance.CreateLinkedSpellTemplate(characterData.Ultimate, m_CharacterLevel.Value);
         GameUIManager.Instance.CreateLinkedSpellTemplate(characterData.SpecialAbility, m_CharacterLevel.Value);
 
@@ -282,11 +324,33 @@ public class Controller : NetworkBehaviour
         }
     }
 
+    protected void AddSpawnHealthBar()
+    {
+        // Instantiate the health bar and position it above the unit
+        PlayerBarUI healthBarPrefab = AssetLoader.Load<PlayerBarUI>("SpawnHealthBar", AssetLoader.c_SpawnUIContentPath);
+        if (healthBarPrefab == null)
+        {
+            ErrorHandler.Error("Unable to load health bar for Spawn");
+            return;
+        }
+
+        // Parent the health bar to the unit for tracking movement
+        var healthBar = GameObject.Instantiate(healthBarPrefab, transform);
+        healthBar.transform.localPosition = new Vector3(0, 1f, 0); // Adjust Y position if necessary
+        healthBar.transform.localScale *= m_GFXHandler.CharacterSize;
+
+        // init with health value 
+        healthBar.Initialize(m_Life.Hp.Value, m_Life.MaxHp.Value);
+        m_Life.Hp.OnValueChanged    += healthBar.OnValueChanged;
+        m_Life.MaxHp.OnValueChanged += healthBar.OnMaxValueChanged;
+    }
+
     public override void OnDestroy()
     {
-        base.OnDestroy();
-
+        OnDestroyedEvent?.Invoke();
         GameManager.GameStartedEvent -= OnGameStarted;
+
+        base.OnDestroy();
     }
 
     #endregion
@@ -304,29 +368,51 @@ public class Controller : NetworkBehaviour
             return bonusStats;
         }
 
+        // RUNES
         foreach (RuneData data in m_RuneData)
         {
             bonusStats.AddRange(data.GetBonusStats());
         }
 
+        // POWER UPS
+        foreach (var powerUp in m_PlayerData.Value.PowerUps)
+        {
+            SRunePower data = SpellLoader.GetPowerUp(powerUp.ToString(), m_CharacterLevel.Value);
+            if (data.BonusStats != null)
+                bonusStats.AddRange(data.BonusStats);
+        }
+
         return bonusStats;
     }
 
-    List<STriggerEffect> GetTriggerEffects()
+    List<STriggerEffect> GetTriggerEffects(CharacterData characterData)
     {
         // get base raw list of trigger effects
         var list = m_PlayerData.Value.TriggerEffects.ToList();
 
-        if (m_RuneData == null)
+        // CHARACTER : base trigger effects
+        foreach (SRunePower data in characterData.SpecialPowers)
         {
-            ErrorHandler.Error("Rune Data not defined yet");
-            return list;
+            list.AddRange(data.TriggerEffects);
         }
 
-        // set level of trigger effects = to character level and add it to list of trigger effects
+        // RUNES
+        if (m_RuneData == null)
+        {
+            m_RuneData = new RuneData[0];
+            ErrorHandler.Warning("Rune Data not defined");
+        }
+
         foreach (RuneData data in m_RuneData)
         {
             list.AddRange(data.GetTriggerEffects());
+        }
+
+        // set level of trigger effects = to character level and add it to list of trigger effects
+        foreach (var powerUp in m_PlayerData.Value.PowerUps)
+        {
+            SRunePower data = SpellLoader.GetPowerUp(powerUp.ToString(), m_CharacterLevel.Value);
+            list.AddRange(data.TriggerEffects);
         }
 
         return list;
@@ -357,8 +443,8 @@ public class Controller : NetworkBehaviour
         // activate components allowing the player to make actions
         ActivateActionComponent(true);
 
-        // when game starts, activate behavior tree of the 
-        if (!IsPlayer)
+        // when game starts, activate behavior tree
+        if (! IsPlayer)
         {
             m_BehaviorTree.Activate(true);
         }
@@ -392,7 +478,12 @@ public class Controller : NetworkBehaviour
     /// </summary>
     void OnDied()
     {
-        //m_CharacterPreview.SetActive(false);
+        if (IsSpawn)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         ActivateActionComponent(false);
     }
   
@@ -411,15 +502,16 @@ public class Controller : NetworkBehaviour
     /// <param name="active"></param>
     public void ActivateActionComponent(bool active)
     {
-        m_Movement.enabled              = active;
         m_StateHandler.enabled          = active;
         m_CounterHandler.enabled        = active;
 
         m_SpellHandler.Activate(active);
         m_TriggerEffectHandler.Activate(active);
 
-        if (m_AutoAttackHandler != null)
-            m_AutoAttackHandler.enabled     = active;
+        m_Movement.Activate(active);
+
+        if (m_AutoAttackHandler != null && m_SpellHandler.AutoAttack != ESpell.None)
+            m_AutoAttackHandler.Activate(active);
 
         if (m_BehaviorTree != null)
         {

@@ -10,7 +10,7 @@ namespace Game.Spells
     {
         [Header("Spell Effects")]
         [SerializeField] protected ESpellEffectType         m_SpellEffectType;
-        [SerializeField] protected List<ESpellType>   m_AllowedSpellTypes;
+        [SerializeField] protected List<ESpellType>         m_AllowedSpellTypes;
         [SerializeField] protected List<SpellData>          m_OnHits;
         [SerializeField] protected List<SStateEffectData>   m_AllyStateEffects;
         [SerializeField] protected List<SStateEffectData>   m_EnemyStateEffects;

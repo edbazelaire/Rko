@@ -8,11 +8,12 @@ namespace Game.Spells
     public class DamageEffect : StateEffect
     {
         [Header("Damages")]
-        [SerializeField] protected int      m_Damages;
-        [SerializeField] protected int      m_EndDamages;
-        [SerializeField] protected int      m_Heal;
-        [SerializeField] protected int      m_EndHeal;
-        [SerializeField] protected float    m_LifeSteal = 0f;
+        [SerializeField] protected bool     m_IsTrueDamages = false;
+        [SerializeField] protected int      m_Damages       = 0;
+        [SerializeField] protected int      m_EndDamages    = 0;
+        [SerializeField] protected int      m_Heal          = 0;
+        [SerializeField] protected int      m_EndHeal       = 0;
+        [SerializeField] protected float    m_LifeSteal     = 0f;
 
         protected float FinalLifeSteal => Mathf.Max(0f, m_LifeSteal + m_Controller.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal) - 1);
 
@@ -22,7 +23,7 @@ namespace Game.Spells
         protected override void OnStart()
         {
             // hit
-            var damages = m_Controller.Life.Hit(GetInt(EStateEffectProperty.Damages));
+            var damages = m_Controller.Life.Hit(GetInt(EStateEffectProperty.Damages), ignoreRes: m_IsTrueDamages);
 
             // apply lifesteal (on caster)
             m_Caster.Life.Heal((int)Mathf.Round(damages * FinalLifeSteal));
@@ -55,7 +56,7 @@ namespace Game.Spells
                 damages += m_Caster.StateHandler.GetInt(EStateEffectProperty.BonusBurnDamages);
 
             // hit
-            damages = m_Controller.Life.Hit(damages);
+            damages = m_Controller.Life.Hit(damages, ignoreRes: m_IsTrueDamages);
 
             // apply lifesteal (on caster)
             m_Caster.Life.Heal((int)Mathf.Round(damages * FinalLifeSteal));

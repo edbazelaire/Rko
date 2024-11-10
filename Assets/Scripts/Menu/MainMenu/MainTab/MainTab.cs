@@ -108,20 +108,6 @@ namespace Menu.MainMenu.MainTab
                 return false;
             }
 
-            if (PlayerPrefsHandler.GetGameMode() == EGameMode.Arena && ProgressionCloudData.IsArenaCompleted(PlayerPrefsHandler.GetArenaType()))
-            {
-                SoundFXManager.PlayOnce(SoundFXManager.ErrorSoundFX);
-                Main.ErrorMessagePopUp("This arena has already beed completed");
-                return false;
-            }
-
-            if (PlayerPrefsHandler.GetGameMode() == EGameMode.Arena && ProgressionCloudData.IsArenaDifficultyCompleted(PlayerPrefsHandler.GetArenaType()))
-            {
-                SoundFXManager.PlayOnce(SoundFXManager.ErrorSoundFX);
-                Main.ErrorMessagePopUp("You need to collect your rewards to unlock the next level of difficulty.\nClick the Arena button to display the Arena Path of Rewards and click rewards to collect them !");
-                return false;
-            }
-
             return true;
         }
 

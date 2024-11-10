@@ -17,7 +17,6 @@ namespace Game.Spells
 
         #endregion
 
-        // Use this for initialization
         public override void Initialize(ulong clientId, Vector3 target, string spellName, int level)
         {
             base.Initialize(clientId, target, spellName, level);
@@ -40,7 +39,6 @@ namespace Game.Spells
             }
         }
 
-        // Update is called once per frame
         protected override void Update()
         {
             base.Update();
@@ -57,7 +55,7 @@ namespace Game.Spells
                 End();
         }
 
-        protected override void OnTriggerEnter2D(Collider2D collistion)
+        protected override void OnTriggerEnter2D(Collider2D collision)
         {
             return;
         }

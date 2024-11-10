@@ -1,7 +1,9 @@
 ﻿using Analytics.Events;
+using Assets.Scripts.Tools;
 using Data.GameManagement;
 using Enums;
 using Game;
+using Game.UI.EndGameUI;
 using Inventory;
 using Managers;
 using Network;
@@ -16,6 +18,17 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+enum EEndGameState
+{
+    Inactive,
+    Intro,
+    PowerUps,
+    Rewards,
+    Exit,
+}
+
+
 public class EndGameUI : MObject
 {
     #region Members
@@ -25,21 +38,25 @@ public class EndGameUI : MObject
     const string c_LeaveButton = "LeaveButton";
 
     // Data
+    EEndGameState m_State;
     bool m_Win;
+    bool m_IsBossFight = false;
 
     // Components
-    GameObject  m_Background;
-    TMP_Text    m_TitleText;
-    GameObject  m_RewardsContent;
-    GameObject  m_XpRewardDisplay;
-    TMP_Text    m_XpQty;
-    GameObject  m_GoldsRewardDisplay;
-    TMP_Text    m_GoldsQty;
-    GameObject  m_GemsRewardDisplay;
-    TMP_Text    m_GemsQty;
-    Image       m_ChestRewardIcon;
-    Button      m_LeaveButton;
-    GameObject  m_Fireworks;
+    GameObject      m_RewardsSection;
+    GameObject      m_Background;
+    TMP_Text        m_TitleText;
+    GameObject      m_RewardsContent;
+    PowerUpSection  m_PowerUpSection;
+    GameObject      m_XpRewardDisplay;
+    TMP_Text        m_XpQty;
+    GameObject      m_GoldsRewardDisplay;
+    TMP_Text        m_GoldsQty;
+    GameObject      m_GemsRewardDisplay;
+    TMP_Text        m_GemsQty;
+    Image           m_ChestRewardIcon;
+    Button          m_LeaveButton;
+    GameObject      m_Fireworks;
 
     #endregion
 
@@ -51,6 +68,10 @@ public class EndGameUI : MObject
         m_Background            = Finder.Find(gameObject, "Background");
         m_Fireworks             = Finder.Find(gameObject, "Fireworks");
         m_TitleText             = Finder.FindComponent<TMP_Text>(gameObject, c_TitleText);
+
+        m_PowerUpSection        = Finder.FindComponent<PowerUpSection>(gameObject, "PowerUpSection");
+
+        m_RewardsSection        = Finder.Find(gameObject, "RewardsSection");
         m_LeaveButton           = Finder.FindComponent<Button>(gameObject, c_LeaveButton);
         m_RewardsContent        = Finder.Find(gameObject, "RewardsContent");
         m_XpRewardDisplay       = Finder.Find(m_RewardsContent, "XpRewardDisplay");
@@ -66,7 +87,8 @@ public class EndGameUI : MObject
     {
         base.Initialize();
 
-        gameObject.SetActive(false);
+        m_PowerUpSection.Initialize();
+        SetState(EEndGameState.Inactive);
     }
 
     // Use this for initialization
@@ -79,6 +101,7 @@ public class EndGameUI : MObject
 
         // save if this is win or not
         m_Win = win;
+        m_IsBossFight = LobbyHandler.Instance.GameMode == EGameMode.Arena && ProgressionCloudData.CurrentArena.IsBoss();
 
         // set color and text according to context
         m_TitleText.text = m_Win ? "Victory" : "Defeat";
@@ -86,7 +109,6 @@ public class EndGameUI : MObject
 
         // handle data processing before animation & stuff
         HandleEndGameData(win);
-        HandleReward(win);
         HandleProgression(win, preventiveLossApplied);
 
         // clean game data
@@ -95,8 +117,11 @@ public class EndGameUI : MObject
         // activate game object
         gameObject.SetActive(true);
 
-        // start animation coroutine
-        StartCoroutine(ActivationAnimation());
+        // cancel methods in TimeWrapper
+        TimeErrorWrapper.Instance.Cancel(GameManager.TIME_WRAPPER_ID);
+
+        // go to IntroState
+        SetState(EEndGameState.Intro);
     }
 
 
@@ -119,11 +144,73 @@ public class EndGameUI : MObject
     #endregion
 
 
+    #region State Management
+
+    void NextState()
+    {
+        SetState(m_State + 1);
+    }
+
+    void SetState(EEndGameState state)
+    {
+        m_State = state;
+
+        switch (state)
+        {
+            case EEndGameState.Inactive:
+                m_PowerUpSection.Activate(false); 
+                m_RewardsSection.SetActive(false); 
+                gameObject.SetActive(false);
+                break;
+
+            case EEndGameState.Intro:
+                // start animation coroutine
+                StartCoroutine(IntroAnimation());
+                break;
+
+            case EEndGameState.PowerUps:
+
+                // check if should skip power up selection
+                if (! m_Win || ! m_IsBossFight || ProgressionCloudData.CurrentArena.IsOver())
+                {
+                    NextState();
+                    return;
+                }
+
+                DisplayArenaPowerUps();
+                break;
+
+            case EEndGameState.Rewards:
+                DisplayRewards(m_Win);
+                break;
+
+            case EEndGameState.Exit:
+                Leave();
+                break;
+        }
+    }
+
+    #endregion
+
+
+    #region Arena PowerUp
+
+    void DisplayArenaPowerUps()
+    {
+        m_PowerUpSection.OnEndEvent += NextState;
+        m_PowerUpSection.Activate(true);
+    }
+
+    #endregion
+
+
     #region Reward & EndGame
 
-    void HandleReward(bool win)
+    void DisplayRewards(bool win)
     {
         ErrorHandler.Log("HandleReward() : start", ELogTag.Rewards);
+
+        m_RewardsSection.SetActive(true);
 
         SRewardCalculator reward = win ? Rewarder.WinGameReward : Rewarder.LossGameReward;
         reward.SetCurrencyMultiplicator(CalculateCurrencyMultiplicator());
@@ -196,6 +283,8 @@ public class EndGameUI : MObject
             InventoryManager.AddChest(chests[0]);
         }
 
+        StartCoroutine(RewardsAnimation());
+
         ErrorHandler.Log("HandleReward() : end", ELogTag.Rewards);
     }
 
@@ -223,11 +312,13 @@ public class EndGameUI : MObject
             case EGameMode.Arena:
                 ErrorHandler.Log("HandleProgression() : Loading Arena Data : " + PlayerPrefsHandler.GetArenaType().ToString(), ELogTag.GameSystem);
 
-                // if preventive loss has been applied, apply double win
-                ProgressionCloudData.UpdateStageValue(PlayerPrefsHandler.GetArenaType(), win, nTimes: win & preventiveLossApplied ? 2 : 1);
-                
-                // DEBUG : check new level coherence
-                CheckNewLevelValue(ProgressionCloudData.SoloArenas[PlayerPrefsHandler.GetArenaType()].CurrentStage, GameUIManager.Instance.PreviousStage, win);
+                // if preventive loss has been applied, remove life loss
+                if (win)
+                {
+                    if (preventiveLossApplied)
+                        ProgressionCloudData.AddArenaLoss(-1, false);
+                    ProgressionCloudData.AddArenaWin();
+                }
                 break;
 
             case EGameMode.Ranked:
@@ -236,8 +327,6 @@ public class EndGameUI : MObject
                 // if preventive loss has been applied, apply double win
                 ProgressionCloudData.UpdateLeagueValue(win, nTimes: win & preventiveLossApplied ? 2 : 1);
                 
-                // DEBUG : check new level coherence
-                CheckNewLevelValue(ProgressionCloudData.CurrentLeagueStage, GameUIManager.Instance.PreviousStage, win);
                 break;
 
             // no progression on training game
@@ -260,7 +349,6 @@ public class EndGameUI : MObject
         switch(LobbyHandler.Instance.GameMode)
         {
             case EGameMode.Arena:
-                var currentArena = ProgressionCloudData.SoloArenas[PlayerPrefsHandler.GetArenaType()];
                 MAnalytics.SendEvent(new ArenaGameEndedEvent(
                     win,
                     character:          StaticPlayerData.Character,
@@ -269,8 +357,8 @@ public class EndGameUI : MObject
                     spells:             StaticPlayerData.Spells.ToList(),
                     spellLevels:        StaticPlayerData.SpellLevels.ToList(),
                     arenaType:          PlayerPrefsHandler.GetArenaType(),
-                    arenaDifficulty:    currentArena.CurrentDifficulty,
-                    level:              currentArena.CurrentLevel,
+                    arenaDifficulty:    ProgressionCloudData.CurrentArena.SArenaDifficulty.ToString(),
+                    level:              ProgressionCloudData.CurrentArena.Level,
                     stage:              GameUIManager.Instance.PreviousStage
                 ));
                 break;
@@ -299,53 +387,12 @@ public class EndGameUI : MObject
         }
     }
 
-    void CheckNewLevelValue(int currentStage, int previousLevel, bool win)
-    {
-        if (win)
-        {
-            // check growth more than 1 level
-            if (currentStage > previousLevel + 1) 
-            {
-                ErrorHandler.Error($"WIN : currentLevel ({currentStage}) > previousLevel + 1 ({previousLevel})");
-            }
-
-            else if (currentStage < previousLevel && currentStage != 0)
-            {
-                ErrorHandler.Error($"WIN : currentLevel ({currentStage}) < previousLevel ({previousLevel}) BUT currentLevel != 0 ");
-            }
-
-            else if (currentStage == previousLevel)
-            {
-                ErrorHandler.Error($"WIN : currentLevel ({currentStage}) == previousLevel ({previousLevel})");
-            }
-        }
-
-        else
-        {
-            // loss more than 1 level
-            if (currentStage < previousLevel - 1)
-            {
-                ErrorHandler.Error($"LOSS : currentLevel ({currentStage}) < previousLevel - 1 ({previousLevel})");
-            }
-
-            else if (currentStage > previousLevel)
-            {
-                ErrorHandler.Error($"LOSS : currentLevel ({currentStage}) > previousLevel ({previousLevel})");
-            }
-
-            else if (currentStage == previousLevel && currentStage != 0)
-            {
-                ErrorHandler.Error($"LOSS : currentLevel ({currentStage}) == previousLevel ({previousLevel}) BUT currentLevel != 0 ");
-            }
-        }
-    }
-
     #endregion
 
 
     #region Animation
 
-    IEnumerator ActivationAnimation()
+    IEnumerator IntroAnimation()
     {
         // Deactivate all components visual animated components
         m_TitleText.gameObject.SetActive(false);
@@ -358,11 +405,6 @@ public class EndGameUI : MObject
         fadeIn.Initialize(duration: 0.4f, startOpacity:0.5f);
         yield return new WaitUntil(() => fadeIn.IsOver);
 
-        // BOUNCE : Rewards
-        m_RewardsContent.SetActive(true);
-        fadeIn = m_RewardsContent.AddComponent<Fade>();
-        fadeIn.Initialize(duration: 0.5f, startScale: 0.5f);
-
         // Move : Title
         m_TitleText.gameObject.SetActive(true);
         var moveTitle = m_TitleText.gameObject.AddComponent<MoveAnimation>();
@@ -370,14 +412,28 @@ public class EndGameUI : MObject
         pos.y += 250;
         moveTitle.Initialize(duration: 0.5f, startPos: pos);
 
+        // FIREWORKS particles (on win only)
+        if (m_Win)
+            m_Fireworks.SetActive(true);
+
+        yield return new WaitForSeconds(0.5f);
+
+        NextState();
+    }
+
+    IEnumerator RewardsAnimation()
+    {
+        var fadeIn = m_Background.AddComponent<Fade>();
+
+        // BOUNCE : Rewards
+        m_RewardsContent.SetActive(true);
+        fadeIn = m_RewardsContent.AddComponent<Fade>();
+        fadeIn.Initialize(duration: 0.5f, startScale: 0.5f);
+
         // FadeIn : Button
         m_LeaveButton.gameObject.SetActive(true);
         var fadeInButton = m_LeaveButton.gameObject.AddComponent<Fade>();
         fadeInButton.Initialize(duration: 0.5f, startOpacity: 0f);
-
-        // FIREWORKS particles (on win only)
-        if (m_Win)
-            m_Fireworks.SetActive(true);
 
         yield return new WaitUntil(() => fadeIn.IsOver);
     }
@@ -391,14 +447,14 @@ public class EndGameUI : MObject
     {
         base.RegisterListeners();
 
-        m_LeaveButton.onClick.AddListener(Leave);
+        m_LeaveButton.onClick.AddListener(NextState);
     }
 
     protected override void UnRegisterListeners()
     {
         base.UnRegisterListeners();
 
-        m_LeaveButton.onClick?.RemoveListener(Leave);
+        m_LeaveButton.onClick?.RemoveListener(NextState);
     }
 
     #endregion

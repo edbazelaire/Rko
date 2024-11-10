@@ -1,0 +1,355 @@
+﻿using Enums;
+using Game;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using Tools;
+using UnityEngine;
+using Assets;
+using Unity.VisualScripting;
+using Data.GameManagement;
+using System;
+using System.Linq;
+
+namespace Data
+{
+    [CreateAssetMenu(fileName = "MultiSpellData", menuName = "Game/Spells/MultiSpellData")]
+    public class MultiSpellData : SpellData
+    {
+        #region Members
+
+        public override ESpellType SpellType => ESpellType.MultiSpellData;
+
+        [Header("Projectile")]
+        [Description("Type of path that the spell is taking")]
+        public SpellData SubSpellData;
+
+        [Header("Multiple Projectiles Data")]
+        [Description("Type of multiple projectile launch")]
+        public EMultiProjectileType MultiProjectileType;
+        [SerializeField, Description("Min/Max height of spell spawn")]
+        protected SMinMax m_YMinMax;
+        [SerializeField, Description("Is the chacter blocked until the end of the cast ?")]
+        protected bool m_IsBlocking = true;
+        [Description("Number of projectiles launched")]
+        [SerializeField] protected int m_NProjectiles = 1;
+        [Description("Number of breaking points that divides the size of the zone")]
+        [SerializeField] protected int m_NBreakPoints = 1;
+        [Description("Size of the projectile zone")]
+        [SerializeField] protected float m_ProjectileZoneSize = 0f;
+        [Description("Delay between each projectile cast")]
+        [SerializeField] protected float m_DelayBetweenLaunches = 0f;
+        [Description("Number of waves")]
+        [SerializeField] protected int m_NWaves = 1;
+        [Description("Delay between each waves")]
+        [SerializeField] protected float m_DelayBetweenWaves = 0f;
+
+        [Header("MultiP Extra Sound Effects")]
+        [Description("Sound Effect on each wave casted")]
+        public AudioClip OnCastWaveSoundFX = null;
+        [Description("Sound Effect on each projectile casted")]
+        public AudioClip OnCastProjectileSoundFX = null;
+
+        // ============================================================================================
+        // Public Accessors
+        public int NProjectiles                 => (int)Math.Floor(m_NProjectiles * GetSpellLevelFactor(ESpellProperty.NProjectiles));
+        public int NWaves                       => (int)Math.Floor(m_NWaves * GetSpellLevelFactor(ESpellProperty.NWaves));
+        public float DelayBetweenLaunches       => m_DelayBetweenLaunches * GetSpellLevelFactor(ESpellProperty.DelayBetweenLaunches);
+        public float DelayBetweenWaves          => m_DelayBetweenWaves * GetSpellLevelFactor(ESpellProperty.DelayBetweenWaves);
+        public float ProjectileZoneSize         => m_ProjectileZoneSize * Settings.SpellSizeFactor;
+        /// <summary> is the "IsCasting" over once the spell has been casted (before delay) ? </summary> ///
+        public override bool IsCompletedOnCast  => !m_IsBlocking;
+        
+        // ============================================================================================
+        // Private Members
+        bool m_IsCancelled;
+
+        #endregion
+
+
+        #region Casting & Spawning
+
+        public override void Cast(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default, bool recalculateTarget = true, bool recalculatePosition = true, bool recalculateRotation = true)
+        {
+            // if specific projectile data are provided : use theme
+            if (SubSpellData == null)
+            {
+                ErrorHandler.Error("No SubSpellData provided for MultiSpell : " + Name);
+                return;
+            }
+
+            // recalculate target depending on spell type
+            if (recalculateTarget)
+                CalculateTarget(ref target, clientId);
+
+            // recalculate target depending on spell type
+            if (recalculatePosition)
+                RecalculatePosition(ref position, target, clientId);
+
+            // recalculate target depending on spell type
+            if (recalculateRotation)
+                RecalculateRotation(ref rotation);
+
+            if (NProjectiles < 1)
+            {
+                ErrorHandler.Error("Bad config for spell " + name + " : NProjectiles (" + NProjectiles + ")  < 1");
+                return;
+            }
+
+            Main.Instance.StartCoroutine(CastMultipleProjectiles(clientId, target, position, rotation));
+        }
+
+        public IEnumerator CastMultipleProjectiles(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default)
+        {
+            // block movement and cast until the end
+            Controller controller = GameManager.Instance.GetPlayer(clientId);
+
+            // save spellTarget to avoid 
+            var targetType = SpellTarget;
+
+            for (int i = 0; i < NWaves; i++)
+            {
+                yield return CastWave(clientId, target, position, rotation);
+
+                if (i == NWaves - 1 || m_IsCancelled)
+                    break;
+
+                // play animation only if blocked during the animation
+                if (m_IsBlocking)
+                    controller.AnimationHandler.PlayAnimationClientRPC(Animation, DelayBetweenWaves);
+
+                var delay = DelayBetweenWaves;
+                while (delay > 0)
+                {
+                    if ((m_IsCancelled || controller.SpellHandler.HasStateBlockingCast()) && m_IsBlocking)
+                    {
+                        m_IsCancelled = true;
+                        break;
+                    }
+
+                    delay -= Time.deltaTime;
+                    yield return null;
+                }
+
+                // cancel animation only if blocked during the animation
+                if (m_IsBlocking)
+                    controller.AnimationHandler.CancelCastAnimationClientRpc();
+
+                if (m_IsCancelled)
+                {
+                    m_IsCancelled = true;
+                    break;
+                }
+            }
+
+            // reset spell target before leaving
+            SpellTarget = targetType;
+
+            // if spell is blocking Controller during the spawn of all multi projectiles, call that the cast has been completed
+            if (! IsCompletedOnCast)
+            {
+                GameManager.Instance.GetPlayer(clientId).SpellHandler.OnCastCompleted();
+            }
+        }
+
+        public IEnumerator CastWave(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default)
+        {
+            // recalculate target at each waves
+            CalculateTarget(ref target, clientId);
+
+            // Play wave sound if any
+            if (OnCastWaveSoundFX != null)
+                GameManager.Instance.PlayCastWaveSoundClientRPC(Name);
+
+            // block movement and cast until the end
+            Controller controller = GameManager.Instance.GetPlayer(clientId);
+
+            for (int i = 0; i < NProjectiles; i++)
+            {
+                CastOneProjectile(controller, CalculateMultiProjectileTarget(target, i, controller.Team), position, rotation);
+                var delay = DelayBetweenLaunches;
+
+                while (delay > 0)
+                {
+                    if ((m_IsCancelled || controller.SpellHandler.HasStateBlockingCast()) && m_IsBlocking)
+                    {
+                        m_IsCancelled = true;
+                        yield break;
+                    }
+
+                    delay -= Time.deltaTime;
+                    yield return null;
+                }
+            }
+        }
+
+        public void CastOneProjectile(Controller controller, Vector3 target, Vector3 position = default, Quaternion rotation = default)
+        {
+            // play wave sound if any
+            if (OnCastProjectileSoundFX != null)
+                GameManager.Instance.PlayCastProjectileSoundClientRPC(Name);
+
+            // cast sup spell with delay
+            controller.StartCoroutine(SubSpellData.CastDelay(
+                clientId: controller.PlayerId,
+                target: target,
+                position: position,
+                rotation: rotation,
+                delay: SubSpellData.Delay,
+                recalculateTarget: false
+            ));
+
+            // spawn SubSpell - SpellGFX
+            foreach (SPrefabSpawn<ESpellEvent> prefabSpawn in SubSpellData.SpellEventActions)
+            {
+                if (prefabSpawn.GFXLifetime.StartSpellPart == ESpellEvent.OnCast)
+                {
+                    prefabSpawn.Spawn(controller, SubSpellData, targetPos: target);
+                }
+            }
+        }
+
+        #endregion
+
+
+        #region End & Destruction
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            if (SubSpellData != null)
+                Destroy(SubSpellData);
+        }
+
+        #endregion
+
+
+        #region Postion & Target
+
+        /// <summary>
+        /// Calculate position of the projectile number "i" depending on his type
+        /// </summary>
+        /// <param name="target">   base target of the projectile   </param>
+        /// <param name="i">        projectile number               </param>
+        /// <returns></returns>
+        protected Vector3 CalculateMultiProjectileTarget(Vector3 target, int i, int team)
+        {
+            (float min, float max) = ArenaManager.GetAreaBounds(team, SpellTarget == ESpellTarget.None || IsEnemyTarget);
+
+            var zoneSize = ProjectileZoneSize;
+            // if projectile size < 0 : use all the size of the arena
+            if (zoneSize < 0f)
+            {
+                zoneSize = ArenaManager.Instance.TargettableAreaSize;
+                target.x = min + zoneSize / 2;
+            }
+
+            switch (MultiProjectileType)
+            {
+                case EMultiProjectileType.None:
+                    break;
+
+                case (EMultiProjectileType.Line):
+                    target.x += ((team == 0 ? -1 : 1) * zoneSize / 2) + i * (team == 0 ? 1 : -1) * zoneSize / (NProjectiles - 1);
+                    break;
+
+                case (EMultiProjectileType.Random):
+                    target.x += UnityEngine.Random.Range(-zoneSize / 2, zoneSize / 2);
+                    break;
+
+                case (EMultiProjectileType.RandomLine):
+                    if (m_NBreakPoints <= 0)
+                    {
+                        ErrorHandler.Error("Bad number of BreakPoints (" + m_NBreakPoints + ") for " + Name + " with Target type EMultiProjectileType.RandomLine");
+                        break; 
+                    }
+                    var nBreakPoints = m_NBreakPoints + 1;
+                    var index = UnityEngine.Random.Range(1, nBreakPoints);
+                    target.x += ((team == 0 ? -1 : 1) * zoneSize / 2) + index * (team == 0 ? 1 : -1) * zoneSize / nBreakPoints;
+                    break;
+
+                default:
+                    ErrorHandler.Warning("Unhandled MultiProjectileType : " + MultiProjectileType);
+                    break;
+            }
+
+            target.x = Mathf.Clamp(target.x, min, max);
+            target.y = UnityEngine.Random.Range(m_YMinMax.Min, m_YMinMax.Max);
+
+            return target;
+        }
+
+        #endregion
+
+
+        #region Overriders 
+
+        /// <summary>
+        /// Overrides projectile data of multiple projectile with provided projectile data
+        /// </summary>
+        /// <param name="overridingData"></param>
+        public void OverrideProjectile(ProjectileData overridingData)
+        {
+            ErrorHandler.Log("Overriding data of " + Name + " with " + overridingData.Name, ELogTag.Spells);
+
+            SubSpellData                = overridingData;
+            Animation                   = overridingData.Animation;
+            IsCancellable               = overridingData.IsCancellable;
+            AnimationTimer              = overridingData.AnimationTimer;
+            m_Cooldown                  = overridingData.Cooldown;
+        }
+
+        #endregion
+
+
+        #region Level
+
+        public override void SetLevel(int level)
+        {
+            if (SubSpellData != null)
+                SubSpellData = SubSpellData.Clone(level);
+
+            base.SetLevel(level);
+        }
+
+        #endregion
+
+
+        #region Info Display
+
+        public override string GetDescription()
+        {
+            string description = base.GetDescription();
+            description = TextHandler.ReplaceSubSpellData(description, SubSpellData);
+            return description;
+        }
+
+        public override Dictionary<string, object> GetInfos()
+        {
+            string[] keysToIgnore = new string[] { "Cooldown", "Cast" };
+            var infoDict = base.GetInfos();
+            if (SubSpellData != null)
+            {
+                foreach (var item in SubSpellData.GetInfos())
+                {
+                    if (keysToIgnore.Contains(item.Key))
+                        continue;
+
+                    infoDict[item.Key] = item.Value;    
+                }
+            }
+
+            infoDict["Projectiles"] = NProjectiles;
+
+            if (NWaves > 1)
+            {
+                infoDict["Waves"] = NWaves;
+            }
+
+            return infoDict;
+        }
+
+        #endregion
+    }
+}

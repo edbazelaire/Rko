@@ -1,10 +1,11 @@
 ﻿using Analytics.Events;
-using Assets.Scripts.Tools;
+using Data;
 using Data.GameManagement;
 using Enums;
 using Managers.Friends;
 using Save;
 using System;
+using System.Collections.Generic;
 using Tools;
 using Unity.Services.Authentication;
 using UnityEngine;
@@ -13,7 +14,6 @@ namespace Assets.Scripts.Managers
 {
     public static class UpdateManager
     {
-        public static bool IsNewPlayer => Main.ForceIsNewPlayer || (LastVersion.ToString() == "0.0.0" && ! ProfileCloudData.PseudoChanged);
         public static Version LastVersion => new Version(PlayerPrefs.GetString("LastVersion", "0.0.0"));
         public static Version CurrentVersion => new Version(Application.version);
 
@@ -26,7 +26,7 @@ namespace Assets.Scripts.Managers
         /// <returns></returns>
         static void InitNewPlayer()
         {
-            if (Main.ForceIsNewPlayer)
+            if (LastVersion.CompareTo(new Version("0.0.0")) == 0)
                 return;
 
             FriendsHandler.SendFriendRequestToAll();
@@ -38,7 +38,7 @@ namespace Assets.Scripts.Managers
         /// </summary>
         public static void CheckUpdates()
         {
-            if (IsNewPlayer)
+            if (LastVersion.CompareTo(new Version("0.0.0")) == 0)
             {
                 InitNewPlayer();
                 return;
@@ -78,6 +78,12 @@ namespace Assets.Scripts.Managers
 
             if (LastVersion.CompareTo(new Version("0.1.8")) == -1)
                 test = UpdateVersion_0_1_8();
+
+            if (LastVersion.CompareTo(new Version("0.1.11")) == -1)
+                test = UpdateVersion_0_1_11();
+
+            if (LastVersion.CompareTo(new Version("0.1.12")) == -1)
+                test = UpdateVersion_0_1_12();
 
             // if does not trigger any version until now, update to current version
             if (LastVersion.CompareTo(CurrentVersion) == -1)
@@ -209,6 +215,77 @@ namespace Assets.Scripts.Managers
             // save version
             if (!SetVersion("0.1.8"))
                 test = false;
+
+            return test;
+        }
+
+        #endregion
+
+
+        #region v0.1.11
+
+        static bool UpdateVersion_0_1_11()
+        {
+            var test = true;
+
+            // set IsTutoDone to true
+            ProfileCloudData.Instance.SetData(ProfileCloudData.KEY_TUTO_DONE, true);
+
+            // save version
+            if (!SetVersion("0.1.11"))
+                test = false;
+
+            return test;
+        }
+
+        #endregion
+
+
+        #region v0.1.12
+
+        static bool UpdateVersion_0_1_12()
+        {
+            var test = true;
+
+            // set IsTutoDone to true
+            Main.CloudSaveManager.ResetAll();
+
+            // save version
+            if (! SetVersion("0.1.12"))
+                test = false;
+
+            return test;
+        }
+
+        #endregion
+
+
+        #region Beta Launch
+
+        static bool UpdateBeta()
+        {
+            var test = true;
+
+            var alphaTesterTitle = new SAchievementReward();
+            alphaTesterTitle.Set(ETitle.Alpha_Tester);
+
+            NotificationCloudData.AddMessage(new SMessage(
+                title: "Congratulation",
+                content: "Congratulation on having played the Alpha version of the game, here is a reward pack to start the Beta !",
+                rewardsData: new SRewardsData(
+                    chests: new List<EChest>() {
+                        EChest.Rare
+                    },
+                    currencyRewards: new List<SCurrencyReward>() {
+                        new SCurrencyReward(ECurrency.Xp, 500),
+                        new SCurrencyReward(ECurrency.Golds, 5000),
+                        new SCurrencyReward(ECurrency.Gems, 100)
+                    },
+                    achievementRewards: new List<SAchievementReward> {
+                        alphaTesterTitle
+                    }
+                )
+             ));
 
             return test;
         }

@@ -28,7 +28,7 @@ namespace Game.Spells
             if (!IsServer)
                 return;
 
-            OnHitPlayer(GetTargetController());
+            OnHit(GetTargetController());
             End();
         }
 
@@ -60,12 +60,12 @@ namespace Game.Spells
 
         #region Hitting
 
-        protected override void OnHitPlayer(Controller controller) 
+        protected override void OnHit(Controller controller) 
         {
             // add state effect specific to this spell (must have same name)
             controller.StateHandler.AddStateEffect(m_SpellData.GetStateEffect(), m_Controller);
 
-            base.OnHitPlayer(controller);
+            base.OnHit(controller);
         }
 
         #endregion

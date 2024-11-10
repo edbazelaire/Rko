@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3187be67d58548144a9d4f83cb44e7d2, type: 3}
   m_Name: ScorchedEarth
   m_EditorClassIdentifier: 
-  Rarety: 1
+  Rarety: 0
   m_Description: Explosion of size {0} dealing {1} damages and applying {2}. Burns
     the ground applying a {3} and {4} damages each or {5} seconds
   m_DescriptionVariables:
@@ -38,8 +38,8 @@ MonoBehaviour:
     - AudioClip: {fileID: 8300000, guid: c79579e74d4f4d5488273d5aeabfc1b4, type: 3}
       SoundDuration: 2
     GFXLifetime:
-      StartSpellPart: 1
-      EndSpellPart: 3
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
       Persistance: 0
@@ -58,8 +58,8 @@ MonoBehaviour:
     - AudioClip: {fileID: 8300000, guid: ef50cd5234f08354988039da92ed0783, type: 3}
       SoundDuration: 0
     GFXLifetime:
-      StartSpellPart: 3
-      EndSpellPart: 0
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
       Persistance: 1.5
@@ -72,9 +72,6 @@ MonoBehaviour:
     Offset: {x: 0, y: 0.5}
     Animation: 0
     StateEffects: 
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit:
   - {fileID: 11400000, guid: e39cfbee781b4b54f974648e3652d53f, type: 2}
   OnHitSpellSpawn: 1
@@ -84,12 +81,18 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 101
-  LockTargetAt: 1
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 25
   m_Heal: 0
+  m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
@@ -105,6 +108,7 @@ MonoBehaviour:
   EnemyStateEffects:
   - StateEffect: 22
     Stacks: 1
+    BonusStacksPerLevel: 0
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0

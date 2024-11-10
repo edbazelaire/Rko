@@ -20,6 +20,7 @@ MonoBehaviour:
     WithIcon: 1
   - Name: Duration
     WithIcon: 1
+  m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions: []
@@ -29,7 +30,7 @@ MonoBehaviour:
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
-  CastSoundFX: {fileID: 0}
+  CastSoundFX: {fileID: 8300000, guid: d74cdc367be2a7443bd88db75229243c, type: 3}
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}

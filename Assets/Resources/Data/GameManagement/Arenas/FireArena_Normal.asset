@@ -16,7 +16,11 @@ MonoBehaviour:
   m_ArenaLevelData:
   - Spells: 1c00000004000000
     TriggerEffects: []
-    BonusStats: []
+    BonusStats:
+    - StateEffectProperty: 8
+      BaseValue: 0
+      BonusValue: -0.5
+      ScalingFactor: 0
     RewardsData:
       Currencies:
       - Currency: 0
@@ -40,7 +44,11 @@ MonoBehaviour:
       CharacterLevel: 2
   - Spells: 0300000004000000
     TriggerEffects: []
-    BonusStats: []
+    BonusStats:
+    - StateEffectProperty: 8
+      BaseValue: 0
+      BonusValue: -0.5
+      ScalingFactor: 0
     RewardsData:
       Currencies:
       - Currency: 0
@@ -68,9 +76,13 @@ MonoBehaviour:
       CharacterLevel: 2
     - Character: 0
       CharacterLevel: 3
-  - Spells: 030000001c00000011000000
+  - Spells: 030000001c000000
     TriggerEffects: []
-    BonusStats: []
+    BonusStats:
+    - StateEffectProperty: 8
+      BaseValue: 0
+      BonusValue: -0.5
+      ScalingFactor: 0
     RewardsData:
       Currencies:
       - Currency: 0
@@ -92,9 +104,13 @@ MonoBehaviour:
       CharacterLevel: 3
     - Character: 0
       CharacterLevel: 4
-  - Spells: 03000000110000001c000000
+  - Spells: 110000001c000000
     TriggerEffects: []
-    BonusStats: []
+    BonusStats:
+    - StateEffectProperty: 8
+      BaseValue: 0
+      BonusValue: -0.4
+      ScalingFactor: 0
     RewardsData:
       Currencies:
       - Currency: 0
@@ -117,9 +133,13 @@ MonoBehaviour:
       CharacterLevel: 4
     - Character: 0
       CharacterLevel: 5
-  - Spells: 03000000110000001c00000000000000
+  - Spells: 03000000110000001c000000
     TriggerEffects: []
-    BonusStats: []
+    BonusStats:
+    - StateEffectProperty: 8
+      BaseValue: 0
+      BonusValue: -0.4
+      ScalingFactor: 0
     RewardsData:
       Currencies:
       - Currency: 0
@@ -145,9 +165,13 @@ MonoBehaviour:
       CharacterLevel: 5
     - Character: 0
       CharacterLevel: 6
-  - Spells: 03000000110000001c0000001b000000
+  - Spells: 030000001c0000001b000000
     TriggerEffects: []
-    BonusStats: []
+    BonusStats:
+    - StateEffectProperty: 8
+      BaseValue: 0
+      BonusValue: -0.3
+      ScalingFactor: 0
     RewardsData:
       Currencies:
       - Currency: 0
@@ -172,7 +196,11 @@ MonoBehaviour:
       CharacterLevel: 7
   - Spells: 03000000110000001b00000020000000
     TriggerEffects: []
-    BonusStats: []
+    BonusStats:
+    - StateEffectProperty: 8
+      BaseValue: 0
+      BonusValue: -0.3
+      ScalingFactor: 0
     RewardsData:
       Currencies:
       - Currency: 0
@@ -197,7 +225,11 @@ MonoBehaviour:
       CharacterLevel: 8
   - Spells: 03000000110000001c0000001b000000
     TriggerEffects: []
-    BonusStats: []
+    BonusStats:
+    - StateEffectProperty: 8
+      BaseValue: 0
+      BonusValue: -0.2
+      ScalingFactor: 0
     RewardsData:
       Currencies:
       - Currency: 0
@@ -228,7 +260,11 @@ MonoBehaviour:
       CharacterLevel: 9
   - Spells: 03000000110000001b00000021000000
     TriggerEffects: []
-    BonusStats: []
+    BonusStats:
+    - StateEffectProperty: 8
+      BaseValue: 0
+      BonusValue: -0.2
+      ScalingFactor: 0
     RewardsData:
       Currencies:
       - Currency: 0

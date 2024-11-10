@@ -1,0 +1,264 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df7d51f633e46b344920f012b0e1eca8, type: 3}
+  m_Name: FrostArena_Hard
+  m_EditorClassIdentifier: 
+  m_BotPerfLevelCeiling: 10
+  m_ArenaLevelData:
+  - RewardsData:
+      Currencies:
+      - Currency: 0
+        Qty: 1500
+      - Currency: 3
+        Qty: 100
+      Chests: 00000000
+      Collectables: []
+      AchievementRewards: []
+    TriggerEffects:
+    - SpellDataName: _FrostBites
+      Level: 5
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      Delay: 10
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _Shield
+      Level: 5
+      Target: 0
+      SpellActivationEvent: 3
+      ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _NeedlesStorm
+      Level: 5
+      Target: 0
+      SpellActivationEvent: 3
+      ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      Delay: 0
+      Duration: 12
+      NActivations: -1
+      Cooldown: 8
+    m_PowerUps: []
+    StageData:
+    - m_Boss: 1000
+      m_Level: 3
+      m_Spells: 15000000
+      m_TriggerEffects:
+      - SpellDataName: 
+        Level: 0
+        Target: 0
+        SpellActivationEvent: 0
+        ActivationTreshold: 0
+        SpellDeactivationEvent: 0
+        DeactivationTreshold: 0
+        StateEffectEvent: 0
+        StateEffectName: 
+        Delay: 0
+        Duration: 0
+        NActivations: 0
+        Cooldown: 0
+      m_BonusStats: []
+    - m_Boss: 1000
+      m_Level: 3
+      m_Spells: 15000000
+      m_TriggerEffects: []
+      m_BonusStats: []
+    - m_Boss: 0
+      m_Level: 3
+      m_Spells: 14270000
+      m_TriggerEffects:
+      - SpellDataName: Melting
+        Level: 0
+        Target: 0
+        SpellActivationEvent: 4
+        ActivationTreshold: 0
+        SpellDeactivationEvent: 4
+        DeactivationTreshold: 1
+        StateEffectEvent: 0
+        StateEffectName: 
+        Delay: 0
+        Duration: 0
+        NActivations: 0
+        Cooldown: 0
+      m_BonusStats: []
+  - RewardsData:
+      Currencies:
+      - Currency: 3
+        Qty: 250
+      - Currency: 0
+        Qty: 3500
+      Chests: 01000000
+      Collectables: []
+      AchievementRewards: []
+    TriggerEffects:
+    - SpellDataName: _GasLeak
+      Level: 5
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      Delay: 5
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _Shield
+      Level: 5
+      Target: 0
+      SpellActivationEvent: 3
+      ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _FrostBites
+      Level: 7
+      Target: 0
+      SpellActivationEvent: 3
+      ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+    m_PowerUps: []
+    StageData:
+    - m_Boss: 1000
+      m_Level: 4
+      m_Spells: 1a000000
+      m_TriggerEffects: []
+      m_BonusStats: []
+    - m_Boss: 1000
+      m_Level: 4
+      m_Spells: 1a000000
+      m_TriggerEffects: []
+      m_BonusStats: []
+    - m_Boss: 1
+      m_Level: 3
+      m_Spells: 78270000
+      m_TriggerEffects: []
+      m_BonusStats: []
+  - RewardsData:
+      Currencies:
+      - Currency: 3
+        Qty: 500
+      - Currency: 0
+        Qty: 5000
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 4
+        Title: 11
+        Avatar: 11
+        Border: 0
+        Badge: 0
+        League: 0
+    TriggerEffects:
+    - SpellDataName: _VoidMines
+      Level: 5
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      Delay: 3
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _Heal
+      Level: 5
+      Target: 0
+      SpellActivationEvent: 3
+      ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: SoulSiffon
+      Level: 3
+      Target: 6
+      SpellActivationEvent: 3
+      ActivationTreshold: 0.33
+      SpellDeactivationEvent: 3
+      DeactivationTreshold: 0.66
+      StateEffectEvent: 0
+      StateEffectName: 
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+    m_PowerUps: []
+    StageData:
+    - m_Boss: 1000
+      m_Level: 5
+      m_Spells: 24000000
+      m_TriggerEffects: []
+      m_BonusStats: []
+    - m_Boss: 1000
+      m_Level: 5
+      m_Spells: 24000000
+      m_TriggerEffects: []
+      m_BonusStats: []
+    - m_Boss: 1000
+      m_Level: 6
+      m_Spells: 24000000
+      m_TriggerEffects: []
+      m_BonusStats: []
+    - m_Boss: 2
+      m_Level: 3
+      m_Spells: 2e000000
+      m_TriggerEffects:
+      - SpellDataName: ShadowVeil
+        Level: 3
+        Target: 4
+        SpellActivationEvent: 4
+        ActivationTreshold: 0
+        SpellDeactivationEvent: 4
+        DeactivationTreshold: 1
+        StateEffectEvent: 0
+        StateEffectName: 
+        Delay: 0
+        Duration: -1
+        NActivations: -1
+        Cooldown: 0
+      m_BonusStats: []

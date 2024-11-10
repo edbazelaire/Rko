@@ -1,4 +1,6 @@
-﻿using Enums;
+﻿using Assets.Scripts.Data.DataStructures;
+using Assets.Scripts.Data.PowerUp;
+using Enums;
 using Game;
 using Game.Loaders;
 using Game.Spells;
@@ -22,7 +24,7 @@ namespace Data.DataStructures
     {
         #region Members
 
-        public string                   SpellDataName;
+        public  string                  SpellDataName;
         public  int                     Level;
         public  ESpellTarget            Target;
         
@@ -33,14 +35,20 @@ namespace Data.DataStructures
 
         public  EStateEffectEvent       StateEffectEvent;
         public  string                  StateEffectName;
-        
+
+        public  float                   Delay;
+        public  float                   Duration;
         public  int                     NActivations;
         public  float                   Cooldown;
 
-        Controller  m_Controller;
+        Controller  m_Caster;
+        Controller  m_TargetController;
+        Coroutine   m_Coroutine;
         int         m_NActivationsCtr;
         float       m_CooldownTimer;
         bool        m_IsActivated;
+
+        public bool IsActivated => m_IsActivated;
 
         #endregion
 
@@ -54,10 +62,14 @@ namespace Data.DataStructures
             serializer.SerializeValue(ref Target);
             serializer.SerializeValue(ref SpellActivationEvent);
             serializer.SerializeValue(ref ActivationTreshold);
+            serializer.SerializeValue(ref SpellDeactivationEvent);
+            serializer.SerializeValue(ref DeactivationTreshold);
 
             serializer.SerializeValue(ref StateEffectEvent);
             serializer.SerializeValue(ref StateEffectName);
 
+            serializer.SerializeValue(ref Delay);
+            serializer.SerializeValue(ref Duration);
             serializer.SerializeValue(ref NActivations);
             serializer.SerializeValue(ref Cooldown);
         }
@@ -76,6 +88,8 @@ namespace Data.DataStructures
 
         public void Activate(Controller controller)
         {
+            Debug.LogWarning("Activating " + SpellDataName);
+
             if (m_IsActivated)
                 return;
 
@@ -85,24 +99,44 @@ namespace Data.DataStructures
                 return;
             }
 
-            m_IsActivated   = true;
-            m_Controller    = controller;
+            m_IsActivated           = true;
+            m_Caster                = controller;
+            m_TargetController      = CalculateTarget();
+
+            m_Coroutine = m_Caster.StartCoroutine(ActivationDelay());
+        }
+
+        IEnumerator ActivationDelay()
+        {
+            yield return new WaitForSeconds(Delay);
 
             if (StateEffectEvent == EStateEffectEvent.None)
             {
-                ActivateEffect(CalculateTarget());
-                return;
+                ActivateEffect();
+            } 
+            else
+            {
+                StateEffect.StateEffectEvent += OnStateEffectEvent;
             }
 
-            StateEffect.StateEffectEvent += OnStateEffectEvent;
+            // activate duration coroutine
+            if (Duration > 0)
+                m_Coroutine = m_Caster.StartCoroutine(DurationCoroutine());
         }
 
-        void ActivateEffect(Controller controller)
+        IEnumerator DurationCoroutine()
+        {
+            yield return new WaitForSeconds(Duration);
+
+            End();
+        }
+
+        void ActivateEffect()
         {
             if (!IsActivable())
                 return;
 
-            if (controller == null)
+            if (m_TargetController == null)
             {
                 ErrorHandler.Error("Provided Controller is null");
                 return;
@@ -112,24 +146,24 @@ namespace Data.DataStructures
             if (Cooldown > 0)
             {
                 m_CooldownTimer = Cooldown;
-                controller.StartCoroutine(UpdateCooldownTimer());
+                m_TargetController.StartCoroutine(UpdateCooldownTimer());
             }
 
             if (SpellLoader.SpellExists(SpellDataName))
             {
                 SpellData spellData = SpellLoader.GetSpellData(SpellDataName, Level);
 
-                controller.StartCoroutine(spellData.CastDelay(controller.PlayerId, Vector3.zero, recalculateTarget: true));
-                foreach (SPrefabSpawn prefabSpawn in spellData.SpellEventActions)
+                m_TargetController.StartCoroutine(spellData.CastDelay(m_TargetController.PlayerId, Vector3.zero, recalculateTarget: true));
+                foreach (SpellPrefabSpawn prefabSpawn in spellData.SpellEventActions)
                 {
                     if (prefabSpawn.GFXLifetime.StartSpellPart == ESpellEvent.OnCast)
-                        prefabSpawn.Spawn(controller, spellData, null);
+                        prefabSpawn.Spawn(m_TargetController, spellData, null);
                 }
             }
 
             else if (SpellLoader.StateEffectExists(SpellDataName))
             {
-                controller.StateHandler.AddStateEffect(SpellLoader.GetStateEffect(SpellDataName, Level), m_Controller);
+                m_TargetController.StateHandler.AddStateEffect(SpellLoader.GetStateEffect(SpellDataName, Level), m_Caster);
             }
 
             else
@@ -147,6 +181,11 @@ namespace Data.DataStructures
             {
                 StateEffect.StateEffectEvent -= OnStateEffectEvent;
             }
+
+            if (m_Coroutine != null)
+            {
+                m_TargetController.StopCoroutine(m_Coroutine);
+            }
         }
 
         public void Deactivate()
@@ -157,14 +196,20 @@ namespace Data.DataStructures
             m_IsActivated = false;
             StateEffect.StateEffectEvent -= OnStateEffectEvent;
 
-            if (m_Controller == null)
+            if (m_Caster == null)
             {
-                ErrorHandler.Error("Unable to find controller when deactivating " + SpellDataName);
+                ErrorHandler.Error("Unable to find CASTER controller when deactivating " + SpellDataName);
+                return;
+            }
+
+            if (m_TargetController == null)
+            {
+                ErrorHandler.Error("Unable to find TARGET controller when deactivating " + SpellDataName);
                 return;
             }
 
             if (SpellLoader.StateEffectExists(SpellDataName))
-                m_Controller.StateHandler.RemoveStateEffect(SpellDataName);
+                m_TargetController.StateHandler.RemoveStateEffect(SpellDataName);
         }
 
         #endregion
@@ -197,22 +242,22 @@ namespace Data.DataStructures
             {
                 case ESpellTarget.None:
                 case ESpellTarget.Self:
-                    return m_Controller;
+                    return m_Caster;
 
                 case ESpellTarget.CurrentTarget:
                     if (targetId.HasValue)
                         return GameManager.Instance.GetPlayer(targetId.Value);
-                    return GameManager.Instance.GetFirstEnemy(m_Controller.Team);
+                    return GameManager.Instance.GetFirstEnemy(m_Caster.Team);
 
                 case ESpellTarget.FirstEnemy:
-                    return GameManager.Instance.GetFirstEnemy(m_Controller.Team);
+                    return GameManager.Instance.GetFirstEnemy(m_Caster.Team);
 
                 case ESpellTarget.FirstAlly:
-                    return GameManager.Instance.GetFirstAlly(m_Controller.Team, m_Controller.PlayerId);
+                    return GameManager.Instance.GetFirstAlly(m_Caster.Team, m_Caster.PlayerId);
 
                 default:
                     ErrorHandler.Warning("Unhandled case : " + Target);
-                    return m_Controller;
+                    return m_Caster;
             }
         }
 
@@ -223,7 +268,7 @@ namespace Data.DataStructures
 
         void OnStateEffectEvent(string stateEffectName, EStateEffectEvent stateEffectEvent, ulong targetId, ulong casterId)
         {
-            if (m_Controller == null)
+            if (m_Caster == null)
             {
                 ErrorHandler.Error("Provided Controller is null for state effect : " + stateEffectName + " - at event " + stateEffectEvent);
                 return;
@@ -235,10 +280,11 @@ namespace Data.DataStructures
             if (stateEffectEvent != StateEffectEvent)
                 return;
 
-            if (casterId != m_Controller.PlayerId)
+            if (casterId != m_Caster.PlayerId)
                 return;
 
-            ActivateEffect(CalculateTarget(targetId));
+            m_TargetController = CalculateTarget(targetId);
+            ActivateEffect();
         }
 
         #endregion
