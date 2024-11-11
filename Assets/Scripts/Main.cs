@@ -25,11 +25,7 @@ using Managers.Friends;
 using Menu.PopUps.PopUps.MessagePopUps;
 using Unity.Services.Friends.Models;
 using UnityEngine.SceneManagement;
-using Assets.Scripts.Data.PowerUp;
 using Menu.PopUps.OverlayScreens;
-
-
-
 
 
 #if UNITY_EDITOR
@@ -44,6 +40,8 @@ namespace Assets
 
         static Main s_Instance;
         static int NReloading;
+
+        public const int MAX_RELOADING = 0;
 
         // ==========================================================================================================
         // SERIALIZED MEMBERS
@@ -78,7 +76,7 @@ namespace Assets
         public static Canvas            Canvas                  => Instance.m_Canvas;
         public static bool              ActivateSaveOnClose     => Instance.m_ActivateSaveOnClose;
         public static bool              ForceIsNewPlayer        => Instance.m_ForceIsNewPlayer;
-        public static bool              IsNewPlayer             => ForceIsNewPlayer && !ProfileCloudData.TutoDone;
+        public static bool              IsNewPlayer             => ForceIsNewPlayer || !ProfileCloudData.TutoDone;
         public static List<ELogTag>     LogTags                 => s_Instance != null ? Instance.m_LogTags : new List<ELogTag>();
 
         #endregion
@@ -99,17 +97,21 @@ namespace Assets
 
         async Task Initialize()
         {
+            Debug.Log("Initialize");
+
             try
             {
+                ErrorHandler.IsActivated = true;
+                
                 // initialize Managers & Loaders
                 PlayerPrefsHandler.Initialize();
                 AchievementLoader.Initialize();
                 SpellLoader.Initialize();
                 ItemLoader.Initialize();
                 RSDManager.Intialize();
-                ErrorHandler.IsActivated = PlayerPrefsHandler.GetDebug(EDebugOption.ErrorHandler);
 
                 // init settings
+                Debug.Log("InitializeSettings");
                 InitializeSettings();
 
                 // register to state changes 
@@ -126,21 +128,22 @@ namespace Assets
                 await UnityServices.InitializeAsync(options);
 
                 // listen to Auth Service and try to signe in anonymously
-                AuthenticationService.Instance.SignedIn += OnSignedIn;
-                AuthenticationService.Instance.SignedIn += m_CloudSaveManager.LoadSave;
-                await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                if (! AuthenticationService.Instance.IsSignedIn)
+                {
+                    AuthenticationService.Instance.SignedIn += OnSignedIn;
+                    AuthenticationService.Instance.SignedIn += m_CloudSaveManager.LoadSave;
+                    await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                } else
+                {
+                    m_CloudSaveManager.LoadSave();
+                    OnSignedIn();
+                }
             }
 
             catch (Exception ex)
             {
                 Debug.LogError(ex.Message);
-                NReloading++;
-
-                if (NReloading <= 3)
-                    Instance.ReloadGame();
-                else
-                    Application.Quit();
-
+                Instance.ReloadGame();
                 return;
             }
 
@@ -161,7 +164,7 @@ namespace Assets
             LobbyHandler.Instance               != null,
             SpellLoader.Initialized,
             RelayHandler.Initialized,
-            //FriendsHandler.Initialized,
+            FriendsHandler.Initialized,
             RSDManager.LoadingCompleted,
             m_CloudSaveManager.LoadingCompleted,
             m_SignedIn
@@ -194,7 +197,7 @@ namespace Assets
 
             // set a timer of 30s to avoid inf loop
             if (TimeErrorWrapper.Instance != null)
-                TimeErrorWrapper.Instance.New("App Initialization", 30f, ReloadGame);      
+                TimeErrorWrapper.Instance.New("App Initialization", 20f, ReloadGame);      
 
             float percInit = 0f;    // init percentage of initialization
             do
@@ -210,7 +213,7 @@ namespace Assets
                     ErrorHandler.Warning("Percentage of initialization decreased, from " + percInit + " to " + newPercInit);
 
                 percInit = newPercInit;
-                SceneLoader.UpdateProgress(percInit);
+                SceneLoader.UpdateProgress(percInit, GetInitializationInfoText());
                 yield return null;
 
             } while (percInit < 1);
@@ -228,13 +231,39 @@ namespace Assets
 
         void ReloadGame()
         {
-            Debug.Log("RELOADING");
+            NReloading++;
+
+            Debug.LogWarning("RELOADING - " + NReloading);
 
             // Stop all background processes if needed
             StopAllCoroutines();
 
+            if (NReloading > MAX_RELOADING)
+            {
+                Time.timeScale = 0;
+                
+                if (!ConsoleUI.Instance.gameObject.activeInHierarchy)
+                    ConsoleUI.Instance.Hide();
+
+                Debugger.Instance.DisplayErrors();
+                //Application.Quit();
+                return;
+            }
+
             // Reload the active scene to restart from scratch
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
+        string GetInitializationInfoText()
+        {
+            string infoText = "[";
+            foreach (bool isInit in InitializedElements)
+            {
+                infoText += isInit ? "<color=#00FF11>+</color>" : "<color=#FF0000>x</color>";
+            }
+            infoText += "]";
+
+            return infoText;
         }
 
         #endregion
@@ -613,6 +642,8 @@ namespace Assets
 
         private void OnInitializationCompleted()
         {
+            Debug.Log("OnInitializationCompleted()");
+
             if (SceneLoader.Instance == null)
                 ErrorHandler.Log("SceneLoader is null", ELogTag.System);
 
@@ -636,6 +667,9 @@ namespace Assets
 
             // check if a current message needs to be displayed to the user before loading the scene 
             CheckCurrentMessage();
+
+            // set error handler active depending on DebugOption settings
+            ErrorHandler.IsActivated = PlayerPrefsHandler.GetDebug(EDebugOption.ErrorHandler);
 
             if (IsNewPlayer)
                 LoadTutorial();

@@ -199,6 +199,9 @@ namespace Game.Spells
         /// </summary>
         protected virtual void AddSpecialComponent() 
         {
+            if (!IsServer)
+                return;
+
             // Construct the full type name including the namespace
             string spellComponentFullName = $"Game.Spells.SpecialEffects.{m_SpellData.Name}";
 
@@ -212,8 +215,6 @@ namespace Game.Spells
             // Add the component to this GameObject
             SpecialEffect specialEffect = (SpecialEffect)gameObject.AddComponent(componentType);
             specialEffect.Initialize(m_SpellData.Level);
-
-            Debug.Log($"Added component {spellComponentFullName} to {gameObject.name}");
         }
 
         /// <summary>

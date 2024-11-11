@@ -39,7 +39,7 @@ namespace Game.Spells.SpecialEffects
 
         protected override void UnRegisterListeners()
         {
-            base.RegisterListeners();
+            base.UnRegisterListeners();
 
             Spell.OnSpellSpawn -= OnSpellSpawn;
         }
@@ -50,7 +50,7 @@ namespace Game.Spells.SpecialEffects
                 m_NightVeilSpell.AddShield(m_BonusShield);
 
             if (spell.SpellData.Name.EndsWith("VoidMine"))
-                m_NightVeilSpell.HitShield(m_BonusShield);
+                m_NightVeilSpell.HitShield(m_HitShield);
         }
 
 

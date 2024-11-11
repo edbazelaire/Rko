@@ -372,7 +372,7 @@ namespace Save
 
         /// <summary> default data for the Inventory </summary>
         protected override Dictionary<string, object> m_Data { get; set; } = new Dictionary<string, object>() {
-            { KEY_TUTO_DONE,                false                                               },
+            { KEY_TUTO_DONE,                true                                                },
             { KEY_PSEUDO_CHANGED,           false                                               },
             { KEY_GAMER_TAG,                ""                                                  },
             { KEY_TAG,                      ""                                                  },

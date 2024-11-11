@@ -13,17 +13,22 @@ namespace Game.AI.BehaviorTrees
                 // COUNTER STATE
                 new Sequence(new List<Node> {
                     new CheckHasCounter(controller),
-                    new TaskUseSpell(controller, ESpell.Scythefall),
                 }),
 
                 // ULTIMATE
-                new TaskAttack(controller, allowedSpellCategories: new List<ESpellCategory> { ESpellCategory.Ultimate }),
-
-                // USE VORTEX
-                new TaskUseSpell(controller, ESpell.Vortex, delay: 15),
+                new Sequence(new List<Node> {
+                    new CheckCanBeCasted(controller, controller.SpellHandler.Ultimate),
+                    new TaskUseSpell(controller, controller.SpellHandler.Ultimate),
+                }),
 
                 // USE SPECIAL ABILITY
                 new TaskUseSpell(controller, ESpell.Scythefall),
+            
+                // USE VORTEX
+                new Sequence(new List<Node> {
+                    new CheckCanBeCasted(controller, ESpell.Vortex),
+                    new TaskUseSpell(controller, ESpell.Vortex, delay: 15),
+                }),
 
                 // MOVE
                 new TaskMove(controller, checkZones: true, checkProjectiles: false),

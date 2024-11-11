@@ -32,6 +32,7 @@ namespace Tools
             ESpellProperty.Delay.ToString(),
             ESpellProperty.DelayBetweenLaunches.ToString(),
             ESpellProperty.DelayBetweenWaves.ToString(),
+            ESpellProperty.DurationTick.ToString(),
         };
 
         #region Cleaning 

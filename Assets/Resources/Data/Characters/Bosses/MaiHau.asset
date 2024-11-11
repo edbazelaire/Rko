@@ -20,11 +20,14 @@ MonoBehaviour:
   m_Ultimate: PoisonDarts
   Size: 3.3
   BaseSpeed: 1
-  BaseHealth: 3000
+  BaseHealth: 2300
   MaxEnergy: 100
+  BaseEnergy: 10
+  IsStructure: 0
   HealthScaleFactor: 0.15
   CharacterStatScaling:
   - StateEffectProperty: 5
     BaseValue: 20
     BonusValue: 0
     ScalingFactor: 0.1
+  m_SpecialPowers: []
