@@ -47,8 +47,8 @@ namespace Game.AI
 
             m_Timer = delay;
 
-            // check that spell exists to activate the node
-            m_IsActivated = controller.SpellHandler.Spells.Contains(m_Spell);
+            //// check that spell exists to activate the node
+            //m_IsActivated = controller.SpellHandler.Spells.Contains(m_Spell);
         }
 
         #endregion

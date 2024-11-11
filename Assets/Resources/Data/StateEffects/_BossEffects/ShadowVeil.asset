@@ -40,6 +40,8 @@ MonoBehaviour:
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 0
   m_DefaultState: 0
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
   m_Priority: 0
   m_Duration: -1
   m_IsInstantanious: 0
@@ -47,8 +49,8 @@ MonoBehaviour:
   m_StackDecay: -1
   m_BonusStats:
   - StateEffectProperty: 5
-    BaseValue: 99999
-    LevelScalingFactor: 0
+    BaseValue: 50
+    LevelScalingFactor: 0.5
     StackScalingFactor: 0
   m_SpeedBonus: 0
   m_CastSpeed: 0

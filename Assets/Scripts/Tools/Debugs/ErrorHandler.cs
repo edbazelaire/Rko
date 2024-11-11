@@ -29,9 +29,6 @@ namespace Tools
         {
             PlayerPrefsHandler.SetDebug(EDebugOption.ErrorHandler, !IsActivated);
             IsActivated = !IsActivated;
-
-            if (!IsActivated)
-                Reset();
         }
 
         #endregion

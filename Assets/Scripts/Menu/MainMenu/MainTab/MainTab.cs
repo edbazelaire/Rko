@@ -150,6 +150,20 @@ namespace Menu.MainMenu.MainTab
                 return;
             }
 
+            if (LobbyHandler.Instance.GameMode == EGameMode.Arena && !ProgressionCloudData.HasArenaInProgress)
+            {
+                var arenaModeDisplayUI = Finder.FindComponent<ArenaModeDisplayUI>(m_GameSectionUI.gameObject);
+                if (arenaModeDisplayUI == null)
+                {
+                    ErrorHandler.Error("GameMode is Arena but ArenaModeDisplayUI was not found");
+                    Main.ErrorMessagePopUp("Please select an Arena before playing");
+                    return;
+                }
+
+                // auto select 
+                arenaModeDisplayUI.OnSelectButtonClicked();
+            }
+
             Main.SetPopUp(EPopUpState.LobbyScreen);
 
             JoinLobby();

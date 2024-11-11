@@ -22,6 +22,12 @@ namespace AI
 
         public override NodeState Evaluate()
         {
+            if (! m_Controller.SpellHandler.Spells.Contains(m_Spell))
+            {
+                m_State = NodeState.FAILURE;
+                return m_State;
+            }
+
             m_State = m_Controller.SpellHandler.CanCast(m_Spell) ? NodeState.SUCCESS : NodeState.FAILURE;
             return m_State;
         }

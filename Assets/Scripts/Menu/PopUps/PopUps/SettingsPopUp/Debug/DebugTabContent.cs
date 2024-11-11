@@ -75,6 +75,9 @@ namespace Assets.Scripts.UI
                 case EDebugOption.ErrorHandler:
                     return (() => ErrorHandler.Toggle(), () => ErrorHandler.Reset());
 
+                case EDebugOption.DebugMode:
+                    return (() => { PlayerPrefsHandler.SetDebug(EDebugOption.DebugMode, !PlayerPrefsHandler.GetDebug(EDebugOption.DebugMode)); }, () => { PlayerPrefsHandler.SetDebug(EDebugOption.DebugMode, false); });
+
                 default:
                     ErrorHandler.Error("Unhandled case : " +  option);  
                     return (() => Debug.Log("Not attributed"), () => Debug.Log("Not attributed"));

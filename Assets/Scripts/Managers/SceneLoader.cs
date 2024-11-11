@@ -140,9 +140,10 @@ public class SceneLoader : MonoBehaviour
         Instance.m_LoadingScreen.SetProgress(atPercentage);
     }
 
-    public static void UpdateProgress(float progress)
+    public static void UpdateProgress(float progress, string infoText = "")
     {
         Instance.m_LoadingScreen.SetProgress(progress);
+        Instance.m_LoadingScreen.SetInfoText(infoText);
     }
 
     #endregion

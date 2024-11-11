@@ -10,7 +10,7 @@ namespace Game.Spells.SpecialEffects
     {
         #region Members
 
-        float m_Radius => m_Spell.SpellData.m_Size / 2;
+        float m_Radius => m_Spell.SpellData.Size / 2;
 
         Zone m_Spell;
 
@@ -67,7 +67,7 @@ namespace Game.Spells.SpecialEffects
                 return false;
 
             // check that players has controller 
-            spell = Finder.FindComponent<Mine>(collider.gameObject);
+            spell = Finder.FindComponent<Mine>(collider.gameObject, throwError: false);
             if (spell == null)
                 return false;
 

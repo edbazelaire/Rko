@@ -261,7 +261,7 @@ namespace Menu.MainMenu.MainTab
             RefreshUI();
         }
 
-        void OnSelectButtonClicked()
+        public void OnSelectButtonClicked()
         {
             ProgressionCloudData.CreateNewCurrentArena(m_ArenaData.ArenaType, m_ArenaDifficulty);
         }

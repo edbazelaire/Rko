@@ -39,6 +39,12 @@ namespace Assets.Scripts.Network
 
         void Start()
         {
+            if (s_Instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
             // Initialize Instance
             s_Instance = this;
 
