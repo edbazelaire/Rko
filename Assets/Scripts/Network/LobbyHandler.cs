@@ -620,7 +620,7 @@ namespace Network
                             new int[] { 1, 1, 1 },
                             new ESpell[] { ESpell.FireBarrage, ESpell.FireBomb },
                             new int[] { 1, 1 },
-                            new SProfileCurrentData(gamerTag: ECharacter.Kahnan.ToString()).AsNetworkSerializable(),
+                            new SProfileCurrentData(accountLevel: 1, gamerTag: ECharacter.Kahnan.ToString()).AsNetworkSerializable(),
                             isPlayer: false,
                             botData: new SBotData(EArenaDifficulty.Normal, 1f, 1f)
                         );
@@ -635,7 +635,7 @@ namespace Network
                         new int[] { 9, 9, 9 },
                         PlayerPrefsHandler.GetTrainingSpells(),
                         new int[] { 9, 9, 9, 9 },
-                        new SProfileCurrentData(gamerTag: trainingCharacter.ToString()).AsNetworkSerializable(),
+                        new SProfileCurrentData(accountLevel: 9, gamerTag: trainingCharacter.ToString()).AsNetworkSerializable(),
                         isPlayer: false,
                         botData: new SBotData(EArenaDifficulty.Normal, PlayerPrefs.GetFloat(EPlayerPref.TrainingDecisionRefresh.ToString(), 0.05f), PlayerPrefs.GetFloat(EPlayerPref.TrainingRandomness.ToString(), 0f))
                     );
@@ -654,6 +654,7 @@ namespace Network
                         new ESpell[] { ESpell.Heal, ESpell.RockShower },
                         new int[] { 1, 1 },
                         new SProfileCurrentData(
+                            accountLevel: 1,
                             gamerTag: character.ToString()
                         ).AsNetworkSerializable(),
                         isPlayer: false

@@ -76,8 +76,12 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 102
-  LockTarget: 100
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 400
   ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 0
   EnergyGain: 0
   EnergyCost: 100
@@ -101,15 +105,17 @@ MonoBehaviour:
   EnemyStateEffects:
   - StateEffect: 14
     Stacks: 1
+    BonusStacksPerLevel: 0
     OverridingProperties:
     - StateEffectProperty: 1
       Value: 3
   - StateEffect: 13
     Stacks: 15
+    BonusStacksPerLevel: 0.34
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
-  PersistanceAfterEnd: 0
+  PersistanceAfterEnd: 1.5
   Animation: 7
   IsCancellable: 0
   AnimationTimer: 0.5

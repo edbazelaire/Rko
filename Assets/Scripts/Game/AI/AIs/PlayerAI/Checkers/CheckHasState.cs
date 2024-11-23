@@ -1,11 +1,9 @@
 ﻿using Enums;
 using Game;
 using Game.Spells;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Tools;
-using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace AI
 {
@@ -17,14 +15,14 @@ namespace AI
         int m_NStacks;
         ESpellTarget m_SpellTarget;
 
-        public CheckHasState(Controller controller, string state, int nStacks = 1, ESpellTarget target = ESpellTarget.Self) : base(controller) 
+        public CheckHasState(Controller controller, string state, int nStacks = 1, ESpellTarget target = ESpellTarget.Self, bool isReversed = false) : base(controller, isReversed) 
         {
             m_StateEffects = new List<string> { state };
             m_NStacks = nStacks;
             m_SpellTarget = target;
         }
 
-        public CheckHasState(Controller controller, List<string> states, int nStacks = 1, ESpellTarget target = ESpellTarget.Self) : base(controller) 
+        public CheckHasState(Controller controller, List<string> states, int nStacks = 1, ESpellTarget target = ESpellTarget.Self, bool isReversed = false) : base(controller, isReversed) 
         {
             m_StateEffects = states;
             m_NStacks = nStacks;
@@ -38,18 +36,19 @@ namespace AI
 
         public override NodeState Evaluate()
         {
-            m_State = NodeState.FAILURE;
             var controllerToCheck = m_SpellTarget == ESpellTarget.Self ? m_Controller : GameManager.Instance.GetFirstEnemy(m_Controller.Team);
-            
             foreach (var stateEffect in m_StateEffects)
             {
                 if (controllerToCheck.StateHandler.GetStacks(stateEffect) >= m_NStacks)
                 {
-                    m_State = NodeState.SUCCESS;
+                    SetNodeState(NodeState.SUCCESS);
+                    ErrorHandler.Log("CheckHasState(" + m_StateEffects[0] + ")" + (m_IsReversed ? " REVERSERD" : "") + " : " + m_State, ELogTag.AIFinalDecision);
                     return m_State;
                 }
             }
 
+            SetNodeState(NodeState.FAILURE);
+            ErrorHandler.Log("CheckHasState(" + m_StateEffects[0] + ")" + (m_IsReversed ? " REVERSERD" : "") + " : " + m_State, ELogTag.AIFinalDecision);
             return m_State;
         }
 

@@ -70,8 +70,39 @@ namespace Game.Character
             if (GameManager.Instance.GetPlayer(spell.OwnerClientId).Team == m_Controller.Team)
                 return false;
 
-            // check that spell can proc counters
-            if (!Counter.COUNTER_PROCABLE_SPELLTYPE.Contains(spell.SpellData.SpellType))
+            // find first counter that has an "OnHit" proc effect
+            foreach (Counter counter in m_Counters)
+            {
+                // check has right type
+                if (counter.SpellData.CounterActivation != ECounterActivation.OnHitPlayer)
+                    continue;
+
+                // check that spell can proc counters
+                if (! counter.SpellData.DamageTypeActivation.Contains(spell.SpellData.DamageType))
+                    continue;
+
+                // try to proc it, return true if successfull
+                if (counter.ProcCounter(spell) && counter.SpellData.IsDestroyingSpell)
+                    return true;
+            }
+
+            // no spell has proc any counter : return false
+            return false;
+        }
+
+        /// <summary>
+        /// When a spell hits a player, check for counters
+        /// </summary>
+        /// <param name="spell"></param>
+        /// <returns></returns>
+        public bool CheckCounters(int damages, Controller caster, EDamageType damageType)
+        {
+            // check has counters
+            if (m_Counters.Count == 0)
+                return false;
+
+            // check is same team
+            if (caster.Team == m_Controller.Team)
                 return false;
 
             // find first counter that has an "OnHit" proc effect
@@ -81,8 +112,12 @@ namespace Game.Character
                 if (counter.SpellData.CounterActivation != ECounterActivation.OnHitPlayer)
                     continue;
 
+                // check that spell can proc counters
+                if (! counter.SpellData.DamageTypeActivation.Contains(damageType))
+                    continue;
+
                 // try to proc it, return true if successfull
-                if (counter.ProcCounter(spell))
+                if (counter.ProcCounter(damages, caster, damageType) && counter.SpellData.IsDestroyingSpell)
                     return true;
             }
 

@@ -2,16 +2,14 @@
 using Data.DataStructures;
 using Enums;
 using Game.Loaders;
-using Game.Spells;
-using Game.UI;
 using MyBox;
-using NUnit.Framework.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Tools
@@ -33,6 +31,7 @@ namespace Tools
             ESpellProperty.DelayBetweenLaunches.ToString(),
             ESpellProperty.DelayBetweenWaves.ToString(),
             ESpellProperty.DurationTick.ToString(),
+            ESpellProperty.NProjectiles.ToString(),
         };
 
         #region Cleaning 
@@ -312,6 +311,13 @@ namespace Tools
             string pattern = @"\[(SubSpellData\.[A-Za-z_][A-Za-z0-9_]*)\]";
             MatchCollection matches = Regex.Matches(text, pattern);
 
+            if (subSpellData == null)
+            {
+                if (matches.Count > 0)
+                    ErrorHandler.Error("Found SubSpell tokens in description but no subSpelLData were provided");
+                return text;
+            }
+
             foreach (Match match in matches)
             {
                 string token = match.Value; // The full token, e.g., "[SubSpellData.PROPERTY_NAME]"
@@ -322,7 +328,7 @@ namespace Tools
                 // Replace token with the property value from ConvertDescriptionVariable
                 text = text.Replace(
                     token,
-                    propertyName == "Description" ? subSpellData.GetDescription() : subSpellData.ConvertDescriptionVariable(new SDescriptionVariable(propertyName, true), subSpellData.GetInfos())
+                    propertyName == "Description" ? subSpellData.GetDescription().FirstCharacterToLower() : subSpellData.ConvertDescriptionVariable(new SDescriptionVariable(propertyName, true), subSpellData.GetInfos())
                 );
             }
 

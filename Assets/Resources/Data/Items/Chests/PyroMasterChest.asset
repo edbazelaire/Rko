@@ -20,7 +20,7 @@ MonoBehaviour:
     Min: 10000
     Max: 15000
   ExtraCardData:
-    ExtraCards: 1
+    ExtraCards: 0
     RaretyPercData:
     - Rarety: 0
       Percentage: 0
@@ -32,15 +32,15 @@ MonoBehaviour:
       Percentage: 100
   SpellsDistribution:
   - Rarety: 0
-    Qty: 100
+    Qty: 60
     Splits: 3
   - Rarety: 1
-    Qty: 50
+    Qty: 35
     Splits: 2
   - Rarety: 2
-    Qty: 25
+    Qty: 15
     Splits: 3
   - Rarety: 3
-    Qty: 0
-    Splits: 0
+    Qty: 1
+    Splits: 1
   SpellElements: 01000000

@@ -4,39 +4,46 @@ using Enums;
 
 namespace Game.AI.BehaviorTrees
 {
-    public static class AtassutBT
+    public class AtassutBT : DefaultBT
     {
-        public static Node LoadTree(Controller controller)
+        public AtassutBT(Controller controller, EArenaDifficulty arenaDifficulty) : base(controller, arenaDifficulty) { }
+
+
+        #region Trees
+
+        public override Node GetDefaultTree()
         {
             return new Selector(new List<Node>
             {
                 // COUNTER STATE
                 new Sequence(new List<Node> {
-                    new CheckHasCounter(controller),
+                    new CheckHasCounter(m_Controller),
                 }),
 
                 // ULTIMATE
                 new Sequence(new List<Node> {
-                    new CheckCanBeCasted(controller, controller.SpellHandler.Ultimate),
-                    new TaskUseSpell(controller, controller.SpellHandler.Ultimate),
+                    new CheckCanBeCasted(m_Controller, m_Controller.SpellHandler.Ultimate),
+                    new TaskUseSpell(m_Controller, m_Controller.SpellHandler.Ultimate),
                 }),
 
                 // USE SPECIAL ABILITY
-                new TaskUseSpell(controller, ESpell.Scythefall),
+                new TaskUseSpell(m_Controller, ESpell.Scythefall),
             
                 // USE VORTEX
                 new Sequence(new List<Node> {
-                    new CheckCanBeCasted(controller, ESpell.Vortex),
-                    new TaskUseSpell(controller, ESpell.Vortex, delay: 15),
+                    new CheckCanBeCasted(m_Controller, ESpell.Vortex),
+                    new TaskUseSpell(m_Controller, ESpell.Vortex, delay: 15),
                 }),
 
                 // MOVE
-                new TaskMove(controller, checkZones: true, checkProjectiles: false),
+                new TaskMove(m_Controller, checkZones: true, checkProjectiles: false),
 
                 // Stand Still if cant move
-                new TaskAutoAttack(controller),
+                new TaskWait(m_Controller),
             });
         }
+
+        #endregion
     }
 }
 

@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Data.PowerUp;
-using Data;
+﻿using Data;
 using Data.GameManagement;
 using Enums;
 using Game.Spells;
@@ -19,9 +18,11 @@ namespace Game.Loaders
 
         public static bool Initialized { get; private set; }
 
+        public const int BOSS_SPELL_THRESHOLD = 10000;
+
         static Dictionary<string, GameObject>      m_SpellsPrefabs;
         static Dictionary<ESpell, SpellData>       m_Spells;
-        static Dictionary<string, SpellData>       m_OnHitSpellData;
+        static Dictionary<string, SpellData>       m_ExtraSpellData;
         static Dictionary<string, StateEffect>     m_StateEffects;
         static Dictionary<string, RuneData>        m_RunesData;
 
@@ -60,22 +61,28 @@ namespace Game.Loaders
             SpellData[] spellList = LoadSpells();
 
             m_Spells = new Dictionary<ESpell, SpellData>();
-            m_OnHitSpellData = new Dictionary<string, SpellData>();
+            m_ExtraSpellData = new Dictionary<string, SpellData>();
 
             foreach (SpellData spell in spellList)
             {
+                // CHECK : Extra ?
                 if (spell.name.StartsWith("_"))
                 {
-                    m_OnHitSpellData.Add(spell.name, spell);
+                    m_ExtraSpellData.Add(spell.Name, spell);
                     continue;
                 }
 
-                if (spell.AnimationTimer < 0)
-                    ErrorHandler.Error($"SpellLoader : AnimationTimer {spell.Spell} < 0");
-
+                // CHECK : Exists ?
                 if (spell.Spell == ESpell.None)
                 {
                     ErrorHandler.Error("Unable to parse " + spell.Name + " as Spell");
+                    continue;
+                }
+
+                // CHECK : IsBoss ?
+                if (IsBossSpell(spell.Spell))
+                {
+                    m_ExtraSpellData.Add(spell.Name, spell);
                     continue;
                 }
 
@@ -166,6 +173,11 @@ namespace Game.Loaders
 
         #region Static Manipulators
 
+        public static bool IsBossSpell(ESpell spell)
+        {
+            return (int)spell >= BOSS_SPELL_THRESHOLD;
+        }
+
         /// <summary>
         /// Check if spell exists
         /// </summary>
@@ -173,7 +185,7 @@ namespace Game.Loaders
         /// <returns></returns>
         public static bool SpellExists(string name)
         {
-            return Enum.TryParse(name, out ESpell _) || m_OnHitSpellData.ContainsKey(name);
+            return Enum.TryParse(name, out ESpell _) || m_ExtraSpellData.ContainsKey(name);
         }
 
         /// <summary>
@@ -216,15 +228,24 @@ namespace Game.Loaders
         /// <returns></returns>
         public static SpellData GetSpellData(ESpell spell, int level = 1, bool destroy = false)
         {
+            if (IsBossSpell(spell))
+            {
+                if (!m_ExtraSpellData.ContainsKey(spell.ToString()))
+                {
+                    ErrorHandler.Error($"ExtraSpellData : Spell {spell} not found");
+                    return null;
+                }
+
+                return m_ExtraSpellData[spell.ToString()].Clone(level, destroy);
+            }
+
             if (!m_Spells.ContainsKey(spell))
             {
-                ErrorHandler.Error($"SpellLoader : Spell {spell} not found");
+                ErrorHandler.Error($"Spells : Spell {spell} not found");
                 return null;
             }
 
-            var spellData = m_Spells[spell].Clone(level, destroy);
-
-            return spellData;
+            return m_Spells[spell].Clone(level, destroy);
         }
 
         /// <summary>
@@ -239,9 +260,9 @@ namespace Game.Loaders
                 return GetSpellData(spell, level, destroy);
             }
 
-            if (m_OnHitSpellData.ContainsKey(spellName))
+            if (m_ExtraSpellData.ContainsKey(spellName))
             {
-                return m_OnHitSpellData[spellName].Clone(level, destroy);
+                return m_ExtraSpellData[spellName].Clone(level, destroy);
             }
             
             ErrorHandler.Error($"SpellLoader : Spell {spellName} not found");

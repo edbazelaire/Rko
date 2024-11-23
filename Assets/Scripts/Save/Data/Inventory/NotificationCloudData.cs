@@ -1,10 +1,12 @@
 ﻿using Assets;
 using Data.GameManagement;
 using Enums;
+using Inventory;
 using System;
 using System.Collections.Generic;
 using Tools;
 using Unity.Services.CloudSave.Models;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 namespace Save
 {
@@ -38,6 +40,7 @@ namespace Save
         // CONSTANTS
         public const string KEY_ARENA_REWARDS   = "ArenaRewards";
         public const string KEY_LEAGUE_REWARDS  = "LeagueRewards";
+        public const string KEY_XP_COLLECTION   = "XpCollection";
         public const string KEY_MESSAGES        = "Messages";
 
         // ===============================================================================================
@@ -50,15 +53,17 @@ namespace Save
         // DATA
         /// <summary> default data for the Inventory </summary>
         protected override Dictionary<string, object> m_Data { get; set; } = new Dictionary<string, object>() {
-            { KEY_ARENA_REWARDS,            new Dictionary<EArenaType,  List<int>>() },
-            { KEY_LEAGUE_REWARDS,           new Dictionary<ELeague,     List<int>>() },
-            { KEY_MESSAGES,                 new List<SMessage>() },
+            { KEY_ARENA_REWARDS,            new Dictionary<EArenaType,  List<int>>()    },
+            { KEY_LEAGUE_REWARDS,           new Dictionary<ELeague,     List<int>>()    },
+            { KEY_XP_COLLECTION,            0                                           },
+            { KEY_MESSAGES,                 new List<SMessage>()                        },
         };
 
         // ===============================================================================================
         // DEPENDENT STATIC ACCESSORS
         public static Dictionary<EArenaType, List<int>> ArenaRewards    => Instance.m_Data[KEY_ARENA_REWARDS] as Dictionary<EArenaType, List<int>>;
         public static Dictionary<ELeague, List<int>>    LeagueRewards   => Instance.m_Data[KEY_LEAGUE_REWARDS] as Dictionary<ELeague, List<int>>;
+        public static int                               XpCollection    => (int)Instance.m_Data[KEY_XP_COLLECTION];
         public static List<SMessage>                    Messages        => Instance.m_Data[KEY_MESSAGES] as List<SMessage>;
 
         #endregion
@@ -199,6 +204,30 @@ namespace Save
         public static bool HasRewardsForLeagueAtLevel(ELeague league, int level)
         {
             return HasRewardsForLeague(league) && LeagueRewards[league].Contains(level);
+        }
+
+        #endregion
+
+
+        #region Xp Collection
+
+        public static void AddXp(int xp)
+        {
+            Instance.SetData(KEY_XP_COLLECTION, xp + XpCollection);
+        }
+
+        public static void CollectXp()
+        {
+            if (XpCollection <= 0)
+                return;
+
+            InventoryManager.UpdateCurrency(ECurrency.Xp, XpCollection, "EndGameReward");
+            ResetXpCollection();
+        }
+
+        public static void ResetXpCollection()
+        {
+            Instance.SetData(KEY_XP_COLLECTION, 0);
         }
 
         #endregion

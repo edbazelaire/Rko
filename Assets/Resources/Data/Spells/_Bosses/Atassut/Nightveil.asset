@@ -34,7 +34,7 @@ MonoBehaviour:
   ApplyIfNotHitting: 0
   m_SpellRequirements: []
   MaxHit: -1
-  EnergyGain: 10
+  EnergyGain: 0
   EnergyCost: 100
   m_Damage: 0
   m_Heal: 0
@@ -72,7 +72,9 @@ MonoBehaviour:
   m_SpawnOffset: {x: 0, y: 0}
   m_IsFollowing: 1
   m_SpawnLocation: 1
+  IsDestroyingSpell: 1
   IsBlockingMovement: 1
   IsBlockingCast: 1
+  IsCanceledOnCast: 0
   m_DamageConversionEffects: []
   OnCounterProc: {fileID: 0}

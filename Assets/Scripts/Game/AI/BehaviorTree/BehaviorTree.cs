@@ -1,5 +1,6 @@
 using Enums;
 using Game;
+using Game.AI.BehaviorTrees;
 using Managers;
 using PlayFab.MultiplayerModels;
 using System;
@@ -14,12 +15,17 @@ namespace AI
     {
         #region Members
 
+        public Action<string>   StateChangedEvent;
+        public Action<int>      PhaseChangedEvent;
+
         List<string> NO_BT_CHARACTERS = new List<string>() { ESpawn.Stalacmite.ToString(), ESpawn.DarkVeil.ToString() };
 
-        private Node m_Root = null;
+        protected Node m_Root = null;
         protected Controller m_Controller;
         protected bool m_IsActivated = false;
 
+        protected int m_Phase                           = 0;
+        protected string m_State                        = "None";
         protected Dictionary<string, float> m_Timers    = new Dictionary<string, float>();
         protected List<string> m_FrozenTimers           = new ();
         protected Dictionary<string, int> m_Counters    = new Dictionary<string, int>();
@@ -28,10 +34,12 @@ namespace AI
 
         protected float m_DecisionTimer                 = 0f;
 
-        public Controller Controller    => m_Controller;
-        public bool IsActivated         => m_IsActivated;
-        public float Randomness         => m_Randomness;
-        public float DecisionRefresh    => m_DecisionRefresh;
+        public Controller   Controller          => m_Controller;
+        public int          Phase               => m_Phase;
+        public string       State               => m_State;
+        public bool         IsActivated         => m_IsActivated;
+        public float        Randomness          => m_Randomness;
+        public float        DecisionRefresh     => m_DecisionRefresh;
 
         #endregion
 
@@ -52,7 +60,8 @@ namespace AI
             if (!m_Controller.IsServer)
                 return;
 
-            m_Root = SetupTree(botData.ArenaDifficulty);
+            SetupTree(botData.ArenaDifficulty);
+            SetupCallbacks(botData.ArenaDifficulty);
 
             m_Timers            = new Dictionary<string, float>();
             m_Randomness        = botData.Randomness;
@@ -65,13 +74,36 @@ namespace AI
                 return;
             
             m_IsActivated = activated;
-            m_Controller.AutoAttackHandler.enabled = activated;
+            if (m_Controller.AutoAttackHandler != null)
+                m_Controller.AutoAttackHandler.enabled = activated;
 
             if (activated == false && m_Controller.IsServer) 
             {
                 m_Controller.Movement.MoveX.Value = 0;
                 m_Controller.AnimationHandler.CancelCastAnimation();
             }
+        }
+
+        protected virtual void SetupTree(EArenaDifficulty arenaDifficulty)
+        {
+            if (m_Controller == null)
+            {
+                ErrorHandler.Error("No controller found for this CharacterBT");
+                m_Root = new Node();
+            }
+
+            m_Root = BTLoader.LoadTree(m_Controller, m_Controller.Character, arenaDifficulty);
+        }
+
+        protected virtual void SetupCallbacks(EArenaDifficulty arenaDifficulty)
+        {
+            if (m_Controller == null)
+            {
+                ErrorHandler.Error("No controller found for this CharacterBT");
+                m_Root = new Node();
+            }
+
+            StateChangedEvent += BTLoader.GetStateChangedCallback(m_Controller, m_Controller.Character, arenaDifficulty);
         }
 
         #endregion
@@ -111,7 +143,26 @@ namespace AI
                 m_Root.Evaluate();
         }
 
-        protected abstract Node SetupTree(EArenaDifficulty arenaDifficulty);
+
+        #region State & Phase
+
+        public void SetState(string state)
+        {
+            ErrorHandler.Log("BT STAT : " + state + "    =====================================================", ELogTag.AIBtState);
+            m_State = state;
+
+            StateChangedEvent?.Invoke(state);
+        }
+
+        public void SetPhase(int phase)
+        {
+            ErrorHandler.Log("BT PHASE : " + phase + "    =====================================================", ELogTag.AIBtState);
+            m_Phase = phase;
+
+            PhaseChangedEvent?.Invoke(phase);
+        }
+
+        #endregion
 
 
         #region Timers
@@ -130,6 +181,11 @@ namespace AI
         public void ResetTimer(string id, float timer)
         {
             m_Timers[id] = timer;
+        }
+
+        public void ResetTimers()
+        {
+            m_Timers = new Dictionary<string, float>();
         }
 
         public void DeleteTimer(string id)
@@ -196,9 +252,22 @@ namespace AI
             return m_Counters[id] < maxValue || maxValue <= -1;
         }
 
+        public void IncreaseCounter(string id, int increment = 1)
+        {
+            if (!m_Counters.ContainsKey(id))
+                m_Counters.Add(id, 0);
+
+            m_Counters[id] += increment;
+        }
+
         public void ResetCounter(string id, int value = 0)
         {
             m_Counters[id] = value;
+        }
+
+        public void ResetCounters()
+        {
+            m_Counters = new Dictionary<string, int>();
         }
 
         public void DeleteCounter(string id)

@@ -18,9 +18,12 @@ namespace Game.Spells
         [SerializeField] protected int                      m_TickDamages;
         [SerializeField] protected int                      m_TickHeal;
         [SerializeField] protected int                      m_TickShield;
+        [SerializeField] protected int                      m_TickEnergy;
         [SerializeField] protected List<SpellRequirements>  m_TickSpellRequirements;
 
         private float m_TickTimer;
+
+        protected float FinalTickLifeSteal => Mathf.Max(0f, FinalLifeSteal + m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusTickLifeSteal, m_Controller) - 1);
 
         #endregion
 
@@ -39,6 +42,9 @@ namespace Game.Spells
         public override void Update()
         {
             base.Update();
+
+            if (m_IsHolding)
+                return;
 
             m_TickTimer -= Time.deltaTime;
 
@@ -81,10 +87,13 @@ namespace Game.Spells
             int damages = GetInt(EStateEffectProperty.TickDamages);
             if (damages > 0)
             {
+                if (m_Controller.CounterHandler.CheckCounters(damages, m_Caster, damageType: EDamageType.Tick))
+                    return;
+
                 ErrorHandler.Log($"{name} : {damages} DAMAGES", ELogTag.StateEffects);
                 m_Controller.Life.Hit(damages, true);
 
-                int lifesteal = (int)Mathf.Round(damages * FinalLifeSteal);
+                int lifesteal = (int)Mathf.Round(damages * FinalTickLifeSteal);
                 if (lifesteal > 0)
                 {
                     ErrorHandler.Log($"{name} : {lifesteal} LIFESTEAL", ELogTag.StateEffects);
@@ -101,7 +110,10 @@ namespace Game.Spells
             }
 
             // add bonus tick shield
-            m_RemainingShield += GetInt(EStateEffectProperty.TickShield);
+            m_Controller.Life.AddShield(GetInt(EStateEffectProperty.TickShield));
+
+            // add bonus tick energy
+            m_Caster.EnergyHandler.AddEnergy(GetInt(EStateEffectProperty.TickEnergy));
         }
 
         #endregion

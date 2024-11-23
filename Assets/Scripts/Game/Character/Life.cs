@@ -71,6 +71,17 @@ public class Life : NetworkBehaviour
 
     #region Public Manipulator
 
+    public bool Kill(bool ignoreDeathEffects = false)
+    {
+        if (!ignoreDeathEffects && m_Controller.TriggerEffectHandler.OnDeathEffect())
+        {
+            return false;
+        }
+
+        DiedEvent?.Invoke();
+        return true;
+    }
+
     /// <summary>
     /// Apply damage to the character
     /// </summary>
@@ -105,10 +116,7 @@ public class Life : NetworkBehaviour
 
         if (m_Hp.Value <= 0)
         {
-            if (! m_Controller.TriggerEffectHandler.OnDeathEffect())
-            {
-                DiedEvent?.Invoke();
-            }
+            Kill(false);
         }
 
         return damage;

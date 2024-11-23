@@ -61,7 +61,9 @@ namespace Menu.PopUps
             m_OverlayCanvas.sortingLayerName = "Overlay";
             m_OverlayCanvas.sortingOrder = OverlayScreen.OrderInLayer + 100;
 
-            RefreshUI();
+            // setup UI
+            SetupArenaInfoSidebar();
+            SetupStagesDisplay();
         }
 
         protected override void OnInitializationCompleted()
@@ -84,7 +86,6 @@ namespace Menu.PopUps
         void RefreshUI()
         {
             SetupArenaInfoSidebar();
-            SetupStagesDisplay();
         }
 
         void SetupArenaInfoSidebar()

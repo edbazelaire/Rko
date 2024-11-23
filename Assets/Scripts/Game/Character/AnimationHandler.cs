@@ -1,6 +1,7 @@
 ﻿using Enums;
 using Game.Loaders;
 using Game.Spells;
+using MyBox;
 using Tools;
 using Unity.Collections;
 using Unity.Netcode;
@@ -37,9 +38,18 @@ namespace Game.Character
             m_Animator = animator;
 
             m_Controller.StateHandler.StateEffectList.OnListChanged         += OnStateEffectListChanged;
-            m_Controller.StateHandler.SpeedBonus.OnValueChanged             += OnSpeedBonusValueChanged;
-            m_Controller.StateHandler.AnimationState.OnValueChanged         += OnStateAnimationValueChanged;
-            m_Controller.CounterHandler.HasCounter.OnValueChanged           += OnHasCounterValueChanged;
+
+            if (HasParameter("HasCounter", AnimatorControllerParameterType.Bool))
+                m_Controller.CounterHandler.HasCounter.OnValueChanged           += OnHasCounterValueChanged;
+
+            if (HasParameter(EAnimation.Frozen.ToString(), AnimatorControllerParameterType.Trigger) || HasParameter(EAnimation.Stun.ToString(), AnimatorControllerParameterType.Trigger) || HasParameter(EAnimation.Silenced.ToString(), AnimatorControllerParameterType.Trigger) || HasParameter(EAnimation.Airborn.ToString(), AnimatorControllerParameterType.Trigger))
+                m_Controller.StateHandler.AnimationState.OnValueChanged += OnStateAnimationValueChanged;
+
+            if (HasParameter("MovementSpeed", AnimatorControllerParameterType.Float))
+            {
+                m_Controller.StateHandler.SpeedBonus.OnValueChanged += OnSpeedBonusValueChanged;
+                UpdateMovementSpeed();
+            }
 
             m_Initialized = true;
         }
@@ -129,6 +139,23 @@ namespace Game.Character
             m_Animator.Play(animation);
         }
 
+        public void ForceFinishAnimation(string animation)
+        {
+            if (string.IsNullOrEmpty(animation) || animation == "None")
+                return;
+
+            var currentState = m_Animator.GetCurrentAnimatorStateInfo(0);
+
+            if (! currentState.IsName(animation))
+            {
+                ErrorHandler.Warning($"Current state: {currentState.fullPathHash}, IsPlaying {animation}: {currentState.IsName(animation)}");
+                return;
+            }
+
+            m_Animator.Play(animation, 0, 1f);
+            m_Animator.Update(0f); // Force refresh of animator state
+        }
+
         #endregion
 
 
@@ -171,6 +198,24 @@ namespace Game.Character
         public bool IsCurrentAnimation(string animation)
         {
             return m_Animator.GetCurrentAnimatorStateInfo(0).IsName(animation);
+        }
+
+        public bool HasParameter(string paramName, AnimatorControllerParameterType type)
+        {
+            if (m_Animator == null)
+            {
+                return false;
+            }
+
+            foreach (var param in m_Animator.parameters)
+            {
+                if (param.name == paramName && param.type == type)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         #endregion

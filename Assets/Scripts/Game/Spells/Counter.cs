@@ -1,5 +1,7 @@
 ﻿using Data;
 using Enums;
+using Game.Loaders;
+using Game.UI;
 using System;
 using System.Linq;
 using Tools;
@@ -38,8 +40,8 @@ namespace Game.Spells
             if (!IsServer)
                 return;
 
-            m_CounterTimer = m_SpellData.Duration;
-            m_Shield = m_SpellData.Shield;
+            m_CounterTimer  = m_SpellData.Duration;
+            m_Shield        = m_SpellData.Shield;
 
             // apply self state effects
             ApplyAllyStateEffects(m_Controller);
@@ -48,26 +50,45 @@ namespace Game.Spells
             if (! m_SpellData.IsLinkedCounter)
                 return;
 
+            if (m_SpellData.IsCanceledOnCast)
+                m_Controller.SpellHandler.OnPreSpellEvent += OnPreSpellEvent;
+
             m_Controller.CounterHandler.AddCounter(this);
         }
 
         protected override void End()
         {
+            if (! IsServer) 
+                return;
+
+            if (m_IsOver)
+                return;
+
+            m_Controller.SpellHandler.OnPreSpellEvent -= OnPreSpellEvent;
+
             if (m_SpellData.IsLinkedCounter)
                 m_Controller.CounterHandler.RemoveCounter(this);
 
             if (m_SpellData.AllyStateEffects != null)
             {
-                foreach (var stateEffect in m_SpellData.AllyStateEffects)
+                foreach (var effect in m_SpellData.AllyStateEffects)
                 {
-                    if (!m_Controller.StateHandler.HasState(stateEffect.StateEffect))
+                    if (!m_Controller.StateHandler.HasState(effect.StateEffect))
                         continue;
 
-                    m_Controller.StateHandler.RemoveStateEffect(stateEffect.StateEffect, true, stateEffect.GetStacks());
+                    m_Controller.StateHandler.RemoveStateEffect(effect.StateEffect, true, effect.GetStacks());
                 }
             }
 
             base.End();
+        }
+
+        public override void OnDestroy()
+        {
+            if (! m_IsOver) 
+                m_Controller.SpellHandler.OnPreSpellEvent -= OnPreSpellEvent;
+
+            base.OnDestroy();
         }
 
         #endregion
@@ -125,9 +146,9 @@ namespace Game.Spells
 
         #region Counter Proc 
 
-        public bool CanBeProc(Spell spell)
+        public bool CanBeProc(EDamageType damageType)
         {
-            return COUNTER_PROCABLE_SPELLTYPE.Contains(spell.SpellData.SpellType);
+            return m_SpellData.DamageTypeActivation.Contains(damageType);
         }
 
         public bool ProcCounter(Spell enemySpell)
@@ -136,15 +157,16 @@ namespace Game.Spells
                 return false;
 
             // check if type of spell can proc counter
-            if (! CanBeProc(enemySpell))
+            if (! CanBeProc(enemySpell.SpellData.DamageType))
                 return false;
 
             var targetPosition = enemySpell.Controller.transform.position;
+            targetPosition.y = 0;
             switch (m_SpellData.CounterType)
             {
                 // cast the counter spell on the enemy
                 case ECounterType.Proc:
-                    m_SpellData.OnCounterProc.Cast(OwnerClientId, targetPosition, transform.position, recalculateTarget: false);
+                    m_SpellData.OnCounterProc.Cast(OwnerClientId, targetPosition, transform.position, recalculateTarget: true);
                     break;
 
                 // block the spell : do nothing
@@ -173,11 +195,68 @@ namespace Game.Spells
                     break;
             }
 
+            // Add energy from counter proc
+            m_Controller.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
+
             // Converts spell incoming damages into someting else
             ProcDamageConversionEffects(enemySpell);
 
             // Destroy the spell
-            Destroy(enemySpell.gameObject);
+            if (m_SpellData.IsDestroyingSpell)
+                Destroy(enemySpell.gameObject);
+
+            // Call "OnHit" event for the Counter
+            CallSpellEventClientRPC(ESpellEvent.OnHit);
+            
+            // Check MaxHit
+            m_HittedPlayerId.Add(0);
+            if (m_SpellData.MaxHit > 0 && m_HittedPlayerId.Count >= m_SpellData.MaxHit)
+                End();
+
+            return true;
+        }
+
+        public bool ProcCounter(int damages, Controller caster, EDamageType damageType)
+        {
+            if (!IsServer)
+                return false;
+
+            if (damages <= 0)
+                return false;
+
+            // check if type of spell can proc counter
+            if (! CanBeProc(damageType))
+                return false;
+
+            var targetPosition = caster.transform.position;
+            targetPosition.y = 0;
+            switch (m_SpellData.CounterType)
+            {
+                // cast the counter spell on the enemy
+                case ECounterType.Proc:
+                    m_SpellData.OnCounterProc.Cast(OwnerClientId, targetPosition, transform.position, recalculateTarget: true);
+                    break;
+
+                // block the spell : do nothing
+                case ECounterType.Block:
+                    if (m_SpellData.Shield > 0)
+                    {
+                        HitShield(damages);
+                    }
+                    break;
+
+                // Recast the spell to the enemy
+                case ECounterType.Reflect:
+                    ErrorHandler.Error("Unhandled counter type Reflect in the situation");
+                    break;
+
+                default:
+                    Debug.LogError("Unhandled counter type : " + m_SpellData.CounterType);
+                    break;
+            }
+
+            // Add energy from counter proc
+            m_Controller.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
 
             // Call "OnHit" event for the Counter
             CallSpellEventClientRPC(ESpellEvent.OnHit);
@@ -240,6 +319,19 @@ namespace Game.Spells
 
             m_Shield += shield;
             m_Controller.Life.RecalculateShield();
+        }
+
+        #endregion
+
+
+        #region Listeners
+
+        void OnPreSpellEvent(string spellNamen, ESpellEvent spellEvent)
+        {
+            if (spellEvent == ESpellEvent.OnStartCast && m_SpellData.IsCanceledOnCast)
+            {
+                End();
+            }
         }
 
         #endregion

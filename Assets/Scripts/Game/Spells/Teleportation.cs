@@ -1,10 +1,4 @@
-﻿using Data;
-using Data.Spells;
-using Enums;
-using Game.Loaders;
-using System;
-using System.Collections;
-using Unity.VisualScripting;
+﻿using Data.Spells;
 using UnityEngine;
 
 namespace Game.Spells
@@ -47,22 +41,25 @@ namespace Game.Spells
 
         protected override void End()
         {
+            if (IsServer)
+            {
+                // re activate collider
+                m_Controller.Collider.enabled = true;
+
+                // set character (not hidden) at the position of the spell
+                m_Controller.GFXHandler.HideCharacterClientRPC(false);
+                m_Controller.transform.position = transform.position;
+            }
+
             base.End();
-
-            if (! IsServer) 
-                return;
-
-            // re activate collider
-            m_Controller.Collider.enabled = true;
-
-            // set character (not hidden) at the position of the spell
-            m_Controller.GFXHandler.HideCharacterClientRPC(false);
-            m_Controller.transform.position = transform.position;
         }
 
         public override void OnDestroy()
         {
             base.OnDestroy();
+
+            if (!IsServer)
+                return;
 
             // reset player position
             m_OriginalPosition.y = 0;
@@ -103,11 +100,6 @@ namespace Game.Spells
         {
             position = target;
         }
-
-        #endregion
-
-
-        #region Members
 
         #endregion
     }

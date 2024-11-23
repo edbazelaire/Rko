@@ -1,8 +1,10 @@
-﻿using Enums;
+﻿using Assets.Scripts.Data.DataStructures.SpellSubStructures;
+using Enums;
 using Game.Loaders;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Tools;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,11 +13,11 @@ namespace Data
     [Serializable]
     public class SSpawnElement
     {
-        public string CharacterName;        // name of the character to spawn
-        public int NSpawn           = 1;    // number of spawn (-1 to infinite)
-        public float SpawnInterval  = 0f;   // interval between each spawns
-        public float Delay          = 0f;   // delay before starting
-        public float Duration       = -1f;  // duration of the spawn (-1 to infinite)
+        public string   CharacterName;                  // name of the character to spawn
+        public int      NSpawn              = 1;        // number of spawn (-1 to infinite)
+        public float    SpawnInterval       = 0f;       // interval between each spawns
+        public float    Delay               = 0f;       // delay before starting
+        public float    Duration            = -1f;      // duration of the spawn (-1 to infinite)
 
         protected bool m_CanSpawn;
         protected int m_NSpawnCounter;
@@ -33,9 +35,13 @@ namespace Data
 
         public IEnumerator StartSpawnTimer()
         {
+            ErrorHandler.Log("Start Spawn timer : " + CharacterName, ELogTag.Spawns);
+
             m_CanSpawn = false;
             yield return new WaitForSeconds(SpawnInterval);
             m_CanSpawn = true;
+
+            ErrorHandler.Log("Ended Spawn timer : " + CharacterName, ELogTag.Spawns);
         }
     }
 
@@ -49,15 +55,22 @@ namespace Data
         [Header("SpawnerData")]
         [SerializeField] protected bool                 m_IsUnique;
         [SerializeField] protected bool                 m_DestroySpawnsOnEnd;
+        [SerializeField] protected SMultiSpellTarget    m_SpawnTarget;
         [SerializeField] protected List<SSpawnElement>  m_SpawnElements;
-        [SerializeField] protected float                m_YPos;
 
         public bool IsUnique                            => m_IsUnique;
         public bool DestroySpawnsOnEnd                  => m_DestroySpawnsOnEnd;
+        public SMultiSpellTarget SpawnTarget            => m_SpawnTarget;
         public List<SSpawnElement> SpawnElements        => m_SpawnElements;
-        public float YPos                               => m_YPos;
 
         #endregion
+
+
+        public override void CalculateTarget(ref Vector3 target, ulong clientId)
+        {
+            target.y = 0;
+            base.CalculateTarget(ref target, clientId);
+        }
 
 
         #region Infos

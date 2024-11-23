@@ -170,7 +170,7 @@ namespace Game.Spells
         protected override void SetTarget(Vector3 target)
         {
             if (m_SpellData.SpellSpawn == ESpellSpawn.Ground)
-                target.y = 0f;
+                target.y = m_SpellData.TargetOffset.Y;
 
             transform.position = target;
             base.SetTarget(target);

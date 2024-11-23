@@ -29,18 +29,19 @@ namespace Menu.Common
         TMP_Text                m_CollectionValue;
         GameObject              m_Glow;
 
-        SCollectableCloudData?  m_CollectableCloudData = null;
-        float                   m_CurrentCollection;
-        float                   m_MaxCollection;
-        float                   m_GlowPauseTimer;
-        bool                    m_IsPerc;
+        protected SCollectableCloudData?    m_CollectableCloudData = null;
+        protected float                     m_CurrentCollection;
+        protected float                     m_MaxCollection;
+        protected float                     m_GlowPauseTimer;
+        protected bool                      m_IsPerc;
 
         Coroutine               m_Animation;
         AudioSource             m_AnimationAudio;
 
-        public bool IsAnimated => m_Animation != null;
-        public AudioSource AudioSource => m_AnimationAudio;
-        public float CurrentCollection => m_CurrentCollection;
+        public bool IsAnimated              => m_Animation != null;
+        public AudioSource AudioSource      => m_AnimationAudio;
+        public float CurrentCollection      => m_CurrentCollection;
+        protected virtual bool m_IsMaxed    => m_MaxCollection == 0;
 
         #endregion
 
@@ -75,12 +76,13 @@ namespace Menu.Common
             m_CollectionFill        = Finder.FindComponent<Image>(gameObject, "Fill");
             m_CollectionFillRectT   = Finder.FindComponent<RectTransform>(m_CollectionFill.gameObject);
             m_CollectionValue       = Finder.FindComponent<TMP_Text>(gameObject, "Value");
-            m_Glow                  = Finder.Find(gameObject, "Glow");
+            m_Glow                  = Finder.Find(gameObject, "Glow", false);
 
             if (m_BaseColor == default(Color))
                 m_BaseColor = m_CollectionFill.color;
             
-            m_Glow.SetActive(false);
+            if (m_Glow != null)
+                m_Glow.SetActive(false);
         }
 
         #endregion  
@@ -93,7 +95,7 @@ namespace Menu.Common
             UpdateGlowAnimation();
         }
 
-        void UpdateGlowAnimation()
+        protected void UpdateGlowAnimation()
         {
             // NOT ACTIVE : skip
             if (m_Glow == null || ! m_Glow.activeInHierarchy)
@@ -125,7 +127,7 @@ namespace Menu.Common
 
         void RefreshUI()
         {
-            if (m_MaxCollection == 0)
+            if (m_IsMaxed)
             {
                 m_CollectionFill.fillAmount = 0;
                 m_CollectionValue.text = "Maxed";

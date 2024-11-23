@@ -97,19 +97,40 @@ namespace Save
             return (TEnum)GetCollectable();  
         }
         
+        /// <summary>
+        /// Is the collectable at max level ?
+        /// </summary>
+        /// <returns></returns>
         public bool IsMaxLevel()
         {
             return Level >= CollectablesManagementData.GetMaxLevel(GetCollectable());
         }
 
+        /// <summary>
+        /// Has enought ressources to upgrade the collectable ?
+        /// </summary>
+        /// <returns></returns>
         public bool HasEnoughQty()
         {
             return GetQty() >= CollectablesManagementData.GetLevelData(GetCollectable(), Level).RequiredQty;
         }
 
+        /// <summary>
+        /// Is collectbale upgradable
+        /// </summary>
+        /// <returns></returns>
         public bool IsUpgradable()
         {
-            return !IsMaxLevel() && HasEnoughQty();
+            if (IsMaxLevel() || ! HasEnoughQty())
+                return false;
+
+            if (GetCollectable().GetType() == typeof(ECharacter))
+            {
+                if (Level >= ProfileCloudData.AccountLevel)
+                    return false;
+            }
+
+            return true;
         }
 
         public override string ToString()
@@ -156,6 +177,7 @@ namespace Save
         // -- Keys
         public const string KEY_GOLDS       = "Golds";
         public const string KEY_GEMS        = "Gems";
+        public const string KEY_TOTAL_XP    = "TotalXp";
         public const string KEY_XP          = "Xp";
         public const string KEY_SPELLS      = "Spells";
         public const string KEY_CHARACTERS  = "Characters";
@@ -190,6 +212,7 @@ namespace Save
             { KEY_GOLDS,        0                                   },
             { KEY_GEMS,         0                                   },
             { KEY_XP,           0                                   },
+            { KEY_TOTAL_XP,     0                                   },
             { KEY_CHARACTERS,   new List<SCollectableCloudData>()   },
             { KEY_SPELLS,       new List<SCollectableCloudData>()   },
             { KEY_RUNES,        new List<SCollectableCloudData>()   },
@@ -331,6 +354,11 @@ namespace Save
             SetData(currency.ToString(), value);
         }
 
+        public void AddCurrency(ECurrency currency, int value)
+        {
+            SetData(currency.ToString(), GetCurrency(currency) + value);
+        }
+
         #endregion
 
 
@@ -464,6 +492,16 @@ namespace Save
         #endregion
 
 
+        #region Error Handler
+
+        protected override void OnLoadingError(string key, Item item)
+        {
+            base.OnLoadingError(key, item);
+        }
+
+        #endregion
+
+
         #region Checkers
 
         void CheckCurrencies()
@@ -476,8 +514,20 @@ namespace Save
 
             if ((int)m_Data[KEY_GEMS] < 0)
             {
-                ErrorHandler.Error("Golds (" + (int)m_Data[KEY_GEMS] + ") < 0 : reseting back to 0");
+                ErrorHandler.Error("Gems (" + (int)m_Data[KEY_GEMS] + ") < 0 : reseting back to 0");
                 Reset(KEY_GEMS);
+            }
+
+            if ((int)m_Data[KEY_XP] < 0)
+            {
+                ErrorHandler.Error("Xp (" + (int)m_Data[KEY_GEMS] + ") < 0 : reseting back to 0");
+                Reset(KEY_XP);
+            }
+
+            if ((int)m_Data[KEY_TOTAL_XP] < 0)
+            {
+                ErrorHandler.Error(KEY_TOTAL_XP + " (" + (int)m_Data[KEY_GEMS] + ") < 0 : reseting back to 0");
+                Reset(KEY_TOTAL_XP);
             }
         }
 
@@ -538,6 +588,11 @@ namespace Save
 
             foreach (Enum collectable in Enum.GetValues(collectableType))
             {
+                if (collectable is ESpell spell && SpellLoader.IsBossSpell(spell))
+                {
+                    continue;
+                }
+
                 bool addedData = AddCollectableData(collectable, GetInfos(collectable).DefaultData.Contains(collectable));
                 if (addedData)
                     hasMissing = true;
@@ -554,6 +609,10 @@ namespace Save
 
             // linked spell : level is dependent on the character
             if (collectable.GetType() == typeof(ESpell) && SpellLoader.GetSpellData(collectable.ToString(), destroy: true).Linked)
+                return false;
+
+            // boss spell : cant be unlocked
+            if (CollectablesManagementData.IsBossSpell(collectable))
                 return false;
 
             // already in data : skip

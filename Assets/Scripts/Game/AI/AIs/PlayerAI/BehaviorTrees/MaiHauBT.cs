@@ -6,9 +6,13 @@ using UnityEngine;
 
 namespace Game.AI.BehaviorTrees
 {
-    public static class MaiHauBT
+    public class MaiHauBT : DefaultBT
     {
-        public static Node LoadTree(Controller controller)
+        public MaiHauBT(Controller controller, EArenaDifficulty arenaDifficulty) : base(controller, arenaDifficulty) { }
+
+        #region Trees
+
+        public override Node GetDefaultTree()
         {
             return new Selector(new List<Node>
             {
@@ -17,33 +21,36 @@ namespace Game.AI.BehaviorTrees
                     // check if has required state effects to use his special ability
                     new Selector(new List<Node> {
                         // -- at least 5 Poison stacks
-                        new CheckHasState(controller, EStateEffect.Poison.ToString(), nStacks: 5, target: ESpellTarget.FirstEnemy),
+                        new CheckHasState(m_Controller, EStateEffect.Poison.ToString(), nStacks: 5, target: ESpellTarget.FirstEnemy),
                         // -- OR Frozen state
-                        new CheckHasState(controller, EStateEffect.Frozen.ToString(), target: ESpellTarget.FirstEnemy),
+                        new CheckHasState(m_Controller, EStateEffect.Frozen.ToString(), target: ESpellTarget.FirstEnemy),
                     }),
-                    
-                    new TaskUseSpell(controller, ESpell.SlIceBreaker),
+
+                    new TaskUseSpell(m_Controller, ESpell.SlIceBreaker),
                 }),
 
                 // ULTIMATE
-                new TaskAttack(controller, allowedSpellCategories: new List<ESpellCategory> { ESpellCategory.Ultimate }),
+                new TaskAttack(m_Controller, allowedSpellCategories: new List<ESpellCategory> { ESpellCategory.Ultimate }),
 
                 // MOVEMENT : dodge enemy zone spells
                 new Sequence(new List<Node> {
-                    new CheckInZone(controller),
-                    new TaskExitZone(controller),
+                    new CheckInZone(m_Controller),
+                    new TaskExitZone(m_Controller),
                 }),
 
                 // AUTO ATTACK
-                new TaskAutoAttack(controller, true),
+                new TaskUseSpell(m_Controller, m_Controller.SpellHandler.AutoAttack),
 
                 // MOVE
-                new TaskMove(controller, checkZones: true, checkProjectiles: false),
+                new TaskMove(m_Controller, checkZones: true, checkProjectiles: false),
 
                 // Stand Still if cant move
-                new TaskAutoAttack(controller),
+                new TaskWait(m_Controller),
             });
         }
+
+        #endregion
+
     }
 }
 

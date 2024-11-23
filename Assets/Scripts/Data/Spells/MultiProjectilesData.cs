@@ -89,7 +89,7 @@ namespace Data
                 return;
             }
 
-            Main.Instance.StartCoroutine(CastMultipleProjectiles(clientId, target, position, rotation));
+            GameManager.Instance.GetPlayer(clientId).StartCoroutine(CastMultipleProjectiles(clientId, target, position, rotation));
         }
 
         public IEnumerator CastMultipleProjectiles(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default)

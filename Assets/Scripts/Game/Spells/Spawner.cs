@@ -2,7 +2,6 @@
 using Enums;
 using Game.Loaders;
 using Managers;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using Tools;
@@ -45,7 +44,6 @@ namespace Game.Spells
         public override void Initialize(ulong clientId, Vector3 target, string spellName, int level)
         {
             base.Initialize(clientId, target, spellName, level);
-            transform.position = new Vector3(target.x, m_SpellData.YPos, target.y);
 
             if (!IsServer)
                 return;
@@ -144,9 +142,15 @@ namespace Game.Spells
 
         void Spawn(ref SSpawnElement spawnElement)
         {
+            ErrorHandler.Log("Spawning [" + spawnElement.NSpawnCounter + "] : " + spawnElement.CharacterName, ELogTag.Spawns);
+
             // create an AI prefab and spawn it
-            var spawnPos = new Vector3(transform.position.x, m_SpellData.YPos, 0f);
-            var spawnPrefab = Instantiate(CharacterLoader.GetCharacterData(spawnElement.CharacterName).IsStructure ? CharacterLoader.Instance.StructurePrefab : CharacterLoader.Instance.PlayerAIPrefab, spawnPos, Quaternion.Euler(0f, 0f, 0f));
+            var spawnPrefab = Instantiate(
+                CharacterLoader.GetPrefab(spawnElement.CharacterName, false), 
+                CalculateSpawnPosition(spawnElement.NSpawnCounter, spawnElement.NSpawn), 
+                Quaternion.Euler(0f, 0f, 0f)
+            );
+
             spawnPrefab.GetComponent<NetworkObject>().Spawn(true);
         
             // add player to list of player controllers
@@ -191,6 +195,22 @@ namespace Game.Spells
                 yield break;
             
             Destroy(spawnController.gameObject);
+        }
+
+        #endregion
+
+
+        #region Target & Position
+
+        protected override void SetTarget(Vector3 target)
+        {
+            transform.position = target;
+            base.SetTarget(target);
+        }
+
+        protected virtual Vector3 CalculateSpawnPosition(int index, int maxSpawns)
+        {
+            return m_SpellData.SpawnTarget.RecalculateTarget(transform.position, index, m_Controller.Team, maxSpawns);
         }
 
         #endregion

@@ -17,41 +17,50 @@ namespace Game.Character
     {
         #region Members
 
+        public static Color INVISIBLE_COLOR => new Color(0f, 0f, 0f, 0f);
+
         // ===========================================================================
         // DATA
         /// <summary> list of colors of the state effect </summary>
-        Dictionary<EBodyPart, List<Color>> m_Colors;
+        Dictionary<string, List<Color>> m_Colors;
         /// <summary> list of colors of the state effect </summary>
-        Dictionary<EBodyPart, List<Material>> m_Materials;
+        Dictionary<string, List<Material>> m_Materials;
         /// <summary> default material of sprites </summary>
         Material m_DefaultMaterial;
+        /// <summary> size of the character </summary>
         float m_CharacterSize;
 
         // ===========================================================================
         // Private Components
-        // original Controller
-        Controller m_Controller;
+        /// <summary> base controller </summary>
+        Controller                          m_Controller;
         /// <summary> preview of the character </summary>
-        GameObject m_CharacterPreview;
+        GameObject                          m_CharacterPreview;
+        /// <summary> collider of the character </summary>
+        Collider2D                          m_Collider;
         /// <summary> sprite renderer of the Character</summary>
-        List<SpriteRenderer> m_SpriteRenderers;
+        List<SpriteRenderer>                m_SpriteRenderers;
         /// <summary> list of body parts </summary>
-        Dictionary<EBodyPart, GameObject> m_BodyParts;
+        Dictionary<EBodyPart, GameObject>   m_BodyParts;
 
         // ===========================================================================
         // PUBLIC ACCESSORS
         public GameObject CharacterPreview => m_CharacterPreview;
+        public Collider2D Collider => m_Collider;
         public Dictionary<EBodyPart, GameObject> BodyParts => m_BodyParts;
         public float CharacterSize => m_CharacterSize;
+
+        public bool IsVisible => m_SpriteRenderers.Any(spriteRenderer => spriteRenderer.color != INVISIBLE_COLOR);
 
         #endregion
 
 
         #region Init & End
-         
+
         public override void OnNetworkSpawn()
         {
             m_Controller = Finder.FindComponent<Controller>(gameObject);
+            m_Collider = Finder.FindComponent<Collider2D>(gameObject);
         }
 
         public void Initialize(string character)
@@ -68,10 +77,10 @@ namespace Game.Character
 
             m_Colors = new();
             m_Materials = new();
-            foreach (EBodyPart bodyPart in Enum.GetValues(typeof(EBodyPart)))
+            foreach (var spriteRenderer in m_SpriteRenderers)
             {
-                m_Colors.Add(bodyPart, new());
-                m_Materials.Add(bodyPart, new());
+                m_Colors.Add(spriteRenderer.gameObject.name , new());
+                m_Materials.Add(spriteRenderer.gameObject.name, new());
             }
             m_DefaultMaterial = m_SpriteRenderers[0].material;
 
@@ -174,18 +183,18 @@ namespace Game.Character
                 return;
 
             // destroy the collider on the Spell before adding the new one
-            Destroy(this.GetComponent<Collider2D>());
+            Destroy(m_Collider);
 
             // Get the type of the original collider
             Type colliderType = graphicsCollider.GetType();
 
             // Add a new collider of the same type to this GameObject
-            Collider2D newCollider = this.gameObject.AddComponent(colliderType) as Collider2D;
+            m_Collider = this.gameObject.AddComponent(colliderType) as Collider2D;
 
             // Copy properties from the original collider to the new one
-            if (newCollider != null)
+            if (m_Collider != null)
             {
-                CopyColliderProperties(graphicsCollider, newCollider);
+                CopyColliderProperties(graphicsCollider, m_Collider);
             }
 
             // Destroy the original collider on the graphics GameObject
@@ -277,6 +286,15 @@ namespace Game.Character
 
         #region Body Parts
 
+        public Transform GetSpellSpawn()
+        {
+            var spellSpawn = GetBodyPart(EBodyPart.SpellSpawn);
+            if (spellSpawn == null)
+                return transform;
+
+            return spellSpawn.transform;
+        }
+
         void FindBodyParts()
         {
             m_BodyParts = new Dictionary<EBodyPart, GameObject>();
@@ -302,14 +320,14 @@ namespace Game.Character
         {
             if (!m_BodyParts.ContainsKey(bodyPart))
             {
-                if (trackError)
+                if (trackError && ! CharacterLoader.IsSpawn(m_Controller.Character))
                     ErrorHandler.Error("BodyPart " + bodyPart + " not found in character " + m_Controller.Character);
                 return null;
             }
 
             if (m_BodyParts[bodyPart] == null)
             {
-                if (trackError)
+                if (trackError && !CharacterLoader.IsSpawn(m_Controller.Character))
                     ErrorHandler.Error("BodyPart " + bodyPart + " is null for character " + m_Controller.Character);
                 return null;
             }
@@ -361,53 +379,45 @@ namespace Game.Character
 
         public void ApplyMaterial(Material material, EBodyPart bodyPart = EBodyPart.None)
         {
-            if (bodyPart == EBodyPart.None)
-                m_Materials[bodyPart].Add(material);
+            if (bodyPart != EBodyPart.None)
+            {
+                if (m_Materials.ContainsKey(bodyPart.ToString()))
+                    m_Materials[bodyPart.ToString()].Add(material);
+                return;
+            }
 
             foreach (var spriteRenderer in m_SpriteRenderers)
             {
-                // check if is a body part
-                if (!Enum.TryParse(spriteRenderer.name, out EBodyPart tempBodyPart))
-                    continue;
-
-                // check is the right body part
-                if (bodyPart != EBodyPart.None && bodyPart != tempBodyPart)
-                    continue;
-
                 // att to list of materials
-                m_Materials[tempBodyPart].Add(material);
+                m_Materials[spriteRenderer.name].Add(material);
                 spriteRenderer.material = material;
             }
         }
 
         public void RemoveMaterial(Material material, EBodyPart bodyPart = EBodyPart.None)
         {
-            if (bodyPart == EBodyPart.None)
-                m_Materials[bodyPart].Remove(material);
-           
+            if (bodyPart != EBodyPart.None)
+            {
+                if (m_Materials.ContainsKey(bodyPart.ToString()))
+                    m_Materials[bodyPart.ToString()].Add(material);
+                return;
+            }
+
             foreach (var spriteRenderer in m_SpriteRenderers)
             {
-                // check if is a body part
-                if (!Enum.TryParse(spriteRenderer.name, out EBodyPart tempBodyPart))
-                    continue;
-
-                // check is the right body part
-                if (bodyPart != EBodyPart.None && bodyPart == tempBodyPart)
-                    continue;
-
                 // check if body part has material in store
-                if (!m_Materials[tempBodyPart].Contains(material))
+                if (! m_Materials[spriteRenderer.name].Contains(material))
                     continue;
 
                 // remove from list of materials
-                m_Materials[tempBodyPart].Remove(material);
+                m_Materials[spriteRenderer.name].Remove(material);
 
                 // check if is current material
                 if (TextHandler.CleanMaterialName(spriteRenderer.sharedMaterial.name) != TextHandler.CleanMaterialName(material.name) )
                     continue;
 
                 // use last available material if any or default
-                spriteRenderer.material = m_Materials[tempBodyPart].Count > 0 ? m_Materials[tempBodyPart].Last() : m_DefaultMaterial;
+                spriteRenderer.material = m_Materials[spriteRenderer.name].Count > 0 ? m_Materials[spriteRenderer.name].Last() : m_DefaultMaterial;
             }
         }
 
@@ -422,7 +432,7 @@ namespace Game.Character
         /// <param name="hidden"></param>
         public void HideCharacter(bool hidden)
         {
-            Color color = new Color(0f, 0f, 0f, 0f);
+            Color color = INVISIBLE_COLOR;
             if (hidden)
                 AddColor(color);
             else
@@ -433,58 +443,63 @@ namespace Game.Character
         /// Hide / show the character colors
         /// </summary>
         /// <param name="hidden"></param>
-        public void Hide(bool hidden, EBodyPart bodyPart = EBodyPart.None)
+        public void Hide(bool hidden, string spriteName)
         {
             Color color = new Color(0f, 0f, 0f, 0f);
             if (hidden)
-                AddColor(color, bodyPart);
+                AddColor(color, spriteName);
             else
-                RemoveColor(color, bodyPart);
+                RemoveColor(color, spriteName);
         }
 
-        void AddColor(Color color, EBodyPart bodyPart = EBodyPart.None)
+        void AddColor(Color color, string spriteName = "None")
         {
-            if (bodyPart == EBodyPart.None)
+            if (spriteName == EBodyPart.None.ToString())
             {
                 foreach (var part in m_Colors.Keys)
                 {
-                    if (part == EBodyPart.None)
-                        continue;
                     AddColor(color, part);
                 }
                 return;
             }
 
-            m_Colors[bodyPart].Add(color);
-            SetColor(color, bodyPart);
+            if (! m_Colors.ContainsKey(spriteName))
+            {
+                ErrorHandler.Warning("Unable to find any sprite named " + spriteName + " in graphics colors of " + m_Controller.Character);
+                return;
+            }
+
+            m_Colors[spriteName].Add(color);
+            SetColor(color, spriteName);
         }
 
-        void RemoveColor(Color color, EBodyPart bodyPart = EBodyPart.None)
+        void RemoveColor(Color color, string spriteName = "None")
         {
-            if (bodyPart == EBodyPart.None)
+            if (spriteName == EBodyPart.None.ToString())
             {
-                foreach (var part in m_Colors.Keys)
+                foreach (var tempSpriteName in m_Colors.Keys)
                 {
-                    if (part == EBodyPart.None)
-                        continue;
-                    RemoveColor(color, part);
+                    RemoveColor(color, tempSpriteName);
                 }
                 return;
             }
 
-            m_Colors[bodyPart].Remove(color);
-            color = m_Colors[bodyPart].Count > 0 ? m_Colors[bodyPart].Last() : Color.white;
-            SetColor(color, bodyPart);
+            if (!m_Colors.ContainsKey(spriteName))
+            {
+                ErrorHandler.Warning("Unable to find any sprite named " + spriteName + " in graphics colors of " + m_Controller.Character);
+                return;
+            }
+
+            m_Colors[spriteName].Remove(color);
+            color = m_Colors[spriteName].Count > 0 ? m_Colors[spriteName].Last() : Color.white;
+            SetColor(color, spriteName);
         }
 
-        void SetColor(Color color, EBodyPart bodyPart = EBodyPart.None)
+        void SetColor(Color color, string spriteName = "None")
         {
             foreach (var spriteRenderer in m_SpriteRenderers)
             {
-                if (!Enum.TryParse(spriteRenderer.name, out EBodyPart tempBodyPart))
-                    continue;
-
-                if (bodyPart != EBodyPart.None && bodyPart != tempBodyPart)
+                if (spriteName != EBodyPart.None.ToString() && spriteRenderer.name != spriteName)
                     continue;
 
                 spriteRenderer.color = color;

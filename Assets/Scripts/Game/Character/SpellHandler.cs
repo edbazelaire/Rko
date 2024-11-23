@@ -235,48 +235,59 @@ namespace Game.Character
 
         #region Spell Selection
 
+        public bool CanSelect(ESpell spell) => CanSelect(spell, out string _);
+        
+
         /// <summary>
         /// Check if the given spell can be selected (no cooldown and enought energy)
         /// </summary>
         /// <param name="spell"></param>
         /// <returns></returns>
-        public bool CanSelect(ESpell spell)
+        public bool CanSelect(ESpell spell, out string reason)
         {
             if (spell == ESpell.None)
+            {
+                reason = "Spell is None";
                 return true;
+            }
 
             // COOLDOWN : check that spell has no current cooldown
             if (GetCooldown(spell) > 0f)
             {
+                reason = "Spell selection (" + spell + ") BLOCKED : In cooldown";
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log("Spell selection (" + spell + ") BLOCKED : IN COOLDOWN", ELogTag.SpellHandler);
+                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
             // ENERGY : check that has enought energy to cast the spell 
             if (GetSpellData(spell).EnergyCost > m_Controller.EnergyHandler.Energy.Value)
             {
+                reason = "Spell selection (" + spell + ") BLOCKED : Not enought energy";
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log("Spell selection (" + spell + ") BLOCKED : IN COOLDOWN", ELogTag.SpellHandler);
+                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
             // check if spell must be unique and has already instance 
             if (!CheckUniqueSpell(spell))
             {
+                reason = "Spell selection (" + spell + ") BLOCKED : Unique spell";
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log("Spell selection (" + spell + ") BLOCKED : Unique spell", ELogTag.SpellHandler);
+                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
             // check that spell requirements are met
             if (!CheckSpellRequirements(spell))
             {
+                reason = "Spell selection (" + spell + ") BLOCKED : CheckSpellRequirements";
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log("Spell selection (" + spell + ") BLOCKED : CheckSpellRequirements", ELogTag.SpellHandler);
+                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
+            reason = "";
             return true;
         }
 
@@ -361,86 +372,104 @@ namespace Game.Character
 
         #region Casting
 
+        public bool CanCast(ESpell spell)
+        {
+            return CanCast(spell, out string _);
+        }
+
         /// <summary>
         /// Check if the given spell can be cast (no cooldown, enought energy, not doing a blocking action or in a state that prevents casts)
         /// </summary>
         /// <param name="spell"></param>
         /// <returns></returns>
-        public bool CanCast(ESpell spell)
+        public bool CanCast(ESpell spell, out string reason)
         {
+            reason = "";
+
             if (spell == ESpell.None)
             {
+                reason = "Spell cast (" + spell + ") BLOCKED : no spell selected";
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log("Spell cast (" + spell + ") BLOCKED : no spell selected", ELogTag.SpellHandler);
+                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
+
                 return false;
             }
 
             if (!m_SpellsNet.Contains((int)spell))
             {
+                reason = "Trying to select spell (" + spell + ") but spell does not exists";
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Error("Trying to select spell (" + spell + ") but spell does not exists");
+                    ErrorHandler.Error(reason);
                 return false;
             }
 
-            if (!CanSelect(spell))
+            if (! CanSelect(spell, out reason))
             {
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log("Spell cast (" + spell + ") BLOCKED : spell can not be selected", ELogTag.SpellHandler);
+                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
             // check : cast is not forced blocked
             if (m_CastBlocked.Value)
             {
+                reason = "Spell cast (" + spell + ") BLOCKED : cast is forced cancel";
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log("Spell cast (" + spell + ") BLOCKED : cast is forced cancel", ELogTag.SpellHandler);
+                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
             // check : global cooldown done
             if (m_GlobalCooldown.Value > 0f)
             {
+                reason = "Spell cast (" + spell + ") BLOCKED : m_GlobalCooldown (" + m_GlobalCooldown.Value + ") > 0";
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log("Spell cast (" + spell + ") BLOCKED : m_GlobalCooldown (" + m_GlobalCooldown.Value + ") > 0", ELogTag.SpellHandler);
+                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
             // check state effect blocking the cast
             if (HasStateBlockingCast())
             {
+                reason = "Spell cast (" + spell + ") BLOCKED : HasStateBlockingCast()";
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log("Spell cast (" + spell + ") BLOCKED : HasStateBlockingCast()", ELogTag.SpellHandler);
+                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
             // performing a special animation : cant cast or move
             if (m_Controller.StateHandler.HasState(EStateEffect.SpecialAnimation) || m_Controller.StateHandler.HasState(EStateEffect.Vanish))
             {
+                reason = "Spell cast (" + spell + ") BLOCKED : Has state 'SpecialAnimation'";
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log("Spell cast (" + spell + ") BLOCKED : Has state 'SpecialAnimation'", ELogTag.SpellHandler);
+                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
             // check : is casting an other spell
             if (m_IsCasting && ! m_IsCurrentSpellCancellable)
             {
+                reason = "Spell cast (" + spell + ") BLOCKED : is casting another non cancellable spell";
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log("Spell cast (" + spell + ") BLOCKED : is casting an other spell", ELogTag.SpellHandler);
+                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
             if (m_CastCoroutine != null && ! m_IsCurrentSpellCancellable)
             {
+                reason = "Spell cast (" + spell + ") BLOCKED : Coroutine not over";
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log("Spell cast (" + spell + ") BLOCKED : Coroutine not over", ELogTag.SpellHandler);
+                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
             // check if enemy can be targeted
             if (! CheckEnemyTargetable(spell))
             {
+                reason = "Spell cast (" + spell + ") BLOCKED : Enemy is not targetable";
+
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log("Spell cast (" + spell + ") BLOCKED : Enemy is not targetable", ELogTag.SpellHandler);
+                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
@@ -523,28 +552,40 @@ namespace Game.Character
             return true;
         }
 
+        public bool TryStartCastSpell(ESpell spell)
+        {
+            return TryStartCastSpell(spell, out string _);
+        }
+
+
         /// <summary>
         /// Cast the given spell
         /// </summary>
         /// <param name="spell"></param>
-        public bool TryStartCastSpell(ESpell spell)
+        public bool TryStartCastSpell(ESpell spell, out string reason)
         {
             if ((m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI)) && spell != m_AutoAttack)
                 ErrorHandler.Log("TryStartCastSpell : " + spell, ELogTag.SpellHandler);
 
             if (!IsServer)
+            {
+                reason = "Not Server";
+                return false;
+            }
+
+            if (! CanCast(spell, out reason))
                 return false;
 
-            if (!CanCast(spell))
+            // check if can consume spell requirements
+            if (! TryConsumeSpellRequirements(spell))
+            {
+                reason = "Unable to consume spell requirements for " + spell;
                 return false;
+            }
 
             // if curently casting another spell, cancel it
             if (m_IsCasting)
                 CancelCast();
-
-            // check if can consume spell requirements
-            if (! TryConsumeSpellRequirements(spell)) 
-                return false;
 
             // set as selected spell
             m_SelectedSpell = spell;
@@ -677,6 +718,7 @@ namespace Game.Character
 
         public void OnCastCompleted()
         {
+            // reset properties and variables
             ResetCastProperties();
 
             // reset spell selection
@@ -778,7 +820,15 @@ namespace Game.Character
         {
             if (! NetworkManager.Singleton.IsConnectedClient || GameManager.IsGameOver)
                 return 0f;
-            return m_Cooldowns[GetSpellIndex(spellType)];
+
+            int index = GetSpellIndex(spellType);
+            if (index < 0)
+            {
+                ErrorHandler.Error("Trying to get spell " + spellType + " not in the list of spells for " + gameObject.name);
+                return 0f;
+            }
+            
+            return m_Cooldowns[index];
         }
 
         public void ResetCooldowns()
@@ -788,11 +838,11 @@ namespace Game.Character
 
             foreach (var spellId in m_SpellsNet)
             {
-                ResetSpell((ESpell)spellId);
+                ResetCooldown((ESpell)spellId);
             }
         }
 
-        public void ResetSpell(ESpell spell)
+        public void ResetCooldown(ESpell spell)
         {
             if (!IsServer)
                 return;

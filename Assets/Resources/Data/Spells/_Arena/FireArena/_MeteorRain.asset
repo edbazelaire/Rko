@@ -26,12 +26,10 @@ MonoBehaviour:
     WithIcon: 1
   - Name: Burn
     WithIcon: 1
+  m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions: []
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -40,12 +38,18 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 1
-  LockTargetAt: 2
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
   m_Heal: 0
+  m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
@@ -71,8 +75,11 @@ MonoBehaviour:
   m_Speed: 0
   ProjectileData: {fileID: 11400000, guid: 2c9ea39538d0f4e40a36d7cf2b20f0e2, type: 2}
   MultiProjectileType: 2
+  m_IsBlocking: 1
   m_NProjectiles: 1
   m_ProjectileZoneSize: -1
   m_DelayBetweenLaunches: 0
-  m_NWaves: 999
-  m_DelayBetweenWaves: 10
+  m_NWaves: 2
+  m_DelayBetweenWaves: 8
+  OnCastWaveSoundFX: {fileID: 0}
+  OnCastProjectileSoundFX: {fileID: 0}

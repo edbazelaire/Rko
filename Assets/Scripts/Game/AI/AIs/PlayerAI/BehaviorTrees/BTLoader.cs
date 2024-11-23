@@ -1,12 +1,34 @@
+using System;
 using System.Collections.Generic;
 using AI;
 using Enums;
+using Save;
 using Tools;
 
 namespace Game.AI.BehaviorTrees
 {
     public static class BTLoader
     {
+        public static DefaultBT GetIBehaviorTree(Controller controller, string characterName, EArenaDifficulty arenaDifficulty = EArenaDifficulty.Normal)
+        {
+            if (characterName == EBoss.IceGolem.ToString())
+                return new IceGolemBT(controller, arenaDifficulty);
+
+            if (characterName == EBoss.MaiHau.ToString())
+                return new MaiHauBT(controller, arenaDifficulty);
+
+            if (characterName == EBoss.Atassut.ToString())
+                return new AtassutBT(controller, arenaDifficulty);
+
+            if (characterName == EBoss.Sikunik.ToString())
+                return new SikunikBT(controller, arenaDifficulty);
+
+            if (characterName == EBoss.Lunassian.ToString())
+                return new LunassianBT(controller, arenaDifficulty);
+
+            return new DefaultBT(controller, arenaDifficulty);
+        }
+
         /// <summary>
         ///  Load the Behavior Tree corresponding to the situation
         /// </summary>
@@ -21,19 +43,12 @@ namespace Game.AI.BehaviorTrees
                 return new Node();
             }
 
-            if (characterName == EBoss.IceGolem.ToString())
-                return IceGolemBT.LoadTree(controller, arenaDifficulty);  
+            return GetIBehaviorTree(controller, characterName, arenaDifficulty).LoadTree();
+        }
 
-            if (characterName == EBoss.MaiHau.ToString())
-                return MaiHauBT.LoadTree(controller);  
-
-            if (characterName == EBoss.Atassut.ToString())
-                return AtassutBT.LoadTree(controller);  
-
-            if (characterName == EBoss.Lunassian.ToString())
-                return LunassianBT.LoadTree(controller, arenaDifficulty);       
-            
-            return LoadBasicTree(controller);
+        public static Action<string> GetStateChangedCallback(Controller controller, string characterName, EArenaDifficulty arenaDifficulty = EArenaDifficulty.Normal)
+        {
+            return GetIBehaviorTree(controller, characterName, arenaDifficulty).OnStateChanged;
         }
 
         public static Node LoadBasicTree(Controller controller)
@@ -57,7 +72,8 @@ namespace Game.AI.BehaviorTrees
                 }),
 
                 new TaskAttack(controller),
-                new TaskAutoAttack(controller),
+
+                new TaskWait(controller)
             });
         }
 
@@ -73,7 +89,7 @@ namespace Game.AI.BehaviorTrees
                         new TaskCounter(controller),
                         new TaskJump(controller),
                         new TaskMove(controller),
-                        new TaskAutoAttack(controller),
+                        new TaskUseSpell(controller, controller.SpellHandler.AutoAttack),
                     }, random: true),
                  }),
 
@@ -100,7 +116,7 @@ namespace Game.AI.BehaviorTrees
                 }),
 
                 new TaskAttack(controller),
-                new TaskAutoAttack(controller),
+                new TaskWait(controller),
             });
         }
     }

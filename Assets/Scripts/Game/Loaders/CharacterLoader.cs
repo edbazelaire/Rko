@@ -88,7 +88,7 @@ namespace Game.Loaders
         #endregion
 
 
-        #region Public Static Manipulators
+        #region Data Accessors
 
         /// <summary>
         /// Get data of a character (updated with level if provided)
@@ -175,9 +175,40 @@ namespace Game.Loaders
             return null;
         }
 
-        public static bool IsBoss(string character)
+        #endregion
+
+
+        #region Checkers
+
+        public static bool IsCharacter(string characterName)
         {
-            return Instance.m_Bosses.ContainsKey(character);
+            return Enum.TryParse(characterName, out ECharacter _);
+        }
+
+        public static bool IsBoss(string characterName)
+        {
+            return Enum.TryParse(characterName, out EBoss _);
+        }
+
+        public static bool IsSpawn(string characterName)
+        {
+            return Enum.TryParse(characterName, out ESpawn _);
+        }
+
+        #endregion
+
+
+        #region Prefabs
+
+        public static GameObject GetPrefab(string characterName, bool isPlayer)
+        {
+            var characterData = GetCharacterData(characterName);
+            if (characterData.IsStructure)
+                return Instance.StructurePrefab;
+            else if (isPlayer)
+                return Instance.PlayerAIPrefab;
+            else
+                return Instance.PlayerPrefab;
         }
 
         #endregion

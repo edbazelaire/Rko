@@ -16,6 +16,7 @@ using System.Linq;
 using Tools;
 using Unity.Netcode;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 
 namespace Game
@@ -74,6 +75,7 @@ namespace Game
         // ===================================================================================
         // PUBLIC ACCESSORS 
         public Dictionary<ulong, Controller> Controllers => m_Controllers;
+        public Dictionary<ulong, Controller> Spawns => m_Spawns;
         public NetworkVariable<float> ProgressGameStart => m_ProgressGameStart;
         public NetworkVariable<EGameState> State => m_State;
         /// <summary> check if GameManager exists, if has an Instance or the game object exists in the scene </summary>
@@ -155,6 +157,8 @@ namespace Game
         /// </summary>
         public void Shutdown()
         {
+            StopAllCoroutines();
+
             // unregister from each events
             m_State.OnValueChanged -= OnStateValueChanged;
             StateEffect.StateEffectEvent = null;    // reset all registeries to the StateEffect static event
@@ -671,11 +675,33 @@ namespace Game
 
         public Controller GetFirstEnemy(int team)
         {
+            Controller returnedController = null;
+
             foreach (Controller controller in m_Controllers.Values)
-                if (controller.Team != team)
+            {
+                if (controller.Team == team)
+                    continue;
+
+                // return this controller if can be targetted
+                if (! controller.StateHandler.IsUnTargetable)
                     return controller;
 
-            return null;
+                // save this as current returned controller but keep looking for a better fit
+                returnedController = controller;
+            }
+
+            // check can be targetted
+            if (! returnedController.StateHandler.IsUnTargetable)
+                return returnedController;
+
+            // get first targetable spawn
+            var spawnController = GetFirstSpawn(team, ally: false);
+            if (spawnController != null && ! spawnController.StateHandler.IsUnTargetable) 
+            {
+                returnedController = spawnController;
+            }
+
+            return returnedController;
         }
 
         public Controller GetFirstAlly(int team, ulong slefId)
@@ -702,6 +728,20 @@ namespace Game
         public bool HasPlayer(ulong clientId)
         {
             return GetPlayer(clientId) != null;
+        }
+
+        public List<Controller> GetAllSpawns(int team, bool ally = false)
+        {
+            return m_Spawns.Values.Where(controller => ally == (controller.Team == team)).ToList();
+        }
+
+        public Controller GetFirstSpawn(int team, bool ally = false)
+        {
+            var spawns = GetAllSpawns(team, ally);
+            if (spawns == null || spawns.Count == 0)
+                return null;
+
+            return spawns[0];
         }
 
         public bool TryFindSpellInArena(string spellName, out Spell spell, Controller controller = null)

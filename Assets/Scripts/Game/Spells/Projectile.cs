@@ -22,10 +22,9 @@ namespace Game.Spells
 
 
         #region Init & End
-
+        
         public override void Initialize(ulong clientId, Vector3 target, string spellName, int level)
         {
-            target.y = 0;
             base.Initialize(clientId, target, spellName, level);
 
             m_OriginalPosition = transform.position;
@@ -39,7 +38,7 @@ namespace Game.Spells
 
                 case ESpellTrajectory.Straight:
                     // set target to be align with orginal position
-                    target.y = transform.position.y;
+                    target.y = transform.position.y + m_SpellData.TargetOffset.Y;
                     SetTarget(target);
                     break;
 
@@ -73,7 +72,7 @@ namespace Game.Spells
             if (collision.gameObject.layer == LayerMask.NameToLayer("Wall") || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
             {
                 // check if should apply on hit
-                if (!m_SpellData.ApplyIfNotHitting)
+                if (! m_SpellData.ApplyIfNotHitting)
                 {
                     End();
                     return;
@@ -96,6 +95,13 @@ namespace Game.Spells
                 var controller = Finder.FindComponent<Controller>(collision.gameObject);
                 if (controller == null)
                     return;
+
+                // check if should apply on hit
+                if (controller.IsPlayer && m_SpellData.ApplyIfNotHitting)
+                {
+                    End();
+                    return;
+                }
 
                 OnHit(controller);
             }
