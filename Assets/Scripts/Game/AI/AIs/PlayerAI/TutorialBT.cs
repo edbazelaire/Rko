@@ -9,10 +9,9 @@ using UnityEngine;
 
 public class TutorialBT : BehaviorTree
 {
-    protected override Node SetupTree(EArenaDifficulty arenaDifficulty)
+    protected override void SetupTree(EArenaDifficulty arenaDifficulty)
     {
-        Node root = new Node();
-        return root;
+        m_Root = new Node();
     }
 
     protected override void Update()

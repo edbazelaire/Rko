@@ -25,7 +25,7 @@ MonoBehaviour:
     - SpellDataName: ToxicWater
       Level: 0
       Target: 6
-      SpellActivationEvent: 0
+      SpellActivationEvent: 1
       ActivationTreshold: 0
       SpellDeactivationEvent: 0
       DeactivationTreshold: 0
@@ -33,7 +33,7 @@ MonoBehaviour:
       StateEffectName: Frozen
       Delay: 0
       Duration: 0
-      NActivations: 0
+      NActivations: -1
       Cooldown: 0
     m_BonusStats: []
   m_MajorPower:
@@ -44,7 +44,7 @@ MonoBehaviour:
     - SpellDataName: ToxicWater
       Level: 0
       Target: 6
-      SpellActivationEvent: 0
+      SpellActivationEvent: 1
       ActivationTreshold: 0
       SpellDeactivationEvent: 0
       DeactivationTreshold: 0
@@ -52,7 +52,7 @@ MonoBehaviour:
       StateEffectName: Frozen
       Delay: 0
       Duration: 0
-      NActivations: 0
+      NActivations: -1
       Cooldown: 0
     m_BonusStats: []
   m_PrimalPower:
@@ -63,7 +63,7 @@ MonoBehaviour:
     - SpellDataName: ToxicWater
       Level: 0
       Target: 6
-      SpellActivationEvent: 0
+      SpellActivationEvent: 1
       ActivationTreshold: 0
       SpellDeactivationEvent: 0
       DeactivationTreshold: 0
@@ -71,7 +71,7 @@ MonoBehaviour:
       StateEffectName: Frozen
       Delay: 0
       Duration: 0
-      NActivations: 0
+      NActivations: -1
       Cooldown: 0
     m_BonusStats: []
   m_TriggerEffects: []

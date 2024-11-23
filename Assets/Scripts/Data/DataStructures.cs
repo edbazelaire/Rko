@@ -158,7 +158,7 @@ namespace Data
             get
             {
                 // must have no prefab or material attached
-                if (Prefab != null || MaterialEffect != null)
+                if (Prefab != null || MaterialEffect != null || StateEffects.Count != 0)
                     return false;
 
                 // must contains sounds
@@ -232,12 +232,15 @@ namespace Data
 
         private GameObject InstantiatePrefab(Controller caster, Spell spell, Controller targetController, Vector3 callFromPosition, Vector3 targetPos)
         {
+            if (spell != null && spell.SpellData.Name == "Soaring")
+                Debug.Log("qslkddj");
+
             var parent = BaseSpellGFX<TEnum>.CalculateParent(this, caster, spell, targetController);
             var position = BaseSpellGFX<TEnum>.CalculatePosition(parent, this, caster, callFromPosition, targetPos);
 
             if (position == Vector3.zero)
             {
-                ErrorHandler.Error("Spell GFX spawned in void");
+                ErrorHandler.Warning("Spell GFX spawned in void");
                 return null;
             }
 

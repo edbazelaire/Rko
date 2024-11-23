@@ -57,6 +57,11 @@ namespace Inventory
                 return;
             }
 
+            if (amount > 0 && currency == ECurrency.Xp)
+            {
+                UpdateCurrency(ECurrency.TotalXp, amount, context, save);
+            }
+
             MAnalytics.SendEvent(new CurrencyEvent(currency, amount, context));
             InventoryCloudData.Instance.SetData(currency.ToString(), total, save);
         }
@@ -131,7 +136,7 @@ namespace Inventory
                 qty -= 1;                       // consume 1 from the qty for the unlocking
             }
 
-            // add xp to character and save
+            // add qty to the collectable
             collectableData.AddQty(qty);
             InventoryCloudData.Instance.SetCollectable(collectableData);
         }
@@ -179,29 +184,6 @@ namespace Inventory
 
             // fire event of upgrade
             CollectableUpgradedEvent?.Invoke(collectable, data.Level);
-
-            // =============================================================================
-            // TODO : BETA TESTING : make characters have same levels
-            //      -> REMOVE later if not use OR set global account level
-            if (collectable.GetType() == typeof(ECharacter))
-            {
-                // get all other characters to level up
-                foreach (ECharacter character in Enum.GetValues(typeof(ECharacter)))
-                {
-                    if (character == ECharacter.None)
-                        continue;
-
-                    SCollectableCloudData charData = InventoryCloudData.Instance.GetCollectable(character);
-                    charData.Level = data.Level;
-
-                    // SAVE : update cloud data
-                    InventoryCloudData.Instance.SetCollectable(charData);
-
-                    // fire event of upgrade
-                    CollectableUpgradedEvent?.Invoke(collectable, data.Level);
-                }
-            }
-            // =============================================================================
         }
 
         public static bool CanUpgrade(Enum collectable)

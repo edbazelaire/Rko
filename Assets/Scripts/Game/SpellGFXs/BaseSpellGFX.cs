@@ -5,6 +5,7 @@ using Enums;
 using Game.Spells;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Tools;
 using UnityEngine;
 
@@ -34,6 +35,7 @@ namespace Game.SpellGFXs
         protected float                 m_Duration;
 
         public string m_Name => m_SpellData != null ? m_SpellData.Name : (string.IsNullOrEmpty(m_StateEffectName) ? "" : m_StateEffectName);
+        protected float m_Delay => m_PrefabSpawn.GFXLifetime.StartAt > 0 ? m_PrefabSpawn.GFXLifetime.StartAt * m_Duration : 0f;
 
         #endregion
 
@@ -45,7 +47,7 @@ namespace Game.SpellGFXs
             m_AudioSource = Finder.FindComponent<AudioSource>(gameObject);
         }
 
-        public virtual void Initialize(Controller controller, SpellData spellData, Spell spell, string stateEffectName, SPrefabSpawn<TEnum> prefabSpawn, EBodyPart bodyPart = EBodyPart.None)
+        public virtual void Initialize(Controller controller, SpellData spellData, Spell spell, string stateEffectName, SPrefabSpawn<TEnum> prefabSpawn)
         {
             if (controller == null)
             {
@@ -58,10 +60,10 @@ namespace Game.SpellGFXs
             m_Spell             = spell;
             m_StateEffectName   = stateEffectName;
             m_PrefabSpawn       = prefabSpawn;
-            m_BodyPart          = bodyPart;
+            m_BodyPart          = prefabSpawn.BodyPart;
 
             if (prefabSpawn.Prefab != null && ArenaManager.IsInVoid(transform.position.x))
-                ErrorHandler.Error("Spell GFX spawned in void : " + m_Name + " - " + prefabSpawn.Prefab.name);
+                ErrorHandler.Warning("Spell GFX spawned in void : " + m_Name + " - " + prefabSpawn.Prefab.name);
 
             // find components if any
             FindComponents();
@@ -78,7 +80,7 @@ namespace Game.SpellGFXs
             // make controller play animation if any
             if (prefabSpawn.Animation != EAnimation.None)
             {
-                controller.AnimationHandler.PlayAnimation(prefabSpawn.Animation);
+                controller.AnimationHandler.PlayAnimation(prefabSpawn.Animation != EAnimation.Self ? prefabSpawn.Animation.ToString() : spellData.Name);
             }
 
             // make controller play animation if any
@@ -96,8 +98,10 @@ namespace Game.SpellGFXs
             // add state effects happening during the lifetime
             AddStateEffects();
 
+            // if not specific end time : call immediat end
             if (prefabSpawn.GFXLifetime.EndSpellPart.ToString() == "None")
             {
+                StartAnimation();
                 End();
                 return;
             }
@@ -286,7 +290,6 @@ namespace Game.SpellGFXs
                 direction = -1; 
 
             return basePos + new Vector3(direction * prefabSpawn.Offset.x, prefabSpawn.Offset.y, 0);
-
         }
 
         void AdjustOrderInLayer(int orderInLayer)
@@ -320,9 +323,6 @@ namespace Game.SpellGFXs
                 return;
 
             m_Duration = 0;
-
-            if (m_PrefabSpawn.GFXLifetime.EndAt > 0)
-                m_Duration *= m_PrefabSpawn.GFXLifetime.EndAt;
 
             m_Duration += Mathf.Max(0, m_PrefabSpawn.GFXLifetime.Persistance);
         }
@@ -395,6 +395,17 @@ namespace Game.SpellGFXs
 
         protected virtual void ApplyPostProcessing() { }
 
+        protected virtual void ActivateObjects(List<GameObject> gameObjects, bool activate = true) 
+        {
+            if (gameObjects == default)
+                return;
+
+            foreach (var go in gameObjects)
+            {
+                go.SetActive(activate);
+            }
+        }
+
         #endregion
 
 
@@ -445,7 +456,8 @@ namespace Game.SpellGFXs
 
         protected virtual void UnRegisterListeners()
         {
-            GameManager.Instance.State.OnValueChanged -= OnGameStateChanged;
+            if (GameManager.Exists)
+                GameManager.Instance.State.OnValueChanged -= OnGameStateChanged;
         }
 
         protected virtual void OnGameStateChanged(EGameState oldState, EGameState newState)

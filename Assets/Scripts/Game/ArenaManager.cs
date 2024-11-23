@@ -162,11 +162,17 @@ namespace Game
             return (team == 0 && enemyArea || team == 1 && !enemyArea) ? 1 : -1;
         }
 
-        public static bool IsInArenaBounds(float x, int team, bool enemyArea)
+        public static bool IsInAreaBounds(float x, int team, bool enemyArea)
         {
             (float xMin, float xMax) = GetAreaBounds(team, enemyArea);
             return xMax > x && x > xMin;
         } 
+
+        public static (float Min, float Max) GetAreaBounds(float xPos)
+        {
+            var area = xPos <= 0 ? Instance.m_TargettableAreas[0] : Instance.m_TargettableAreas[1];
+            return (area.position.x - Instance.TargettableAreaSize / 2 + (area.position.x < 0 ? 0.5f : 0.1f), area.position.x + Instance.TargettableAreaSize / 2 - (area.position.x > 0 ? 0.5f : 0.1f));
+        }
 
         public static (float Min, float Max) GetAreaBounds(int team, bool enemyArea = true)
         {
@@ -176,8 +182,8 @@ namespace Game
 
         public static bool IsInVoid(float x)
         {
-            return x > Instance.m_TargettableAreas[0].transform.position.x + Instance.TargettableAreaSize / 2
-                && x < Instance.m_TargettableAreas[1].transform.position.x - Instance.TargettableAreaSize / 2;
+            return x > Instance.m_TargettableAreas[0].transform.position.x + Instance.TargettableAreaSize / 2 + 0.3f
+                && x < Instance.m_TargettableAreas[1].transform.position.x - Instance.TargettableAreaSize / 2 - 0.3f;
         }
  
         /// <summary>

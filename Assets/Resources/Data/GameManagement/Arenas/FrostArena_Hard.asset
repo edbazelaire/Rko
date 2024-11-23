@@ -19,9 +19,12 @@ MonoBehaviour:
       - Currency: 0
         Qty: 1500
       - Currency: 3
-        Qty: 100
-      Chests: 00000000
-      Collectables: []
+        Qty: 120
+      Chests: 
+      Collectables:
+      - CollectableType: 3
+        CollectableName: AncientAegisRune
+        Qty: 1
       AchievementRewards: []
     TriggerEffects:
     - SpellDataName: _FrostBites
@@ -34,19 +37,6 @@ MonoBehaviour:
       StateEffectEvent: 0
       StateEffectName: 
       Delay: 10
-      Duration: 0
-      NActivations: 0
-      Cooldown: 0
-    - SpellDataName: _Shield
-      Level: 5
-      Target: 0
-      SpellActivationEvent: 3
-      ActivationTreshold: 0.5
-      SpellDeactivationEvent: 0
-      DeactivationTreshold: 0
-      StateEffectEvent: 0
-      StateEffectName: 
-      Delay: 0
       Duration: 0
       NActivations: 0
       Cooldown: 0
@@ -63,33 +53,22 @@ MonoBehaviour:
       Duration: 12
       NActivations: -1
       Cooldown: 8
-    m_PowerUps: []
+    m_PowerUps:
+    - ShieldRune - Major
+    - AncientAegisRune - Minor
     StageData:
     - m_Boss: 1000
-      m_Level: 3
-      m_Spells: 15000000
-      m_TriggerEffects:
-      - SpellDataName: 
-        Level: 0
-        Target: 0
-        SpellActivationEvent: 0
-        ActivationTreshold: 0
-        SpellDeactivationEvent: 0
-        DeactivationTreshold: 0
-        StateEffectEvent: 0
-        StateEffectName: 
-        Delay: 0
-        Duration: 0
-        NActivations: 0
-        Cooldown: 0
+      m_BonusLevel: 0
+      m_Spells: 0a000000040000001700000015000000
+      m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1000
-      m_Level: 3
-      m_Spells: 15000000
+      m_BonusLevel: 1
+      m_Spells: 320000001d0000001700000015000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 0
-      m_Level: 3
+      m_BonusLevel: 0
       m_Spells: 14270000
       m_TriggerEffects:
       - SpellDataName: Melting
@@ -109,11 +88,17 @@ MonoBehaviour:
   - RewardsData:
       Currencies:
       - Currency: 3
-        Qty: 250
+        Qty: 120
       - Currency: 0
-        Qty: 3500
-      Chests: 01000000
-      Collectables: []
+        Qty: 1500
+      Chests: 00000000
+      Collectables:
+      - CollectableType: 3
+        CollectableName: AncientAegisRune
+        Qty: 1
+      - CollectableType: 3
+        CollectableName: ToxicWaterRune
+        Qty: 1
       AchievementRewards: []
     TriggerEffects:
     - SpellDataName: _GasLeak
@@ -126,19 +111,6 @@ MonoBehaviour:
       StateEffectEvent: 0
       StateEffectName: 
       Delay: 5
-      Duration: 0
-      NActivations: 0
-      Cooldown: 0
-    - SpellDataName: _Shield
-      Level: 5
-      Target: 0
-      SpellActivationEvent: 3
-      ActivationTreshold: 0.5
-      SpellDeactivationEvent: 0
-      DeactivationTreshold: 0
-      StateEffectEvent: 0
-      StateEffectName: 
-      Delay: 0
       Duration: 0
       NActivations: 0
       Cooldown: 0
@@ -155,35 +127,44 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
-    m_PowerUps: []
+    m_PowerUps:
+    - PoisonRune - Major
+    - ToxicWaterRune - Major
+    - ParasiteRune - Major
     StageData:
     - m_Boss: 1000
-      m_Level: 4
-      m_Spells: 1a000000
+      m_BonusLevel: 1
+      m_Spells: 1a0000002b0000002700000028000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1000
-      m_Level: 4
-      m_Spells: 1a000000
+      m_BonusLevel: 2
+      m_Spells: 1a0000002b0000002700000028000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1
-      m_Level: 3
+      m_BonusLevel: 0
       m_Spells: 78270000
       m_TriggerEffects: []
       m_BonusStats: []
   - RewardsData:
       Currencies:
       - Currency: 3
-        Qty: 500
+        Qty: 150
       - Currency: 0
-        Qty: 5000
-      Chests: 02000000
-      Collectables: []
+        Qty: 2000
+      Chests: 01000000
+      Collectables:
+      - CollectableType: 3
+        CollectableName: AncientAegisRune
+        Qty: 1
+      - CollectableType: 3
+        CollectableName: ToxicWaterRune
+        Qty: 1
       AchievementRewards:
       - AchievementReward: 4
-        Title: 11
-        Avatar: 11
+        Title: 1001
+        Avatar: 105
         Border: 0
         Badge: 0
         League: 0
@@ -201,55 +182,31 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
-    - SpellDataName: _Heal
-      Level: 5
-      Target: 0
-      SpellActivationEvent: 3
-      ActivationTreshold: 0.5
-      SpellDeactivationEvent: 0
-      DeactivationTreshold: 0
-      StateEffectEvent: 0
-      StateEffectName: 
-      Delay: 0
-      Duration: 0
-      NActivations: 0
-      Cooldown: 0
-    - SpellDataName: SoulSiffon
-      Level: 3
-      Target: 6
-      SpellActivationEvent: 3
-      ActivationTreshold: 0.33
-      SpellDeactivationEvent: 3
-      DeactivationTreshold: 0.66
-      StateEffectEvent: 0
-      StateEffectName: 
-      Delay: 0
-      Duration: 0
-      NActivations: 0
-      Cooldown: 0
-    m_PowerUps: []
+    m_PowerUps:
+    - HealRune - Major
+    - SoulSiffonRune - Minor
     StageData:
     - m_Boss: 1000
-      m_Level: 5
-      m_Spells: 24000000
+      m_BonusLevel: 2
+      m_Spells: 17000000150000003200000024000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1000
-      m_Level: 5
-      m_Spells: 24000000
+      m_BonusLevel: 3
+      m_Spells: 17000000150000003200000024000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1000
-      m_Level: 6
-      m_Spells: 24000000
+      m_BonusLevel: 4
+      m_Spells: 17000000150000003200000024000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 2
-      m_Level: 3
-      m_Spells: 2e000000
+      m_BonusLevel: 0
+      m_Spells: 
       m_TriggerEffects:
       - SpellDataName: ShadowVeil
-        Level: 3
+        Level: 7
         Target: 4
         SpellActivationEvent: 4
         ActivationTreshold: 0

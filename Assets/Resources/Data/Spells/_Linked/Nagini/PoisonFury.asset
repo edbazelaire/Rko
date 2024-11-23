@@ -51,8 +51,12 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 6
+  TargetOffset:
+    X: 0
+    Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 0
   EnergyGain: 0
   EnergyCost: 100
@@ -82,7 +86,7 @@ MonoBehaviour:
   Trajectory: 1
   m_StopOnTargetPos: 0
   m_Speed: 10
-  ProjectileData: {fileID: 11400000, guid: 93a080128b9d08b41be2771c8b8e659a, type: 2}
+  ProjectileData: {fileID: 11400000, guid: 18ed728b7c70c514ab1ce7bd596512a7, type: 2}
   MultiProjectileType: 2
   m_IsBlocking: 1
   m_NProjectiles: 10

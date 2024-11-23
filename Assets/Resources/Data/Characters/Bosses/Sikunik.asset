@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
+  m_Name: Sikunik
+  m_EditorClassIdentifier: 
+  Rarety: 0
+  m_Description: 
+  m_DescriptionVariables: []
+  m_AutoAttack: BlueMeteor
+  m_SpecialAbility: DragonicRest
+  m_Ultimate: Soaring
+  Size: 4
+  BaseSpeed: 1
+  BaseHealth: 2500
+  MaxEnergy: 100
+  BaseEnergy: 0
+  IsStructure: 0
+  HealthScaleFactor: 0.2
+  CharacterStatScaling:
+  - StateEffectProperty: 5
+    BaseValue: 20
+    BonusValue: 0
+    ScalingFactor: 0.1
+  - StateEffectProperty: 4
+    BaseValue: 500
+    BonusValue: 0
+    ScalingFactor: 0.1
+  m_SpecialPowers:
+  - Description: 
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects: []
+    m_BonusStats: []

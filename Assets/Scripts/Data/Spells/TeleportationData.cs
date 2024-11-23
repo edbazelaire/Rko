@@ -12,7 +12,7 @@ namespace Data.Spells
         public override ESpellType SpellType => ESpellType.Teleportation;
 
         [Header("TeleportationSpell")]
-        [SerializeField, Description("Is the spell graphics attached to the target")]
+        [SerializeField, Tooltip("Is the spell graphics attached to the target")]
         protected bool m_Display = false;
 
 

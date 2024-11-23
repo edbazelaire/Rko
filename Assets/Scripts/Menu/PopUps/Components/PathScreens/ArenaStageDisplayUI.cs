@@ -76,6 +76,11 @@ namespace Menu.PopUps
 
         #region GUI Manipulators
 
+        public void RefreshUI()
+        {
+
+        }
+
         void SetUpEffects()
         {
             // clean content (remove potential TEST displays)

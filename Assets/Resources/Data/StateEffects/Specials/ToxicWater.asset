@@ -16,7 +16,7 @@ MonoBehaviour:
     [Infected].\nAlso [SubStateEffect.0]'
   m_DescriptionVariables: 
   m_StateEffectType: 0
-  m_IsDisplayed: 1
+  m_IsDisplayed: 0
   m_VisualEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
@@ -25,7 +25,7 @@ MonoBehaviour:
   m_DefaultState: 0
   m_SubStateEffects:
   - StateEffect: 9
-    Stacks: 1
+    Stacks: 0
     BonusStacksPerLevel: 0.2
     OverridingProperties: []
   m_HoldingStateEffects:
@@ -48,6 +48,8 @@ MonoBehaviour:
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
   m_BonusLifeSteal: 0
+  m_BonusHeal: 0
+  m_BonusHealPerc: 0
   m_BonusBurnDamages: 0
   m_BonusSlowPerc: 0
   m_OnStartStateEffect: []

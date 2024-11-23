@@ -2,28 +2,33 @@ using System.Collections.Generic;
 using AI;
 using AI.Checkers;
 using Enums;
-using Game.AI.Tasks.Resets;
+using Game.AI.Tasks.Variables;
 using UnityEngine;
 
 namespace Game.AI.BehaviorTrees
 {
-    public static class LunassianBT
+    public class LunassianBT: DefaultBT
     {
-        public static Node LoadTree(Controller controller, EArenaDifficulty arenaDifficulty)
+        public LunassianBT(Controller controller, EArenaDifficulty arenaDifficulty) : base(controller, arenaDifficulty) { }
+
+        public override Node LoadTree()
         {
-            switch (arenaDifficulty)
+            switch (m_ArenaDifficulty)
             {
+                case EArenaDifficulty.Easy:
                 case EArenaDifficulty.Normal:
-                    Debug.Log("Loading (Normal Tree)");
-                    return GetTree_Normal(controller);
+                    Debug.Log("Loading (Default Tree)");
+                    return GetDefaultTree(m_Controller);
 
                 default:
                     Debug.Log("Loading (Hard Tree)");
-                    return GetTree_Hard(controller);
+                    return GetTree_Hard(m_Controller);
             }
         }
 
-        static Node GetTree_Normal(Controller controller)
+        #region Trees
+
+        static Node GetDefaultTree(Controller controller)
         {
             return new Selector(new List<Node>
             {
@@ -36,7 +41,7 @@ namespace Game.AI.BehaviorTrees
                 new TaskMove(controller, checkZones: false, checkProjectiles: false),         
                 
                 // Default
-                new TaskAutoAttack(controller),
+                new TaskWait(controller),
             });
         }
 
@@ -67,9 +72,11 @@ namespace Game.AI.BehaviorTrees
                 new TaskMove(controller, checkZones: true, checkProjectiles: false),         
 
                 // Default - if cant move (should not be used most of the time)
-                new TaskAutoAttack(controller),
+                new TaskWait(controller),
             });
         }
+
+        #endregion
     }
 }
 

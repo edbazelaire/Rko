@@ -20,7 +20,7 @@ namespace Data.GameManagement
     {
         #region Members
 
-        public const float SPELL_HIGHT_POS_Y    = 4.5f;
+        public const float SPELL_HIGHT_POS_Y    = 5f;
         public const float SPELL_DIAGONAL_POS_Y = 4f;
 
         // GAME Speed & Size

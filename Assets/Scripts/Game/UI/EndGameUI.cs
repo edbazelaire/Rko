@@ -229,7 +229,7 @@ public class EndGameUI : MObject
         {
             m_XpRewardDisplay.SetActive(true);
             m_XpQty.text = string.Format(GOLDS_FORMAT, xp);
-            InventoryManager.AddCollectable(CharacterBuildsCloudData.SelectedCharacter, xp);
+            NotificationCloudData.AddXp(xp);
         }
 
         // ----------------------------------------------------------------------------
@@ -293,7 +293,7 @@ public class EndGameUI : MObject
         switch (LobbyHandler.Instance.GameMode)
         {
             case EGameMode.Arena:
-                ArenaData arenaData = AssetLoader.LoadArenaData(PlayerPrefsHandler.GetArenaType());
+                ArenaData arenaData = AssetLoader.LoadArenaData(ProgressionCloudData.CurrentArena.ArenaType, ProgressionCloudData.CurrentArena.SArenaDifficulty);
                 return arenaData.CurrentRewardMultiplicator;
 
             default:

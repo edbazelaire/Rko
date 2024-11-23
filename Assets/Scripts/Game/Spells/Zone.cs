@@ -216,7 +216,7 @@ namespace Game.Spells
             {
                 damages *= controller.StateHandler.GetStacks(m_SpellData.StateEffectStackFactor);
             }
-            damages = m_Controller.StateHandler.ApplyBonusInt(damages, EStateEffectProperty.TickDamages);
+            damages = m_Controller.StateHandler.ApplyBonusInt(damages, EStateEffectProperty.TickDamages, controller);
 
             // get final damages after shields and resistances
             int finalDamages = controller.Life.Hit(damages);
@@ -263,7 +263,7 @@ namespace Game.Spells
             {
                 heal *= controller.StateHandler.GetStacks(m_SpellData.StateEffectStackFactor);
             }
-            heal = m_Controller.StateHandler.ApplyBonusInt(heal, EStateEffectProperty.TickHeal);
+            heal = m_Controller.StateHandler.ApplyBonusInt(heal, EStateEffectProperty.TickHeal, controller);
 
             // heal the target for the specified amount
             controller.Life.Heal(heal);

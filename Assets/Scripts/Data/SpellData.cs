@@ -16,6 +16,7 @@ using System.Reflection;
 using MyBox;
 using Assets.Scripts.Data.DataStructures;
 using Assets.Scripts.Data.DataStructures.SpellRequirement;
+using Assets.Scripts.Data.DataStructures.SpellSubStructures;
 
 namespace Data
 {
@@ -42,19 +43,6 @@ namespace Data
         {
             Property = prop;
             Value = value;
-        }
-    }
-
-    [Serializable]
-    public struct Offset
-    {
-        public float X;
-        public float Y;
-
-        public Offset(float x = 0, float y = 0)
-        {
-            X = x;
-            Y = y;
         }
     }
 
@@ -95,11 +83,11 @@ namespace Data
         [Description("Type of targetting for the spell")]
         public ESpellTarget                 SpellTarget             = ESpellTarget.FirstEnemy;
         [Description("Target offset X/Y")]
-        public Offset                       TargetOffset            = new Offset(0, 0);
+        public SOffset                      TargetOffset            = new SOffset(0, 0);
         [Description("Type of targetting for the spell")]
         public ESpellEvent                  LockTarget              = ESpellEvent.OnCast;
         [Description("Is the spell effect applied when NOT hitting the target ?")]
-        public bool ApplyIfNotHitting = false;
+        public bool                         ApplyIfNotHitting       = false;
         
         [Header("Requirements")]
         [SerializeField, Description("Is the spell effect applied when NOT hitting the target ?")]
@@ -181,8 +169,10 @@ namespace Data
         public virtual int Shield               => (int)Math.Round(m_Shield * GetSpellLevelFactor(ESpellProperty.Shield));
         public virtual float LifeSteal          => m_LifeSteal * GetSpellLevelFactor(ESpellProperty.LifeSteal);
         public virtual float Duration           => m_Duration * GetSpellLevelFactor(ESpellProperty.Duration);
+
         /// <summary> is the "IsCasting" over once the spell has been casted (before delay) ? </summary>
         public virtual bool IsCompletedOnCast   => true;
+        public virtual EDamageType DamageType => EDamageType.Direct;
 
         #endregion
 
@@ -276,13 +266,18 @@ namespace Data
             if (OnHit == null || OnHit.Count == 0)
                 return;
 
+            var controller = GameManager.Instance.GetPlayer(clientId);
+
             foreach(SpellData spellData in OnHit)
             {
                 // setup spell data to level of this spell
                 var onHitSpellData = spellData.Clone(m_Level);
                 onHitSpellData.Override(this);
                 onHitSpellData.OverrideSpellSpawn(OnHitSpellSpawn);
-                onHitSpellData.Cast(clientId, target, position, rotation, false);
+                controller.StartCoroutine(onHitSpellData.CastDelay(clientId, target, position, rotation, recalculateTarget: false));
+
+                // call graphics event
+                controller.SpellHandler.CallSpellEvent(spellData.Name, ESpellEvent.OnStartCast);
             }   
         }
 
@@ -409,9 +404,9 @@ namespace Data
             return sortedStateEffects;
         }
 
-        public virtual Controller GetTargetController(ulong clientId)
+        public virtual Controller GetTargetController(ulong casterId)
         {
-            Controller controller = GameManager.Instance.GetPlayer(clientId);
+            Controller controller = GameManager.Instance.GetPlayer(casterId);
 
             switch (SpellTarget)
             {
@@ -419,7 +414,7 @@ namespace Data
                     return controller;
 
                 case ESpellTarget.FirstAlly:
-                    return GameManager.Instance.GetFirstAlly(controller.Team, clientId);
+                    return GameManager.Instance.GetFirstAlly(controller.Team, casterId);
 
                 case ESpellTarget.FirstEnemy:
                     return GameManager.Instance.GetFirstEnemy(controller.Team);
@@ -441,35 +436,35 @@ namespace Data
             switch (SpellTarget)
             {
                 case ESpellTarget.Self:
-                    target = controller.transform.position;
+                    target.x = controller.transform.position.x;
                     break;
 
                 case ESpellTarget.FirstAlly:
-                    target = GameManager.Instance.GetFirstAlly(controller.Team, clientId).transform.position;
+                    target.x = GameManager.Instance.GetFirstAlly(controller.Team, clientId).transform.position.x;
                     break;
 
                 case ESpellTarget.FirstEnemy:
-                    target = GameManager.Instance.GetFirstEnemy(controller.Team).transform.position;
+                    target.x = GameManager.Instance.GetFirstEnemy(controller.Team).transform.position.x;
                     break;
 
                 case ESpellTarget.AllyZoneCenter:
                 case ESpellTarget.EnemyZoneCenter:
-                    target = new Vector3(GetTargettableArea(controller.Team).position.x, target.y, target.z);
+                    target.x = GetTargettableArea(controller.Team).position.x;
                     break;
 
                 case ESpellTarget.AllyZoneStart:
                 case ESpellTarget.EnemyZoneStart:
                     var centerPos = GetTargettableArea(controller.Team).position.x;
-                    target = new Vector3(centerPos - direction * ArenaManager.Instance.TargettableAreaSize / 2, target.y, target.z);
+                    target.x = centerPos - direction * ArenaManager.Instance.TargettableAreaSize / 2;
                     break;
 
                 case ESpellTarget.Mirror:
-                    target = new Vector3(-controller.transform.position.x, target.y, 0f);
+                    target.x = -controller.transform.position.x;
                     break;
 
                 case ESpellTarget.Fixed:
                     direction = ArenaManager.GetAreaMovementDirection(controller.Team, true);
-                    target = new Vector3(controller.transform.position.x + direction * Settings.SpellFixedDistance, target.y, 0f);
+                    target.x = controller.transform.position.x + direction * Settings.SpellFixedDistance;
                     break;
 
                 default:
@@ -516,9 +511,13 @@ namespace Data
         #endregion
 
 
-        #region Position
+        #region Position & Rotation
 
-        public virtual void RecalculatePosition(ref Vector3 position, Vector3 target, ulong clientId) { }
+        public virtual void RecalculatePosition(ref Vector3 position, Vector3 target, ulong clientId) 
+        {
+            position = GameManager.Instance.GetPlayer(clientId).GFXHandler.GetSpellSpawn().position;
+        }
+
         public virtual void RecalculateRotation(ref Quaternion rotation)
         {
             rotation = Quaternion.identity;

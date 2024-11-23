@@ -101,6 +101,10 @@ namespace Game.Spells
         [SerializeField] protected      float                       m_BonusDamagesPerc      = 0f;
         [SerializeField] protected      float                       m_BonusLifeSteal        = 0f;
 
+        [Header("Heal")]
+        [SerializeField] protected      int                         m_BonusHeal             = 0;
+        [SerializeField] protected      float                       m_BonusHealPerc         = 0f;
+
         [Header("Elementary")]
         [SerializeField] protected      int                         m_BonusBurnDamages      = 0;
         [SerializeField] protected      float                       m_BonusSlowPerc         = 0f;
@@ -126,6 +130,7 @@ namespace Game.Spells
         protected int                   m_Level;
         /// <summary> Type of state effect </summary>
         protected EStateEffect          m_Type;
+        /// <summary> source of audio </summary>
         protected AudioSource           m_AudioSource;
 
         protected int                   m_Stacks = 1;   
@@ -204,7 +209,8 @@ namespace Game.Spells
                 return false;
 
             m_IsHolding = m_Controller.StateHandler.IsHolding(StateEffectName);
-            m_Controller.StateHandler.HoldingStateEffects.OnListChanged += RecheckIsHolding;
+
+            RegisterListeners();
 
             return true;
         }
@@ -302,6 +308,8 @@ namespace Game.Spells
 
             if (m_Controller == null)
                 return;
+
+            UnRegisterListeners();
 
             m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnEnd, StateEffectName);
         }
@@ -617,8 +625,30 @@ namespace Game.Spells
 
             try
             {
+                // Check if the object is already of the desired type
+                if (value is T typedValue)
+                    return typedValue;
+
+                // Attempt to convert if it's a numeric type and `T` is numeric
+                if (typeof(T) == typeof(int) && value is IConvertible)
+                    return (T)(object)Convert.ToInt32(value);
+
+                if (typeof(T) == typeof(float) && value is IConvertible)
+                    return (T)(object)Convert.ToSingle(value);
+
+                if (typeof(T) == typeof(double) && value is IConvertible)
+                    return (T)(object)Convert.ToDouble(value);
+
+                // Handle string to int or other parseable types
+                if (value is string stringValue && typeof(T) == typeof(int))
+                    return (T)(object)int.Parse(stringValue);
+
+                // Add additional conversions as needed
+
+                // If none of the conversions worked, try direct casting
                 return (T)value;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 ErrorHandler.Error(ex.Message);
                 ErrorHandler.Error("Unable to parse value " + value + " of property " + property + " of state effect " + name + " into " + typeof(T));
@@ -654,8 +684,8 @@ namespace Game.Spells
             if (m_Controller == null)
                 return true;
 
-            value = m_Controller.StateHandler.ApplyBonus(value, property);      // Bonus values applied to the property
-            value *= Stacks * stacksFactor;                                     // apply Stack bonus 
+            value = m_Controller.StateHandler.ApplyBonus(value, property, null);    // Bonus values applied to the property
+            value *= Stacks * stacksFactor;                                         // apply Stack bonus 
             return true;
         }
 
@@ -674,7 +704,7 @@ namespace Game.Spells
             if (m_Controller == null)
                 return baseValue;
 
-            int boostedValue        = m_Controller.StateHandler.ApplyBonusInt(baseValue, property);                                                              // Bonus values applied to the property
+            int boostedValue        = m_Caster.StateHandler.ApplyBonusInt(baseValue, property, m_Controller);                                                              // Bonus values applied to the property
             float stacksFactor      = stateEffectScalingStacks.StateEffectProperty == property ? Stacks * stateEffectScalingStacks.ScalingFactor : 1f;                  // apply Stack bonus 
 
             // return boosted valye
@@ -700,7 +730,7 @@ namespace Game.Spells
                 baseValue *= Mathf.Max(0, m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusSlowPerc));
             }
 
-            float boostedValue = m_Controller.StateHandler.ApplyBonus(baseValue, property);
+            float boostedValue = m_Controller.StateHandler.ApplyBonus(baseValue, property, null);
 
             // check that a scaling value was provided
             if (stateEffectScaling.StateEffectProperty != property || stateEffectScaling.ScalingFactor == 0)
@@ -715,6 +745,18 @@ namespace Game.Spells
 
 
         #region Listeners
+
+        protected virtual void RegisterListeners()
+        {
+            UnRegisterListeners();
+
+            m_Controller.StateHandler.HoldingStateEffects.OnListChanged += RecheckIsHolding;
+        }
+
+        protected virtual void UnRegisterListeners()
+        {
+            m_Controller.StateHandler.HoldingStateEffects.OnListChanged -= RecheckIsHolding;
+        }
 
         void RecheckIsHolding(NetworkListEvent<FixedString64Bytes> changeEvent)
         {

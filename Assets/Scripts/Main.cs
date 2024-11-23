@@ -52,6 +52,7 @@ namespace Assets
 
         [Header("Debug Section")]
         [SerializeField] bool m_ForceIsNewPlayer;
+        [SerializeField] bool m_StopPreventiveLoss;
         [SerializeField] List<ELogTag> m_LogTags;
 
         // ==========================================================================================================
@@ -76,6 +77,7 @@ namespace Assets
         public static Canvas            Canvas                  => Instance.m_Canvas;
         public static bool              ActivateSaveOnClose     => Instance.m_ActivateSaveOnClose;
         public static bool              ForceIsNewPlayer        => Instance.m_ForceIsNewPlayer;
+        public static bool              StopPreventiveLoss      => Instance.m_StopPreventiveLoss;
         public static bool              IsNewPlayer             => ForceIsNewPlayer || !ProfileCloudData.TutoDone;
         public static List<ELogTag>     LogTags                 => s_Instance != null ? Instance.m_LogTags : new List<ELogTag>();
 

@@ -317,6 +317,10 @@ namespace Save
         /// <returns></returns>
         public static bool ApplyPreventiveLoss(EGameMode gameMode)
         {
+            // debug tool
+            if (Main.StopPreventiveLoss)
+                return false;
+
             switch (gameMode)
             {
                 case EGameMode.Arena:
@@ -706,8 +710,16 @@ namespace Save
 
                 if (UnlockedArenas[arenaType].Level >= ArenaManagementData.NDifficultyLevels)
                 {
-                    ErrorHandler.Error($"UnlockedArenas {arenaType} data : has level ({UnlockedArenas[arenaType].Level}) > " + ArenaManagementData.NDifficultyLevels);
-                    UnlockedArenas[arenaType] = new SArenaDifficulty(UnlockedArenas[arenaType].Difficulty, ArenaManagementData.NDifficultyLevels);
+                    ErrorHandler.Error($"UnlockedArenas {arenaType} data : has level ({UnlockedArenas[arenaType].Level}) >= " + ArenaManagementData.NDifficultyLevels);
+                    UnlockedArenas[arenaType] = new SArenaDifficulty(UnlockedArenas[arenaType].Difficulty, ArenaManagementData.NDifficultyLevels - 1);
+                    save = true;
+                }
+
+                EArenaDifficulty maxArenaDifficulty = Enum.GetValues(typeof(EArenaDifficulty)).Cast<EArenaDifficulty>().Last();
+                if (UnlockedArenas[arenaType].Difficulty > maxArenaDifficulty)
+                {
+                    ErrorHandler.Error($"UnlockedArenas {arenaType} data : has difficulty ({UnlockedArenas[arenaType].Difficulty}) > " + maxArenaDifficulty);
+                    UnlockedArenas[arenaType] = new SArenaDifficulty(maxArenaDifficulty, ArenaManagementData.NDifficultyLevels - 1);
                     save = true;
                 }
             }

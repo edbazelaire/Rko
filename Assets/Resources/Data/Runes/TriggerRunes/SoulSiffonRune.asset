@@ -18,7 +18,9 @@ MonoBehaviour:
   Description: 
   m_SpellElements: 
   m_MinorPower:
-    Description: 
+    Description: '[TriggerEffect.0]\nThis effect is triggered when getting below
+      33% hp and stays active until the HP get backs to 50%.\nThis Effect can only
+      happen once'
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
@@ -37,7 +39,8 @@ MonoBehaviour:
       Cooldown: 0
     m_BonusStats: []
   m_MajorPower:
-    Description: 
+    Description: '[TriggerEffect.0]\nThis effect is triggered when getting below
+      33% hp and stays active until the HP get backs to 50%.'
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
@@ -56,12 +59,13 @@ MonoBehaviour:
       Cooldown: 0
     m_BonusStats: []
   m_PrimalPower:
-    Description: 
+    Description: '[TriggerEffect.0]\nThis effect is triggered when getting below
+      33% hp and stays active until the HP get backs to 66%.'
     m_DescriptionVariables: []
     m_BonusLevel: 3
     m_TriggerEffects:
     - SpellDataName: SoulSiffon
-      Level: 0
+      Level: 3
       Target: 6
       SpellActivationEvent: 3
       ActivationTreshold: 0.33

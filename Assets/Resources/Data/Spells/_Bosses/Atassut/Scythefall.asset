@@ -68,7 +68,7 @@ MonoBehaviour:
     OrderInLayer: 0
     SpawnTarget: 1
     SpawnLocation: 2
-    BodyPart: 0
+    BodyPart: 12
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
@@ -100,8 +100,12 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 6
+  TargetOffset:
+    X: 0
+    Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
@@ -125,9 +129,11 @@ MonoBehaviour:
   EnemyStateEffects:
   - StateEffect: 16
     Stacks: 1
+    BonusStacksPerLevel: 0
     OverridingProperties: []
   - StateEffect: 13
     Stacks: 10
+    BonusStacksPerLevel: 0
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0

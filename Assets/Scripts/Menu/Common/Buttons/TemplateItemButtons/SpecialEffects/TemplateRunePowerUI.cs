@@ -21,6 +21,13 @@ namespace Menu.Common.Buttons.TemplateItemButtons
 
         public virtual void Initialize(SRunePower runePower)
         {
+            if (runePower == null)
+            {
+                ErrorHandler.Error("Trying to initialize TemplateRunePowerUI with no runePowerData");
+                Destroy(gameObject);
+                return;
+            }
+
             m_RunePower = runePower;
 
             base.Initialize();
@@ -34,7 +41,6 @@ namespace Menu.Common.Buttons.TemplateItemButtons
 
             m_Icon.sprite = AssetLoader.LoadIcon(m_RunePower.RuneName);
 
-            SetBottomOverlay("Level " + m_RunePower.Level);
             SetBottomOverlay("Level " + m_RunePower.Level);
         }
 

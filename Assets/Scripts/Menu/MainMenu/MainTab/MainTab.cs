@@ -150,18 +150,27 @@ namespace Menu.MainMenu.MainTab
                 return;
             }
 
-            if (LobbyHandler.Instance.GameMode == EGameMode.Arena && !ProgressionCloudData.HasArenaInProgress)
+            if (LobbyHandler.Instance.GameMode == EGameMode.Arena)
             {
-                var arenaModeDisplayUI = Finder.FindComponent<ArenaModeDisplayUI>(m_GameSectionUI.gameObject);
-                if (arenaModeDisplayUI == null)
+                if (!ProgressionCloudData.HasArenaInProgress)
                 {
-                    ErrorHandler.Error("GameMode is Arena but ArenaModeDisplayUI was not found");
-                    Main.ErrorMessagePopUp("Please select an Arena before playing");
-                    return;
+                    var arenaModeDisplayUI = Finder.FindComponent<ArenaModeDisplayUI>(m_GameSectionUI.gameObject);
+                    if (arenaModeDisplayUI == null)
+                    {
+                        ErrorHandler.Error("GameMode is Arena but ArenaModeDisplayUI was not found");
+                        Main.ErrorMessagePopUp("Please select an Arena before playing");
+                        return;
+                    }
+
+                    // auto select 
+                    arenaModeDisplayUI.OnSelectButtonClicked();
                 }
 
-                // auto select 
-                arenaModeDisplayUI.OnSelectButtonClicked();
+                else if (ProgressionCloudData.CurrentArena.IsOver())
+                {
+                    Main.ErrorMessagePopUp("Please collect your Arena rewards before playing");
+                    return;
+                }
             }
 
             Main.SetPopUp(EPopUpState.LobbyScreen);

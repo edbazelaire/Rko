@@ -15,7 +15,7 @@ namespace Game.Spells
         [SerializeField] protected int      m_EndHeal       = 0;
         [SerializeField] protected float    m_LifeSteal     = 0f;
 
-        protected float FinalLifeSteal => Mathf.Max(0f, m_LifeSteal + m_Controller.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal) - 1);
+        protected float FinalLifeSteal => Mathf.Max(0f, m_LifeSteal + m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal, m_Controller) - 1);
 
         /// <summary>
         /// Apply damages / Heal on end

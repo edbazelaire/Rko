@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df7d51f633e46b344920f012b0e1eca8, type: 3}
+  m_Name: FrostArena_Easy
+  m_EditorClassIdentifier: 
+  m_BotPerfLevelCeiling: 10
+  m_ArenaLevelData:
+  - RewardsData:
+      Currencies:
+      - Currency: 0
+        Qty: 500
+      - Currency: 3
+        Qty: 50
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 2
+        Title: 0
+        Avatar: 10
+        Border: 0
+        Badge: 0
+        League: 0
+    TriggerEffects: []
+    m_PowerUps: []
+    StageData:
+    - m_Boss: 1000
+      m_BonusLevel: 0
+      m_Spells: 
+      m_TriggerEffects: []
+      m_BonusStats: []
+    - m_Boss: 1000
+      m_BonusLevel: 0
+      m_Spells: 15000000
+      m_TriggerEffects: []
+      m_BonusStats: []
+    - m_Boss: 1000
+      m_BonusLevel: 1
+      m_Spells: 15000000
+      m_TriggerEffects: []
+      m_BonusStats: []
+    - m_Boss: 0
+      m_BonusLevel: 0
+      m_Spells: 
+      m_TriggerEffects:
+      - SpellDataName: Melting
+        Level: 0
+        Target: 0
+        SpellActivationEvent: 4
+        ActivationTreshold: 0
+        SpellDeactivationEvent: 4
+        DeactivationTreshold: 1
+        StateEffectEvent: 0
+        StateEffectName: 
+        Delay: 0
+        Duration: 0
+        NActivations: 0
+        Cooldown: 0
+      m_BonusStats: []

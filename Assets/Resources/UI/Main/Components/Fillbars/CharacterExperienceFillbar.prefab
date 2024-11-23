@@ -536,7 +536,8 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8093605297632340939, guid: c26d4191c06a6b24d968a2a1ff63ab35, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 1592507471319801496, guid: c26d4191c06a6b24d968a2a1ff63ab35, type: 3}
@@ -549,6 +550,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1401199129175419660, guid: c26d4191c06a6b24d968a2a1ff63ab35, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8452334892829569143}
+    - targetCorrespondingSourceObject: {fileID: 1401199129175419660, guid: c26d4191c06a6b24d968a2a1ff63ab35, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2035207578169154884}
   m_SourcePrefab: {fileID: 100100000, guid: c26d4191c06a6b24d968a2a1ff63ab35, type: 3}
 --- !u!1 &5873617833396155009 stripped
 GameObject:
@@ -575,6 +579,23 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &2035207578169154884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5873617833396155009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1260d543ae59ed4d9b8287b3f05ef46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CollectionAnimationDuration: 1
+  m_BaseColor: {r: 0, g: 0, b: 0, a: 0}
+  m_FullColor: {r: 0.09710693, g: 1, b: 0, a: 1}
+  m_GlowSpeed: 250
+  m_GlowPause: 0.5
 --- !u!224 &6118419885295945493 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1592507471319801496, guid: c26d4191c06a6b24d968a2a1ff63ab35, type: 3}

@@ -23,8 +23,6 @@ public class Controller : NetworkBehaviour
 
     public Action OnDestroyedEvent;
 
-    [SerializeField] Collider2D m_Collider;
-
     // ===================================================================================
     // PRIVATE VARIABLES 
     // -- Network Variables
@@ -86,9 +84,9 @@ public class Controller : NetworkBehaviour
     public TriggerEffectHandler TriggerEffectHandler    => m_TriggerEffectHandler;
     public ClientAnalytics  ClientAnalytics             => m_ClientAnalytics;
     public EnergyHandler    EnergyHandler               => m_EnergyHandler;
-    public Collider2D       Collider                    => m_Collider;
+    public Collider2D       Collider                    => m_GFXHandler.Collider;
     /// <summary> y position of the character's Height point </summary>
-    public float            CharacterHeight             => m_Collider.transform.position.y + m_Collider.bounds.extents.y;
+    public float            CharacterHeight             => Collider.transform.position.y + Collider.bounds.extents.y;
 
     #endregion
 
@@ -111,7 +109,7 @@ public class Controller : NetworkBehaviour
         m_GFXHandler            = Finder.FindComponent<GFXHandler>(gameObject);
         m_StateHandler          = Finder.FindComponent<StateHandler>(gameObject);
         m_CounterHandler        = Finder.FindComponent<CounterHandler>(gameObject);
-        m_AutoAttackHandler     = Finder.FindComponent<AutoAttackHandler>(gameObject);
+        m_AutoAttackHandler     = Finder.FindComponent<AutoAttackHandler>(gameObject, throwError: false);
         m_TriggerEffectHandler  = Finder.FindComponent<TriggerEffectHandler>(gameObject);
         m_ClientAnalytics       = Finder.FindComponent<ClientAnalytics>(gameObject, throwError: false);
 
@@ -233,9 +231,6 @@ public class Controller : NetworkBehaviour
         // get animator
         Animator animator = Finder.FindComponent<Animator>(m_GFXHandler.CharacterPreview);
         m_AnimationHandler.Initialize(animator);
-
-        // initialize base MovementSpeed
-        m_AnimationHandler.UpdateMovementSpeed();
     }
 
     /// <summary>
@@ -444,7 +439,7 @@ public class Controller : NetworkBehaviour
         ActivateActionComponent(true);
 
         // when game starts, activate behavior tree
-        if (! IsPlayer)
+        if (! IsPlayer && m_BehaviorTree != null)
         {
             m_BehaviorTree.Activate(true);
         }
@@ -464,7 +459,7 @@ public class Controller : NetworkBehaviour
     [ClientRpc]
     public void ActivateColliderClientRPC(bool on)
     {
-        m_Collider.enabled = on;
+        Collider.enabled = on;
     }
 
     #endregion
@@ -489,6 +484,9 @@ public class Controller : NetworkBehaviour
   
     public void OnGameEnded(bool win)
     {
+        // stop all current coroutines
+        StopAllCoroutines();
+
         // deactivate all "action" components
         ActivateActionComponent(false);
 

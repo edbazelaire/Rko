@@ -1,5 +1,7 @@
 ﻿using Data;
+using Inventory;
 using Menu.Common.Infos;
+using Save;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -18,6 +20,8 @@ namespace Menu.PopUps
         // =========================================================================================
         // Dependent Members
         CharacterData m_CharacterData => m_Data as CharacterData;
+        protected override bool m_CanUpgrade => base.m_CanUpgrade && m_Data.Level < ProfileCloudData.AccountLevel;
+
 
         #endregion
 

@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bec91e441d966e438d35c0133adae84, type: 3}
   m_Name: IronSkin
   m_EditorClassIdentifier: 
-  m_Description: 
-  m_DescriptionVariables: 
+  m_Description: Increases your Resistance by {0} fix and {1} for {2} seconds, but
+    also reduces your Movement Speed by {3}
+  m_DescriptionVariables: 05000000060000000100000003000000
   m_StateEffectType: 0
   m_IsDisplayed: 1
   m_VisualEffects:
@@ -40,22 +41,20 @@ MonoBehaviour:
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 0
   m_DefaultState: 0
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
   m_Priority: 0
-  m_Duration: 50
+  m_Duration: 8
   m_IsInstantanious: 0
   m_MaxStacks: 1
   m_StackDecay: -1
   m_BonusStats:
-  - StateEffectProperty: 111
-    BaseValue: 1500
-    LevelScalingFactor: 0.1
-    StackScalingFactor: 1
   - StateEffectProperty: 3
-    BaseValue: -0.5
+    BaseValue: -0.3
     LevelScalingFactor: 0
     StackScalingFactor: 0
   - StateEffectProperty: 5
-    BaseValue: 50
+    BaseValue: 40
     LevelScalingFactor: 0.1
     StackScalingFactor: 0
   - StateEffectProperty: 6

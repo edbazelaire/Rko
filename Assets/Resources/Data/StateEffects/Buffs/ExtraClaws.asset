@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76eb794ff3e449c4dafe23f3ba7e0eb0, type: 3}
+  m_Name: ExtraClaws
+  m_EditorClassIdentifier: 
+  m_Description: 
+  m_DescriptionVariables: 
+  m_StateEffectType: 0
+  m_IsDisplayed: 1
+  m_VisualEffects:
+  - Prefab: {fileID: 1923825553450198, guid: 60f6ce11d75f17540a6cf9652c8c3ac5, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 400
+      m_EndSpellPart: 1000
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 1
+    OrderInLayer: 0
+    SpawnTarget: 2
+    SpawnLocation: 0
+    BodyPart: 2
+    IsFollowing: 1
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
+  m_Animation: 0
+  m_OnApplySoundFX: {fileID: 0}
+  m_PermanantSoundFX: {fileID: 0}
+  m_ConsumeState: 0
+  m_DefaultState: 0
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
+  m_Priority: 0
+  m_Duration: 4
+  m_IsInstantanious: 0
+  m_MaxStacks: 1
+  m_StackDecay: -1
+  m_BonusStats: []
+  m_SpeedBonus: 0
+  m_CastSpeed: 0
+  m_AttackSpeed: 0
+  m_CooldownReduction: 0
+  m_CooldownReductionPerc: 0
+  m_Shield: 0
+  m_ResistanceFix: 0
+  m_ResistancePerc: 0
+  m_BonusDamages: 0
+  m_BonusDamagesPerc: 0
+  m_BonusLifeSteal: 0
+  m_BonusBurnDamages: 0
+  m_BonusSlowPerc: 0
+  m_OnStartStateEffect: []
+  m_OnEndStateEffect: []
+  m_StateEffectScalingLevel:
+  - StateEffectProperty: 1
+    ScalingFactor: 0.05
+  m_StateEffectScalingStacks: []
+  m_SpellEffectType: 0
+  m_AllowedSpellTypes: 
+  m_OnHits: []
+  m_AllyStateEffects: []
+  m_EnemyStateEffects: []
+  m_ReplacementData: {fileID: 11400000, guid: 9980bfe581c209048a565e453ca93629, type: 2}

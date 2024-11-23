@@ -58,7 +58,7 @@ namespace Data
         public float DelayBetweenWaves          => m_DelayBetweenWaves * GetSpellLevelFactor(ESpellProperty.DelayBetweenWaves);
         public float ProjectileZoneSize         => m_ProjectileZoneSize * Settings.SpellSizeFactor;
         /// <summary> is the "IsCasting" over once the spell has been casted (before delay) ? </summary> ///
-        public override bool IsCompletedOnCast  => !m_IsBlocking;
+        public override bool IsCompletedOnCast  => ! m_IsBlocking;
         
         // ============================================================================================
         // Private Members
@@ -96,20 +96,23 @@ namespace Data
                 return;
             }
 
-            Main.Instance.StartCoroutine(CastMultipleProjectiles(clientId, target, position, rotation));
+            GameManager.Instance.GetPlayer(clientId).StartCoroutine(CastMultipleWaves(clientId, target, position, rotation));
         }
 
-        public IEnumerator CastMultipleProjectiles(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default)
+        public IEnumerator CastMultipleWaves(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default)
         {
             // block movement and cast until the end
             Controller controller = GameManager.Instance.GetPlayer(clientId);
 
-            // save spellTarget to avoid 
-            var targetType = SpellTarget;
+            ErrorHandler.Log("MutliSpell STARTED : " + Name + " =============================================================", ELogTag.MultiSpells);
 
             for (int i = 0; i < NWaves; i++)
             {
-                yield return CastWave(clientId, target, position, rotation);
+                ErrorHandler.Log("     + " + Name + " WAVE [" + i + " / "+ NWaves + "] - start", ELogTag.MultiSpells);
+
+                yield return CastOneWave(clientId, target, position, rotation);
+
+                ErrorHandler.Log("     + " + Name + " WAVE [" + i + " / " + NWaves + "] - over", ELogTag.MultiSpells);
 
                 if (i == NWaves - 1 || m_IsCancelled)
                     break;
@@ -142,17 +145,18 @@ namespace Data
                 }
             }
 
-            // reset spell target before leaving
-            SpellTarget = targetType;
-
             // if spell is blocking Controller during the spawn of all multi projectiles, call that the cast has been completed
             if (! IsCompletedOnCast)
             {
                 GameManager.Instance.GetPlayer(clientId).SpellHandler.OnCastCompleted();
             }
+
+            ErrorHandler.Log("MutliSpell ENDED : " + Name + " =============================================================", ELogTag.MultiSpells);
+
+            Destroy(this);
         }
 
-        public IEnumerator CastWave(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default)
+        public IEnumerator CastOneWave(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default)
         {
             // recalculate target at each waves
             CalculateTarget(ref target, clientId);
@@ -166,7 +170,7 @@ namespace Data
 
             for (int i = 0; i < NProjectiles; i++)
             {
-                CastOneProjectile(controller, CalculateMultiProjectileTarget(target, i, controller.Team), position, rotation);
+                CastOneProjectile(controller, CalculateMultiSpellTarget(target, i, controller.Team), position, rotation);
                 var delay = DelayBetweenLaunches;
 
                 while (delay > 0)
@@ -233,7 +237,7 @@ namespace Data
         /// <param name="target">   base target of the projectile   </param>
         /// <param name="i">        projectile number               </param>
         /// <returns></returns>
-        protected Vector3 CalculateMultiProjectileTarget(Vector3 target, int i, int team)
+        protected Vector3 CalculateMultiSpellTarget(Vector3 target, int i, int team)
         {
             (float min, float max) = ArenaManager.GetAreaBounds(team, SpellTarget == ESpellTarget.None || IsEnemyTarget);
 

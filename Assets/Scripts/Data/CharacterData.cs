@@ -1,30 +1,35 @@
-﻿using Data.DataStructures;
+﻿using Assets.Scripts.Data.DataStructures.SpellSubStructures;
+using Data.DataStructures;
 using Enums;
 using Game;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
+using Unity.Collections;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Data
 {
     [Serializable]
     public struct SCharacterStatScaling : INetworkSerializable
     {
-        public EStateEffectProperty StateEffectProperty;
-        public float BaseValue;
-        public float BonusValue;
-        public float ScalingFactor;
+        public EStateEffectProperty             StateEffectProperty;
+        public float                            BaseValue;
+        public float                            BonusValue;
+        public float                            ScalingFactor;
+        public List<SStateEffectStackFactor>    StateEffectStackFactors;
 
-        public SCharacterStatScaling(EStateEffectProperty stateEffectProperty, float baseValue, float bonusValue, float scalingFactor = 0.1f)
+        public SCharacterStatScaling(EStateEffectProperty stateEffectProperty, float baseValue, float bonusValue, float scalingFactor = 0.1f, List<SStateEffectStackFactor> stateEffectStackFactors = default)
         {
             StateEffectProperty = stateEffectProperty;
             BaseValue = baseValue;
             BonusValue = bonusValue;
             ScalingFactor = scalingFactor;
+            StateEffectStackFactors = stateEffectStackFactors != default ? stateEffectStackFactors : new List<SStateEffectStackFactor>() ;
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
@@ -33,6 +38,18 @@ namespace Data
             serializer.SerializeValue(ref BaseValue);
             serializer.SerializeValue(ref BonusValue);
             serializer.SerializeValue(ref ScalingFactor);
+
+            // -- PowerUps
+            var length = StateEffectStackFactors != null ? StateEffectStackFactors.Count : 0;
+            serializer.SerializeValue(ref length);
+            if (serializer.IsReader)
+            {
+                StateEffectStackFactors = new List<SStateEffectStackFactor>();
+            }
+            for (int i = 0; i < length; i++)
+            {
+                StateEffectStackFactors[i].NetworkSerialize(serializer);
+            }
         }
 
         /// <summary>
@@ -52,9 +69,25 @@ namespace Data
             return this;
         }
 
-        public float GetValue(int level)
+        public float GetValue(int level, Controller controller = null, Controller targetController = null)
         {
-            return BonusValue + BaseValue * Mathf.Pow(1 + ScalingFactor, level - 1);
+            return BonusValue
+                + BaseValue * Mathf.Pow(1 + ScalingFactor, level - 1)
+                + GetStateEffectStackBonus(level, controller, targetController);
+        }
+
+        float GetStateEffectStackBonus(int level, Controller controller, Controller targetController)
+        {
+            if (controller == null || StateEffectStackFactors == null)
+                return 0.0f;
+
+            float value = 0.0f;
+            foreach (var stateEffectStackFactor in StateEffectStackFactors)
+            {
+                value += stateEffectStackFactor.GetBonusValue(level, controller, targetController);
+            }
+
+            return value;
         }
     }
 
@@ -180,6 +213,7 @@ namespace Data
 
                 var current = CharacterStatScaling[index];
                 current.BonusValue += characterStatScaling.AsBonus(m_Level).BonusValue;
+                current.StateEffectStackFactors.AddRange(characterStatScaling.StateEffectStackFactors);
                 CharacterStatScaling[index] = current;
             }
         }
@@ -189,18 +223,18 @@ namespace Data
 
         #region Scaling & Stats Accessors
 
-        public float GetValue(EStateEffectProperty property)
+        public float GetValue(EStateEffectProperty property, Controller caster = null, Controller targetController = null)
         {
             var characterStatScalingData = GetCharacterScalingData(property);
-            if (!characterStatScalingData.HasValue)
+            if (! characterStatScalingData.HasValue)
                 return 0.0f;
 
-            return characterStatScalingData.Value.BonusValue + Mathf.Pow(1f + characterStatScalingData.Value.ScalingFactor, m_Level - 1) * characterStatScalingData.Value.BaseValue;
+            return characterStatScalingData.Value.GetValue(Level, caster, targetController);
         }
 
-        public int GetInt(EStateEffectProperty property)
+        public int GetInt(EStateEffectProperty property, Controller caster = null, Controller targetController = null)
         {
-            return (int)Math.Round(GetValue(property));
+            return (int)Math.Round(GetValue(property, caster, targetController));
         }
 
         SCharacterStatScaling? GetCharacterScalingData(EStateEffectProperty property)
@@ -231,6 +265,7 @@ namespace Data
         {
             return property.EndsWith("Perc")
                 || property == EStateEffectProperty.BonusLifeSteal.ToString()
+                || property == EStateEffectProperty.BonusTickLifeSteal.ToString()
                 || property == EStateEffectProperty.AttackSpeed.ToString()
                 || property == EStateEffectProperty.CastSpeed.ToString()
                 || property == EStateEffectProperty.LifeSteal.ToString()

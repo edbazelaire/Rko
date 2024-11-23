@@ -9,7 +9,9 @@ namespace Data
     [CreateAssetMenu(fileName = "Mine", menuName = "Game/Spells/Mine")]
     public class MineData : SpellData
     { 
-        public override ESpellType SpellType => ESpellType.Mine;
+        public override ESpellType SpellType    => ESpellType.Mine;
+        public override EDamageType DamageType  => EDamageType.Zone;
+
 
         [Header("MineData")]
         [SerializeField] protected SpellData    m_ActivationData;

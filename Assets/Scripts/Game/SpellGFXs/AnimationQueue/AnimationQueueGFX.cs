@@ -15,7 +15,6 @@ namespace Game.SpellGFXs
         #endregion
 
 
-
         #region Init
 
         protected override void ApplyPostProcessing()

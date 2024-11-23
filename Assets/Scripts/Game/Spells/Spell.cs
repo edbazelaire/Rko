@@ -114,7 +114,7 @@ namespace Game.Spells
             if (IsServer)
                 AddSpecialComponent();
 
-            // initialize graphics of the spell (whith delay if has any)
+            // initialize graphics of the spell (with delay if has any)
             InitGraphics();
 
             // call event that spell has spawn
@@ -370,27 +370,34 @@ namespace Game.Spells
         /// <summary>
         /// Check if ability hit an enemy
         /// </summary>
-        /// <param name="controller"> controller of hit target </param>
+        /// <param name="targetController"> controller of hit target </param>
         /// <returns></returns>
-        protected virtual bool CheckHitEnemy(Controller controller)
+        protected virtual bool CheckHitEnemy(Controller targetController)
         {
             // Target is Ally - return
-            if (controller.Team == m_Controller.Team)
+            if (targetController.Team == m_Controller.Team)
                 return false;
 
             // no base Damages, StateEffects or OnHit effects - return
             if (m_SpellData.Damage <= 0 && m_SpellData.EnemyStateEffects.Count == 0 && m_SpellData.OnHit.Count == 0)
                 return false;
 
-            // add bonus damages from state bonus & boosts 
-            int damages = GetBoostedDamages(controller);
-
             // check if target has counter(s)
-            if (controller.CounterHandler.CheckCounters(this))
+            if (targetController.CounterHandler.CheckCounters(this))
                 return false;
 
+            HitEnemy(targetController);
+
+            return true;
+        }
+
+        void HitEnemy(Controller targetController)
+        {
+            // add bonus damages from state bonus & boosts 
+            int damages = GetBoostedDamages(targetController);
+
             // get final damages after shields and resistances
-            int finalDamages = controller.Life.Hit(damages);
+            int finalDamages = targetController.Life.Hit(damages);
             if (finalDamages > 0 && m_Controller.ClientAnalytics != null)
                 m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Damage, finalDamages);
 
@@ -410,9 +417,7 @@ namespace Game.Spells
             }
 
             // apply state effects specifics to enemies
-            ApplyEnemyStateEffects(controller);
-            
-            return true;
+            ApplyEnemyStateEffects(targetController);
         }
 
         /// <summary>
@@ -463,7 +468,7 @@ namespace Game.Spells
                 damages *= targetController.StateHandler.GetStacks(m_SpellData.StateEffectStackFactor);
             }
 
-            return m_Controller.StateHandler.ApplyBonusDamages(damages);
+            return m_Controller.StateHandler.ApplyBonusDamages(damages, targetController);
         }
 
         protected virtual void AddExtraEffects()

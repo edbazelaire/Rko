@@ -63,12 +63,19 @@
 
     public enum EArenaDifficulty
     {
+        Easy,
         Normal,
         Hard,
         Painfull,
+        //Brutal,
         //HardCore,
+        //Savage,
+        //Relentless
         //Torment,
         //Infernal,
+        //Nightmare,
+        //Cataclysmic,
+        //Hell,
     }
 
     public enum ECharacter
@@ -84,25 +91,27 @@
 
     public enum EBoss
     {
-        None = -1,
+        None        = -1,
 
-        IceGolem = 0,
-        MaiHau = 1,
-        Atassut = 2,
+        IceGolem    = 0,
+        MaiHau      = 1,
+        Atassut     = 2,
+        Sikunik     = 3,
 
-        Zorg = 10,
+        Zorg        = 10,
 
         // ======================================================================
         // Mobs
-        Lunassian = 1000,
+        Lunassian   = 1000,
     }
 
     public enum ESpawn
     {
         None = -1,
 
-        Stalacmite  = 1,
-        DarkVeil    = 2,
+        Stalacmite      = 1,
+        DarkVeil        = 2,
+        AzurePowerOrb   = 3,
     }
 
     public enum ESpell
@@ -160,24 +169,33 @@
         SoulFreeze,
         DarkVeil,
         IceField,
+        Stalacmite,
 
         // ======================================================================
         // BOSSES ABILITIES
         // -- IceGolem
-        IceRock         = 10001,
-        Carapice        = 10002,
-        Stalacmite      = 10004,
+        IceRock             = 10001,
+        Carapice            = 10002,
+        IceRockNRoll        = 10003,
+        CryoPunch           = 10004,
         // -- MaiHau
-        Slicide         = 10101,
-        SlIceBreaker    = 10102,
-        PoisonDarts     = 10103,
-        Crosslice       = 10104,
+        Slicide             = 10101,
+        SlIceBreaker        = 10102,
+        PoisonDarts         = 10103,
+        Crosslice           = 10104,
+        ExtraClaws          = 10105,
         // -- Atassut
-        Scythefall      = 10201,
-        Nightveil       = 10202,
+        Scythefall          = 10201,
+        Nightveil           = 10203,
+        // -- Sikunik
+        BlueMeteor          = 10301,
+        DragonicRest        = 10302,
+        Soaring             = 10303,
+        AzureDeflagration   = 10304,
+        AzurePowerOrbs      = 10305,
 
         // -- Lunassian
-        FerociousBite = 100001,
+        FerociousBite       = 100001,
     }
 
     public enum ESpellType
@@ -195,7 +213,7 @@
         Teleportation       = 8,
         MultiSpellData      = 9,
         Mine                = 10,
-        Spawner           = 11,
+        Spawner             = 11,
     }
 
     public enum ESpellElement
@@ -206,6 +224,15 @@
         Frost,
         Poison,
         Void,
+    }
+
+    public enum EDamageType
+    {
+        None,
+
+        Direct,
+        Zone,
+        Tick,
     }
 
     public enum ESpellSelectionState
@@ -260,6 +287,10 @@
         SoulSiffonRune,
         ShardcurseRune,
         ToxicWaterRune,
+        ThermalShockRune,
+        ParasiteRune,
+        PoisonfangRune,
+        VampiricRune,
     }
 
     public enum EOrderBy
@@ -383,6 +414,19 @@
         Fixed = 102,                // at a fixed distance
     }
 
+    public enum EStateEffectTarget
+    {
+        None = 0,
+
+        Self        = 1,
+        Target      = 2,
+        Ally        = 3,
+        Enemy       = 4,
+
+        AllEnemies  = 10,
+        AllAllies   = 11,
+    }
+
     public enum ESpellSpawn
     {
         None,
@@ -397,6 +441,14 @@
         Line = 1,
         Random = 2,
         RandomLine = 4,
+    }
+
+    public enum EMultiSpellSpawn
+    {
+        None        = 0,
+
+        Random      = 1,
+        Line        = 2,
     }
 
     public enum EJumpType
@@ -501,7 +553,9 @@
 
         // ======================================================================
         // Special Effects (boss)
-        DarkRetribution = 10001
+        DarkRetribution = 10001,
+        DragonicRest    = 10002,
+        AzurePowerOrb   = 10003,
     }
 
     public enum EStateEffectType
@@ -567,6 +621,7 @@
         BonusTickDamagesPerc    = 101,
         BonusTickHeal           = 102,
         BonusTickShield         = 103,
+        BonusTickLifeSteal      = 104,
 
         Heal,
         LifeSteal,
@@ -580,6 +635,8 @@
         BonusBurnDamages,
         BonusSlowPerc,
         Priority,
+        TickEnergy,
+        Energy,
     }
 
     public enum EAnimation
@@ -645,7 +702,6 @@
         // Game
         Game                = 100,    
         Gameplay            = 101,      
-        Spells              = 102,      // spell infos, start, end, stats, Colliders(), ...
         Rewards             = 103,      // end game rewards handling
         GameSystem          = 104,      // login, new player, stages, ...
         SpellHandler        = 105,      // casting error/success messages, cancel, all stages of spell casting, spell ending, ...
@@ -653,9 +709,10 @@
         StateEffects        = 107,      // state effects changes
         SpellGFX            = 107,      // spell graphics playing
         StateEffectGFX      = 108,      // spell graphics playing
+        BonusStats          = 109,      // track increased statistiques
 
         // AI
-        AI                  = 200,
+        AI = 200,
         AIFinalDecision     = 201,
         AICheckers          = 202,
         AITaskAttack        = 203,
@@ -664,6 +721,7 @@
         AITaskCounter       = 206,
         AITaskAutoAttack    = 207,
         AITaskUseSpell      = 208,
+        AIBtState          = 209,
 
         // CloudData
         CloudData           = 300,
@@ -672,6 +730,15 @@
         // Services
         Services            = 400,
         Analytics           = 401,
+
+        // Spells
+        Spells              = 500,      // spell infos, start, end, stats, Colliders(), ...
+        Projectiles         = 501,  
+        Aoe                 = 502,  
+        Buff                = 503,      
+        Spawns              = 504,  
+        MultiSpells         = 505,  
+
     }
 
     public enum ERewardType
@@ -687,6 +754,7 @@
         Gems,
         Dollars,
         Xp,
+        TotalXp,
     }
 
     public enum EChest
@@ -850,10 +918,18 @@
         The_Money_Maker,
         Cresus,
         Lone_Wolf,
-        Pyro_Master,
-        Glacial_Conqueror,
         Heal_Checker,
         Alpha_Tester,
+
+        // Frost Arena ======================================================
+        Winter_Soldier          = 1001,
+        The_Iceborned           = 1002,
+        Arctic_Vanquisher       = 1003,
+        Glacial_Conqueror       = 1004,
+        Eternal_Winter_King     = 1005,
+
+        // Fire Arena ======================================================
+        Pyro_Master             = 1104,
     }
 
     public enum EAvatar
@@ -879,7 +955,7 @@
         ChibiFrostDemon = 105,
         FirstWinChibi   = 106,
 
-        Alexander = 1000,
+        Alexander       = 1000,
         YoungAlexander  = 1001,
         Marcus          = 1010,
         Kahnan          = 1030,

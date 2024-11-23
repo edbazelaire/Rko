@@ -13,9 +13,14 @@ MonoBehaviour:
   m_Name: DarkVeil
   m_EditorClassIdentifier: 
   Rarety: 1
-  m_Description: 'Creates a wall of shadow slowing the enemies that passes throught
-    it and [EnemyStateEffect.0] and [Frost]'
-  m_DescriptionVariables: []
+  m_Description: Creates a wall of shadow slowing the enemies that passes throught
+    it. Applies 5 stacks of [Cursed] and [Frost].\nThe wall last for {0} seconds
+    or until destruction ({1} hp)
+  m_DescriptionVariables:
+  - Name: Duration
+    WithIcon: 1
+  - Name: Hp
+    WithIcon: 1
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}

@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8d2bcd733533b8499b0cb4a21b59b82, type: 3}
+  m_Name: AzurePowerOrbs
+  m_EditorClassIdentifier: 
+  Rarety: 0
+  m_Description: 
+  m_DescriptionVariables: []
+  m_SpellElements: 
+  Linked: 0
+  Graphics: {fileID: 0}
+  SpellEventActions: []
+  OnHit: []
+  OnHitSpellSpawn: 1
+  AnimationSoundFX: {fileID: 0}
+  CastSoundFX: {fileID: 0}
+  PermanantSoundFX: {fileID: 0}
+  OnHitSoundFX: {fileID: 0}
+  OnEndSoundFX: {fileID: 0}
+  SpellTarget: 10
+  TargetOffset:
+    X: 0
+    Y: 0.5
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  m_SpellRequirements: []
+  MaxHit: 1
+  EnergyGain: 0
+  EnergyCost: 0
+  m_Damage: 0
+  m_Heal: 0
+  m_Shield: 0
+  m_LifeSteal: 0
+  Distance: -1
+  OverrideOnHitProperties: 
+  m_Duration: 10
+  Delay: 2
+  m_SpellsScalingLevel: []
+  m_Size: 3
+  TriggerPlayer: 0
+  EnemyStateEffects: []
+  AllyStateEffects: []
+  StateEffectStackFactor: 0
+  PersistanceAfterEnd: 0
+  Animation: 0
+  IsCancellable: 0
+  AnimationTimer: 0
+  m_Cooldown: 10
+  m_IsUnique: 1
+  m_DestroySpawnsOnEnd: 0
+  m_SpawnTarget:
+    m_MultiProjectileSpawn: 1
+    m_ZoneSize: -1
+    m_NBreakPoints: 0
+    m_OffsetMin:
+      X: 0
+      Y: 0
+    m_OffsetMax:
+      X: 0
+      Y: 0
+  m_SpawnElements:
+  - CharacterName: AzurePowerOrb
+    NSpawn: -1
+    SpawnInterval: 1.5
+    Delay: 0
+    Duration: -1

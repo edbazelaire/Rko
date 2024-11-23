@@ -15,15 +15,15 @@ namespace Data.GameManagement
     public struct SStageData
     {
         [SerializeField] EBoss                          m_Boss;
-        [SerializeField] int                            m_Level;
+        [SerializeField] int                            m_BonusLevel;
         [SerializeField] List<ESpell>                   m_Spells;
         [SerializeField] List<STriggerEffect>           m_TriggerEffects;
         [SerializeField] List<SCharacterStatScaling>    m_BonusStats;
 
-        int m_ArenaDifficultyLevel;
+        int m_BaseLevel;
 
         public readonly EBoss                   Boss            => m_Boss;
-        public readonly int                     Level           => m_Level + m_ArenaDifficultyLevel;
+        public readonly int                     Level           => m_BonusLevel + m_BaseLevel;
         public readonly List<ESpell>            Spells          => m_Spells;
         public readonly List<STriggerEffect>    TriggerEffects
         {
@@ -33,7 +33,7 @@ namespace Data.GameManagement
                 foreach (var effect in m_TriggerEffects)
                 {
                     var duplicateEffect = effect;
-                    duplicateEffect.Level += 2 * m_ArenaDifficultyLevel;
+                    duplicateEffect.Level = Level;
                     triggerEffects.Add(duplicateEffect);
                 }
 
@@ -43,9 +43,9 @@ namespace Data.GameManagement
 
         public readonly List<SCharacterStatScaling>  BonusStats      => m_BonusStats;
 
-        public SStageData SetArenaDifficultyLevel(int arenaDifficultyLevel)
+        public SStageData SetBaseLevel(int baseLevel)
         {
-            m_ArenaDifficultyLevel = arenaDifficultyLevel;
+            m_BaseLevel = baseLevel;
             return this;
         }
     }
@@ -87,8 +87,9 @@ namespace Data.GameManagement
 
         protected int m_ArenaDifficultyLevel;
 
-        public int CurrentLevel => ProgressionCloudData.CurrentArena.Level;
-        public int CurrentStage => ProgressionCloudData.CurrentArena.Stage;
+        public int CurrentLevel                 => ProgressionCloudData.CurrentArena.Level;
+        public int CurrentStage                 => ProgressionCloudData.CurrentArena.Stage;
+        public int CurrentBaseCharacterLevel    => (int)ArenaDifficulty * 2 + m_ArenaDifficultyLevel;
         public float CurrentRewardMultiplicator => 1 + (int)ArenaDifficulty * 0.5f + m_ArenaDifficultyLevel * 0.15f;
 
         public EArenaType               ArenaType               => Enum.TryParse(name.Split("_")[0], out EArenaType arenaType) ? arenaType : EArenaType.FrostArena;
@@ -128,14 +129,14 @@ namespace Data.GameManagement
             foreach (var effect in arenaLevelData.TriggerEffects)
             {
                 var duplicateEffect = effect;
-                duplicateEffect.Level += 2 * m_ArenaDifficultyLevel;
+                duplicateEffect.Level = CurrentBaseCharacterLevel;
                 triggerEffects.Add(duplicateEffect);
             }
             arenaLevelData.TriggerEffects = triggerEffects;
 
             for (int i = 0; i < m_ArenaLevelData[arenaLevel].StageData.Count; i++)
             {
-                arenaLevelData.StageData[i].SetArenaDifficultyLevel(m_ArenaDifficultyLevel);
+                arenaLevelData.StageData[i].SetBaseLevel(CurrentBaseCharacterLevel);
             }
 
             return arenaLevelData;
@@ -156,7 +157,7 @@ namespace Data.GameManagement
                 stage = 0;
             }
 
-            return stageDataList[stage].SetArenaDifficultyLevel(m_ArenaDifficultyLevel);
+            return stageDataList[stage].SetBaseLevel(CurrentBaseCharacterLevel);
         }
 
         public EBoss GetBoss(int arenaLevel)
@@ -240,6 +241,7 @@ namespace Data.GameManagement
         public SProfileDataNetwork CreateProfileData()
         {
             return new SProfileDataNetwork(
+                accountLevel: CurrentStageData.Level,
                 gamerTag: CurrentStageData.Boss.ToString(),
                 avatar: EAvatar.None.ToString(),
                 border: GetBorder().ToString(),
