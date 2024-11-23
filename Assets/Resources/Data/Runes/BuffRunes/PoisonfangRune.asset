@@ -18,37 +18,38 @@ MonoBehaviour:
   Description: 
   m_SpellElements: 
   m_MinorPower:
-    Description: Increase damages by 5 for each stacks of Poison on the target
+    Description: Increase damages by 1% for each stacks of Poison on the target
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
-    - StateEffectProperty: 7
+    - StateEffectProperty: 8
       BaseValue: 0
       BonusValue: 0
       ScalingFactor: 0
       StateEffectStackFactors:
       - Target: 2
         StateEffect: 9
-        BaseValue: 5
-        LevelFactor: 0.1
+        BaseValue: 0.01
+        LevelFactor: 0.05
   m_MajorPower:
-    Description: Increase damages by 10 for each stacks of Poison on the target
+    Description: Increase damages by 2% for each stacks of Poison on the target
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
-    - StateEffectProperty: 7
+    - StateEffectProperty: 8
       BaseValue: 0
       BonusValue: 0
       ScalingFactor: 0
       StateEffectStackFactors:
       - Target: 2
         StateEffect: 9
-        BaseValue: 10
-        LevelFactor: 0.1
+        BaseValue: 0.02
+        LevelFactor: 0.05
   m_PrimalPower:
-    Description: Increase damages by 15 + 2% for each stacks of Poison on the target
+    Description: Increase damages by 5 fix + 2% for each stacks of Poison on the
+      target
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
@@ -73,7 +74,7 @@ MonoBehaviour:
       StateEffectStackFactors:
       - Target: 2
         StateEffect: 9
-        BaseValue: 10
+        BaseValue: 3
         LevelFactor: 0.1
     - StateEffectProperty: 8
       BaseValue: 0
