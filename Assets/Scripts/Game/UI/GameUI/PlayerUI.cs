@@ -107,7 +107,11 @@ namespace Game.UI
         void OnStateEvent(EListEvent listEvent, string state, int stack, float duration)
         {
             // check that is not one of the state that are not displayed
-            if (IGNORED_STATE_EFFECTS.Contains(state) || state.StartsWith("_") || SpellLoader.IsInstantanious(state))
+            if (IGNORED_STATE_EFFECTS.Contains(state) || state.StartsWith("_"))
+                return;
+
+            var stateEffectData = SpellLoader.GetStateEffect(state);
+            if (stateEffectData == null || stateEffectData.IsInstantanious || ! stateEffectData.IsDisplayed) 
                 return;
 
             switch (listEvent)

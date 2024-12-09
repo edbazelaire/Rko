@@ -1,7 +1,5 @@
 ﻿using Assets.Scripts.Data.DataStructures.SpellSubStructures;
-using Data.DataStructures;
 using Enums;
-using Game;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +8,6 @@ using Unity.Collections;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Data
 {

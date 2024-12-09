@@ -92,10 +92,12 @@ MonoBehaviour:
     m_OffsetMax:
       X: 0
       Y: 0
+  m_NSpawns: 1
   m_SpawnElements:
   - CharacterName: Stalacmite
-    NSpawn: 1
-    SpawnInterval: 0
-    Delay: 0
-    Duration: -1
-  m_YPos: 0
+    m_MaxSpawns: 1
+    m_SpawnProbability: 1
+    m_BonusLevel: 0
+    m_SpawnInterval: 0
+    m_Delay: 0
+    m_Duration: -1

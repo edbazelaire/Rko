@@ -1,9 +1,7 @@
 ﻿using Data;
+using Data.GameManagement;
 using Enums;
-using Game.Loaders;
 using System;
-using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Game.Spells
@@ -12,8 +10,8 @@ namespace Game.Spells
     {
         #region Members
 
-        JumpData m_SpellData => m_BaseSpellData as JumpData;
-        float   m_OffsetY;
+        JumpData    m_SpellData => m_BaseSpellData as JumpData;
+        float       m_CharacterOffsetY;
 
         #endregion
 
@@ -21,11 +19,8 @@ namespace Game.Spells
         {
             base.Initialize(clientId, target, spellName, level);
 
-            m_OffsetY = 0.1f + ((CapsuleCollider2D)m_Controller.Collider).size.y / 2;
-
-            transform.position  = m_Controller.transform.position;
-            m_OriginalPosition  = transform.position;
-            m_MaxDistance       = Math.Abs(m_Target.x - m_OriginalPosition.x);
+            m_CharacterOffsetY      = 0.1f + ((CapsuleCollider2D)m_Controller.Collider).size.y / 2;
+            transform.localScale    = m_Controller.transform.localScale * m_SpellData.BaseSize;
 
             if (EJumpType.Teleport == m_SpellData.JumpType)
                 m_Controller.GFXHandler.HideCharacter(true);
@@ -33,10 +28,20 @@ namespace Game.Spells
             // make player untargatable, unmovable and unrotatable
             if (IsServer)
             {
+                // get collider of the Controller
+                var collider = CopyCollider(m_Controller.GFXHandler.Collider);
+                collider.isTrigger = true;  
+
                 m_Controller.StateHandler.SetStateJump(true);
                 m_Controller.SpellHandler.ForceBlockCast(true);
                 m_Controller.Movement.ForceBlockMovement(true);
             }
+
+            // play corresponding animation
+            if (m_SpellData.JumpAnimation == EAnimation.None)
+                m_Controller.AnimationHandler.CancelCastAnimation();
+            else
+                m_Controller.AnimationHandler.PlayAnimation(m_SpellData.JumpAnimation);
         }
 
         protected override void Update()
@@ -49,15 +54,11 @@ namespace Game.Spells
 
             if (m_SpellData.JumpType != EJumpType.Teleport)
                 UpdatePlayerPosition();
-
-            // check if the spell has reached its max distance
-            if (Math.Abs(transform.position.x - m_OriginalPosition.x) >= m_MaxDistance)
-                End();
         }
 
         protected override void OnTriggerEnter2D(Collider2D collision)
         {
-            return;
+            base.OnTriggerEnter2D(collision);
         }
 
 
@@ -89,6 +90,12 @@ namespace Game.Spells
         {
             base.OnDestroy();
 
+            // cancel animation
+            m_Controller.AnimationHandler.CancelCastAnimation();
+
+            if (!IsServer)
+                return;
+
             // reset player position
             m_OriginalPosition.y = 0;
             m_Controller.transform.position = m_OriginalPosition;
@@ -110,7 +117,7 @@ namespace Game.Spells
         void UpdatePlayerPosition()
         {
             Vector3 pos = transform.position;
-            pos.y += m_OffsetY;
+            pos.y += m_CharacterOffsetY;
             m_Controller.transform.position = pos;
         }
 

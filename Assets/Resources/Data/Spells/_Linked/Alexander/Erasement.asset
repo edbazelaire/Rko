@@ -30,9 +30,10 @@ MonoBehaviour:
   SpellEventActions:
   - Prefab: {fileID: 150222, guid: 44f40a08278d2704d86e189b67164324, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
-      StartSpellPart: 5
-      EndSpellPart: 0
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
       Persistance: 1.5
@@ -45,10 +46,6 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs:
-  - {fileID: 610942752557020422, guid: 4c012a077fc8a714fb23670e129fb0eb, type: 3}
   OnHit:
   - {fileID: 11400000, guid: 3e51126bd555af3469c4e988f343ec15, type: 2}
   OnHitSpellSpawn: 1
@@ -58,12 +55,18 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 1
-  LockTargetAt: 2
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 0
   EnergyGain: 0
   EnergyCost: 100
   m_Damage: 0
   m_Heal: 0
+  m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
@@ -83,6 +86,9 @@ MonoBehaviour:
   AnimationTimer: 0
   m_Cooldown: 0.5
   Trajectory: 1
-  m_StopOnTargetPos: 0
+  m_TriggerGround: 0
+  m_StopOnTargetPos: 1
   m_Speed: 20
+  m_YSpawnPos: 0
   JumpType: 1
+  JumpAnimation: 5

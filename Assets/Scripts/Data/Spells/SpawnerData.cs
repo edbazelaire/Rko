@@ -5,7 +5,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Tools;
-using UnityEditor;
 using UnityEngine;
 
 namespace Data
@@ -13,15 +12,37 @@ namespace Data
     [Serializable]
     public class SSpawnElement
     {
-        public string   CharacterName;                  // name of the character to spawn
-        public int      NSpawn              = 1;        // number of spawn (-1 to infinite)
-        public float    SpawnInterval       = 0f;       // interval between each spawns
-        public float    Delay               = 0f;       // delay before starting
-        public float    Duration            = -1f;      // duration of the spawn (-1 to infinite)
+        // ===========================================================================
+        // Serialized Data
+        [Tooltip("Name of the character to spawn")]
+        public string       CharacterName;                   
+        [SerializeField, Tooltip("max number of spawn for that element (-1 to infinite)")]
+        protected int       m_MaxSpawns           = -1;       
+        [SerializeField, Tooltip("probability that this spawn element is selected")]
+        protected float     m_SpawnProbability    = 1f;      
+        [SerializeField, Tooltip("bonus levels of the spawn")]
+        public int          m_BonusLevel          = 0;       
+        [SerializeField, Tooltip("interval between each spawns")]
+        public float        m_SpawnInterval       = 0f;     
+        [SerializeField, Tooltip("delay before starting")]
+        public float        m_Delay               = 0f;    
+        [SerializeField, Tooltip("duration of the spawn (-1 to infinite)")]
+        public float        m_Duration            = -1f;      
 
-        protected bool m_CanSpawn;
-        protected int m_NSpawnCounter;
-        public bool CanSpawn => m_CanSpawn;
+        // ===========================================================================
+        // Private Data
+        protected bool  m_CanSpawn;
+        protected int   m_NSpawnCounter;
+
+        // ===========================================================================
+        // Public Accessors
+        public int MaxSpawns            => m_MaxSpawns;
+        public float SpawnProbability   => m_SpawnProbability;
+        public int BonusLevel           => m_BonusLevel;
+        public float SpawnInterval      => m_SpawnInterval;
+        public float Delay              => m_Delay;
+        public float Duration           => m_Duration;
+        public bool CanSpawn            => m_CanSpawn;
         public int NSpawnCounter { get { return m_NSpawnCounter; } set { m_NSpawnCounter = value; } }
 
 
@@ -56,8 +77,10 @@ namespace Data
         [SerializeField] protected bool                 m_IsUnique;
         [SerializeField] protected bool                 m_DestroySpawnsOnEnd;
         [SerializeField] protected SMultiSpellTarget    m_SpawnTarget;
+        [SerializeField] protected int                  m_NSpawns = -1;
         [SerializeField] protected List<SSpawnElement>  m_SpawnElements;
 
+        public int NSpawns                              => m_NSpawns;
         public bool IsUnique                            => m_IsUnique;
         public bool DestroySpawnsOnEnd                  => m_DestroySpawnsOnEnd;
         public SMultiSpellTarget SpawnTarget            => m_SpawnTarget;
@@ -98,7 +121,7 @@ namespace Data
 
         public bool IsStruct => 
             m_SpawnElements.Count == 1
-            && m_SpawnElements[0].NSpawn == 1
+            && m_SpawnElements[0].MaxSpawns == 1
             && CharacterLoader.GetCharacterData(m_SpawnElements[0].CharacterName).IsStructure;
 
         #endregion

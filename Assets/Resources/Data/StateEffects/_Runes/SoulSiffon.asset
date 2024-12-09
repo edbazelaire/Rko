@@ -17,12 +17,50 @@ MonoBehaviour:
   m_DescriptionVariables: 0c0000000d000000
   m_StateEffectType: 0
   m_IsDisplayed: 1
-  m_VisualEffects: []
+  m_VisualEffects:
+  - Prefab: {fileID: 8992406793559661190, guid: 8d8cd328688b80f4b8d2ef6a258e8d47, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 400
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 2
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 2
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
+  - Prefab: {fileID: 8352405631492424525, guid: abd953b3436ad0f44a2c0db328ce7a5f, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 500
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0.5
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 2
+    SpawnLocation: 2
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 0
   m_DefaultState: 0
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
   m_Priority: 0
   m_Duration: 0
   m_IsInstantanious: 0
@@ -40,6 +78,8 @@ MonoBehaviour:
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
   m_BonusLifeSteal: 0
+  m_BonusHeal: 0
+  m_BonusHealPerc: 0
   m_BonusBurnDamages: 0
   m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
@@ -48,15 +88,17 @@ MonoBehaviour:
   - StateEffectProperty: 13
     ScalingFactor: 0.15
   m_StateEffectScalingStacks: []
+  m_IsTrueDamages: 0
   m_Damages: 0
   m_EndDamages: 0
   m_Heal: 0
   m_EndHeal: 0
   m_LifeSteal: 1
-  m_Tick: 1.5
-  m_TickDamages: 30
+  m_Tick: 4
+  m_TickDamages: 60
   m_TickHeal: 0
   m_TickShield: 0
+  m_TickEnergy: 0
   m_TickSpellRequirements:
   - m_StateEffectRequirements:
     - m_StateEffect: Cursed

@@ -47,6 +47,44 @@ namespace Game.Spells
             m_CollisionCheckRefreshTimer = 0;
 
             base.Initialize(clientId, target, spellName, level);
+
+            InitializeTriggerZone();
+        }
+
+        /// <summary>
+        /// Make sure that the Trigger effects are applied if player is already in the zone 
+        /// </summary>
+        protected void InitializeTriggerZone()
+        {
+            Collider2D[] colliders = new Collider2D[10]; // Adjust size based on expected objects
+            ContactFilter2D filter = new ContactFilter2D();
+            filter.useTriggers = true;
+
+            int count = GetComponent<Collider2D>().Overlap(filter, colliders);
+
+            var hitControllers = new List<Controller>();
+            if (! m_SpellData.ApplyIfNotHitting)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    if (TryGetController(colliders[i], out Controller controller))
+                    {
+                        hitControllers.Add(controller);
+                    }
+                }
+            }
+            else
+            {
+                var allControllers = m_SpellData.IsEnemyTarget ? GameManager.Instance.GetAllEnemies(m_Controller.Team) : GameManager.Instance.GetAllAllies(m_Controller.Team);
+                hitControllers = allControllers.Where(
+                    controller => hitControllers.Any(hitController => hitController.PlayerId == controller.PlayerId)
+                ).ToList();
+            }
+
+            foreach (Controller controller in hitControllers)
+            {
+                ApplyZoneEffects(controller);
+            }
         }
 
         /// <summary>
@@ -100,16 +138,11 @@ namespace Game.Spells
 
             if (m_SpellData.ApplyIfNotHitting)
             {
-                // remove persistant effects
-                RemovePersistentStateEffects(controller);
+                RemoveZoneEffects(controller);
             } 
             else
             {
-                // apply collision effect
-                OnCollisionController(controller);
-
-                // apply persistant effects
-                ApplyPersistentStateEffects(controller);
+                ApplyZoneEffects(controller);
             }
         }
 
@@ -120,17 +153,35 @@ namespace Game.Spells
 
             if (m_SpellData.ApplyIfNotHitting)
             {
-                // apply collision effect
-                OnCollisionController(controller);
-
-                // apply persistant effects
-                ApplyPersistentStateEffects(controller);
+                ApplyZoneEffects(controller);
             }
             else
             {
-                // remove persistant effects
-                RemovePersistentStateEffects(controller);
+                RemoveZoneEffects(controller);
             }
+        }
+
+        void ApplyZoneEffects(Controller controller)
+        {
+            // apply collision effect
+            OnCollisionController(controller);
+
+            // apply persistant effects
+            ApplyPersistentStateEffects(controller);
+
+            // apply force
+            if (m_SpellData.ZoneForce != default)
+                controller.Movement.AddForce(m_SpellData.ZoneForce);
+        }
+
+        void RemoveZoneEffects(Controller controller)
+        {
+            // remove persistant effects
+            RemovePersistentStateEffects(controller);
+
+            // remove force
+            if (m_SpellData.ZoneForce != default)
+                controller.Movement.RemoveForce(m_SpellData.ZoneForce);
         }
 
         #endregion
@@ -207,7 +258,7 @@ namespace Game.Spells
                 return false;
 
             // no base Damages, StateEffects or OnHit effects - return
-            if (m_SpellData.Damage <= 0 && m_SpellData.EnemyStateEffects.Count == 0 && m_SpellData.OnHit.Count == 0)
+            if (m_SpellData.TickDamages <= 0 && m_SpellData.EnemyStateEffects.Count == 0 && m_SpellData.OnHit.Count == 0)
                 return false;
 
             // add bonus damages from state bonus & boosts 

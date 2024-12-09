@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using AI;
 using AI.Checkers;
 using Enums;
 using Game.AI.Tasks.Variables;
 using Tools;
-using UnityEngine.UIElements;
 
 namespace Game.AI.BehaviorTrees
 {

@@ -55,9 +55,9 @@ namespace Data
         // ===========================================================================
         // Serialized Data
         [SerializeField, Description("List of Element catagories of the spell")]
-        protected List<ESpellElement> m_SpellElements;
+        protected List<ESpellElement>   m_SpellElements;
         [Description("Is this spell linked to a specific character")]
-        public bool                 Linked;
+        public bool                     Linked;
 
         [Header("Prefabs")]
         [Description("Prefab of the spell that will be instantiated when the spell is cast")]
@@ -82,6 +82,8 @@ namespace Data
         [Header("Target & Position")]
         [Description("Type of targetting for the spell")]
         public ESpellTarget                 SpellTarget             = ESpellTarget.FirstEnemy;
+        [SerializeField, Tooltip("Clamp target position between arena bounds")]
+        protected bool m_ClampTargetPos                             = true;
         [Description("Target offset X/Y")]
         public SOffset                      TargetOffset            = new SOffset(0, 0);
         [Description("Type of targetting for the spell")]
@@ -116,6 +118,8 @@ namespace Data
         public float                        m_Duration          = 0f;
         [Description("Delay of the spell to be instantiated after cast")]
         public float                        Delay               = 0f;
+        [SerializeField, Description("Force applied on hitting the target")]
+        protected SForce                    m_Force             = default;
 
         [Header("Scaling")]
         [SerializeField] protected List<SSpellPropertyScaling> m_SpellsScalingLevel = new() { 
@@ -154,10 +158,11 @@ namespace Data
 
         // ===========================================================================
         // Dependent Members
-        public virtual ESpellType SpellType => ESpellType.InstantSpell;
-        public float Size => m_Size >= 0 ? m_Size * Settings.SpellSizeFactor : ArenaManager.Instance.TargettableAreaSize;
-        protected override Type m_EnumType => typeof(ESpell);
-        public ESpell Spell => Id == null ? ESpell.None : (ESpell)Id;
+        public virtual ESpellType   SpellType   => ESpellType.InstantSpell;
+        public float                BaseSize    => m_Size;
+        public float                Size        => m_Size >= 0 ? m_Size * Settings.SpellSizeFactor : ArenaManager.Instance.TargettableAreaSize;
+        protected override Type     m_EnumType  => typeof(ESpell);
+        public ESpell               Spell       => Id == null ? ESpell.None : (ESpell)Id;
 
         // ===========================================================================
         // Level Dependent Members
@@ -169,6 +174,7 @@ namespace Data
         public virtual int Shield               => (int)Math.Round(m_Shield * GetSpellLevelFactor(ESpellProperty.Shield));
         public virtual float LifeSteal          => m_LifeSteal * GetSpellLevelFactor(ESpellProperty.LifeSteal);
         public virtual float Duration           => m_Duration * GetSpellLevelFactor(ESpellProperty.Duration);
+        public virtual SForce Force             => m_Force;
 
         /// <summary> is the "IsCasting" over once the spell has been casted (before delay) ? </summary>
         public virtual bool IsCompletedOnCast   => true;
@@ -187,7 +193,7 @@ namespace Data
         /// <param name="position">     position where to spawn the spell prefab    </param>
         /// <param name="rotation">     rotation of the prefab                      </param>
         /// <returns></returns>
-        public IEnumerator CastDelay(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default, float? delay = null, bool recalculateTarget = true)
+        public IEnumerator CastDelay(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default, float? delay = null, bool recalculateTarget = true, bool recalculatePosition = true)
         {
             if (delay == null)
                 delay = Delay;
@@ -209,7 +215,7 @@ namespace Data
 
             // cast the spell at the end of the delay
             bool recalculateOnCast = LockTarget == ESpellEvent.OnSpawn;
-            Cast(clientId, target, position, rotation, recalculateTarget: recalculateOnCast);
+            Cast(clientId, target, position, rotation, recalculateTarget: recalculateOnCast, recalculatePosition: recalculatePosition);
         }
 
         /// <summary>
@@ -458,6 +464,11 @@ namespace Data
                     target.x = centerPos - direction * ArenaManager.Instance.TargettableAreaSize / 2;
                     break;
 
+                case ESpellTarget.AllyZoneEnd:
+                case ESpellTarget.EnemyZoneEnd:
+                    target.x = GetTargettableArea(controller.Team).position.x + direction * ArenaManager.Instance.TargettableAreaSize / 2;
+                    break;
+
                 case ESpellTarget.Mirror:
                     target.x = -controller.transform.position.x;
                     break;
@@ -477,7 +488,7 @@ namespace Data
             target.y += TargetOffset.Y;
 
             // CLAMP target in between available positions
-            if (SpellTarget != ESpellTarget.Self)
+            if (m_ClampTargetPos && SpellTarget != ESpellTarget.Self)
                 ClampTargetX(ref target, clientId);
         }
 
@@ -892,6 +903,8 @@ namespace Data
         {
             base.SetLevel(level);
 
+            m_Force.SetLevel(level);
+
             for (int i = 0; i < OnHit.Count; i++)
             {
                 OnHit[i] = OnHit[i].Clone(level);
@@ -952,6 +965,7 @@ namespace Data
             || SpellTarget == ESpellTarget.EnemyZone
             || SpellTarget == ESpellTarget.EnemyZoneStart
             || SpellTarget == ESpellTarget.EnemyZoneCenter
+            || SpellTarget == ESpellTarget.EnemyZoneEnd
             || SpellTarget == ESpellTarget.Fixed
             || SpellTarget == ESpellTarget.Mirror;
             
@@ -960,7 +974,8 @@ namespace Data
             || SpellTarget == ESpellTarget.Self
             || SpellTarget == ESpellTarget.AllyZone
             || SpellTarget == ESpellTarget.AllyZoneStart
-            || SpellTarget == ESpellTarget.AllyZoneCenter;
+            || SpellTarget == ESpellTarget.AllyZoneCenter
+            || SpellTarget == ESpellTarget.AllyZoneEnd;
 
         #endregion
 

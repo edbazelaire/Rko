@@ -1,5 +1,6 @@
 ﻿using Data;
 using Enums;
+using MyBox;
 using System;
 using Tools;
 using UnityEngine;
@@ -69,7 +70,8 @@ namespace Game.Spells
                 return;
 
             // if spell hits a wall, end it
-            if (collision.gameObject.layer == LayerMask.NameToLayer("Wall") || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            if (collision.gameObject.layer == LayerMask.NameToLayer("Wall") 
+                || (collision.gameObject.layer == LayerMask.NameToLayer("Ground") && m_SpellData.TriggerGround))
             {
                 // check if should apply on hit
                 if (! m_SpellData.ApplyIfNotHitting)
@@ -89,15 +91,14 @@ namespace Game.Spells
             // if spell hits a player, hit it and end the spell
             else if (
                 (collision.gameObject.layer == LayerMask.NameToLayer("Player") && m_SpellData.TriggerPlayer)
-                || collision.gameObject.layer == LayerMask.NameToLayer("Structure")
-                )
+                || collision.gameObject.layer == LayerMask.NameToLayer("Structure"))
             {
                 var controller = Finder.FindComponent<Controller>(collision.gameObject);
                 if (controller == null)
                     return;
 
                 // check if should apply on hit
-                if (controller.IsPlayer && m_SpellData.ApplyIfNotHitting)
+                if (m_SpellData.ApplyIfNotHitting && !controller.IsSpawn)
                 {
                     End();
                     return;
@@ -131,7 +132,7 @@ namespace Game.Spells
                 End();
 
             // check if the spell has reached its target position
-            if (m_SpellData.StopOnTargetPos && m_Target.x - transform.position.x < 0)
+            if (m_SpellData.StopOnTargetPos && Math.Abs(m_Target.x - transform.position.x) < 0.05f)
                 End();
 
             // check if the spell is stuck in the void

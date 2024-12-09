@@ -26,17 +26,20 @@ namespace Game.AI.BehaviorTrees
                     new TaskUseSpell(m_Controller, m_Controller.SpellHandler.Ultimate),
                 }),
 
+                // ASTRAL ICEFALL
+                new TaskUseSpell(m_Controller, ESpell.AstralIcefall),
+
                 // USE SPECIAL ABILITY
-                new TaskUseSpell(m_Controller, ESpell.Scythefall),
+                new TaskUseSpell(m_Controller, ESpell.Scythefall, delay: 8f),
             
-                // USE VORTEX
-                new Sequence(new List<Node> {
-                    new CheckCanBeCasted(m_Controller, ESpell.Vortex),
-                    new TaskUseSpell(m_Controller, ESpell.Vortex, delay: 15),
-                }),
+                // GREAT VORTEX
+                new TaskUseSpell(m_Controller, ESpell.GreatVortex, delay: 15f),
+
+                // AUTO ATTACK
+                new TaskUseSpell(m_Controller, ESpell.ChaosOrb),
 
                 // MOVE
-                new TaskMove(m_Controller, checkZones: true, checkProjectiles: false),
+                new TaskMove(m_Controller, checkZones: false, checkProjectiles: false),
 
                 // Stand Still if cant move
                 new TaskWait(m_Controller),

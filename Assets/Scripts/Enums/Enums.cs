@@ -67,7 +67,7 @@
         Normal,
         Hard,
         Painfull,
-        //Brutal,
+        Brutal,
         //HardCore,
         //Savage,
         //Relentless
@@ -97,12 +97,17 @@
         MaiHau      = 1,
         Atassut     = 2,
         Sikunik     = 3,
+        Fenris      = 4,
 
         Zorg        = 10,
 
         // ======================================================================
         // Mobs
-        Lunassian   = 1000,
+        Lunassian               = 1001,
+        VenomfangLunassian      = 1002,
+        MoonclawLunassian       = 1003,
+        AshhowlLunassian        = 1004,
+        ElderLunassian          = 1005,
     }
 
     public enum ESpawn
@@ -170,6 +175,8 @@
         DarkVeil,
         IceField,
         Stalacmite,
+        PoisonDart,
+        DarkEnergyField,
 
         // ======================================================================
         // BOSSES ABILITIES
@@ -178,6 +185,7 @@
         Carapice            = 10002,
         IceRockNRoll        = 10003,
         CryoPunch           = 10004,
+        FrostfistRain       = 10005,
         // -- MaiHau
         Slicide             = 10101,
         SlIceBreaker        = 10102,
@@ -185,17 +193,33 @@
         Crosslice           = 10104,
         ExtraClaws          = 10105,
         // -- Atassut
-        Scythefall          = 10201,
+        ChaosOrb            = 10201,
+        Scythefall          = 10202,
         Nightveil           = 10203,
+        GreatVortex         = 10204,
+        AstralIcefall       = 10205,
         // -- Sikunik
         BlueMeteor          = 10301,
         DragonicRest        = 10302,
         Soaring             = 10303,
         AzureDeflagration   = 10304,
         AzurePowerOrbs      = 10305,
+        // -- Fenris
+        IceClaws            = 10401,
+        PackHunt            = 10402,
+        FrostfangStrike     = 10403,
 
         // -- Lunassian
-        FerociousBite       = 100001,
+        LeatherSkin         = 100002,
+        StalacmiteLuna      = 100003,
+        FrostVenomOrb       = 100004,
+        HealingField        = 100006,
+        FrostCursedOrb      = 100007,
+        MoonSilence         = 100009,
+        FrostFireOrb        = 100010,
+        Howling             = 100012,
+        GlacialOrb          = 100013,
+        FerociousBite       = 100015,
     }
 
     public enum ESpellType
@@ -407,6 +431,8 @@
         AllyZoneStart = 8,
         EnemyZoneCenter = 9,
         AllyZoneCenter = 10,
+        EnemyZoneEnd = 11,
+        AllyZoneEnd = 12,
 
         CurrentTarget = 50,
 
@@ -443,7 +469,15 @@
         RandomLine = 4,
     }
 
-    public enum EMultiSpellSpawn
+    public enum EDimension
+    {
+        None = 0,
+
+        X = 1, 
+        Y = 2,
+    }
+
+    public enum EMultiSpellZone
     {
         None        = 0,
 
@@ -458,6 +492,7 @@
         Curve,
         Dash,
         Teleport,
+        Charge,
     }
 
     public enum ESpellEffectType
@@ -482,6 +517,7 @@
         OnSpell,                // spell location
         TargetPos,              // target of the spell (position where it's aim at)
         Mouse,                  // on the mouse location    
+        MapCenter,              // center of the map (0, 0, 0)
     }
 
     public enum ESpawnLocation
@@ -550,12 +586,15 @@
         Airborn,
         Infection,
         Vanish,
+        Cleanse,
+        SoulHarvest,
 
         // ======================================================================
         // Special Effects (boss)
         DarkRetribution = 10001,
         DragonicRest    = 10002,
         AzurePowerOrb   = 10003,
+        Howling         = 10004,
     }
 
     public enum EStateEffectType
@@ -641,23 +680,28 @@
 
     public enum EAnimation
     {
-        None,
-        CastShootStraight,
-        CastShoot,
-        CancelCast,
-        Counter,
-        Jump,
-        CastAOE,
-        Win,
-        Loss,
-        CastBuff,
-        CancelStateEffect,
-        Stun,
-        Frozen,
-        Silenced,
-        CastHight,
-        Airborn,
-        Self,                       // animation would be the name of the spell (for special spells)
+        Self = -1,                       // animation would be the name of the spell (for special spells)
+        
+        None = 0,
+        
+        CastShootStraight   = 1,
+        CastShoot           = 2,
+        CancelCast          = 3,
+        Counter             = 4,
+        Jump                = 5,
+        CastAOE             = 6,
+        Win                 = 7,
+        Loss                = 8,
+        CastBuff            = 9,
+        CancelStateEffect   = 10,
+        Stun                = 11,
+        Frozen              = 12,
+        Silenced            = 13,
+        CastHight           = 14,
+        Airborn             = 15,
+        CastDiagonal        = 16,
+        PrepareCharge       = 17,
+        Charge              = 18,
     }
 
     public enum ECounterType
@@ -710,9 +754,10 @@
         SpellGFX            = 107,      // spell graphics playing
         StateEffectGFX      = 108,      // spell graphics playing
         BonusStats          = 109,      // track increased statistiques
+        Movement            = 110,      // track increased statistiques
 
         // AI
-        AI = 200,
+        AI                  = 200,
         AIFinalDecision     = 201,
         AICheckers          = 202,
         AITaskAttack        = 203,

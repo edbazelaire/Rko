@@ -26,20 +26,22 @@ namespace Data
         public ProjectileData ProjectileData;
 
         [Header("Multiple Projectiles Data")]
-        [Description("Type of multiple projectile launch")]
+        [Tooltip("Type of multiple projectile launch")]
         public EMultiProjectileType MultiProjectileType;
-        [SerializeField, Description("Is the chacter blocked until the end of the cast ?")]
+        [SerializeField, Tooltip("Should the subspell recalculate its position on spawn ?")]
+        protected bool m_RecalculatePosition = true;
+        [SerializeField, Tooltip("Is the chacter blocked until the end of the cast ?")]
         protected bool m_IsBlocking = true;
-        [Description("Number of projectiles launched")]
-        [SerializeField] protected int m_NProjectiles = 1;
-        [Description("Size of the projectile zone")]
-        [SerializeField] protected float m_ProjectileZoneSize = 0f;
-        [Description("Delay between each projectile cast")]
-        [SerializeField] protected float m_DelayBetweenLaunches = 0f;
-        [Description("Number of waves")]
-        [SerializeField] protected int m_NWaves = 1;
-        [Description("Delay between each waves")]
-        [SerializeField] protected float m_DelayBetweenWaves = 0f;
+        [SerializeField, Tooltip("Number of projectiles launched")]
+        protected int m_NProjectiles = 1;
+        [SerializeField, Tooltip("Size of the projectile zone")]
+        protected float m_ProjectileZoneSize = 0f;
+        [SerializeField, Tooltip("Delay between each projectile cast")]
+        protected float m_DelayBetweenLaunches = 0f;
+        [SerializeField, Tooltip("Number of waves")]
+        protected int m_NWaves = 1;
+        [SerializeField, Tooltip("Delay between each waves")]
+        protected float m_DelayBetweenWaves = 0f;
 
         [Header("MultiP Extra Sound Effects")]
         [Description("Sound Effect on each wave casted")]
@@ -187,7 +189,14 @@ namespace Data
 
             // if specific projectile data are provided : use theme
             if (ProjectileData != null)
-                ProjectileData.Cast(clientId, target, position, rotation, false, true);
+                ProjectileData.Cast(
+                    clientId: clientId, 
+                    target: target, 
+                    position: position, 
+                    rotation: rotation, 
+                    recalculateTarget: false, 
+                    recalculatePosition: m_RecalculatePosition
+                );
 
             // otherwise use config of the file
             else

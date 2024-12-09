@@ -29,12 +29,32 @@ MonoBehaviour:
       m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
-      Persistance: 1
+      Persistance: 1.5
     Size: 0.5
     OrderInLayer: 0
     SpawnTarget: 2
     SpawnLocation: 0
     BodyPart: 5
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
+  - Prefab: {fileID: 4924508274929071776, guid: 2df5e7fba6f073547b02730c76b0ebfe, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX:
+    - AudioClip: {fileID: 8300000, guid: 649bbd02eab33e04ba90a65c0c1e0f37, type: 3}
+      SoundDuration: 0
+    GFXLifetime:
+      m_StartSpellPart: 1000
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 3
+    SpawnLocation: 0
+    BodyPart: 0
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
@@ -47,12 +67,16 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 0
+  TargetOffset:
+    X: 0
+    Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 15
   EnergyCost: 0
-  m_Damage: 80
+  m_Damage: 120
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -63,11 +87,12 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.15
-  m_Size: 2
+  m_Size: 6
   TriggerPlayer: 1
   EnemyStateEffects:
   - StateEffect: 16
     Stacks: 1
+    BonusStacksPerLevel: 0
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0

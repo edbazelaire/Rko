@@ -23,7 +23,14 @@ namespace Game.AI.BehaviorTrees
             if (characterName == EBoss.Sikunik.ToString())
                 return new SikunikBT(controller, arenaDifficulty);
 
-            if (characterName == EBoss.Lunassian.ToString())
+            if (characterName == EBoss.Fenris.ToString())
+                return new FenrisBT(controller, arenaDifficulty);
+
+            if (characterName == EBoss.Lunassian.ToString()
+                || characterName == EBoss.VenomfangLunassian.ToString()
+                || characterName == EBoss.AshhowlLunassian.ToString()
+                || characterName == EBoss.MoonclawLunassian.ToString()
+                || characterName == EBoss.ElderLunassian.ToString())
                 return new LunassianBT(controller, arenaDifficulty);
 
             return new DefaultBT(controller, arenaDifficulty);

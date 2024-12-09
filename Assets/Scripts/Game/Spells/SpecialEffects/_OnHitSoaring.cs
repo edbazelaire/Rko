@@ -4,7 +4,7 @@ using Tools;
 
 namespace Game.Spells.SpecialEffects
 {
-    public class _OnHitSoaring : SpecialEffect
+    public class _LandingSoaring : SpecialEffect
     {
         #region Members
 

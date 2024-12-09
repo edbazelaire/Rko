@@ -224,7 +224,7 @@ namespace Data.GameManagement
                 isPlayer:       false,
 
                 triggerEffects: triggerEffects.ToArray(),
-                powerUps:       CurrentArenaLevelData.PowerUps.Select(str => new FixedString32Bytes(str)).ToArray(),
+                powerUps:       CurrentArenaLevelData.PowerUps.Select(str => new FixedString64Bytes(str)).ToArray(),
                 bonusStats:     CurrentStageData.BonusStats.ToArray(),
                 botData :       new SBotData(
                     ArenaDifficulty,

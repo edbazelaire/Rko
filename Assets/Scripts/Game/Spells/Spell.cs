@@ -35,6 +35,7 @@ namespace Game.Spells
         protected Controller        m_Controller;
         protected Vector3           m_Target;
         protected GameObject        m_GraphicsContainer;
+        protected GameObject        m_Graphics;
 
         /// <summary> in case of persistance of graphisme, allows to stop spell behavior </summary>
         protected bool              m_IsOver = false;   
@@ -51,9 +52,10 @@ namespace Game.Spells
 
         // ========================================================================================================
         // Public Accessors
-        public SpellData SpellData => m_SpellData;
-        public Controller Controller => m_Controller;
-        public Vector3 Target => m_Target;
+        public SpellData    SpellData   => m_SpellData;
+        public Controller   Controller  => m_Controller;
+        public Vector3      Target      => m_Target;
+        public GameObject   Graphics    => m_Graphics;
 
         public bool IsAutoAttack => m_SpellData.Name == m_Controller.SpellHandler.AutoAttack.ToString();
 
@@ -62,10 +64,7 @@ namespace Game.Spells
 
         #region Init & End
 
-        public override void OnNetworkSpawn()
-        {
-            GameManager.Instance.State.OnValueChanged += OnGameStateChanged;
-        }
+        public override void OnNetworkSpawn() { }
 
         public override void OnDestroy()
         {
@@ -77,8 +76,8 @@ namespace Game.Spells
             // destroy data (to avoid charging memory)
             Destroy(m_SpellData);
 
-            if (GameManager.Exists)
-                GameManager.Instance.State.OnValueChanged -= OnGameStateChanged;
+            // unregister from any listeners
+            UnRegisterListeners();
         }
 
         protected virtual void SetSpellData(string spellName, int level)
@@ -116,6 +115,9 @@ namespace Game.Spells
 
             // initialize graphics of the spell (with delay if has any)
             InitGraphics();
+
+            // register listeners
+            RegisterListeners();
 
             // call event that spell has spawn
             OnSpellSpawn?.Invoke(this);
@@ -228,10 +230,10 @@ namespace Game.Spells
 
             if (m_SpellData.Graphics != null)
             {
-                var gfx = Instantiate(m_SpellData.Graphics, m_GraphicsContainer.transform);
-                SwapColliders(gfx);
+                m_Graphics = Instantiate(m_SpellData.Graphics, m_GraphicsContainer.transform);
+                SwapColliders(m_Graphics);
 
-                var audioSource = Finder.FindComponent<AudioSource>(gfx);
+                var audioSource = Finder.FindComponent<AudioSource>(m_Graphics);
                 if (audioSource != null)
                     SoundFXManager.AdjustVolume(ref audioSource);
             }
@@ -240,6 +242,26 @@ namespace Game.Spells
 
             if (m_SpellData.PermanantSoundFX != null)
                 SoundFXManager.PlaySoundFXClip(m_SpellData.PermanantSoundFX, transform);
+        }
+
+        protected virtual Collider2D CopyCollider(Collider2D collider)
+        {
+            // destroy the collider on the Spell before adding the new one
+            Destroy(this.GetComponent<Collider2D>());
+
+            // Get the type of the original collider
+            Type colliderType = collider.GetType();
+
+            // Add a new collider of the same type to this GameObject
+            Collider2D newCollider = this.gameObject.AddComponent(colliderType) as Collider2D;
+
+            // Copy properties from the original collider to the new one
+            if (newCollider != null)
+            {
+                CopyColliderProperties(collider, newCollider);
+            }
+
+            return newCollider;
         }
 
         /// <summary>
@@ -252,20 +274,8 @@ namespace Game.Spells
             if (graphicsCollider == null || ! graphicsCollider.enabled)
                 return;
 
-            // destroy the collider on the Spell before adding the new one
-            Destroy(this.GetComponent<Collider2D>());
-
-            // Get the type of the original collider
-            Type colliderType = graphicsCollider.GetType();
-
-            // Add a new collider of the same type to this GameObject
-            Collider2D newCollider = this.gameObject.AddComponent(colliderType) as Collider2D;
-
-            // Copy properties from the original collider to the new one
-            if (newCollider != null)
-            {
-                CopyColliderProperties(graphicsCollider, newCollider);
-            }
+            // copy properties of the graphics collider on this object
+            CopyCollider(graphicsCollider);
 
             // Destroy the original collider on the graphics GameObject
             Destroy(graphicsCollider);
@@ -351,6 +361,10 @@ namespace Game.Spells
             // apply effects on ally or enemy : if none, skip
             if (! CheckHitEnemy(controller) && ! CheckHitAlly(controller))
                 return;
+
+            // apply force
+            if (m_SpellData.Force != default)
+                controller.Movement.AddForce(m_SpellData.Force);
 
             // if spell has "OnHit" GFX : call on CLIENT that spell has touched something
             if (m_SpellData.HasGfxEventAt(ESpellEvent.OnHit, checkEnd: false))
@@ -645,6 +659,18 @@ namespace Game.Spells
 
 
         #region Listeners
+
+        protected virtual void RegisterListeners() 
+        {
+            if(GameManager.Exists)
+                GameManager.Instance.State.OnValueChanged += OnGameStateChanged;
+        }
+
+        protected virtual void UnRegisterListeners() 
+        {
+            if (GameManager.Exists)
+                GameManager.Instance.State.OnValueChanged -= OnGameStateChanged;
+        }
 
         void OnGameStateChanged(EGameState oldValue, EGameState state)
         {

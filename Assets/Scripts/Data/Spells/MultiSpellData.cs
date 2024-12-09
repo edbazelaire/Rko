@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Tools;
 using UnityEngine;
-using Assets;
 using Unity.VisualScripting;
 using Data.GameManagement;
 using System;
 using System.Linq;
+using Assets.Scripts.Data.DataStructures.SpellSubStructures;
 
 namespace Data
 {
@@ -27,22 +27,26 @@ namespace Data
         [Header("Multiple Projectiles Data")]
         [Description("Type of multiple projectile launch")]
         public EMultiProjectileType MultiProjectileType;
+        [Description("Position of the subspells")]
+        public SMultiSpellSpawn SubSpellSpawn;
         [SerializeField, Description("Min/Max height of spell spawn")]
         protected SMinMax m_YMinMax;
-        [SerializeField, Description("Is the chacter blocked until the end of the cast ?")]
+        [SerializeField, Tooltip("Should the subspell recalculate its position on spawn ?")]
+        protected bool m_RecalculatePosition = true;
+        [SerializeField, Tooltip("Is the chacter blocked until the end of the cast ?")]
         protected bool m_IsBlocking = true;
-        [Description("Number of projectiles launched")]
-        [SerializeField] protected int m_NProjectiles = 1;
-        [Description("Number of breaking points that divides the size of the zone")]
-        [SerializeField] protected int m_NBreakPoints = 1;
-        [Description("Size of the projectile zone")]
-        [SerializeField] protected float m_ProjectileZoneSize = 0f;
-        [Description("Delay between each projectile cast")]
-        [SerializeField] protected float m_DelayBetweenLaunches = 0f;
-        [Description("Number of waves")]
-        [SerializeField] protected int m_NWaves = 1;
-        [Description("Delay between each waves")]
-        [SerializeField] protected float m_DelayBetweenWaves = 0f;
+        [SerializeField, Tooltip("Number of projectiles launched")]
+        protected int m_NProjectiles = 1;
+        [SerializeField, Description("Number of breaking points that divides the size of the zone")]
+        protected int m_NBreakPoints = 1;
+        [SerializeField, Tooltip("Size of the projectile zone")]
+        protected float m_ProjectileZoneSize = 0f;
+        [SerializeField, Tooltip("Delay between each projectile cast")]
+        protected float m_DelayBetweenLaunches = 0f;
+        [SerializeField, Tooltip("Number of waves")]
+        protected int m_NWaves = 1;
+        [SerializeField, Tooltip("Delay between each waves")]
+        protected float m_DelayBetweenWaves = 0f;
 
         [Header("MultiP Extra Sound Effects")]
         [Description("Sound Effect on each wave casted")]
@@ -170,7 +174,13 @@ namespace Data
 
             for (int i = 0; i < NProjectiles; i++)
             {
-                CastOneProjectile(controller, CalculateMultiSpellTarget(target, i, controller.Team), position, rotation);
+                CastOneProjectile(
+                    controller, 
+                    CalculateMultiSpellTarget(target, i, controller.Team),
+                    SubSpellSpawn.Recalculate(position, i, controller.Team, NProjectiles), 
+                    rotation
+                );
+
                 var delay = DelayBetweenLaunches;
 
                 while (delay > 0)
@@ -195,12 +205,13 @@ namespace Data
 
             // cast sup spell with delay
             controller.StartCoroutine(SubSpellData.CastDelay(
-                clientId: controller.PlayerId,
-                target: target,
-                position: position,
-                rotation: rotation,
-                delay: SubSpellData.Delay,
-                recalculateTarget: false
+                clientId:               controller.PlayerId,
+                target:                 target,
+                position:               position,
+                rotation:               rotation,
+                delay:                  SubSpellData.Delay,
+                recalculateTarget:      false,
+                recalculatePosition:    m_RecalculatePosition
             ));
 
             // spawn SubSpell - SpellGFX

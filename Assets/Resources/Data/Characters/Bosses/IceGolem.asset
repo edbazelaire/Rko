@@ -20,18 +20,20 @@ MonoBehaviour:
   m_Ultimate: IceRockNRoll
   Size: 4.5
   BaseSpeed: 0.25
-  BaseHealth: 2500
+  BaseHealth: 2600
   MaxEnergy: 100
   BaseEnergy: 10
   IsStructure: 0
-  HealthScaleFactor: 0.2
+  HealthScaleFactor: 0.12
   CharacterStatScaling:
   - StateEffectProperty: 5
     BaseValue: 25
     BonusValue: 0
     ScalingFactor: 0.1
+    StateEffectStackFactors: []
   - StateEffectProperty: 4
     BaseValue: 1000
     BonusValue: 0
-    ScalingFactor: 0.25
+    ScalingFactor: 0.15
+    StateEffectStackFactors: []
   m_SpecialPowers: []

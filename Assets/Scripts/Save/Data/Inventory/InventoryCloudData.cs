@@ -172,7 +172,7 @@ namespace Save
         // CONSTANTS
         // -- Values
         public Type[] COLLECTABLE_TYPES                     => new Type[] { typeof(ECharacter), typeof(ESpell), typeof(ERune) };
-        public Enum[] IGNORED_COLLECTABLES                  => new Enum[] { ESpell.None, ECharacter.None };
+        public Enum[] IGNORED_COLLECTABLES                  => new Enum[] { ESpell.None, ECharacter.None , ERune.None };
 
         // -- Keys
         public const string KEY_GOLDS       = "Golds";
@@ -258,6 +258,9 @@ namespace Save
 
         public SCollectableCloudData GetCollectable(Enum collectable)
         {
+            if (collectable.ToString() == "None")
+                return new SCollectableCloudData(collectable);
+
             if (collectable.GetType() == typeof(ESpell))
             {
                 return GetSpell((ESpell)collectable);

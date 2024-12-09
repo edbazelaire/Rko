@@ -3,6 +3,7 @@ using Data;
 using Data.GameManagement;
 using Enums;
 using Game.Spells;
+using MyBox;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -62,7 +63,7 @@ namespace Game.SpellGFXs
             m_PrefabSpawn       = prefabSpawn;
             m_BodyPart          = prefabSpawn.BodyPart;
 
-            if (prefabSpawn.Prefab != null && ArenaManager.IsInVoid(transform.position.x))
+            if (prefabSpawn.Prefab != null && ArenaManager.IsInVoid(transform.position.x) && prefabSpawn.SpawnTarget != ESpawnTarget.MapCenter)
                 ErrorHandler.Warning("Spell GFX spawned in void : " + m_Name + " - " + prefabSpawn.Prefab.name);
 
             // find components if any
@@ -82,6 +83,9 @@ namespace Game.SpellGFXs
             {
                 controller.AnimationHandler.PlayAnimation(prefabSpawn.Animation != EAnimation.Self ? prefabSpawn.Animation.ToString() : spellData.Name);
             }
+
+            // make spell play animation if any
+            PlaySpellAnimation(prefabSpawn.SpellAnimation);
 
             // make controller play animation if any
             AdjustSoundFX();
@@ -207,6 +211,7 @@ namespace Game.SpellGFXs
         {
             switch (prefabSpawn.SpawnTarget)
             {
+                case ESpawnTarget.MapCenter:
                 case ESpawnTarget.TargetPos:
                     return null;
 
@@ -261,6 +266,9 @@ namespace Game.SpellGFXs
 
             else if (prefabSpawn.SpawnTarget == ESpawnTarget.TargetPos)
                 basePos = targetPosition;
+
+            else if (prefabSpawn.SpawnTarget == ESpawnTarget.MapCenter)
+                basePos = Vector3.zero;
 
             switch (prefabSpawn.SpawnLocation)
             {
@@ -430,9 +438,45 @@ namespace Game.SpellGFXs
         #endregion
 
 
+        #region Animation
+
+        void PlaySpellAnimation(string spellAnimation)
+        {
+            if (spellAnimation.IsNullOrEmpty())
+                return;
+
+            // Get SPELL
+            if (m_Spell == null)
+            {
+                ErrorHandler.Warning("Unable to find spell to play animation " + spellAnimation);
+                return;
+            }
+
+            // Get GRAPHICS
+            if (m_Spell.Graphics == null)
+            {
+                ErrorHandler.Warning("Unable to find graphics in spell " + m_SpellData.Name + " to play animation " + spellAnimation);
+                return;
+            }
+
+            // Get Animator
+            var animator = Finder.FindComponent<Animator>(m_Spell.Graphics);
+            if (animator == null)
+            {
+                ErrorHandler.Warning("Unable to find Animator to play animation " + spellAnimation + " in spell " + m_SpellData.Name);
+                return;
+            }
+
+            // PLAY Animation
+            animator.Play(spellAnimation);
+        }
+
+        #endregion
+
+
         #region StateEffects
 
-        protected void AddStateEffects()
+            protected void AddStateEffects()
         {
             foreach (var effect in m_PrefabSpawn.StateEffects)
                 m_Controller.StateHandler.AddStateEffect(effect, m_Controller, duration: -1);

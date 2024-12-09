@@ -75,7 +75,15 @@ namespace Game.AI
             m_Timer = delay;
 
             // check that spell exists to activate the node
-            m_IsActivated = controller.SpellHandler.Spells.Contains(m_Spell);
+            CheckActivation();
+        }
+
+        void CheckActivation()
+        {
+            m_IsActivated = m_Controller.SpellHandler.Spells.Contains(m_Spell);
+
+            if (m_IsActivated)
+                ErrorHandler.Log("TaskUseSell("+m_Spell+") : Deactivated", ELogTag.AITaskUseSpell);
         }
 
         #endregion
