@@ -9,7 +9,8 @@ namespace Menu.Common.Infos
     {
         #region Members
 
-        GameObject    m_ValueContainer;
+        GameObject      m_InfosContainer;
+        GameObject      m_ValueContainer;
 
         List<TemplateStateEffectIconUI> m_StateEffectIcons;
 
@@ -20,8 +21,8 @@ namespace Menu.Common.Infos
 
         void Awake()
         {
-            var infosContainer  = Finder.Find(gameObject, "InfosContainer");
-            m_ValueContainer    = Finder.Find(infosContainer, "ValueContainer");
+            m_InfosContainer    = Finder.Find(gameObject, "InfosContainer");
+            m_ValueContainer    = Finder.Find(m_InfosContainer, "ValueContainer");
         }
 
 
@@ -29,12 +30,22 @@ namespace Menu.Common.Infos
         {
             m_StateEffectIcons = new();
             UIHelper.CleanContent(m_ValueContainer);
+            int i = 0;
             foreach (var stateEffectData in stateEffectDatas)
             {
+                // add new line of state effects
+                if (i%5 == 0 && i > 0)
+                {
+                    var newValueContainer = Instantiate(m_ValueContainer, m_InfosContainer.transform);
+                    UIHelper.CleanContent(newValueContainer);
+                    m_ValueContainer = newValueContainer;
+                }
+
                 var icon = Instantiate(AssetLoader.LoadTemplateItem("StateEffectIcon"), m_ValueContainer.transform).GetComponent<TemplateStateEffectIconUI>();
                 icon.Initialize(stateEffectData, spellLevel);
 
                 m_StateEffectIcons.Add(icon);
+                i++;
             }
         }
 

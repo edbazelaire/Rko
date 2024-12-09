@@ -45,12 +45,8 @@ MonoBehaviour:
   m_Duration: -1
   Delay: 0
   m_SpellsScalingLevel:
-  - Property: 2
+  - Property: 17
     Value: 0.1
-  - Property: 1
-    Value: 0.1
-  - Property: 3
-    Value: 0.05
   m_Size: 8
   TriggerPlayer: 1
   EnemyStateEffects: []
@@ -69,6 +65,7 @@ MonoBehaviour:
   m_Cooldown: 0
   CounterType: 2
   CounterActivation: 1
+  m_DamageTypeActivation: 01000000
   m_SpawnOffset: {x: 0, y: 0}
   m_IsFollowing: 1
   m_SpawnLocation: 1

@@ -10,11 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4282911013137018190, guid: 3f1062e095e763f448855cd3f0b195e4, type: 3}
       propertyPath: m_IsTrigger
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4307471943917487146, guid: 3f1062e095e763f448855cd3f0b195e4, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 4098823684
+      objectReference: {fileID: 0}
+    - target: {fileID: 4689813761922670376, guid: 3f1062e095e763f448855cd3f0b195e4, type: 3}
+      propertyPath: m_IncludeLayers.m_Bits
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6093574689762572816, guid: 3f1062e095e763f448855cd3f0b195e4, type: 3}
       propertyPath: m_Pivot.x
@@ -98,7 +102,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8240067815722378921, guid: 3f1062e095e763f448855cd3f0b195e4, type: 3}
       propertyPath: m_Name
-      value: StructureSpell
+      value: Spawner
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

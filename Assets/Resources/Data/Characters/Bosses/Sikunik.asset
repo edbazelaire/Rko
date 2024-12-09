@@ -24,16 +24,13 @@ MonoBehaviour:
   MaxEnergy: 100
   BaseEnergy: 0
   IsStructure: 0
-  HealthScaleFactor: 0.2
+  HealthScaleFactor: 0.12
   CharacterStatScaling:
-  - StateEffectProperty: 5
-    BaseValue: 20
-    BonusValue: 0
-    ScalingFactor: 0.1
   - StateEffectProperty: 4
     BaseValue: 500
     BonusValue: 0
     ScalingFactor: 0.1
+    StateEffectStackFactors: []
   m_SpecialPowers:
   - Description: 
     m_DescriptionVariables: []

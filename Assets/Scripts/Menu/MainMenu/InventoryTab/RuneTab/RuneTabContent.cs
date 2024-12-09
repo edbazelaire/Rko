@@ -118,7 +118,7 @@ namespace Menu.MainMenu
             TemplateRuneItemUI collectableUI = Instantiate(m_TemplateItem, parent);
             collectableUI.gameObject.name = string.Format(RUNE_ITEM_NAME_FORMAT, runeData.Rune.ToString());
             collectableUI.Initialize(runeData.Rune);
-            collectableUI.gameObject.SetActive(isUnlocked);
+            //collectableUI.gameObject.SetActive(isUnlocked);
             m_Items.Add(runeData.Rune, collectableUI);
 
             // hide if spell is in current build

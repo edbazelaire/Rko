@@ -19,6 +19,8 @@ namespace Data
         [Header("Movement Data")]
         [Tooltip("Type of path that the spell is taking")]
         public ESpellTrajectory     Trajectory;
+        [SerializeField, Tooltip("Is the projectile triggered by the ground ?")]
+        protected bool              m_TriggerGround = true;
         [SerializeField, Tooltip("Should the projectile end when reaching target position ?")]
         protected bool              m_StopOnTargetPos;
         [SerializeField, Tooltip("Speed of the spell")]
@@ -30,6 +32,7 @@ namespace Data
         // Dependent Members
         /// <summary> Movement speed of the spell </summary>
         public float Speed                  => Settings.SpellSpeedFactor * m_Speed;
+        public bool TriggerGround           => m_TriggerGround;
         public bool StopOnTargetPos         => m_StopOnTargetPos;
         public bool IsTrajectoryFromAbove   => Trajectory == ESpellTrajectory.Hight || Trajectory == ESpellTrajectory.Diagonal;
 
@@ -65,8 +68,6 @@ namespace Data
         {
             base.RecalculatePosition(ref position, target, clientId);
 
-            Controller controller = GameManager.Instance.GetPlayer(clientId);
-
             // handle Y position
             switch (Trajectory)
             {
@@ -94,8 +95,6 @@ namespace Data
                 case ESpellTrajectory.Diagonal:
                 case ESpellTrajectory.Curve:
                     break;
-                //    position += GetSpawnOffset(controller);
-                //    break;
 
                 case ESpellTrajectory.DiagonalMiddle:
                     position.x = 0;

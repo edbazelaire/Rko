@@ -33,5 +33,14 @@ namespace Game.Spells
 
             return true;
         }
+
+        public override void Refresh(int stacks = 0, int level = 1)
+        {
+            // Frozen cant be refreshed by another "Frozen" effect
+            if (stacks > 0)
+                return;
+
+            base.Refresh(stacks, level);
+        }
     }
 }

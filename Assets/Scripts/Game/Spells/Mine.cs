@@ -74,7 +74,7 @@ namespace Game.Spells
 
             m_DurationTimer -= Time.deltaTime;
             if (m_DurationTimer < 0)
-                End();
+                SetState(EMineState.End);
         }
 
         protected void CreateCollisionCircle()
@@ -162,9 +162,13 @@ namespace Game.Spells
                     if (m_SpellData.NumActivations < 0 || m_ActivationCounter < m_SpellData.NumActivations)
                         SetState(EMineState.Inactive);
                     else
-                        End();
+                        SetState(EMineState.End);
 
                     return;
+
+                case EMineState.End:
+                    End();
+                    break;
             }
         }
 

@@ -67,9 +67,12 @@ MonoBehaviour:
     m_OffsetMax:
       X: 0
       Y: 0
+  m_NSpawns: 8
   m_SpawnElements:
   - CharacterName: AzurePowerOrb
-    NSpawn: -1
-    SpawnInterval: 1.5
-    Delay: 0
-    Duration: -1
+    m_MaxSpawns: -1
+    m_SpawnProbability: 1
+    m_BonusLevel: 0
+    m_SpawnInterval: 1.5
+    m_Delay: 0
+    m_Duration: -1

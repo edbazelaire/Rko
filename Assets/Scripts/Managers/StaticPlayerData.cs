@@ -43,9 +43,9 @@ namespace Managers
     [Serializable]
     public struct SPlayerData : INetworkSerializable
     {
-        public FixedString32Bytes           PlayerName;
+        public FixedString64Bytes           PlayerName;
         public int                          CharacterLevel;
-        public FixedString32Bytes           Character;
+        public FixedString64Bytes           Character;
         public ERune[]                      Runes;
         public int[]                        RuneLevels;
         public ESpell[]                     Spells;
@@ -53,11 +53,11 @@ namespace Managers
         public SProfileDataNetwork          ProfileData;
         public bool                         IsPlayer;
         public STriggerEffect[]             TriggerEffects; 
-        public FixedString32Bytes[]         PowerUps; 
+        public FixedString64Bytes[]         PowerUps; 
         public SCharacterStatScaling[]      BonusStats; 
         public SBotData                     BotData; 
 
-        public SPlayerData(FixedString32Bytes playerName, int characterLevel, FixedString32Bytes character, ERune[] runes = default, int[] runeLevels = default, ESpell[] spells = default, int[] spellLevels = default, SProfileDataNetwork profileData = default, bool isPlayer = false, STriggerEffect[] triggerEffects = default, FixedString32Bytes[] powerUps = default, SCharacterStatScaling[] bonusStats = default, SBotData botData = default)
+        public SPlayerData(FixedString64Bytes playerName, int characterLevel, FixedString64Bytes character, ERune[] runes = default, int[] runeLevels = default, ESpell[] spells = default, int[] spellLevels = default, SProfileDataNetwork profileData = default, bool isPlayer = false, STriggerEffect[] triggerEffects = default, FixedString64Bytes[] powerUps = default, SCharacterStatScaling[] bonusStats = default, SBotData botData = default)
         {
             PlayerName      = playerName;
             CharacterLevel  = characterLevel;
@@ -69,14 +69,14 @@ namespace Managers
             ProfileData     = profileData;
             IsPlayer        = isPlayer;
             TriggerEffects  = triggerEffects    != default ? triggerEffects : new STriggerEffect[0];
-            PowerUps        = powerUps          != default ? powerUps       : new FixedString32Bytes[0];
+            PowerUps        = powerUps          != default ? powerUps       : new FixedString64Bytes[0];
             BonusStats      = bonusStats        != default ? bonusStats     : new SCharacterStatScaling[0];
             BotData         = botData;
         }
 
         public void SetPowerUps(List<string> powerUps)
         {
-            PowerUps = new FixedString32Bytes[powerUps.Count];
+            PowerUps = new FixedString64Bytes[powerUps.Count];
 
             // Iterate through the List<string> and convert each element to FixedString32Bytes
             for (int i = 0; i < powerUps.Count; i++)
@@ -164,7 +164,7 @@ namespace Managers
             serializer.SerializeValue(ref length);
             if (serializer.IsReader)
             {
-                PowerUps = new FixedString32Bytes[length];
+                PowerUps = new FixedString64Bytes[length];
             }
             for (int i = 0; i < length; i++)
             {

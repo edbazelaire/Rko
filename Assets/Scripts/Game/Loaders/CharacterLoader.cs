@@ -206,9 +206,9 @@ namespace Game.Loaders
             if (characterData.IsStructure)
                 return Instance.StructurePrefab;
             else if (isPlayer)
-                return Instance.PlayerAIPrefab;
-            else
                 return Instance.PlayerPrefab;
+            else
+                return Instance.PlayerAIPrefab;
         }
 
         #endregion

@@ -2,6 +2,7 @@
 using Enums;
 using Game.SpellGFXs;
 using Game.Spells;
+using MyBox;
 using System;
 using System.Collections.Generic;
 using Tools;
@@ -148,6 +149,7 @@ namespace Data
         public Vector2              Offset;
 
         public EAnimation           Animation;
+        public string               SpellAnimation;
         public List<EStateEffect>   StateEffects;
 
         /// <summary>
@@ -158,7 +160,11 @@ namespace Data
             get
             {
                 // must have no prefab or material attached
-                if (Prefab != null || MaterialEffect != null || StateEffects.Count != 0)
+                if (Prefab != null 
+                    || MaterialEffect != null 
+                    || StateEffects.Count != 0 
+                    || Animation != EAnimation.None 
+                    || ! SpellAnimation.IsNullOrEmpty())
                     return false;
 
                 // must contains sounds
@@ -232,9 +238,6 @@ namespace Data
 
         private GameObject InstantiatePrefab(Controller caster, Spell spell, Controller targetController, Vector3 callFromPosition, Vector3 targetPos)
         {
-            if (spell != null && spell.SpellData.Name == "Soaring")
-                Debug.Log("qslkddj");
-
             var parent = BaseSpellGFX<TEnum>.CalculateParent(this, caster, spell, targetController);
             var position = BaseSpellGFX<TEnum>.CalculatePosition(parent, this, caster, callFromPosition, targetPos);
 

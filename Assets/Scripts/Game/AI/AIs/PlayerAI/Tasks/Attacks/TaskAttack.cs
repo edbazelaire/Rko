@@ -14,6 +14,7 @@ using UnityEngine;
 public enum ESpellCategory
 {
     Ultimate,
+    Spawner,
     Heal,
     Buff,
     ConsumeStateEffect,
@@ -48,14 +49,15 @@ public class TaskAttack : Node
 
     void FilterSpells(List<ESpellCategory> allowedSpellCategories = default)
     {
-        bool IsAllowed(ESpellCategory category) { return allowedSpellCategories.IsNullOrEmpty() || allowedSpellCategories.Contains(ESpellCategory.Ultimate); }
+        bool IsAllowed(ESpellCategory category) { return allowedSpellCategories.IsNullOrEmpty() || allowedSpellCategories.Contains(category); }
         
-        m_SpellCategories[ESpellCategory.Ultimate]              = IsAllowed(ESpellCategory.Ultimate) ? new List<ESpell>() { m_SpellHandler.Ultimate } : new List<ESpell>() { };
-        m_SpellCategories[ESpellCategory.Heal]                  = IsAllowed(ESpellCategory.Heal) ? FilterSpellsByProperty(ESpellProperty.Heal) : new List<ESpell>() { };
-        m_SpellCategories[ESpellCategory.Buff]                  = IsAllowed(ESpellCategory.Buff) ? FilterSpellsByType(ESpellType.Buff) : new List<ESpell>() { };
-        m_SpellCategories[ESpellCategory.ConsumeStateEffect]    = IsAllowed(ESpellCategory.ConsumeStateEffect) ? FilterSpellsWithConsumeStateEffect() : new List<ESpell>() { };
-        m_SpellCategories[ESpellCategory.Damage]                = IsAllowed(ESpellCategory.Damage) ? FilterSpellsByProperty(ESpellProperty.Damages) : new List<ESpell>() { };
-        m_SpellCategories[ESpellCategory.AutoAttack]            = IsAllowed(ESpellCategory.AutoAttack) ? new List<ESpell>() { m_SpellHandler.AutoAttack } : new List<ESpell>() { };
+        m_SpellCategories[ESpellCategory.Ultimate]              = IsAllowed(ESpellCategory.Ultimate)            ? new List<ESpell>() { m_SpellHandler.Ultimate }    : new List<ESpell>() { };
+        m_SpellCategories[ESpellCategory.Spawner]               = IsAllowed(ESpellCategory.Spawner)             ? FilterSpellsByType(ESpellType.Spawner)            : new List<ESpell>() { };
+        m_SpellCategories[ESpellCategory.Heal]                  = IsAllowed(ESpellCategory.Heal)                ? FilterSpellsByProperty(ESpellProperty.Heal)       : new List<ESpell>() { };
+        m_SpellCategories[ESpellCategory.Buff]                  = IsAllowed(ESpellCategory.Buff)                ? FilterSpellsByType(ESpellType.Buff)               : new List<ESpell>() { };
+        m_SpellCategories[ESpellCategory.ConsumeStateEffect]    = IsAllowed(ESpellCategory.ConsumeStateEffect)  ? FilterSpellsWithConsumeStateEffect()              : new List<ESpell>() { };
+        m_SpellCategories[ESpellCategory.Damage]                = IsAllowed(ESpellCategory.Damage)              ? FilterSpellsByProperty(ESpellProperty.Damages)    : new List<ESpell>() { };
+        m_SpellCategories[ESpellCategory.AutoAttack]            = IsAllowed(ESpellCategory.AutoAttack)          ? new List<ESpell>() { m_SpellHandler.AutoAttack }  : new List<ESpell>() { };
     }
 
     #endregion
@@ -91,7 +93,7 @@ public class TaskAttack : Node
         }
 
         // check if any spell can be casted
-        ESpell spell = CheckSpellToSelect();
+        ESpell spell = SelectSpell();
         if (spell != ESpell.None)
         {
             m_Controller.SpellHandler.TryStartCastSpell(spell);
@@ -121,13 +123,16 @@ public class TaskAttack : Node
     /// Check all spells to decide which is more adequate to the situation
     /// </summary>
     /// <returns></returns>
-    ESpell CheckSpellToSelect()
+    ESpell SelectSpell()
     {
         // init spell
         ESpell spell = ESpell.None;
 
         // check : ULTIMATE
         CheckUltimate(ref spell);
+
+        // check : SPAWNER
+        CheckSpawners(ref spell);
 
         // check : HEAL
         CheckHealingSpells(ref spell);
@@ -148,7 +153,7 @@ public class TaskAttack : Node
     {
         foreach (ESpell tempSpell in spellsList)
         {
-            if (!m_SpellHandler.CanCast(tempSpell))
+            if (! m_SpellHandler.CanCast(tempSpell))
                 continue;
 
             spell = tempSpell;
@@ -171,6 +176,17 @@ public class TaskAttack : Node
         // check : ULTIMATE
         if (m_SpellHandler.CanCast(m_SpellHandler.Ultimate))
             spell = m_SpellHandler.Ultimate;
+    }
+
+    void CheckSpawners(ref ESpell spell)
+    {
+        // skip if a spell was already selected
+        if (spell != ESpell.None)
+            return;
+
+        ErrorHandler.Log("CheckSpawners()", ELogTag.AITaskAttack);
+
+        CheckSpells(ref spell, m_SpellCategories[ESpellCategory.Spawner]);
     }
 
     /// <summary>

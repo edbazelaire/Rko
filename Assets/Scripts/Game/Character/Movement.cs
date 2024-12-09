@@ -1,6 +1,9 @@
+using Assets.Scripts.Data.DataStructures.SpellSubStructures;
 using Data.GameManagement;
 using Enums;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using Tools;
 using Unity.Netcode;
 using UnityEngine;
@@ -16,6 +19,9 @@ namespace Game.Character
         NetworkVariable<int>        m_MoveX                 = new(0);
         NetworkVariable<bool>       m_MovementCancelled     = new(false);
         NetworkVariable<bool>       m_MovementBlocked       = new(false);
+
+        // [Server Data]
+        List<SForce> m_Forces = new List<SForce>();
 
         // [Client Data]
         bool    m_IsActive          = false;
@@ -118,6 +124,48 @@ namespace Game.Character
         #endregion
 
 
+        #region Force
+
+        public float Force
+        {
+            get
+            {
+                float force = 0f;
+                foreach (var sforce in m_Forces)
+                {
+                    force += sforce.Speed;
+                }
+                return force;
+            }
+        }
+
+        public void AddForce(SForce force)
+        {
+            if (force == null || force == default)
+                return;
+
+            if (force.Duration > 0)
+                StartCoroutine(StartForceTimer(force));
+
+            m_Forces.Add(force);
+        }
+
+        public void RemoveForce(SForce force)
+        {
+            if (!m_Forces.Contains(force))
+                return;
+            m_Forces.Remove(force);
+        }
+
+        IEnumerator StartForceTimer(SForce force)
+        {
+            yield return new WaitForSeconds(force.Duration);
+            m_Forces.Remove(force);
+        }
+
+        #endregion
+
+
         #region Private Manipulators
 
         /// <summary>
@@ -125,25 +173,30 @@ namespace Game.Character
         /// </summary>
         void UpdateMovement()
         {
+            // depending on team, the camera is rotated implying that movement is inverted
+            float teamFactor = m_Controller.Team == 0 ? 1f : -1f;
+
             if (! CanMove || m_MovementInput == 0)
             {
                 if (m_MoveX.Value != 0)
                     m_MoveX.Value = 0;
-                return;
+            } 
+            else
+            {
+                if (m_MoveX.Value != m_MovementInput)
+                    m_MoveX.Value = m_MovementInput;
+
+                // update rotation depending on movement (and team)
+                if (teamFactor * m_MoveX.Value == 1)
+                    SetRotation(0f);
+                else if (teamFactor * m_MoveX.Value == -1)
+                    SetRotation(180f);
             }
-
-            if (m_MoveX.Value != m_MovementInput)
-                m_MoveX.Value = m_MovementInput;
-
-            // depending on team, the camera is rotated implying that movement is inverted
-            float teamFactor = m_Controller.Team == 0 ? 1f : -1f;
-            transform.position += new Vector3(teamFactor * m_MoveX.Value * Speed * Time.deltaTime, 0f, 0f);
-
-            // update rotation depending on movement (and team)
-            if (teamFactor * m_MoveX.Value == 1)
-                SetRotation(0f);
-            else if (teamFactor * m_MoveX.Value == -1)
-                SetRotation(180f);
+            
+            // apply movement and Force
+            transform.position += new Vector3(
+                teamFactor * (m_MoveX.Value * Speed + Force) * Time.deltaTime, 
+                0f, 0f);
         }
 
         /// <summary>
@@ -320,15 +373,55 @@ namespace Game.Character
         {
             get
             {
-                return
-                    ! m_Controller.StateHandler.IsStunned 
-                    && ! m_MovementBlocked.Value
-                    && ! m_MovementCancelled.Value
-                    && ! m_Controller.SpellHandler.IsCastingUncancellable
-                    && ! m_Controller.StateHandler.HasState(EStateEffect.SpecialAnimation)    // special animation cancel movement
-                    && ! m_Controller.StateHandler.HasState(EStateEffect.Frozen) 
-                    && ! m_Controller.CounterHandler.IsBlockingMovement.Value
-                    && ! m_Controller.StateHandler.HasState(EStateEffect.Jump);
+                if (m_Controller.StateHandler.IsStunned)
+                {
+                    ErrorHandler.Log("CanMove - FALSE : IsStunned", ELogTag.Movement);
+                    return false;
+                }
+
+                if (m_Controller.StateHandler.HasState(EStateEffect.Jump))
+                {
+                    ErrorHandler.Log("CanMove - FALSE : is Jumping", ELogTag.Movement);
+                    return false;
+                }
+
+                if (m_Controller.StateHandler.HasState(EStateEffect.Frozen))
+                {
+                    ErrorHandler.Log("CanMove - FALSE : is Frozen", ELogTag.Movement);
+                    return false;
+                }
+
+                if (m_Controller.StateHandler.HasState(EStateEffect.SpecialAnimation))
+                {
+                    ErrorHandler.Log("CanMove - FALSE : has SpecialAnimation", ELogTag.Movement);
+                    return false;
+                }
+
+                if (m_MovementBlocked.Value)
+                {
+                    ErrorHandler.Log("CanMove - FALSE : Movement is blocked", ELogTag.Movement);
+                    return false;
+                }
+
+                if (m_MovementCancelled.Value)
+                {
+                    ErrorHandler.Log("CanMove - FALSE : Movement is cancelled", ELogTag.Movement);
+                    return false;
+                }
+
+                if (m_Controller.SpellHandler.IsCastingUncancellable)
+                {
+                    ErrorHandler.Log("CanMove - FALSE : Current cast is not cancellable", ELogTag.Movement);
+                    return false;
+                }
+
+                if (m_Controller.CounterHandler.IsBlockingMovement.Value)
+                {
+                    ErrorHandler.Log("CanMove - FALSE : Has counter blocking movement", ELogTag.Movement);
+                    return false;
+                }
+
+                return true;
             }
         }
 

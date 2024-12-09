@@ -70,11 +70,11 @@ namespace Game.Spells
         [SerializeField] protected      AudioClip                   m_PermanantSoundFX;
 
         [Header("Consume State")]
-        [SerializeField] protected EStateEffect                     m_ConsumeState;
+        [SerializeField] protected      EStateEffect                m_ConsumeState;
         [ConditionalField("ConsumeState", true, EStateEffect.None)]
-        [SerializeField] protected EStateEffect                     m_DefaultState;
-        [SerializeField] protected List<SStateEffectData>           m_SubStateEffects;
-        [SerializeField] protected List<string>                     m_HoldingStateEffects;
+        [SerializeField] protected      EStateEffect                m_DefaultState;
+        [SerializeField] protected      List<SStateEffectData>      m_SubStateEffects;
+        [SerializeField] protected      List<string>                m_HoldingStateEffects;
 
         [Header("General Stats")]
         [SerializeField] protected      int                         m_Priority              = 0;
@@ -84,6 +84,7 @@ namespace Game.Spells
         [SerializeField] protected      int                         m_StackDecay            = -1;   // number of stacks decaying at the end of the duration (-1 = all stacks)
 
         [Header("General Boosts")]
+        [SerializeField] protected      int                         m_Energy                = 0;
         [SerializeField] protected      List<SBonusStats>           m_BonusStats;
         [SerializeField] protected      float                       m_SpeedBonus            = 0f;
         [SerializeField] protected      float                       m_CastSpeed             = 0f;
@@ -147,13 +148,14 @@ namespace Game.Spells
         public virtual EStateEffectType StateEffectType     => m_StateEffectType;
         public List<SStateEffectData>   SubStateEffects     => m_SubStateEffects;
 
+        public bool                     IsDisplayed         => m_IsDisplayed;
         public bool                     IsUnique            => StateEffectType == EStateEffectType.Incarnation || StateEffectType == EStateEffectType.AutoAttackBuff;
         public List<SpellPrefabSpawn>   VisualEffects       => m_VisualEffects;
         public EAnimation               Animation           => m_Animation;
         public EStateEffect             Type                => Enum.TryParse(name, out EStateEffect type) ? type : m_Type ;
         public virtual int              Stacks              => m_Stacks;
         public virtual int              Priority            => m_Priority;
-        public virtual bool             IsInfinite          => m_Duration <= 0;
+        public virtual bool             IsInfinite          => ! m_IsInstantanious && m_Duration <= 0;
         public int                      RemainingShield     => m_RemainingShield;
         public bool                     IsInstantanious     => m_IsInstantanious;
         public virtual int              MaxStacks           => m_MaxStacks;
@@ -179,6 +181,13 @@ namespace Game.Spells
 
         #region Init & End
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="controller"></param>
+        /// <param name="caster"></param>
+        /// <param name="stateEffectData"></param>
+        /// <returns></returns>
         public virtual bool Initialize(Controller controller, Controller caster, SStateEffectData? stateEffectData = null)
         {
             if (controller == null)
@@ -235,6 +244,9 @@ namespace Game.Spells
 
         protected virtual void OnStart()
         {
+            if (m_Energy != 0)
+                m_Caster.EnergyHandler.AddEnergy(GetInt(EStateEffectProperty.Energy) * m_Stacks);
+
             ActivateHoldingStateEffects(true);
 
             ApplySubStateEffect();
@@ -282,6 +294,7 @@ namespace Game.Spells
             if (! IsInstantanious)
                 m_Controller.StateHandler.RemoveStateEffect(StateEffectName, true);
 
+            RemoveSubStateEffects();
             ActivateHoldingStateEffects(false);
             StateEffectEvent?.Invoke(StateEffectName, EStateEffectEvent.OnRemoved, m_Controller.PlayerId, m_Caster.PlayerId);
         }
@@ -335,7 +348,13 @@ namespace Game.Spells
                 m_Timer = m_Duration;
 
                 // remove N stacks
-                RemoveStacks(m_StackDecay);
+                if (m_StackDecay < 0)
+                    RemoveStacks(Math.Abs(m_StackDecay));
+                else
+                {
+                    Refresh(m_StackDecay);
+                    m_Controller.StateHandler.OnStateEventClientRPC(EListEvent.Add, StateEffectName, Stacks, GetFloat(EStateEffectProperty.Duration));
+                }
             }
         }
 
@@ -367,6 +386,9 @@ namespace Game.Spells
             // keep max level as applied level
             if (m_Level < level)
                 SetLevel(level);
+
+            if (m_Energy != 0)
+                m_Caster.EnergyHandler.AddEnergy(GetInt(EStateEffectProperty.Energy) * stacks);
 
             m_Stacks = Math.Min(m_MaxStacks, m_Stacks + stacks);
             RefreshStats();
@@ -428,7 +450,7 @@ namespace Game.Spells
                 m_Controller.StateHandler.RemoveHoldingStateEffects(m_HoldingStateEffects);
         }
 
-        void ApplySubStateEffect()
+        protected virtual void ApplySubStateEffect()
         {
             if (m_SubStateEffects == null)
                 return;
@@ -436,6 +458,23 @@ namespace Game.Spells
             foreach (var subStateEffect in m_SubStateEffects)
             {
                 m_Controller.StateHandler.AddStateEffect(subStateEffect, m_Controller, level: m_Level);
+            }
+        }
+
+        protected virtual void RemoveSubStateEffects()
+        {
+            if (m_SubStateEffects == null)
+                return;
+
+            foreach (var subStateEffect in m_SubStateEffects)
+            {
+                // get stateEffectData overwritten with provided data
+                var stateEffectData = SpellLoader.GetStateEffect(subStateEffect.StateEffect.ToString());
+                stateEffectData.OverrideStateEffectData(subStateEffect);
+                
+                // check if is Inifinite (meaning the sub StateEffect end is linked to the end of this effect)
+                if (stateEffectData.IsInfinite)
+                    m_Controller.StateHandler.RemoveStateEffect(subStateEffect.StateEffect);
             }
         }
 

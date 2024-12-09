@@ -2,6 +2,7 @@
 using Enums;
 using Game.Loaders;
 using Managers;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Tools;
@@ -18,7 +19,8 @@ namespace Game.Spells
         protected SpawnerData m_SpellData => (SpawnerData)m_BaseSpellData;
         protected Life m_Life;
 
-        protected bool m_HasSpawnLeft;
+        protected int   m_NSpawnsCounter;
+        protected bool  m_HasSpawnLeft;
         protected float m_DurationTimer;
         protected List<Controller> m_Spawns = new ();
 
@@ -48,7 +50,8 @@ namespace Game.Spells
             if (!IsServer)
                 return;
 
-            m_HasSpawnLeft = true;
+            m_NSpawnsCounter    = 0;
+            m_HasSpawnLeft      = true;
 
             // initialize spawners delays
             InitSpawns();
@@ -120,23 +123,30 @@ namespace Game.Spells
             // check if all spawnElements has been spawned
             bool hasAnySpawnLeft = false;
 
+            var currentProba = 0f;
+            float random = UnityEngine.Random.Range(0f, 1f);
             for (int i = 0; i < m_SpellData.SpawnElements.Count; i++)
             {
                 var spawnElement = m_SpellData.SpawnElements[i];
+                currentProba += spawnElement.SpawnProbability;
 
-                if (spawnElement.NSpawnCounter >= spawnElement.NSpawn && spawnElement.NSpawn > 0)
+                if (spawnElement.NSpawnCounter >= spawnElement.MaxSpawns && spawnElement.MaxSpawns > 0)
                     continue;
 
                 hasAnySpawnLeft = true;
 
                 if (! spawnElement.CanSpawn)
                     continue;
+
+                if (currentProba < random)
+                    continue;
                 
                 Spawn(ref spawnElement);
                 m_SpellData.SpawnElements[i] = spawnElement;
+                break;
             }
 
-            if (!hasAnySpawnLeft)
+            if (!hasAnySpawnLeft || (m_SpellData.NSpawns > 0 && m_NSpawnsCounter >= m_SpellData.NSpawns))
                 m_HasSpawnLeft = false;
         }
 
@@ -147,7 +157,7 @@ namespace Game.Spells
             // create an AI prefab and spawn it
             var spawnPrefab = Instantiate(
                 CharacterLoader.GetPrefab(spawnElement.CharacterName, false), 
-                CalculateSpawnPosition(spawnElement.NSpawnCounter, spawnElement.NSpawn), 
+                CalculateSpawnPosition(spawnElement.NSpawnCounter, spawnElement.MaxSpawns), 
                 Quaternion.Euler(0f, 0f, 0f)
             );
 
@@ -168,6 +178,7 @@ namespace Game.Spells
 
             // update variables
             spawnElement.NSpawnCounter++;
+            m_NSpawnsCounter++;
             m_Spawns.Add(spawnController);
 
             // link event that will remove spawn from list on external destruction
@@ -180,10 +191,10 @@ namespace Game.Spells
         SPlayerData CreatePlayerData(SSpawnElement spawnElement)
         {
             return new SPlayerData(
-                playerName: "",
-                characterLevel: m_SpellData.Level,
-                character: spawnElement.CharacterName,
-                isPlayer: false
+                playerName:     "",
+                characterLevel: Math.Max(1, m_SpellData.Level + spawnElement.BonusLevel),
+                character:      spawnElement.CharacterName,
+                isPlayer:       false
             );
         }
 
@@ -217,6 +228,21 @@ namespace Game.Spells
 
 
         #region Listeners
+
+        protected override void UnRegisterListeners()
+        {
+            base.UnRegisterListeners();
+
+            int nSpawns = m_Spawns.Count;
+            for (int i = 0; i < nSpawns; i++)
+            {
+                // in case a spawns dies during the process
+                if (i > m_Spawns.Count)
+                    return;
+
+                m_Spawns[i].OnDestroyedEvent -= () => { OnSpawnDestroyed(m_Spawns[i]); };
+            }
+        }
 
         void OnSpawnDestroyed(Controller spawnController)
         {

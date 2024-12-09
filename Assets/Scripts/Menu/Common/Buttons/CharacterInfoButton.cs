@@ -1,7 +1,6 @@
 ﻿using Enums;
 using Menu.Common.Notifications;
 using Save;
-using System.Collections;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;

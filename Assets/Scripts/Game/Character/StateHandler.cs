@@ -8,7 +8,6 @@ using Tools;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 namespace Game.Character
 {
@@ -119,7 +118,14 @@ namespace Game.Character
 
             for (int i = m_StateEffects.Count - 1; i >= 0; i--)
             {
+                if (i >= m_StateEffects.Count)
+                {
+                    ErrorHandler.Warning("Bad index (" + i + ") for " + gameObject.name);
+                    continue;
+                }
+
                 m_StateEffects[i].Update();
+
                 if (!m_Controller.Life.IsAlive)
                     return;
             }
@@ -340,6 +346,20 @@ namespace Game.Character
         /// Add a state effect to the character
         /// </summary>
         /// <param name="stateEffect"></param>
+        public void AddStateEffect(string stateEffectName, Controller caster, int level = 1)
+        {
+            if (! IsServer)
+                return;
+
+            // create and add state effect  
+            StateEffect stateEffect = SpellLoader.GetStateEffect(stateEffectName, level);
+            AddStateEffect(stateEffect, caster);
+        }
+
+        /// <summary>
+        /// Add a state effect to the character
+        /// </summary>
+        /// <param name="stateEffect"></param>
         public void AddStateEffect(SStateEffectData stateEffectData, Controller caster, int level = 1)
         {
             if (! IsServer)
@@ -365,8 +385,8 @@ namespace Game.Character
             var pastState = GetAnimationState();
             int stacks = overridingData != null ? overridingData.Value.GetStacks() : 1;
 
-            if (stateEffect.StateEffectName == "Jump")
-                Debug.LogWarning("  ++ ADDING STATE : Jump");
+            if (stateEffect.StateEffectName == "Invulnerable")
+                Debug.LogWarning("  ++ ADDING STATE : Invulnerable");
 
             // if already in the list of state effects, refresh it
             if (HasState(stateEffect.StateEffectName))
@@ -434,6 +454,9 @@ namespace Game.Character
             if (!IsServer)
                 return 0;
 
+            if (state == "Invulnerable")
+                Debug.LogWarning("  ++ REMOVING STATE : Invulnerable");
+
             // remove effect type from list of active effects
             int index = m_StateEffectList.IndexOf(state);
             if (index == -1)
@@ -441,9 +464,6 @@ namespace Game.Character
                 ErrorHandler.Error($"Unable to find state {state} in list");
                 return 0;
             }
-
-            if (state == "Jump")
-                Debug.LogWarning("  ++ REMOVING STATE : Jump");
 
             // check if remove effect if not enought stacks 
             if (maxStacks <= 0 || m_StateEffects[index].Stacks < maxStacks)

@@ -90,7 +90,7 @@ MonoBehaviour:
   MaxHit: -1
   EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 200
+  m_Damage: 150
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -98,6 +98,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
@@ -126,6 +129,7 @@ MonoBehaviour:
   AnimationTimer: 2
   m_Cooldown: 35
   Trajectory: 2
+  m_TriggerGround: 0
   m_StopOnTargetPos: 0
   m_Speed: 12
-  m_YSpawnPos: 1
+  m_YSpawnPos: 0.6

@@ -92,7 +92,7 @@ namespace Data.DataStructures
                 return;
 
             Debug.LogWarning("Activating " + SpellDataName);
-
+            
             if (controller == null)
             {
                 ErrorHandler.Error("Provided Controller is null for " + SpellDataName);
@@ -273,6 +273,9 @@ namespace Data.DataStructures
                 ErrorHandler.Error("Provided Controller is null for state effect : " + stateEffectName + " - at event " + stateEffectEvent);
                 return;
             }
+
+            if (stateEffectName == "Scorched" && HasStateEffect(stateEffectName))
+                Debug.Log("qslkhqs");
 
             if (! HasStateEffect(stateEffectName))
                 return;

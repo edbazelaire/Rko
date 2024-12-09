@@ -18,7 +18,25 @@ MonoBehaviour:
   m_SpellElements: 0200000004000000
   Linked: 0
   Graphics: {fileID: 0}
-  SpellEventActions: []
+  SpellEventActions:
+  - Prefab: {fileID: 7638894480909468004, guid: 01867598b7c2fa244a808a14b66f9536, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 500
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0.8
+    Size: 0.5
+    OrderInLayer: 0
+    SpawnTarget: 2
+    SpawnLocation: 2
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -35,7 +53,7 @@ MonoBehaviour:
   m_SpellRequirements:
   - m_StateEffectRequirements:
     - m_StateEffect: Cursed
-      m_Stacks: 23
+      m_Stacks: 30
       m_NStacksReductionPerLevel: 0.5
   MaxHit: 1
   EnergyGain: 5
