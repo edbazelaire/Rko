@@ -208,6 +208,18 @@ namespace Data.GameManagement
         #endregion
 
 
+        #region Account Level
+
+        public static bool IsAccountUpgradableIn(int bonusXp)
+        {
+            return !ProfileCloudData.IsAccountMaxed
+                && InventoryCloudData.Instance.GetCurrency(ECurrency.TotalXp) + bonusXp >= GetCurrentAccountLevelData().RequiredXp;
+        }
+
+
+        #endregion
+
+
         #region Level & Rarety 
 
         public static int GetStartLevel(Enum collectable)

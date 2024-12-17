@@ -15,14 +15,21 @@ namespace Assets.Scripts.Data.DataStructures
         {
         }
 
-        protected override BaseSpellGFX<EMineState> InitializeGFXComponent(GameObject go, Controller caster, SpellData spellData, Spell spell, string stateEffectName, Controller targetController)
+        protected override BaseSpellGFX<EMineState> InitializeGFXComponent(GameObject go, Controller caster, SpellData spellData, Spell spell, string stateEffectName, Controller targetController, float? forcedDuration = null)
         {
             if (! go.TryGetComponent(out MineSpellGFX mineSpellGFX))
             {
                 mineSpellGFX = go.AddComponent<MineSpellGFX>();
             }
 
-            mineSpellGFX.Initialize(this.SpawnTarget != ESpawnTarget.Target ? caster : targetController, spellData, spell, stateEffectName, this);
+            mineSpellGFX.Initialize(
+                controller: this.SpawnTarget != ESpawnTarget.Target ? caster : targetController, 
+                spellData: spellData, 
+                spell: spell, 
+                stateEffectName: stateEffectName, 
+                prefabSpawn: this,
+                forcedDuration: forcedDuration
+                );
             return mineSpellGFX;
         }
     }

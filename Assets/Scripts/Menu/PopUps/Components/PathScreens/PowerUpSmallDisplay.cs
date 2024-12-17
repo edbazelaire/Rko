@@ -121,7 +121,7 @@ namespace Menu.PopUps
             // Do not have a PowerUp BUT SHOULD -> Display the Selection Screen
             if (m_IsMissingData)
             {
-                Main.SetPopUp(EPopUpState.PowerUpSelectionScreen);
+                Main.SetPopUp(EPopUpState.PowerUpSelectionScreen, m_Index);
                 return;
             }
 

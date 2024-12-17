@@ -29,6 +29,7 @@ public class TaskAttack : Node
     const float ATTACK_COOLDOWN = 0.2f;
 
     Controller m_Controller;
+    bool m_CheckHasState;
     SpellHandler m_SpellHandler => m_Controller.SpellHandler;
 
     bool m_CanAttack = true;
@@ -40,9 +41,10 @@ public class TaskAttack : Node
 
     #region Init & End
 
-    public TaskAttack(Controller controller, List<ESpellCategory> allowedSpellCategories = default)
+    public TaskAttack(Controller controller, List<ESpellCategory> allowedSpellCategories = default, bool checkHasState = true)
     {
         m_Controller = controller;
+        m_CheckHasState = checkHasState;
 
         FilterSpells(allowedSpellCategories);
     }
@@ -236,18 +238,21 @@ public class TaskAttack : Node
 
         foreach (var item in m_ConsumSpells)
         {
-            bool hasState = false;
-            foreach (var state in item.Value)
+            if (m_CheckHasState)
             {
-                if (GameManager.Instance.GetFirstEnemy(m_Controller.Team).StateHandler.HasState(state))
+                bool hasState = false;
+                foreach (var state in item.Value)
                 {
-                    hasState = true;
-                    break;
+                    if (GameManager.Instance.GetFirstEnemy(m_Controller.Team).StateHandler.HasState(state))
+                    {
+                        hasState = true;
+                        break;
+                    }
                 }
-            }
 
-            if (!hasState)
-                continue;
+                if (!hasState)
+                    continue;
+            }
 
             if (! m_SpellHandler.CanCast(item.Key))
                 continue;

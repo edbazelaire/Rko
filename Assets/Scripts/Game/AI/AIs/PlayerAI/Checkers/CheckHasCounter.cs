@@ -1,6 +1,4 @@
-﻿using Enums;
-using Game;
-using System.Collections.Generic;
+﻿using Tools;
 
 namespace AI
 {
@@ -8,9 +6,9 @@ namespace AI
     {
         #region Init & End
 
-        public CheckHasCounter(Controller controller) : base(controller) 
+        public CheckHasCounter(Controller controller, bool reversed = false) : base(controller, reversed) 
         {
-           
+
         }
 
         #endregion
@@ -20,7 +18,10 @@ namespace AI
 
         public override NodeState Evaluate()
         {
-            m_State = m_Controller.CounterHandler.HasCounter.Value ? NodeState.SUCCESS : NodeState.FAILURE;
+            SetNodeState(m_Controller.CounterHandler.HasCounter.Value ? NodeState.SUCCESS : NodeState.FAILURE);
+
+            ErrorHandler.Log("CheckHasCounter "+ (m_IsReversed ? "(reversed) " : "") +": " + m_State);
+
             return m_State;
         }
 

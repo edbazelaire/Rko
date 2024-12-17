@@ -23,6 +23,9 @@ namespace Game.UI.EndGameUI
         GameObject m_PowerUpContainer;
         List<PowerUpItem> m_PowerUpItems = new();
 
+        /// <summary> index of the arena power up to replace in cloud data </summary>
+        int m_CurrentArenaPowerUpIndex;
+
         #endregion
 
 
@@ -35,8 +38,9 @@ namespace Game.UI.EndGameUI
             m_PowerUpContainer = gameObject;
         }
 
-        public override void Initialize()
+        public void Initialize(int index = -1)
         {
+            m_CurrentArenaPowerUpIndex = index >= 0 ? index : ProgressionCloudData.CurrentArena.Level - 1;    
             base.Initialize();
         }
 
@@ -84,7 +88,7 @@ namespace Game.UI.EndGameUI
                 // set first PowerUpValue as default PowerUp
                 if (i == 0)
                 {
-                    ProgressionCloudData.AddCurrentArenaPowerUp(powerUpData.Name);
+                    ProgressionCloudData.SetCurrentArenaPowerUp(powerUpData.Name, m_CurrentArenaPowerUpIndex);
                 }
 
                 // add to list of already selected power ups
@@ -173,7 +177,7 @@ namespace Game.UI.EndGameUI
         {
             return () =>
             {
-                ProgressionCloudData.AddCurrentArenaPowerUp(m_PowerUpItems[index].PowerUpData.Name);
+                ProgressionCloudData.SetCurrentArenaPowerUp(m_PowerUpItems[index].PowerUpData.Name, m_CurrentArenaPowerUpIndex, true);
                 StartCoroutine(SelectPowerUpAnimation(index));
             };
             

@@ -70,42 +70,69 @@ namespace Game.Spells
                 return;
 
             // if spell hits a wall, end it
-            if (collision.gameObject.layer == LayerMask.NameToLayer("Wall") 
-                || (collision.gameObject.layer == LayerMask.NameToLayer("Ground") && m_SpellData.TriggerGround))
+            if (collision.gameObject.layer == LayerMask.NameToLayer("Wall"))
             {
-                // check if should apply on hit
-                if (! m_SpellData.ApplyIfNotHitting)
-                {
-                    End();
-                    return;
-                }
+                OnHitWall(collision);
+            }
 
-                // if "ApplyIfNotHitting" : apply effects to every not hit targets
-                var allControllers = m_SpellData.IsEnemyTarget ? GameManager.Instance.GetAllEnemies(m_Controller.Team) : GameManager.Instance.GetAllAllies(m_Controller.Team);
-                foreach (Controller controller in allControllers)
-                {
-                    OnHit(controller);
-                }
+            else if (collision.gameObject.layer == LayerMask.NameToLayer("Ground") && m_SpellData.TriggerGround)
+            {
+                OnHitGround(collision);
             }
 
             // if spell hits a player, hit it and end the spell
-            else if (
-                (collision.gameObject.layer == LayerMask.NameToLayer("Player") && m_SpellData.TriggerPlayer)
-                || collision.gameObject.layer == LayerMask.NameToLayer("Structure"))
+            else if (collision.gameObject.layer == LayerMask.NameToLayer("Player") && m_SpellData.TriggerPlayer)
             {
-                var controller = Finder.FindComponent<Controller>(collision.gameObject);
-                if (controller == null)
-                    return;
+                OnHitPlayer(collision);
+            }
 
-                // check if should apply on hit
-                if (m_SpellData.ApplyIfNotHitting && !controller.IsSpawn)
-                {
-                    End();
-                    return;
-                }
+            else if (collision.gameObject.layer == LayerMask.NameToLayer("Structure"))
+            {
+                OnHitStructure(collision);
+            }
+        }
 
+        protected virtual void OnHitWall(Collider2D collision)
+        {
+            // check if should apply on hit
+            if (!m_SpellData.ApplyIfNotHitting)
+            {
+                End();
+                return;
+            }
+
+            // if "ApplyIfNotHitting" : apply effects to every not hit targets
+            var allControllers = m_SpellData.IsEnemyTarget ? GameManager.Instance.GetAllEnemies(m_Controller.Team) : GameManager.Instance.GetAllAllies(m_Controller.Team);
+            foreach (Controller controller in allControllers)
+            {
                 OnHit(controller);
             }
+        }
+
+        protected virtual void OnHitGround(Collider2D collision)
+        {
+            OnHitWall(collision);
+        }
+
+        protected virtual void OnHitPlayer(Collider2D collision)
+        {
+            var controller = Finder.FindComponent<Controller>(collision.gameObject);
+            if (controller == null)
+                return;
+
+            // check if should apply on hit
+            if (m_SpellData.ApplyIfNotHitting && !controller.IsSpawn)
+            {
+                End();
+                return;
+            }
+
+            OnHit(controller);
+        }
+
+        protected virtual void OnHitStructure(Collider2D collision)
+        {
+            OnHitPlayer(collision);
         }
 
         /// <summary>
@@ -132,7 +159,10 @@ namespace Game.Spells
                 End();
 
             // check if the spell has reached its target position
-            if (m_SpellData.StopOnTargetPos && Math.Abs(m_Target.x - transform.position.x) < 0.05f)
+            if (m_SpellData.StopOnTargetPos && (
+                (m_Target.x > m_OriginalPosition.x && transform.position.x >= m_Target.x)
+                || (m_Target.x < m_OriginalPosition.x && transform.position.x <= m_Target.x)
+                ))
                 End();
 
             // check if the spell is stuck in the void

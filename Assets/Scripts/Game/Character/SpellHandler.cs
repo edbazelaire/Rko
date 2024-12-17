@@ -943,7 +943,7 @@ namespace Game.Character
             SpellSelectionEvent?.Invoke(spell, spellActivation);
         }
 
-        public void CallSpellEvent(string spellName, ESpellEvent spellEvent)
+        public void CallSpellEvent(string spellName, ESpellEvent spellEvent, float? forcedDuration = null)
         {
             var spellData = SpellLoader.GetSpellData(spellName, destroy: true);
 
@@ -962,12 +962,18 @@ namespace Game.Character
             if (! spellData.HasTargetGfxEventAt(spellEvent))
             {
                 // NO POSITION REQUESTED
-                CallSpellEventClientRPC(spellName, spellEvent);
+                if (forcedDuration == null)
+                    CallSpellEventClientRPC(spellName, spellEvent);
+                else
+                    CallSpellEventClientRPC(spellName, spellEvent, forcedDuration.Value);
             }
             else
             {
                 // POSITION REQUESTED : add target pos to the variables
-                CallSpellEventClientRPC(spellName, spellEvent, m_TargetPos.Value);
+                if (forcedDuration == null)
+                    CallSpellEventClientRPC(spellName, spellEvent, m_TargetPos.Value);
+                else
+                    CallSpellEventClientRPC(spellName, spellEvent, m_TargetPos.Value, forcedDuration.Value);
             }
         }
 
@@ -979,9 +985,23 @@ namespace Game.Character
         }
 
         [ClientRpc]
+        public void CallSpellEventClientRPC(string spellName, ESpellEvent spellEvent, float forcedDuration)
+        {
+            m_Controller.GFXHandler.SpawnSpellGFX(spellName, spellEvent);
+            OnPreSpellEvent?.Invoke(spellName, spellEvent);
+        }
+
+        [ClientRpc]
         public void CallSpellEventClientRPC(string spellName, ESpellEvent spellEvent, Vector3 targetPos)
         {
             m_Controller.GFXHandler.SpawnSpellGFX(spellName, spellEvent, targetPos);
+            OnPreSpellEvent?.Invoke(spellName, spellEvent);
+        }
+
+        [ClientRpc]
+        public void CallSpellEventClientRPC(string spellName, ESpellEvent spellEvent, Vector3 targetPos, float forcedDuration)
+        {
+            m_Controller.GFXHandler.SpawnSpellGFX(spellName, spellEvent, targetPos, forcedDuration);
             OnPreSpellEvent?.Invoke(spellName, spellEvent);
         }
         

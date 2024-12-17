@@ -274,9 +274,6 @@ namespace Data.DataStructures
                 return;
             }
 
-            if (stateEffectName == "Scorched" && HasStateEffect(stateEffectName))
-                Debug.Log("qslkhqs");
-
             if (! HasStateEffect(stateEffectName))
                 return;
 

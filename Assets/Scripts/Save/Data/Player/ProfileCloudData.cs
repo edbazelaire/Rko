@@ -938,10 +938,8 @@ namespace Save
 
             switch (key)
             {
-                // Make KEY_PSEUDO_CHANGED un-resetable
+                // List of un-resetable data
                 case KEY_PSEUDO_CHANGED:
-                    break;
-
                 case KEY_TUTO_DONE:
                     break;
 

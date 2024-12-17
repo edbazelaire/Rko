@@ -24,7 +24,7 @@ namespace Data
         [Description("Type of path that the spell is taking")]
         public SpellData SubSpellData;
 
-        [Header("Multiple Projectiles Data")]
+        [Header("Multiple Spell Data")]
         [Description("Type of multiple projectile launch")]
         public EMultiProjectileType MultiProjectileType;
         [Description("Position of the subspells")]
@@ -123,12 +123,18 @@ namespace Data
 
                 // play animation only if blocked during the animation
                 if (m_IsBlocking)
+                {
+                    // play wave animation
                     controller.AnimationHandler.PlayAnimationClientRPC(Animation, DelayBetweenWaves);
+
+                    // spawn SubSpell - SpellGFX
+                    controller.SpellHandler.CallSpellEvent(Name, ESpellEvent.OnStartCast);
+                }
 
                 var delay = DelayBetweenWaves;
                 while (delay > 0)
                 {
-                    if ((m_IsCancelled || controller.SpellHandler.HasStateBlockingCast()) && m_IsBlocking)
+                    if (IsCancellable && controller.SpellHandler.HasStateBlockingCast() && m_IsBlocking)
                     {
                         m_IsCancelled = true;
                         break;
@@ -138,16 +144,20 @@ namespace Data
                     yield return null;
                 }
 
-                // cancel animation only if blocked during the animation
-                if (m_IsBlocking)
-                    controller.AnimationHandler.CancelCastAnimationClientRpc();
-
                 if (m_IsCancelled)
-                {
-                    m_IsCancelled = true;
                     break;
+
+                // call end of wave cast
+                if (m_IsBlocking)
+                {
+                    // spawn SubSpell - SpellGFX
+                    controller.SpellHandler.CallSpellEvent(Name, ESpellEvent.OnCast);
                 }
             }
+
+            // cancel animation only if blocked during the animation
+            if (m_IsBlocking)
+                controller.AnimationHandler.CancelCastAnimationClientRpc();
 
             // if spell is blocking Controller during the spawn of all multi projectiles, call that the cast has been completed
             if (! IsCompletedOnCast)
@@ -176,16 +186,16 @@ namespace Data
             {
                 CastOneProjectile(
                     controller, 
-                    CalculateMultiSpellTarget(target, i, controller.Team),
-                    SubSpellSpawn.Recalculate(position, i, controller.Team, NProjectiles), 
-                    rotation
+                    target:     CalculateMultiSpellTarget(target, i, controller.Team),
+                    position:   SubSpellSpawn.Recalculate(position, i, controller.Team, NProjectiles), 
+                    rotation:   rotation
                 );
 
                 var delay = DelayBetweenLaunches;
 
                 while (delay > 0)
                 {
-                    if ((m_IsCancelled || controller.SpellHandler.HasStateBlockingCast()) && m_IsBlocking)
+                    if (IsCancellable && controller.SpellHandler.HasStateBlockingCast() && m_IsBlocking)
                     {
                         m_IsCancelled = true;
                         yield break;
@@ -215,13 +225,7 @@ namespace Data
             ));
 
             // spawn SubSpell - SpellGFX
-            foreach (SPrefabSpawn<ESpellEvent> prefabSpawn in SubSpellData.SpellEventActions)
-            {
-                if (prefabSpawn.GFXLifetime.StartSpellPart == ESpellEvent.OnCast)
-                {
-                    prefabSpawn.Spawn(controller, SubSpellData, targetPos: target);
-                }
-            }
+            controller.SpellHandler.CallSpellEvent(SubSpellData.name, ESpellEvent.OnCast);
         }
 
         #endregion

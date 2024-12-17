@@ -25,10 +25,11 @@ MonoBehaviour:
   m_SubStateEffects: []
   m_HoldingStateEffects: []
   m_Priority: 0
-  m_Duration: 0
+  m_Duration: -1
   m_IsInstantanious: 0
   m_MaxStacks: 1
   m_StackDecay: -1
+  m_Energy: 0
   m_BonusStats: []
   m_SpeedBonus: -0.3
   m_CastSpeed: 0
@@ -41,6 +42,8 @@ MonoBehaviour:
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
   m_BonusLifeSteal: 0
+  m_BonusHeal: 0
+  m_BonusHealPerc: 0
   m_BonusBurnDamages: 0
   m_BonusSlowPerc: 0
   m_OnStartStateEffect: []

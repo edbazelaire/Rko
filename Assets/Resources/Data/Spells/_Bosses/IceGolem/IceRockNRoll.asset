@@ -16,9 +16,30 @@ MonoBehaviour:
   m_Description: 
   m_DescriptionVariables: []
   m_SpellElements: 
-  Linked: 0
+  Linked: 1
   Graphics: {fileID: 0}
-  SpellEventActions: []
+  SpellEventActions:
+  - Prefab: {fileID: 8617118645599596134, guid: a27f25647296b16498dfb932ad1179ea, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX:
+    - AudioClip: {fileID: 8300000, guid: 0118b8bcfdeffea4092f2bcad9104b75, type: 3}
+      SoundDuration: 0
+    GFXLifetime:
+      m_StartSpellPart: 100
+      m_EndSpellPart: 300
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 2
+    BodyPart: 0
+    IsFollowing: 1
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -27,6 +48,7 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 6
+  m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
@@ -44,28 +66,49 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel: []
-  m_Size: 1
+  m_Size: 8
   TriggerPlayer: 1
   EnemyStateEffects: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
-  Animation: 0
+  Animation: -1
   IsCancellable: 0
-  AnimationTimer: 0
+  AnimationTimer: 1.2
   m_Cooldown: 0
   SubSpellData: {fileID: 11400000, guid: ee3424fe91110014ca42e09e61b6bff1, type: 2}
-  MultiProjectileType: 0
+  MultiProjectileType: 2
+  SubSpellSpawn:
+    m_SpellTargetX:
+      m_Dimension: 1
+      m_MultiSpellTarget: 0
+      m_ZoneSize: -1
+      m_NBreakPoints: 1
+      m_OffsetMinMax:
+        Min: 0
+        Max: 0
+    m_SpellTargetY:
+      m_Dimension: 2
+      m_MultiSpellTarget: 0
+      m_ZoneSize: -1
+      m_NBreakPoints: 1
+      m_OffsetMinMax:
+        Min: 0
+        Max: 0
   m_YMinMax:
     Min: 0
     Max: 0
+  m_RecalculatePosition: 0
   m_IsBlocking: 1
   m_NProjectiles: 1
   m_NBreakPoints: 1
-  m_ProjectileZoneSize: 0
+  m_ProjectileZoneSize: -1
   m_DelayBetweenLaunches: 0
   m_NWaves: 3
-  m_DelayBetweenWaves: 2
+  m_DelayBetweenWaves: 1.2
   OnCastWaveSoundFX: {fileID: 0}
   OnCastProjectileSoundFX: {fileID: 0}

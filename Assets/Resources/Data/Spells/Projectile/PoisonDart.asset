@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: PoisonDart
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: Shoot a projectile in a straight line, applying [EnemyStateEffect.1]
-    and [Silence] on hitted enemy for 3 seconds, making him unable to use spells
-    or auto attacks
-  m_DescriptionVariables: []
-  m_SpellElements: 
+  m_Description: Shoot a projectile in a straight line, applying {0} damages and
+    [EnemyStateEffect.0] on hitted enemy
+  m_DescriptionVariables:
+  - Name: Damages
+    WithIcon: 1
+  m_SpellElements: 03000000
   Linked: 0
   Graphics: {fileID: 1453329069581620619, guid: 7afd15ecce25d5143b07edefb6a2a006, type: 3}
   SpellEventActions:
@@ -40,6 +41,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   OnHit: []
   OnHitSpellSpawn: 1
@@ -49,6 +51,7 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 6
+  m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
@@ -66,6 +69,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
@@ -91,4 +97,4 @@ MonoBehaviour:
   m_TriggerGround: 1
   m_StopOnTargetPos: 0
   m_Speed: 10
-  m_YSpawnPos: 0
+  m_YSpawnPos: 0.35

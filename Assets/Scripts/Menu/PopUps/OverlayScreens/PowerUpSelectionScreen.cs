@@ -12,6 +12,7 @@ namespace Menu.PopUps.OverlayScreens
         #region Members
 
         PowerUpSection m_PowerUpSection;
+        int m_Index;
 
         #endregion
 
@@ -25,8 +26,9 @@ namespace Menu.PopUps.OverlayScreens
             m_PowerUpSection = Finder.FindComponent<PowerUpSection>(gameObject);
         }
 
-        public override void Initialize()
+        public void Initialize(int index = -1)
         {
+            m_Index = index;
             base.Initialize();
         }
 
@@ -34,7 +36,7 @@ namespace Menu.PopUps.OverlayScreens
         {
             base.OnPrefabLoaded();
 
-            m_PowerUpSection.Initialize();
+            m_PowerUpSection.Initialize(m_Index);
             m_PowerUpSection.Activate(true);
         }
 

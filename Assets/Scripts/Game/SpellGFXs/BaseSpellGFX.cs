@@ -48,7 +48,7 @@ namespace Game.SpellGFXs
             m_AudioSource = Finder.FindComponent<AudioSource>(gameObject);
         }
 
-        public virtual void Initialize(Controller controller, SpellData spellData, Spell spell, string stateEffectName, SPrefabSpawn<TEnum> prefabSpawn)
+        public virtual void Initialize(Controller controller, SpellData spellData, Spell spell, string stateEffectName, SPrefabSpawn<TEnum> prefabSpawn, float? forcedDuration = null)
         {
             if (controller == null)
             {
@@ -62,6 +62,9 @@ namespace Game.SpellGFXs
             m_StateEffectName   = stateEffectName;
             m_PrefabSpawn       = prefabSpawn;
             m_BodyPart          = prefabSpawn.BodyPart;
+
+            if (forcedDuration != null) 
+                m_Duration = forcedDuration.Value;
 
             if (prefabSpawn.Prefab != null && ArenaManager.IsInVoid(transform.position.x) && prefabSpawn.SpawnTarget != ESpawnTarget.MapCenter)
                 ErrorHandler.Warning("Spell GFX spawned in void : " + m_Name + " - " + prefabSpawn.Prefab.name);

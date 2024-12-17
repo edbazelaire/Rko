@@ -30,7 +30,7 @@ namespace Game.Spells
             {
                 // get collider of the Controller
                 var collider = CopyCollider(m_Controller.GFXHandler.Collider);
-                collider.isTrigger = true;  
+                collider.isTrigger = true;
 
                 m_Controller.StateHandler.SetStateJump(true);
                 m_Controller.SpellHandler.ForceBlockCast(true);
@@ -56,9 +56,20 @@ namespace Game.Spells
                 UpdatePlayerPosition();
         }
 
-        protected override void OnTriggerEnter2D(Collider2D collision)
+        protected override void OnHitGround(Collider2D collision)
         {
-            base.OnTriggerEnter2D(collision);
+            // check if is caster's arena : do not collide with our arena
+            var arenaTransform = ArenaManager.GetTargettableArea(m_Controller.Team, false);
+            if (arenaTransform == collision.transform)
+                return;
+
+            base.OnHitGround(collision);
+        }
+
+        protected override void OnHitStructure(Collider2D collision)
+        {
+            // do not hit structures with jumps
+            return;
         }
 
 

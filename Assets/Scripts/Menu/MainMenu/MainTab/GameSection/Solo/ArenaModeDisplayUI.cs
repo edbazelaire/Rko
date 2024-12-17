@@ -268,7 +268,7 @@ namespace Menu.MainMenu.MainTab
 
         void OnCollectButtonClicked()
         {
-            Main.SetPopUp(EPopUpState.RewardsScreen, m_ArenaData.GetCurrentRewards(), "Arena");
+            Main.DisplayRewards(m_ArenaData.GetCurrentRewards(), "Arena", title: "Arena Rewards");
             ProgressionCloudData.ResetCurrentArena();
         }
 

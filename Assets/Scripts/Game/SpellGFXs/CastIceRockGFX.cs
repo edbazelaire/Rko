@@ -1,6 +1,5 @@
 ﻿using Enums;
 using System.Collections;
-using System.Collections.Generic;
 using Tools;
 using UnityEngine;
 
@@ -31,13 +30,6 @@ namespace Game.SpellGFXs
 
             m_AnimationQueue.Enqueue(PickUpRock());
         }
-
-        //protected override void OnDestroy()
-        //{
-        //    base.OnDestroy();
-
-        //    Destroy(m_IceRock);
-        //}
 
         #endregion
 

@@ -29,8 +29,20 @@ namespace Assets.Scripts.Data.DataStructures.SpellSubStructures
         public int              NBreakPoints        => m_NBreakPoints;
         public SMinMax          OffsetMinMax        => m_OffsetMinMax;
 
+        public SSpellTargetDim(EDimension dimension = EDimension.X, EMultiSpellZone multiSpellZone = EMultiSpellZone.None, float zoneSize = -1f, int nBreakPoints = 1, SMinMax offsetMinMax = default) 
+        {
+            m_Dimension         = dimension;
+            m_MultiSpellTarget  = multiSpellZone;
+            m_ZoneSize          = zoneSize;
+            m_NBreakPoints      = nBreakPoints;
+            m_OffsetMinMax      = offsetMinMax;
+        }
+
         public virtual float Recalculate(float value, int index, int team, int nProjectiles)
         {
+            if (m_MultiSpellTarget == EMultiSpellZone.None)
+                return value;
+
             if (ArenaManager.Instance == null)
             {
                 ErrorHandler.Error("Unable to find ArenaManager to calculate target position - exiting");
@@ -190,8 +202,8 @@ namespace Assets.Scripts.Data.DataStructures.SpellSubStructures
     public class SMultiSpellSpawn
     {
         [SerializeField]
-        public SSpellTargetDim m_SpellTargetX;
-        public SSpellTargetDim m_SpellTargetY;
+        public SSpellTargetDim m_SpellTargetX = new SSpellTargetDim(EDimension.Y, EMultiSpellZone.None);
+        public SSpellTargetDim m_SpellTargetY = new SSpellTargetDim(EDimension.Y, EMultiSpellZone.None);
 
         public virtual Vector3 Recalculate(Vector3 position, int index, int team, int nProjectiles)
         {

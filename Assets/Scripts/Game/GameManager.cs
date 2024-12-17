@@ -16,7 +16,6 @@ using System.Linq;
 using Tools;
 using Unity.Netcode;
 using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 
 namespace Game
@@ -1025,6 +1024,22 @@ namespace Game
         public void Hit()
         {
             GetFirstEnemy(Owner.Team).Life.Hit(500);
+        }
+
+        [Command(KeyCode.O)]
+        public void Invulnerability()
+        {
+            var controller = GetFirstEnemy(Owner.Team);
+            if (controller.StateHandler.HasState(EStateEffect.Invulnerable))
+                controller.StateHandler.RemoveStateEffect(EStateEffect.Invulnerable);
+            else
+                controller.StateHandler.AddStateEffect(EStateEffect.Invulnerable.ToString(), Owner);
+        }
+
+        [Command(KeyCode.K)]
+        public void GiveEnergy()
+        {
+            GetFirstEnemy(Owner.Team).EnergyHandler.AddEnergy(100);
         }
 
         /// <summary>

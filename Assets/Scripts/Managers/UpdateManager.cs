@@ -79,11 +79,17 @@ namespace Assets.Scripts.Managers
             if (LastVersion.CompareTo(new Version("0.1.8")) == -1)
                 test = UpdateVersion_0_1_8();
 
-            if (LastVersion.CompareTo(new Version("0.1.11")) == -1)
-                test = UpdateVersion_0_1_11();
+            //if (LastVersion.CompareTo(new Version("0.1.11")) == -1)
+            //    test = UpdateVersion_0_1_11();
 
-            if (LastVersion.CompareTo(new Version("0.1.12")) == -1)
-                test = UpdateVersion_0_1_12();
+            //if (LastVersion.CompareTo(new Version("0.1.12")) == -1)
+            //    test = UpdateVersion_0_1_12();
+
+            if (LastVersion.CompareTo(new Version("0.1.13")) == -1)
+                test = UpdateVersion_0_1_13();
+
+            if (LastVersion.CompareTo(new Version("0.2.0")) == 0)
+                test = UpdateVersion_0_2_0();
 
             // if does not trigger any version until now, update to current version
             if (LastVersion.CompareTo(CurrentVersion) == -1)
@@ -260,26 +266,31 @@ namespace Assets.Scripts.Managers
         #endregion
 
 
-        #region Beta Launch
+        #region v0.1.13
 
-        static bool UpdateBeta()
+        static bool UpdateVersion_0_1_13()
         {
             var test = true;
+
+            // DO NOT reset (for some testers)
+            if (LastVersion.CompareTo(new Version("0.1.12")) == -1)
+                Main.CloudSaveManager.ResetAll();
 
             var alphaTesterTitle = new SAchievementReward();
             alphaTesterTitle.Set(ETitle.Alpha_Tester);
 
             NotificationCloudData.AddMessage(new SMessage(
-                title: "Congratulation",
-                content: "Congratulation on having played the Alpha version of the game, here is a reward pack to start the Beta !",
+                title: "Alpha Tester Rewards",
+                content: "Congratulation on having played the Alpha version of the game !\n\nAll data have been reseted, but here is a reward pack to help you start this new version !\nAlso, you gained the title \"AlphaTester\" that will be still be available on your account when the game launches.\n\nThank you for your contribution so far and i hope you'll enjoy this new patch !",
                 rewardsData: new SRewardsData(
                     chests: new List<EChest>() {
+                        EChest.Rare,
                         EChest.Rare
                     },
                     currencyRewards: new List<SCurrencyReward>() {
-                        new SCurrencyReward(ECurrency.Xp, 500),
+                        new SCurrencyReward(ECurrency.Xp, 250),
                         new SCurrencyReward(ECurrency.Golds, 5000),
-                        new SCurrencyReward(ECurrency.Gems, 100)
+                        new SCurrencyReward(ECurrency.Gems, 150)
                     },
                     achievementRewards: new List<SAchievementReward> {
                         alphaTesterTitle
@@ -287,8 +298,61 @@ namespace Assets.Scripts.Managers
                 )
              ));
 
+            // save version
+            if (!SetVersion("0.1.13"))
+                test = false;
+
             return test;
         }
+
+        #endregion
+
+
+        #region v0.2.0
+
+        static bool UpdateVersion_0_2_0()
+        {
+            var test = true;
+
+            // DO NOT reset (for some testers)
+            if (LastVersion.CompareTo(new Version("0.1.12")) == -1)
+                Main.CloudSaveManager.ResetAll();
+
+            var alphaTesterTitle = new SAchievementReward();
+            alphaTesterTitle.Set(ETitle.Alpha_Tester);
+
+            NotificationCloudData.AddMessage(new SMessage(
+                title: "Alpha Tester Rewards",
+                content: "Congratulation on having played the Alpha version of the game !\n\nAll data have been reseted, but here is a reward pack to help you start this new version !\nAlso, you gained the title \"AlphaTester\" that will be still be available on your account when the game launches.\n\nThank you for your contribution so far and i hope you'll enjoy this new patch !",
+                rewardsData: new SRewardsData(
+                    chests: new List<EChest>() {
+                        EChest.Rare,
+                        EChest.Rare
+                    },
+                    currencyRewards: new List<SCurrencyReward>() {
+                        new SCurrencyReward(ECurrency.Xp, 250),
+                        new SCurrencyReward(ECurrency.Golds, 5000),
+                        new SCurrencyReward(ECurrency.Gems, 150)
+                    },
+                    achievementRewards: new List<SAchievementReward> {
+                        alphaTesterTitle
+                    }
+                )
+             ));
+
+            // save version
+            if (! SetVersion("0.2.0"))
+                test = false;
+
+            return test;
+        }
+
+        #endregion
+
+
+        #region Beta Launch
+
+
 
         #endregion
     }

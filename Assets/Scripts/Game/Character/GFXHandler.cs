@@ -347,7 +347,7 @@ namespace Game.Character
         /// <param name="spellName">    name of the spell                                   </param>
         /// <param name="spellEvent">   event called by the spell (cast, spawn, onHit, ...) </param>
         /// <param name="targetPos">    position targeted by the spell                      </param>
-        public void SpawnSpellGFX(string spellName, ESpellEvent spellEvent, Vector3 targetPos = default)
+        public void SpawnSpellGFX(string spellName, ESpellEvent spellEvent, Vector3 targetPos = default, float? forcedDuration = null)
         {
             // FILTER : handle on event before spell spawn (post-spell spawning is handled by the spell itself)
             // except "OnEnd" that can be called when the cast is cancelled
@@ -363,9 +363,10 @@ namespace Game.Character
                     continue;
 
                 prefabSpawn.Spawn(
-                    caster:     m_Controller, 
-                    spellData:  spellData,
-                    targetPos:  targetPos
+                    caster:         m_Controller, 
+                    spellData:      spellData,
+                    targetPos:      targetPos,
+                    forcedDuration: forcedDuration
                 );
             }
 

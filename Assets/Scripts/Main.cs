@@ -395,10 +395,9 @@ namespace Assets
                     obj.GetComponent<ConfirmBuyBundlePopUp>().Initialize((string)args[0], (SPriceData)args[1], (SRewardsData)args[2], (Action)args[3], (Action)args[4]);
                     break;
 
-
                 // SCREENS -------------------------------------------------------
                 case EPopUpState.RewardsScreen:
-                    obj.GetComponent<RewardsScreen>().Initialize((SRewardsData)args[0], (string)args[1], args.Length > 2 ? (Action)args[2] : null);
+                    obj.GetComponent<RewardsScreen>().Initialize((SRewardsData)args[0], (string)args[1], args.Length > 2 ? (Action)args[2] : null, args.Length > 3 ? (string)args[3] : null);
                     break;
 
                 case EPopUpState.AchievementRewardScreen:
@@ -410,7 +409,7 @@ namespace Assets
                     break;
 
                 case EPopUpState.LevelUpScreen:
-                    obj.GetComponent<LevelUpScreen>().Initialize((ECharacter)args[0]);
+                    obj.GetComponent<LevelUpScreen>().Initialize(baseXp: (int)args[0], maxXp: (int)args[1], bonusXp: (int)args[2]);
                     break;
 
                 case EPopUpState.PowerUpInfoScreen:
@@ -418,7 +417,7 @@ namespace Assets
                     break;
 
                 case EPopUpState.PowerUpSelectionScreen:
-                    obj.GetComponent<PowerUpSelectionScreen>().Initialize();
+                    obj.GetComponent<PowerUpSelectionScreen>().Initialize(args.Count() > 0 ? (int)args[0] : -1);
                     break;
 
                 // INFO POP UPS -------------------------------------------------------
@@ -477,9 +476,9 @@ namespace Assets
             }, unlockedOnly);
         }
 
-        public static void DisplayRewards(SRewardsData rewardsData, string context, Action OnRewardCollected = null)
+        public static void DisplayRewards(SRewardsData rewardsData, string context, Action OnRewardCollected = null, string title = null)
         {
-            Main.SetPopUp(EPopUpState.RewardsScreen, rewardsData, context, OnRewardCollected);
+            Main.SetPopUp(EPopUpState.RewardsScreen, rewardsData, context, OnRewardCollected, title);
         }
      
         public static void DisplayAchievementRewards(List<SAchievementReward> rewardsData)

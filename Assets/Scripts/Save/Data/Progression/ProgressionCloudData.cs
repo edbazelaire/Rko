@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Tools;
 using Unity.Services.CloudSave.Models;
+using UnityEngine;
 
 namespace Save
 {
@@ -500,6 +501,8 @@ namespace Save
                 ErrorHandler.Error("Bad index PowerUpData index (" + index + ") : PowerUp max length is " + CurrentArena.PowerUps.Length);
                 return;
             }
+
+            Debug.Log("SETTING PowerUp (" + powerUpName + ") at index " + index);
 
             currentArena.PowerUps[index] = powerUpName;
             Instance.m_Data[KEY_CURRENT_ARENA] = currentArena;

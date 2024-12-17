@@ -54,7 +54,7 @@ namespace Game.AI.BehaviorTrees
                     new TaskExitZone(m_Controller),
                 }),
 
-                new TaskAttack(m_Controller),
+                new TaskAttack(m_Controller, checkHasState: false),
 
                 new TaskWait(m_Controller)
             });
