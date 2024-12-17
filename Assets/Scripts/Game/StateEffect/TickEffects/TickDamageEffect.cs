@@ -1,7 +1,6 @@
 ﻿using Assets.Scripts.Data.DataStructures.SpellRequirement;
 using Data;
 using Enums;
-using System.Collections;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
@@ -23,7 +22,7 @@ namespace Game.Spells
 
         private float m_TickTimer;
 
-        protected float FinalTickLifeSteal => Mathf.Max(0f, FinalLifeSteal + m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusTickLifeSteal, m_Controller) - 1);
+        protected float FinalTickLifeSteal => Mathf.Max(0f, m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusTickLifeSteal, m_Controller) - 1);
 
         #endregion
 
@@ -91,7 +90,7 @@ namespace Game.Spells
                     return;
 
                 ErrorHandler.Log($"{name} : {damages} DAMAGES", ELogTag.StateEffects);
-                m_Controller.Life.Hit(damages, true);
+                damages = m_Controller.Life.Hit(damages, true);
 
                 int lifesteal = (int)Mathf.Round(damages * FinalTickLifeSteal);
                 if (lifesteal > 0)

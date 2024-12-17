@@ -15,7 +15,7 @@ namespace Assets.Scripts.Data.DataStructures
         {
         }
 
-        protected override BaseSpellGFX<ESpellEvent> InitializeGFXComponent(GameObject go, Controller caster, SpellData spellData, Spell spell, string stateEffectName, Controller targetController)
+        protected override BaseSpellGFX<ESpellEvent> InitializeGFXComponent(GameObject go, Controller caster, SpellData spellData, Spell spell, string stateEffectName, Controller targetController, float? forcedDuration = null)
         {
             if (go == null)
                 return null;
@@ -30,7 +30,8 @@ namespace Assets.Scripts.Data.DataStructures
                 spellData:          spellData, 
                 spell:              spell, 
                 stateEffectName:    stateEffectName, 
-                prefabSpawn:        this
+                prefabSpawn:        this,
+                forcedDuration:     forcedDuration
             );
 
             return spellGfx;

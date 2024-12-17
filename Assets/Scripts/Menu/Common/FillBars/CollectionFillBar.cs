@@ -18,6 +18,8 @@ namespace Menu.Common
         const string COLLECTION_FLOAT_FORMAT    = "{0} / {1}";
         const string COLLECTION_PERC_FORMAT     = "{0}%";
 
+        public Action CollectionEndedEvent;
+
         [SerializeField] float  m_CollectionAnimationDuration = 1.0f;
         [SerializeField] Color  m_BaseColor;
         [SerializeField] Color  m_FullColor;
@@ -230,6 +232,8 @@ namespace Menu.Common
 
             UpdateCollection(goal);
             m_Animation = null;
+
+            CollectionEndedEvent?.Invoke();
         }
 
         #endregion

@@ -32,9 +32,6 @@ namespace Assets.Scripts.Menu
 
             RefreshUI();
             InventoryCloudData.CurrencyChangedEvent += OnCurrencyChanged;
-
-            if (NotificationCloudData.XpCollection > 0)
-                NotificationCloudData.CollectXp();
         }
 
         protected void OnDestroy()
@@ -59,9 +56,6 @@ namespace Assets.Scripts.Menu
 
             m_LevelText.text = ProfileCloudData.AccountLevel.ToString();
             m_CollectionFillbar.Initialize(InventoryManager.GetCurrency(ECurrency.TotalXp), CollectablesManagementData.GetCurrentAccountLevelData().RequiredXp);
-
-            if (CollectablesManagementData.IsAccountUpgradable)
-                LevelUpAccount();
         }
 
         IEnumerator CollectXpCoroutine(int xpGained)
@@ -69,38 +63,22 @@ namespace Assets.Scripts.Menu
             yield return m_CollectionFillbar.CollectionAnimationCoroutine(xpGained);
 
             m_CurrentXp = InventoryManager.GetCurrency(ECurrency.TotalXp);
-
-            if (CollectablesManagementData.IsAccountUpgradable)
-                LevelUpAccount();
         }
 
-        #endregion
-
-
-        #region Rewards
-
-        void LevelUpAccount()
-        {
-            Main.DisplayRewards(CollectablesManagementData.GetCurrentAccountLevelData().Rewards, "AccountLevelUp");
-            ProfileCloudData.UpgradeAccountLevel();
-            
-            RefreshUI();
-        }
- 
         #endregion
 
 
         #region Listeners
 
-        void OnCurrencyChanged(ECurrency currency, int amount = 0)
+        void OnCurrencyChanged(ECurrency currency, int newValue = 0)
         {
             if (currency != ECurrency.TotalXp)
                 return;
 
-            int gainedXp = m_CurrentXp - amount;
+            int gainedXp = newValue - m_CurrentXp;
 
             if (gainedXp > 0)
-                StartCoroutine(CollectXpCoroutine(amount));
+                StartCoroutine(CollectXpCoroutine(gainedXp));
             else
                 RefreshUI();
         }

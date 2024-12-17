@@ -416,6 +416,11 @@ namespace Save
                     CurrencyChangedEvent?.Invoke(ECurrency.Xp, 0);
                     break;
 
+                case KEY_TOTAL_XP:
+                    m_Data[KEY_TOTAL_XP] = 0;
+                    CurrencyChangedEvent?.Invoke(ECurrency.TotalXp, 0);
+                    break;
+
                 case KEY_CHARACTERS:
                     m_Data[KEY_CHARACTERS] = new List<SCollectableCloudData>();
                     CheckMissingCollectable(typeof(ECharacter));

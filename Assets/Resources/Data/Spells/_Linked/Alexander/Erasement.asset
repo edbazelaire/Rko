@@ -45,6 +45,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   OnHit:
   - {fileID: 11400000, guid: 3e51126bd555af3469c4e988f343ec15, type: 2}
@@ -54,7 +55,8 @@ MonoBehaviour:
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
-  SpellTarget: 1
+  SpellTarget: 6
+  m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
@@ -72,6 +74,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1

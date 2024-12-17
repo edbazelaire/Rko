@@ -198,6 +198,7 @@
         Nightveil           = 10203,
         GreatVortex         = 10204,
         AstralIcefall       = 10205,
+        DarkstarDescent     = 10206,
         // -- Sikunik
         BlueMeteor          = 10301,
         DragonicRest        = 10302,

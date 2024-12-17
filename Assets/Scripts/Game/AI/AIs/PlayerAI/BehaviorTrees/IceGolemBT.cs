@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using AI;
 using AI.Checkers;
 using Enums;
-using Game.AI.Tasks.Variables;
-using Tools;
 
 namespace Game.AI.BehaviorTrees
 {
@@ -23,11 +21,21 @@ namespace Game.AI.BehaviorTrees
                 // CHECK (MELTING) : Can cast Carapice
                 new Sequence(new List<Node> {
                     new CheckHasState(m_Controller, "Melting"),
-                    new TaskUseSpell(m_Controller, ESpell.Carapice, delay: CarapiceDelay),
+
+                    new Selector(new List<Node>
+                    {
+                        // Carapice
+                        new TaskUseSpell(m_Controller, ESpell.Carapice, delay: CarapiceDelay),
+
+                        // FrostfistRain
+                        new TaskUseSpell(m_Controller, ESpell.FrostfistRain),
+                    })
                 }),
 
                 // CHECK : Ultimate
                 new TaskUseSpell(m_Controller, m_Controller.SpellHandler.Ultimate),
+
+                new TaskUseSpell(m_Controller, ESpell.FrostfistRain),
 
                 // CHECK : 
                 new TaskUseSpell(m_Controller, ESpell.CryoPunch, delay: 0f),
@@ -37,9 +45,6 @@ namespace Game.AI.BehaviorTrees
                     new CheckTimer(m_Controller, "Stalacmite", 8f),
                     new TaskUseSpell(m_Controller, ESpell.Stalacmite),
                 }),
-
-                // IceField
-                new TaskUseSpell(m_Controller, ESpell.IceField),
 
                 // AutoAttack
                 new TaskUseSpell(m_Controller, m_Controller.SpellHandler.AutoAttack),

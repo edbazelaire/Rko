@@ -27,6 +27,7 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 4
+  m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
@@ -44,6 +45,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: -1
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 17
     Value: 0.1
@@ -71,7 +75,7 @@ MonoBehaviour:
   m_SpawnLocation: 1
   IsDestroyingSpell: 1
   IsBlockingMovement: 1
-  IsBlockingCast: 1
+  IsBlockingCast: 0
   IsCanceledOnCast: 0
   m_DamageConversionEffects: []
   OnCounterProc: {fileID: 0}

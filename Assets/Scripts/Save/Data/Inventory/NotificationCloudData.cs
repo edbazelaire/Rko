@@ -210,6 +210,11 @@ namespace Save
 
         #region Xp Collection
 
+        public static int GetXp()
+        {
+            return (int)Instance.m_Data[KEY_XP_COLLECTION];
+        }
+
         public static void AddXp(int xp)
         {
             Instance.SetData(KEY_XP_COLLECTION, xp + XpCollection);

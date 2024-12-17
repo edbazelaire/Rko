@@ -223,7 +223,9 @@ namespace Data
             string stateEffectName = null,
             Controller targetController = null,
             Vector3 callFromPosition = default,
-            Vector3 targetPos = default)
+            Vector3 targetPos = default,
+            float? forcedDuration = null
+            )
         {
             if (IsAsyncSoundOnly)
             {
@@ -233,7 +235,7 @@ namespace Data
 
             GameObject go = Prefab == null ? new GameObject() : InstantiatePrefab(caster, spell, targetController, callFromPosition, targetPos);
 
-            return InitializeGFXComponent(go, caster, spellData, spell, stateEffectName, targetController);
+            return InitializeGFXComponent(go, caster, spellData, spell, stateEffectName, targetController, forcedDuration);
         }
 
         private GameObject InstantiatePrefab(Controller caster, Spell spell, Controller targetController, Vector3 callFromPosition, Vector3 targetPos)
@@ -256,7 +258,9 @@ namespace Data
             SpellData spellData,
             Spell spell,
             string stateEffectName,
-            Controller targetController)
+            Controller targetController,
+            float? forcedDuration
+            )
         {
             return null;
         }

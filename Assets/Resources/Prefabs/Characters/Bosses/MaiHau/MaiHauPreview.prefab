@@ -684,6 +684,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.x
       value: 1.431714
       objectReference: {fileID: 0}
+    - target: {fileID: 8685656753409484541, guid: 918da4a15752f9841b8366dd967635d5, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.4194586
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -863,6 +867,13 @@ MonoBehaviour:
     DestinationState: 2081823275
     TransitionDuration: 0.25
     TriggerNameHash: -1112030371
+    TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1426689594
+    DestinationState: 2081823275
+    TransitionDuration: 0
+    TriggerNameHash: 890595506
     TransitionIndex: 0
   m_Animator: {fileID: 3457950781807352513}
 --- !u!4 &512218510330823056 stripped

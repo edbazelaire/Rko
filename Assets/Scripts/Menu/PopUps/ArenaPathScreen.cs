@@ -18,7 +18,6 @@ namespace Menu.PopUps
         EArenaType  m_ArenaType;
         ArenaData   m_ArenaData;
 
-        Image                   m_Background;
         Canvas                  m_OverlayCanvas;
         GameObject              m_ScrollContent;
         GameObject              m_Viewport;
@@ -39,7 +38,6 @@ namespace Menu.PopUps
             m_StageDisplayUIPrefab = AssetLoader.Load<ArenaStageDisplayUI>("ArenaStageDisplay", AssetLoader.c_UIPath + "OverlayScreens/Components/RewardsPath/ArenaPathContent/");
             m_ArenaInfoSidebar = Finder.FindComponent<ArenaInfoSidebar>(gameObject, "ArenaInfoSidebar");
 
-            m_Background = Finder.FindComponent<Image>(gameObject, "Background");
             m_OverlayCanvas = Finder.FindComponent<Canvas>(gameObject, "OverlayCanvas");
             m_ScrollContent = Finder.Find(gameObject, "ScrollContent");
             m_Viewport = Finder.Find(gameObject, "Viewport");
