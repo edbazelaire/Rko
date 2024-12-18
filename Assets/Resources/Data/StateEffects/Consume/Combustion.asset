@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdf9fa99f588d38479137fd3d7b8d353, type: 3}
   m_Name: Combustion
   m_EditorClassIdentifier: 
-  m_Description: If target has Burn effect, consume it, otherwise apply it
+  m_Description: If target has [Burn] effect, consume it, otherwise apply it
   m_DescriptionVariables: 
   m_StateEffectType: 0
   m_IsDisplayed: 0
@@ -22,11 +22,14 @@ MonoBehaviour:
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 8
   m_DefaultState: 8
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
   m_Priority: 0
   m_Duration: 0
   m_IsInstantanious: 1
   m_MaxStacks: 1
   m_StackDecay: -1
+  m_Energy: 0
   m_BonusStats: []
   m_SpeedBonus: 0
   m_CastSpeed: 0
@@ -39,12 +42,15 @@ MonoBehaviour:
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
   m_BonusLifeSteal: 0
+  m_BonusHeal: 0
+  m_BonusHealPerc: 0
   m_BonusBurnDamages: 0
   m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel: []
   m_StateEffectScalingStacks: []
+  m_IsTrueDamages: 0
   m_Damages: 0
   m_EndDamages: 0
   m_Heal: 0

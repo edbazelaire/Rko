@@ -79,16 +79,7 @@ namespace Assets.Scripts.Managers
             if (LastVersion.CompareTo(new Version("0.1.8")) == -1)
                 test = UpdateVersion_0_1_8();
 
-            //if (LastVersion.CompareTo(new Version("0.1.11")) == -1)
-            //    test = UpdateVersion_0_1_11();
-
-            //if (LastVersion.CompareTo(new Version("0.1.12")) == -1)
-            //    test = UpdateVersion_0_1_12();
-
-            if (LastVersion.CompareTo(new Version("0.1.13")) == -1)
-                test = UpdateVersion_0_1_13();
-
-            if (LastVersion.CompareTo(new Version("0.2.0")) == 0)
+            if (LastVersion.CompareTo(new Version("0.2.0")) == -1)
                 test = UpdateVersion_0_2_0();
 
             // if does not trigger any version until now, update to current version
@@ -330,9 +321,9 @@ namespace Assets.Scripts.Managers
                         EChest.Rare
                     },
                     currencyRewards: new List<SCurrencyReward>() {
-                        new SCurrencyReward(ECurrency.Xp, 250),
-                        new SCurrencyReward(ECurrency.Golds, 5000),
-                        new SCurrencyReward(ECurrency.Gems, 150)
+                        new SCurrencyReward(ECurrency.Xp,       250),
+                        new SCurrencyReward(ECurrency.Golds,    5000),
+                        new SCurrencyReward(ECurrency.Gems,     150)
                     },
                     achievementRewards: new List<SAchievementReward> {
                         alphaTesterTitle
