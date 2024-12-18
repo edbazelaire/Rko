@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea8328bdbe40b584daa6549887933f55, type: 3}
   m_Name: Scorched
   m_EditorClassIdentifier: 
-  m_Description: Apply a burn effect. If player already has a burn effect,  stun
-    him for {0} seconds  and apply {1} damages each {2} seconds
+  m_Description: Consume a [Burn] effect, to stun the target for {0} seconds and
+    applies {1} damages each {2} seconds
   m_DescriptionVariables: 010000000d0000000c000000
   m_StateEffectType: 0
   m_IsDisplayed: 1
@@ -23,11 +23,14 @@ MonoBehaviour:
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 8
   m_DefaultState: 0
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
   m_Priority: 0
   m_Duration: 1.5
   m_IsInstantanious: 0
   m_MaxStacks: 1
   m_StackDecay: -1
+  m_Energy: 0
   m_BonusStats: []
   m_SpeedBonus: 0
   m_CastSpeed: 0
@@ -40,6 +43,8 @@ MonoBehaviour:
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
   m_BonusLifeSteal: 0
+  m_BonusHeal: 0
+  m_BonusHealPerc: 0
   m_BonusBurnDamages: 0
   m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
@@ -58,4 +63,5 @@ MonoBehaviour:
   m_TickDamages: 25
   m_TickHeal: 0
   m_TickShield: 0
+  m_TickEnergy: 0
   m_TickSpellRequirements: []
