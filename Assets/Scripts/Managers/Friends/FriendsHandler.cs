@@ -73,6 +73,8 @@ namespace Managers.Friends
 
         public async void Initialize()
         {
+            Debug.Log("FriendsHandler.Initialize()");
+
             // Registering callbacks before Friends Initializing to ensure the receiving of all
             // `NotificationsConnectivityChanged` events.
             RegisterFriendsEventCallbacks();

@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c134d41ca291c244b96cfda56a7e83fd, type: 3}
+  m_Name: _MultiGasLeak
+  m_EditorClassIdentifier: 
+  Rarety: 0
+  m_Description: creates a GasLeak for {0} seconds that delas {1} damages, also [EnemyStateEffect.1]
+    and [Frost] each {2} seconds
+  m_DescriptionVariables:
+  - Name: Duration
+    WithIcon: 0
+  - Name: TickDamages
+    WithIcon: 1
+  - Name: DurationTick
+    WithIcon: 0
+  m_SpellElements: 
+  Linked: 0
+  Graphics: {fileID: 119840, guid: ee9d18cf0a994c84eb65e3b57aff11cd, type: 3}
+  SpellEventActions:
+  - Prefab: {fileID: 119840, guid: f7f44520c4200194693f662a1dc69baf, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 300
+      m_EndSpellPart: 400
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 4
+    SpawnLocation: 2
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
+  OnHit: []
+  OnHitSpellSpawn: 1
+  AnimationSoundFX: {fileID: 0}
+  CastSoundFX: {fileID: 0}
+  PermanantSoundFX: {fileID: 0}
+  OnHitSoundFX: {fileID: 0}
+  OnEndSoundFX: {fileID: 0}
+  SpellTarget: 6
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  m_SpellRequirements: []
+  MaxHit: 1
+  EnergyGain: 2
+  EnergyCost: 0
+  m_Damage: 50
+  m_Heal: 0
+  m_Shield: 0
+  m_LifeSteal: 0
+  Distance: -1
+  OverrideOnHitProperties: 
+  m_Duration: 5
+  Delay: 3
+  m_SpellsScalingLevel:
+  - Property: 2
+    Value: 0.1
+  - Property: 1
+    Value: 0.1
+  - Property: 3
+    Value: 0.05
+  m_Size: 3
+  TriggerPlayer: 1
+  EnemyStateEffects:
+  - StateEffect: 6
+    Stacks: 1
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
+  - StateEffect: 9
+    Stacks: 1
+    BonusStacksPerLevel: 0.2
+    OverridingProperties: []
+  AllyStateEffects: []
+  StateEffectStackFactor: 0
+  PersistanceAfterEnd: 0
+  Animation: 0
+  IsCancellable: 0
+  AnimationTimer: 0
+  m_Cooldown: 0
+  m_SpellSpawn: 1
+  DurationTick: 1
+  m_TickDamages: 15
+  m_TickHeal: 0
+  m_TickShield: 0
+  GrowSizeFactor: 0
+  MaxSizeAt: 1
+  PersistentStateEffects: []

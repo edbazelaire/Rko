@@ -26,18 +26,22 @@ namespace Data
         public ProjectileData ProjectileData;
 
         [Header("Multiple Projectiles Data")]
-        [Description("Type of multiple projectile launch")]
+        [Tooltip("Type of multiple projectile launch")]
         public EMultiProjectileType MultiProjectileType;
-        [Description("Number of projectiles launched")]
-        [SerializeField] protected int m_NProjectiles = 1;
-        [Description("Size of the projectile zone")]
-        [SerializeField] protected float m_ProjectileZoneSize = 0f;
-        [Description("Delay between each projectile cast")]
-        [SerializeField] protected float m_DelayBetweenLaunches = 0f;
-        [Description("Number of waves")]
-        [SerializeField] protected int m_NWaves = 1;
-        [Description("Delay between each waves")]
-        [SerializeField] protected float m_DelayBetweenWaves = 0f;
+        [SerializeField, Tooltip("Should the subspell recalculate its position on spawn ?")]
+        protected bool m_RecalculatePosition = true;
+        [SerializeField, Tooltip("Is the chacter blocked until the end of the cast ?")]
+        protected bool m_IsBlocking = true;
+        [SerializeField, Tooltip("Number of projectiles launched")]
+        protected int m_NProjectiles = 1;
+        [SerializeField, Tooltip("Size of the projectile zone")]
+        protected float m_ProjectileZoneSize = 0f;
+        [SerializeField, Tooltip("Delay between each projectile cast")]
+        protected float m_DelayBetweenLaunches = 0f;
+        [SerializeField, Tooltip("Number of waves")]
+        protected int m_NWaves = 1;
+        [SerializeField, Tooltip("Delay between each waves")]
+        protected float m_DelayBetweenWaves = 0f;
 
         [Header("MultiP Extra Sound Effects")]
         [Description("Sound Effect on each wave casted")]
@@ -58,17 +62,16 @@ namespace Data
 
         // ============================================================================================
         // Dependent Members
-        /// <summary> Is the spell blocking movement and cast until the end of the multicast ? </summary>
-        protected bool m_IsBlocking => Trajectory == ESpellTrajectory.Curve || Trajectory == ESpellTrajectory.Straight;
-
         public float ProjectileZoneSize => m_ProjectileZoneSize * Settings.SpellSizeFactor;
+        /// <summary> is the "IsCasting" over once the spell has been casted (before delay) ? </summary>
+        public override bool IsCompletedOnCast => ! m_IsBlocking;
 
         #endregion
 
 
         #region Casting & Spawning
 
-        public override void Cast(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default, bool recalculateTarget = true, bool recalculatePosition = true)
+        public override void Cast(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default, bool recalculateTarget = true, bool recalculatePosition = true, bool recalculateRotation = true)
         {
             // recalculate target depending on spell type
             if (recalculateTarget)
@@ -78,24 +81,23 @@ namespace Data
             if (recalculatePosition)
                 RecalculatePosition(ref position, target, clientId);
 
+            // recalculate target depending on spell type
+            if (recalculateRotation)
+                RecalculateRotation(ref rotation);
+
             if (NProjectiles < 1)
             {
                 ErrorHandler.Error("Bad config for spell " + name + " : NProjectiles (" + NProjectiles + ")  < 1");
                 return;
             }
 
-            Main.Instance.StartCoroutine(CastMultipleProjectiles(clientId, target, position, rotation));
+            GameManager.Instance.GetPlayer(clientId).StartCoroutine(CastMultipleProjectiles(clientId, target, position, rotation));
         }
 
         public IEnumerator CastMultipleProjectiles(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default)
         {
             // block movement and cast until the end
             Controller controller = GameManager.Instance.GetPlayer(clientId);
-            if (m_IsBlocking)
-            {
-                controller.SpellHandler.ForceBlockCast(true);
-                controller.Movement.ForceBlockMovement(true);
-            }
 
             // save spellTarget to avoid 
             var targetType = SpellTarget;
@@ -141,11 +143,10 @@ namespace Data
             // reset spell target before leaving
             SpellTarget = targetType;
 
-            // remove blockers
-            if (m_IsBlocking)
+            // if spell is blocking Controller during the spawn of all multi projectiles, call that the cast has been completed
+            if (! IsCompletedOnCast)
             {
-                controller.SpellHandler.ForceBlockCast(false);
-                controller.Movement.ForceBlockMovement(false);
+                GameManager.Instance.GetPlayer(clientId).SpellHandler.OnCastCompleted();
             }
         }
 
@@ -163,7 +164,7 @@ namespace Data
 
             for (int i = 0; i < NProjectiles; i++)
             {
-                CastOneProjectile(clientId, CalculateMultiProjectileTarget(target, i, controller.Team), position, rotation);    
+                CastOneProjectile(clientId, CalculateMultiProjectileTarget(target, i, controller.Team), position, rotation);
                 var delay = DelayBetweenLaunches;
 
                 while (delay > 0)
@@ -188,7 +189,14 @@ namespace Data
 
             // if specific projectile data are provided : use theme
             if (ProjectileData != null)
-                ProjectileData.Cast(clientId, target, position, rotation, false, true);
+                ProjectileData.Cast(
+                    clientId: clientId, 
+                    target: target, 
+                    position: position, 
+                    rotation: rotation, 
+                    recalculateTarget: false, 
+                    recalculatePosition: m_RecalculatePosition
+                );
 
             // otherwise use config of the file
             else
@@ -282,7 +290,7 @@ namespace Data
 
         #region Level
 
-        protected override void SetLevel(int level)
+        public override void SetLevel(int level)
         {
             if (ProjectileData != null)
                 ProjectileData = (ProjectileData)ProjectileData.Clone(level);

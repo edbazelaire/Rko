@@ -22,12 +22,10 @@ MonoBehaviour:
     WithIcon: 1
   - Name: Infected
     WithIcon: 1
+  m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 0}
   SpellEventActions: []
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit:
   - {fileID: 11400000, guid: 97edd57ec13862d45a3902dc777f4fe3, type: 2}
   OnHitSpellSpawn: 1
@@ -37,12 +35,18 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 1
-  LockTargetAt: 2
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
   m_Heal: 0
+  m_Shield: 0
   m_LifeSteal: 1
   Distance: -1
   OverrideOnHitProperties: 
@@ -53,7 +57,7 @@ MonoBehaviour:
     Value: 0.1
   - Property: 3
     Value: 0.05
-  m_Size: 2
+  m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects: []
   AllyStateEffects: []
@@ -64,6 +68,9 @@ MonoBehaviour:
   AnimationTimer: 0
   m_Cooldown: 30
   Trajectory: 1
-  m_StopOnTargetPos: 0
+  m_TriggerGround: 0
+  m_StopOnTargetPos: 1
   m_Speed: 15
+  m_YSpawnPos: 0
   JumpType: 1
+  JumpAnimation: 5

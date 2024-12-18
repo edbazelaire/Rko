@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdf9fa99f588d38479137fd3d7b8d353, type: 3}
   m_Name: IceBreak
   m_EditorClassIdentifier: 
-  m_Description: Consume {0} to inflict an extra {1} damages
-  m_DescriptionVariables: 120000000b000000
+  m_Description: Consume [Frozen] to inflict an extra {0} damages
+  m_DescriptionVariables: 0b000000
   m_StateEffectType: 0
+  m_IsDisplayed: 0
   m_VisualEffects:
   - Prefab: {fileID: 1364846237022580, guid: b7cc9b248528c8044b25f9538cc72b06, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
-      StartSpellPart: 3
-      EndSpellPart: 0
+      m_StartSpellPart: 400
+      m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
       Persistance: 1
@@ -32,16 +34,22 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 8300000, guid: e3abed086c6be224a83488520f98f6af, type: 3}
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 2
   m_DefaultState: 6
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
+  m_Priority: 0
   m_Duration: 0
   m_IsInstantanious: 1
   m_MaxStacks: 1
   m_StackDecay: -1
+  m_Energy: 0
+  m_BonusStats: []
   m_SpeedBonus: 0
   m_CastSpeed: 0
   m_AttackSpeed: 0
@@ -53,12 +61,17 @@ MonoBehaviour:
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
   m_BonusLifeSteal: 0
+  m_BonusHeal: 0
+  m_BonusHealPerc: 0
+  m_BonusBurnDamages: 0
+  m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel:
   - StateEffectProperty: 11
     ScalingFactor: 0.1
   m_StateEffectScalingStacks: []
+  m_IsTrueDamages: 0
   m_Damages: 200
   m_EndDamages: 0
   m_Heal: 0

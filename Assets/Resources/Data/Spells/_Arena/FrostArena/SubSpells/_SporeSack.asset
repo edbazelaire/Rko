@@ -1,0 +1,112 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3187be67d58548144a9d4f83cb44e7d2, type: 3}
+  m_Name: _SporeSack
+  m_EditorClassIdentifier: 
+  Rarety: 0
+  m_Description: 
+  m_DescriptionVariables: []
+  m_SpellElements: 
+  Linked: 0
+  Graphics: {fileID: 0}
+  SpellEventActions:
+  - Prefab: {fileID: 8771594727836323484, guid: ca959cea1f3d07544970be18e5980740, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 300
+      m_EndSpellPart: 400
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
+  - Prefab: {fileID: 1503414589296656, guid: 42202091a672def458c53a92b4ec0b89, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 400
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1.5
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
+  OnHit: []
+  OnHitSpellSpawn: 2
+  AnimationSoundFX: {fileID: 0}
+  CastSoundFX: {fileID: 0}
+  PermanantSoundFX: {fileID: 0}
+  OnHitSoundFX: {fileID: 0}
+  OnEndSoundFX: {fileID: 0}
+  SpellTarget: 6
+  m_ClampTargetPos: 1
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  m_SpellRequirements: []
+  MaxHit: 1
+  EnergyGain: 10
+  EnergyCost: 0
+  m_Damage: 50
+  m_Heal: 0
+  m_Shield: 0
+  m_LifeSteal: 0
+  Distance: -1
+  OverrideOnHitProperties: 
+  m_Duration: 0
+  Delay: 3
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
+  m_SpellsScalingLevel:
+  - Property: 2
+    Value: 0.15
+  - Property: 9
+    Value: -0.05
+  m_Size: 3
+  TriggerPlayer: 1
+  EnemyStateEffects:
+  - StateEffect: 2
+    Stacks: 1
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
+  - StateEffect: 13
+    Stacks: 15
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
+  AllyStateEffects: []
+  StateEffectStackFactor: 0
+  PersistanceAfterEnd: 1.5
+  Animation: 0
+  IsCancellable: 0
+  AnimationTimer: 0
+  m_Cooldown: 0
+  m_SpellSpawn: 2

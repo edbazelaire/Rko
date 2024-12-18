@@ -203,7 +203,7 @@ namespace Menu.MainMenu
         /// </summary>
         void SpawnCharPreview()
         {
-            UIHelper.SpawnCharacter(StaticPlayerData.Character, m_CharacterPreviewContainer);
+            UIHelper.SpawnCharacter(StaticPlayerData.Character.ToString(), m_CharacterPreviewContainer);
         }
 
         #endregion

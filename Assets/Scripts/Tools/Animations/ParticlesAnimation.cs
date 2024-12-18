@@ -22,6 +22,7 @@ namespace Tools.Animations
                 return;
 
             m_Particles = Instantiate(animationParticles, gameObject.transform);
+            m_Particles.name = particlesName;
             m_Visu = Finder.FindComponent<SpriteRenderer>(m_Particles, "Visu", false);
             m_Visu?.gameObject.SetActive(false);
 

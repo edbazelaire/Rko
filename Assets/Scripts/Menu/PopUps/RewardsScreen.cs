@@ -8,6 +8,7 @@ using Game.Loaders;
 using Inventory;
 using Menu.Common;
 using Menu.Common.Buttons;
+using Menu.Common.Displayers;
 using Save;
 using System;
 using System.Collections;
@@ -28,6 +29,9 @@ namespace Menu.PopUps
         const string        c_ChestContainer            = "ChestContainer";
         const string        c_RewardDisplayContainer    = "RewardDisplayContainer";
 
+        GameObject          m_PresentationContainer;
+        TMP_Text            m_PresentationTitle;
+        RewardsDisplayer    m_RewardsDisplayer;
         GameObject          m_ChestContainer;
         ChestUI             m_ChestUI;
         GameObject          m_RewardDisplayContainer;
@@ -42,6 +46,7 @@ namespace Menu.PopUps
         SRewardsData        m_RewardsData;
         string              m_Context                   = "";
         Action              m_OnRewardCollected         = null;
+        string              m_Title                     = null;
 
         bool                m_CanSkip                   = false;
         bool                m_Skip                      = false;
@@ -61,6 +66,11 @@ namespace Menu.PopUps
             // setup game objects
             m_ChestContainer            = Finder.Find(gameObject, c_ChestContainer);
 
+            // Presentation
+            m_PresentationContainer     = Finder.Find(gameObject, "PresentationContainer");
+            m_PresentationTitle         = Finder.FindComponent<TMP_Text>(m_PresentationContainer, "PresentationTitle");
+            m_RewardsDisplayer          = Finder.FindComponent<RewardsDisplayer>(m_PresentationContainer, "RewardsDisplayer");
+
             // Rewars Template
             m_RewardDisplayContainer    = Finder.Find(gameObject, c_RewardDisplayContainer);
             m_RewardIconSection         = Finder.Find(m_RewardDisplayContainer, "RewardIconSection");
@@ -79,13 +89,14 @@ namespace Menu.PopUps
         /// <param name="rewardsData">          every rewards to collect (golds, chests, achievements, ...) </param>
         /// <param name="context">              [ANALYTICS] context from where this rewards came from       </param>
         /// <param name="onRewardCollected">    Action() to fire after the rewards are collected            </param>
-        public void Initialize(SRewardsData rewardsData, string context, Action onRewardCollected = null)
+        public void Initialize(SRewardsData rewardsData, string context, Action onRewardCollected = null, string title = null)
         {
             m_Skip                      = false;
             m_RewardsData               = rewardsData;
             m_Context                   = context;
             m_CurrentChestRewardData    = null;
             m_OnRewardCollected         = onRewardCollected;
+            m_Title                     = title;
 
             base.Initialize();
         }
@@ -128,7 +139,14 @@ namespace Menu.PopUps
         {
             base.OnPrefabLoaded();
 
+            if (m_Title != null) 
+            {
+                m_PresentationTitle.text = m_Title;
+                m_RewardsDisplayer.Initialize(m_RewardsData);
+            }
+
             // hide before displaying rewards
+            m_PresentationContainer.SetActive(false);
             m_RewardDisplayContainer.SetActive(false);
             m_ChestContainer.SetActive(false);
         }
@@ -210,9 +228,23 @@ namespace Menu.PopUps
 
         IEnumerator StartDisplay()
         {
+            yield return DisplayPresentation();
             yield return DisplayRewards(m_RewardsData.Rewards);
 
             Exit();
+        }
+
+        IEnumerator DisplayPresentation()
+        {
+            if (m_Title == null)
+                yield break;
+
+            m_PresentationContainer.SetActive(true);
+
+            yield return new WaitUntil(() => m_Skip);
+
+            m_Skip = false;
+            m_PresentationContainer.SetActive(false);
         }
 
         IEnumerator DisplayRewards(List<SReward> rewards)

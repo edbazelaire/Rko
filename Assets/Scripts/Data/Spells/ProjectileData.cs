@@ -5,6 +5,8 @@ using System.ComponentModel;
 using Tools;
 using UnityEngine;
 using Data.GameManagement;
+using static UnityEngine.RuleTile.TilingRuleOutput;
+using MyBox;
 
 namespace Data
 {
@@ -15,55 +17,56 @@ namespace Data
         public override ESpellType SpellType => ESpellType.Projectile;
 
         [Header("Movement Data")]
-        [Description("Type of path that the spell is taking")]
-        public ESpellTrajectory Trajectory;
-        [Description("Should the projectile end when reaching target position ?")]
-        [SerializeField] bool m_StopOnTargetPos;
-        [Description("Speed of the spell")]
-        [SerializeField] float            m_Speed       = 0f;
+        [Tooltip("Type of path that the spell is taking")]
+        public ESpellTrajectory     Trajectory;
+        [SerializeField, Tooltip("Is the projectile triggered by the ground ?")]
+        protected bool              m_TriggerGround = true;
+        [SerializeField, Tooltip("Should the projectile end when reaching target position ?")]
+        protected bool              m_StopOnTargetPos;
+        [SerializeField, Tooltip("Speed of the spell")]
+        protected float             m_Speed         = 0f;
+        [SerializeField, Tooltip("Y spawn position of the spell (for straight cast only)"), ConditionalField("Trajectory", false, ESpellTrajectory.Straight)]
+        protected float             m_YSpawnPos     = 0f;
 
         // ================================================================================================
         // Dependent Members
         /// <summary> Movement speed of the spell </summary>
-        public float Speed => Settings.SpellSpeedFactor * m_Speed;
-        public bool StopOnTargetPos => m_StopOnTargetPos;
-        public bool IsTrajectoryFromAbove => Trajectory == ESpellTrajectory.Hight || Trajectory == ESpellTrajectory.Diagonal;
-        #endregion
-
-
-        #region Inherited Spawning Members
-
-        public override void SpellPreview(Controller controller, Transform parent = default, Vector3 offset = default)
-        {
-            offset = GetSpawnOffset(controller);
-            switch (Trajectory)
-            {
-                case ESpellTrajectory.Curve:
-                case ESpellTrajectory.Hight:
-                    parent = ArenaManager.Instance.Arena.transform;
-                    break;
-
-                case ESpellTrajectory.Diagonal:
-                case ESpellTrajectory.DiagonalMiddle:
-                case ESpellTrajectory.Straight:
-                    break;
-
-                default:
-                    Debug.LogError($"Trajectory {Trajectory} not implemented");
-                    break;
-            }
-
-            base.SpellPreview(controller, parent, offset);
-        }
+        public float Speed                  => Settings.SpellSpeedFactor * m_Speed;
+        public bool TriggerGround           => m_TriggerGround;
+        public bool StopOnTargetPos         => m_StopOnTargetPos;
+        public bool IsTrajectoryFromAbove   => Trajectory == ESpellTrajectory.Hight || Trajectory == ESpellTrajectory.Diagonal;
 
         #endregion
 
 
         #region Postion & Target
 
+        public override void CalculateTarget(ref Vector3 target, ulong clientId)
+        {
+            switch (Trajectory)
+            {
+                case ESpellTrajectory.Curve:
+                case ESpellTrajectory.Hight:
+                case ESpellTrajectory.Diagonal:
+                case ESpellTrajectory.DiagonalMiddle:
+                    target.y = 0;
+                    break;
+
+                case ESpellTrajectory.Straight:
+                    break;
+
+                default:
+                    ErrorHandler.Error("Unhandled type " + Trajectory);
+                    break;
+
+            }
+
+            base.CalculateTarget(ref target, clientId);
+        }
+
         public override void RecalculatePosition(ref Vector3 position, Vector3 target, ulong clientId)
         {
-            Controller controller = GameManager.Instance.GetPlayer(clientId);
+            base.RecalculatePosition(ref position, target, clientId);
 
             // handle Y position
             switch (Trajectory)
@@ -76,19 +79,21 @@ namespace Data
                 case ESpellTrajectory.DiagonalMiddle:
                     position.y = Settings.SPELL_HIGHT_POS_Y;
                     break;
+
+                case ESpellTrajectory.Straight:
+                    if (m_YSpawnPos > 0)
+                        position.y = m_YSpawnPos;
+                    break;
             }
-                
-            // bounds of the proc area
-            (float Min, float Max) bounds = (0f, 0f);
             
             // handle X position
             switch (Trajectory)
             {
                 case ESpellTrajectory.Straight:
+                    break;
+
                 case ESpellTrajectory.Diagonal:
                 case ESpellTrajectory.Curve:
-                    position += GetSpawnOffset(controller);
-                    bounds = ArenaManager.GetAreaBounds(controller.Team, false);
                     break;
 
                 case ESpellTrajectory.DiagonalMiddle:
@@ -104,12 +109,19 @@ namespace Data
                     break;
             }
 
+            (float Min, float Max)  bounds = ArenaManager.GetAreaBounds(position.x);
             if (bounds != (0f, 0f))
             {
                 var offset = 0.1f + Size / 2;
                 position.x = Mathf.Clamp(position.x, bounds.Min + offset, bounds.Max - offset);
             }
         }
+
+        /// <summary>
+        /// Recalculate the rotation of the spell on spawn
+        /// </summary>
+        /// <param name="rotation"></param>
+        public override void RecalculateRotation(ref Quaternion rotation) { }
 
         /// <summary>
         /// Calculate offset of the spawn position depending on the trajectory
@@ -124,11 +136,9 @@ namespace Data
             {
                 case ESpellTrajectory.Straight:
                 case ESpellTrajectory.Diagonal:
-                    return new Vector3(0, 0, 0);
-
-                case ESpellTrajectory.Curve:
                 case ESpellTrajectory.DiagonalMiddle:
-                    return new Vector3(rotationFactor * 0.1f, 0.25f, 0);
+                case ESpellTrajectory.Curve:
+                    return new Vector3(0, 0, 0);
 
                 case ESpellTrajectory.Hight:
                     return new Vector3(rotationFactor * controller.SpellHandler.SpellSpawn.transform.position.x, 1f, 0); ;

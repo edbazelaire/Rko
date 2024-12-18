@@ -1,7 +1,6 @@
 ﻿using Data;
 using Enums;
 using Game.Loaders;
-using Game.Spells;
 using Inventory;
 using Menu.Common.Filters;
 using Save;

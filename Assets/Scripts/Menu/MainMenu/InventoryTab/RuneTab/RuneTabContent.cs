@@ -66,26 +66,13 @@ namespace Menu.MainMenu
             InitFilters();
 
             m_Items = new ();
-            List<RuneData> runesData = CollectablesManagementData.OrderCollectable(SpellLoader.RunesData, EOrderBy.Rarety);
+            List<RuneData> runesData = CollectablesManagementData.OrderCollectable(SpellLoader.GetPlayerRunesData(), EOrderBy.Rarety);
             foreach (RuneData runeData in runesData)
             {
                 if (runeData.Rune == ERune.None)
                     continue;
 
-                // check if is unlocked or not
-                bool isUnlocked = InventoryCloudData.Instance.GetCollectable(runeData.Rune).Level > 0;
-                var parent = isUnlocked ? m_ItemContainer.transform : m_LockedItemContainer.transform;
-
-                // spawn and init ui of the spell
-                TemplateRuneItemUI collectableUI = Instantiate(m_TemplateItem, parent);
-                collectableUI.gameObject.name = string.Format(RUNE_ITEM_NAME_FORMAT, runeData.Rune.ToString());
-                collectableUI.Initialize(runeData.Rune);
-                collectableUI.gameObject.SetActive(isUnlocked);
-                m_Items.Add(runeData.Rune, collectableUI);
-
-                // hide if spell is in current build
-                if (CharacterBuildsCloudData.CurrentRunes.Contains(runeData.Rune))
-                    collectableUI.gameObject.SetActive(false);
+                SpawnRuneItem(runeData);
             }
         }
 
@@ -119,6 +106,24 @@ namespace Menu.MainMenu
 
             if (m_FiltersSection != null)
                 m_FiltersSection.gameObject.SetActive(activate);
+        }
+
+        protected void SpawnRuneItem(RuneData runeData)
+        {
+            // check if is unlocked or not
+            bool isUnlocked = InventoryCloudData.Instance.GetCollectable(runeData.Rune).Level > 0;
+            var parent = isUnlocked ? m_ItemContainer.transform : m_LockedItemContainer.transform;
+
+            // spawn and init ui of the spell
+            TemplateRuneItemUI collectableUI = Instantiate(m_TemplateItem, parent);
+            collectableUI.gameObject.name = string.Format(RUNE_ITEM_NAME_FORMAT, runeData.Rune.ToString());
+            collectableUI.Initialize(runeData.Rune);
+            //collectableUI.gameObject.SetActive(isUnlocked);
+            m_Items.Add(runeData.Rune, collectableUI);
+
+            // hide if spell is in current build
+            if (CharacterBuildsCloudData.CurrentRunes.Contains(runeData.Rune))
+                collectableUI.gameObject.SetActive(false);
         }
 
         protected void InitFilters()
@@ -188,24 +193,22 @@ namespace Menu.MainMenu
         /// <param name="spell"></param>
         void OnUnlocked(Enum collectable)
         {
-            if (collectable.GetType() != typeof(ESpell))
+            if (collectable.GetType() != typeof(ERune))
                 return;
 
-            // find the item
-            TemplateRuneItemUI collectableItemUI = Finder.FindComponent<TemplateRuneItemUI>(m_LockedItemContainer, string.Format(RUNE_ITEM_NAME_FORMAT, collectable.ToString()));
-            if (collectableItemUI == null)
-                return;
+            // find the game object
+            if (! m_Items.ContainsKey((ERune)collectable))
+            {
+                // if not found, try to spawn it
+                ErrorHandler.Error("Unable to find rune " + collectable + " in list of items");
+                SpawnRuneItem(SpellLoader.GetRuneData((ERune)collectable));
+            }
 
-            // change parent
-            collectableItemUI.transform.SetParent(m_ItemContainer.transform);
-            collectableItemUI.CollectionFillBar?.gameObject.SetActive(true);
+            // activate the object
+            m_Items[(ERune)collectable].gameObject.SetActive(true);
 
             // Force layout rebuild for both containers
-            LayoutRebuilder.ForceRebuildLayoutImmediate(m_LockedItemContainer.GetComponent<RectTransform>());
             LayoutRebuilder.ForceRebuildLayoutImmediate(m_ItemContainer.GetComponent<RectTransform>());
-
-            // add CollectableUI to dict of current UIs
-            m_Items.Add(collectableItemUI.Rune, collectableItemUI);
         }
 
         void OnSearchValueChanged(string value)

@@ -17,9 +17,12 @@ namespace AI
         protected NodeState m_State;
 
         public Node m_Parent;
+        protected bool m_IsActivated = true;
         protected List<Node> m_Children = new List<Node>();
 
         private Dictionary<string, object> m_DataContext = new Dictionary<string, object>();
+
+        public bool IsActivated => m_IsActivated;
 
         public Node()
         {
@@ -31,24 +34,19 @@ namespace AI
                 _Attach(child);
         }
 
-        protected virtual void _Attach(SNode node)
-        {
-            _Attach(CreateNode(node));
-        }
-
+     
         private void _Attach(Node node)
         {
             node.m_Parent = this;
             m_Children.Add(node);
         }
 
-        Node CreateNode(SNode nodeData)
-        {
-            // TODO
-            return new Node();
-        }
-
         public virtual NodeState Evaluate() => NodeState.FAILURE;
+
+        public virtual void SetNodeState(NodeState nodeState)
+        {
+            m_State = nodeState;
+        }
 
         public void SetData(string key, object value)
         {

@@ -42,6 +42,12 @@ namespace Tools
 
         void Awake() 
         {
+            if (s_Instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
             // register instance
             s_Instance = this;
 

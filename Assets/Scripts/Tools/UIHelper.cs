@@ -234,13 +234,14 @@ namespace Tools
 
         #region Spawning
 
-        public static void SpawnCharacter(ECharacter character, GameObject parent, string layerName = "")
+        public static void SpawnCharacter(string character, GameObject parent, string layerName = "")
         {
             // clean container before spawning
             CleanContent(parent);
 
             // get selected character preview
             var characterPreview = CharacterLoader.GetCharacterData(character, destroy: true).InstantiateCharacterPreview(parent);
+            var animator = Finder.FindComponent<Animator>(characterPreview);
 
             // display character preview
             var baseScale = characterPreview.transform.localScale;

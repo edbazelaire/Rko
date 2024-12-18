@@ -89,7 +89,6 @@ namespace Game.UI
 
         public IEnumerator PlayCountDown()
         {
-            ErrorHandler.Log("Playing CountDown");
             m_CountDown.gameObject.SetActive(true);
 
             int COUNTDOWN = 3;

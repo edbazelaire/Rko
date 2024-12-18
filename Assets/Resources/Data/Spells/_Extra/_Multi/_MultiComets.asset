@@ -13,14 +13,18 @@ MonoBehaviour:
   m_Name: _MultiComets
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: 
+  m_DescriptionVariables: []
+  m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 6631489239233227332, guid: 51d6d62dbf340c44e8509011ca22e292, type: 3}
   SpellEventActions:
   - Prefab: {fileID: 1209601309875748, guid: b170aebab32c55e468901bd9220320f8, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
-      StartSpellPart: 4
-      EndSpellPart: 0
+      m_StartSpellPart: 500
+      m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
       Persistance: 1
@@ -33,9 +37,6 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -44,12 +45,14 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 1
-  LockTargetAt: 2
+  LockTarget: 300
+  ApplyIfNotHitting: 0
   MaxHit: 1
   EnergyGain: 5
   EnergyCost: 0
   m_Damage: 30
   m_Heal: 0
+  m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 

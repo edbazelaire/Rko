@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: ProtectorRune
   m_EditorClassIdentifier: 
   Rarety: 1
+  m_Description: 
+  m_DescriptionVariables: []
   Description: 
+  m_SpellElements: 
   m_MinorPower:
     Description: Gain {0} hp and +{1} resistances
     m_DescriptionVariables:
@@ -22,17 +25,18 @@ MonoBehaviour:
     - Name: ResistanceFix
       WithIcon: 1
     m_BonusLevel: 0
-    m_IsOverwritten: 0
     m_TriggerEffects: []
     m_BonusStats:
     - StateEffectProperty: 111
       BaseValue: 150
       BonusValue: 0
       ScalingFactor: 0.1
+      StateEffectStackFactors: []
     - StateEffectProperty: 5
       BaseValue: 3
       BonusValue: 0
       ScalingFactor: 0.05
+      StateEffectStackFactors: []
   m_MajorPower:
     Description: Gain {0} hp and +{1} resistances
     m_DescriptionVariables:
@@ -41,17 +45,18 @@ MonoBehaviour:
     - Name: ResistanceFix
       WithIcon: 1
     m_BonusLevel: 0
-    m_IsOverwritten: 0
     m_TriggerEffects: []
     m_BonusStats:
     - StateEffectProperty: 111
       BaseValue: 300
       BonusValue: 0
       ScalingFactor: 0.1
+      StateEffectStackFactors: []
     - StateEffectProperty: 5
       BaseValue: 5
       BonusValue: 0
       ScalingFactor: 0.05
+      StateEffectStackFactors: []
   m_PrimalPower:
     Description: Gain {0} hp and +{1} resistances
     m_DescriptionVariables:
@@ -60,14 +65,15 @@ MonoBehaviour:
     - Name: ResistanceFix
       WithIcon: 1
     m_BonusLevel: 0
-    m_IsOverwritten: 0
     m_TriggerEffects: []
     m_BonusStats:
     - StateEffectProperty: 111
       BaseValue: 500
       BonusValue: 0
       ScalingFactor: 0.1
+      StateEffectStackFactors: []
     - StateEffectProperty: 5
       BaseValue: 10
       BonusValue: 0
       ScalingFactor: 0.05
+      StateEffectStackFactors: []

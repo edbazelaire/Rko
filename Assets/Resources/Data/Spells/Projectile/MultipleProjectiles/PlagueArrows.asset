@@ -28,9 +28,10 @@ MonoBehaviour:
   SpellEventActions:
   - Prefab: {fileID: 8404073712820093283, guid: 7c07f264d7b379c4d9e0c8d9238115f4, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
-      StartSpellPart: 2
-      EndSpellPart: 0
+      m_StartSpellPart: 300
+      m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
       Persistance: 1
@@ -45,9 +46,12 @@ MonoBehaviour:
     StateEffects: 
   - Prefab: {fileID: 5138121657292497717, guid: ceef5902ada59ee458474fef9111c2fc, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX:
+    - AudioClip: {fileID: 8300000, guid: ab7f421ad803a894fb4f2fae8fa250a4, type: 3}
+      SoundDuration: 0
     GFXLifetime:
-      StartSpellPart: 4
-      EndSpellPart: 0
+      m_StartSpellPart: 500
+      m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
       Persistance: 1
@@ -60,9 +64,6 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -71,12 +72,14 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 8300000, guid: c6d45d69015ca934fbd95932874c5b59, type: 3}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 9
-  LockTargetAt: 2
+  LockTarget: 300
+  ApplyIfNotHitting: 0
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 100
   m_Heal: 0
+  m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
@@ -105,8 +108,11 @@ MonoBehaviour:
   m_Speed: 8
   ProjectileData: {fileID: 0}
   MultiProjectileType: 1
+  m_IsBlocking: 0
   m_NProjectiles: 5
   m_ProjectileZoneSize: -1
   m_DelayBetweenLaunches: 0.5
   m_NWaves: 1
   m_DelayBetweenWaves: 0
+  OnCastWaveSoundFX: {fileID: 0}
+  OnCastProjectileSoundFX: {fileID: 0}

@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e4cfa3627d26f943991f09092d4eb7e, type: 3}
+  m_Name: ToxicWater
+  m_EditorClassIdentifier: 
+  m_Description: 'While the target is [Frozen] holds the duration of [Poison] and
+    [Infected].\nAlso [SubStateEffect.0]'
+  m_DescriptionVariables: 
+  m_StateEffectType: 0
+  m_IsDisplayed: 0
+  m_VisualEffects: []
+  m_Animation: 0
+  m_OnApplySoundFX: {fileID: 0}
+  m_PermanantSoundFX: {fileID: 0}
+  m_ConsumeState: 0
+  m_DefaultState: 0
+  m_SubStateEffects:
+  - StateEffect: 9
+    Stacks: 0
+    BonusStacksPerLevel: 0.2
+    OverridingProperties: []
+  m_HoldingStateEffects:
+  - Poison
+  - Infected
+  m_Priority: 0
+  m_Duration: -1
+  m_IsInstantanious: 0
+  m_MaxStacks: 1
+  m_StackDecay: -1
+  m_BonusStats: []
+  m_SpeedBonus: 0
+  m_CastSpeed: 0
+  m_AttackSpeed: 0
+  m_CooldownReduction: 0
+  m_CooldownReductionPerc: 0
+  m_Shield: 0
+  m_ResistanceFix: 0
+  m_ResistancePerc: 0
+  m_BonusDamages: 0
+  m_BonusDamagesPerc: 0
+  m_BonusLifeSteal: 0
+  m_BonusHeal: 0
+  m_BonusHealPerc: 0
+  m_BonusBurnDamages: 0
+  m_BonusSlowPerc: 0
+  m_OnStartStateEffect: []
+  m_OnEndStateEffect: []
+  m_StateEffectScalingLevel: []
+  m_StateEffectScalingStacks: []

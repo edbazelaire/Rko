@@ -15,12 +15,14 @@ MonoBehaviour:
   m_Description: apply a {0} shield for {1} seconds
   m_DescriptionVariables: 0400000001000000
   m_StateEffectType: 0
+  m_IsDisplayed: 1
   m_VisualEffects:
   - Prefab: {fileID: 152564, guid: 4ab45d63db2ac6448a1bd863420410b7, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
-      StartSpellPart: 3
-      EndSpellPart: 0
+      m_StartSpellPart: 400
+      m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
       Persistance: 1
@@ -43,6 +45,7 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_MaxStacks: 1
   m_StackDecay: -1
+  m_BonusStats: []
   m_SpeedBonus: 0
   m_CastSpeed: 0
   m_AttackSpeed: 0

@@ -21,6 +21,7 @@ namespace Game.UI
         string          m_StateEffectName;
         float           m_Duration;
         float           m_Timer;
+        bool            m_IsHolding;
 
         #region Init & End
 
@@ -52,6 +53,9 @@ namespace Game.UI
             if (m_Timer <= 0)
                 return;
 
+            if (m_IsHolding)
+                return;
+
             m_Timer -= Time.deltaTime;
             m_TimerFill.fillAmount = Mathf.Clamp01(m_Timer / m_Duration);
         }
@@ -74,6 +78,11 @@ namespace Game.UI
 
             if (duration <= 0)
                 m_TimerFill.fillAmount = 0;
+        }
+
+        public void SetIsHolding(bool isHolding)
+        {
+            m_IsHolding = isHolding;
         }
     }
 }

@@ -54,7 +54,11 @@ namespace Tools
 
         protected override void OnDestroy()
         {
-            base.OnDestroy();   
+            base.OnDestroy();
+
+            if (!m_IsInitialized)
+                return;
+
             Application.logMessageReceived -= OnLog;
             m_ScrollViewButton.onClick.RemoveAllListeners();
             m_InputField.onSubmit.RemoveAllListeners();

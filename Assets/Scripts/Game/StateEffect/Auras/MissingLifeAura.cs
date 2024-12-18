@@ -1,7 +1,8 @@
 ﻿using Enums;
 using System.Collections.Generic;
-using UnityEditor;
+using Tools;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Game.Spells
 {
@@ -11,7 +12,10 @@ namespace Game.Spells
         #region Members
 
         [Header("Missing Life")]
-        [SerializeField] protected float m_MissingLifeFactor;
+        [SerializeField, Tooltip("Bonus applied depending of percentage of health loss")] 
+        protected float                m_MissingLifeFactor;
+        [SerializeField, Tooltip("Target to check when calculating missing life")]
+        protected EStateEffectTarget   m_TargetMissingLife = EStateEffectTarget.Self;
         
         #endregion
 
@@ -23,7 +27,7 @@ namespace Game.Spells
             if (m_Controller == null)
                 return (int)Mathf.Round(ApplyMissingLifeFactor(base.GetInt(property), 0, 1));
 
-            return (int)Mathf.Round(ApplyMissingLifeFactor(base.GetInt(property), m_Controller.Life.Hp.Value, m_Controller.Life.MaxHp.Value));
+            return (int)Mathf.Round(GetFloat(property));
         }
 
         public override float GetFloat(EStateEffectProperty property)
@@ -31,7 +35,8 @@ namespace Game.Spells
             if (m_Controller == null)
                 return ApplyMissingLifeFactor(base.GetFloat(property), 0, 1);
 
-            return ApplyMissingLifeFactor(base.GetFloat(property), m_Controller.Life.Hp.Value, m_Controller.Life.MaxHp.Value);
+            var controller = GetTarget(m_Caster, null);
+            return ApplyMissingLifeFactor(base.GetFloat(property), controller.Life.Hp.Value, controller.Life.MaxHp.Value);
         }
 
         #endregion
@@ -42,6 +47,37 @@ namespace Game.Spells
         float ApplyMissingLifeFactor(float baseValue, int hp, int maxHp)
         {
             return m_MissingLifeFactor * (1 - (hp / maxHp)) * baseValue;
+        }
+
+        public Controller GetTarget(Controller caster, Controller target)
+        {
+            if (!GameManager.Exists)
+                return null;
+
+            switch (m_TargetMissingLife)
+            {
+                case EStateEffectTarget.None:
+                    ErrorHandler.Error("no StateEffectTarget provided");
+                    return null;
+
+                case EStateEffectTarget.Self:
+                    return caster;
+
+                case EStateEffectTarget.Target:
+                    if (target == null)
+                        ErrorHandler.Error("Provided target controller is null");
+                    return target;
+
+                case EStateEffectTarget.Ally:
+                    return GameManager.Instance.GetFirstAlly(caster.Team, caster.PlayerId);
+
+                case EStateEffectTarget.Enemy:
+                    return GameManager.Instance.GetFirstEnemy(caster.Team);
+
+                default:
+                    ErrorHandler.Warning("Unahandled case : " + m_TargetMissingLife);
+                    return null;
+            }
         }
 
         #endregion

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -64,6 +65,9 @@ namespace Tools.Animations
 
         protected override IEnumerator AnimationFrame()
         {
+            if (!gameObject.activeInHierarchy || gameObject.IsDestroyed())
+                yield break;
+
             float progress = GetProgress();
 
             // Interpolate scale and opacity based on progress
@@ -119,6 +123,9 @@ namespace Tools.Animations
         /// <param name="opacity"></param>
         void SetOpacity(float opacity)
         {
+            if (m_Images == null)
+                return;
+
             // Get all Image components and set alpha
             foreach (var image in m_Images)
             {

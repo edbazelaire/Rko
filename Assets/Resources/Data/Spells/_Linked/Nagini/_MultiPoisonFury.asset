@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2413bf9bea7a81d44a0b645bca9d69f8, type: 3}
+  m_Name: _MultiPoisonFury
+  m_EditorClassIdentifier: 
+  Rarety: 0
+  m_Description: Spits poison to the enemy, dealing {0} damages and applying {1}
+  m_DescriptionVariables:
+  - Name: Damages
+    WithIcon: 1
+  - Name: Poison
+    WithIcon: 1
+  m_SpellElements: 
+  Linked: 1
+  Graphics: {fileID: 1923825553450198, guid: c518ffb802a01b947b08d6b8c8ea9948, type: 3}
+  SpellEventActions:
+  - Prefab: {fileID: 1923825553450198, guid: bd4cb3e325f36c84f89950ca3ce6659d, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 100
+      m_EndSpellPart: 300
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0.5
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 0
+    BodyPart: 7
+    IsFollowing: 1
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
+  - Prefab: {fileID: 181780, guid: 50ce45e5489c3c548b174c7de621220b, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX:
+    - AudioClip: {fileID: 8300000, guid: b5777fefd0161b7458fa131622c84f3c, type: 3}
+      SoundDuration: 0
+    GFXLifetime:
+      m_StartSpellPart: 500
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1
+    Size: 1
+    OrderInLayer: 0
+    SpawnTarget: 3
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
+  OnHit: []
+  OnHitSpellSpawn: 1
+  AnimationSoundFX: {fileID: 0}
+  CastSoundFX: {fileID: 8300000, guid: 2f5fa469f5b8ed9489b48966de42b93f, type: 3}
+  PermanantSoundFX: {fileID: 0}
+  OnHitSoundFX: {fileID: 0}
+  OnEndSoundFX: {fileID: 0}
+  SpellTarget: 1
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  m_SpellRequirements: []
+  MaxHit: 1
+  EnergyGain: 0
+  EnergyCost: 0
+  m_Damage: 25
+  m_Heal: 0
+  m_Shield: 0
+  m_LifeSteal: 0
+  Distance: -1
+  OverrideOnHitProperties: 
+  m_Duration: 0
+  Delay: 0
+  m_SpellsScalingLevel:
+  - Property: 2
+    Value: 0.1
+  m_Size: 1
+  TriggerPlayer: 1
+  EnemyStateEffects:
+  - StateEffect: 9
+    Stacks: 1
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
+  AllyStateEffects: []
+  StateEffectStackFactor: 0
+  PersistanceAfterEnd: 0
+  Animation: 2
+  IsCancellable: 1
+  AnimationTimer: 0.7
+  m_Cooldown: 0
+  Trajectory: 1
+  m_StopOnTargetPos: 0
+  m_Speed: 11

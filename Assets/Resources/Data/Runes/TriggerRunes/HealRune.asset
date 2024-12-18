@@ -13,15 +13,78 @@ MonoBehaviour:
   m_Name: HealRune
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: 
+  m_DescriptionVariables: []
   Description: 
+  m_SpellElements: 
+  m_MinorPower:
+    Description: 'On reaching 50% hp, [TriggerEffect.0]'
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: _Heal
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 3
+      ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+    m_BonusStats: []
+  m_MajorPower:
+    Description: 'On reaching 50% hp, [TriggerEffect.0]'
+    m_DescriptionVariables: []
+    m_BonusLevel: 3
+    m_TriggerEffects:
+    - SpellDataName: _Heal
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 3
+      ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+    m_BonusStats: []
+  m_PrimalPower:
+    Description: 'On reaching 50% hp, [TriggerEffect.0]'
+    m_DescriptionVariables: []
+    m_BonusLevel: 6
+    m_TriggerEffects:
+    - SpellDataName: _Heal
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 3
+      ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+    m_BonusStats: []
   m_TriggerEffects:
   - SpellDataName: HealRune
     Level: 0
+    Target: 0
     SpellActivationEvent: 3
     ActivationTreshold: 0.5
     SpellDeactivationEvent: 0
     DeactivationTreshold: 0
     StateEffectEvent: 0
     StateEffectName: 
+    Delay: 0
+    Duration: 0
     NActivations: 0
     Cooldown: 60

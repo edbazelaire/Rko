@@ -19,19 +19,21 @@ MonoBehaviour:
     WithIcon: 1
   - Name: Cursed
     WithIcon: 1
+  m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 2910976597878939058, guid: b31ba57748e748d4d98b43494ab559b1, type: 3}
   SpellEventActions:
   - Prefab: {fileID: 2910976597878939058, guid: b31ba57748e748d4d98b43494ab559b1, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
-      StartSpellPart: 1
-      EndSpellPart: 2
+      m_StartSpellPart: 100
+      m_EndSpellPart: 300
       StartAt: 0
       EndAt: 1
       Persistance: 0
     Size: 0
-    OrderInLayer: 50
+    OrderInLayer: 0
     SpawnTarget: 1
     SpawnLocation: 1
     BodyPart: 7
@@ -41,9 +43,10 @@ MonoBehaviour:
     StateEffects: 
   - Prefab: {fileID: 168108, guid: efba7df89f206af43a5d08693012fed6, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
-      StartSpellPart: 4
-      EndSpellPart: 0
+      m_StartSpellPart: 500
+      m_EndSpellPart: 0
       StartAt: 0
       EndAt: 1
       Persistance: 1
@@ -56,9 +59,6 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -67,12 +67,14 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 1
-  LockTargetAt: 2
+  LockTarget: 300
+  ApplyIfNotHitting: 0
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 40
   m_Heal: 0
+  m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 

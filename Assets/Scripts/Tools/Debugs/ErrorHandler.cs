@@ -1,4 +1,7 @@
-﻿using Enums;
+﻿using Assets;
+using Enums;
+using PlayFab.EconomyModels;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -26,9 +29,6 @@ namespace Tools
         {
             PlayerPrefsHandler.SetDebug(EDebugOption.ErrorHandler, !IsActivated);
             IsActivated = !IsActivated;
-
-            if (!IsActivated)
-                Reset();
         }
 
         #endregion
@@ -107,6 +107,36 @@ namespace Tools
         public static void Reset()
         {
             Errors = new List<Error>();
+        }
+
+        #endregion
+
+
+        #region Error LogTag
+
+        public static bool ShouldDisplayLogTag(ELogTag logTag)
+        {
+            if (logTag == ELogTag.None)
+                return true;
+
+            if (Main.LogTags.Contains(ELogTag.All))
+                return true;
+
+            if (Main.LogTags.Contains(logTag))
+                return true;
+
+            // CHECK that contains GLOBAL GROUPS log tag
+            int groupValue = 100 * (int)Math.Floor((int)logTag / 100f);
+            if (groupValue == 0)
+                return false;
+
+            // CHECK that this log tag has a valid LogTag for the group AND that this log is allowed
+            if (Enum.IsDefined(typeof(ELogTag), groupValue))
+            {
+                return Main.LogTags.Contains((ELogTag)groupValue);
+            }
+
+            return false;
         }
 
         #endregion

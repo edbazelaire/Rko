@@ -33,9 +33,6 @@ MonoBehaviour:
   Linked: 1
   Graphics: {fileID: 236456056510051514, guid: 0e36e049eed3f8a4790d4bc09c245df8, type: 3}
   SpellEventActions: []
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit:
   - {fileID: 11400000, guid: 96980145c41455a4aaebef628b96d1a6, type: 2}
   OnHitSpellSpawn: 1
@@ -45,12 +42,14 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 8300000, guid: 3ecced41c79ec3840824bd3813604df2, type: 3}
   OnEndSoundFX: {fileID: 8300000, guid: 299a1418d59067345b65a80b8a8b7e87, type: 3}
   SpellTarget: 1
-  LockTargetAt: 2
+  LockTarget: 300
+  ApplyIfNotHitting: 0
   MaxHit: 0
   EnergyGain: 5
   EnergyCost: 100
   m_Damage: 0
   m_Heal: 0
+  m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 

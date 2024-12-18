@@ -29,11 +29,32 @@ MonoBehaviour:
   Linked: 0
   Graphics: {fileID: 6631489239233227332, guid: 02bec8ec829840b40ad07d8f99117476, type: 3}
   SpellEventActions:
-  - Prefab: {fileID: 1209601309875748, guid: b170aebab32c55e468901bd9220320f8, type: 3}
+  - Prefab: {fileID: 6631489239233227332, guid: 02bec8ec829840b40ad07d8f99117476, type: 3}
     MaterialEffect: {fileID: 0}
+    SoundFX: []
     GFXLifetime:
-      StartSpellPart: 4
-      EndSpellPart: 0
+      m_StartSpellPart: 100
+      m_EndSpellPart: 300
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 2
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 0
+    BodyPart: 7
+    IsFollowing: 1
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
+  - Prefab: {fileID: 1209601309875748, guid: dae71195561d9c344b5ec6bc651a1db3, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX:
+    - AudioClip: {fileID: 8300000, guid: ee9ac0e69a3a58e4481382b3604d9edf, type: 3}
+      SoundDuration: 0
+    GFXLifetime:
+      m_StartSpellPart: 500
+      m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
       Persistance: 1
@@ -46,23 +67,22 @@ MonoBehaviour:
     Offset: {x: 0, y: 0}
     Animation: 0
     StateEffects: 
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 54af383899a0037459aded7ebbf3c3f0, type: 3}
   PermanantSoundFX: {fileID: 0}
-  OnHitSoundFX: {fileID: 8300000, guid: ee9ac0e69a3a58e4481382b3604d9edf, type: 3}
+  OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 9
-  LockTargetAt: 2
+  LockTarget: 300
+  ApplyIfNotHitting: 0
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 40
   m_Heal: 0
+  m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
@@ -96,8 +116,11 @@ MonoBehaviour:
   m_Speed: 10
   ProjectileData: {fileID: 0}
   MultiProjectileType: 0
+  m_IsBlocking: 1
   m_NProjectiles: 4
   m_ProjectileZoneSize: 0
   m_DelayBetweenLaunches: 0.15
   m_NWaves: 1
   m_DelayBetweenWaves: 0
+  OnCastWaveSoundFX: {fileID: 0}
+  OnCastProjectileSoundFX: {fileID: 0}

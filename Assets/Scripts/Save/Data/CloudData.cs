@@ -89,13 +89,24 @@ namespace Save
             }
 
             // CONVERT value in expected type
-            var value = Convert(item);
-            if (value == null)
-                return;
+            try
+            {
+                var value = Convert(item);
+                if (value == null)
+                    return;
 
-            // set givent value (block saving)
-            SetData(key, value, false);
-            OnCloudDataKeyLoaded(key);
+                // set givent value (block saving)
+                SetData(key, value, false);
+                OnCloudDataKeyLoaded(key);
+            } 
+            catch (Exception ex)
+            {
+                ErrorHandler.Error("Unable to Convert " + key + " with value " + item.Value.GetAsString());
+                ErrorHandler.Error(ex.Message);
+
+                OnLoadingError(key, item);
+                return;
+            }
         }
 
         public virtual void Save()
@@ -146,6 +157,11 @@ namespace Save
 
 
         #region Loading / Saving Error Management
+
+        protected virtual void OnLoadingError(string key, Item item)
+        {
+
+        }
 
         private async Task ResolveConflictAsync(string key, Dictionary<string, object> newPlayerData)
         {
@@ -279,10 +295,15 @@ namespace Save
 
                 case "ECharacter":
                     return item.Value.GetAs<ECharacter>();
+
                 case "ESpell":
-                    return item.Value.GetAs<ESpell>();
+                    if (Enum.TryParse(item.Value.GetAs<string>(), out ESpell spell))
+                        return spell;
+                    break;
+
                 case "EBadge":
                     return item.Value.GetAs<EBadge>();
+
                 case "EBadge[]":
                     return item.Value.GetAs<EBadge[]>();
 
@@ -290,6 +311,8 @@ namespace Save
                     ErrorHandler.Error("Unhandled type : " + expectedType);
                     return null;
             }
+
+            return CloudConversionError(item);
         }
 
         public async Task<bool> KeyExists(string key)
@@ -307,6 +330,26 @@ namespace Save
         #endregion
 
 
+        #region Error Handling
+
+        protected virtual object CloudConversionError(Item item)
+        {
+            var expectedType = m_Data[item.Key].GetType().Name;
+
+            ErrorHandler.Error("Error while loading (" + item.Key + ") : Unable to convert item " + item + " into " + expectedType);
+            
+            switch (expectedType)
+            {
+                case "ESpell":
+                    return ESpell.None;
+            }
+
+            return null;
+        }
+
+        #endregion
+
+
         #region Listeners
 
         protected virtual void OnCloudDataKeyLoaded(string key)
@@ -318,7 +361,6 @@ namespace Save
                 OnCloudDataLoadingCompleted();
 
             ErrorHandler.Log("Key Loaded : " + key, ELogTag.CloudData);
-            //ErrorHandler.Log(TextHandler.ToString(m_Data[key]), ELogTag.CloudData);
         }
 
         protected virtual void OnCloudDataLoadingCompleted()

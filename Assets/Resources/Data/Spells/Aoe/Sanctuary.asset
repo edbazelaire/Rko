@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c134d41ca291c244b96cfda56a7e83fd, type: 3}
   m_Name: Sanctuary
   m_EditorClassIdentifier: 
-  Rarety: 1
+  Rarety: 0
   m_Description: Zone of size {0} restauring {1} health each {2} seconds for {3}
     seconds
   m_DescriptionVariables:
@@ -28,9 +28,6 @@ MonoBehaviour:
   Linked: 0
   Graphics: {fileID: 8179447634951739534, guid: a98bb070248f37942b1ca92fd54510d9, type: 3}
   SpellEventActions: []
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -39,12 +36,18 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 8300000, guid: 3ecced41c79ec3840824bd3813604df2, type: 3}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 4
-  LockTargetAt: 2
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 0
   EnergyGain: 5
   EnergyCost: 0
   m_Damage: 0
   m_Heal: 0
+  m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 

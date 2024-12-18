@@ -14,17 +14,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Description: Character is unable to cast spells for {0} seconds
   m_DescriptionVariables: 01000000
-  m_VisualEffect: {fileID: 0}
-  m_SpawnBodyParts: 
-  m_Offset: {x: 0, y: 0}
-  m_ColorSwitch: {r: 1, g: 1, b: 1, a: 1}
+  m_StateEffectType: 0
+  m_IsDisplayed: 1
+  m_VisualEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 0
   m_DefaultState: 0
-  m_Duration: 0
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
+  m_Priority: 0
+  m_Duration: -1
+  m_IsInstantanious: 0
   m_MaxStacks: 1
+  m_StackDecay: -1
+  m_Energy: 0
+  m_BonusStats: []
   m_SpeedBonus: 0
   m_CastSpeed: 0
   m_AttackSpeed: 0
@@ -36,6 +42,10 @@ MonoBehaviour:
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
   m_BonusLifeSteal: 0
+  m_BonusHeal: 0
+  m_BonusHealPerc: 0
+  m_BonusBurnDamages: 0
+  m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel:

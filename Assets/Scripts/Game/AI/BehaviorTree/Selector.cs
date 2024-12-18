@@ -1,5 +1,3 @@
-using MyBox;
-using System;
 using System.Collections.Generic;
 
 namespace AI
@@ -8,8 +6,7 @@ namespace AI
     {
         protected bool m_IsRandom = false;
 
-        public Selector() : base() { }
-        public Selector(List<Node> children, bool random = false) : base(children) 
+        public Selector(List<Node> nodes, bool random = false) : base(nodes)
         {
             m_IsRandom = random;
         }
@@ -18,16 +15,25 @@ namespace AI
         {
             foreach (Node node in (m_IsRandom ? m_Children.ShuffleClone() : m_Children))
             {
+                if (! node.IsActivated)
+                {
+                    m_State = NodeState.FAILURE;
+                    continue;
+                }
+
                 switch (node.Evaluate())
                 {
                     case NodeState.FAILURE:
                         continue;
-                    case NodeState.SUCCESS:
-                        m_State = NodeState.SUCCESS;
-                        return m_State;
+
                     case NodeState.RUNNING:
                         m_State = NodeState.RUNNING;
                         return m_State;
+
+                    case NodeState.SUCCESS:
+                        m_State = NodeState.SUCCESS;
+                        return m_State;
+
                     default:
                         continue;
                 }

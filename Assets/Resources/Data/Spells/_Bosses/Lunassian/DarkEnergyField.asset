@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c134d41ca291c244b96cfda56a7e83fd, type: 3}
+  m_Name: DarkEnergyField
+  m_EditorClassIdentifier: 
+  Rarety: 1
+  m_Description: '[SpellRequirement.0] to create a field of dark energy, granting
+    {0} energy each {1} seconds for {2} seconds'
+  m_DescriptionVariables:
+  - Name: Energy
+    WithIcon: 1
+  - Name: DurationTick
+    WithIcon: 0
+  - Name: Duration
+    WithIcon: 0
+  m_SpellElements: 
+  Linked: 0
+  Graphics: {fileID: 108808, guid: cc067d0d86957fa4f965fccb923b18e2, type: 3}
+  SpellEventActions: []
+  OnHit: []
+  OnHitSpellSpawn: 1
+  AnimationSoundFX: {fileID: 0}
+  CastSoundFX: {fileID: 0}
+  PermanantSoundFX: {fileID: 0}
+  OnHitSoundFX: {fileID: 0}
+  OnEndSoundFX: {fileID: 0}
+  SpellTarget: 10
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  m_SpellRequirements:
+  - m_StateEffectRequirements:
+    - m_StateEffect: Cursed
+      m_Stacks: 35
+      m_NStacksReductionPerLevel: 1
+  MaxHit: -1
+  EnergyGain: 3
+  EnergyCost: 0
+  m_Damage: 0
+  m_Heal: 0
+  m_Shield: 0
+  m_LifeSteal: 0
+  Distance: -1
+  OverrideOnHitProperties: 
+  m_Duration: 8
+  Delay: 0
+  m_SpellsScalingLevel:
+  - Property: 2
+    Value: 0.1
+  - Property: 1
+    Value: 0.1
+  - Property: 3
+    Value: 0.05
+  m_Size: 15
+  TriggerPlayer: 1
+  EnemyStateEffects: []
+  AllyStateEffects: []
+  StateEffectStackFactor: 0
+  PersistanceAfterEnd: 0
+  Animation: 0
+  IsCancellable: 0
+  AnimationTimer: 0
+  m_Cooldown: 15
+  m_SpellSpawn: 1
+  DurationTick: 1
+  m_TickDamages: 0
+  m_TickHeal: 0
+  m_TickShield: 0
+  GrowSizeFactor: 0
+  MaxSizeAt: 1
+  PersistentStateEffects: []

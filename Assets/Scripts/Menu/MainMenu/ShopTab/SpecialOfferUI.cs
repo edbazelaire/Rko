@@ -125,7 +125,7 @@ namespace Menu.MainMenu.ShopTab
         SShopData SpellShopDataFromCloudData(int index, out STimeData? timeData)
         {
             timeData = TimeCloudData.GetTimeData(TimeCloudData.GetDailyShopId(index));
-            ESpell spell = ESpell.Count;
+            ESpell spell = ESpell.None;
 
             // check if timeData is valid 
             bool isOk = true;

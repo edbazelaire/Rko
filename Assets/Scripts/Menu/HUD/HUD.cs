@@ -1,8 +1,4 @@
 ﻿using Enums;
-using Inventory;
-using Save;
-using System.Collections;
-using TMPro;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,8 +10,8 @@ namespace Assets.Scripts.Menu
         #region Members
 
         GameObject m_ButtonsContainer;
+        Button m_MessagerieButton;
         Button m_SettingsButton;
-        Button m_ConsoleButton;
 
         #endregion
 
@@ -32,8 +28,8 @@ namespace Assets.Scripts.Menu
             base.FindComponents();
 
             m_ButtonsContainer = Finder.Find(gameObject, "ButtonsContainer");
+            m_MessagerieButton = Finder.FindComponent<Button>(m_ButtonsContainer, "MessagerieButton");
             m_SettingsButton = Finder.FindComponent<Button>(m_ButtonsContainer, "SettingsButton");
-            m_ConsoleButton = Finder.FindComponent<Button>(m_ButtonsContainer, "ConsoleButton");
         }
 
         #endregion
@@ -45,8 +41,8 @@ namespace Assets.Scripts.Menu
         {
             base.RegisterListeners();
 
+            m_MessagerieButton.onClick.AddListener(() => Main.SetPopUp(EPopUpState.MessageriePopUp));
             m_SettingsButton.onClick.AddListener(() => Main.SetPopUp(EPopUpState.SettingsPopUp));
-            m_ConsoleButton.onClick.AddListener(() => ConsoleUI.Instance.Hide());
         }
 
         protected override void UnRegisterListeners()

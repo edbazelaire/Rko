@@ -105,12 +105,12 @@ namespace Tools
         /// <summary> reward when the game is won </summary>
         public static SRewardCalculator WinGameReward = new SRewardCalculator(
             xp: 25,
-            gems: 10,
+            gems: 3,
             minGolds: 30, maxGolds: 55,
             chests: new List<SChestDropPercentage>() {
                 new SChestDropPercentage(new Dictionary<EChest, float>
                 {
-                    { EChest.Common,        0.85f        },
+                    { EChest.Common,        0.85f       },
                     { EChest.Rare,          0.99f       },
                     { EChest.Epic,          0.999f      },
                     { EChest.Legendary,     1f          },

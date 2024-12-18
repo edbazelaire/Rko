@@ -25,7 +25,7 @@ using Managers.Friends;
 using Menu.PopUps.PopUps.MessagePopUps;
 using Unity.Services.Friends.Models;
 using UnityEngine.SceneManagement;
-
+using Menu.PopUps.OverlayScreens;
 
 
 #if UNITY_EDITOR
@@ -39,41 +39,47 @@ namespace Assets
         #region Members
 
         static Main s_Instance;
+        static int NReloading;
+
+        public const int MAX_RELOADING = 0;
 
         // ==========================================================================================================
         // SERIALIZED MEMBERS
-        [SerializeField] Canvas                 m_Canvas;
-        [SerializeField] CloudSaveManager       m_CloudSaveManager;
-        [SerializeField] LeagueDataConfig       m_LeagueDataConfig;
-        [SerializeField] bool                   m_ActivateSaveOnClose;
+        [SerializeField] Canvas m_Canvas;
+        [SerializeField] CloudSaveManager m_CloudSaveManager;
+        [SerializeField] LeagueDataConfig m_LeagueDataConfig;
+        [SerializeField] bool m_ActivateSaveOnClose;
 
         [Header("Debug Section")]
-        [SerializeField] bool                   m_ForceIsNewPlayer; 
-        [SerializeField] List<ELogTag>          m_LogTags;
+        [SerializeField] bool m_ForceIsNewPlayer;
+        [SerializeField] bool m_StopPreventiveLoss;
+        [SerializeField] List<ELogTag> m_LogTags;
 
         // ==========================================================================================================
         // EVENTS
-        public static event Action<EAppState>   StateChangedEvent;
-        public static event Action              InitializationCompletedEvent;
-        public static event Action              ApplicationQuitEvent;
+        public static event Action<EAppState> StateChangedEvent;
+        public static event Action InitializationCompletedEvent;
+        public static event Action ApplicationQuitEvent;
 
         // ==========================================================================================================
         // PRIVATE MEMBERS
-        EAppState                               m_State                 = EAppState.Release;
-        bool                                    m_SignedIn              = false;
+        EAppState m_State = EAppState.Release;
+        bool m_SignedIn = false;
         /// <summary> Events to store until reaching a specific AppState </summary>
-        Dictionary<EAppState, List<Action>>     m_StoredEvents          = new();
+        Dictionary<EAppState, List<Action>> m_StoredEvents = new();
 
         // ==========================================================================================================
         // PUBLIC DEPENDENT STATIC MEMBERS
-        public static Main Instance                             => s_Instance;
-        public static CloudSaveManager CloudSaveManager         => Instance.m_CloudSaveManager;
-        public static LeagueDataConfig LeagueDataConfig         => Instance.m_LeagueDataConfig;
-        public static EAppState State                           => Instance.m_State;
-        public static Canvas Canvas                             => Instance.m_Canvas;
-        public static bool ActivateSaveOnClose                  => Instance.m_ActivateSaveOnClose;
-        public static bool ForceIsNewPlayer                     => Instance.m_ForceIsNewPlayer;
-        public static List<ELogTag> LogTags                     => s_Instance != null ? Instance.m_LogTags : new List<ELogTag>();
+        public static Main              Instance                => s_Instance;
+        public static CloudSaveManager  CloudSaveManager        => Instance.m_CloudSaveManager;
+        public static LeagueDataConfig  LeagueDataConfig        => Instance.m_LeagueDataConfig;
+        public static EAppState         State                   => Instance.m_State;
+        public static Canvas            Canvas                  => Instance.m_Canvas;
+        public static bool              ActivateSaveOnClose     => Instance.m_ActivateSaveOnClose;
+        public static bool              ForceIsNewPlayer        => Instance.m_ForceIsNewPlayer;
+        public static bool              StopPreventiveLoss      => Instance.m_StopPreventiveLoss;
+        public static bool              IsNewPlayer             => ForceIsNewPlayer || !ProfileCloudData.TutoDone;
+        public static List<ELogTag>     LogTags                 => s_Instance != null ? Instance.m_LogTags : new List<ELogTag>();
 
         #endregion
 
@@ -93,17 +99,21 @@ namespace Assets
 
         async Task Initialize()
         {
+            Debug.Log("Initialize");
+
             try
             {
+                ErrorHandler.IsActivated = true;
+                
                 // initialize Managers & Loaders
                 PlayerPrefsHandler.Initialize();
                 AchievementLoader.Initialize();
                 SpellLoader.Initialize();
                 ItemLoader.Initialize();
                 RSDManager.Intialize();
-                ErrorHandler.IsActivated = PlayerPrefsHandler.GetDebug(EDebugOption.ErrorHandler);
 
                 // init settings
+                Debug.Log("InitializeSettings");
                 InitializeSettings();
 
                 // register to state changes 
@@ -120,22 +130,63 @@ namespace Assets
                 await UnityServices.InitializeAsync(options);
 
                 // listen to Auth Service and try to signe in anonymously
-                AuthenticationService.Instance.SignedIn += OnSignedIn;
-                AuthenticationService.Instance.SignedIn += m_CloudSaveManager.LoadSave;
-                await AuthenticationService.Instance.SignInAnonymouslyAsync();
-
+                if (! AuthenticationService.Instance.IsSignedIn)
+                {
+                    AuthenticationService.Instance.SignedIn += OnSignedIn;
+                    AuthenticationService.Instance.SignedIn += m_CloudSaveManager.LoadSave;
+                    await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                } else
+                {
+                    m_CloudSaveManager.LoadSave();
+                    OnSignedIn();
+                }
             }
+
             catch (Exception ex)
             {
-                ErrorHandler.Error(ex.Message);
+                Debug.LogError(ex.Message);
+                Instance.ReloadGame();
+                return;
             }
 
 #if UNITY_EDITOR
             ErrorHandler.Log("UNITY EDITOR MODE", ELogTag.System);
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
-
             ApplicationQuitEvent += m_CloudSaveManager.OnApplicationQuit;
 #endif
+        }
+
+        List<bool> InitializedElements => new List<bool>()
+        {
+            CharacterLoader.Instance            != null,
+            TimeErrorWrapper.Instance           != null,
+            SceneLoader.Instance                != null,
+            ItemLoader.ChestRewardData          != null,
+            AchievementLoader.Achievements      != null,
+            LobbyHandler.Instance               != null,
+            SpellLoader.Initialized,
+            RelayHandler.Initialized,
+            FriendsHandler.Initialized,
+            RSDManager.LoadingCompleted,
+            m_CloudSaveManager.LoadingCompleted,
+            m_SignedIn
+        };
+
+        /// <summary>
+        /// Calculate percentage of initialization based on number of elements initialized
+        /// </summary>
+        /// <returns></returns>
+        float CalculateInitializationPercentage()
+        {
+            List<bool> initializedElements = InitializedElements;
+            if (initializedElements.Count == 0)
+            {
+                ErrorHandler.Error("InitializedElements count is 0");
+                ReloadGame();
+                return 0;  // Avoid division by zero
+            }
+
+            return Mathf.Round(100 * (float)initializedElements.Count(element => element) / initializedElements.Count) / 100;
         }
 
         /// <summary>
@@ -144,51 +195,77 @@ namespace Assets
         /// <returns></returns>
         IEnumerator CheckInitialization()
         {
-            float timer = 30f; // set a timer of 30s to avoid inf loop
-            while (
-                CharacterLoader.Instance            == null
-                || TimeErrorWrapper.Instance        == null
-                || SceneLoader.Instance             == null
-                || ItemLoader.ChestRewardData       == null
-                || AchievementLoader.Achievements   == null
-                || LobbyHandler.Instance            == null
-                || ! SpellLoader.Initialized
-                || ! RelayHandler.Initialized
-                || ! FriendsHandler.Initialized
-                || ! RSDManager.LoadingCompleted
-                || ! m_CloudSaveManager.LoadingCompleted
-                || ! m_SignedIn
-            )
-            {
-                timer -= Time.deltaTime;
+            ErrorHandler.Log("CheckInitialization()");
 
-                if (timer <= 0)
+            // set a timer of 30s to avoid inf loop
+            if (TimeErrorWrapper.Instance != null)
+                TimeErrorWrapper.Instance.New("App Initialization", 20f, ReloadGame);      
+
+            float percInit = 0f;    // init percentage of initialization
+            do
+            {
+                float newPercInit = CalculateInitializationPercentage();
+                if (newPercInit == percInit)
                 {
-                    ErrorHandler.Error("Unable to initialize the App in less than 30 seconds");
-                    ReloadGame();
+                    yield return new WaitForSeconds(0.2f);
+                    continue;
                 }
 
-                yield return null;
-            }
+                if (newPercInit < percInit)
+                    ErrorHandler.Warning("Percentage of initialization decreased, from " + percInit + " to " + newPercInit);
 
+                percInit = newPercInit;
+                SceneLoader.UpdateProgress(percInit, GetInitializationInfoText());
+                yield return null;
+
+            } while (percInit < 1);
+
+            SceneLoader.UpdateProgress(1f);
+            TimeErrorWrapper.Instance.Cancel("App Initialization");
             InitializationCompletedEvent?.Invoke();
         }
 
         void InitializeSettings()
         {
-            QualitySettings.vSyncCount = 0;         // Disable V-Sync
-            Application.targetFrameRate = 120;      // Set desired frame rate
+            QualitySettings.vSyncCount  = 0;            // Disable V-Sync
+            Application.targetFrameRate = 120;          // Set desired frame rate
         }
 
         void ReloadGame()
         {
-            Debug.Log("RELOADING");
+            NReloading++;
+
+            Debug.LogWarning("RELOADING - " + NReloading);
 
             // Stop all background processes if needed
             StopAllCoroutines();
 
+            if (NReloading > MAX_RELOADING)
+            {
+                Time.timeScale = 0;
+                
+                if (!ConsoleUI.Instance.gameObject.activeInHierarchy)
+                    ConsoleUI.Instance.Hide();
+
+                Debugger.Instance.DisplayErrors();
+                //Application.Quit();
+                return;
+            }
+
             // Reload the active scene to restart from scratch
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
+        string GetInitializationInfoText()
+        {
+            string infoText = "[";
+            foreach (bool isInit in InitializedElements)
+            {
+                infoText += isInit ? "<color=#00FF11>+</color>" : "<color=#FF0000>x</color>";
+            }
+            infoText += "]";
+
+            return infoText;
         }
 
         #endregion
@@ -299,7 +376,11 @@ namespace Assets
 
                 // MESSAGE POP UPS -------------------------------------------------------
                 case EPopUpState.MessagePopUp:
-                    obj.GetComponent<MessagePopUp>().Initialize((string)args[0], args.Count() > 1 ? (string)args[1] : "");
+                    obj.GetComponent<MessagePopUp>().Initialize(message: (string)args[0], title: args.Count() > 1 ? (string)args[1] : "", onValidate: args.Count() > 2 ? (Action)args[2] : null, onCancel: args.Count() > 3 ? (Action)args[3] : null);
+                    break;
+
+                case EPopUpState.ConfirmPopUp:
+                    obj.GetComponent<ConfirmPopUp>().Initialize(message: (string)args[0], title: args.Count() > 1 ? (string)args[1] : "", onValidate: args.Count() > 2 ? (Action)args[2] : null, onCancel: args.Count() > 3 ? (Action)args[3] : null);
                     break;
 
                 case EPopUpState.ConfirmBuyPopUp:
@@ -314,10 +395,9 @@ namespace Assets
                     obj.GetComponent<ConfirmBuyBundlePopUp>().Initialize((string)args[0], (SPriceData)args[1], (SRewardsData)args[2], (Action)args[3], (Action)args[4]);
                     break;
 
-
                 // SCREENS -------------------------------------------------------
                 case EPopUpState.RewardsScreen:
-                    obj.GetComponent<RewardsScreen>().Initialize((SRewardsData)args[0], (string)args[1], args.Length > 2 ? (Action)args[2] : null);
+                    obj.GetComponent<RewardsScreen>().Initialize((SRewardsData)args[0], (string)args[1], args.Length > 2 ? (Action)args[2] : null, args.Length > 3 ? (string)args[3] : null);
                     break;
 
                 case EPopUpState.AchievementRewardScreen:
@@ -325,11 +405,19 @@ namespace Assets
                     break;
 
                 case EPopUpState.ArenaPathScreen:
-                    obj.GetComponent<ArenaPathScreen>().Initialize((EArenaType)args[0]);
+                    obj.GetComponent<ArenaPathScreen>().Initialize((EArenaType)args[0], (SArenaDifficulty)args[1]);
                     break;
 
                 case EPopUpState.LevelUpScreen:
-                    obj.GetComponent<LevelUpScreen>().Initialize((ECharacter)args[0]);
+                    obj.GetComponent<LevelUpScreen>().Initialize(baseXp: (int)args[0], maxXp: (int)args[1], bonusXp: (int)args[2]);
+                    break;
+
+                case EPopUpState.PowerUpInfoScreen:
+                    obj.GetComponent<PowerUpInfoScreen>().Initialize((SRunePower)args[0]);
+                    break;
+
+                case EPopUpState.PowerUpSelectionScreen:
+                    obj.GetComponent<PowerUpSelectionScreen>().Initialize(args.Count() > 0 ? (int)args[0] : -1);
                     break;
 
                 // INFO POP UPS -------------------------------------------------------
@@ -353,6 +441,10 @@ namespace Assets
 
                 case EPopUpState.TriggerEffectPopUp:
                     obj.GetComponent<TriggerEffectPopUp>().Initialize((STriggerEffect)args[0]);
+                    break;
+
+                case EPopUpState.RunePowerPopUp:
+                    obj.GetComponent<RunePowerPopUp>().Initialize((SRunePower)args[0]);
                     break;
 
                 // SETTINGS & OPTIONS -------------------------------------------------------
@@ -384,14 +476,19 @@ namespace Assets
             }, unlockedOnly);
         }
 
-        public static void DisplayRewards(SRewardsData rewardsData, string context, Action OnRewardCollected = null)
+        public static void DisplayRewards(SRewardsData rewardsData, string context, Action OnRewardCollected = null, string title = null)
         {
-            Main.SetPopUp(EPopUpState.RewardsScreen, rewardsData, context, OnRewardCollected);
+            Main.SetPopUp(EPopUpState.RewardsScreen, rewardsData, context, OnRewardCollected, title);
         }
      
         public static void DisplayAchievementRewards(List<SAchievementReward> rewardsData)
         {
             Main.SetPopUp(EPopUpState.AchievementRewardScreen, rewardsData);
+        }
+
+        public static void ConfirmPopUp(string message, string title = "", Action onValidate = null, Action onCancel = null)
+        {
+            Main.SetPopUp(EPopUpState.ConfirmPopUp, message, title, onValidate, onCancel);
         }
 
         /// <summary>
@@ -546,6 +643,8 @@ namespace Assets
 
         private void OnInitializationCompleted()
         {
+            Debug.Log("OnInitializationCompleted()");
+
             if (SceneLoader.Instance == null)
                 ErrorHandler.Log("SceneLoader is null", ELogTag.System);
 
@@ -567,10 +666,13 @@ namespace Assets
             // check that region has been provided
             CheckRegion();
 
-            // check if a current message needs to be dislayed to the user before loading the scene 
+            // check if a current message needs to be displayed to the user before loading the scene 
             CheckCurrentMessage();
 
-            if (UpdateManager.IsNewPlayer)
+            // set error handler active depending on DebugOption settings
+            ErrorHandler.IsActivated = PlayerPrefsHandler.GetDebug(EDebugOption.ErrorHandler);
+
+            if (IsNewPlayer)
                 LoadTutorial();
             else 
                 SceneLoader.Instance.LoadScene("MainMenu");

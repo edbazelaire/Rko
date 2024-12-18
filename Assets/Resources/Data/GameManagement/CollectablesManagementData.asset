@@ -25,33 +25,125 @@ MonoBehaviour:
   - Rarety: 3
     Color: {r: 0.99215686, g: 0.60159343, b: 0.19215685, a: 1}
     StartLevel: 9
+  AccountLevelData:
+  - RequiredXp: 50
+    Rewards:
+      Currencies:
+      - Currency: 0
+        Qty: 1000
+      Chests: 
+      Collectables: []
+      AchievementRewards: []
+  - RequiredXp: 300
+    Rewards:
+      Currencies: []
+      Chests: 00000000
+      Collectables: []
+      AchievementRewards: []
+  - RequiredXp: 1500
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables:
+      - CollectableType: 1
+        CollectableName: Marcus
+        Qty: 1
+      AchievementRewards: []
+  - RequiredXp: 3000
+    Rewards:
+      Currencies: []
+      Chests: 01000000
+      Collectables: []
+      AchievementRewards: []
+  - RequiredXp: 7500
+    Rewards:
+      Currencies:
+      - Currency: 0
+        Qty: 5000
+      Chests: 01000000
+      Collectables: []
+      AchievementRewards: []
+  - RequiredXp: 15000
+    Rewards:
+      Currencies: []
+      Chests: 0100000001000000
+      Collectables: []
+      AchievementRewards: []
+  - RequiredXp: 30000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables:
+      - CollectableType: 1
+        CollectableName: Srug
+        Qty: 1
+      AchievementRewards: []
+  - RequiredXp: 50000
+    Rewards:
+      Currencies: []
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards: []
+  - RequiredXp: 100000
+    Rewards:
+      Currencies: []
+      Chests: 0100000002000000
+      Collectables: []
+      AchievementRewards: []
+  - RequiredXp: 150000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables:
+      - CollectableType: 1
+        CollectableName: Nagini
+        Qty: 1
+      AchievementRewards: []
+  - RequiredXp: 200000
+    Rewards:
+      Currencies: []
+      Chests: 03000000
+      Collectables: []
+      AchievementRewards: []
+  - RequiredXp: 350000
+    Rewards:
+      Currencies: []
+      Chests: 0200000003000000
+      Collectables: []
+      AchievementRewards: []
+  - RequiredXp: 500000
+    Rewards:
+      Currencies: []
+      Chests: 0300000003000000
+      Collectables: []
+      AchievementRewards: []
   CharacterLevelData:
   - RequiredGolds: 50
     RequiredQty: 50
-  - RequiredGolds: 200
+  - RequiredGolds: 150
     RequiredQty: 150
-  - RequiredGolds: 800
-    RequiredQty: 300
-  - RequiredGolds: 2000
-    RequiredQty: 750
+  - RequiredGolds: 500
+    RequiredQty: 400
+  - RequiredGolds: 1500
+    RequiredQty: 1000
+  - RequiredGolds: 3000
+    RequiredQty: 2000
   - RequiredGolds: 5000
-    RequiredQty: 1500
-  - RequiredGolds: 10000
     RequiredQty: 3500
-  - RequiredGolds: 25000
+  - RequiredGolds: 10000
+    RequiredQty: 5000
+  - RequiredGolds: 15000
     RequiredQty: 7500
-  - RequiredGolds: 50000
+  - RequiredGolds: 30000
     RequiredQty: 15000
-  - RequiredGolds: 100000
+  - RequiredGolds: 50000
     RequiredQty: 30000
-  - RequiredGolds: 150000
+  - RequiredGolds: 75000
     RequiredQty: 50000
-  - RequiredGolds: 200000
+  - RequiredGolds: 100000
+    RequiredQty: 75000
+  - RequiredGolds: 150000
     RequiredQty: 100000
-  - RequiredGolds: 250000
-    RequiredQty: 150000
-  - RequiredGolds: 300000
-    RequiredQty: 200000
   SpellLevelData:
   - RequiredGolds: 5
     RequiredQty: 2
@@ -89,20 +181,20 @@ MonoBehaviour:
   - RequiredGolds: 1000
     RequiredQty: 8
   - RequiredGolds: 2500
-    RequiredQty: 15
+    RequiredQty: 12
   - RequiredGolds: 5000
-    RequiredQty: 25
+    RequiredQty: 20
   - RequiredGolds: 10000
-    RequiredQty: 50
+    RequiredQty: 35
   - RequiredGolds: 20000
-    RequiredQty: 75
+    RequiredQty: 50
   - RequiredGolds: 35000
-    RequiredQty: 100
+    RequiredQty: 75
   - RequiredGolds: 50000
-    RequiredQty: 150
+    RequiredQty: 100
   - RequiredGolds: 75000
-    RequiredQty: 200
+    RequiredQty: 150
   - RequiredGolds: 100000
-    RequiredQty: 250
+    RequiredQty: 200
   - RequiredGolds: 150000
-    RequiredQty: 300
+    RequiredQty: 250

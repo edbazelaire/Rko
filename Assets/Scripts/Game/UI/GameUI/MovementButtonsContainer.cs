@@ -16,6 +16,9 @@ public class MovementButtonsContainer : MonoBehaviour, IPointerDownHandler, IPoi
     [SerializeField] Image          m_LeftMovementButtonImage;
     [SerializeField] Image          m_RightMovementButtonImage;
 
+    public GameObject LeftMovementButton => m_LeftMovementButton;
+    public GameObject RightMovementButton => m_RightMovementButton;
+
     bool m_IsTouching = false;
 
     #endregion
@@ -31,7 +34,10 @@ public class MovementButtonsContainer : MonoBehaviour, IPointerDownHandler, IPoi
     public void OnPointerUp(PointerEventData eventData)
     {
         m_IsTouching = false;
+
         MovementInputEvent?.Invoke(0);
+        m_LeftMovementButtonImage.color = Color.white;
+        m_RightMovementButtonImage.color = Color.white;
     }
 
     public void OnDrag(PointerEventData eventData)

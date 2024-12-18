@@ -1,11 +1,12 @@
-﻿using Enums;
+﻿using Data.GameManagement;
+using Enums;
 using Game;
 using Game.Loaders;
 using Game.Spells;
-using MyBox;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Tools;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -113,32 +114,36 @@ namespace Data
         public override ESpellType SpellType => ESpellType.Counter;
 
         [Header("Counter")]
-        [Description("Spell Caster when the counter procs")]
-        public ECounterType CounterType;
-        public ECounterActivation CounterActivation;
-        [SerializeField] protected Vector2 m_SpawnOffset    = new Vector2(0, 0);
-        [SerializeField] protected bool m_IsFollowing       = true;
-        [SerializeField] protected ESpawnLocation m_SpawnLocation = ESpawnLocation.Center;
-        public bool IsBlockingMovement                      = true;
-        public bool IsBlockingCast                          = true;
+        [Tooltip("Type of counter")]
+        public ECounterType         CounterType;
+        [Tooltip("How is the counter triggerred ? ")]
+        public ECounterActivation   CounterActivation;
+        [SerializeField, Tooltip("Type of spells that can proc the counter")] 
+        protected List<EDamageType>  m_DamageTypeActivation                   = new List<EDamageType>() { EDamageType.Direct };
+        [SerializeField, Tooltip("Offset spawning of the counter proc spell")] 
+        protected Vector2           m_SpawnOffset                           = new Vector2(0, 0);
+        [SerializeField, Tooltip("")]
+        protected bool              m_IsFollowing                           = true;
+        [SerializeField, Tooltip("Location where the counter is spawning")] 
+        protected ESpawnLocation    m_SpawnLocation                         = ESpawnLocation.Center;
+        public bool                 IsDestroyingSpell                       = true;
+        public bool                 IsBlockingMovement                      = true;
+        public bool                 IsBlockingCast                          = true;
+        public bool                 IsCanceledOnCast                        = false;
 
-        [Description("List of effects converting enemy damages into something else (stacks, runes, ...)")]
-        [SerializeField] protected List<SDamageConversionEffects> m_DamageConversionEffects;
+        [SerializeField, Tooltip("List of effects converting enemy damages into something else (stacks, runes, ...)")]
+        protected List<SDamageConversionEffects> m_DamageConversionEffects;
 
-        [Description("Spell Casted when the counter procs")]
-        [ConditionalField("CounterType", false, ECounterType.Proc)]
+        [Tooltip("Spell Casted when the counter procs"), MyBox.ConditionalField("CounterType", false, ECounterType.Proc)]
         public SpellData OnCounterProc;
-
-        [Header("Counter Extra Graphics")]
-        [Description("Change of character color")]
-        public Color ColorSwap;
 
 
         // ===================================================================================
         // Public Accessors
-        public bool IsLinkedCounter => IsBlockingCast || IsBlockingMovement || CounterActivation == ECounterActivation.OnHitPlayer;
-        public List<SDamageConversionEffects> DamageConversionEffects => m_DamageConversionEffects;
-        public Vector2 SpawnOffset => m_SpawnOffset;
+        public List<EDamageType>                DamageTypeActivation     => m_DamageTypeActivation;
+        public bool                             IsLinkedCounter         => IsBlockingCast || IsBlockingMovement || CounterActivation == ECounterActivation.OnHitPlayer;
+        public List<SDamageConversionEffects>   DamageConversionEffects => m_DamageConversionEffects;
+        public Vector2                          SpawnOffset             => m_SpawnOffset;
 
 
         #region Target & Position 
@@ -166,6 +171,11 @@ namespace Data
                     position.y = 0;
                     break;
 
+                case ESpawnLocation.Hight:
+                    position = GameManager.Instance.GetPlayer(clientId).transform.position;
+                    position.y = Settings.SPELL_DIAGONAL_POS_Y;
+                    break;
+
                 case ESpawnLocation.Sky:
                     position = GameManager.Instance.GetPlayer(clientId).transform.position;
                     position.y = 5;
@@ -188,7 +198,7 @@ namespace Data
 
         #region Level Management
 
-        protected override void SetLevel(int level)
+        public override void SetLevel(int level)
         {
             base.SetLevel(level);
 

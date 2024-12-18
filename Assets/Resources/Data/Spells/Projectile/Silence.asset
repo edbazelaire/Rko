@@ -13,17 +13,34 @@ MonoBehaviour:
   m_Name: Silence
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: Shoot a projectile in a straight line, applying {0} on hitted enemy
-    for 3 seconds, making him unable to use spells or auto attacks
-  m_DescriptionVariables:
-  - Name: Silence
-    WithIcon: 1
+  m_Description: Shoot a projectile in a straight line, applying [EnemyStateEffect.1]
+    and [Silence] on hitted enemy for 3 seconds, making him unable to use spells
+    or auto attacks
+  m_DescriptionVariables: []
+  m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 1453329069581620619, guid: f87c65a9356a6734b96e661ed7ef7bbc, type: 3}
-  SpellEventActions: []
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
+  SpellEventActions:
+  - Prefab: {fileID: 1042534902773516, guid: cdf164d9a61e3cc49851994332a436ec, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX:
+    - AudioClip: {fileID: 8300000, guid: 037688ea562d74144b0f62a682d368a6, type: 3}
+      SoundDuration: 0
+    GFXLifetime:
+      m_StartSpellPart: 500
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1
+    Size: 0.5
+    OrderInLayer: 0
+    SpawnTarget: 3
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -32,12 +49,18 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 6
-  LockTargetAt: 2
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 0
   m_Heal: 0
+  m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
@@ -55,9 +78,14 @@ MonoBehaviour:
   EnemyStateEffects:
   - StateEffect: 14
     Stacks: 1
+    BonusStacksPerLevel: 0
     OverridingProperties:
     - StateEffectProperty: 1
       Value: 3
+  - StateEffect: 13
+    Stacks: 1
+    BonusStacksPerLevel: 0.5
+    OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
@@ -66,5 +94,7 @@ MonoBehaviour:
   AnimationTimer: 0.3
   m_Cooldown: 20
   Trajectory: 2
+  m_TriggerGround: 1
   m_StopOnTargetPos: 0
   m_Speed: 10
+  m_YSpawnPos: 0

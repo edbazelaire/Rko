@@ -1,4 +1,5 @@
 ﻿using Data;
+using Tools;
 using UnityEngine;
 
 namespace Game.Spells
@@ -26,7 +27,12 @@ namespace Game.Spells
             if (!IsServer)
                 return;
 
-            OnHitPlayer(m_Controller);
+            var controller = GetTargetController();
+            if (controller != null)
+                OnHit(controller);
+            else
+                ErrorHandler.Error("Instant spell should Target a Controller : " + m_SpellData.Name);
+
             End();
         }
 

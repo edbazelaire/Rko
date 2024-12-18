@@ -25,7 +25,7 @@ namespace Tools
             m_Trace = GetTrace(frame);
 
             // check if configuration contains this type of logs to display
-            display &= (logTag == ELogTag.None || Main.LogTags.Contains(logTag));
+            display &= ErrorHandler.ShouldDisplayLogTag(logTag);
                               
             if (display)
             {

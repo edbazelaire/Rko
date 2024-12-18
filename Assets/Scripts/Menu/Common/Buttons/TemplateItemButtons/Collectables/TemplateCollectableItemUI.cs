@@ -244,10 +244,7 @@ namespace Menu.Common.Buttons
 
         protected virtual void OnCollectableUpgraded(Enum collectable, int level) { }
 
-        protected virtual void OnClickLocked()
-        {
-            Main.ConfirmBuyCollectable(ShopManagementData.GetPrice(m_Collectable), m_Collectable, 1, OnPurchased);
-        }
+        protected virtual void OnClickLocked() { }
 
         protected virtual void OnPurchased(bool success)
         {

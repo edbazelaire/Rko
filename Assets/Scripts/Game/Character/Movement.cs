@@ -1,6 +1,9 @@
+using Assets.Scripts.Data.DataStructures.SpellSubStructures;
 using Data.GameManagement;
 using Enums;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using Tools;
 using Unity.Netcode;
 using UnityEngine;
@@ -17,12 +20,19 @@ namespace Game.Character
         NetworkVariable<bool>       m_MovementCancelled     = new(false);
         NetworkVariable<bool>       m_MovementBlocked       = new(false);
 
+        // [Server Data]
+        List<SForce> m_Forces = new List<SForce>();
+
         // [Client Data]
-        int m_MovementInput = 0;
-        float m_SpeedBonus = 0f;
-        float m_InitialSpeed;
+        bool    m_IsActive          = false;
+        bool    m_CanMoveClient     = true;
+        int     m_MovementInput     = 0;
+        float   m_SpeedBonus        = 0f;
+        float   m_InitialSpeed;
 
         public NetworkVariable<int> MoveX => m_MoveX;
+        public float Speed => Math.Max(0, Settings.CharacterSpeedFactor * (m_InitialSpeed + m_SpeedBonus));
+        public bool IsMoving => m_MoveX.Value != 0;
 
         #endregion
 
@@ -39,7 +49,11 @@ namespace Game.Character
             if (IsServer)
                 return;
 
-            m_MoveX.OnValueChanged += OnMoveXChanged;
+            // CLIENT SIDE --------------------------------------------
+            if (IsOwner)
+                m_MoveX.OnValueChanged += OnMoveXChanged;
+
+            ShakeServerRpc();
         }
 
         /// <summary>
@@ -56,16 +70,29 @@ namespace Game.Character
             m_InitialSpeed = characterSpeed;
         }
 
+        public void Activate(bool activate)
+        {
+            if (! activate)
+            {
+                SetMovement(0);
+                ResetRotation();
+            }
+
+            m_IsActive = activate;
+        }
+
+
         void Update()
         {
-            if (! m_Controller.GameRunning)
+            if (! m_Controller.GameRunning || ! m_IsActive)
                 return;
 
             CheckInputs();
 
             if (!IsServer)
                 return;
-            
+
+            UpdateCanMove();
             UpdateMovement();
         }
 
@@ -97,6 +124,48 @@ namespace Game.Character
         #endregion
 
 
+        #region Force
+
+        public float Force
+        {
+            get
+            {
+                float force = 0f;
+                foreach (var sforce in m_Forces)
+                {
+                    force += sforce.Speed;
+                }
+                return force;
+            }
+        }
+
+        public void AddForce(SForce force)
+        {
+            if (force == null || force == default)
+                return;
+
+            if (force.Duration > 0)
+                StartCoroutine(StartForceTimer(force));
+
+            m_Forces.Add(force);
+        }
+
+        public void RemoveForce(SForce force)
+        {
+            if (!m_Forces.Contains(force))
+                return;
+            m_Forces.Remove(force);
+        }
+
+        IEnumerator StartForceTimer(SForce force)
+        {
+            yield return new WaitForSeconds(force.Duration);
+            m_Forces.Remove(force);
+        }
+
+        #endregion
+
+
         #region Private Manipulators
 
         /// <summary>
@@ -104,25 +173,47 @@ namespace Game.Character
         /// </summary>
         void UpdateMovement()
         {
+            // depending on team, the camera is rotated implying that movement is inverted
+            float teamFactor = m_Controller.Team == 0 ? 1f : -1f;
+
             if (! CanMove || m_MovementInput == 0)
             {
                 if (m_MoveX.Value != 0)
                     m_MoveX.Value = 0;
-                return;
+            } 
+            else
+            {
+                if (m_MoveX.Value != m_MovementInput)
+                    m_MoveX.Value = m_MovementInput;
+
+                // update rotation depending on movement (and team)
+                if (teamFactor * m_MoveX.Value == 1)
+                    SetRotation(0f);
+                else if (teamFactor * m_MoveX.Value == -1)
+                    SetRotation(180f);
             }
+            
+            // apply movement and Force
+            transform.position += new Vector3(
+                teamFactor * (m_MoveX.Value * Speed + Force) * Time.deltaTime, 
+                0f, 0f);
+        }
 
-            if (m_MoveX.Value != m_MovementInput)
-                m_MoveX.Value = m_MovementInput;
+        /// <summary>
+        /// Check if movement allowed (on server side) is the same as most recent value provided to the Client.
+        /// If not -> send the correct value to the client
+        /// </summary>
+        void UpdateCanMove()
+        {
+            if (! IsServer) 
+                return;
 
-            // depending on team, the camera is rotated implying that movement is inverted
-            float teamFactor = m_Controller.Team == 0 ? 1f : -1f;
-            transform.position += new Vector3(teamFactor * m_MoveX.Value * Speed * Time.deltaTime, 0f, 0f);
-
-            // update rotation depending on movement (and team)
-            if (teamFactor * m_MoveX.Value == 1)
-                SetRotation(0f);
-            else if (teamFactor * m_MoveX.Value == -1)
-                SetRotation(180f);
+            bool canMove = CanMove;
+            if (m_CanMoveClient != canMove)
+            {
+                canMove = CanMove;
+                SetCanMoveClientRPC(canMove);
+            }
         }
 
         void SetRotation(float y)
@@ -173,7 +264,9 @@ namespace Game.Character
                 return;
 
             m_MovementInput = moveX;
-            UpdateRotation(m_Controller.Team == 0 ? moveX : -moveX);
+
+            if (m_CanMoveClient)
+                UpdateRotation(m_Controller.Team == 0 ? moveX : -moveX);
         }
 
         void UpdateRotation(int moveX)
@@ -193,6 +286,12 @@ namespace Game.Character
             ResetRotation();
         }
 
+        [ClientRpc]
+        void SetCanMoveClientRPC(bool value)
+        {
+            m_CanMoveClient = value;
+        }
+
         void ResetRotation()
         {
             SetRotation(m_Controller.Team == 0 ? 0f : -180f);
@@ -208,13 +307,16 @@ namespace Game.Character
         /// </summary>
         public void Shake()
         {
+            // apply small movement and rotation
             transform.position += new Vector3(0.15f, 0, 0);
-            transform.rotation = Quaternion.Euler(0f, 0f, 0.1f);
-            ResetRotation();
+            transform.rotation = Quaternion.Euler(0.1f, 0.1f, 0.1f);
+
+            // reset to default values next frame
+            CoroutineManager.DelayMethod(ResetRotation);
         }
 
-        [ClientRpc]
-        public void ShakeClientRPC()
+        [ServerRpc]
+        public void ShakeServerRpc()
         {
             if (transform.position.x == 0)
             {
@@ -265,33 +367,61 @@ namespace Game.Character
 
 
         #region Dependent Attributes
-
-        public float Speed
-        {
-            get 
-            {
-                return Math.Max(0, Settings.CharacterSpeedFactor * (m_InitialSpeed + m_SpeedBonus));
-            }
-        }
-
-        public bool IsMoving
-        {
-            get { return m_MoveX.Value != 0; }
-        }
+       
 
         public bool CanMove
         {
             get
             {
-                return
-                    ! m_Controller.StateHandler.IsStunned 
-                    && ! m_MovementBlocked.Value
-                    && ! m_MovementCancelled.Value
-                    && ! m_Controller.SpellHandler.IsCastingUncancellable
-                    && ! m_Controller.StateHandler.HasState(EStateEffect.SpecialAnimation)    // special animation cancel movement
-                    && ! m_Controller.StateHandler.HasState(EStateEffect.Frozen) 
-                    && ! m_Controller.CounterHandler.IsBlockingMovement.Value
-                    && ! m_Controller.StateHandler.HasState(EStateEffect.Jump);
+                if (m_Controller.StateHandler.IsStunned)
+                {
+                    ErrorHandler.Log("CanMove - FALSE : IsStunned", ELogTag.Movement);
+                    return false;
+                }
+
+                if (m_Controller.StateHandler.HasState(EStateEffect.Jump))
+                {
+                    ErrorHandler.Log("CanMove - FALSE : is Jumping", ELogTag.Movement);
+                    return false;
+                }
+
+                if (m_Controller.StateHandler.HasState(EStateEffect.Frozen))
+                {
+                    ErrorHandler.Log("CanMove - FALSE : is Frozen", ELogTag.Movement);
+                    return false;
+                }
+
+                if (m_Controller.StateHandler.HasState(EStateEffect.SpecialAnimation))
+                {
+                    ErrorHandler.Log("CanMove - FALSE : has SpecialAnimation", ELogTag.Movement);
+                    return false;
+                }
+
+                if (m_MovementBlocked.Value)
+                {
+                    ErrorHandler.Log("CanMove - FALSE : Movement is blocked", ELogTag.Movement);
+                    return false;
+                }
+
+                if (m_MovementCancelled.Value)
+                {
+                    ErrorHandler.Log("CanMove - FALSE : Movement is cancelled", ELogTag.Movement);
+                    return false;
+                }
+
+                if (m_Controller.SpellHandler.IsCastingUncancellable)
+                {
+                    ErrorHandler.Log("CanMove - FALSE : Current cast is not cancellable", ELogTag.Movement);
+                    return false;
+                }
+
+                if (m_Controller.CounterHandler.IsBlockingMovement.Value)
+                {
+                    ErrorHandler.Log("CanMove - FALSE : Has counter blocking movement", ELogTag.Movement);
+                    return false;
+                }
+
+                return true;
             }
         }
 

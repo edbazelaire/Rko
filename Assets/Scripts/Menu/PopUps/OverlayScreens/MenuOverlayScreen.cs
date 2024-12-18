@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using Tools;
-using UnityEngine;
+﻿using Tools;
 using UnityEngine.UI;
 
 

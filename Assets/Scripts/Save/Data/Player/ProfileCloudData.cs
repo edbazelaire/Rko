@@ -1,8 +1,9 @@
 ﻿using Analytics.Events;
 using Assets;
+using Data.GameManagement;
 using Enums;
+using Inventory;
 using MyBox;
-using Newtonsoft.Json.Linq;
 using Save.RSDs;
 using System;
 using System.Collections.Generic;
@@ -15,20 +16,20 @@ using Unity.Services.Authentication;
 using Unity.Services.CloudSave;
 using Unity.Services.CloudSave.Models;
 using Unity.Services.CloudSave.Models.Data.Player;
-using Unity.Services.Relay.Models;
 using Unity.VisualScripting;
 
 namespace Save
 {
     public struct SProfileDataNetwork : INetworkSerializable
     {
+        public int                      AccountLevel;
         public FixedString32Bytes       GamerTag;
         public FixedString32Bytes       Avatar;
         public FixedString32Bytes       Border;
         public FixedString32Bytes       Title;
         public FixedString32Bytes[]     Badges;
 
-        public SProfileDataNetwork(string gamerTag = default, string avatar = default, string border = default, string title = default, string[] badges = null)
+        public SProfileDataNetwork(int accountLevel = 0, string gamerTag = default, string avatar = default, string border = default, string title = default, string[] badges = null)
         {
             if (gamerTag == default)
                 gamerTag = SProfileCurrentData.DEFAULT_GAMER_TAG;
@@ -45,17 +46,19 @@ namespace Save
             if (badges == null)
                 badges = SProfileCurrentData.DEFAULT_BADGES;
 
-            GamerTag    = gamerTag;
-            Avatar      = avatar;
-            Border      = border;
-            Title       = title;
-            Badges      = badges.Select(badge => (FixedString32Bytes)badge).ToArray();
+            AccountLevel    = accountLevel;
+            GamerTag        = gamerTag;
+            Avatar          = avatar;
+            Border          = border;
+            Title           = title;
+            Badges          = badges.Select(badge => (FixedString32Bytes)badge).ToArray();
         }
 
         #region Network Serialization
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
+            serializer.SerializeValue(ref AccountLevel);
             serializer.SerializeValue(ref GamerTag);
             serializer.SerializeValue(ref Avatar);
             serializer.SerializeValue(ref Border);
@@ -95,6 +98,7 @@ namespace Save
         public static string DEFAULT_BADGE => EBadge.None.ToString();
         public static string[] DEFAULT_BADGES => new string[] { DEFAULT_BADGE, DEFAULT_BADGE, DEFAULT_BADGE };
 
+        public int      AccountLevel; 
         public string   GamerTag; 
         public string   Avatar; 
         public string   Border; 
@@ -103,8 +107,11 @@ namespace Save
 
         #endregion
 
-        public SProfileCurrentData(string gamerTag = default, string avatar = default, string border = default, string title = default, string[] badges = null)
+        public SProfileCurrentData(int accountLevel = 1, string gamerTag = default, string avatar = default, string border = default, string title = default, string[] badges = null)
         {
+            if (accountLevel == 0)
+                accountLevel = 1;
+
             if (gamerTag == default)
                 gamerTag = DEFAULT_GAMER_TAG;
 
@@ -120,16 +127,17 @@ namespace Save
             if (badges == null)
                 badges = DEFAULT_BADGES;
 
-            GamerTag  = gamerTag;
-            Avatar    = avatar;
-            Border    = border;
-            Title     = title;
-            Badges    = badges;
+            AccountLevel    = accountLevel;
+            GamerTag        = gamerTag;
+            Avatar          = avatar;
+            Border          = border;
+            Title           = title;
+            Badges          = badges;
         }
 
         public SProfileDataNetwork AsNetworkSerializable()
         {
-            return new SProfileDataNetwork(GamerTag, Avatar, Border, Title, Badges);
+            return new SProfileDataNetwork(AccountLevel, GamerTag, Avatar, Border, Title, Badges);
         }
 
          
@@ -184,8 +192,24 @@ namespace Save
 
         public void Check()
         {
+            CheckLevelAccount();
             CheckGamerTag();
             CheckAchievementRewards();
+        }
+
+        void CheckLevelAccount()
+        {
+            if (AccountLevel <= 0)
+            {
+                ErrorHandler.Error("Bad AccountLevel detected : " + AccountLevel + " - reseting to 1");
+                AccountLevel = 1;
+            }
+
+            if (AccountLevel > CollectablesManagementData.Instance.AccountLevelData.Count)
+            {
+                ErrorHandler.Error("Bad AccountLevel detected : " + AccountLevel + " - reseting to " + CollectablesManagementData.Instance.AccountLevelData.Count);
+                AccountLevel = CollectablesManagementData.Instance.AccountLevelData.Count;
+            }
         }
 
         void CheckGamerTag()
@@ -225,7 +249,7 @@ namespace Save
             string value = Get(achievementReward);
             if (value == null || value == "")
             {
-                ErrorHandler.Warning("Current "+ achievementReward.ToString()+" is empty : use default one");
+                ErrorHandler.Warning("Current "+ achievementReward.ToString() +" is empty : use default one");
                 Set(achievementReward, DEFAULT_AR[achievementReward]);
                 return;
             }
@@ -373,7 +397,7 @@ namespace Save
 
         /// <summary> default data for the Inventory </summary>
         protected override Dictionary<string, object> m_Data { get; set; } = new Dictionary<string, object>() {
-            { KEY_TUTO_DONE,                false                                               },
+            { KEY_TUTO_DONE,                true                                                },
             { KEY_PSEUDO_CHANGED,           false                                               },
             { KEY_GAMER_TAG,                ""                                                  },
             { KEY_TAG,                      ""                                                  },
@@ -391,6 +415,7 @@ namespace Save
         // DEPENDENT STATIC ACCESSORS
         public static int                   LastSelectedBadgeIndex = 0;
         public static bool                  IsAdmin             => TokensRSD.IsTokenAdmin(Token);
+        public static bool                  IsAccountMaxed      => AccountLevel > CollectablesManagementData.Instance.AccountLevelData.Count;
         public static string                PlayerName          => GamerTag + Tag;
         public static string                GamerTag            => (string)Instance.m_Data[KEY_GAMER_TAG];
         public static string                Tag                 => (string)Instance.m_Data[KEY_TAG];
@@ -401,7 +426,8 @@ namespace Save
         public static SProfileCurrentData   CurrentProfileData  => (SProfileCurrentData)Instance.m_Data[KEY_CURRENT_PROFILE_DATA];
         public static string[]              CurrentBadges       => CurrentProfileData.Badges;
 
-        public static Dictionary<string, int> Achievements => (Instance.m_Data[KEY_ACHIEVEMENTS] as Dictionary<string, int>);
+        public static int                       AccountLevel    => CurrentProfileData.AccountLevel;
+        public static Dictionary<string, int>   Achievements    => (Instance.m_Data[KEY_ACHIEVEMENTS] as Dictionary<string, int>);
         public static Dictionary<EAchievementReward, List<string>> AchievementRewards => (Instance.m_Data[KEY_ACHIEVEMENT_REWARDS] as Dictionary<EAchievementReward, List<string>>);
         public static Dictionary<EBadge, ELeague> Badges => Instance.m_Badges;
 
@@ -597,6 +623,36 @@ namespace Save
 
 
             return (true, "");
+        }
+
+        #endregion
+
+
+        #region Account Level
+
+        public static void UpgradeAccountLevel()
+        {
+            if (IsAccountMaxed)
+            {
+                ErrorHandler.Error("Trying to level up an account already maxed");
+                return;
+            }
+
+            int requiredXp = CollectablesManagementData.GetCurrentAccountLevelData().RequiredXp;
+            int totalXp = InventoryCloudData.Instance.GetCurrency(ECurrency.TotalXp);
+            if (totalXp < requiredXp)
+            {
+                ErrorHandler.Error("Trying to level up an account but not enought TOTAL XP (" + totalXp + ") - required " + requiredXp);
+                return;
+            }
+
+            // level up account
+            var currentProfileData = CurrentProfileData;
+            currentProfileData.AccountLevel++;
+            Instance.SetData(KEY_CURRENT_PROFILE_DATA, currentProfileData);
+
+            // update collectable
+            InventoryManager.Spend(requiredXp, ECurrency.TotalXp, "AccountLevelUp");
         }
 
         #endregion
@@ -882,9 +938,9 @@ namespace Save
 
             switch (key)
             {
-                // Make KEY_PSEUDO_CHANGED un-resetable
+                // List of un-resetable data
                 case KEY_PSEUDO_CHANGED:
-                    //Instance.m_Data[key] = false;
+                case KEY_TUTO_DONE:
                     break;
 
                 case KEY_CURRENT_PROFILE_DATA:

@@ -60,7 +60,8 @@ public class PlayerBarUI : MonoBehaviour
             return;
 
         m_Fill.fillAmount = (float)m_CurrentValue / m_MaxValue;
-        if (m_Text != null)
+
+        if (m_Text != null && m_Text.isActiveAndEnabled)
             m_Text.text = GetText();
     }
 

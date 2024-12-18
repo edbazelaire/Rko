@@ -20,9 +20,14 @@
         SpellInfoPopUp,
         StateEffectPopUp,
         TriggerEffectPopUp,
+        RunePowerPopUp,
+        PowerUpInfoScreen,
+        PowerUpSelectionScreen,
+        BossInfoScreen,
 
         // -- message PopUps
         MessagePopUp,
+        ConfirmPopUp,
         PseudoPopUp,
         ErrorMessagePopUp,
         ConfirmBuyPopUp,
@@ -31,6 +36,7 @@
 
         // -- config popup
         SettingsPopUp,
+        MessageriePopUp,
     }
 
     public enum EScreenAspect
@@ -49,29 +55,74 @@
 
     public enum EArenaType
     {
-        FireArena,
-        //FrostArena,
+        None = -1,
+
+        //FireArena = 0,
+        FrostArena = 1,
     }
 
     public enum EArenaDifficulty
     {
+        Easy,
         Normal,
-        HardCore,
+        Hard,
+        Painfull,
+        Brutal,
+        //HardCore,
+        //Savage,
+        //Relentless
+        //Torment,
+        //Infernal,
+        //Nightmare,
+        //Cataclysmic,
+        //Hell,
     }
 
     public enum ECharacter
     {
+        None = -1,
+
         Kahnan,
         Alexander,
         Srug,
         Marcus,
         Nagini,
+    }
 
-        Count
+    public enum EBoss
+    {
+        None        = -1,
+
+        IceGolem    = 0,
+        MaiHau      = 1,
+        Atassut     = 2,
+        Sikunik     = 3,
+        Fenris      = 4,
+
+        Zorg        = 10,
+
+        // ======================================================================
+        // Mobs
+        Lunassian               = 1001,
+        VenomfangLunassian      = 1002,
+        MoonclawLunassian       = 1003,
+        AshhowlLunassian        = 1004,
+        ElderLunassian          = 1005,
+    }
+
+    public enum ESpawn
+    {
+        None = -1,
+
+        Stalacmite      = 1,
+        DarkVeil        = 2,
+        AzurePowerOrb   = 3,
     }
 
     public enum ESpell
     {
+        None = -1,
+
         RockShower,
         Blazeburst,
         Fireball,
@@ -120,22 +171,74 @@
         ExperimentalVial,
         Vortex,
         Shardrot,
+        SoulFreeze,
+        DarkVeil,
+        IceField,
+        Stalacmite,
+        PoisonDart,
+        DarkEnergyField,
 
-        Count
+        // ======================================================================
+        // BOSSES ABILITIES
+        // -- IceGolem
+        IceRock             = 10001,
+        Carapice            = 10002,
+        IceRockNRoll        = 10003,
+        CryoPunch           = 10004,
+        FrostfistRain       = 10005,
+        // -- MaiHau
+        Slicide             = 10101,
+        SlIceBreaker        = 10102,
+        PoisonDarts         = 10103,
+        Crosslice           = 10104,
+        ExtraClaws          = 10105,
+        // -- Atassut
+        ChaosOrb            = 10201,
+        Scythefall          = 10202,
+        Nightveil           = 10203,
+        GreatVortex         = 10204,
+        AstralIcefall       = 10205,
+        DarkstarDescent     = 10206,
+        // -- Sikunik
+        BlueMeteor          = 10301,
+        DragonicRest        = 10302,
+        Soaring             = 10303,
+        AzureDeflagration   = 10304,
+        AzurePowerOrbs      = 10305,
+        // -- Fenris
+        IceClaws            = 10401,
+        PackHunt            = 10402,
+        FrostfangStrike     = 10403,
+
+        // -- Lunassian
+        LeatherSkin         = 100002,
+        StalacmiteLuna      = 100003,
+        FrostVenomOrb       = 100004,
+        HealingField        = 100006,
+        FrostCursedOrb      = 100007,
+        MoonSilence         = 100009,
+        FrostFireOrb        = 100010,
+        Howling             = 100012,
+        GlacialOrb          = 100013,
+        FerociousBite       = 100015,
     }
 
     public enum ESpellType
     {
-        Projectile,
-        InstantSpell,
-        Aoe,
-        Counter,
-        Jump,
-        Zone,
-        Buff,
-        MultiProjectiles,
+        None = -1,
 
-        Count
+        Projectile          = 0,
+        InstantSpell        = 1,
+        Aoe                 = 2,
+        Counter             = 3,
+        Jump                = 4,
+        Zone                = 5,
+        Buff                = 6,
+        MultiProjectiles    = 7,
+        Teleportation       = 8,
+        MultiSpellData      = 9,
+        Mine                = 10,
+        Spawner             = 11,
     }
 
     public enum ESpellElement
@@ -146,6 +249,15 @@
         Frost,
         Poison,
         Void,
+    }
+
+    public enum EDamageType
+    {
+        None,
+
+        Direct,
+        Zone,
+        Tick,
     }
 
     public enum ESpellSelectionState
@@ -185,10 +297,10 @@
     public enum ERune
     {
         None,
-        FrostRune = 1,
-        FireRune = 2,
-        PoisonRune = 3,
-        CurseRune = 4,
+        FrostRune   = 1,
+        FireRune    = 2,
+        PoisonRune  = 3,
+        CurseRune   = 4,
 
         ProtectorRune,
         BerserkerRune,
@@ -196,6 +308,14 @@
         ResurrectionRune,
         InfernalProtectionRune,
         AncientAegisRune,
+        HealRune,
+        SoulSiffonRune,
+        ShardcurseRune,
+        ToxicWaterRune,
+        ThermalShockRune,
+        ParasiteRune,
+        PoisonfangRune,
+        VampiricRune,
     }
 
     public enum EOrderBy
@@ -256,17 +376,21 @@
         Hp                  = 3,        // activate effect when HP goes below a threshold
         Shield              = 4,        // activate effect when SHIELD foes below a threshold
         Death               = 5,        // activate effect when the player DIES
+        //TriggerEnter        = 6,        // activate effect when something ENTER collision with target
+        //TriggerExit         = 7,        // activate effect when something EXIT collision with target
     }
 
     public enum ESpellEvent
     {
-        None,
+        None = 0,
 
-        OnStartCast,
-        OnCast,
-        OnSpawn,
-        OnHit,
-        OnEnd,
+        OnStartCast     = 100,
+        OnCancelCast    = 200,
+        OnCast          = 300,
+        OnSpawn         = 400,
+        OnHit           = 500,
+
+        OnEnd           = 1000,
     }
 
     public enum EStateEffectEvent
@@ -308,11 +432,26 @@
         AllyZoneStart = 8,
         EnemyZoneCenter = 9,
         AllyZoneCenter = 10,
+        EnemyZoneEnd = 11,
+        AllyZoneEnd = 12,
 
         CurrentTarget = 50,
 
         Mirror = 101,               // target the symetrical point
         Fixed = 102,                // at a fixed distance
+    }
+
+    public enum EStateEffectTarget
+    {
+        None = 0,
+
+        Self        = 1,
+        Target      = 2,
+        Ally        = 3,
+        Enemy       = 4,
+
+        AllEnemies  = 10,
+        AllAllies   = 11,
     }
 
     public enum ESpellSpawn
@@ -326,8 +465,25 @@
     {
         None,
 
-        Line,
-        Random,
+        Line = 1,
+        Random = 2,
+        RandomLine = 4,
+    }
+
+    public enum EDimension
+    {
+        None = 0,
+
+        X = 1, 
+        Y = 2,
+    }
+
+    public enum EMultiSpellZone
+    {
+        None        = 0,
+
+        Random      = 1,
+        Line        = 2,
     }
 
     public enum EJumpType
@@ -337,6 +493,7 @@
         Curve,
         Dash,
         Teleport,
+        Charge,
     }
 
     public enum ESpellEffectType
@@ -361,6 +518,7 @@
         OnSpell,                // spell location
         TargetPos,              // target of the spell (position where it's aim at)
         Mouse,                  // on the mouse location    
+        MapCenter,              // center of the map (0, 0, 0)
     }
 
     public enum ESpawnLocation
@@ -369,6 +527,7 @@
 
         Center,                 // spawn at the Center of the provided position
         Ground,                 // spawn on the ground (y = 0) at the X requested position
+        Hight,                  // spawn in the "Hight" at the X requested position
         Sky,                    // spawn in the sky at the X requested position
     }
 
@@ -386,7 +545,8 @@
         L_Arm,
         R_Arm,
         L_Leg,
-        R_Leg
+        R_Leg,
+        Weapon
     }
 
     public enum EStateEffect
@@ -426,6 +586,16 @@
         Combustion,
         Airborn,
         Infection,
+        Vanish,
+        Cleanse,
+        SoulHarvest,
+
+        // ======================================================================
+        // Special Effects (boss)
+        DarkRetribution = 10001,
+        DragonicRest    = 10002,
+        AzurePowerOrb   = 10003,
+        Howling         = 10004,
     }
 
     public enum EStateEffectType
@@ -456,6 +626,8 @@
         TickDamages,
         TickHeal,
         TickShield,
+        Shield,
+        Delay,
     }
 
     public enum EStateEffectProperty
@@ -489,39 +661,48 @@
         BonusTickDamagesPerc    = 101,
         BonusTickHeal           = 102,
         BonusTickShield         = 103,
+        BonusTickLifeSteal      = 117,
 
-        Heal,
-        LifeSteal,
-        BonusHeal,
-        BonusHealPerc,
+        Heal                = 104,
+        LifeSteal           = 105,
+        BonusHeal           = 106,
+        BonusHealPerc       = 107,
 
-        EndDamages,
-        EndHeal,
-        Stacks,
-        Hp,
-        BonusBurnDamages,
-        BonusSlowPerc,
-        Priority,
+        EndDamages          = 108,
+        EndHeal             = 109,
+        Stacks              = 110,
+        Hp                  = 111,
+        BonusBurnDamages    = 112,
+        BonusSlowPerc       = 113,
+        Priority            = 114,
+        TickEnergy          = 115,
+        Energy              = 116,
     }
 
     public enum EAnimation
     {
-        None,
-        CastShootStraight,
-        CastShoot,
-        CancelCast,
-        Counter,
-        Jump,
-        CastAOE,
-        Win,
-        Loss,
-        CastBuff,
-        CancelStateEffect,
-        Stun,
-        Frozen,
-        Silenced,
-        CastHight,
-        Airborn,
+        Self = -1,                       // animation would be the name of the spell (for special spells)
+        
+        None = 0,
+        
+        CastShootStraight   = 1,
+        CastShoot           = 2,
+        CancelCast          = 3,
+        Counter             = 4,
+        Jump                = 5,
+        CastAOE             = 6,
+        Win                 = 7,
+        Loss                = 8,
+        CastBuff            = 9,
+        CancelStateEffect   = 10,
+        Stun                = 11,
+        Frozen              = 12,
+        Silenced            = 13,
+        CastHight           = 14,
+        Airborn             = 15,
+        CastDiagonal        = 16,
+        PrepareCharge       = 17,
+        Charge              = 18,
     }
 
     public enum ECounterType
@@ -531,7 +712,7 @@
         Proc,
         Block,
         Reflect,
-        ApplyStateEffect
+        ApplyStateEffect,
     }
 
     public enum ECounterActivation
@@ -566,7 +747,6 @@
         // Game
         Game                = 100,    
         Gameplay            = 101,      
-        Spells              = 102,      // spell infos, start, end, stats, Colliders(), ...
         Rewards             = 103,      // end game rewards handling
         GameSystem          = 104,      // login, new player, stages, ...
         SpellHandler        = 105,      // casting error/success messages, cancel, all stages of spell casting, spell ending, ...
@@ -574,6 +754,8 @@
         StateEffects        = 107,      // state effects changes
         SpellGFX            = 107,      // spell graphics playing
         StateEffectGFX      = 108,      // spell graphics playing
+        BonusStats          = 109,      // track increased statistiques
+        Movement            = 110,      // track increased statistiques
 
         // AI
         AI                  = 200,
@@ -583,6 +765,9 @@
         AITaskMove          = 204,
         AITaskJump          = 205,
         AITaskCounter       = 206,
+        AITaskAutoAttack    = 207,
+        AITaskUseSpell      = 208,
+        AIBtState          = 209,
 
         // CloudData
         CloudData           = 300,
@@ -591,6 +776,15 @@
         // Services
         Services            = 400,
         Analytics           = 401,
+
+        // Spells
+        Spells              = 500,      // spell infos, start, end, stats, Colliders(), ...
+        Projectiles         = 501,  
+        Aoe                 = 502,  
+        Buff                = 503,      
+        Spawns              = 504,  
+        MultiSpells         = 505,  
+
     }
 
     public enum ERewardType
@@ -606,6 +800,7 @@
         Gems,
         Dollars,
         Xp,
+        TotalXp,
     }
 
     public enum EChest
@@ -729,7 +924,8 @@
     {
         Damage,
         Heal,
-        LifeSteal
+        LifeSteal,
+        Shield,
     }
 
     public enum ELeague
@@ -768,9 +964,18 @@
         The_Money_Maker,
         Cresus,
         Lone_Wolf,
-        Pyro_Master,
-        Glacial_Conqueror,
         Heal_Checker,
+        Alpha_Tester,
+
+        // Frost Arena ======================================================
+        Winter_Soldier          = 1001,
+        The_Iceborned           = 1002,
+        Arctic_Vanquisher       = 1003,
+        Glacial_Conqueror       = 1004,
+        Eternal_Winter_King     = 1005,
+
+        // Fire Arena ======================================================
+        Pyro_Master             = 1104,
     }
 
     public enum EAvatar
@@ -796,7 +1001,7 @@
         ChibiFrostDemon = 105,
         FirstWinChibi   = 106,
 
-        Alexander = 1000,
+        Alexander       = 1000,
         YoungAlexander  = 1001,
         Marcus          = 1010,
         Kahnan          = 1030,
@@ -882,5 +1087,12 @@
 
         Normal,
         Exclamation
+    }
+
+    public enum ECaptionColor
+    {
+        None,
+        White,
+        Black,
     }
 }

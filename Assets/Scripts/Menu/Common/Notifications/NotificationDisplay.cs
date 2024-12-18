@@ -101,6 +101,11 @@ namespace Menu.Common.Notifications
             if (m_ParticleAnimations != null)
                 m_ParticleAnimations.End();
 
+            // check manually
+            var particleAnimations = Finder.FindComponent<ParticlesAnimation>(gameObject);
+            if (particleAnimations != null)
+                particleAnimations.End(); 
+
             if (m_Background != null)
             {
                 if (m_ReplacementColor != null)

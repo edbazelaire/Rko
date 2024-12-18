@@ -1,4 +1,6 @@
-﻿using Menu.Common.Buttons;
+﻿using Enums;
+using Game.Loaders;
+using Menu.Common.Buttons;
 using Menu.PopUps;
 using Save;
 using System;
@@ -46,7 +48,10 @@ public class CollectableSelectionPopUp : PopUp
         UIHelper.CleanContent(m_ScrollerContent);
         foreach(Enum value in Enum.GetValues(m_CollectableType))
         {
-            if (value.ToString() == "Count")
+            if (value.ToString() == "None")
+                continue;
+
+            if (m_CollectableType == typeof(ESpell) && (SpellLoader.IsLinked(value.ToString()) || SpellLoader.IsBossSpell((ESpell)value)))
                 continue;
 
             if (InventoryCloudData.Instance.GetCollectable(value).Level <= 0 && m_UnlockedOnly)

@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a402882a257d18548a281b17574b3711, type: 3}
+  m_Name: PoisonfangRune
+  m_EditorClassIdentifier: 
+  Rarety: 1
+  m_Description: 
+  m_DescriptionVariables: []
+  Description: 
+  m_SpellElements: 
+  m_MinorPower:
+    Description: Increase damages by 1% for each stacks of Poison on the target
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects: []
+    m_BonusStats:
+    - StateEffectProperty: 8
+      BaseValue: 0
+      BonusValue: 0
+      ScalingFactor: 0
+      StateEffectStackFactors:
+      - Target: 2
+        StateEffect: 9
+        BaseValue: 0.01
+        LevelFactor: 0.05
+  m_MajorPower:
+    Description: Increase damages by 2% for each stacks of Poison on the target
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects: []
+    m_BonusStats:
+    - StateEffectProperty: 8
+      BaseValue: 0
+      BonusValue: 0
+      ScalingFactor: 0
+      StateEffectStackFactors:
+      - Target: 2
+        StateEffect: 9
+        BaseValue: 0.02
+        LevelFactor: 0.05
+  m_PrimalPower:
+    Description: Increase damages by 5 fix + 2% for each stacks of Poison on the
+      target
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: 
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 0
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+    m_BonusStats:
+    - StateEffectProperty: 7
+      BaseValue: 0
+      BonusValue: 0
+      ScalingFactor: 0
+      StateEffectStackFactors:
+      - Target: 2
+        StateEffect: 9
+        BaseValue: 3
+        LevelFactor: 0.1
+    - StateEffectProperty: 8
+      BaseValue: 0
+      BonusValue: 0
+      ScalingFactor: 0
+      StateEffectStackFactors:
+      - Target: 2
+        StateEffect: 9
+        BaseValue: 0.02
+        LevelFactor: 0.05

@@ -108,20 +108,6 @@ namespace Menu.MainMenu.MainTab
                 return false;
             }
 
-            if (PlayerPrefsHandler.GetGameMode() == EGameMode.Arena && ProgressionCloudData.IsArenaCompleted(PlayerPrefsHandler.GetArenaType()))
-            {
-                SoundFXManager.PlayOnce(SoundFXManager.ErrorSoundFX);
-                Main.ErrorMessagePopUp("This arena has already beed completed");
-                return false;
-            }
-
-            if (PlayerPrefsHandler.GetGameMode() == EGameMode.Arena && ProgressionCloudData.IsArenaDifficultyCompleted(PlayerPrefsHandler.GetArenaType()))
-            {
-                SoundFXManager.PlayOnce(SoundFXManager.ErrorSoundFX);
-                Main.ErrorMessagePopUp("You need to collect your rewards to unlock the next level of difficulty.\nClick the Arena button to display the Arena Path of Rewards and click rewards to collect them !");
-                return false;
-            }
-
             return true;
         }
 
@@ -162,6 +148,29 @@ namespace Menu.MainMenu.MainTab
             {
                 LeaveLobby();
                 return;
+            }
+
+            if (LobbyHandler.Instance.GameMode == EGameMode.Arena)
+            {
+                if (!ProgressionCloudData.HasArenaInProgress)
+                {
+                    var arenaModeDisplayUI = Finder.FindComponent<ArenaModeDisplayUI>(m_GameSectionUI.gameObject);
+                    if (arenaModeDisplayUI == null)
+                    {
+                        ErrorHandler.Error("GameMode is Arena but ArenaModeDisplayUI was not found");
+                        Main.ErrorMessagePopUp("Please select an Arena before playing");
+                        return;
+                    }
+
+                    // auto select 
+                    arenaModeDisplayUI.OnSelectButtonClicked();
+                }
+
+                else if (ProgressionCloudData.CurrentArena.IsOver())
+                {
+                    Main.ErrorMessagePopUp("Please collect your Arena rewards before playing");
+                    return;
+                }
             }
 
             Main.SetPopUp(EPopUpState.LobbyScreen);

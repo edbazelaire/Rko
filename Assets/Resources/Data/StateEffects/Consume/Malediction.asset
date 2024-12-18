@@ -12,18 +12,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdf9fa99f588d38479137fd3d7b8d353, type: 3}
   m_Name: Malediction
   m_EditorClassIdentifier: 
-  m_Description: Consume all {0} stacks to inflict {1} damages for each stack consumed.
-    Also apply a silence and a slow for {2} seconds
-  m_DescriptionVariables: 120000000b00000001000000
+  m_Description: Consume all [Cursed] stacks to inflict {0} damages for each stack
+    consumed. Also apply a silence and a slow for {1} seconds
+  m_DescriptionVariables: 0b00000001000000
   m_StateEffectType: 0
+  m_IsDisplayed: 1
   m_VisualEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 13
   m_DefaultState: 0
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
+  m_Priority: 0
   m_Duration: 0.05
+  m_IsInstantanious: 0
   m_MaxStacks: 10
+  m_StackDecay: -1
+  m_Energy: 0
+  m_BonusStats: []
   m_SpeedBonus: -0.05
   m_CastSpeed: 0
   m_AttackSpeed: 0
@@ -35,6 +43,10 @@ MonoBehaviour:
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
   m_BonusLifeSteal: 0
+  m_BonusHeal: 0
+  m_BonusHealPerc: 0
+  m_BonusBurnDamages: 0
+  m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel:
@@ -47,6 +59,7 @@ MonoBehaviour:
     ScalingFactor: 1
   - StateEffectProperty: 1
     ScalingFactor: 1
+  m_IsTrueDamages: 0
   m_Damages: 5
   m_EndDamages: 0
   m_Heal: 0

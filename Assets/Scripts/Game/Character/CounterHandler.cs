@@ -1,5 +1,6 @@
 ﻿using Enums;
 using Game.Spells;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
@@ -21,6 +22,20 @@ namespace Game.Character
         public NetworkVariable<bool> IsBlockingMovement => m_IsBlockingMovement;
         public NetworkVariable<bool> IsBlockingCast => m_IsBlockingCast;
         public NetworkVariable<bool> HasCounter => m_HasCounter;
+
+        public int RemainingShield
+        {
+            get
+            {
+                var shield = 0;
+                foreach (var counter in m_Counters)
+                {
+                    shield += Math.Max(0, counter.Shield);
+                }
+
+                return shield;
+            }
+        }
 
         #endregion
 
@@ -55,8 +70,39 @@ namespace Game.Character
             if (GameManager.Instance.GetPlayer(spell.OwnerClientId).Team == m_Controller.Team)
                 return false;
 
-            // check that spell can proc counters
-            if (!Counter.COUNTER_PROCABLE_SPELLTYPE.Contains(spell.SpellData.SpellType))
+            // find first counter that has an "OnHit" proc effect
+            foreach (Counter counter in m_Counters)
+            {
+                // check has right type
+                if (counter.SpellData.CounterActivation != ECounterActivation.OnHitPlayer)
+                    continue;
+
+                // check that spell can proc counters
+                if (! counter.SpellData.DamageTypeActivation.Contains(spell.SpellData.DamageType))
+                    continue;
+
+                // try to proc it, return true if successfull
+                if (counter.ProcCounter(spell) && counter.SpellData.IsDestroyingSpell)
+                    return true;
+            }
+
+            // no spell has proc any counter : return false
+            return false;
+        }
+
+        /// <summary>
+        /// When a spell hits a player, check for counters
+        /// </summary>
+        /// <param name="spell"></param>
+        /// <returns></returns>
+        public bool CheckCounters(int damages, Controller caster, EDamageType damageType)
+        {
+            // check has counters
+            if (m_Counters.Count == 0)
+                return false;
+
+            // check is same team
+            if (caster.Team == m_Controller.Team)
                 return false;
 
             // find first counter that has an "OnHit" proc effect
@@ -66,8 +112,12 @@ namespace Game.Character
                 if (counter.SpellData.CounterActivation != ECounterActivation.OnHitPlayer)
                     continue;
 
+                // check that spell can proc counters
+                if (! counter.SpellData.DamageTypeActivation.Contains(damageType))
+                    continue;
+
                 // try to proc it, return true if successfull
-                if (counter.ProcCounter(spell))
+                if (counter.ProcCounter(damages, caster, damageType) && counter.SpellData.IsDestroyingSpell)
                     return true;
             }
 
@@ -90,16 +140,19 @@ namespace Game.Character
             CheckBlockingActions();
         }
 
-        public void RemoveCounter(Counter counterSpell)
+        public void RemoveCounter(Counter counter)
         {
             if (!IsServer)
+                return;
+
+            if (counter == null)
                 return;
 
             // find index
             int index = -1;
             for (int i = 0; i < m_Counters.Count; i++)
             {
-                if (m_Counters[i] == counterSpell)
+                if (m_Counters[i] == counter)
                 {
                     index = i;
                     break;
@@ -110,7 +163,7 @@ namespace Game.Character
             if (index >= 0)
                 m_Counters.RemoveAt(index);
             else
-                ErrorHandler.Error("Unable to find counter " + counterSpell.name + " in list of counters");
+                ErrorHandler.Error("Unable to find counter " + counter.name + " in list of counters");
 
             // now that this spell has been removed, check if there is still blocking actions
             CheckBlockingActions();

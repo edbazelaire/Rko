@@ -18,10 +18,25 @@ MonoBehaviour:
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
-  SpellEventActions: []
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
+  SpellEventActions:
+  - Prefab: {fileID: 150222, guid: 44f40a08278d2704d86e189b67164324, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 400
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1.5
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 3
+    SpawnLocation: 2
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    StateEffects: 
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -30,12 +45,18 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 0
-  LockTargetAt: 2
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 0
   EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 200
+  m_Damage: 150
   m_Heal: 0
+  m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
@@ -53,6 +74,7 @@ MonoBehaviour:
   EnemyStateEffects:
   - StateEffect: 1
     Stacks: 1
+    BonusStacksPerLevel: 0
     OverridingProperties:
     - StateEffectProperty: 1
       Value: 2

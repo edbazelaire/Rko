@@ -14,6 +14,11 @@ namespace Data
         public ERarety Rarety;
 
         // ===================================================================================================
+        // Protected Serialize Data
+        [SerializeField] protected string m_Description = "";
+        [SerializeField] protected List<SDescriptionVariable> m_DescriptionVariables = new List<SDescriptionVariable>();
+
+        // ===================================================================================================
         // Private Data
         protected int m_Level = 1;
         protected virtual Type m_EnumType => null;
@@ -65,8 +70,7 @@ namespace Data
 
         protected virtual void OnDestroy()
         {
-            //if (ErrorHandler.IsExiting)
-            //    ErrorHandler.Error("Unhandled Destroy() Data : " + Name);
+
         }
 
         #endregion
@@ -77,19 +81,18 @@ namespace Data
         public virtual CollectableData Clone(int level = 0, bool destroy = false)
         {
             CollectableData clone = Instantiate(this);
-            if (level == 0)
-                return clone;
-
-            clone.SetLevel(level);
             clone.name = Name;
-
+            
             if (destroy)
                 CoroutineManager.DelayMethod(() => Destroy(clone));
+
+            if (level != 0)
+                clone.SetLevel(level);
 
             return clone;
         }
 
-        protected virtual void SetLevel(int level)
+        public virtual void SetLevel(int level)
         {
             m_Level = level;
         }
@@ -102,6 +105,49 @@ namespace Data
         public virtual Dictionary<string, object> GetInfos()
         {
             return new Dictionary<string, object>();
+        }
+
+        /// <summary>
+        /// Get Description info of the StateEffect
+        /// </summary>
+        /// <returns></returns>
+        public virtual string GetDescription()
+        {
+            List<string> values = new List<string>();
+            var infos = GetInfos();
+
+            foreach (SDescriptionVariable descriptionVariable in m_DescriptionVariables)
+            {
+                values.Add(ConvertDescriptionVariable(descriptionVariable, infos));
+            }
+
+            return string.Format(TextHandler.ReplaceStateEffectTokens(m_Description), values.ToArray());
+        }
+
+        /// <summary>
+        /// Convert a description variable into a string implemented into the description
+        /// </summary>
+        /// <returns></returns>
+        public virtual string ConvertDescriptionVariable(SDescriptionVariable descriptionVariable, Dictionary<string, object> infos = default, bool throwError = true)
+        {
+            if (infos.ContainsKey(descriptionVariable.Name))
+            {
+                string value = infos[descriptionVariable.Name].ToString();
+                if (float.TryParse(value, out float floatValue))
+                    value = TextHandler.FormatPropertyValue(floatValue, descriptionVariable.Name);
+
+                return TextHandler.FormatPropertyIcon(descriptionVariable.Name, value, descriptionVariable.WithIcon, false);
+            }
+
+            if (Enum.TryParse(descriptionVariable.Name, out EStateEffect _))
+            {
+                return TextHandler.FormatStateEffectIcon(descriptionVariable.Name, descriptionVariable.WithIcon);
+            }
+            
+            if (throwError)
+                ErrorHandler.Error("Unable to find property " + descriptionVariable.Name + " in info dict of spell " + Name);
+
+            return TextHandler.UNDEFINED;
         }
 
         #endregion

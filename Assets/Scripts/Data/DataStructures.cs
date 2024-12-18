@@ -1,17 +1,23 @@
 ﻿using Assets.Scripts.Managers.Sound;
 using Enums;
-using Game;
 using Game.SpellGFXs;
 using Game.Spells;
+using MyBox;
 using System;
 using System.Collections.Generic;
-using System.Xml.Linq;
 using Tools;
 using UnityEngine;
 
 
 namespace Data
 {
+    [Serializable]
+    public struct SMinMax
+    {
+        public float Min;
+        public float Max;
+    }
+
     [Serializable] 
     public struct SStateEffectProperty
     {
@@ -33,29 +39,51 @@ namespace Data
     {
         public EStateEffect                 StateEffect;
         public int                          Stacks;
+        public float                        BonusStacksPerLevel;
         public List<SStateEffectProperty>   OverridingProperties;
 
-        public SStateEffectData(EStateEffect stateEffect, int stacks = 1, List<SStateEffectProperty> overridingProperties = default)
+        int m_Level;
+
+        public SStateEffectData(EStateEffect stateEffect, int stacks = 1, float bonusStacks = 0, int level = 1, List<SStateEffectProperty> overridingProperties = default)
         {
             StateEffect             = stateEffect;
             Stacks                  = stacks;
+            BonusStacksPerLevel     = bonusStacks;
             OverridingProperties    = overridingProperties;
+
+            m_Level = level;
         }
+
+        public void SetLevel(int level)
+        {
+            m_Level = level;
+        }
+
+        public int GetStacks()
+        {
+            return Stacks + (int)Math.Floor(m_Level * BonusStacksPerLevel);
+        }
+
+        public string Description => TextHandler.ReplaceStateEffectTokens($"apply {GetStacks()} stacks of [{StateEffect}]");
     }
 
     [Serializable]
-    public struct SGFXLifetime
+    public class SGFXLifetime<TEnum> where TEnum : Enum 
     {
-        public ESpellEvent StartSpellPart;
-        public ESpellEvent EndSpellPart;
+        [SerializeField] protected TEnum m_StartSpellPart;
+        [SerializeField] protected TEnum m_EndSpellPart;
+
         public float StartAt;
         public float EndAt;
         public float Persistance;
 
-        public SGFXLifetime(ESpellEvent startSpellSpart, ESpellEvent endSpellSpart = ESpellEvent.None, float startAt = 0f, float endAt = 1f, float persistance = 0f)
+        public TEnum StartSpellPart => m_StartSpellPart;
+        public TEnum EndSpellPart   => m_EndSpellPart;
+
+        public SGFXLifetime(TEnum startSpellPart, TEnum endSpellPart, float startAt = 0f, float endAt = 1f, float persistance = 0f)
         {
-            StartSpellPart = startSpellSpart;
-            EndSpellPart = endSpellSpart;
+            m_StartSpellPart = startSpellPart;
+            m_EndSpellPart = endSpellPart;
 
             if (startAt < 0)
             {
@@ -103,14 +131,14 @@ namespace Data
 
 
     [Serializable]
-    public struct SPrefabSpawn
+    public class SPrefabSpawn<TEnum> where TEnum : Enum
     {
         #region Members
 
         public GameObject           Prefab;
         public Material             MaterialEffect;
         public List<SSoundFX>       SoundFX;
-        public SGFXLifetime         GFXLifetime;
+        public SGFXLifetime<TEnum>  GFXLifetime;
         public float                Size;
         public int                  OrderInLayer;
 
@@ -121,17 +149,22 @@ namespace Data
         public Vector2              Offset;
 
         public EAnimation           Animation;
+        public string               SpellAnimation;
         public List<EStateEffect>   StateEffects;
 
         /// <summary>
         /// Check if is only made with asynchron sounds
         /// </summary>
-        public readonly bool IsAsyncSoundOnly
+        public bool IsAsyncSoundOnly
         {
             get
             {
                 // must have no prefab or material attached
-                if (Prefab != null || MaterialEffect != null)
+                if (Prefab != null 
+                    || MaterialEffect != null 
+                    || StateEffects.Count != 0 
+                    || Animation != EAnimation.None 
+                    || ! SpellAnimation.IsNullOrEmpty())
                     return false;
 
                 // must contains sounds
@@ -156,12 +189,12 @@ namespace Data
 
         #region Contructor
 
-        public SPrefabSpawn(GameObject prefab, Material materialEffect, List<SSoundFX> soundFX, SGFXLifetime gFXLifetime, ESpawnTarget spawnTarget, ESpawnLocation spawnLocation, EBodyPart bodyPart, bool isFollowing, Vector2 offset, EAnimation animation, List<EStateEffect> stateEffects = default, float size = 0f, int orderInLayer = 0)
+        public SPrefabSpawn(GameObject prefab, Material materialEffect, List<SSoundFX> soundFX, SGFXLifetime<TEnum> gfxLifetime, ESpawnTarget spawnTarget, ESpawnLocation spawnLocation, EBodyPart bodyPart, bool isFollowing, Vector2 offset, EAnimation animation, List<EStateEffect> stateEffects = default, float size = 0f, int orderInLayer = 0)
         {
             Prefab          = prefab;
             MaterialEffect  = materialEffect;
             SoundFX         = soundFX;
-            GFXLifetime     = gFXLifetime;
+            GFXLifetime     = gfxLifetime;
             Size            = size;
             OrderInLayer    = orderInLayer;
 
@@ -181,49 +214,58 @@ namespace Data
         #region Spawn & Instantiation
 
         /// <summary>
-        /// Spawn a Prefab for a defined lifetime
+        /// Spawns a prefab for a defined lifetime with specific enum events
         /// </summary>
-        /// <param name="caster">       Controller at the origin of this action </param>
-        /// <param name="spellData">    SpellData of the spell we are trying to cast or was casted </param>
-        /// <param name="spell">        If the spell has already spawned, provide it (otherwise will be null) </param>
-        /// <returns></returns>
-        public readonly SpellGFX Spawn(Controller caster, SpellData spellData, Spell spell = null, string stateEffectName = null, Controller targetController = null, Vector3 callFromPosition = default, Vector3 targetPos = default)
+        public BaseSpellGFX<TEnum> Spawn(
+            Controller caster,
+            SpellData spellData,
+            Spell spell = null,
+            string stateEffectName = null,
+            Controller targetController = null,
+            Vector3 callFromPosition = default,
+            Vector3 targetPos = default,
+            float? forcedDuration = null
+            )
         {
-            // if is only asynchrone sounds, just play the sounds and leave
             if (IsAsyncSoundOnly)
             {
                 PlaySoundOnly();
                 return null;
-            }    
-
-            GameObject go;
-            if (Prefab == null)
-                go = new GameObject();
-            else
-            {
-                var parent = SpellGFX.CalculateParent(this, caster, spell, targetController);
-                var position = SpellGFX.CalculatePosition(parent, this, caster, callFromPosition, targetPos);
-                
-                if (position == Vector3.zero)
-                {
-                    ErrorHandler.Error("Spell GFX spawned in void : " + spellData.Name + " - " + Prefab.name);
-                    return null;
-                }
-
-                go = GameObject.Instantiate(Prefab, position, Quaternion.identity, IsFollowing ? parent : null);
-            }
-            
-            if (! go.TryGetComponent(out SpellGFX spellGfx))
-            {
-                // NO SPECIFIC COMPONENT : add default spell graphics component
-                spellGfx = go.AddComponent<SpellGFX>();
             }
 
-            spellGfx.Initialize(this.SpawnTarget != ESpawnTarget.Target ? caster : targetController, spellData, spell, stateEffectName, this);
-            return spellGfx;
+            GameObject go = Prefab == null ? new GameObject() : InstantiatePrefab(caster, spell, targetController, callFromPosition, targetPos);
+
+            return InitializeGFXComponent(go, caster, spellData, spell, stateEffectName, targetController, forcedDuration);
         }
 
-        public readonly void PlaySoundOnly()
+        private GameObject InstantiatePrefab(Controller caster, Spell spell, Controller targetController, Vector3 callFromPosition, Vector3 targetPos)
+        {
+            var parent = BaseSpellGFX<TEnum>.CalculateParent(this, caster, spell, targetController);
+            var position = BaseSpellGFX<TEnum>.CalculatePosition(parent, this, caster, callFromPosition, targetPos);
+
+            if (position == Vector3.zero)
+            {
+                ErrorHandler.Warning("Spell GFX spawned in void");
+                return null;
+            }
+
+            return GameObject.Instantiate(Prefab, position, Quaternion.identity, IsFollowing ? parent : null);
+        }
+
+        protected virtual BaseSpellGFX<TEnum> InitializeGFXComponent(
+            GameObject go,
+            Controller caster,
+            SpellData spellData,
+            Spell spell,
+            string stateEffectName,
+            Controller targetController,
+            float? forcedDuration
+            )
+        {
+            return null;
+        }
+ 
+        public void PlaySoundOnly()
         {
             foreach (SSoundFX soundFX in SoundFX)
             {
@@ -243,4 +285,6 @@ namespace Data
         #endregion
 
     }
+
+
 }

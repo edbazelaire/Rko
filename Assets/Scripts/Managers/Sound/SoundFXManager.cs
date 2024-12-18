@@ -86,6 +86,12 @@ namespace Assets.Scripts.Managers.Sound
 
         private void Awake()
         {
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
             Instance = this;
             m_AudioSource = Finder.FindComponent<AudioSource>(gameObject, "AudioSource");
             m_FXAudioSource = Finder.FindComponent<AudioSource>(gameObject, "FXAudioSource");

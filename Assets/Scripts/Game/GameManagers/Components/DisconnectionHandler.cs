@@ -86,7 +86,7 @@ namespace Game.GameManagers.Components
                 // ========================================================================
 
                 case EErrorType.ServerDown:
-                    GameManager.ExitWithError(m_ServerDownMessage);
+                    GameManager.ExitWithError(m_ServerDownMessage, refund: ! GameManager.Instance.IsServer);
                     return;
 
                 default:
@@ -222,8 +222,6 @@ namespace Game.GameManagers.Components
 
         void OnServerStopped(bool stopped)
         {
-            Debug.LogError("ON SERVER STOPPED : " + stopped);
-            
             if (m_IsWaitingServer == stopped)
                 return;
 

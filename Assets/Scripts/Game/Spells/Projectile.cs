@@ -1,5 +1,6 @@
 ﻿using Data;
 using Enums;
+using MyBox;
 using System;
 using Tools;
 using UnityEngine;
@@ -22,10 +23,9 @@ namespace Game.Spells
 
 
         #region Init & End
-
+        
         public override void Initialize(ulong clientId, Vector3 target, string spellName, int level)
         {
-            target.y = 0;
             base.Initialize(clientId, target, spellName, level);
 
             m_OriginalPosition = transform.position;
@@ -39,7 +39,7 @@ namespace Game.Spells
 
                 case ESpellTrajectory.Straight:
                     // set target to be align with orginal position
-                    target.y = transform.position.y;
+                    target.y = transform.position.y + m_SpellData.TargetOffset.Y;
                     SetTarget(target);
                     break;
 
@@ -70,12 +70,69 @@ namespace Game.Spells
                 return;
 
             // if spell hits a wall, end it
-            if (collision.gameObject.layer == LayerMask.NameToLayer("Wall") || collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
-                End();
+            if (collision.gameObject.layer == LayerMask.NameToLayer("Wall"))
+            {
+                OnHitWall(collision);
+            }
+
+            else if (collision.gameObject.layer == LayerMask.NameToLayer("Ground") && m_SpellData.TriggerGround)
+            {
+                OnHitGround(collision);
+            }
 
             // if spell hits a player, hit it and end the spell
             else if (collision.gameObject.layer == LayerMask.NameToLayer("Player") && m_SpellData.TriggerPlayer)
-                OnHitPlayer(Finder.FindComponent<Controller>(collision.gameObject));
+            {
+                OnHitPlayer(collision);
+            }
+
+            else if (collision.gameObject.layer == LayerMask.NameToLayer("Structure"))
+            {
+                OnHitStructure(collision);
+            }
+        }
+
+        protected virtual void OnHitWall(Collider2D collision)
+        {
+            // check if should apply on hit
+            if (!m_SpellData.ApplyIfNotHitting)
+            {
+                End();
+                return;
+            }
+
+            // if "ApplyIfNotHitting" : apply effects to every not hit targets
+            var allControllers = m_SpellData.IsEnemyTarget ? GameManager.Instance.GetAllEnemies(m_Controller.Team) : GameManager.Instance.GetAllAllies(m_Controller.Team);
+            foreach (Controller controller in allControllers)
+            {
+                OnHit(controller);
+            }
+        }
+
+        protected virtual void OnHitGround(Collider2D collision)
+        {
+            OnHitWall(collision);
+        }
+
+        protected virtual void OnHitPlayer(Collider2D collision)
+        {
+            var controller = Finder.FindComponent<Controller>(collision.gameObject);
+            if (controller == null)
+                return;
+
+            // check if should apply on hit
+            if (m_SpellData.ApplyIfNotHitting && !controller.IsSpawn)
+            {
+                End();
+                return;
+            }
+
+            OnHit(controller);
+        }
+
+        protected virtual void OnHitStructure(Collider2D collision)
+        {
+            OnHitPlayer(collision);
         }
 
         /// <summary>
@@ -102,7 +159,10 @@ namespace Game.Spells
                 End();
 
             // check if the spell has reached its target position
-            if (m_SpellData.StopOnTargetPos && m_Target.x - transform.position.x < 0)
+            if (m_SpellData.StopOnTargetPos && (
+                (m_Target.x > m_OriginalPosition.x && transform.position.x >= m_Target.x)
+                || (m_Target.x < m_OriginalPosition.x && transform.position.x <= m_Target.x)
+                ))
                 End();
 
             // check if the spell is stuck in the void

@@ -1,0 +1,97 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33c7b0d6efb178c4db1658488d1ecfdd, type: 3}
+  m_Name: FrostfangStrike
+  m_EditorClassIdentifier: 
+  Rarety: 0
+  m_Description: 
+  m_DescriptionVariables: []
+  m_SpellElements: 
+  Linked: 0
+  Graphics: {fileID: 0}
+  SpellEventActions:
+  - Prefab: {fileID: 4052242029054160489, guid: 5486e2a8b1f36634789ebc65be4ba216, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 500
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1.2
+    Size: 1
+    OrderInLayer: 0
+    SpawnTarget: 2
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
+  OnHit: []
+  OnHitSpellSpawn: 1
+  AnimationSoundFX: {fileID: 0}
+  CastSoundFX: {fileID: 0}
+  PermanantSoundFX: {fileID: 0}
+  OnHitSoundFX: {fileID: 0}
+  OnEndSoundFX: {fileID: 0}
+  SpellTarget: 6
+  m_ClampTargetPos: 1
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  m_SpellRequirements: []
+  MaxHit: 1
+  EnergyGain: 0
+  EnergyCost: 100
+  m_Damage: 80
+  m_Heal: 0
+  m_Shield: 0
+  m_LifeSteal: 0
+  Distance: -1
+  OverrideOnHitProperties: 
+  m_Duration: 0
+  Delay: 0
+  m_Force:
+    m_Speed: -5
+    m_Duration: 0.3
+  m_SpellsScalingLevel:
+  - Property: 2
+    Value: 0.1
+  - Property: 3
+    Value: 0.05
+  m_Size: 1
+  TriggerPlayer: 1
+  EnemyStateEffects:
+  - StateEffect: 1
+    Stacks: 1
+    BonusStacksPerLevel: 0
+    OverridingProperties:
+    - StateEffectProperty: 1
+      Value: 2
+  AllyStateEffects: []
+  StateEffectStackFactor: 0
+  PersistanceAfterEnd: 0
+  Animation: 17
+  IsCancellable: 0
+  AnimationTimer: 3
+  m_Cooldown: 0
+  Trajectory: 2
+  m_TriggerGround: 0
+  m_StopOnTargetPos: 0
+  m_Speed: 20
+  m_YSpawnPos: 0
+  JumpType: 4
+  JumpAnimation: 18

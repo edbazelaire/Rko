@@ -20,26 +20,26 @@ MonoBehaviour:
     Min: 10000
     Max: 15000
   ExtraCardData:
-    ExtraCards: 10
+    ExtraCards: 0
     RaretyPercData:
     - Rarety: 0
       Percentage: 0
     - Rarety: 1
       Percentage: 0
     - Rarety: 2
-      Percentage: 100
+      Percentage: 0
     - Rarety: 3
-      Percentage: 2.5
+      Percentage: 100
   SpellsDistribution:
   - Rarety: 0
-    Qty: 75
+    Qty: 60
     Splits: 3
   - Rarety: 1
-    Qty: 40
+    Qty: 35
     Splits: 2
   - Rarety: 2
     Qty: 15
-    Splits: 2
+    Splits: 3
   - Rarety: 3
     Qty: 1
     Splits: 1

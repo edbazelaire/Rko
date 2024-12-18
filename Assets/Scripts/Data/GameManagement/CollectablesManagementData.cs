@@ -1,5 +1,6 @@
 ﻿using Enums;
 using Game.Loaders;
+using Save;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,6 +10,21 @@ using UnityEngine;
 
 namespace Data.GameManagement
 {
+    [Serializable]
+    public struct SAccountLevelData
+    {
+        /// <summary> quantity of golds required to level up </summary>
+        public int RequiredXp;
+        /// <summary> Number of cards required to level up </summary>
+        public SRewardsData Rewards;
+
+        public SAccountLevelData(int xp, SRewardsData rewards)
+        {
+            RequiredXp = xp;
+            Rewards = rewards;
+        }
+    }
+
     [Serializable]
     public struct SLevelData
     {
@@ -37,14 +53,18 @@ namespace Data.GameManagement
     {
         #region Members
 
+        public const int MAX_LEVEL = 14;
+
         [Description("Specific data for each rarety type of spells")]
-        public List<SRaretyData> RaretyData;
-        [Description("Quantity and Golds required for each character level up")]
-        public List<SLevelData> CharacterLevelData;
-        [Description("Quantity and Golds required for each level up")]
-        public List<SLevelData> SpellLevelData;
-        [Description("Quantity and Golds required for each level up")]
-        public List<SLevelData> RuneLevelData;
+        public List<SRaretyData>        RaretyData;
+        [Description("Specific data for each rarety type of spells")]
+        public List<SAccountLevelData>  AccountLevelData;
+        [Description("Quantity and Golds required for each Character level up")]
+        public List<SLevelData>         CharacterLevelData;
+        [Description("Quantity and Golds required for each Spell level up")]
+        public List<SLevelData>         SpellLevelData;
+        [Description("Quantity and Golds required for each Rune level up")]
+        public List<SLevelData>         RuneLevelData;
 
         public static CollectablesManagementData s_Instance;
 
@@ -61,10 +81,33 @@ namespace Data.GameManagement
             }
         }
 
+        public static bool IsAccountUpgradable => !ProfileCloudData.IsAccountMaxed && InventoryCloudData.Instance.GetCurrency(ECurrency.TotalXp) >= GetCurrentAccountLevelData().RequiredXp;
+
+        #endregion
+
+
+        #region Check special cases
+
+        public static bool IsBossSpell(Enum collectable)
+        {
+            if (!Enum.TryParse(collectable.ToString(), out ESpell spell))
+                return false;
+
+            return (int)spell >= 10000;
+        }
+
         #endregion
 
 
         #region Data Management
+
+        public static SAccountLevelData GetCurrentAccountLevelData()
+        {
+            if (ProfileCloudData.IsAccountMaxed)
+                return new SAccountLevelData(0, default);
+
+            return Instance.AccountLevelData[ProfileCloudData.AccountLevel - 1];
+        }
 
         public static CollectableData GetData(Enum collectable, int level, bool destroy = false)
         {
@@ -161,6 +204,18 @@ namespace Data.GameManagement
             ErrorHandler.Error("Failed to parse enum value for value: " + name);
             return null;
         }
+
+        #endregion
+
+
+        #region Account Level
+
+        public static bool IsAccountUpgradableIn(int bonusXp)
+        {
+            return !ProfileCloudData.IsAccountMaxed
+                && InventoryCloudData.Instance.GetCurrency(ECurrency.TotalXp) + bonusXp >= GetCurrentAccountLevelData().RequiredXp;
+        }
+
 
         #endregion
 

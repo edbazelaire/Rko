@@ -143,7 +143,7 @@ public class ImmediatThreatTrigger : MonoBehaviour
         // Iterate through all colliders found
         foreach (Collider2D collider in colliders)
         {
-            var onCastAoe = collider.GetComponent<OnCastAoe>();
+            var onCastAoe = collider.GetComponent<PreviewGrowing>();
             if (onCastAoe == null)
                 continue;
 

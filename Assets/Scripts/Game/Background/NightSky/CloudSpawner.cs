@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Tools;
 using UnityEngine;
-using UnityEngine.UI;
 
 
 namespace Game.Background.NightSky
@@ -13,7 +12,6 @@ namespace Game.Background.NightSky
         public float Max;
     }
 
-
     public class CloudSpawner : MObject
     {
         #region Members
@@ -22,6 +20,7 @@ namespace Game.Background.NightSky
 
         [SerializeField] int m_NLayers;
         [SerializeField] float m_CloudSpeed;
+        [SerializeField] SMinMax m_YPosition;
         [SerializeField] SMinMax m_CloudSize;
         [SerializeField] SMinMax m_ProcInterval;
         [SerializeField] List<Sprite> m_Clouds;
@@ -96,7 +95,7 @@ namespace Game.Background.NightSky
             int sorterOrder = Random.Range(0, m_NLayers + 1);
 
             Cloud cloud = Instantiate(m_CloudObject, transform.position, Quaternion.identity, m_Canvas.transform);
-            var yPos = Random.Range(0f, 5f);
+            var yPos = Random.Range(m_YPosition.Min, m_YPosition.Max);
             cloud.transform.position = new Vector3(xPos, yPos, 0f);
             cloud.Initialize(m_Clouds[Random.Range(0, m_Clouds.Count)], m_CloudSpeed * (sorterOrder + 1 / m_NLayers + 1), (sorterOrder + 1 / m_NLayers + 1) * Random.Range(m_CloudSize.Min, m_CloudSize.Max), m_Canvas.sortingOrder + sorterOrder, m_Canvas.sortingLayerName);
         }
