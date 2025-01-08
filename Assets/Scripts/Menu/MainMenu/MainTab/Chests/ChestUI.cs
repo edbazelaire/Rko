@@ -2,12 +2,10 @@
 using Data;
 using Enums;
 using Game.Loaders;
-using Save;
 using System;
 using System.Collections;
 using Tools;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
 {
@@ -15,23 +13,22 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
     {
         #region Members
 
-        const string IDLE_ANIMATION = "ChestIdle";
-        const string JUMP_ANIMATION = "ChestJump";
-        const string OPEN_ANIMATION = "ChestOpen";
+        public const string IDLE_ANIMATION = "ChestIdle";
+        public const string OPEN_ANIMATION = "ChestOpen";
 
-        const string c_ChestPreview = "ChestPreview";
-        const string c_AuraEffects = "AuraEffects";
-        const string c_OpenEffects = "OpenEffects";
+        public const string c_ChestPreview = "ChestPreview";
+        public const string c_AuraEffects  = "AuraEffects";
+        public const string c_OpenEffects  = "OpenEffects";
 
-        ChestRewardData m_ChestData;
+        private     ChestRewardData     m_ChestData;
 
-        GameObject m_ChestPreview;
-        Sprite m_Icon;
-        GameObject m_AuraEffects;
-        GameObject m_OpeningEffects;
-        Animator m_Animator;
-
-        AudioSource m_AudioSource;
+        protected   GameObject          m_Preview;
+        protected   SpriteRenderer      m_SpriteRenderer;
+        protected   Sprite              m_Icon;
+        protected   GameObject          m_AuraEffects;
+        protected   GameObject          m_OpeningEffects;
+        protected   Animator            m_Animator;
+        protected   AudioSource         m_AudioSource;
 
         public Sprite Icon => m_Icon;
 
@@ -62,11 +59,12 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
         {
             base.FindComponents();
 
-            m_ChestData = ItemLoader.GetChestRewardData(m_ChestType);
+            LoadData();
 
-            m_ChestPreview      = Finder.Find(gameObject, c_ChestPreview);
-            m_Icon              = Finder.FindComponent<SpriteRenderer>(m_ChestPreview).sprite;
-            m_Animator          = Finder.FindComponent<Animator>(m_ChestPreview);
+            m_Preview           = Finder.Find(gameObject, "Preview");
+            m_SpriteRenderer    = Finder.FindComponent<SpriteRenderer>(m_Preview);
+            m_Icon              = m_SpriteRenderer.sprite;
+            m_Animator          = Finder.FindComponent<Animator>(m_Preview);
             m_AuraEffects       = Finder.Find(gameObject, c_AuraEffects);
             m_OpeningEffects    = Finder.Find(gameObject, c_OpenEffects);
         }
@@ -78,13 +76,35 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
             m_AuraEffects.SetActive(false);
             m_OpeningEffects.SetActive(false);
         }
+
+        protected virtual void LoadData()
+        {
+            m_ChestData = ItemLoader.GetChestRewardData(m_ChestType);
+        }
         
         #endregion
 
 
         #region Animation & Particles
 
-        public void ActivateIdle(bool withAura = false, bool withSound = false)
+        protected virtual IEnumerator PlayAnimationOnce(string animationName)
+        {
+            m_Animator.Play(animationName);
+
+            // wait for the animation to start
+            while (!m_Animator.GetCurrentAnimatorStateInfo(0).IsName(animationName))
+            {
+                yield return null;
+            }
+
+            // wait for the end of the animation
+            while (m_Animator.GetCurrentAnimatorStateInfo(0).IsName(animationName))
+            {
+                yield return null;
+            }
+        }
+
+        public virtual void ActivateIdle(bool withAura = false, bool withSound = false)
         {
             m_Animator.Play(IDLE_ANIMATION);
             ActivateAura(withAura);
@@ -93,7 +113,7 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
                 m_AudioSource = SoundFXManager.PlaySoundFXClip(m_ChestData.IdleSoundFX);
         }
 
-        public void ActivateOpen(bool withOpenParticles = true)
+        public virtual void ActivateOpen(bool withOpenParticles = true)
         {
             if (m_AudioSource.isActiveAndEnabled)
                 Destroy(m_AudioSource);
@@ -101,17 +121,17 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
             StartCoroutine(PlayOpenAnimation());
         }
 
-        public void ActivateAura(bool activate = true)
+        public virtual void ActivateAura(bool activate = true)
         {
             m_AuraEffects.SetActive(activate);
         }
 
-        public void ActivateOpenParticles(bool activate = true)
+        public virtual void ActivateOpenParticles(bool activate = true)
         {
             m_OpeningEffects.SetActive(activate);
         }
 
-        public IEnumerator PlayOpenAnimation()
+        public virtual IEnumerator PlayOpenAnimation()
         {
             m_Animator.Play(OPEN_ANIMATION);
             ActivateOpenParticles(true);

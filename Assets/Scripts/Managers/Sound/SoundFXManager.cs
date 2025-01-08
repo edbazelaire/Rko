@@ -49,6 +49,8 @@ namespace Assets.Scripts.Managers.Sound
         [SerializeField] private AudioClip m_AchievementRewardCollectedSoundFX;
         [SerializeField] private AudioClip m_RewardCollectedSoundFX;
         [SerializeField] private AudioClip m_DefaultChestOpenSoundFX;
+        [SerializeField] private AudioClip m_UpgradeFailSoundFX;
+        [SerializeField] private AudioClip m_OpenOrbSoundFX;
 
         [Header("Game")]
         [SerializeField] private AudioClip m_DefaultCastSoundFX;
@@ -71,6 +73,8 @@ namespace Assets.Scripts.Managers.Sound
         public static AudioClip AchievementRewardCollectedSoundFX => Instance.m_AchievementRewardCollectedSoundFX;
         public static AudioClip RewardCollectedSoundFX => Instance.m_RewardCollectedSoundFX;
         public static AudioClip DefaultChestOpenSoundFX => Instance.m_DefaultChestOpenSoundFX;
+        public static AudioClip UpgradeFailSoundFX => Instance.m_UpgradeFailSoundFX;
+        public static AudioClip OpenOrbSoundFX => Instance.m_OpenOrbSoundFX;
 
         // ==================================================================================================
         // GAME

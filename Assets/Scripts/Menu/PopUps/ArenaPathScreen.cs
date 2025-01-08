@@ -1,13 +1,14 @@
 ﻿using Assets;
 using Data.GameManagement;
 using Enums;
+using Inventory;
+using Menu.Common.Displayers;
 using Save;
 using System;
 using System.Collections.Generic;
 using Tools;
 using Tools.Animations;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Menu.PopUps
 {
@@ -18,6 +19,7 @@ namespace Menu.PopUps
         EArenaType  m_ArenaType;
         ArenaData   m_ArenaData;
 
+        OrbRewardDisplayer      m_OrbRewardDisplayer;
         Canvas                  m_OverlayCanvas;
         GameObject              m_ScrollContent;
         GameObject              m_Viewport;
@@ -38,6 +40,7 @@ namespace Menu.PopUps
             m_StageDisplayUIPrefab = AssetLoader.Load<ArenaStageDisplayUI>("ArenaStageDisplay", AssetLoader.c_UIPath + "OverlayScreens/Components/RewardsPath/ArenaPathContent/");
             m_ArenaInfoSidebar = Finder.FindComponent<ArenaInfoSidebar>(gameObject, "ArenaInfoSidebar");
 
+            m_OrbRewardDisplayer = Finder.FindComponent<OrbRewardDisplayer>(gameObject, "OrbRewardDisplayer");
             m_OverlayCanvas = Finder.FindComponent<Canvas>(gameObject, "OverlayCanvas");
             m_ScrollContent = Finder.Find(gameObject, "ScrollContent");
             m_Viewport = Finder.Find(gameObject, "Viewport");
@@ -60,6 +63,7 @@ namespace Menu.PopUps
             m_OverlayCanvas.sortingOrder = OverlayScreen.OrderInLayer + 100;
 
             // setup UI
+            SetupOrbRewardDisplayer();
             SetupArenaInfoSidebar();
             SetupStagesDisplay();
         }
@@ -84,6 +88,11 @@ namespace Menu.PopUps
         void RefreshUI()
         {
             SetupArenaInfoSidebar();
+        }
+
+        void SetupOrbRewardDisplayer()
+        {
+            m_OrbRewardDisplayer.Initialize(ProgressionCloudData.CurrentArena.GetPowerOrb(), m_ArenaData.CalculateMaxOrbPower());
         }
 
         void SetupArenaInfoSidebar()
@@ -177,7 +186,7 @@ namespace Menu.PopUps
         void OnAbandonButtonClicked()
         {
             Main.ConfirmPopUp(
-                message: "Do you really want to end this game ? All progression will be loss",
+                message: "Do you really want to end this game ? All progression will be lost.\nYour rewards earned so far will still be granted",
                 title: "",
                 onValidate: OnAbandonValidated,
                 onCancel: null

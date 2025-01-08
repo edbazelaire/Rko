@@ -107,15 +107,15 @@ MonoBehaviour:
   - RewardsData:
       Currencies:
       - Currency: 3
-        Qty: 220
+        Qty: 350
       Chests: 01000000
       Collectables:
       - CollectableType: 3
-        CollectableName: BerserkerRune
-        Qty: 1
-      - CollectableType: 3
         CollectableName: PoisonfangRune
-        Qty: 1
+        Qty: 5
+      - CollectableType: 3
+        CollectableName: ParasiteRune
+        Qty: 5
       AchievementRewards: []
     TriggerEffects:
     - SpellDataName: _PlagueArrows
@@ -173,15 +173,6 @@ MonoBehaviour:
         Qty: 3500
       Chests: 01000000
       Collectables:
-      - CollectableType: 3
-        CollectableName: BerserkerRune
-        Qty: 1
-      - CollectableType: 3
-        CollectableName: PoisonfangRune
-        Qty: 1
-      - CollectableType: 3
-        CollectableName: ShardcurseRune
-        Qty: 1
       - CollectableType: 2
         CollectableName: SoulFreeze
         Qty: 1
@@ -253,21 +244,9 @@ MonoBehaviour:
       - Currency: 3
         Qty: 700
       - Currency: 0
-        Qty: 7500
-      Chests: 01000000
+        Qty: 5000
+      Chests: 02000000
       Collectables:
-      - CollectableType: 3
-        CollectableName: BerserkerRune
-        Qty: 1
-      - CollectableType: 3
-        CollectableName: PoisonfangRune
-        Qty: 1
-      - CollectableType: 3
-        CollectableName: ShardcurseRune
-        Qty: 1
-      - CollectableType: 2
-        CollectableName: SoulFreeze
-        Qty: 1
       - CollectableType: 3
         CollectableName: ThermalShockRune
         Qty: 1
@@ -336,26 +315,11 @@ MonoBehaviour:
   - RewardsData:
       Currencies:
       - Currency: 3
-        Qty: 700
+        Qty: 1000
       - Currency: 0
-        Qty: 5000
-      Chests: 02000000
-      Collectables:
-      - CollectableType: 3
-        CollectableName: BerserkerRune
-        Qty: 1
-      - CollectableType: 3
-        CollectableName: PoisonfangRune
-        Qty: 1
-      - CollectableType: 3
-        CollectableName: ShardcurseRune
-        Qty: 1
-      - CollectableType: 2
-        CollectableName: SoulFreeze
-        Qty: 1
-      - CollectableType: 3
-        CollectableName: ThermalShockRune
-        Qty: 1
+        Qty: 10000
+      Chests: 03000000
+      Collectables: []
       AchievementRewards:
       - AchievementReward: 3
         Title: 0

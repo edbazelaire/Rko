@@ -1,9 +1,6 @@
-﻿using Analytics.Events;
-using Assets;
-using Assets.Scripts.Menu.Common.Buttons.SubButtons;
-using Data.GameManagement;
-using Enums;
+﻿using Data.GameManagement;
 using Inventory;
+using Menu.Common.Displayers;
 using System;
 using Tools;
 using UnityEngine;

@@ -245,7 +245,7 @@ namespace Data
 
             if (position == Vector3.zero)
             {
-                ErrorHandler.Warning("Spell GFX spawned in void");
+                ErrorHandler.Warning($"Spell GFX spawned in void - spell : { (spell != null ? spell.name : "null")} | position : {position} | callFromPosition : {callFromPosition} | targetPos : {targetPos} ");
                 return null;
             }
 

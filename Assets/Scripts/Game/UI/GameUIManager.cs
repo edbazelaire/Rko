@@ -293,9 +293,9 @@ public class GameUIManager : MonoBehaviour
                 break;
 
             default:
-                arenaManager = AssetLoader.LoadArena("VoidArena");
+                arenaManager = AssetLoader.LoadArena("DefaultArena");
                 //arenaManager = AssetLoader.LoadArena("FrostArena");
-                //arenaManager = AssetLoader.LoadArena("DefaultArena");
+                //arenaManager = AssetLoader.LoadArena("VoidArena");
                 break;
         }
 

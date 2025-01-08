@@ -1,9 +1,6 @@
-﻿using Assets;
-using Assets.Scripts.Menu.Common.Buttons.SubButtons;
-using Assets.Scripts.Menu.Common.Buttons.TemplateItemButtons;
+﻿using Assets.Scripts.Menu.Common.Buttons.TemplateItemButtons;
 using Data.GameManagement;
 using Enums;
-using Inventory;
 using Menu.Common.Buttons;
 using Save;
 using System;

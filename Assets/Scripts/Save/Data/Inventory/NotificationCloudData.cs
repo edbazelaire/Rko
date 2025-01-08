@@ -37,10 +37,11 @@ namespace Save
 
         // ===============================================================================================
         // CONSTANTS
-        public const string KEY_ARENA_REWARDS   = "ArenaRewards";
-        public const string KEY_LEAGUE_REWARDS  = "LeagueRewards";
-        public const string KEY_XP_COLLECTION   = "XpCollection";
-        public const string KEY_MESSAGES        = "Messages";
+        public const string KEY_ARENA_UNLOCKED_NOTIFICATIONS    = "ArenaUnlockedNotifications";
+        public const string KEY_ARENA_REWARDS                   = "ArenaRewards";
+        public const string KEY_LEAGUE_REWARDS                  = "LeagueRewards";
+        public const string KEY_XP_COLLECTION                   = "XpCollection";
+        public const string KEY_MESSAGES                        = "Messages";
 
         // ===============================================================================================
         // ACTION
@@ -52,14 +53,16 @@ namespace Save
         // DATA
         /// <summary> default data for the Inventory </summary>
         protected override Dictionary<string, object> m_Data { get; set; } = new Dictionary<string, object>() {
-            { KEY_ARENA_REWARDS,            new Dictionary<EArenaType,  List<int>>()    },
-            { KEY_LEAGUE_REWARDS,           new Dictionary<ELeague,     List<int>>()    },
-            { KEY_XP_COLLECTION,            0                                           },
-            { KEY_MESSAGES,                 new List<SMessage>()                        },
+            { KEY_ARENA_UNLOCKED_NOTIFICATIONS,     new List<EArenaType>()                      },
+            { KEY_ARENA_REWARDS,                    new Dictionary<EArenaType,  List<int>>()    },
+            { KEY_LEAGUE_REWARDS,                   new Dictionary<ELeague,     List<int>>()    },
+            { KEY_XP_COLLECTION,                    0                                           },
+            { KEY_MESSAGES,                         new List<SMessage>()                        },
         };
 
         // ===============================================================================================
         // DEPENDENT STATIC ACCESSORS
+        public static List<EArenaType>                  ArenaUnlocked   => Instance.m_Data[KEY_ARENA_UNLOCKED_NOTIFICATIONS] as List<EArenaType>;
         public static Dictionary<EArenaType, List<int>> ArenaRewards    => Instance.m_Data[KEY_ARENA_REWARDS] as Dictionary<EArenaType, List<int>>;
         public static Dictionary<ELeague, List<int>>    LeagueRewards   => Instance.m_Data[KEY_LEAGUE_REWARDS] as Dictionary<ELeague, List<int>>;
         public static int                               XpCollection    => (int)Instance.m_Data[KEY_XP_COLLECTION];
@@ -77,6 +80,9 @@ namespace Save
         /// <returns></returns>
         protected override object Convert(Item item)
         {
+            if (m_Data[item.Key].GetType() == typeof(List<EArenaType>))
+                return item.Value.GetAs<List<EArenaType>>();
+
             if (m_Data[item.Key].GetType() == typeof(Dictionary<EArenaType, List<int>>))
                 return item.Value.GetAs<Dictionary<EArenaType, List<int>>>();
 
@@ -93,6 +99,31 @@ namespace Save
 
 
         #region Arena Data
+
+        public static void AddUnlockedArena(EArenaType arenaType)
+        {
+            ArenaUnlocked.Add(arenaType);
+            Instance.SaveValue(KEY_ARENA_UNLOCKED_NOTIFICATIONS);
+        }
+
+        public static bool HasUnlockedArena(EArenaType arenaType)
+        {
+            return ArenaUnlocked.Contains(arenaType);
+        }
+
+        public static bool CollectUnlockedArena(EArenaType arenaType)
+        {
+            if (! HasUnlockedArena(arenaType))
+            {
+                ErrorHandler.Error("Arena type not found in cloud data : " + arenaType);
+                return false;
+            }
+
+            ArenaUnlocked.Remove(arenaType);
+            Instance.SaveValue(KEY_ARENA_UNLOCKED_NOTIFICATIONS);
+
+            return true;
+        }
 
         public static void AddArenaReward(EArenaType arenaType, int level)
         {
@@ -276,6 +307,10 @@ namespace Save
 
             switch (key)
             {
+                case KEY_ARENA_UNLOCKED_NOTIFICATIONS:
+                    m_Data[key] = new List<EArenaType>();
+                    break;
+
                 case KEY_ARENA_REWARDS:
                     m_Data[key] = new Dictionary<EArenaType, List<int>>();
                     break;

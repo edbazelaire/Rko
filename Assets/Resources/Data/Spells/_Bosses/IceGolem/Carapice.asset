@@ -36,6 +36,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   - Prefab: {fileID: 152564, guid: 4ab45d63db2ac6448a1bd863420410b7, type: 3}
     MaterialEffect: {fileID: 0}
@@ -54,6 +55,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   OnHit: []
   OnHitSpellSpawn: 1
@@ -63,8 +65,13 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 4
+  m_ClampTargetPos: 1
+  TargetOffset:
+    X: 0
+    Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
@@ -76,6 +83,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 17
     Value: 0.15
@@ -87,6 +97,6 @@ MonoBehaviour:
   PersistanceAfterEnd: 0
   Animation: 9
   IsCancellable: 0
-  AnimationTimer: 5
+  AnimationTimer: 7.5
   m_Cooldown: 0
   IsAttachedToTarget: 0
