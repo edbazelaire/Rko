@@ -41,6 +41,10 @@ public class EndGameUI : MObject
     EEndGameState m_State;
     bool m_Win;
     bool m_IsBossFight = false;
+    // -- arena
+    ArenaData m_ArenaData = null;
+    int m_CurrentLevel = 0;
+    int m_CurrentStage = 0;
 
     // Components
     GameObject      m_RewardsSection;
@@ -54,6 +58,9 @@ public class EndGameUI : MObject
     TMP_Text        m_GoldsQty;
     GameObject      m_GemsRewardDisplay;
     TMP_Text        m_GemsQty;
+    GameObject      m_OrbPowerRewardDisplay;
+    TMP_Text        m_OrbPowerRewardQty;
+    GameObject      m_PowerOrbUpgradeRewardIcon;
     Image           m_ChestRewardIcon;
     Button          m_LeaveButton;
     GameObject      m_Fireworks;
@@ -80,6 +87,9 @@ public class EndGameUI : MObject
         m_GoldsQty              = Finder.FindComponent<TMP_Text>(m_GoldsRewardDisplay, "Qty");
         m_GemsRewardDisplay     = Finder.Find(m_RewardsContent, "GemsRewardDisplay");
         m_GemsQty               = Finder.FindComponent<TMP_Text>(m_GemsRewardDisplay, "Qty");
+        m_OrbPowerRewardDisplay = Finder.Find(m_RewardsContent, "OrbPowerRewardDisplay");
+        m_OrbPowerRewardQty     = Finder.FindComponent<TMP_Text>(m_OrbPowerRewardDisplay, "Qty");
+        m_PowerOrbUpgradeRewardIcon        = Finder.Find(m_RewardsContent, "StarRewardIcon");
         m_ChestRewardIcon       = Finder.FindComponent<Image>(m_RewardsContent, "ChestRewardIcon");
     }
 
@@ -87,8 +97,35 @@ public class EndGameUI : MObject
     {
         base.Initialize();
 
+        SetUpData();
         m_PowerUpSection.Initialize();
         SetState(EEndGameState.Inactive);
+    }
+
+    void SetUpData()
+    {
+        m_IsBossFight = LobbyHandler.Instance.GameMode == EGameMode.Arena && ProgressionCloudData.CurrentArena.IsBoss();
+        
+        switch (LobbyHandler.Instance.GameMode)
+        {
+            case EGameMode.Arena:
+                m_ArenaData = ProgressionCloudData.CurrentArena.LoadArenaData();
+                m_CurrentLevel = ProgressionCloudData.CurrentArena.Level;
+                m_CurrentStage = ProgressionCloudData.CurrentArena.Stage;
+                break;
+
+            case EGameMode.Ranked:
+                m_ArenaData = null;
+                m_CurrentLevel = ProgressionCloudData.CurrentLeagueLevel;
+                m_CurrentStage = ProgressionCloudData.CurrentLeagueStage;
+                break;
+
+            default:
+                m_ArenaData = null;
+                m_CurrentLevel = 0;
+                m_CurrentStage =0;
+                break;
+        }
     }
 
     // Use this for initialization
@@ -101,8 +138,7 @@ public class EndGameUI : MObject
 
         // save if this is win or not
         m_Win = win;
-        m_IsBossFight = LobbyHandler.Instance.GameMode == EGameMode.Arena && ProgressionCloudData.CurrentArena.IsBoss();
-
+        
         // set color and text according to context
         m_TitleText.text = m_Win ? "Victory" : "Defeat";
         m_TitleText.color = m_Win ? Color.green : Color.red;
@@ -210,6 +246,12 @@ public class EndGameUI : MObject
     {
         ErrorHandler.Log("HandleReward() : start", ELogTag.Rewards);
 
+        m_GemsRewardDisplay.SetActive(false);
+        m_XpRewardDisplay.SetActive(false);
+        m_GoldsRewardDisplay.SetActive(false);
+        m_OrbPowerRewardDisplay.SetActive(false);   
+        m_PowerOrbUpgradeRewardIcon.SetActive(false);
+
         m_RewardsSection.SetActive(true);
 
         SRewardCalculator reward = win ? Rewarder.WinGameReward : Rewarder.LossGameReward;
@@ -223,9 +265,7 @@ public class EndGameUI : MObject
         // Xp   
         int xp = reward.GetXp();
         ErrorHandler.Log("         + XP : " + xp, ELogTag.Rewards);
-        if (xp <= 0)
-            m_XpRewardDisplay.SetActive(false);
-        else
+        if (xp > 0)
         {
             m_XpRewardDisplay.SetActive(true);
             m_XpQty.text = string.Format(GOLDS_FORMAT, xp);
@@ -236,10 +276,7 @@ public class EndGameUI : MObject
         // GOLDS   
         int golds = reward.GetGolds();
         ErrorHandler.Log("         + GOLDS : " + golds, ELogTag.Rewards);
-
-        if (golds <= 0)
-            m_GoldsRewardDisplay.SetActive(false);
-        else
+        if (golds > 0)
         {
             m_GoldsRewardDisplay.SetActive(true);
             m_GoldsQty.text = string.Format(GOLDS_FORMAT, golds);
@@ -250,9 +287,7 @@ public class EndGameUI : MObject
         // Gems   
         int gems = reward.GetGems();
         ErrorHandler.Log("         + XP : " + xp, ELogTag.Rewards);
-        if (gems <= 0)
-            m_GemsRewardDisplay.SetActive(false);
-        else
+        if (gems > 0)
         {
             m_GemsRewardDisplay.SetActive(true);
             m_GemsQty.text = string.Format(GOLDS_FORMAT, gems);
@@ -281,6 +316,25 @@ public class EndGameUI : MObject
 
             m_ChestRewardIcon.sprite = AssetLoader.LoadChestIcon(chests[0]);
             InventoryManager.AddChest(chests[0]);
+        }
+
+        // ----------------------------------------------------------------------------
+        // Orb Power  
+        if (LobbyHandler.Instance.GameMode == EGameMode.Arena)
+        {
+            SPowerOrb currentPowerOrb = ProgressionCloudData.CurrentArena.GetPowerOrb();
+            int orbPower = m_ArenaData.CalculateOrbPowerReward(m_CurrentLevel, m_CurrentStage);
+            m_OrbPowerRewardDisplay.SetActive(true);
+            m_OrbPowerRewardQty.text = string.Format(GOLDS_FORMAT, orbPower);
+
+            // check if a bonus star has been provided
+            if (m_IsBossFight && currentPowerOrb.TryUpgradeRarety())
+            {
+                m_PowerOrbUpgradeRewardIcon.SetActive(true);
+            }
+
+            // update to cloud
+            ProgressionCloudData.AddCurrentArenaPowerOrbReward(orbPower, currentPowerOrb.Rarety);
         }
 
         StartCoroutine(RewardsAnimation());
@@ -429,6 +483,12 @@ public class EndGameUI : MObject
         m_RewardsContent.SetActive(true);
         fadeIn = m_RewardsContent.AddComponent<Fade>();
         fadeIn.Initialize(duration: 0.5f, startScale: 0.5f);
+
+        // STAR ANIMATION
+        if (m_PowerOrbUpgradeRewardIcon.activeInHierarchy)
+        {
+            // TODO : Animation
+        }
 
         // FadeIn : Button
         m_LeaveButton.gameObject.SetActive(true);

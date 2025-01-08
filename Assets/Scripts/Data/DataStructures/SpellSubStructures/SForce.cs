@@ -30,6 +30,8 @@ namespace Assets.Scripts.Data.DataStructures.SpellSubStructures
         public float        Speed       => m_Speed;
         public float        Duration    => m_Duration;
 
+        public bool         IsActive    => Speed != 0;
+
         #endregion
 
         #region Clone & Level

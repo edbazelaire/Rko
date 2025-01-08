@@ -1,17 +1,11 @@
-﻿using Assets;
-using Assets.Scripts.Data.PowerUp;
-using Assets.Scripts.Managers.Sound;
-using Data;
+﻿using Data;
 using Data.DataStructures;
 using Data.GameManagement;
 using Enums;
 using Game.Loaders;
-using Menu.Common.Buttons;
 using Menu.Common.Buttons.TemplateItemButtons;
-using Menu.MainMenu;
 using Menu.MainMenu.MainTab;
 using Save;
-using System.Linq;
 using Tools;
 using UnityEngine;
 
@@ -30,8 +24,6 @@ namespace Menu.PopUps
         GameObject          m_EffectsSection;
         /// <summary> layout container for bonus effects </summary>
         GameObject          m_EffectsContainer;
-        /// <summary> layout container for spells </summary>
-        GameObject          m_SpellsContainer;
         /// <summary> display the boss of this stage </summary>
         BossPreviewDisplay  m_BossPreviewDisplay;
 
@@ -46,7 +38,6 @@ namespace Menu.PopUps
 
             m_EffectsSection                = Finder.Find(gameObject, "EffectsSection");
             m_EffectsContainer              = Finder.Find(gameObject, "EffectsContainer");
-            m_SpellsContainer               = Finder.Find(gameObject, "SpellsContainer");
             m_BossPreviewDisplay            = Finder.FindComponent<BossPreviewDisplay>(gameObject, "BossPreviewDisplay");
         }
 
@@ -67,7 +58,6 @@ namespace Menu.PopUps
             base.SetUpUI();
 
             SetUpEffects();
-            SetUpSpells();        // TODO : Remove ? (if spells are no longer displayed)
             SetUpBossPreview();
         }
 
@@ -116,29 +106,6 @@ namespace Menu.PopUps
             }
         }
 
-        void SetUpSpells()
-        {
-            UIHelper.CleanContent(m_SpellsContainer);
-            return;
-
-            // =========================================================================
-            // TODO : Remove ?
-            foreach (ESpell spell in m_ArenaLevelData.StageData.LastOrDefault().Spells)
-            {
-                TemplateSpellItemUI spellItemUI = Instantiate(AssetLoader.LoadTemplateItem(spell), m_SpellsContainer.transform).GetComponent<TemplateSpellItemUI>();
-                spellItemUI.Initialize(spell, asIconOnly: true);
-
-                // TODO : later
-                int spellLevel = m_ArenaLevelData.StageData[0].Level;
-                spellItemUI.SetBottomOverlay("Level " + spellLevel);
-
-                // display informations of the spell on click
-                spellItemUI.Button.interactable = true;
-                spellItemUI.Button.onClick.RemoveAllListeners();
-                spellItemUI.Button.onClick.AddListener(() => { Main.SetPopUp(EPopUpState.SpellInfoPopUp, spell, spellLevel, true); });
-            }
-        }
-
         void SetUpBossPreview()
         {
             m_BossPreviewDisplay.Initialize(m_ArenaData.GetBoss(m_ArenaLevel), (int)m_ArenaData.ArenaDifficulty + 1);
@@ -151,19 +118,17 @@ namespace Menu.PopUps
 
         protected override void RefreshState()
         {
-            if (NotificationCloudData.HasRewardsForArenaTypeAtLevel(m_ArenaType, m_ArenaLevel))
-            {
-                SetState(EStageRewardState.Unlocked);
-                return;
-            }
-
-            if (m_ArenaLevel < ProgressionCloudData.CurrentArena.Level)
-            {
+            if (ProgressionCloudData.IsArenaRewardCollected(m_ArenaType, m_ArenaData.SArenaDifficulty, m_ArenaLevel))
                 SetState(EStageRewardState.Collected);
-                return;
-            }
+            else
+                SetState(EStageRewardState.Unlocked);
+            return;
+        }
 
-            SetState(EStageRewardState.Locked);
+        protected override void SetUnlockedState()
+        {
+            m_OverlayScreen.SetActive(false);
+            m_RewardDisplayerBackground.color = new Color(0.1f, 0.1f, 0.1f, 0.95f);
         }
 
         #endregion

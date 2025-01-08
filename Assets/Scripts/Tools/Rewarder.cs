@@ -18,14 +18,14 @@ namespace Tools
         public List<SChestDropPercentage> Chests;
         public float CurrencyMultiplicator;
 
-        public SRewardCalculator(int xp, int gems, int minGolds, int maxGolds, List<SChestDropPercentage> chests, float currencyMultiplicator = 1f)
+        public SRewardCalculator(int xp = 0, int gems = 0, int minGolds = 0, int maxGolds = 0, List<SChestDropPercentage> chests = default, float currencyMultiplicator = 1f)
         {
-            Xp          = xp;
-            Gems        = gems;
-            MinGolds    = minGolds;
-            MaxGolds    = maxGolds;
-            Chests      = chests;
-            CurrencyMultiplicator = currencyMultiplicator;
+            Xp                      = xp;
+            Gems                    = gems;
+            MinGolds                = minGolds;
+            MaxGolds                = maxGolds > minGolds ? maxGolds : minGolds;
+            Chests                  = chests != default ? chests : new List<SChestDropPercentage>();
+            CurrencyMultiplicator   = currencyMultiplicator;
         }
 
         #region Accessors
@@ -105,7 +105,6 @@ namespace Tools
         /// <summary> reward when the game is won </summary>
         public static SRewardCalculator WinGameReward = new SRewardCalculator(
             xp: 25,
-            gems: 3,
             minGolds: 30, maxGolds: 55,
             chests: new List<SChestDropPercentage>() {
                 new SChestDropPercentage(new Dictionary<EChest, float>
@@ -121,7 +120,6 @@ namespace Tools
         /// <summary> reward when the game is lost </summary>
         public static SRewardCalculator LossGameReward = new SRewardCalculator(
             xp: 5,
-            gems: 0,
             minGolds: 10, maxGolds: 15,
             chests: new List<SChestDropPercentage>() {}
         );

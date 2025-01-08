@@ -1,8 +1,10 @@
-﻿using Data.GameManagement;
+﻿using Assets.Scripts.Menu.MainMenu.MainTab.Chests;
+using Data.GameManagement;
 using Enums;
 using Game;
 using Game.UI.EndGameUI;
 using Menu.Common.Buttons;
+using Menu.Common.Rewards;
 using Save;
 using System.Linq;
 using UnityEngine;
@@ -44,6 +46,7 @@ namespace Tools
         public const string c_SpellsPrefabsPath             = c_PrefabsPath + "Spells/";
         // ---- Items 
         public const string c_ItemsPrefabPath               = c_PrefabsPath + "Items/";
+        public const string c_PowerOrbPrefabPath            = c_ItemsPrefabPath + "Orbs/";
         public const string c_ParticlesPrefabPath           = c_PrefabsPath + "Particles/";
 
         // =============================================================================================================
@@ -53,6 +56,7 @@ namespace Tools
         public const string c_TemplatesUIPath               = c_UIPath  + "Templates/";
         public const string c_TemplatesShopPath             = c_TemplatesUIPath + "Shop/";
         public const string c_AchievementsTemplatesPath     = c_TemplatesUIPath + "Achievements/";
+        public const string c_PowerOrbsTemplatesPath        = c_TemplatesUIPath + "PowerOrbs/";
         public const string c_PowerUpsTemplatesPath         = c_TemplatesUIPath + "PowerUps/";
         // ---- Commons
         public const string c_CommonPath                    = c_UIPath + "Common/";
@@ -260,6 +264,15 @@ namespace Tools
         public static GameObject LoadChestPrefab(EChest chestType)
         {
             return Load<GameObject>(c_ItemsPrefabPath + chestType.ToString() + c_ChestSuffix);
+        }
+
+        public static PowerOrbUI LoadPowerOrbTemplate(ERarety rarety)
+        {
+            return Load<PowerOrbUI>(c_PowerOrbPrefabPath + "PowerOrb" + rarety);
+        }
+        public static PowerOrbContainer LoadPowerOrbContainer()
+        {
+            return Load<PowerOrbContainer>(c_PowerOrbPrefabPath + "PowerOrbContainer");
         }
 
         public static GameObject LoadTemplateItem(string suffix)

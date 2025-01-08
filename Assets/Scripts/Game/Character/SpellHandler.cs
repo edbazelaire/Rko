@@ -943,7 +943,7 @@ namespace Game.Character
             SpellSelectionEvent?.Invoke(spell, spellActivation);
         }
 
-        public void CallSpellEvent(string spellName, ESpellEvent spellEvent, float? forcedDuration = null)
+        public void CallSpellEvent(string spellName, ESpellEvent spellEvent, float? forcedDuration = null, Vector2? forcedPosition = null)
         {
             var spellData = SpellLoader.GetSpellData(spellName, destroy: true);
 
@@ -958,22 +958,33 @@ namespace Game.Character
                 return;
             }
 
-            // check if one of the effects requests a spawn position
-            if (! spellData.HasTargetGfxEventAt(spellEvent))
+            // FORCED POSTION REQUESTED
+            if (forcedPosition != null)
             {
-                // NO POSITION REQUESTED
                 if (forcedDuration == null)
-                    CallSpellEventClientRPC(spellName, spellEvent);
+                    CallSpellEventClientRPC(spellName, spellEvent, forcedPosition.Value);
                 else
                     CallSpellEventClientRPC(spellName, spellEvent, forcedDuration.Value);
             }
-            else
+
+            // HAS TARGET POS REQUESTED
+            else if (! spellData.HasTargetGfxEventAt(spellEvent))
             {
                 // POSITION REQUESTED : add target pos to the variables
                 if (forcedDuration == null)
                     CallSpellEventClientRPC(spellName, spellEvent, m_TargetPos.Value);
                 else
                     CallSpellEventClientRPC(spellName, spellEvent, m_TargetPos.Value, forcedDuration.Value);
+               
+            }
+
+            // NO POSITION REQUESTED
+            else
+            {
+                if (forcedDuration == null)
+                    CallSpellEventClientRPC(spellName, spellEvent);
+                else
+                    CallSpellEventClientRPC(spellName, spellEvent, forcedDuration.Value);
             }
         }
 

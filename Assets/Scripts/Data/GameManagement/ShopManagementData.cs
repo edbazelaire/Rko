@@ -6,6 +6,7 @@ using System.ComponentModel;
 using Tools;
 using Inventory;
 using Save;
+using Unity.VisualScripting;
 
 namespace Data.GameManagement
 {
@@ -55,24 +56,31 @@ namespace Data.GameManagement
     {
         public List<SCurrencyReward>        Currencies;
         public List<EChest>                 Chests;
+        public List<SPowerOrb>              PowerOrbs;
         public List<SCollectableReward>     Collectables;
         public List<SAchievementReward>     AchievementRewards;
 
         public readonly bool IsEmpty => Count == 0;
         public readonly int Count => Currencies.Count + Chests.Count + Collectables.Count + AchievementRewards.Count;
 
-        public SRewardsData(List<SCurrencyReward> currencyRewards = null, List<EChest> chests = null, List<SCollectableReward> collectableRewards = null, List<SAchievementReward> achievementRewards = null)
+        public SRewardsData(List<SCurrencyReward> currencyRewards       = null,
+                            List<EChest> chests                         = null,
+                            List<SPowerOrb> powerOrbs                   = null,
+                            List<SCollectableReward> collectableRewards = null,
+                            List<SAchievementReward> achievementRewards = null)
         {
-            Currencies          = currencyRewards ?? new List<SCurrencyReward>();
-            Chests              = chests ?? new List<EChest>();
-            Collectables        = collectableRewards ?? new List<SCollectableReward>();
-            AchievementRewards  = achievementRewards ?? new List<SAchievementReward>();
+            Currencies          = currencyRewards       ?? new List<SCurrencyReward>();
+            Chests              = chests                ?? new List<EChest>();
+            PowerOrbs           = powerOrbs             ?? new List<SPowerOrb>();
+            Collectables        = collectableRewards    ?? new List<SCollectableReward>();
+            AchievementRewards  = achievementRewards    ?? new List<SAchievementReward>();
         }
 
         public void SetDefaultData()
         {
             Currencies          ??= new List<SCurrencyReward>();
             Chests              ??= new List<EChest>();
+            PowerOrbs           ??= new List<SPowerOrb>();
             Collectables        ??= new List<SCollectableReward>();
             AchievementRewards  ??= new List<SAchievementReward>();
         }
@@ -110,12 +118,51 @@ namespace Data.GameManagement
 
         }
 
+        public void Add(SPowerOrb powerOrb)
+        {
+            PowerOrbs.Add(powerOrb);
+        }
+
+        public void Add(SRewardsData rewardsData)
+        {
+            if (rewardsData.Currencies != null)
+            {
+                Currencies ??= new List<SCurrencyReward>();
+                Currencies.AddRange(rewardsData.Currencies);
+            }
+            
+            if (rewardsData.Chests != null)
+            {
+                Chests ??= new List<EChest>();
+                Chests.AddRange(rewardsData.Chests);
+            }
+
+            if (rewardsData.PowerOrbs != null)
+            {
+                PowerOrbs ??= new List<SPowerOrb>();
+                PowerOrbs.AddRange(rewardsData.PowerOrbs);
+            }
+
+            if (rewardsData.Collectables != null)
+            {
+                Collectables ??= new List<SCollectableReward>();
+                Collectables.AddRange(rewardsData.Collectables);
+            }
+
+            if (rewardsData.AchievementRewards != null)
+            {
+                AchievementRewards ??= new List<SAchievementReward>();
+                AchievementRewards.AddRange(rewardsData.AchievementRewards);
+            }
+        }
+
         public List<SReward> Rewards
         {
             get
             {
                 List<SReward> list = AsRewardStruct(Currencies);
                 list.AddRange(AsRewardStruct(Chests));
+                list.AddRange(AsRewardStruct(PowerOrbs));
                 list.AddRange(AsRewardStruct(Collectables));
                 list.AddRange(AsRewardStruct(AchievementRewards));
 
@@ -146,6 +193,19 @@ namespace Data.GameManagement
             foreach (EChest data in chests)
             {
                 rewards.Add(new SReward(typeof(EChest), data.ToString(), 1));
+            }
+
+            return rewards;
+        }
+        public List<SReward> AsRewardStruct(List<SPowerOrb> powerOrbs)
+        {
+            if (powerOrbs == null || powerOrbs.Count == 0)
+                return new List<SReward>();
+
+            var rewards = new List<SReward>();
+            foreach (SPowerOrb data in powerOrbs)
+            {
+                rewards.Add(data.AsReward());
             }
 
             return rewards;

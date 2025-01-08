@@ -30,9 +30,23 @@ namespace Menu.Common
             m_Icon = Finder.FindComponent<Image>(gameObject, "Icon");
             m_Qty = Finder.FindComponent<TMP_Text>(gameObject, "Qty");
            
+            // POWER ORBS
+            if (reward.RewardType == typeof(EPowerOrb))
+            {
+                SPowerOrb powerOrb = new SPowerOrb(reward.RewardName);
+
+                var baseTemplate = powerOrb.LoadTemplate();
+                if (baseTemplate == null)
+                    return;
+
+                var template = Instantiate(baseTemplate, m_Icon.transform.parent);
+            }
+
             // CURRENCY
-            if (reward.RewardType == typeof(ECurrency) && Enum.TryParse(reward.RewardName, out ECurrency currency))
+            else if (reward.RewardType == typeof(ECurrency) && Enum.TryParse(reward.RewardName, out ECurrency currency))
+            {
                 m_Icon.sprite = AssetLoader.LoadCurrencyIcon(currency, reward.Qty);
+            }
 
             // ACHIEVEMENT REWARDS
             else if (ProfileCloudData.TryGetType(reward.RewardType, out EAchievementReward arType, false))

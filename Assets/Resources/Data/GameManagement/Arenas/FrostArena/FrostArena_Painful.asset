@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: df7d51f633e46b344920f012b0e1eca8, type: 3}
-  m_Name: FrostArena_Painfull
+  m_Name: FrostArena_Painful
   m_EditorClassIdentifier: 
   m_BotPerfLevelCeiling: 10
   m_ArenaLevelData:
@@ -89,12 +89,9 @@ MonoBehaviour:
   - RewardsData:
       Currencies:
       - Currency: 3
-        Qty: 180
-      Chests: 01000000
+        Qty: 250
+      Chests: 00000000
       Collectables:
-      - CollectableType: 3
-        CollectableName: BerserkerRune
-        Qty: 1
       - CollectableType: 3
         CollectableName: ToxicWaterRune
         Qty: 2
@@ -154,15 +151,6 @@ MonoBehaviour:
         Qty: 2500
       Chests: 01000000
       Collectables:
-      - CollectableType: 3
-        CollectableName: BerserkerRune
-        Qty: 1
-      - CollectableType: 3
-        CollectableName: ToxicWaterRune
-        Qty: 2
-      - CollectableType: 3
-        CollectableName: ShardcurseRune
-        Qty: 1
       - CollectableType: 2
         CollectableName: SoulFreeze
         Qty: 1
@@ -221,20 +209,8 @@ MonoBehaviour:
         Qty: 500
       - Currency: 0
         Qty: 5000
-      Chests: 07000000
+      Chests: 02000000
       Collectables:
-      - CollectableType: 3
-        CollectableName: BerserkerRune
-        Qty: 1
-      - CollectableType: 3
-        CollectableName: ToxicWaterRune
-        Qty: 2
-      - CollectableType: 3
-        CollectableName: ShardcurseRune
-        Qty: 1
-      - CollectableType: 2
-        CollectableName: SoulFreeze
-        Qty: 1
       - CollectableType: 3
         CollectableName: ThermalShockRune
         Qty: 1

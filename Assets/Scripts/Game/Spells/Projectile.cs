@@ -118,7 +118,10 @@ namespace Game.Spells
         {
             var controller = Finder.FindComponent<Controller>(collision.gameObject);
             if (controller == null)
+            {
+                ErrorHandler.Error("Player has no Controller");
                 return;
+            }
 
             // check if should apply on hit
             if (m_SpellData.ApplyIfNotHitting && !controller.IsSpawn)

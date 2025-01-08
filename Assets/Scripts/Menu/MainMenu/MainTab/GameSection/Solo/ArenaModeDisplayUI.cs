@@ -11,6 +11,7 @@ using Save;
 using UnityEngine.UI;
 using Assets;
 using Assets.Scripts.Data.GameManagement;
+using Unity.VisualScripting;
 
 namespace Menu.MainMenu.MainTab
 {
@@ -118,13 +119,28 @@ namespace Menu.MainMenu.MainTab
                 m_ButtonsSection.gameObject.SetActive(true);
                 m_SelectButton.gameObject.SetActive(true);
                 m_CollectButton.gameObject.SetActive(false);
+
+                // check if has notification of unlocked arena
+                if (NotificationCloudData.HasUnlockedArena(m_ArenaType))
+                {
+                    m_ArenaDifficulty = ProgressionCloudData.GetUnlockedArenaDifficulty(m_ArenaType);
+                    m_ArenaData = AssetLoader.LoadArenaData(m_ArenaType, m_ArenaDifficulty);
+
+                    // set this new unlocked value as current selected and add 
+                    m_ArenaDifficultyDropdown.SetValueWithoutNotify(m_ArenaDifficultyDropdown.options.FindIndex(option => option.text == m_ArenaDifficulty.ToString()));
+
+                    // TODO : Animation of the button for the notification
+
+                    // tell notifications that the value has been seen
+                    NotificationCloudData.CollectUnlockedArena(m_ArenaType);
+                }
             }
             
             // ARENA IS OVER
             else if (ProgressionCloudData.CurrentArena.IsOver())
             {
                 // if is Over but has not reward - Refresh CloudData + UI
-                if (ProgressionCloudData.CurrentArena.Level == 0)
+                if (ProgressionCloudData.CurrentArena.Level == 0 && ProgressionCloudData.CurrentArena.Stage == 0)
                 {
                     ProgressionCloudData.ResetCurrentArena();
                     RefreshUI();
@@ -155,6 +171,7 @@ namespace Menu.MainMenu.MainTab
             // ARENA TYPE
             List<string> values = Enum.GetNames(typeof(EArenaType)).ToList();
             values.Remove(EArenaType.None.ToString());
+
             // add values to dropdown
             m_ArenaTypeDropdown.AddOptions(values);
         }
@@ -268,7 +285,10 @@ namespace Menu.MainMenu.MainTab
 
         void OnCollectButtonClicked()
         {
-            Main.DisplayRewards(m_ArenaData.GetCurrentRewards(), "Arena", title: "Arena Rewards");
+            var rewards = m_ArenaData.GetCurrentRewards();
+            ProgressionCloudData.UpdateArenaUnlockedRewards();
+
+            Main.DisplayRewards(rewards, "Arena");
             ProgressionCloudData.ResetCurrentArena();
         }
 
