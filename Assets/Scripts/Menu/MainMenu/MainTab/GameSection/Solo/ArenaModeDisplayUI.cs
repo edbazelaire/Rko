@@ -125,6 +125,7 @@ namespace Menu.MainMenu.MainTab
                 {
                     m_ArenaDifficulty = ProgressionCloudData.GetUnlockedArenaDifficulty(m_ArenaType);
                     m_ArenaData = AssetLoader.LoadArenaData(m_ArenaType, m_ArenaDifficulty);
+                    m_ArenaButton.UpdateArenaDifficulty(m_ArenaDifficulty);
 
                     // set this new unlocked value as current selected and add 
                     m_ArenaDifficultyDropdown.SetValueWithoutNotify(m_ArenaDifficultyDropdown.options.FindIndex(option => option.text == m_ArenaDifficulty.ToString()));

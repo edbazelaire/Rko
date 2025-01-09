@@ -505,7 +505,7 @@ namespace Save
             if (! UnlockedArenaRewards.ContainsKey(arenaType))
             {
                 ErrorHandler.Warning("Unable to find arena (" + arenaType + ") in UnlockedArenaRewards Cloud Data - adding it manually");
-                UnlockedArenaRewards[arenaType] = new SUnlockedArenaReward(new SArenaDifficulty(0, 1), -1);
+                UnlockedArenaRewards[arenaType] = new SUnlockedArenaReward(new SArenaDifficulty(0, 0), -1);
                 Instance.SaveValue(KEY_UNLOCKED_ARENA_REWARDS);
             }
 
