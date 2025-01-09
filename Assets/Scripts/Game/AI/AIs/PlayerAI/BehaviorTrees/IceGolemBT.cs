@@ -7,7 +7,7 @@ namespace Game.AI.BehaviorTrees
 {
     public class IceGolemBT: DefaultBT
     {
-        public static float CarapiceDelay = 10f;
+        public static float CarapiceDelay = 30f;
 
         public IceGolemBT(Controller controller, EArenaDifficulty arenaDifficulty) : base(controller, arenaDifficulty) { }
 

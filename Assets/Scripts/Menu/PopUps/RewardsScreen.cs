@@ -9,6 +9,7 @@ using Inventory;
 using Menu.Common;
 using Menu.Common.Buttons;
 using Menu.Common.Displayers;
+using Menu.Common.Rewards;
 using Save;
 using System;
 using System.Collections;
@@ -34,6 +35,7 @@ namespace Menu.PopUps
         RewardsDisplayer    m_RewardsDisplayer;
         GameObject          m_ChestContainer;
         ChestUI             m_ChestUI;
+        PowerOrbContainer   m_PowerOrbContainer;
         GameObject          m_RewardDisplayContainer;
         GameObject          m_RewardIconSection;
         GameObject          m_RewardInfosSection;
@@ -279,6 +281,10 @@ namespace Menu.PopUps
             {
                 yield return DisplayChestReward(chestType, reward.Qty);
             } 
+            else if (reward.RewardType == typeof(EPowerOrb))
+            {
+                yield return DisplayOrbReward(new SPowerOrb(reward.RewardName));
+            } 
             else if (reward.RewardType == typeof(ECurrency) && Enum.TryParse(reward.RewardName, out ECurrency currency))
             {
                 yield return DisplayCurrencyReward(currency, reward.Qty);
@@ -354,6 +360,71 @@ namespace Menu.PopUps
         #endregion
 
 
+        #region Power Orb
+
+        IEnumerator DisplayOrbReward(SPowerOrb powerOrb)
+        {
+            ErrorHandler.Log("DisplayOrbReward() : ");
+            ErrorHandler.Log("      + rarety : " + powerOrb.Rarety);
+
+            m_Skip = false;
+
+            // displaying a list of rewards add a new depth in the coroutine management
+            m_Depth++;
+
+            // deactivate rewards display container
+            m_RewardDisplayContainer.SetActive(false);
+            // activate chest container
+            m_ChestContainer.SetActive(true);
+
+            // clean chest container
+            UIHelper.CleanContent(m_ChestContainer);
+
+            // instantiate chest prefab
+            m_PowerOrbContainer = Instantiate(AssetLoader.LoadPowerOrbContainer(), m_ChestContainer.transform);
+            m_PowerOrbContainer.Initialize(powerOrb);
+            m_PowerOrbContainer.transform.localScale *= 3;
+
+            // wait until touch to display reward
+            yield return new WaitUntil(() => m_Skip);
+
+            m_Skip = false;
+
+            // wait until touch to display reward
+            yield return TryUpgradeRarety();
+
+            m_Skip = false;
+
+            yield return WaitForCoroutineOrSkip(OpenOrb());
+
+            m_Skip = false;
+
+            yield return DisplayRewards(m_PowerOrbContainer.PowerOrbData.GenerateRewards());
+        }
+
+        IEnumerator TryUpgradeRarety()
+        {
+            for(int i = 0; i < 5; i++)
+            {
+                if (! m_PowerOrbContainer.PowerOrbData.TryUpgradeRarety())
+                    yield return WaitForCoroutineOrSkip(m_PowerOrbContainer.PowerOrbUI.UpgradeFailedAnimation());
+                else
+                    yield return WaitForCoroutineOrSkip(m_PowerOrbContainer.UpgradeSuccessAnimation());
+
+                yield return new WaitUntil(() => m_Skip);
+
+                m_Skip = false;
+            }
+        }
+
+        IEnumerator OpenOrb()
+        {
+            yield return m_PowerOrbContainer.PowerOrbUI.PlayOpenAnimation();
+        }
+
+        #endregion
+
+
         #region Single 
 
         IEnumerator DisplayCurrencyReward(ECurrency currency, int qty)
@@ -390,7 +461,10 @@ namespace Menu.PopUps
             // -- setup collection fill bar
             m_CollectionFillBar.Initialize(currentlyOwnValue, currentlyOwnValue + qty);
             yield return WaitForCoroutineOrSkip(m_CollectionFillBar.CollectionAnimationCoroutine(qty));
-            Destroy(m_CollectionFillBar.AudioSource.gameObject);    // make sure that audio source is destroyed (in case of skip)
+
+            // make sure that audio source is destroyed (in case of skip)
+            if (! m_CollectionFillBar.AudioSource.IsDestroyed())
+                Destroy(m_CollectionFillBar.AudioSource.gameObject);    
 
             // add reward to collection of rewards
             InventoryManager.UpdateCurrency(currency, qty, m_Context);

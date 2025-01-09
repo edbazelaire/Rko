@@ -27,19 +27,20 @@ MonoBehaviour:
   m_Priority: 0
   m_Duration: -1
   m_IsInstantanious: 0
-  m_MaxStacks: 15
+  m_MaxStacks: 21
   m_StackDecay: 0
+  m_Energy: 0
   m_BonusStats:
   - StateEffectProperty: 8
-    BaseValue: 0.05
+    BaseValue: 0.03
     LevelScalingFactor: 0
     StackScalingFactor: 1
   - StateEffectProperty: 20
-    BaseValue: 0.05
+    BaseValue: 0.025
     LevelScalingFactor: 0
     StackScalingFactor: 1
   - StateEffectProperty: 16
-    BaseValue: 0.1
+    BaseValue: 0.025
     LevelScalingFactor: 0
     StackScalingFactor: 1
   m_SpeedBonus: 0
@@ -53,6 +54,8 @@ MonoBehaviour:
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
   m_BonusLifeSteal: 0
+  m_BonusHeal: 0
+  m_BonusHealPerc: 0
   m_BonusBurnDamages: 0
   m_BonusSlowPerc: 0
   m_OnStartStateEffect: []

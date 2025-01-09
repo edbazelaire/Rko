@@ -124,9 +124,13 @@ namespace Assets
 
                 StartCoroutine(CheckInitialization());
 
-                // initialize Unity Services
+                // initialize Unity Services 
                 var options = new InitializationOptions();
+#if UNITY_EDITOR
+                options.SetEnvironmentName("beta");
+#else
                 options.SetEnvironmentName("dev");
+#endif
                 await UnityServices.InitializeAsync(options);
 
                 // listen to Auth Service and try to signe in anonymously
@@ -268,7 +272,7 @@ namespace Assets
             return infoText;
         }
 
-        #endregion
+#endregion
 
 
         #region State Management

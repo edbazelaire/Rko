@@ -111,9 +111,12 @@ namespace Game.Character
             for (int i = 0; i < m_TriggerEffects.Count; i++)
             {
                 var effect = m_TriggerEffects[i];
+
+                // CHECK : is triggered by death
                 if (effect.SpellActivationEvent != ESpellActivation.Death)
                     continue;
 
+                // CHECK : can be activated
                 if (! effect.IsActivable())
                     continue;
 
@@ -122,7 +125,7 @@ namespace Game.Character
 
                 effect.Activate(m_Controller);
                 m_TriggerEffects[i] = effect;
-                success = true;                
+                success = true;
             }
 
             return success;

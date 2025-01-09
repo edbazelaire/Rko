@@ -15,12 +15,15 @@ namespace Game.Spells
 
         #endregion
 
+
+        #region Init & End
+
         public override void Initialize(ulong clientId, Vector3 target, string spellName, int level)
         {
             base.Initialize(clientId, target, spellName, level);
-
-            m_CharacterOffsetY      = 0.1f + ((CapsuleCollider2D)m_Controller.Collider).size.y / 2;
-            transform.localScale    = m_Controller.transform.localScale * m_SpellData.BaseSize;
+            
+            m_CharacterOffsetY = 0.1f + ((CapsuleCollider2D)m_Controller.Collider).size.y / 2;
+            transform.localScale = m_Controller.transform.localScale * m_SpellData.BaseSize;
 
             if (EJumpType.Teleport == m_SpellData.JumpType)
                 m_Controller.GFXHandler.HideCharacter(true);
@@ -44,42 +47,11 @@ namespace Game.Spells
                 m_Controller.AnimationHandler.PlayAnimation(m_SpellData.JumpAnimation);
         }
 
-        protected override void Update()
-        {
-            base.Update();
-
-            // only server can check for distance and update the Controller position
-            if (!IsServer)
-                return;
-
-            if (m_SpellData.JumpType != EJumpType.Teleport)
-                UpdatePlayerPosition();
-        }
-
-        protected override void OnHitGround(Collider2D collision)
-        {
-            // check if is caster's arena : do not collide with our arena
-            var arenaTransform = ArenaManager.GetTargettableArea(m_Controller.Team, false);
-            if (arenaTransform == collision.transform)
-                return;
-
-            base.OnHitGround(collision);
-        }
-
-        protected override void OnHitStructure(Collider2D collision)
-        {
-            // do not hit structures with jumps
-            return;
-        }
-
-
-        #region Protected Members
-
         protected override void End()
         {
             base.End();
 
-            if (! IsServer) 
+            if (!IsServer)
                 return;
 
             // force pos to original Y
@@ -120,7 +92,19 @@ namespace Game.Spells
         #endregion
 
 
-        #region Private Members
+        #region Update
+
+        protected override void Update()
+        {
+            base.Update();
+
+            // only server can check for distance and update the Controller position
+            if (!IsServer)
+                return;
+
+            if (m_SpellData.JumpType != EJumpType.Teleport)
+                UpdatePlayerPosition();
+        }
 
         /// <summary>
         /// Update the player position to the spell position
@@ -130,6 +114,44 @@ namespace Game.Spells
             Vector3 pos = transform.position;
             pos.y += m_CharacterOffsetY;
             m_Controller.transform.position = pos;
+        }
+
+        #endregion
+
+
+        #region On Hit
+
+        /// <summary>
+        /// Jumps ends on hitting enemy ground 
+        /// </summary>
+        /// <param name="collision"></param>
+        protected override void OnHitGround(Collider2D collision)
+        {
+            // check if is caster's arena : do not collide with our arena
+            var arenaTransform = ArenaManager.GetTargettableArea(m_Controller.Team, false);
+            if (arenaTransform == collision.transform)
+                return;
+
+            base.OnHitGround(collision);
+        }
+
+        /// <summary>
+        /// Jumps go throught structures
+        /// </summary>
+        /// <param name="collision"></param>
+        protected override void OnHitStructure(Collider2D collision)
+        {
+            // do not hit structures with jumps
+            return;
+        }
+
+        /// <summary>
+        /// Ignore walls
+        /// </summary>
+        /// <param name="collision"></param>
+        protected override void OnHitWall(Collider2D collision)
+        {
+            return;
         }
 
         #endregion

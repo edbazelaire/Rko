@@ -68,6 +68,7 @@ namespace Menu.PopUps
 
         void SetUpBackground()
         {
+            // missing power up : set to green and with pulse animation
             if (m_IsMissingData)
             {
                 m_Background.color = new Color(0.7f , 1f, 0.7f);
@@ -82,7 +83,11 @@ namespace Menu.PopUps
                 return;
             }
 
+            // no missing power up : reset animation and color
             m_Background.color = new Color(1f, 1f, 1f);
+            var pulse = m_Background.GetComponent<Pulse>();
+            if (pulse != null)
+                GameObject.Destroy(pulse);
         }
 
         void SetUpIcon()

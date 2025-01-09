@@ -363,7 +363,7 @@ namespace Game.Spells
                 return;
 
             // apply force
-            if (m_SpellData.Force != default)
+            if (m_SpellData.Force.IsActive)
                 controller.Movement.AddForce(m_SpellData.Force);
 
             // if spell has "OnHit" GFX : call on CLIENT that spell has touched something

@@ -66,7 +66,7 @@
         Easy,
         Normal,
         Hard,
-        Painfull,
+        Painful,
         Brutal,
         //HardCore,
         //Savage,
@@ -820,6 +820,11 @@
         WintersBreath,
         Iceforged,
         FrostMaster,
+    }
+
+    public enum EPowerOrb
+    {
+        PowerOrb,
     }
 
     public enum EChestAnimState

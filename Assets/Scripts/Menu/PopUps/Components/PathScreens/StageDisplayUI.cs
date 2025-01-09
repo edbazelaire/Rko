@@ -27,6 +27,7 @@ namespace Menu.PopUps
 
         protected StageSectionUI        m_StageSectionUI;
         protected RewardsDisplayer      m_RewardsDisplayer;
+        protected Image                 m_RewardDisplayerBackground;
         protected GameObject            m_OverlayScreen;
         protected Button                m_CollectButton;
 
@@ -41,6 +42,7 @@ namespace Menu.PopUps
 
             m_StageSectionUI                = Finder.FindComponent<StageSectionUI>(gameObject);
             m_RewardsDisplayer              = Finder.FindComponent<RewardsDisplayer>(gameObject);
+            m_RewardDisplayerBackground     = Finder.FindComponent<Image>(m_RewardsDisplayer.gameObject);
             m_NotificationDisplay           = Finder.FindComponent<NotificationDisplay>(m_RewardsDisplayer.gameObject);
             m_OverlayScreen                 = Finder.Find(m_RewardsDisplayer.gameObject, "OverlayScreen");
             m_CollectButton                 = Finder.FindComponent<Button>(gameObject, "CollectButton");
@@ -80,30 +82,45 @@ namespace Menu.PopUps
             switch (state)
             {
                 case EStageRewardState.Locked:
-                    m_NotificationDisplay.Deactivate();
-                    m_CollectButton.gameObject.SetActive(false);
-                    m_OverlayScreen.SetActive(false);
+                    SetLockedState();
                     return;
 
                 case EStageRewardState.Unlocked:
-                    m_NotificationDisplay.Activate(); 
-                    m_CollectButton.gameObject.SetActive(true);
-                    var pulse = m_CollectButton.AddComponent<Pulse>();
-                    pulse.Initialize("", -1, pauseDuration: 1.5f);
-
-                    m_OverlayScreen.SetActive(false);
+                    SetUnlockedState();
                     return;
                     
                 case EStageRewardState.Collected:
-                    m_NotificationDisplay.Deactivate();
-                    m_CollectButton.gameObject.SetActive(false);
-                    m_OverlayScreen.SetActive(true);
+                    SetCollectedState();
                     return;
 
                 default: 
                     ErrorHandler.Error("Unknown state : " + state);
                     return;
             }
+        }
+
+        protected virtual void SetLockedState()
+        {
+            m_NotificationDisplay.Deactivate();
+            m_CollectButton.gameObject.SetActive(false);
+            m_OverlayScreen.SetActive(false);
+        }
+
+        protected virtual void SetUnlockedState()
+        {
+            m_NotificationDisplay.Activate();
+            m_CollectButton.gameObject.SetActive(true);
+            var pulse = m_CollectButton.AddComponent<Pulse>();
+            pulse.Initialize("", -1, pauseDuration: 1.5f);
+
+            m_OverlayScreen.SetActive(false);
+        }
+
+        protected virtual void SetCollectedState()
+        {
+            m_NotificationDisplay.Deactivate();
+            m_CollectButton.gameObject.SetActive(false);
+            m_OverlayScreen.SetActive(true);
         }
 
         #endregion

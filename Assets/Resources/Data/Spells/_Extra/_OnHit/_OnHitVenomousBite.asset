@@ -30,7 +30,7 @@ MonoBehaviour:
       StartAt: 0
       EndAt: 0
       Persistance: 1
-    Size: 0.5
+    Size: 1
     OrderInLayer: 0
     SpawnTarget: 2
     SpawnLocation: 0
@@ -38,6 +38,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   OnHit: []
   OnHitSpellSpawn: 1
@@ -47,8 +48,13 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 0
+  m_ClampTargetPos: 1
+  TargetOffset:
+    X: 0
+    Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 15
   EnergyCost: 0
@@ -60,6 +66,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
@@ -67,11 +76,12 @@ MonoBehaviour:
     Value: 0.1
   - Property: 3
     Value: 0.05
-  m_Size: 2
+  m_Size: 6
   TriggerPlayer: 1
   EnemyStateEffects:
   - StateEffect: 17
     Stacks: 7
+    BonusStacksPerLevel: 0
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 9

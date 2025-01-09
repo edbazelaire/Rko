@@ -102,6 +102,7 @@ namespace Data.DataStructures
             m_IsActivated           = true;
             m_Caster                = controller;
             m_TargetController      = CalculateTarget();
+            m_NActivationsCtr++;
 
             m_Coroutine = m_Caster.StartCoroutine(ActivationDelay());
         }
@@ -133,16 +134,13 @@ namespace Data.DataStructures
 
         void ActivateEffect()
         {
-            if (!IsActivable())
-                return;
-
             if (m_TargetController == null)
             {
                 ErrorHandler.Error("Provided Controller is null");
                 return;
             }
 
-            m_NActivationsCtr++;
+            // start cooldown
             if (Cooldown > 0)
             {
                 m_CooldownTimer = Cooldown;

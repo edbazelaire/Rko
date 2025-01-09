@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Managers.Sound;
+using Assets.Scripts.Menu.MainMenu.MainTab.Chests;
 using Enums;
 using Game.Loaders;
 using System;
@@ -241,7 +242,6 @@ namespace Tools
 
             // get selected character preview
             var characterPreview = CharacterLoader.GetCharacterData(character, destroy: true).InstantiateCharacterPreview(parent);
-            var animator = Finder.FindComponent<Animator>(characterPreview);
 
             // display character preview
             var baseScale = characterPreview.transform.localScale;
@@ -256,7 +256,39 @@ namespace Tools
             characterContainer.transform.localPosition = basePos;
 
             // adjust ordering of the character preview to be above canvas
-            AdjustLayout(characterPreview, layerName);
+            AdjustLayout(ref characterPreview, characterContainer.transform, layerName);
+        }
+
+        public static GameObject SpawnItem(GameObject go, GameObject parent, bool cleanParent = true, bool adjustLayout = true, bool adjustScale = true)
+        {
+            // Clean parent
+            if (cleanParent)
+                CleanContent(parent);
+
+            // Instantiate
+            go = GameObject.Instantiate(go, parent.transform);
+
+            if (adjustLayout)
+                AdjustLayout(ref go, parent.transform);
+
+            if (adjustScale)
+                AdjustScale(ref go, parent);
+
+            return go;
+        }
+
+        #endregion
+
+
+        #region Size Management
+
+        public static void AdjustScale(ref GameObject go, GameObject parent)
+        {
+            // display character preview
+            var baseScale = go.transform.localScale;
+            var parentRect = Finder.FindComponent<RectTransform>(parent);
+            float scaleFactor = Mathf.Min(parentRect.rect.height / baseScale.y, parentRect.rect.width / baseScale.x);
+            go.transform.localScale = new Vector3(baseScale.x * scaleFactor, baseScale.y * scaleFactor, baseScale.y * scaleFactor);
         }
 
         #endregion
@@ -266,17 +298,19 @@ namespace Tools
 
         public static Canvas GetFirstCanvas(Transform child)
         {
+            var parent = child;
+
             // Traverse up the hierarchy until a Canvas component is found
-            while (child != null)
+            while (parent != null)
             {
-                Canvas canvas = child.GetComponent<Canvas>();
+                Canvas canvas = parent.GetComponent<Canvas>();
                 if (canvas != null)
                 {
                     return canvas; // Found a Canvas component
                 }
 
                 // Move up to the parent transform
-                child = child.parent;
+                parent = parent.parent;
             }
 
             // No Canvas component found in the hierarchy
@@ -289,9 +323,11 @@ namespace Tools
         /// </summary>
         /// <param name="gameObject"></param>
         /// <param name="parent"></param>
-        public static void AdjustLayout(GameObject gameObject, string layerName = "")
+        public static void AdjustLayout(ref GameObject gameObject, Transform parent = null, string layerName = "")
         {
-            Canvas canvas = GetFirstCanvas(gameObject.transform);
+            Canvas canvas = GetFirstCanvas(parent == null ? gameObject.transform : parent);
+            if (canvas == null)
+                return;
 
             // Get all SpriteRenderer components attached to this GameObject and its children
             SpriteRenderer[] spriteRenderers = gameObject.GetComponentsInChildren<SpriteRenderer>();
@@ -301,6 +337,20 @@ namespace Tools
             {
                 renderer.sortingLayerName   = layerName == "" ? canvas.sortingLayerName : layerName;
                 renderer.sortingOrder       += canvas.sortingOrder;
+            }
+
+            // Get all ParticleSystem components in the hierarchy of the Chest object
+            var particleSystems = Finder.FindComponents<ParticleSystem>(gameObject, throwError: false);
+
+            // Adjust the rendering order of ParticleSystem components
+            foreach (ParticleSystem particleSystem in particleSystems)
+            {
+                Renderer particleRenderer = particleSystem.GetComponent<Renderer>();
+                if (particleRenderer != null)
+                {
+                    particleRenderer.sortingLayerName = canvas.sortingLayerName;
+                    particleRenderer.sortingOrder += canvas.sortingOrder + 1; // Render above the Canvas
+                }
             }
         }
 

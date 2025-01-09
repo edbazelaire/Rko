@@ -18,7 +18,6 @@ namespace Game
         const string c_PlateformPrefix          = "Plateform_";
         const string c_SpawnerPrefix            = "SpawnPoint_";
         const string c_TargettableAreaPrefix    = "TargettableArea_";
-        const string c_Arena                    = "Arena";
         const string c_TargetHight              = "TargetHight";
         const int c_NumTeams                    = 2;
 
@@ -36,22 +35,6 @@ namespace Game
         public Transform                TargetHight             => m_TargetHight;
         public float                    TargettableAreaSize     => m_TargettableAreaSize;
         public ArenaBackground          ArenaBackground         => m_ArenaBackground;
-
-        #endregion
-
-
-        #region Inherited Manipulators
-
-        //void Awake()
-        //{
-        //    if (s_Instance != null)
-        //    {
-        //        Destroy(gameObject);
-        //        return;
-        //    }
-
-        //    Initialize();
-        //}
 
         #endregion
 
@@ -162,10 +145,10 @@ namespace Game
             return (team == 0 && enemyArea || team == 1 && !enemyArea) ? 1 : -1;
         }
 
-        public static bool IsInAreaBounds(float x, int team, bool enemyArea)
+        public static bool IsInAreaBounds(float x, int team, bool enemyArea, float marge = 0f)
         {
             (float xMin, float xMax) = GetAreaBounds(team, enemyArea);
-            return xMax > x && x > xMin;
+            return xMax + marge > x && x > xMin - marge;
         } 
 
         public static (float Min, float Max) GetAreaBounds(float xPos)

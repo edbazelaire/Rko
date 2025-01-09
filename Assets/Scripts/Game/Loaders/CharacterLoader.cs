@@ -1,7 +1,9 @@
 using Data;
 using Enums;
+using Save;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Tools;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -173,6 +175,79 @@ namespace Game.Loaders
 
             ErrorHandler.Error("Unable to find character linked to spell : " + spell);
             return null;
+        }
+
+        #endregion
+
+
+        #region Filters 
+
+        /// <summary>
+        /// Get a spell matching provided filters
+        /// </summary>
+        /// <param name="raretyFilters"></param>
+        /// <param name="spellTypeFilters"></param>
+        /// <param name="spellElementFilters"></param>
+        /// <param name="stateEffectFilters"></param>
+        /// <param name="notAllowedSpellsFilter"></param>
+        /// <param name="unlocked"></param>
+        /// <returns></returns>
+        public static CharacterData GetRandomCharacter(List<ERarety> raretyFilters = default, List<ECharacter> notAllowedFilter = default, bool? unlocked = null)
+        {
+            var characters = FilterCharacters(raretyFilters, notAllowedFilter, unlocked);
+            if (characters.Count == 0)
+            {
+                ErrorHandler.Warning("Unable to find any spell matching provided filters");
+                return null;
+            }
+
+            int randomIndex = UnityEngine.Random.Range(0, characters.Count);
+            return characters[randomIndex];
+        }
+
+        /// <summary>
+        /// Return a list of spells that can be filtered by :
+        ///     - Rarety
+        ///     - Type 
+        ///     - State Effects
+        /// </summary>
+        /// <param name="raretyFilters"></param>
+        /// <param name="spellTypeFilters"></param>
+        /// <param name="stateEffectFilters"></param>
+        /// <returns></returns>
+        public static List<CharacterData> FilterCharacters(List<ERarety> raretyFilters = default, List<ECharacter> notAllowedSpellsFilter = default, bool? unlocked = null, string containsName = "")
+        {
+            List<CharacterData> characters = new List<CharacterData>();
+            foreach (var characterData in Instance.m_Characters.Values)
+            {
+                // CHECK : not allowed 
+                if (notAllowedSpellsFilter != null && notAllowedSpellsFilter.Contains(characterData.Character))
+                    continue;
+
+                // CHECK : rarety
+                if (raretyFilters != null && raretyFilters.Count > 0 && !raretyFilters.Contains(characterData.Rarety))
+                    continue;
+
+                // FILTER : is owned
+                if (unlocked != null)
+                {
+                    // if UNLOCKED is required : check that spell is already unlocked
+                    if (unlocked.Value && InventoryCloudData.Instance.GetCollectable(characterData.Character).Level == 0)
+                        continue;
+
+                    // if NOT UNLOCKED is required : check that spell is not already unlocked
+                    if (!unlocked.Value && InventoryCloudData.Instance.GetCollectable(characterData.Character).Level > 0)
+                        continue;
+                }
+
+                // FILTER : name contains string
+                if (!string.IsNullOrEmpty(containsName) && !characterData.Character.ToString().ToLower().Contains(containsName.ToLower()))
+                    continue;
+
+                characters.Add(characterData);
+            }
+
+            return characters;
         }
 
         #endregion

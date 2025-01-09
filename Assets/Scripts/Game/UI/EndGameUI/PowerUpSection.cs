@@ -40,7 +40,7 @@ namespace Game.UI.EndGameUI
 
         public void Initialize(int index = -1)
         {
-            m_CurrentArenaPowerUpIndex = index >= 0 ? index : ProgressionCloudData.CurrentArena.Level - 1;    
+            m_CurrentArenaPowerUpIndex = index >= 0 ? index : ProgressionCloudData.CurrentArena.Level;    
             base.Initialize();
         }
 

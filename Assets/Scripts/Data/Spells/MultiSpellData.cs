@@ -225,7 +225,7 @@ namespace Data
             ));
 
             // spawn SubSpell - SpellGFX
-            controller.SpellHandler.CallSpellEvent(SubSpellData.name, ESpellEvent.OnCast);
+            controller.SpellHandler.CallSpellEvent(SubSpellData.name, ESpellEvent.OnCast, forcedPosition: target);
         }
 
         #endregion

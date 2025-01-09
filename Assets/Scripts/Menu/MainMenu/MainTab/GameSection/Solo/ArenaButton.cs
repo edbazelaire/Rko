@@ -42,12 +42,22 @@ public class ArenaButton : MObject
         CheckNotificationActivation();
     }
 
+    #endregion
+
+
+    #region Manipulators
+
     void CheckNotificationActivation()
     {
         if (NotificationCloudData.HasRewardsForArenaType(m_ArenaType))
             m_NotificationDisplay.Activate();
         else
             m_NotificationDisplay.Deactivate();
+    }
+
+    public void UpdateArenaDifficulty(SArenaDifficulty arenaDifficulty)
+    {
+        m_ArenaDifficulty = arenaDifficulty;
     }
 
     #endregion

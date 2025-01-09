@@ -1,5 +1,6 @@
 ﻿using Data.DataStructures;
 using Enums;
+using Inventory;
 using Managers;
 using Save;
 using System;
@@ -89,10 +90,11 @@ namespace Data.GameManagement
 
         public int CurrentLevel                 => ProgressionCloudData.CurrentArena.Level;
         public int CurrentStage                 => ProgressionCloudData.CurrentArena.Stage;
-        public int CurrentBaseCharacterLevel    => (int)ArenaDifficulty * 2 + m_ArenaDifficultyLevel;
+        public int CurrentBaseCharacterLevel    => 1 + (int)ArenaDifficulty * 2 + m_ArenaDifficultyLevel;
         public float CurrentRewardMultiplicator => 1 + (int)ArenaDifficulty * 0.5f + m_ArenaDifficultyLevel * 0.15f;
 
         public EArenaType               ArenaType               => Enum.TryParse(name.Split("_")[0], out EArenaType arenaType) ? arenaType : EArenaType.FrostArena;
+        public SArenaDifficulty         SArenaDifficulty        => new SArenaDifficulty(ArenaDifficulty, ArenaDifficultyLevel);
         public EArenaDifficulty         ArenaDifficulty         => Enum.TryParse(name.Split("_")[1], out EArenaDifficulty arenaDifficulty) ? arenaDifficulty : EArenaDifficulty.Normal;
         public int                      ArenaDifficultyLevel    => m_ArenaDifficultyLevel;
         public List<SArenaLevelData>    ArenaLevelData          => m_ArenaLevelData;
@@ -172,10 +174,87 @@ namespace Data.GameManagement
 
         public SRewardsData GetCurrentRewards()
         {
-            if (ProgressionCloudData.CurrentArena.Level == 0)
-                return new SRewardsData();
+            if (ProgressionCloudData.CurrentArena.GetPowerOrb().Power == 0)
+                return default;
 
-            return GetArenaLevelData(ProgressionCloudData.CurrentArena.Level - 1).RewardsData;
+            // init rewards
+            var rewards = new SRewardsData();
+            rewards.SetDefaultData();
+
+            // add current orb as reward
+            rewards.Add(ProgressionCloudData.CurrentArena.GetPowerOrb());
+
+            // current difficulty inferior to already unlocked difficulty -> return rewards
+            if (SArenaDifficulty < ProgressionCloudData.GetUnlockedArenaReward(ArenaType).ArenaDifficulty)
+                return rewards;  
+            
+            for (int arenaLevel = 0; arenaLevel < ProgressionCloudData.CurrentArena.Level; arenaLevel++)
+            {
+                // check if this arena level has already been collected
+                if (ProgressionCloudData.IsArenaRewardCollected(ArenaType, SArenaDifficulty, arenaLevel))
+                    continue;
+
+                rewards.Add(m_ArenaLevelData[arenaLevel].RewardsData);
+            }
+
+            return rewards;
+        }
+
+        /// <summary>
+        /// Calculate the total OrbPower that can be collected during this Arena
+        /// </summary>
+        /// <returns></returns>
+        public int CalculateMaxOrbPower()
+        {
+            int maxPower = 0;
+
+            for (int arenaLevel = 0; arenaLevel < m_ArenaLevelData.Count; arenaLevel++)
+            {
+                // add power of each mobs of arena level
+                maxPower += CalculateOrbPowerReward(arenaLevel, 0) * (m_ArenaLevelData[arenaLevel].StageData.Count - 1);
+                // add boss power
+                maxPower += CalculateOrbPowerReward(arenaLevel, m_ArenaLevelData[arenaLevel].StageData.Count - 1);
+            }
+
+            return maxPower;
+        }
+
+        /// <summary>
+        /// Calculate the Power to add to the current OrbPower from finishing a stage
+        /// </summary>
+        /// <param name="arenaLevel"></param>
+        /// <param name="arenaStage"></param>
+        /// <returns></returns>
+        public int CalculateOrbPowerReward(int arenaLevel, int arenaStage)
+        {
+            // TODO : constants
+            int baseMobPower                = 10;
+            int baseBossPower               = 150;
+            float mobPowerIncreasePerLevel  = 0.2f;
+            float bossPowerIncreasePerLevel = 0.5f;
+            float bonusArenaDifficulty      = 0.3f;
+            float bonusArenaDifficultyLevel = 0.15f;
+            // TODO : constants
+
+            float basePowerIncreasePerLevel;
+            float basePower;
+            // MOB REWARD
+            if (arenaStage < m_ArenaLevelData[arenaLevel].StageData.Count - 1)
+            {
+                basePower = baseMobPower;
+                basePowerIncreasePerLevel = mobPowerIncreasePerLevel;
+            }
+            else
+            {
+                basePower = baseBossPower;
+                basePowerIncreasePerLevel = bossPowerIncreasePerLevel;
+            }
+
+            return (int)Math.Round(
+                basePower * (1 + arenaLevel * basePowerIncreasePerLevel)        // base power level from current arena level
+                * Math.Pow(1 + bonusArenaDifficulty, (int)ArenaDifficulty)      // power level increase from arena difficulty (normal, hard, brutal, ...)
+                * (1 + bonusArenaDifficultyLevel * ArenaDifficultyLevel)        // power level increase from arena difficulty bonus level (+, ++, ... etc)
+            );
         }
 
         #endregion
@@ -265,13 +344,14 @@ namespace Data.GameManagement
         /// <returns></returns>
         public EBorder GetBorder()
         {
+            if (ArenaDifficulty == EArenaDifficulty.Easy)
             if (ArenaDifficulty == EArenaDifficulty.Normal)
                 return EBorder.None;
 
             if (ArenaDifficulty == EArenaDifficulty.Hard)
                 return EBorder.LeagueBronze;
 
-            if (ArenaDifficulty == EArenaDifficulty.Painfull)
+            if (ArenaDifficulty == EArenaDifficulty.Painful)
                 return EBorder.LeagueSilver;
 
             //if (ArenaDifficulty == EArenaDifficulty.Normal)

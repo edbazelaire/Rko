@@ -4,7 +4,7 @@ using Tools;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Assets.Scripts.Menu.Common.Buttons.SubButtons
+namespace Menu.Common.Displayers
 {
     public class PriceDisplay : MonoBehaviour
     {
