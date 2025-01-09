@@ -124,12 +124,12 @@ namespace Assets
 
                 StartCoroutine(CheckInitialization());
 
-                // initialize Unity Services
+                // initialize Unity Services 
                 var options = new InitializationOptions();
 #if UNITY_EDITOR
-                options.SetEnvironmentName("dev");
-#else
                 options.SetEnvironmentName("beta");
+#else
+                options.SetEnvironmentName("dev");
 #endif
                 await UnityServices.InitializeAsync(options);
 

@@ -127,6 +127,7 @@ namespace Menu.PopUps
 
         protected override void SetUnlockedState()
         {
+            m_CollectButton.gameObject.SetActive(false);
             m_OverlayScreen.SetActive(false);
             m_RewardDisplayerBackground.color = new Color(0.1f, 0.1f, 0.1f, 0.95f);
         }

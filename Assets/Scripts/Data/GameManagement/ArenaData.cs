@@ -90,7 +90,7 @@ namespace Data.GameManagement
 
         public int CurrentLevel                 => ProgressionCloudData.CurrentArena.Level;
         public int CurrentStage                 => ProgressionCloudData.CurrentArena.Stage;
-        public int CurrentBaseCharacterLevel    => (int)ArenaDifficulty * 2 + m_ArenaDifficultyLevel;
+        public int CurrentBaseCharacterLevel    => 1 + (int)ArenaDifficulty * 2 + m_ArenaDifficultyLevel;
         public float CurrentRewardMultiplicator => 1 + (int)ArenaDifficulty * 0.5f + m_ArenaDifficultyLevel * 0.15f;
 
         public EArenaType               ArenaType               => Enum.TryParse(name.Split("_")[0], out EArenaType arenaType) ? arenaType : EArenaType.FrostArena;
@@ -228,8 +228,8 @@ namespace Data.GameManagement
         public int CalculateOrbPowerReward(int arenaLevel, int arenaStage)
         {
             // TODO : constants
-            int baseMobPower                = 5;
-            int baseBossPower               = 50;
+            int baseMobPower                = 10;
+            int baseBossPower               = 150;
             float mobPowerIncreasePerLevel  = 0.2f;
             float bossPowerIncreasePerLevel = 0.5f;
             float bonusArenaDifficulty      = 0.3f;
@@ -344,6 +344,7 @@ namespace Data.GameManagement
         /// <returns></returns>
         public EBorder GetBorder()
         {
+            if (ArenaDifficulty == EArenaDifficulty.Easy)
             if (ArenaDifficulty == EArenaDifficulty.Normal)
                 return EBorder.None;
 

@@ -38,27 +38,27 @@ namespace Inventory
         Dictionary<string, int> RewardsPrice = new Dictionary<string, int>()
         {
             // Currencies
-            { ECurrency.Golds.ToString(),                   1   },
-            { ECurrency.Xp.ToString(),                      3   },
-            { ECurrency.Gems.ToString(),                    10  },
+            { ECurrency.Golds.ToString(),                   1       },
+            { ECurrency.Xp.ToString(),                      3       },
+            { ECurrency.Gems.ToString(),                    10      },
 
             // Spells
-            { "Spell_" + ERarety.Common.ToString(),         5   },
-            { "Spell_" + ERarety.Rare.ToString(),           15  },
-            { "Spell_" + ERarety.Epic.ToString(),           75  },
-            { "Spell_" + ERarety.Legendary.ToString(),      250 },
+            { "Spell_" + ERarety.Common.ToString(),         25      },
+            { "Spell_" + ERarety.Rare.ToString(),           75      },
+            { "Spell_" + ERarety.Epic.ToString(),           500     },
+            { "Spell_" + ERarety.Legendary.ToString(),      2500    },
 
             // Runes
-            { "Rune_" + ERarety.Common.ToString(),          5   },
-            { "Rune_" + ERarety.Rare.ToString(),            15  },
-            { "Rune_" + ERarety.Epic.ToString(),            75  },
-            { "Rune_" + ERarety.Legendary.ToString(),       250 },
+            { "Rune_" + ERarety.Common.ToString(),          75      },
+            { "Rune_" + ERarety.Rare.ToString(),            225     },
+            { "Rune_" + ERarety.Epic.ToString(),            1500    },
+            { "Rune_" + ERarety.Legendary.ToString(),       7500    },
 
             // Characters
-            { "Character_" + ERarety.Common.ToString(),     150  },
-            { "Character_" + ERarety.Rare.ToString(),       350  },
-            { "Character_" + ERarety.Epic.ToString(),       1000 },
-            { "Character_" + ERarety.Legendary.ToString(),  2500 },
+            { "Character_" + ERarety.Common.ToString(),     250     },
+            { "Character_" + ERarety.Rare.ToString(),       750     },
+            { "Character_" + ERarety.Epic.ToString(),       5000    },
+            { "Character_" + ERarety.Legendary.ToString(),  25000   },
         };
 
         #endregion
