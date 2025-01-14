@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 076dc584973b01f4fbb5f8233381a268, type: 3}
+  m_Name: LootManagementData
+  m_EditorClassIdentifier: 
+  OrbRaretyDistribution:
+  - Rarety: 0
+    RaretyPercData:
+    - Rarety: 0
+      Percentage: 0.695
+    - Rarety: 1
+      Percentage: 0.25
+    - Rarety: 2
+      Percentage: 0.05
+    - Rarety: 3
+      Percentage: 0.005
+  - Rarety: 1
+    RaretyPercData:
+    - Rarety: 1
+      Percentage: 0.89
+    - Rarety: 2
+      Percentage: 0.1
+    - Rarety: 3
+      Percentage: 0.01
+  - Rarety: 2
+    RaretyPercData:
+    - Rarety: 2
+      Percentage: 0.9
+    - Rarety: 3
+      Percentage: 0.1
+  - Rarety: 3
+    RaretyPercData:
+    - Rarety: 3
+      Percentage: 1
+  OrbSubRewardsTypePercs:
+  - SubRewardType: 1
+    Percentage: 0.65
+  - SubRewardType: 2
+    Percentage: 0.15
+  - SubRewardType: 0
+    Percentage: 0.15
+  - SubRewardType: 3
+    Percentage: 0.05

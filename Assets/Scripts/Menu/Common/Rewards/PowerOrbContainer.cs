@@ -72,6 +72,8 @@ namespace Menu.Common.Rewards
             yield return null;
 
             RefreshUI();
+
+            StartCoroutine(m_PowerOrbUI.UpgradeSuccessAnimation());
         }
 
         #endregion

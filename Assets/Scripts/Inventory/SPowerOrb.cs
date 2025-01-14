@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Menu.MainMenu.MainTab.Chests;
 using Data;
+using Data.GameManagement;
 using Enums;
 using Game.Loaders;
 using JetBrains.Annotations;
@@ -28,9 +29,8 @@ namespace Inventory
         public ERarety  Rarety              => m_Rarety;
         protected int   FinalPower          => (int)Math.Round(
             m_Power * Mathf.Pow(1 + PERC_STAR_BONUS, (int)m_Rarety)     // percentage bonus from rarety
-            + FIX_STAR_BONUS * Mathf.Pow(2, (int)m_Rarety)              // fix value bonus from rarety
+            + FIX_STAR_BONUS * (Mathf.Pow(2, (int)m_Rarety) - 1)        // fix value bonus from rarety
         );
-
 
         /// <summary>
         /// Associate Reward with its price in "Power"
@@ -159,161 +159,226 @@ namespace Inventory
 
         #region Rewards
 
-        public List<SReward> GenerateRewards()
-        {
-            // Initialize the rewards list
-            List<SReward> rewards = new List<SReward>();
-
-            // Remaining power and items count
-            int remainingPower = FinalPower;
-            int garbagePower = 0;
-            int nItems = 0;
-
-            // Number of items to distribute power among
-            const int maxItems = 6;
-
-            // Maximum power bias factor (for creating non-linear distribution)
-            const float powerBiasFactor = 2.0f;
-
-            // Define probabilities for each item
-            float[] probabilities = { 0.5f, 0.25f, 0.1f, 0.075f, 0.05f, 0.025f };
-
-            // Normalize probabilities
-            float totalProbability = probabilities.Sum();
-            probabilities = probabilities.Select(p => p / totalProbability).ToArray();
-
-            // Generate random power values for each item
-            while (remainingPower >= FinalPower / 10 && nItems < maxItems)
-            {
-                // Determine the power split using a weighted random choice
-                int basePower = FinalPower / maxItems;
-                float randomValue = UnityEngine.Random.Range(0f, 1f);
-
-                // Determine the multiplier for this item's power based on probabilities
-                float powerMultiplier = 1.0f;
-                float cumulativeProbability = 0.0f;
-
-                for (int i = 0; i < probabilities.Length; i++)
-                {
-                    cumulativeProbability += probabilities[i];
-                    if (randomValue <= cumulativeProbability)
-                    {
-                        powerMultiplier += i / powerBiasFactor;
-                        break;
-                    }
-                }
-
-                // Compute the power for this item
-                int itemPower = Mathf.Clamp((int)(basePower * powerMultiplier), 1, remainingPower);
-
-                // Create the reward
-                SReward reward = CreateReward(itemPower);
-                if (reward.Qty > 0)
-                {
-                    rewards.Add(reward);
-                    remainingPower -= itemPower;
-                    nItems++;
-                }
-            }
-
-            // Assign remaining power to garbage (gold or XP)
-            garbagePower = remainingPower;
-            if (garbagePower > 0)
-            {
-                rewards.Add(new SReward(typeof(ECurrency), ECurrency.Golds.ToString(), garbagePower));
-            }
-
-            return rewards;
-        }
-
         /// <summary>
         /// Creates an SReward based on the provided power.
         /// </summary>
         /// <param name="power">Power value to determine the reward type and quantity.</param>
         /// <returns>An SReward instance.</returns>
-        private SReward CreateReward(int power)
+        public List<SReward> GenerateRewards()
         {
-            // Filter rewards within the acceptable power range
-            var eligibleRewards = RewardsPrice.Where(kv => kv.Value <= power).ToList();
+            List<SReward> rewards = new List<SReward>();
+            int basePower = FinalPower;
+            int remainingPower = basePower;
+            int nItems = 0;
+            const int maxItems = 6;
 
-            if (eligibleRewards.Count > 0)
+            // Determine bonus gold
+            int bonusGold = Mathf.RoundToInt(FinalPower * UnityEngine.Random.Range(0.05f, 0.15f));
+
+            while (remainingPower > 0 && nItems < maxItems)
             {
-                int randomIndex = UnityEngine.Random.Range(0, eligibleRewards.Count);
-                var selectedReward = eligibleRewards[randomIndex];
+                // Step 1: Calculate power for this item
+                int itemPower = CalculateItemPower(basePower, remainingPower);
 
-                string rewardName = selectedReward.Key;
-                int rewardBasePower = selectedReward.Value;
+                // Step 2: Choose rarity based on RaretyPerc
+                ERarety rarity = ChooseItemRarity();
 
-                if (rewardName.StartsWith("Spell"))
+                // Step 3: Choose reward type based on RewardsTypePercs
+                ESubRewardType rewardType = ChooseRewardType(rarity);
+
+                // Step 4: Create reward
+                SReward reward = CreateReward(rewardType, itemPower, rarity);
+                if (reward.Qty > 0)
                 {
-                    var rarity = GetRarityFromRewardName(rewardName);
-                    SpellData spellData = SpellLoader.GetRandomSpell(new List<ERarety> { rarity });
-                    if (spellData != null)
-                    {
-                        int qty = rarity == ERarety.Legendary ? 1 : Mathf.Max(1, power / rewardBasePower);
-                        return new SReward(typeof(ESpell), spellData.Spell.ToString(), qty);
-                    }
-                }
-                else if (rewardName.StartsWith("Rune"))
-                {
-                    var rarity = GetRarityFromRewardName(rewardName);
-                    RuneData runeData = SpellLoader.GetRandomRune(new List<ERarety> { rarity });
-                    if (runeData != null)
-                    {
-                        int qty = rarity == ERarety.Legendary ? 1 : Mathf.Max(1, power / rewardBasePower);
-                        return new SReward(typeof(ERune), runeData.Rune.ToString(), qty);
-                    }
-                }
-                else if (rewardName.StartsWith("Character"))
-                {
-                    var rarity = GetRarityFromRewardName(rewardName);
-                    CharacterData characterData = CharacterLoader.GetRandomCharacter(new List<ERarety> { rarity }, null, false);
-                    if (characterData != null)
-                    {
-                        return new SReward(typeof(ECharacter), characterData.Character.ToString(), 1);
-                    }
-                    else
-                    {
-                        // If no characters are available, fallback to another reward
-                        return CreateFallbackReward(power);
-                    }
-                }
-                else if (rewardName.StartsWith(ECurrency.Golds.ToString()) || rewardName.StartsWith(ECurrency.Xp.ToString()))
-                {
-                    int qty = Mathf.Max(1, power / rewardBasePower);
-                    return new SReward(typeof(ECurrency), rewardName, qty);
+                    rewards.Add(reward);
+                    nItems++;
+
+                    // Deduct used power from remaining power
+                    var name = rewardType == ESubRewardType.Currency ? reward.RewardName : rewardType + "_" + rarity;
+                    int consumedPower = Mathf.Max(RewardsPrice[name] * reward.Qty, itemPower);
+                    remainingPower -= consumedPower;
                 }
             }
 
-            // Default to golds if no matches
-            return new SReward(typeof(ECurrency), ECurrency.Golds.ToString(), 0);
+            // Add bonus gold to the rewards
+            rewards.Add(new SReward(typeof(ECurrency), ECurrency.Golds.ToString(), bonusGold));
+
+            return rewards;
         }
 
         /// <summary>
-        /// Fallback reward in case primary selection fails.
+        /// Calculates the power to attribute to the next item.
+        /// </summary>
+        private int CalculateItemPower(int basePower, int remainingPower)
+        {
+            // Randomly attribute power from 10% to 30% of the remaining power
+            return Mathf.Clamp(UnityEngine.Random.Range(basePower / 10, remainingPower / 3), 1, remainingPower);
+        }
+
+        /// <summary>
+        /// Chooses a rarity based on the RaretyPerc distribution.
+        /// </summary>
+        private ERarety ChooseItemRarity()
+        {
+            // Retrieve the RaretyPercData array for the orb's rarity
+            SRaretyPercData[] orbRaretyPercDataArray = LootManagementData.FindOrbRaretyPercData(m_Rarety);
+
+            if (orbRaretyPercDataArray == null || orbRaretyPercDataArray.Length == 0)
+            {
+                ErrorHandler.Error("No rarity data found for the orb rarity: " + m_Rarety);
+                return ERarety.Common; // Fallback to Common
+            }
+
+            // Extract percentages and normalize to sum to 1
+            Dictionary<ERarety, float> currentRaretyPerc = new Dictionary<ERarety, float>();
+            float total = 0f;
+
+            foreach (var data in orbRaretyPercDataArray)
+            {
+                currentRaretyPerc[data.Rarety] = data.Percentage;
+                total += data.Percentage;
+            }
+
+            if (total <= 0f)
+            {
+                ErrorHandler.Error("Total rarity percentage for orb rarity " + m_Rarety + " is invalid.");
+                return ERarety.Common;
+            }
+
+            // Normalize percentages
+            foreach (var key in currentRaretyPerc.Keys.ToList())
+            {
+                currentRaretyPerc[key] /= total;
+            }
+
+            // Perform weighted random selection
+            float randomValue = UnityEngine.Random.Range(0f, 1f);
+            float cumulative = 0f;
+
+            foreach (var pair in currentRaretyPerc)
+            {
+                cumulative += pair.Value;
+                if (randomValue <= cumulative)
+                {
+                    return pair.Key;
+                }
+            }
+
+            return ERarety.Common; // Fallback to Common
+        }
+
+
+        /// <summary>
+        /// Chooses a reward type based on the RewardsTypePercs distribution.
+        /// Ensures no Currency is selected for Legendary rarity.
+        /// </summary>
+        private ESubRewardType ChooseRewardType(ERarety rarity = ERarety.Common)
+        {
+            float randomValue = UnityEngine.Random.Range(0f, 1f);
+            float cumulative = 0;
+
+            foreach (SSubRewardsTypePerc rewardTypePerc in LootManagementData.Instance.OrbSubRewardsTypePercs)
+            {
+                // Avoid currency if rarity is Legendary
+                if (rarity == ERarety.Legendary && rewardTypePerc.SubRewardType == ESubRewardType.Currency)
+                    continue;
+
+                cumulative += rewardTypePerc.Percentage;
+                if (randomValue <= cumulative)
+                {
+                    return rewardTypePerc.SubRewardType;
+                }
+            }
+
+            return ESubRewardType.Currency; // Fallback to Currency if something goes wrong
+        }
+
+        /// <summary>
+        /// Creates a reward based on the type, power, and rarity.
+        /// </summary>
+        private SReward CreateReward(ESubRewardType rewardType, int power, ERarety rarity)
+        {
+            switch (rewardType)
+            {
+                case ESubRewardType.Currency:
+                    return CreateCurrencyReward(power, rarity);
+                case ESubRewardType.Spell:
+                    return CreateSpellReward(power, rarity);
+                case ESubRewardType.Rune:
+                    return CreateRuneReward(power, rarity);
+                case ESubRewardType.Character:
+                    return CreateCharacterReward(power, rarity);
+                default:
+                    return new SReward(typeof(ECurrency), ECurrency.Golds.ToString(), 0);
+            }
+        }
+
+        /// <summary>
+        /// Creates a currency reward.
+        /// </summary>
+        private SReward CreateCurrencyReward(int power, ERarety rarity)
+        {
+            string currencyName = rarity switch
+            {
+                ERarety.Common => ECurrency.Golds.ToString(),
+                ERarety.Rare => ECurrency.Xp.ToString(),
+                ERarety.Epic => ECurrency.Gems.ToString(),
+                _ => null // Legendary should not result in a currency
+            };
+
+            if (currencyName == null)
+                return new SReward(typeof(ECurrency), ECurrency.Golds.ToString(), 0);
+
+            int qty = Mathf.Max(1, power / RewardsPrice[currencyName]);
+            return new SReward(typeof(ECurrency), currencyName, qty);
+        }
+
+        /// <summary>
+        /// Creates a spell reward.
+        /// </summary>
+        private SReward CreateSpellReward(int power, ERarety rarity)
+        {
+            var spellData = SpellLoader.GetRandomSpell(new List<ERarety> { rarity });
+            if (spellData == null)
+                return new SReward(typeof(ECurrency), ECurrency.Golds.ToString(), 0);
+
+            int qty = rarity == ERarety.Legendary ? 1 : Mathf.Max(1, power / RewardsPrice["Spell_" + rarity]);
+            return new SReward(typeof(ESpell), spellData.Spell.ToString(), qty);
+        }
+
+        /// <summary>
+        /// Creates a rune reward.
+        /// </summary>
+        private SReward CreateRuneReward(int power, ERarety rarity)
+        {
+            var runeData = SpellLoader.GetRandomRune(new List<ERarety> { rarity });
+            if (runeData == null)
+                return new SReward(typeof(ECurrency), ECurrency.Golds.ToString(), 0);
+
+            int qty = rarity == ERarety.Legendary ? 1 : Mathf.Max(1, power / RewardsPrice["Rune_" + rarity]);
+            return new SReward(typeof(ERune), runeData.Rune.ToString(), qty);
+        }
+
+        /// <summary>
+        /// Creates a character reward.
+        /// </summary>
+        private SReward CreateCharacterReward(int power, ERarety rarity)
+        {
+            var characterData = CharacterLoader.GetRandomCharacter(new List<ERarety> { rarity }, null, false);
+            if (characterData == null)
+                return CreateFallbackReward(power); // Fallback to another reward type if no characters are available
+
+            return new SReward(typeof(ECharacter), characterData.Character.ToString(), 1);
+        }
+
+        /// <summary>
+        /// Fallback reward in case a specific reward cannot be created.
         /// </summary>
         private SReward CreateFallbackReward(int power)
         {
-            int qty = Mathf.Max(1, power);
-            return new SReward(typeof(ECurrency), ECurrency.Golds.ToString(), qty);
+            return new SReward(typeof(ECurrency), ECurrency.Golds.ToString(), Mathf.Max(1, power));
         }
 
-        /// <summary>
-        /// Extracts the rarity from the reward name.
-        /// </summary>
-        /// <param name="rewardName">The name of the reward.</param>
-        /// <returns>The rarity of the reward.</returns>
-        private ERarety GetRarityFromRewardName(string rewardName)
-        {
-            foreach (ERarety rarity in Enum.GetValues(typeof(ERarety)))
-            {
-                if (rewardName.Contains(rarity.ToString()))
-                {
-                    return rarity;
-                }
-            }
-            return ERarety.Common;
-        }
 
         #endregion
 

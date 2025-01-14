@@ -343,9 +343,9 @@ namespace Save
 
         #region Reset & Unlock
 
-        public override void Reset(string key)
+        public override void Reset(string key, bool save = true)
         {
-            base.Reset(key);
+            base.Reset(key, save);
 
             switch (key)
             {
@@ -369,6 +369,9 @@ namespace Save
                     ErrorHandler.Error("Unhandled key : " + key);
                     return;
             }
+
+            if (save)
+                Instance.SaveValue(key);
         }
 
         #endregion

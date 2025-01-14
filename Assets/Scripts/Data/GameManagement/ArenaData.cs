@@ -228,8 +228,8 @@ namespace Data.GameManagement
         public int CalculateOrbPowerReward(int arenaLevel, int arenaStage)
         {
             // TODO : constants
-            int baseMobPower                = 10;
-            int baseBossPower               = 150;
+            int baseMobPower                = 15;
+            int baseBossPower               = 200;
             float mobPowerIncreasePerLevel  = 0.2f;
             float bossPowerIncreasePerLevel = 0.5f;
             float bonusArenaDifficulty      = 0.3f;
@@ -303,7 +303,7 @@ namespace Data.GameManagement
                 isPlayer:       false,
 
                 triggerEffects: triggerEffects.ToArray(),
-                powerUps:       CurrentArenaLevelData.PowerUps.Select(str => new FixedString64Bytes(str)).ToArray(),
+                powerUps:       CurrentArenaLevelData.PowerUps.Select(str => new FixedString128Bytes(str)).ToArray(),
                 bonusStats:     CurrentStageData.BonusStats.ToArray(),
                 botData :       new SBotData(
                     ArenaDifficulty,
