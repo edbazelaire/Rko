@@ -131,11 +131,14 @@ namespace Save
 
         #region Default Data
 
-        public override void Reset(string key)
+        public override void Reset(string key, bool save = true)
         {
-            base.Reset(key);
+            base.Reset(key, save);
 
             Instance.m_Data[key] = new List<SCurrencyEventCloudData>();
+
+            if (save)
+                Instance.SaveValue(key);
         }
 
         #endregion

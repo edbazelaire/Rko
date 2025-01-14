@@ -71,6 +71,7 @@ namespace Menu.MainMenu
             CharacterBuildsCloudData.SelectedCharacterChangedEvent  += OnSelectedCharacterChanged;
             CharacterBuildsCloudData.CurrentBuildIndexChangedEvent  += OnCurrentRuneChanged;
             CharacterBuildsCloudData.CurrentRuneChangedEvent        += OnCurrentRuneChanged;
+            ProfileCloudData.AccountLevelUpEvent                    += OnAccountLevelUp;
             InventoryManager.CollectableUpgradedEvent               += OnCharacterLeveledUp;
             InventoryCloudData.CurrencyChangedEvent                 += OnCurrencyChanged;
 
@@ -89,6 +90,7 @@ namespace Menu.MainMenu
             CharacterBuildsCloudData.SelectedCharacterChangedEvent  -= OnSelectedCharacterChanged;
             CharacterBuildsCloudData.CurrentBuildIndexChangedEvent  -= OnCurrentRuneChanged;
             CharacterBuildsCloudData.CurrentRuneChangedEvent        -= OnCurrentRuneChanged;
+            ProfileCloudData.AccountLevelUpEvent                    -= OnAccountLevelUp;
             InventoryManager.CollectableUpgradedEvent               -= OnCharacterLeveledUp;
             InventoryCloudData.CurrencyChangedEvent                 -= OnCurrencyChanged;
 
@@ -284,6 +286,13 @@ namespace Menu.MainMenu
                 m_XpBar.AddCollectionAnimation(xp - m_XpBar.CurrentCollection);
             else
                 m_XpBar.Add(xp - m_XpBar.CurrentCollection);
+        }
+
+        void OnAccountLevelUp()
+        {
+            // refresh the info button UI
+            m_CharacterInfoButton.RefreshUI(CharacterBuildsCloudData.SelectedCharacter);
+            RefreshXpBarUI();
         }
 
         /// <summary>

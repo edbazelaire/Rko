@@ -320,7 +320,7 @@ public class EndGameUI : MObject
 
         // ----------------------------------------------------------------------------
         // Orb Power  
-        if (LobbyHandler.Instance.GameMode == EGameMode.Arena)
+        if (LobbyHandler.Instance.GameMode == EGameMode.Arena && win)
         {
             SPowerOrb currentPowerOrb = ProgressionCloudData.CurrentArena.GetPowerOrb();
             int orbPower = m_ArenaData.CalculateOrbPowerReward(m_CurrentLevel, m_CurrentStage);

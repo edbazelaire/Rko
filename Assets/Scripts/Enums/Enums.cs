@@ -794,6 +794,14 @@
         Collectable
     }
 
+    public enum ESubRewardType
+    {
+        Currency,
+        Spell,
+        Rune,
+        Character
+    }
+
     public enum ECurrency
     {
         Golds,

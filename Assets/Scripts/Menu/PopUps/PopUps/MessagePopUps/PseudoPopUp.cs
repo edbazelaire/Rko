@@ -2,6 +2,7 @@
 using MyBox;
 using Save;
 using Save.RSDs;
+using System.Threading.Tasks;
 using TMPro;
 using Tools;
 
@@ -28,8 +29,12 @@ namespace Menu.PopUps.PopUps.MessagePopUps
             m_TokenInputField   = Finder.FindComponent<TMP_InputField>(m_WindowContent, "TokenInputField");
             m_ErrorMessage      = Finder.FindComponent<TMP_Text>( m_WindowContent,      "ErrorMessage");
 
-            if (ProfileCloudData.Token != "")
-                m_TokenInputField.gameObject.SetActive(false);
+            // ==================================================================================
+            // TODO : Remove tokens ?
+            m_TokenInputField.gameObject.SetActive(false);
+
+            //if (ProfileCloudData.Token == "")
+            //    m_TokenInputField.gameObject.SetActive(true);
         }
 
         protected override void OnPrefabLoaded()
@@ -94,9 +99,26 @@ namespace Menu.PopUps.PopUps.MessagePopUps
             }
 
             // CHECK : Token
+            success = await CheckToken();
+
+            if (! success)
+                return;
+
+            ProfileCloudData.SetGamerTag(m_InputField.text);
+
+            base.OnValidateButton();
+            Exit();
+        }
+
+        async Task<bool> CheckToken()
+        {
+            return true;
+
+            // ==================================================================================
+            // TODO : Remove tokens ?
             if (ProfileCloudData.Token == "")
             {
-                (success, reason) = await ProfileCloudData.IsTokenValid(m_TokenInputField.text);
+                (bool success, string reason) = await ProfileCloudData.IsTokenValid(m_TokenInputField.text);
                 if (!success)
                 {
                     // play error sound
@@ -104,16 +126,12 @@ namespace Menu.PopUps.PopUps.MessagePopUps
 
                     // display why is not valid
                     m_ErrorMessage.text = reason;
-                    return;
+                    return false;
                 }
 
                 ProfileCloudData.SetToken(m_TokenInputField.text);
+                return success;
             }
-
-            ProfileCloudData.SetGamerTag(m_InputField.text);
-
-            base.OnValidateButton();
-            Exit();
         }
 
         #endregion
