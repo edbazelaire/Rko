@@ -191,7 +191,7 @@ public class Life : NetworkBehaviour
 
 
     #region Listeners & Events
-
+    
     public void RecalculateShield()
     {
         if (m_Controller == null)

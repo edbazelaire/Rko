@@ -249,17 +249,24 @@ namespace Menu.PopUps
             m_PresentationContainer.SetActive(false);
         }
 
-        IEnumerator DisplayRewards(List<SReward> rewards)
+        IEnumerator DisplayRewards(List<SReward> rewards, bool setGoldsAsBonus = false)
         {
             // depth of the current coroutine 
             int myDepth = m_Depth;
 
-            int i = 0;
-            foreach (SReward reward in rewards)
+            for (int i = 0; i < rewards.Count; i++)
             {
-                ErrorHandler.Log("Reward : " + (++i) + "/" + rewards.Count, ELogTag.Rewards);
+                ErrorHandler.Log("Reward : " + (i+1) + "/" + rewards.Count, ELogTag.Rewards);
 
-                yield return DisplayReward(reward);
+                // get the reward
+                SReward reward = rewards[i];
+
+                // check if reward should be named "bonus"
+                bool isBonus = setGoldsAsBonus
+                    && i == rewards.Count - 1
+                    && reward.RewardName == "Golds";
+
+                yield return DisplayReward(reward, isBonus: isBonus);
 
                 // Wait for the player to touch the screen before displaying the next reward
                 yield return new WaitUntil(() => myDepth == m_Depth && m_Skip);
@@ -270,7 +277,7 @@ namespace Menu.PopUps
             m_Depth--;
         }
 
-        IEnumerator DisplayReward(SReward reward)
+        IEnumerator DisplayReward(SReward reward, bool isBonus = false)
         {
             ErrorHandler.Log("DisplayReward : " + reward.RewardName, ELogTag.Rewards);
 
@@ -287,7 +294,7 @@ namespace Menu.PopUps
             } 
             else if (reward.RewardType == typeof(ECurrency) && Enum.TryParse(reward.RewardName, out ECurrency currency))
             {
-                yield return DisplayCurrencyReward(currency, reward.Qty);
+                yield return DisplayCurrencyReward(currency, reward.Qty, isBonus);
             } 
             else if (ProfileCloudData.TryGetType(reward.RewardType, out EAchievementReward arType, false))
             {
@@ -399,13 +406,15 @@ namespace Menu.PopUps
 
             m_Skip = false;
 
-            yield return DisplayRewards(m_PowerOrbContainer.PowerOrbData.GenerateRewards());
+            yield return DisplayRewards(m_PowerOrbContainer.PowerOrbData.GenerateRewards(), setGoldsAsBonus: true);
         }
 
         IEnumerator TryUpgradeRarety()
         {
             for(int i = 0; i < 5; i++)
             {
+                StartCoroutine(m_PowerOrbContainer.PowerOrbUI.PlayOnClickAnimation());
+
                 if (! m_PowerOrbContainer.PowerOrbData.TryUpgradeRarety())
                     yield return WaitForCoroutineOrSkip(m_PowerOrbContainer.PowerOrbUI.UpgradeFailedAnimation());
                 else
@@ -427,10 +436,10 @@ namespace Menu.PopUps
 
         #region Single 
 
-        IEnumerator DisplayCurrencyReward(ECurrency currency, int qty)
+        IEnumerator DisplayCurrencyReward(ECurrency currency, int qty, bool isBonus = false)
         {
             ErrorHandler.Log("DisplayCurrencyReward() : ", ELogTag.Rewards);
-            ErrorHandler.Log("      + currency : " + currency, ELogTag.Rewards);
+            ErrorHandler.Log("      + "+ (isBonus ? "(bonus) " : "") + "currency : " + currency, ELogTag.Rewards);
 
             m_Skip = false;
 
@@ -443,7 +452,7 @@ namespace Menu.PopUps
             // deactivate chest container
             m_ChestContainer.SetActive(false);
 
-            string title = currency.ToString();
+            string title = (isBonus ? "(Bonus) " : "") + currency.ToString();
             int currentlyOwnValue = InventoryManager.GetCurrency(currency);
 
             // init default template and clean previous content

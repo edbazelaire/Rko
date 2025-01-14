@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Managers.Sound;
 using System.Collections;
+using Tools;
 using UnityEngine;
 
 namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
@@ -10,6 +11,10 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
 
         const string UPGRADE_FAILED_ANIMATION = "ChestShake";
 
+        GameObject m_OnClickEffects;
+        GameObject m_UpgradeEffects;
+        GameObject m_LocatedClickEffect;
+
         #endregion
 
 
@@ -18,6 +23,9 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
         protected override void FindComponents()
         {
             base.FindComponents();
+
+            m_OnClickEffects = Finder.Find(gameObject, "OnClickEffects");
+            m_UpgradeEffects = Finder.Find(gameObject, "UpgradeEffects");
         }
 
         protected override void SetUpUI()
@@ -25,25 +33,19 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
             base.SetUpUI();
 
             m_AuraEffects.SetActive(true);
+            m_OnClickEffects.SetActive(false);
+            m_UpgradeEffects.SetActive(false);
         }
         
         #endregion
 
 
-        #region Animation & Particles
+        #region Animation Activation
 
         public override void ActivateIdle(bool withAura = false, bool withSound = false)
         {
             m_Animator.Play(IDLE_ANIMATION);
             ActivateAura(withAura);
-        }
-
-        public override void ActivateOpen(bool withOpenParticles = true)
-        {
-            if (m_AudioSource.isActiveAndEnabled)
-                Destroy(m_AudioSource);
-
-            StartCoroutine(PlayOpenAnimation());
         }
 
         public override void ActivateAura(bool activate = true)
@@ -55,6 +57,65 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
         {
             m_OpeningEffects.SetActive(activate);
         }
+
+        public override void ActivateOpen(bool withOpenParticles = true)
+        {
+            if (m_AudioSource.isActiveAndEnabled)
+                Destroy(m_AudioSource);
+
+            StartCoroutine(PlayOpenAnimation());
+        }
+
+        #endregion
+
+
+        #region On Click
+
+        public IEnumerator PlayOnClickAnimation()
+        {
+            var duration = 1f;
+            m_OnClickEffects.SetActive(true);
+
+            while (duration > 0f)
+            {
+                duration -= Time.deltaTime;
+                yield return null;
+            }
+
+            m_OnClickEffects.SetActive(false);
+        }
+
+        public IEnumerator UpgradeFailedAnimation()
+        {
+            if (m_AudioSource != null)
+                Destroy(m_AudioSource);
+
+            SoundFXManager.PlayOnce(SoundFXManager.UpgradeFailSoundFX);
+
+            yield return PlayAnimationOnce(UPGRADE_FAILED_ANIMATION);
+        }
+
+        public IEnumerator UpgradeSuccessAnimation()
+        {
+            var duration = 1f;
+
+            m_UpgradeEffects.SetActive(true);
+
+            while (duration > 0f)
+            {
+                duration -= Time.deltaTime;
+                yield return null;
+            }
+
+            m_UpgradeEffects.SetActive(true);
+        }
+
+        #endregion
+
+
+        #region Open Effect
+
+
 
         public override IEnumerator PlayOpenAnimation()
         {
@@ -74,22 +135,13 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
             ActivateOpenParticles(false);
         }
 
-        public IEnumerator UpgradeFailedAnimation()
-        {
-            if (m_AudioSource != null)
-                Destroy(m_AudioSource);
-
-            SoundFXManager.PlayOnce(SoundFXManager.UpgradeFailSoundFX);
-
-            yield return PlayAnimationOnce(UPGRADE_FAILED_ANIMATION);
-        }
-
-        public IEnumerator UpgradeSuccessAnimation()
-        {
-            yield return null;
-        }
-
         #endregion
+
+
+
+        
+
+       
 
 
         #region Data

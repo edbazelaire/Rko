@@ -1,5 +1,4 @@
 ﻿using Assets.Scripts.Data.DataStructures;
-using Assets.Scripts.Data.PowerUp;
 using Enums;
 using Game;
 using Game.Loaders;

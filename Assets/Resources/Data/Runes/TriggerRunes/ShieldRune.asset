@@ -13,12 +13,14 @@ MonoBehaviour:
   m_Name: ShieldRune
   m_EditorClassIdentifier: 
   Rarety: 0
+  m_Description: 
+  m_DescriptionVariables: []
   Description: 
+  m_SpellElements: 
   m_MinorPower:
     Description: 'On reaching 50% hp, [TriggerEffect.0]'
     m_DescriptionVariables: []
     m_BonusLevel: 0
-    m_IsOverwritten: 0
     m_TriggerEffects:
     - SpellDataName: ShieldRune
       Level: 0
@@ -29,32 +31,47 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
-      NActivations: 0
-      Cooldown: 60
+      Delay: 0
+      Duration: 0
+      NActivations: 1
+      Cooldown: 0
     m_BonusStats: []
   m_MajorPower:
     Description: 'On reaching 66% hp and 33% hp, [TriggerEffect.0]'
     m_DescriptionVariables: []
     m_BonusLevel: 0
-    m_IsOverwritten: 0
     m_TriggerEffects:
     - SpellDataName: ShieldRune
       Level: 0
       Target: 0
       SpellActivationEvent: 3
-      ActivationTreshold: 0.5
+      ActivationTreshold: 0.66
       SpellDeactivationEvent: 0
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
-      NActivations: 0
-      Cooldown: 60
+      Delay: 0
+      Duration: 0
+      NActivations: 1
+      Cooldown: 0
+    - SpellDataName: ShieldRune
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 3
+      ActivationTreshold: 0.33
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      Delay: 0
+      Duration: 0
+      NActivations: 1
+      Cooldown: 0
     m_BonusStats: []
   m_PrimalPower:
     Description: 'On reaching 75% hp, 50% hp and 25%hp, [TriggerEffect.0]'
     m_DescriptionVariables: []
     m_BonusLevel: 0
-    m_IsOverwritten: 0
     m_TriggerEffects:
     - SpellDataName: ShieldRune
       Level: 0
@@ -65,8 +82,10 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
-      NActivations: 0
-      Cooldown: 60
+      Delay: 0
+      Duration: 0
+      NActivations: 1
+      Cooldown: 0
     - SpellDataName: ShieldRune
       Level: 0
       Target: 0
@@ -76,8 +95,10 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
-      NActivations: 0
-      Cooldown: 60
+      Delay: 0
+      Duration: 0
+      NActivations: 1
+      Cooldown: 0
     - SpellDataName: ShieldRune
       Level: 0
       Target: 0
@@ -87,8 +108,10 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
-      NActivations: 0
-      Cooldown: 60
+      Delay: 0
+      Duration: 0
+      NActivations: 1
+      Cooldown: 0
     m_BonusStats: []
   m_TriggerEffects:
   - SpellDataName: ShieldRune
@@ -100,5 +123,7 @@ MonoBehaviour:
     DeactivationTreshold: 0
     StateEffectEvent: 0
     StateEffectName: 
+    Delay: 0
+    Duration: 0
     NActivations: 0
     Cooldown: 60

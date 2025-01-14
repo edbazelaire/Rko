@@ -53,16 +53,21 @@ namespace Save
 
         #region Loading & Saving
 
-        public virtual void Load()
+        public virtual async void Load()
         {
-            foreach (var key in m_Data.Keys)
+            var keys = m_Data.Keys.ToList();
+            foreach (var key in keys)
             {
                 // if value exists in the cloud get it, other wise keep default
-                LoadValueAsync(key);
+                bool success = await LoadValueAsync(key);
+
+                // if unable to load a key from cloud data, reset and save the value
+                if (!success)
+                    Reset(key, save: true);
             }
         }
 
-        protected async virtual void LoadValueAsync(string key)
+        protected async virtual Task<bool> LoadValueAsync(string key)
         {
             Dictionary<string, Item> cloudData = new();
 
@@ -82,10 +87,10 @@ namespace Save
             }
 
             // CHECK : expected key present in the directory - otherwise exit
-            if (!cloudData.TryGetValue(key, out var item))
+            if (! cloudData.TryGetValue(key, out var item))
             {
                 OnCloudDataKeyLoaded(key);
-                return;
+                return false;
             }
 
             // CONVERT value in expected type
@@ -93,11 +98,12 @@ namespace Save
             {
                 var value = Convert(item);
                 if (value == null)
-                    return;
+                    return false;
 
                 // set givent value (block saving)
                 SetData(key, value, false);
                 OnCloudDataKeyLoaded(key);
+                return true;
             } 
             catch (Exception ex)
             {
@@ -105,7 +111,7 @@ namespace Save
                 ErrorHandler.Error(ex.Message);
 
                 OnLoadingError(key, item);
-                return;
+                return false;
             }
         }
 
@@ -215,14 +221,14 @@ namespace Save
 
         #region Reset & Unlock
 
-        public virtual void Reset(string key) { }
+        public virtual void Reset(string key, bool save = true) { }
 
         public virtual void ResetAll()
         {
             var keys = m_Data.Keys.ToArray();
             foreach (string dataKey in keys)
             {
-                Reset(dataKey);
+                Reset(dataKey, save: false);
             }
 
             Save();

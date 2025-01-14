@@ -968,7 +968,7 @@ namespace Game.Character
             }
 
             // HAS TARGET POS REQUESTED
-            else if (! spellData.HasTargetGfxEventAt(spellEvent))
+            else if (spellData.HasTargetGfxEventAt(spellEvent))
             {
                 // POSITION REQUESTED : add target pos to the variables
                 if (forcedDuration == null)

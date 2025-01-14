@@ -17,7 +17,6 @@ using System.Collections.Generic;
 using Scripts.Menu.PopUps;
 using Unity.Services.Core.Environments;
 using Network;
-using Save.RSDs;
 using Assets.Scripts.Tools;
 using Data.DataStructures;
 using Assets.Scripts.Managers;
@@ -77,11 +76,22 @@ namespace Assets
         public static Canvas            Canvas                  => Instance.m_Canvas;
         public static bool              ActivateSaveOnClose     => Instance.m_ActivateSaveOnClose;
         public static bool              ForceIsNewPlayer        => Instance.m_ForceIsNewPlayer;
-        public static bool              StopPreventiveLoss      => Instance.m_StopPreventiveLoss;
         public static bool              IsNewPlayer             => ForceIsNewPlayer || !ProfileCloudData.TutoDone;
         public static List<ELogTag>     LogTags                 => s_Instance != null ? Instance.m_LogTags : new List<ELogTag>();
+        public static bool StopPreventiveLoss
+        {
+            get
+            {
+#if UNITY_EDITOR
+                // only works in EDITOR mode
+                return Instance.m_StopPreventiveLoss;
+#else
+                return false;
+#endif
+            }
+        }
 
-        #endregion
+#endregion
 
 
         #region Initialization 
@@ -165,6 +175,7 @@ namespace Assets
             CharacterLoader.Instance            != null,
             TimeErrorWrapper.Instance           != null,
             SceneLoader.Instance                != null,
+            LootManagementData.Instance         != null,
             ItemLoader.ChestRewardData          != null,
             AchievementLoader.Achievements      != null,
             LobbyHandler.Instance               != null,
@@ -623,11 +634,12 @@ namespace Assets
 
         bool AuthorizeAccess()
         {
-            // pseudo not changed : authorize access to pseudo popup
-            if (!ProfileCloudData.PseudoChanged)
-                return true;
+            return true;
+            //// pseudo not changed : authorize access to pseudo popup
+            //if (!ProfileCloudData.PseudoChanged)
+            //    return true;
 
-            return TokensRSD.IsTokenAuthorized(ProfileCloudData.Token);
+            //return TokensRSD.IsTokenAuthorized(ProfileCloudData.Token);
         }
 
         #endregion

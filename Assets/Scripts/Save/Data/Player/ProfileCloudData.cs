@@ -384,6 +384,7 @@ namespace Save
         // ===============================================================================================
         // EVENTS
         /// <summary> action fired when the amount of gold changed </summary>
+        public static Action                                AccountLevelUpEvent;
         public static Action<EAchievementReward, string>    AchievementRewardCollectedEvent;
         public static Action<string>                        AchievementCompletedEvent;
         public static Action                                GamerTagChanged;
@@ -477,7 +478,9 @@ namespace Save
 
             Instance.SetData(KEY_CURRENT_PROFILE_DATA, data);
             Instance.SetData(KEY_GAMER_TAG, gamerTag);
-            Instance.SetData(KEY_PSEUDO_CHANGED, true);
+
+            if (gamerTag != SProfileCurrentData.DEFAULT_GAMER_TAG)
+                Instance.SetData(KEY_PSEUDO_CHANGED, true);
 
             // update value in AuthService
             AuthenticationService.Instance.UpdatePlayerNameAsync(gamerTag);
@@ -515,7 +518,7 @@ namespace Save
 
         public static void ResetGamerTag()
         {
-
+            Instance.SetData(KEY_GAMER_TAG, SProfileCurrentData.DEFAULT_GAMER_TAG);
         }
 
         /// <summary>
@@ -615,12 +618,10 @@ namespace Save
                 }
             }
 
-
             if (checkAvailable && await Instance.FindPlayerWithValue(KEY_GAMER_TAG, gamerTag) != null)
             {
                 return (false, "Pseudo already used");
             }
-
 
             return (true, "");
         }
@@ -653,6 +654,9 @@ namespace Save
 
             // update collectable
             InventoryManager.Spend(requiredXp, ECurrency.TotalXp, "AccountLevelUp");
+
+            // fire event that the account has been leveled up
+            AccountLevelUpEvent?.Invoke();
         }
 
         #endregion
@@ -932,9 +936,9 @@ namespace Save
 
         #region Reset & Unlock
 
-        public override void Reset(string key) 
+        public override void Reset(string key, bool save = true) 
         {
-            base.Reset(key);
+            base.Reset(key, save);
 
             switch (key)
             {
@@ -948,6 +952,18 @@ namespace Save
                     data.Check();
                     Instance.m_Data[key] = data;
                     break;
+
+                case KEY_GAMER_TAG:
+                    SetGamerTag(SProfileCurrentData.DEFAULT_GAMER_TAG);
+                    return;
+                    
+                case KEY_TOKEN:
+                    SetToken("");
+                    return;
+                    
+                case KEY_REGION:
+                    SetRegion("");
+                    return;
 
                 case KEY_ACHIEVEMENTS:
                     Instance.m_Data[key] = new Dictionary<string, int>() { };
@@ -969,6 +985,9 @@ namespace Save
                     ErrorHandler.Warning("Unknown key to reset : " +  key);
                     return;
             }
+
+            if (save)
+                Instance.SaveValue(key);
         }
 
         public override bool IsUnlockable(string key)
@@ -1115,11 +1134,12 @@ namespace Save
             {
                 ErrorHandler.Warning("Current Profile Data are empty : use default ones");
                 Reset(KEY_CURRENT_PROFILE_DATA);
+                return;
             }
 
             var data = CurrentProfileData;
             data.Check();
-            Instance.SetData(KEY_CURRENT_PROFILE_DATA, data, false);
+            Instance.SetData(KEY_CURRENT_PROFILE_DATA, data);
         }
 
         public async Task<EntityData> FindPlayerWithValue(string key, string value)
@@ -1131,7 +1151,18 @@ namespace Save
                 new HashSet<string> { KEY_TOKEN, KEY_GAMER_TAG, KEY_REGION }
             );
 
-            var results = await CloudSaveService.Instance.Data.Player.QueryAsync(query, new QueryOptions());
+            List<EntityData> results = new List<EntityData>();
+            try
+            {
+                results = await CloudSaveService.Instance.Data.Player.QueryAsync(query, new QueryOptions());
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.Error(ex.Message);
+                ErrorHandler.Error("    + key : " + key);
+                ErrorHandler.Error("    + value " + value);
+                return null;
+            }
 
             if (results.Count == 0)
                 return null;

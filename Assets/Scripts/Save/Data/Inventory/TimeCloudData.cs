@@ -314,9 +314,9 @@ namespace Save
 
         #region Default Data
 
-        public override void Reset(string key)
+        public override void Reset(string key, bool save = true)
         {
-            base.Reset(key);
+            base.Reset(key, save);
 
             switch (key)
             {
@@ -325,6 +325,9 @@ namespace Save
                     CheckTimeData();
                     break;
             }
+
+            if (save)
+                Instance.SaveValue(key);
         }
 
         #endregion
