@@ -1,3 +1,4 @@
+using Assets.Scripts.Game;
 using Assets.Scripts.Managers.Sound;
 using Enums;
 using Game;
@@ -63,13 +64,15 @@ public class GameUIManager : MonoBehaviour
 
     // ==============================================================================================================
     // Public Accessors
-    public static IntroGameUI IntroGameUI               => Instance.m_IntroGameUI;
-    public static ErrorGameUI ErrorGameUI               => Instance.m_ErrorGameUI;
-    public static TutoGameUI TutoGameUI                 => Instance.m_TutoGameUI;
-    public static List<SpellItemUI> SpellItems          => Instance.m_SpellItems;
+    public static IntroGameUI IntroGameUI                   => Instance.m_IntroGameUI;
+    public static ErrorGameUI ErrorGameUI                   => Instance.m_ErrorGameUI;
+    public static EndGameUI EndGameUI                       => Instance.m_EndGameUI;
+    public static TutoGameUI TutoGameUI                     => Instance.m_TutoGameUI;
+    public static HitDisplayUI DamageDisplayManager => HitDisplayUI.Instance;
+    public static List<SpellItemUI> SpellItems              => Instance.m_SpellItems;
     public static MovementButtonsContainer MovementButtonsContainer => Instance.m_MovementButtonsContainer;
-    public static bool LeftMovementButtonPressed        => Instance.m_LeftMovementButtonPressed;
-    public static bool RightMovementButtonPressed       => Instance.m_RightMovementButtonPressed;
+    public static bool LeftMovementButtonPressed            => Instance.m_LeftMovementButtonPressed;
+    public static bool RightMovementButtonPressed           => Instance.m_RightMovementButtonPressed;
 
     #endregion
 

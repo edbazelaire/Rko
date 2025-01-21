@@ -23,13 +23,13 @@ namespace Game.Spells
         protected override void OnStart()
         {
             // hit
-            var damages = m_Controller.Life.Hit(GetInt(EStateEffectProperty.Damages), ignoreRes: m_IsTrueDamages);
+            var damages = m_Controller.Life.Hit(GetInt(EStateEffectProperty.Damages), m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct, ignoreRes: m_IsTrueDamages);
 
             // apply lifesteal (on caster)
-            m_Caster.Life.Heal((int)Mathf.Round(damages * FinalLifeSteal));
+            m_Caster.Life.Heal((int)Mathf.Round(damages * FinalLifeSteal), m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct);
 
             // apply heal
-            m_Controller.Life.Heal(GetInt(EStateEffectProperty.Heal));
+            m_Controller.Life.Heal(GetInt(EStateEffectProperty.Heal), m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct);
 
             base.OnStart();
         }
@@ -56,13 +56,13 @@ namespace Game.Spells
                 damages += m_Caster.StateHandler.GetInt(EStateEffectProperty.BonusBurnDamages);
 
             // hit
-            damages = m_Controller.Life.Hit(damages, ignoreRes: m_IsTrueDamages);
+            damages = m_Controller.Life.Hit(damages, m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct, ignoreRes: m_IsTrueDamages);
 
             // apply lifesteal (on caster)
-            m_Caster.Life.Heal((int)Mathf.Round(damages * FinalLifeSteal));
+            m_Caster.Life.Heal((int)Mathf.Round(damages * FinalLifeSteal), m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct);
 
             // apply heal
-            m_Controller.Life.Heal(GetInt(EStateEffectProperty.EndHeal));
+            m_Controller.Life.Heal(GetInt(EStateEffectProperty.EndHeal), m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct);
         }
 
         #endregion

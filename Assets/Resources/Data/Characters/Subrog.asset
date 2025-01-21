@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
+  m_Name: Subrog
+  m_EditorClassIdentifier: 
+  Rarety: 2
+  m_Description: Subrog, the Eclipse Assassin, is a master of stealth and lethal
+    precision, wielding the duality of light and shadow. Empowered by the celestial
+    forces of the eclipse, Subrog strikes from the darkness with ruthless efficiency,
+    blending black and white energy in a deadly dance of destruction. His abilities
+    reflect his mastery of both concealment and overwhelming force, making him a
+    formidable foe to any who dare face him
+  m_DescriptionVariables: []
+  m_AutoAttack: EclipseBlade
+  m_SpecialAbility: ShadowStrike
+  m_Ultimate: Duskfall
+  Size: 1.1
+  BaseSpeed: 1.15
+  BaseHealth: 800
+  MaxEnergy: 100
+  BaseEnergy: 10
+  IsStructure: 0
+  HealthScaleFactor: 0.1
+  CharacterStatScaling:
+  - StateEffectProperty: 7
+    BaseValue: 15
+    BonusValue: 0
+    ScalingFactor: 0.1
+    StateEffectStackFactors: []
+  - StateEffectProperty: 3
+    BaseValue: 0.05
+    BonusValue: 0
+    ScalingFactor: 0.05
+    StateEffectStackFactors: []
+  m_SpecialPowers: []

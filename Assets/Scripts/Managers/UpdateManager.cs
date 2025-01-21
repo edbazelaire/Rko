@@ -14,8 +14,10 @@ namespace Assets.Scripts.Managers
 {
     public static class UpdateManager
     {
-        public static Version LastVersion => new Version(PlayerPrefs.GetString("LastVersion", "0.0.0"));
-        public static Version CurrentVersion => new Version(Application.version);
+        /// <summary> player's current installed version </summary>
+        public static Version CurrentVersion => new Version(PlayerPrefs.GetString("LastVersion", "0.0.0"));
+        /// <summary> game's expected version </summary>
+        public static Version GameVersion => new Version(Application.version);
 
 
         #region Updates Manipulators
@@ -26,7 +28,7 @@ namespace Assets.Scripts.Managers
         /// <returns></returns>
         static void InitNewPlayer()
         {
-            if (LastVersion.CompareTo(new Version("0.0.0")) == 0)
+            if (CurrentVersion.CompareTo(new Version("0.0.0")) == 0)
                 return;
 
             FriendsHandler.SendFriendRequestToAll();
@@ -38,17 +40,17 @@ namespace Assets.Scripts.Managers
         /// </summary>
         public static void CheckUpdates()
         {
-            if (LastVersion.CompareTo(new Version("0.0.0")) == 0)
+            if (CurrentVersion.CompareTo(new Version("0.0.0")) == 0)
             {
                 InitNewPlayer();
                 return;
             }
 
-            while (LastVersion != CurrentVersion)
+            while (CurrentVersion != GameVersion)
             {
                 if (! UpdateVersion())
                 {
-                    ErrorHandler.Error($"Unable to udpate version {LastVersion} to {Application.version}");
+                    ErrorHandler.Error($"Unable to udpate version {CurrentVersion} to {Application.version}");
                     return;
                 }
             }
@@ -61,29 +63,29 @@ namespace Assets.Scripts.Managers
         public static bool UpdateVersion()
         {
             var test = true;
-            if (LastVersion.CompareTo(CurrentVersion) == 0)
+            if (CurrentVersion.CompareTo(GameVersion) == 0)
                 return test;
 
             // reset PlayerPrefs settings on every new versions
             Settings.Reload();
 
-            if (LastVersion.CompareTo(new Version("0.1.5")) == -1)
+            if (CurrentVersion.CompareTo(new Version("0.1.5")) == -1)
                 test = UpdateVersion_0_1_5();
 
-            if (LastVersion.CompareTo(new Version("0.1.6")) == -1)
+            if (CurrentVersion.CompareTo(new Version("0.1.6")) == -1)
                 test = UpdateVersion_0_1_6();
 
-            if (LastVersion.CompareTo(new Version("0.1.7")) == -1)
+            if (CurrentVersion.CompareTo(new Version("0.1.7")) == -1)
                 test = UpdateVersion_0_1_7();
 
-            if (LastVersion.CompareTo(new Version("0.1.8")) == -1)
+            if (CurrentVersion.CompareTo(new Version("0.1.8")) == -1)
                 test = UpdateVersion_0_1_8();
 
-            if (LastVersion.CompareTo(new Version("0.2.0")) == -1)
+            if (CurrentVersion.CompareTo(new Version("0.2.0")) == -1)
                 test = UpdateVersion_0_2_0();
 
             // if does not trigger any version until now, update to current version
-            if (LastVersion.CompareTo(CurrentVersion) == -1)
+            if (CurrentVersion.CompareTo(GameVersion) == -1)
                 SetVersion(Application.version);
 
             return test;
@@ -96,13 +98,13 @@ namespace Assets.Scripts.Managers
         /// <returns></returns>
         static bool SetVersion(string version)
         {
-            if (LastVersion.CompareTo(new Version(version)) >= 0)
+            if (CurrentVersion.CompareTo(new Version(version)) >= 0)
             {
-                ErrorHandler.Error($"Trying to set new version {version} wich is <= current version {LastVersion}");
+                ErrorHandler.Error($"Trying to set new version {version} wich is <= current version {CurrentVersion}");
                 return false;
             }
 
-            Debug.Log($"Version Updated from {LastVersion} to {version}");
+            Debug.Log($"Version Updated from {CurrentVersion} to {version}");
             PlayerPrefs.SetString("LastVersion", version);
             return true;
         }
@@ -264,7 +266,7 @@ namespace Assets.Scripts.Managers
             var test = true;
 
             // DO NOT reset (for some testers)
-            if (LastVersion.CompareTo(new Version("0.1.12")) == -1)
+            if (CurrentVersion.CompareTo(new Version("0.1.12")) == -1)
                 Main.CloudSaveManager.ResetAll();
 
             var alphaTesterTitle = new SAchievementReward();
@@ -306,7 +308,7 @@ namespace Assets.Scripts.Managers
             var test = true;
 
             // DO NOT reset (for some testers)
-            if (LastVersion.CompareTo(new Version("0.1.12")) == -1)
+            if (CurrentVersion.CompareTo(new Version("0.1.12")) == -1)
                 Main.CloudSaveManager.ResetAll();
 
             var alphaTesterTitle = new SAchievementReward();

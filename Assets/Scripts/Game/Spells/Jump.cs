@@ -1,7 +1,5 @@
 ﻿using Data;
-using Data.GameManagement;
 using Enums;
-using System;
 using UnityEngine;
 
 namespace Game.Spells
@@ -18,9 +16,9 @@ namespace Game.Spells
 
         #region Init & End
 
-        public override void Initialize(ulong clientId, Vector3 target, string spellName, int level)
+        public override void Initialize(ulong clientId, Vector3 target, string spellName, int level, string parent)
         {
-            base.Initialize(clientId, target, spellName, level);
+            base.Initialize(clientId, target, spellName, level, parent);
             
             m_CharacterOffsetY = 0.1f + ((CapsuleCollider2D)m_Controller.Collider).size.y / 2;
             transform.localScale = m_Controller.transform.localScale * m_SpellData.BaseSize;

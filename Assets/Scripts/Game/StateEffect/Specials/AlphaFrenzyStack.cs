@@ -17,7 +17,7 @@ namespace Game.Spells
             EStateEffect.Stun.ToString(),
             EStateEffect.Scorched.ToString(),
             EStateEffect.Frozen.ToString(),
-            EStateEffect.Airborn.ToString(),
+            EStateEffect.Airborne.ToString(),
         };
 
         protected float m_StackRefreshTimer;

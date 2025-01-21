@@ -42,7 +42,7 @@ namespace Game.Character
             if (HasParameter("HasCounter", AnimatorControllerParameterType.Bool))
                 m_Controller.CounterHandler.HasCounter.OnValueChanged           += OnHasCounterValueChanged;
 
-            if (HasParameter(EAnimation.Frozen.ToString(), AnimatorControllerParameterType.Trigger) || HasParameter(EAnimation.Stun.ToString(), AnimatorControllerParameterType.Trigger) || HasParameter(EAnimation.Silenced.ToString(), AnimatorControllerParameterType.Trigger) || HasParameter(EAnimation.Airborn.ToString(), AnimatorControllerParameterType.Trigger))
+            if (HasParameter(EAnimation.Frozen.ToString(), AnimatorControllerParameterType.Trigger) || HasParameter(EAnimation.Stun.ToString(), AnimatorControllerParameterType.Trigger) || HasParameter(EAnimation.Silenced.ToString(), AnimatorControllerParameterType.Trigger) || HasParameter(EAnimation.Airborne.ToString(), AnimatorControllerParameterType.Trigger))
                 m_Controller.StateHandler.AnimationState.OnValueChanged += OnStateAnimationValueChanged;
 
             if (HasParameter("MovementSpeed", AnimatorControllerParameterType.Float))

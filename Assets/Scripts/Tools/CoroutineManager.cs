@@ -6,6 +6,11 @@ namespace Tools
 {
     public static class CoroutineManager
     {
+        public static void Display(Action method)
+        {
+            DelayMethod(method, 0);
+        }
+
         public static void DelayMethod(Action method, int nFrames = 1)
         {
             if (Main.Instance != null)

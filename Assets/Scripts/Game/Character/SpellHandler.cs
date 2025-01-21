@@ -483,6 +483,7 @@ namespace Game.Character
         public bool HasStateBlockingCast()
         {
             return m_Controller.StateHandler.IsStunned                                  // is stunned
+                || m_Controller.StateHandler.IsAirborned                                // is airborned
                 || m_Controller.StateHandler.IsSilenced                                 // is silenced
                 || m_Controller.StateHandler.HasState(EStateEffect.Frozen)              // is frozen 
                 || m_Controller.StateHandler.HasState(EStateEffect.Jump)                // is jumping
