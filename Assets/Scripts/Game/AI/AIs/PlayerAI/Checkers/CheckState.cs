@@ -11,6 +11,7 @@ namespace AI
         Casting,
         Stun,
         Silence,
+        Airborne,
     }
 
     public class CheckState : BaseChecker
@@ -71,6 +72,9 @@ namespace AI
 
                 case EGlobalState.Stun:
                     return m_Controller.StateHandler.IsStunned;
+
+                case EGlobalState.Airborne:
+                    return m_Controller.StateHandler.IsAirborned;
 
                 case EGlobalState.Silence:
                     return m_Controller.StateHandler.IsSilenced;

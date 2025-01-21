@@ -87,7 +87,6 @@ public class Controller : NetworkBehaviour
     public Collider2D       Collider                    => m_GFXHandler.Collider;
     /// <summary> y position of the character's Height point </summary>
     public float            CharacterHeight             => Collider.transform.position.y + Collider.bounds.extents.y;
-
     #endregion
 
 

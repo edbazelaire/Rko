@@ -1,8 +1,10 @@
-﻿using Assets.Scripts.Managers.Sound;
+﻿using Assets.Scripts.Game;
+using Assets.Scripts.Managers.Sound;
 using Data;
 using Enums;
 using Game.Loaders;
 using Game.Spells.SpecialEffects;
+using MyBox;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -80,9 +82,12 @@ namespace Game.Spells
             UnRegisterListeners();
         }
 
-        protected virtual void SetSpellData(string spellName, int level)
+        protected virtual void SetSpellData(string spellName, int level, string parent = null)
         {
             m_BaseSpellData = SpellLoader.GetSpellData(spellName, level);
+
+            if (! parent.IsNullOrEmpty())
+                m_BaseSpellData.SetParent(parent);
         }
 
         /// <summary>
@@ -90,10 +95,10 @@ namespace Game.Spells
         /// </summary>
         /// <param name="target"></param>
         /// <param name="spellName"></param>
-        public virtual void Initialize(ulong clientId, Vector3 target, string spellName, int level)
+        public virtual void Initialize(ulong clientId, Vector3 target, string spellName, int level, string parent)
         {
             m_Controller = GameManager.Instance.GetPlayer(clientId);
-            SetSpellData(spellName, level);
+            SetSpellData(spellName, level, parent);
             m_HittedPlayerId    = new List<ulong>();
 
             // add extra effects (damages bonus, on hit effects, ...) that the controller has at time of casting
@@ -183,7 +188,7 @@ namespace Game.Spells
         {
             if (IsHost)
                 return;
-            Initialize(clientId, target, spellName, level);
+            Initialize(clientId, target, spellName, level, "");
         }
 
         #endregion
@@ -393,7 +398,7 @@ namespace Game.Spells
                 return false;
 
             // no base Damages, StateEffects or OnHit effects - return
-            if (m_SpellData.Damage <= 0 && m_SpellData.EnemyStateEffects.Count == 0 && m_SpellData.OnHit.Count == 0)
+            if (m_SpellData.Damage <= 0 && m_SpellData.ExecutionDamages <= 0 && m_SpellData.EnemyStateEffects.Count == 0 && m_SpellData.OnHit.Count == 0)
                 return false;
 
             // check if target has counter(s)
@@ -407,13 +412,22 @@ namespace Game.Spells
 
         void HitEnemy(Controller targetController)
         {
-            // add bonus damages from state bonus & boosts 
-            int damages = GetBoostedDamages(targetController);
+            // apply spell base damages on target
+            if (m_SpellData.Damage > 0)
+                ApplyDamagesOnTarget(GetBoostedDamages(targetController), targetController);
 
+            // apply execution damages on target
+            if (m_SpellData.ExecutionDamages > 0)
+                ApplyDamagesOnTarget(GetBoostedExecutionDamages(targetController), targetController);
+
+            // apply state effects specifics to enemies
+            ApplyEnemyStateEffects(targetController);
+        }
+
+        void ApplyDamagesOnTarget(int damages, Controller targetController)
+        {
             // get final damages after shields and resistances
-            int finalDamages = targetController.Life.Hit(damages);
-            if (finalDamages > 0 && m_Controller.ClientAnalytics != null)
-                m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Damage, finalDamages);
+            int finalDamages = targetController.Life.Hit(damages, m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
 
             ErrorHandler.Log(m_SpellData.Name + " : " + finalDamages, ELogTag.Spells);
 
@@ -421,17 +435,8 @@ namespace Game.Spells
             float lifeSteal = SpellData.LifeSteal + Mathf.Max(0f, m_Controller.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal) - 1);
             if (lifeSteal > 0 && finalDamages > 0)
             {
-                m_Controller.Life.Heal((int)Mathf.Round(lifeSteal * finalDamages));
-
-                if (m_Controller.ClientAnalytics != null)
-                {
-                    m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Heal, (int)Mathf.Round(lifeSteal * finalDamages));
-                    m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.LifeSteal, (int)Mathf.Round(lifeSteal * finalDamages));
-                }
+                m_Controller.Life.Heal((int)Mathf.Round(lifeSteal * finalDamages), m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
             }
-
-            // apply state effects specifics to enemies
-            ApplyEnemyStateEffects(targetController);
         }
 
         /// <summary>
@@ -447,21 +452,13 @@ namespace Game.Spells
             bool test = false;
             if (m_SpellData.Heal > 0)
             {
-                controller.Life.Heal(m_SpellData.Heal);
-
-                if (m_Controller.ClientAnalytics != null)
-                    m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Heal, m_SpellData.Heal);
-
+                controller.Life.Heal(m_SpellData.Heal, m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
                 test = true;
             }
 
             if (m_SpellData.Shield > 0)
             {
-                controller.Life.AddShield(m_SpellData.Shield);
-
-                if (m_Controller.ClientAnalytics != null)
-                    m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Shield, m_SpellData.Shield);
-
+                controller.Life.AddShield(m_SpellData.Shield, m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
                 test = true;
             }
 
@@ -476,13 +473,25 @@ namespace Game.Spells
 
         public virtual int GetBoostedDamages(Controller targetController)
         {
-            int damages = m_SpellData.Damage;
+            var damages = m_SpellData.Damage;
+
+            if (damages <= 0)
+                return 0;
+
             if (m_SpellData.StateEffectStackFactor != EStateEffect.None)
             {
                 damages *= targetController.StateHandler.GetStacks(m_SpellData.StateEffectStackFactor);
             }
 
             return m_Controller.StateHandler.ApplyBonusDamages(damages, targetController);
+        }
+
+        public virtual int GetBoostedExecutionDamages(Controller target)
+        {
+            if (m_SpellData.ExecutionDamages <= 0)
+                return 0;
+
+            return (int)Math.Round(m_Controller.StateHandler.ApplyBonusDamages(m_SpellData.ExecutionDamages, target) * (1 - target.Life.PercHp));
         }
 
         protected virtual void AddExtraEffects()

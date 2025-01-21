@@ -1,4 +1,5 @@
 using Assets;
+using Assets.Scripts.Game;
 using Assets.Scripts.Managers.Sound;
 using Assets.Scripts.Tools;
 using Data;
@@ -39,6 +40,10 @@ namespace Game
         public static Action GameEndEvent;
 
         // ===================================================================================
+        // GameObjects & Components
+        private GameAnalyticsManager m_GameAnalyticsManager;
+
+        // ===================================================================================
         // PRIVATE VARIABLES 
         // -- Network Variables
         /// <summary> current state of the Game </summary>
@@ -69,10 +74,12 @@ namespace Game
         List<ulong> m_ClientsInitialized = new();
         /// <summary> [CLIENT] used to check if the initialization is completed on the client side (to avoid sending multiple time the validation to the server) </summary>
         bool m_InitOnClientSide = false;
+        /// <summary> is this a TUTORIAL game ? </summary>
         bool m_IsTuto = false;
 
         // ===================================================================================
         // PUBLIC ACCESSORS 
+        public GameAnalyticsManager GameAnalyticsManager => m_GameAnalyticsManager;
         public Dictionary<ulong, Controller> Controllers => m_Controllers;
         public Dictionary<ulong, Controller> Spawns => m_Spawns;
         public NetworkVariable<float> ProgressGameStart => m_ProgressGameStart;
@@ -99,6 +106,7 @@ namespace Game
             m_ClientsInitialized    = new();
             m_PlayersData           = new();
             m_Controllers           = new Dictionary<ulong, Controller>();
+            m_GameAnalyticsManager  = Finder.FindComponent<GameAnalyticsManager>(gameObject);
 
             s_Instance = this;
         }
@@ -486,7 +494,13 @@ namespace Game
 
         public void GameOver(int team)
         {
+            // shutdown on server side
             ShutDownControllersServerSide();
+
+            // collect analytics from server before shutodown
+            GameAnalyticsManager.Instance.SendGameAnalytics();
+
+            // display gameOver ui
             GameOverClientRPC(team);
         }
 
@@ -503,6 +517,7 @@ namespace Game
                 return;
 
             ShutDownControllers(team);
+
             GameUIManager.Instance.SetUpGameOver(team == Instance.Owner.Team);
         }
 
@@ -658,7 +673,7 @@ namespace Game
         #endregion
 
 
-        #region Public Manipulators
+        #region Target
 
         public Controller GetPlayer(ulong clientId)
         {
@@ -1017,13 +1032,13 @@ namespace Game
         [Command(KeyCode.M)]
         public void HitSelf()
         {
-            Owner.Life.Hit(500);
+            Owner.Life.Hit(500, 999, "God", Enums.ESpellCategory.Direct, true);
         }
 
         [Command(KeyCode.L)]
         public void Hit()
         {
-            GetFirstEnemy(Owner.Team).Life.Hit(500);
+            GetFirstEnemy(Owner.Team).Life.Hit(500, 999, "God", Enums.ESpellCategory.Direct, true);
         }
 
         [Command(KeyCode.O)]

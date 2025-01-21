@@ -21,9 +21,9 @@ namespace Game.Spells
         /// </summary>
         /// <param name="target"></param>
         /// <param name="spellName"></param>
-        public override void Initialize(ulong clientId, Vector3 target, string spellName, int level)
+        public override void Initialize(ulong clientId, Vector3 target, string spellName, int level, string parent)
         {
-            base.Initialize(clientId, target, spellName, level);
+            base.Initialize(clientId, target, spellName, level, parent);
 
             if (!IsServer)
                 return;

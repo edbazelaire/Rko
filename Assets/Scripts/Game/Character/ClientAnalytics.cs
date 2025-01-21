@@ -31,9 +31,16 @@ namespace Game.Character
         [ClientRpc]
         public void SendSpellDataClientRPC(string spell, EHitType hitType, int qty)
         {
+            // send event to analytics
+            SendSpellData(spell, hitType, qty);
+        }
+
+        public void SendSpellData(string spell, EHitType hitType, int qty)
+        {
             if (! CanSendData)
                 return;
 
+            // send event to analytics
             MAnalytics.SendEvent(new InGameEvent(LobbyHandler.Instance.GameMode, StaticPlayerData.Character, spell, hitType.ToString(), qty));
         }
 

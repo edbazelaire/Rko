@@ -87,6 +87,7 @@
         Srug,
         Marcus,
         Nagini,
+        Subrog,
     }
 
     public enum EBoss
@@ -177,6 +178,9 @@
         Stalacmite,
         PoisonDart,
         DarkEnergyField,
+        EclipseBlade,
+        ShadowStrike,
+        Duskfall,
 
         // ======================================================================
         // BOSSES ABILITIES
@@ -251,7 +255,7 @@
         Void,
     }
 
-    public enum EDamageType
+    public enum ESpellCategory
     {
         None,
 
@@ -584,7 +588,7 @@
         UnTargettable,
         SpecialAnimation,
         Combustion,
-        Airborn,
+        Airborne,
         Infection,
         Vanish,
         Cleanse,
@@ -608,7 +612,7 @@
 
     public enum ESpellProperty
     {
-        Non,
+        None,
 
         Heal,
         Damages,
@@ -628,6 +632,7 @@
         TickShield,
         Shield,
         Delay,
+        ExecutionDamages,
     }
 
     public enum EStateEffectProperty
@@ -699,7 +704,7 @@
         Frozen              = 12,
         Silenced            = 13,
         CastHight           = 14,
-        Airborn             = 15,
+        Airborne             = 15,
         CastDiagonal        = 16,
         PrepareCharge       = 17,
         Charge              = 18,

@@ -36,7 +36,14 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
             m_OnClickEffects.SetActive(false);
             m_UpgradeEffects.SetActive(false);
         }
-        
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            StopAllCoroutines();
+        }
+
         #endregion
 
 
@@ -71,7 +78,12 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
 
         #region On Click
 
-        public IEnumerator PlayOnClickAnimation()
+        public void PlayOnClickAnimation()
+        {
+            StartCoroutine(OnClickAnimation());
+        }
+
+        public IEnumerator OnClickAnimation()
         {
             var duration = 1f;
             m_OnClickEffects.SetActive(true);

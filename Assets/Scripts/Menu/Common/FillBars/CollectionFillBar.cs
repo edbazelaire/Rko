@@ -15,7 +15,6 @@ namespace Menu.Common
         #region Members
 
         const string COLLECTION_VALUE_FORMAT    = "{0} / {1}";
-        const string COLLECTION_FLOAT_FORMAT    = "{0} / {1}";
         const string COLLECTION_PERC_FORMAT     = "{0}%";
 
         public Action CollectionEndedEvent;

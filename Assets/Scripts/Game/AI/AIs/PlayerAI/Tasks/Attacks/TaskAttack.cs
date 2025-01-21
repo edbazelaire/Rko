@@ -11,7 +11,7 @@ using MyBox;
 using Tools;
 using UnityEngine;
 
-public enum ESpellCategory
+public enum ESpellTypeCategory
 {
     Ultimate,
     Spawner,
@@ -33,7 +33,7 @@ public class TaskAttack : Node
     SpellHandler m_SpellHandler => m_Controller.SpellHandler;
 
     bool m_CanAttack = true;
-    Dictionary<ESpellCategory, List<ESpell>> m_SpellCategories = new Dictionary<ESpellCategory, List<ESpell>>();
+    Dictionary<ESpellTypeCategory, List<ESpell>> m_SpellCategories = new Dictionary<ESpellTypeCategory, List<ESpell>>();
     Dictionary<ESpell, List<EStateEffect>> m_ConsumSpells = new Dictionary<ESpell, List<EStateEffect>>();
 
     #endregion
@@ -41,7 +41,7 @@ public class TaskAttack : Node
 
     #region Init & End
 
-    public TaskAttack(Controller controller, List<ESpellCategory> allowedSpellCategories = default, bool checkHasState = true)
+    public TaskAttack(Controller controller, List<ESpellTypeCategory> allowedSpellCategories = default, bool checkHasState = true)
     {
         m_Controller = controller;
         m_CheckHasState = checkHasState;
@@ -49,17 +49,17 @@ public class TaskAttack : Node
         FilterSpells(allowedSpellCategories);
     }
 
-    void FilterSpells(List<ESpellCategory> allowedSpellCategories = default)
+    void FilterSpells(List<ESpellTypeCategory> allowedSpellCategories = default)
     {
-        bool IsAllowed(ESpellCategory category) { return allowedSpellCategories.IsNullOrEmpty() || allowedSpellCategories.Contains(category); }
+        bool IsAllowed(ESpellTypeCategory category) { return allowedSpellCategories.IsNullOrEmpty() || allowedSpellCategories.Contains(category); }
         
-        m_SpellCategories[ESpellCategory.Ultimate]              = IsAllowed(ESpellCategory.Ultimate)            ? new List<ESpell>() { m_SpellHandler.Ultimate }    : new List<ESpell>() { };
-        m_SpellCategories[ESpellCategory.Spawner]               = IsAllowed(ESpellCategory.Spawner)             ? FilterSpellsByType(ESpellType.Spawner)            : new List<ESpell>() { };
-        m_SpellCategories[ESpellCategory.Heal]                  = IsAllowed(ESpellCategory.Heal)                ? FilterSpellsByProperty(ESpellProperty.Heal)       : new List<ESpell>() { };
-        m_SpellCategories[ESpellCategory.Buff]                  = IsAllowed(ESpellCategory.Buff)                ? FilterSpellsByType(ESpellType.Buff)               : new List<ESpell>() { };
-        m_SpellCategories[ESpellCategory.ConsumeStateEffect]    = IsAllowed(ESpellCategory.ConsumeStateEffect)  ? FilterSpellsWithConsumeStateEffect()              : new List<ESpell>() { };
-        m_SpellCategories[ESpellCategory.Damage]                = IsAllowed(ESpellCategory.Damage)              ? FilterSpellsByProperty(ESpellProperty.Damages)    : new List<ESpell>() { };
-        m_SpellCategories[ESpellCategory.AutoAttack]            = IsAllowed(ESpellCategory.AutoAttack)          ? new List<ESpell>() { m_SpellHandler.AutoAttack }  : new List<ESpell>() { };
+        m_SpellCategories[ESpellTypeCategory.Ultimate]              = IsAllowed(ESpellTypeCategory.Ultimate)            ? new List<ESpell>() { m_SpellHandler.Ultimate }    : new List<ESpell>() { };
+        m_SpellCategories[ESpellTypeCategory.Spawner]               = IsAllowed(ESpellTypeCategory.Spawner)             ? FilterSpellsByType(ESpellType.Spawner)            : new List<ESpell>() { };
+        m_SpellCategories[ESpellTypeCategory.Heal]                  = IsAllowed(ESpellTypeCategory.Heal)                ? FilterSpellsByProperty(ESpellProperty.Heal)       : new List<ESpell>() { };
+        m_SpellCategories[ESpellTypeCategory.Buff]                  = IsAllowed(ESpellTypeCategory.Buff)                ? FilterSpellsByType(ESpellType.Buff)               : new List<ESpell>() { };
+        m_SpellCategories[ESpellTypeCategory.ConsumeStateEffect]    = IsAllowed(ESpellTypeCategory.ConsumeStateEffect)  ? FilterSpellsWithConsumeStateEffect()              : new List<ESpell>() { };
+        m_SpellCategories[ESpellTypeCategory.Damage]                = IsAllowed(ESpellTypeCategory.Damage)              ? FilterSpellsByProperty(ESpellProperty.Damages)    : new List<ESpell>() { };
+        m_SpellCategories[ESpellTypeCategory.AutoAttack]            = IsAllowed(ESpellTypeCategory.AutoAttack)          ? new List<ESpell>() { m_SpellHandler.AutoAttack }  : new List<ESpell>() { };
     }
 
     #endregion
@@ -188,7 +188,7 @@ public class TaskAttack : Node
 
         ErrorHandler.Log("CheckSpawners()", ELogTag.AITaskAttack);
 
-        CheckSpells(ref spell, m_SpellCategories[ESpellCategory.Spawner]);
+        CheckSpells(ref spell, m_SpellCategories[ESpellTypeCategory.Spawner]);
     }
 
     /// <summary>
@@ -206,7 +206,7 @@ public class TaskAttack : Node
         if (m_Controller.Life.Hp.Value == m_Controller.Life.MaxHp.Value)
             return;
 
-        CheckSpells(ref spell, m_SpellCategories[ESpellCategory.Heal]);
+        CheckSpells(ref spell, m_SpellCategories[ESpellTypeCategory.Heal]);
     }
 
     /// <summary>
@@ -221,7 +221,7 @@ public class TaskAttack : Node
 
         ErrorHandler.Log("CheckBuffs()", ELogTag.AITaskAttack);
 
-        CheckSpells(ref spell, m_SpellCategories[ESpellCategory.Buff]);
+        CheckSpells(ref spell, m_SpellCategories[ESpellTypeCategory.Buff]);
     }
 
     /// <summary>
@@ -274,7 +274,7 @@ public class TaskAttack : Node
 
         ErrorHandler.Log("CheckDamageSpells()", ELogTag.AITaskAttack);
 
-        CheckSpells(ref spell, m_SpellCategories[ESpellCategory.Damage]);
+        CheckSpells(ref spell, m_SpellCategories[ESpellTypeCategory.Damage]);
     }
 
     #endregion

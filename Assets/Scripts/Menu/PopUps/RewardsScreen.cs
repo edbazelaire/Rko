@@ -413,7 +413,7 @@ namespace Menu.PopUps
         {
             for(int i = 0; i < 5; i++)
             {
-                StartCoroutine(m_PowerOrbContainer.PowerOrbUI.PlayOnClickAnimation());
+                m_PowerOrbContainer.PowerOrbUI.PlayOnClickAnimation();
 
                 if (! m_PowerOrbContainer.PowerOrbData.TryUpgradeRarety())
                     yield return WaitForCoroutineOrSkip(m_PowerOrbContainer.PowerOrbUI.UpgradeFailedAnimation());

@@ -7,7 +7,7 @@ namespace Data
     public class AoeData : SpellData
     {
         public override ESpellType SpellType    => ESpellType.Aoe;
-        public override EDamageType DamageType  => EDamageType.Zone;
+        public override Enums.ESpellCategory SpellCategory  => Enums.ESpellCategory.Zone;
 
         [Header("AoeData")]
         [SerializeField] protected ESpellSpawn m_SpellSpawn = ESpellSpawn.Ground;

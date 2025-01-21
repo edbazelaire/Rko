@@ -104,6 +104,8 @@ namespace Data
         public int                          EnergyCost          = 0;
         [SerializeField, Description("Damage of the spell")]
         public int                          m_Damage            = 0;
+        [SerializeField, Description("Execution damage of the spell (growing with missing life)")]
+        public int                          m_ExecutionDamages  = 0;
         [SerializeField, Description("Heals provided to the target")]
         public int                          m_Heal              = 0;
         [SerializeField, Description("Quantity of (permanant) shield provided to the target")] 
@@ -157,7 +159,13 @@ namespace Data
         [SerializeField] protected float m_Cooldown;
 
         // ===========================================================================
+        string m_Parent;
+
+        // ===========================================================================
         // Dependent Members
+        public virtual string Parent => m_Parent.IsNullOrEmpty() ? Name : m_Parent;
+        public virtual List<ESpellElement> SpellElements => m_SpellElements;
+        public virtual  List<SpellRequirements> SpellRequirements => m_SpellRequirements;
         public virtual ESpellType   SpellType   => ESpellType.InstantSpell;
         public float                BaseSize    => m_Size;
         public float                Size        => m_Size >= 0 ? m_Size * Settings.SpellSizeFactor : ArenaManager.Instance.TargettableAreaSize;
@@ -166,10 +174,9 @@ namespace Data
 
         // ===========================================================================
         // Level Dependent Members
-        public virtual List<ESpellElement>      SpellElements       => m_SpellElements;
-        public virtual List<SpellRequirements>  SpellRequirements   => m_SpellRequirements;
         public virtual float Cooldown           => Mathf.Max(Mathf.Round(100f * m_Cooldown / GetSpellLevelFactor(ESpellProperty.Cooldowns)) / 100f, 0f);
         public virtual int Damage               => (int)Math.Round(m_Damage * GetSpellLevelFactor(ESpellProperty.Damages));
+        public virtual int ExecutionDamages     => (int)Math.Round(m_ExecutionDamages * GetSpellLevelFactor(ESpellProperty.ExecutionDamages));
         public virtual int Heal                 => (int)Math.Round(m_Heal * GetSpellLevelFactor(ESpellProperty.Heal));
         public virtual int Shield               => (int)Math.Round(m_Shield * GetSpellLevelFactor(ESpellProperty.Shield));
         public virtual float LifeSteal          => m_LifeSteal * GetSpellLevelFactor(ESpellProperty.LifeSteal);
@@ -178,7 +185,7 @@ namespace Data
 
         /// <summary> is the "IsCasting" over once the spell has been casted (before delay) ? </summary>
         public virtual bool IsCompletedOnCast   => true;
-        public virtual EDamageType DamageType => EDamageType.Direct;
+        public virtual ESpellCategory SpellCategory => ESpellCategory.Direct;
 
         #endregion
 
@@ -251,7 +258,7 @@ namespace Data
 
             // initialize the spell
             var spell = Finder.FindComponent<Spell>(spellGO);
-            spell.Initialize(clientId, target, Name, m_Level);
+            spell.Initialize(clientId, target, Name, m_Level, m_Parent);
 
             // backpropagate the spell intialization to the client (for the preview)
             spell.InitializeClientRpc(clientId, target, Name, m_Level);
@@ -265,7 +272,6 @@ namespace Data
         /// </summary>
         /// <param name="clientId"></param>
         /// <param name="position"></param>
-        /// 
         /// <param name="rotation"></param>
         public void SpawnOnHitPrefab(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default)
         {
@@ -278,9 +284,11 @@ namespace Data
             {
                 // setup spell data to level of this spell
                 var onHitSpellData = spellData.Clone(m_Level);
+                onHitSpellData.SetParent(Parent);
+
                 onHitSpellData.Override(this);
                 onHitSpellData.OverrideSpellSpawn(OnHitSpellSpawn);
-                controller.StartCoroutine(onHitSpellData.CastDelay(clientId, target, position, rotation, recalculateTarget: false));
+                controller.StartCoroutine(onHitSpellData.CastDelay(clientId, target, position, rotation, recalculateTarget: false, recalculatePosition: false));
 
                 // call graphics event
                 controller.SpellHandler.CallSpellEvent(spellData.Name, ESpellEvent.OnStartCast);
@@ -479,7 +487,7 @@ namespace Data
                     break;
 
                 default:
-                    ErrorHandler.Error("Unhandled case : " + SpellTarget);
+                    ErrorHandler.Error("("+ Name +") - Unhandled case : " + SpellTarget);
                     break;
             }
 
@@ -724,6 +732,8 @@ namespace Data
                 infosDict.Add("EnergyCost", EnergyCost);
             if (Damage > 0)
                 infosDict.Add("Damages", Damage);
+            if (ExecutionDamages > 0)
+                infosDict.Add("ExecutionDamages", ExecutionDamages);
             if (Heal > 0)
                 infosDict.Add("Heal", Heal);
             if (Duration > 0)
@@ -897,6 +907,11 @@ namespace Data
         public new SpellData Clone(int level = 0, bool destroy = false)
         {
             return (SpellData)base.Clone(level, destroy);
+        }
+
+        public void SetParent(string parent)
+        {
+            m_Parent = parent;
         }
 
         public override void SetLevel(int level)
