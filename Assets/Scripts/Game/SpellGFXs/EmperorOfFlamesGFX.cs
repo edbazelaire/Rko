@@ -148,7 +148,7 @@ namespace Game.SpellGFXs
 
             StartCoroutine(NextAnimation(0.2f * timer));
 
-            m_Controller.AnimationHandler.PlayAnimation(Enums.EAnimation.Airborn, -1);
+            m_Controller.AnimationHandler.PlayAnimation(Enums.EAnimation.Airborne, -1);
             while (timer > 0)
             {
                 timer -= Time.deltaTime;

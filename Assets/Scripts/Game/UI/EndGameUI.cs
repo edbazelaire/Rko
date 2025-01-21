@@ -34,8 +34,6 @@ public class EndGameUI : MObject
     #region Members
 
     const string GOLDS_FORMAT = "+ {0}";
-    const string c_TitleText = "TitleText";
-    const string c_LeaveButton = "LeaveButton";
 
     // Data
     EEndGameState m_State;
@@ -47,23 +45,27 @@ public class EndGameUI : MObject
     int m_CurrentStage = 0;
 
     // Components
-    GameObject      m_RewardsSection;
-    GameObject      m_Background;
-    TMP_Text        m_TitleText;
-    GameObject      m_RewardsContent;
-    PowerUpSection  m_PowerUpSection;
-    GameObject      m_XpRewardDisplay;
-    TMP_Text        m_XpQty;
-    GameObject      m_GoldsRewardDisplay;
-    TMP_Text        m_GoldsQty;
-    GameObject      m_GemsRewardDisplay;
-    TMP_Text        m_GemsQty;
-    GameObject      m_OrbPowerRewardDisplay;
-    TMP_Text        m_OrbPowerRewardQty;
-    GameObject      m_PowerOrbUpgradeRewardIcon;
-    Image           m_ChestRewardIcon;
-    Button          m_LeaveButton;
-    GameObject      m_Fireworks;
+    EndGameAnalyticsUI  m_EndGameAnalyticsUI;
+    GameObject          m_RewardsSection;
+    GameObject          m_Background;
+    TMP_Text            m_TitleText;
+    GameObject          m_RewardsContent;
+    PowerUpSection      m_PowerUpSection;
+    GameObject          m_XpRewardDisplay;
+    TMP_Text            m_XpQty;
+    GameObject          m_GoldsRewardDisplay;
+    TMP_Text            m_GoldsQty;
+    GameObject          m_GemsRewardDisplay;
+    TMP_Text            m_GemsQty;
+    GameObject          m_OrbPowerRewardDisplay;
+    TMP_Text            m_OrbPowerRewardQty;
+    GameObject          m_PowerOrbUpgradeRewardIcon;
+    Image               m_ChestRewardIcon;
+    Button              m_LeaveButton;
+    Button              m_DetailsButton;
+    GameObject          m_Fireworks;
+
+    public EndGameAnalyticsUI EndGameAnalyticsUI => m_EndGameAnalyticsUI;
 
     #endregion
 
@@ -72,25 +74,27 @@ public class EndGameUI : MObject
 
     protected override void FindComponents()
     {
-        m_Background            = Finder.Find(gameObject, "Background");
-        m_Fireworks             = Finder.Find(gameObject, "Fireworks");
-        m_TitleText             = Finder.FindComponent<TMP_Text>(gameObject, c_TitleText);
+        m_Background                = Finder.Find(gameObject, "Background");
+        m_Fireworks                 = Finder.Find(gameObject, "Fireworks");
+        m_TitleText                 = Finder.FindComponent<TMP_Text>(gameObject, "TitleText");
 
-        m_PowerUpSection        = Finder.FindComponent<PowerUpSection>(gameObject, "PowerUpSection");
+        m_EndGameAnalyticsUI        = Finder.FindComponent<EndGameAnalyticsUI>(gameObject, "EndGameAnalyticsUI");
+        m_PowerUpSection            = Finder.FindComponent<PowerUpSection>(gameObject, "PowerUpSection");
 
-        m_RewardsSection        = Finder.Find(gameObject, "RewardsSection");
-        m_LeaveButton           = Finder.FindComponent<Button>(gameObject, c_LeaveButton);
-        m_RewardsContent        = Finder.Find(gameObject, "RewardsContent");
-        m_XpRewardDisplay       = Finder.Find(m_RewardsContent, "XpRewardDisplay");
-        m_XpQty                 = Finder.FindComponent<TMP_Text>(m_XpRewardDisplay, "Qty");
-        m_GoldsRewardDisplay    = Finder.Find(m_RewardsContent, "GoldsRewardDisplay");
-        m_GoldsQty              = Finder.FindComponent<TMP_Text>(m_GoldsRewardDisplay, "Qty");
-        m_GemsRewardDisplay     = Finder.Find(m_RewardsContent, "GemsRewardDisplay");
-        m_GemsQty               = Finder.FindComponent<TMP_Text>(m_GemsRewardDisplay, "Qty");
-        m_OrbPowerRewardDisplay = Finder.Find(m_RewardsContent, "OrbPowerRewardDisplay");
-        m_OrbPowerRewardQty     = Finder.FindComponent<TMP_Text>(m_OrbPowerRewardDisplay, "Qty");
-        m_PowerOrbUpgradeRewardIcon        = Finder.Find(m_RewardsContent, "StarRewardIcon");
-        m_ChestRewardIcon       = Finder.FindComponent<Image>(m_RewardsContent, "ChestRewardIcon");
+        m_RewardsSection            = Finder.Find(gameObject, "RewardsSection");
+        m_LeaveButton               = Finder.FindComponent<Button>(gameObject, "LeaveButton");
+        m_DetailsButton             = Finder.FindComponent<Button>(gameObject, "DetailsButton");
+        m_RewardsContent            = Finder.Find(gameObject, "RewardsContent");
+        m_XpRewardDisplay           = Finder.Find(m_RewardsContent, "XpRewardDisplay");
+        m_XpQty                     = Finder.FindComponent<TMP_Text>(m_XpRewardDisplay, "Qty");
+        m_GoldsRewardDisplay        = Finder.Find(m_RewardsContent, "GoldsRewardDisplay");
+        m_GoldsQty                  = Finder.FindComponent<TMP_Text>(m_GoldsRewardDisplay, "Qty");
+        m_GemsRewardDisplay         = Finder.Find(m_RewardsContent, "GemsRewardDisplay");
+        m_GemsQty                   = Finder.FindComponent<TMP_Text>(m_GemsRewardDisplay, "Qty");
+        m_OrbPowerRewardDisplay     = Finder.Find(m_RewardsContent, "OrbPowerRewardDisplay");
+        m_OrbPowerRewardQty         = Finder.FindComponent<TMP_Text>(m_OrbPowerRewardDisplay, "Qty");
+        m_PowerOrbUpgradeRewardIcon = Finder.Find(m_RewardsContent, "StarRewardIcon");
+        m_ChestRewardIcon           = Finder.FindComponent<Image>(m_RewardsContent, "ChestRewardIcon");
     }
 
     public override void Initialize()
@@ -98,7 +102,10 @@ public class EndGameUI : MObject
         base.Initialize();
 
         SetUpData();
+
         m_PowerUpSection.Initialize();
+        m_EndGameAnalyticsUI.Initialize();
+
         SetState(EEndGameState.Inactive);
     }
 
@@ -195,7 +202,8 @@ public class EndGameUI : MObject
         {
             case EEndGameState.Inactive:
                 m_PowerUpSection.Activate(false); 
-                m_RewardsSection.SetActive(false); 
+                m_RewardsSection.SetActive(false);
+                m_EndGameAnalyticsUI.gameObject.SetActive(false); 
                 gameObject.SetActive(false);
                 break;
 
@@ -495,6 +503,11 @@ public class EndGameUI : MObject
         var fadeInButton = m_LeaveButton.gameObject.AddComponent<Fade>();
         fadeInButton.Initialize(duration: 0.5f, startOpacity: 0f);
 
+        // FadeIn : Button
+        m_DetailsButton.gameObject.SetActive(true);
+        fadeInButton = m_DetailsButton.gameObject.AddComponent<Fade>();
+        fadeInButton.Initialize(duration: 0.5f, startOpacity: 0f);
+
         yield return new WaitUntil(() => fadeIn.IsOver);
     }
 
@@ -507,6 +520,7 @@ public class EndGameUI : MObject
     {
         base.RegisterListeners();
 
+        m_DetailsButton.onClick.AddListener(m_EndGameAnalyticsUI.ToggleDisplay);
         m_LeaveButton.onClick.AddListener(NextState);
     }
 
@@ -514,6 +528,7 @@ public class EndGameUI : MObject
     {
         base.UnRegisterListeners();
 
+        m_DetailsButton.onClick?.RemoveListener(m_EndGameAnalyticsUI.ToggleDisplay);
         m_LeaveButton.onClick?.RemoveListener(NextState);
     }
 

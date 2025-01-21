@@ -10,7 +10,7 @@ namespace Data
     public class MineData : SpellData
     { 
         public override ESpellType SpellType    => ESpellType.Mine;
-        public override EDamageType DamageType  => EDamageType.Zone;
+        public override Enums.ESpellCategory SpellCategory  => Enums.ESpellCategory.Zone;
 
 
         [Header("MineData")]

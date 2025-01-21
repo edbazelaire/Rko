@@ -41,12 +41,12 @@ namespace Game.Spells
         /// <param name="radius"></param>
         /// <param name="damage"></param>
         /// <param name="duration"></param>
-        public override void Initialize(ulong clientId, Vector3 target, string spellName, int level)
+        public override void Initialize(ulong clientId, Vector3 target, string spellName, int level, string parent)
         {
             m_PlayersAffected = new Dictionary<ulong, float>();
             m_CollisionCheckRefreshTimer = 0;
 
-            base.Initialize(clientId, target, spellName, level);
+            base.Initialize(clientId, target, spellName, level, parent);
 
             InitializeTriggerZone();
         }
@@ -270,7 +270,7 @@ namespace Game.Spells
             damages = m_Controller.StateHandler.ApplyBonusInt(damages, EStateEffectProperty.TickDamages, controller);
 
             // get final damages after shields and resistances
-            int finalDamages = controller.Life.Hit(damages);
+            int finalDamages = controller.Life.Hit(damages, m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
             if (finalDamages > 0 && m_Controller.ClientAnalytics != null)
                 m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Damage, finalDamages);
 
@@ -280,8 +280,8 @@ namespace Game.Spells
             float lifeSteal = SpellData.LifeSteal + Mathf.Max(0f, m_Controller.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal) - 1);
             if (lifeSteal > 0 && finalDamages > 0)
             {
-                m_Controller.Life.Heal((int)Mathf.Round(lifeSteal * finalDamages));
-
+                m_Controller.Life.Heal((int)Mathf.Round(lifeSteal * finalDamages), m_Controller.PlayerId, m_SpellData.Name, m_SpellData.SpellCategory);
+                
                 if (m_Controller.ClientAnalytics != null)
                 { 
                     m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Heal, (int)Mathf.Round(lifeSteal * finalDamages));
@@ -317,7 +317,7 @@ namespace Game.Spells
             heal = m_Controller.StateHandler.ApplyBonusInt(heal, EStateEffectProperty.TickHeal, controller);
 
             // heal the target for the specified amount
-            controller.Life.Heal(heal);
+            controller.Life.Heal(heal, m_Controller.PlayerId, m_SpellData.Name, m_SpellData.SpellCategory);
 
             if (m_Controller.ClientAnalytics != null)
                 m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Heal, heal);

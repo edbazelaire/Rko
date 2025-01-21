@@ -38,6 +38,8 @@ namespace Game.Character
         GameObject                          m_CharacterPreview;
         /// <summary> collider of the character </summary>
         Collider2D                          m_Collider;
+        /// <summary> collider of the character </summary>
+        Rigidbody2D                         m_Rigidbody;
         /// <summary> sprite renderer of the Character</summary>
         List<SpriteRenderer>                m_SpriteRenderers;
         /// <summary> list of body parts </summary>
@@ -45,10 +47,11 @@ namespace Game.Character
 
         // ===========================================================================
         // PUBLIC ACCESSORS
-        public GameObject CharacterPreview => m_CharacterPreview;
-        public Collider2D Collider => m_Collider;
-        public Dictionary<EBodyPart, GameObject> BodyParts => m_BodyParts;
-        public float CharacterSize => m_CharacterSize;
+        public GameObject       CharacterPreview            => m_CharacterPreview;
+        public Collider2D       Collider                    => m_Collider;
+        public Rigidbody2D      Rigidbody                   => m_Rigidbody;
+        public Dictionary<EBodyPart, GameObject> BodyParts  => m_BodyParts;
+        public float            CharacterSize               => m_CharacterSize;
 
         public bool IsVisible => m_SpriteRenderers.Any(spriteRenderer => spriteRenderer.color != INVISIBLE_COLOR);
 
@@ -61,6 +64,7 @@ namespace Game.Character
         {
             m_Controller = Finder.FindComponent<Controller>(gameObject);
             m_Collider = Finder.FindComponent<Collider2D>(gameObject);
+            m_Rigidbody = Finder.FindComponent<Rigidbody2D>(gameObject);
         }
 
         public void Initialize(string character)
@@ -112,6 +116,11 @@ namespace Game.Character
 
         #region Collider & RigidBody
 
+        public void EnableRigidBody(bool enable = true)
+        {
+            m_Rigidbody.simulated = enable;
+        }
+
         protected virtual void SwapLayerMask(GameObject graphics)
         {
             if (graphics.layer == default)
@@ -144,7 +153,10 @@ namespace Game.Character
 
             // Copy properties from graphics Rigidbody2D to the new Rigidbody2D
             CopyRigidbodyProperties(graphicsRb, ref currentRb);
-        
+
+            // Set new rigid body
+            m_Rigidbody = currentRb;
+
             // Destroy the original Rigidbody2D on the graphics GameObject
             Destroy(graphicsRb);
         }

@@ -379,6 +379,12 @@ namespace Game.Character
                     return false;
                 }
 
+                if (m_Controller.StateHandler.IsAirborned)
+                {
+                    ErrorHandler.Log("CanMove - FALSE : IsAirborned", ELogTag.Movement);
+                    return false;
+                }
+
                 if (m_Controller.StateHandler.HasState(EStateEffect.Jump))
                 {
                     ErrorHandler.Log("CanMove - FALSE : is Jumping", ELogTag.Movement);

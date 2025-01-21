@@ -33,9 +33,9 @@ namespace Game.Spells
         /// </summary>
         /// <param name="target"></param>
         /// <param name="spellName"></param>
-        public override void Initialize(ulong clientId, Vector3 target, string spellName, int level)
+        public override void Initialize(ulong clientId, Vector3 target, string spellName, int level, string parent)
         {
-            base.Initialize(clientId, target, spellName, level);
+            base.Initialize(clientId, target, spellName, level, parent);
 
             if (!IsServer)
                 return;
@@ -146,7 +146,7 @@ namespace Game.Spells
 
         #region Counter Proc 
 
-        public bool CanBeProc(EDamageType damageType)
+        public bool CanBeProc(Enums.ESpellCategory damageType)
         {
             return m_SpellData.DamageTypeActivation.Contains(damageType);
         }
@@ -157,7 +157,7 @@ namespace Game.Spells
                 return false;
 
             // check if type of spell can proc counter
-            if (! CanBeProc(enemySpell.SpellData.DamageType))
+            if (! CanBeProc(enemySpell.SpellData.SpellCategory))
                 return false;
 
             var targetPosition = enemySpell.Controller.transform.position;
@@ -173,7 +173,7 @@ namespace Game.Spells
                 case ECounterType.Block:
                     if (m_SpellData.Shield > 0)
                     {
-                        HitShield(enemySpell.GetBoostedDamages(m_Controller));
+                        HitShield(enemySpell.GetBoostedDamages(m_Controller) + enemySpell.GetBoostedExecutionDamages(m_Controller));
                     }
 
                     enemySpell.CallSpellEventClientRPC(ESpellEvent.OnHit, m_Controller.PlayerId);
@@ -216,7 +216,7 @@ namespace Game.Spells
             return true;
         }
 
-        public bool ProcCounter(int damages, Controller caster, EDamageType damageType)
+        public bool ProcCounter(int damages, Controller caster, Enums.ESpellCategory damageType)
         {
             if (!IsServer)
                 return false;

@@ -43,9 +43,9 @@ namespace Game.Spells
         /// <param name="radius"></param>
         /// <param name="damage"></param>
         /// <param name="duration"></param>
-        public override void Initialize(ulong clientId, Vector3 target, string spellName, int level)
+        public override void Initialize(ulong clientId, Vector3 target, string spellName, int level, string parent)
         {
-            base.Initialize(clientId, target, spellName, level);
+            base.Initialize(clientId, target, spellName, level, parent);
 
             if (!IsServer)
                 return;

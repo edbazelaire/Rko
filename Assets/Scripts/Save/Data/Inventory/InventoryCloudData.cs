@@ -186,7 +186,7 @@ namespace Save
         // -- Informations
         public Dictionary<Type, SInfoCollectable> InfoCollectables = new Dictionary<Type, SInfoCollectable>
         {
-            { typeof(ECharacter),   new SInfoCollectable(KEY_CHARACTERS,  new Enum[] { CharacterBuildsCloudData.DEFAULT_CHARACTER, ECharacter.Nagini, ECharacter.Kahnan, ECharacter.Srug, ECharacter.Marcus } ) },
+            { typeof(ECharacter),   new SInfoCollectable(KEY_CHARACTERS,  new Enum[] { CharacterBuildsCloudData.DEFAULT_CHARACTER, ECharacter.Nagini, ECharacter.Kahnan, ECharacter.Srug, ECharacter.Marcus , ECharacter.Subrog } ) },
             { typeof(ESpell),       new SInfoCollectable(KEY_SPELLS,      CharacterBuildsCloudData.DEFAULT_BUILD.Cast<Enum>().ToArray() ) },
             { typeof(ERune),        new SInfoCollectable(KEY_RUNES,       new Enum[] { } ) }
         };

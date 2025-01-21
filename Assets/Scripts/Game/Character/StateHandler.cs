@@ -37,7 +37,11 @@ namespace Game.Character
             ! IsUncontrollable
             && (HasState(EStateEffect.Stun.ToString()) 
             || HasState(EStateEffect.Scorched.ToString())
-            || HasState(EStateEffect.Airborn.ToString())
+            );
+
+        public bool IsAirborned => 
+            ! IsUncontrollable
+            && (HasState(EStateEffect.Airborne.ToString())
             );
 
         public bool IsSilenced =>
@@ -560,6 +564,9 @@ namespace Game.Character
 
             if (IsStunned)
                 return EAnimation.Stun;
+
+            if (IsAirborned)
+                return EAnimation.Airborne;
 
             if (IsSilenced)
                 return EAnimation.Silenced;

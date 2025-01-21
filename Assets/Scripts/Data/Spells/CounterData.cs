@@ -119,7 +119,7 @@ namespace Data
         [Tooltip("How is the counter triggerred ? ")]
         public ECounterActivation   CounterActivation;
         [SerializeField, Tooltip("Type of spells that can proc the counter")] 
-        protected List<EDamageType>  m_DamageTypeActivation                   = new List<EDamageType>() { EDamageType.Direct };
+        protected List<Enums.ESpellCategory>  m_DamageTypeActivation                   = new List<Enums.ESpellCategory>() { Enums.ESpellCategory.Direct };
         [SerializeField, Tooltip("Offset spawning of the counter proc spell")] 
         protected Vector2           m_SpawnOffset                           = new Vector2(0, 0);
         [SerializeField, Tooltip("")]
@@ -140,7 +140,7 @@ namespace Data
 
         // ===================================================================================
         // Public Accessors
-        public List<EDamageType>                DamageTypeActivation     => m_DamageTypeActivation;
+        public List<Enums.ESpellCategory>       DamageTypeActivation     => m_DamageTypeActivation;
         public bool                             IsLinkedCounter         => IsBlockingCast || IsBlockingMovement || CounterActivation == ECounterActivation.OnHitPlayer;
         public List<SDamageConversionEffects>   DamageConversionEffects => m_DamageConversionEffects;
         public Vector2                          SpawnOffset             => m_SpawnOffset;

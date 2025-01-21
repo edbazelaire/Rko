@@ -1,17 +1,15 @@
-﻿using Assets.Scripts.Network;
+﻿using Assets.Scripts.Managers;
+using Assets.Scripts.Network;
 using Managers.Friends;
 using Menu.MainMenu;
 using Network;
 using Save;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using TMPro;
 using Tools;
 using Unity.Services.Authentication;
 using Unity.Services.Relay;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace Assets.Scripts.UI
 {
@@ -21,7 +19,7 @@ namespace Assets.Scripts.UI
 
         TMP_Text        m_PseudoText;
         TMP_Text        m_PlayerIdText; 
-        TMP_Text        m_TokenText;
+        TMP_Text        m_VersionText;
         TMP_Dropdown    m_RegionDropdown; 
 
         #endregion
@@ -35,7 +33,7 @@ namespace Assets.Scripts.UI
 
             m_PseudoText        = Finder.FindComponent<TMP_Text>(Finder.Find(gameObject, "PseudoInfo"),     "Value");
             m_PlayerIdText      = Finder.FindComponent<TMP_Text>(Finder.Find(gameObject, "PlayerIdInfo"),   "Value");
-            m_TokenText         = Finder.FindComponent<TMP_Text>(Finder.Find(gameObject, "TokenInfo"),      "Value");
+            m_VersionText       = Finder.FindComponent<TMP_Text>(Finder.Find(gameObject, "VersionInfo"),    "Value");
             m_RegionDropdown    = Finder.FindComponent<TMP_Dropdown>(Finder.Find(gameObject, "RegionInfo"), "Dropdown");
         }
 
@@ -43,9 +41,9 @@ namespace Assets.Scripts.UI
         {
             base.SetUpUI();
 
-            m_PseudoText.text   = ProfileCloudData.GamerTag;
-            m_PlayerIdText.text = AuthenticationService.Instance.PlayerId;
-            m_TokenText.text    = ProfileCloudData.Token;
+            m_PseudoText.text       = ProfileCloudData.GamerTag;
+            m_PlayerIdText.text     = AuthenticationService.Instance.PlayerId;
+            m_VersionText.text      = UpdateManager.CurrentVersion.ToString();
 
             await SetUpDropdown();
         }

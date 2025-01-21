@@ -1,3 +1,5 @@
+using Assets.Scripts.Game;
+using Data;
 using Enums;
 using System;
 using Unity.Collections.LowLevel.Unsafe;
@@ -36,6 +38,7 @@ public class Life : NetworkBehaviour
 
     public Controller Controller    => m_Controller;
     public int Shield               => m_Shield;
+    public float PercHp             => Mathf.Clamp(m_Hp.Value / m_MaxHp.Value, 0f, 1f);
 
     /// <summary> Is the character alive </summary>
     public bool IsAlive             => m_Hp.Value > 0;
@@ -86,7 +89,7 @@ public class Life : NetworkBehaviour
     /// Apply damage to the character
     /// </summary>
     /// <param name="damage"> amount of damages </param>
-    public int Hit(int damage, bool ignoreRes = false)
+    public int Hit(int damage, ulong casterId, string source, ESpellCategory spellCategory, bool ignoreRes = false)
     {
         // only server can apply damages
         if (! IsServer || ! IsAlive)
@@ -95,9 +98,6 @@ public class Life : NetworkBehaviour
         if (m_Controller != null && m_Controller.StateHandler.IsInvulnerable)
             return 0;
 
-        // calculate damages after resistance
-        damage = ignoreRes ? damage : m_Controller.StateHandler.ApplyResistance(damage);
-
         // check provided value
         if (damage < 0)
         {
@@ -105,14 +105,25 @@ public class Life : NetworkBehaviour
             return 0;
         }
 
-        // calculate damages after shield
-        damage = HitShield(damage);
+        // calculate damages after resistance
+        damage = ignoreRes ? damage : m_Controller.StateHandler.ApplyResistance(damage);
 
-        if (damage == 0)
+        // check provided value
+        if (damage <= 0)
+            return 0;
+
+        if (source.Contains("OnHit"))
+            Debug.LogWarning("ONHIT SOURCE DETECTED");
+
+        GameAnalyticsManager.Instance.OnSpellHit(casterId, m_Controller.PlayerId, source, damage, EHitType.Damage, spellCategory);
+
+        // calculate damages after shield
+        var damages = HitShield(damage);
+        if (damages == 0)
             return damage;
 
         // apply damages (after shield)
-        m_Hp.Value -= damage;
+        m_Hp.Value -= damages;
 
         if (m_Hp.Value <= 0)
         {
@@ -126,7 +137,7 @@ public class Life : NetworkBehaviour
     /// Apply healing to the character
     /// </summary>
     /// <param name="heal"></param>
-    public int Heal(int heal)
+    public int Heal(int heal, ulong casterId, string source, ESpellCategory spellCategory)
     {
         // only server can apply heals
         if (!IsServer)
@@ -139,21 +150,26 @@ public class Life : NetworkBehaviour
             return 0;
         }
 
+        if (heal == 0)
+            return 0;
+
         // apply heals
         if (m_Hp.Value + heal > m_MaxHp.Value)
-            m_Hp.Value = m_MaxHp.Value;
-        else
-            m_Hp.Value += heal;
+            heal = m_MaxHp.Value - m_Hp.Value;
+
+        m_Hp.Value += heal;
+        GameAnalyticsManager.Instance.OnSpellHit(casterId, m_Controller.PlayerId, source, heal, EHitType.Heal, spellCategory);
 
         return heal;
     }
 
-    public int AddShield(int shield)
+    public int AddShield(int shield, ulong casterId, string source, ESpellCategory spellCategory)
     {
         if (shield <= 0)
             return 0;
 
         m_Shield += shield;
+        GameAnalyticsManager.Instance.OnSpellHit(casterId, m_Controller.PlayerId, source, shield, EHitType.Shield, spellCategory);
 
         RecalculateShield();
 

@@ -30,7 +30,11 @@ namespace Game.AI.BehaviorTrees
                 }),
 
                 // ULTIMATE
-                new TaskAttack(m_Controller, allowedSpellCategories: new List<ESpellCategory> { ESpellCategory.Ultimate }),
+                new TaskAttack(m_Controller, allowedSpellCategories: new List<ESpellTypeCategory> { ESpellTypeCategory.Ultimate }),
+                
+                // EXTRA SPELLS
+                new TaskUseSpell(m_Controller, ESpell.ExtraClaws),
+                new TaskUseSpell(m_Controller, ESpell.Crosslice, delay: 5f),
 
                 // MOVEMENT : dodge enemy zone spells
                 new Sequence(new List<Node> {

@@ -16,12 +16,16 @@ namespace Game.Spells
 
         #region Init & End
 
-        public override void Initialize(ulong clientId, Vector3 target, string spellName, int level)
+        public override void Initialize(ulong clientId, Vector3 target, string spellName, int level, string parent)
         {
-            base.Initialize(clientId, target, spellName, level);
+            base.Initialize(clientId, target, spellName, level, parent);
 
             m_Timer = m_SpellData.Duration;
             m_OriginalPosition = m_Controller.transform.position;
+
+            // if character is not in his area during cast (can happen for some special animations) get center of his area as original position
+            if (!ArenaManager.IsInAreaBounds(m_OriginalPosition.x, m_Controller.Team, false))
+                m_OriginalPosition = new Vector3(ArenaManager.GetTargettableArea(m_Controller.Team, false).transform.position.x, 0f, 0f);
 
             // hide character
             m_Controller.GFXHandler.HideCharacter(true);

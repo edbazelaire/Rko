@@ -78,7 +78,7 @@ namespace Game.Character
                     continue;
 
                 // check that spell can proc counters
-                if (! counter.SpellData.DamageTypeActivation.Contains(spell.SpellData.DamageType))
+                if (! counter.SpellData.DamageTypeActivation.Contains(spell.SpellData.SpellCategory))
                     continue;
 
                 // try to proc it, return true if successfull
@@ -95,7 +95,7 @@ namespace Game.Character
         /// </summary>
         /// <param name="spell"></param>
         /// <returns></returns>
-        public bool CheckCounters(int damages, Controller caster, EDamageType damageType)
+        public bool CheckCounters(int damages, Controller caster, ESpellCategory spellCategory)
         {
             // check has counters
             if (m_Counters.Count == 0)
@@ -113,11 +113,11 @@ namespace Game.Character
                     continue;
 
                 // check that spell can proc counters
-                if (! counter.SpellData.DamageTypeActivation.Contains(damageType))
+                if (! counter.SpellData.DamageTypeActivation.Contains(spellCategory))
                     continue;
 
                 // try to proc it, return true if successfull
-                if (counter.ProcCounter(damages, caster, damageType) && counter.SpellData.IsDestroyingSpell)
+                if (counter.ProcCounter(damages, caster, spellCategory) && counter.SpellData.IsDestroyingSpell)
                     return true;
             }
 
