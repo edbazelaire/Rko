@@ -82,6 +82,9 @@ namespace Data
                 return;
             }
 
+            // set parent as this for sub-spell
+            SubSpellData.SetParent(Parent);
+
             // recalculate target depending on spell type
             if (recalculateTarget)
                 CalculateTarget(ref target, clientId);
@@ -327,7 +330,9 @@ namespace Data
         public override void SetLevel(int level)
         {
             if (SubSpellData != null)
+            {
                 SubSpellData = SubSpellData.Clone(level);
+            }
 
             base.SetLevel(level);
         }

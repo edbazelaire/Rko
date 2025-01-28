@@ -20,7 +20,7 @@ MonoBehaviour:
   m_Ultimate: Howling
   Size: 1.75
   BaseSpeed: 0.5
-  BaseHealth: 1250
+  BaseHealth: 1850
   MaxEnergy: 100
   BaseEnergy: 0
   IsStructure: 0
@@ -29,11 +29,16 @@ MonoBehaviour:
   - StateEffectProperty: 8
     BaseValue: 0.1
     BonusValue: 0
-    ScalingFactor: 0.1
+    ScalingFactor: 0.12
     StateEffectStackFactors: []
   - StateEffectProperty: 3
     BaseValue: 0.1
     BonusValue: 0
     ScalingFactor: 0.1
+    StateEffectStackFactors: []
+  - StateEffectProperty: 5
+    BaseValue: 10
+    BonusValue: 0
+    ScalingFactor: 0.15
     StateEffectStackFactors: []
   m_SpecialPowers: []

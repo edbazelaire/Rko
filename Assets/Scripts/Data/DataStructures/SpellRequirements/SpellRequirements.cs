@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Tools;
@@ -45,6 +46,7 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
         #endregion
 
 
+
         #region Checkers
 
         /// <summary>
@@ -52,11 +54,11 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
         /// </summary>
         /// <param name="targetController"></param>
         /// <returns></returns>
-        public bool CheckRequirement(Controller targetController)
+        public bool CheckRequirement(Controller caster)
         {
             foreach (var requirement in Requirements)
             {
-                if (! requirement.CheckRequirement(targetController))
+                if (! requirement.CheckRequirement(requirement.CalculateTarget(caster)))
                     return false;
             }
 
@@ -68,11 +70,11 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
         /// </summary>
         /// <param name="targetController"></param>
         /// <returns></returns>
-        public bool TryApplyRequirements(Controller targetController)
+        public bool TryApplyRequirements(Controller caster)
         {
             foreach (var requirement in Requirements)
             {
-                if (!requirement.TryApplyRequirements(targetController))
+                if (!requirement.TryApplyRequirements(requirement.CalculateTarget(caster)))
                     return false;
             }
 

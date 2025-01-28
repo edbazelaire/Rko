@@ -459,12 +459,43 @@ namespace Tools
             ConsoleUI.Log(text);
         }
 
+
+        #region Inventory
+
         [Command]
         public void Babylon()
         {
-            InventoryManager.AddCollectable(ECurrency.Golds, 9999999);
-            InventoryManager.AddCollectable(ECurrency.Gems, 9999999);
+            InventoryManager.UpdateCurrency(ECurrency.Golds, 9999999, "DebugTool");
+            InventoryManager.UpdateCurrency(ECurrency.Gems, 9999999, "DebugTool");
+            InventoryManager.UpdateCurrency(ECurrency.TotalXp, 9999999, "DebugTool");
         }
+
+        [Command]
+        public void Xp100()
+        {
+            InventoryManager.UpdateCurrency(ECurrency.TotalXp, 100, "DebugTool");
+        }
+
+        [Command]
+        public void Xp1000()
+        {
+            InventoryManager.UpdateCurrency(ECurrency.Xp, 1000, "DebugTool");
+        }
+
+        [Command]
+        public void Xp10000()
+        {
+            InventoryManager.UpdateCurrency(ECurrency.Xp, 10000, "DebugTool");
+        }
+
+        [Command]
+        public void Xp100000()
+        {
+            InventoryManager.UpdateCurrency(ECurrency.Xp, 100000, "DebugTool");
+        }
+
+        #endregion
+
 
         #region Debug Achievements
 
@@ -475,6 +506,7 @@ namespace Tools
         }
 
         #endregion
+
 
         #region Debug Achivement Rewards
 
@@ -562,6 +594,8 @@ namespace Tools
         #endregion
 
 
+        #region Errors
+
         [Command]
         public void DisplayErrors()
         {
@@ -573,8 +607,8 @@ namespace Tools
 
             foreach (Error error in ErrorHandler.Errors)
             {
-                ConsoleUI.Log(error.Message); 
-            } 
+                ConsoleUI.Log(error.Message);
+            }
         }
 
         [Command]
@@ -600,6 +634,10 @@ namespace Tools
         {
             ConsoleUI.Log(InventoryCloudData.Instance.ToString());
         }
+
+
+        #endregion
+
 
         #endregion
     }

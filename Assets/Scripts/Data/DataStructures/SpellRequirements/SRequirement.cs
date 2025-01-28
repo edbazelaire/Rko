@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Enums;
+using Game;
+using System;
+using Tools;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,9 +12,11 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
     {
         #region Members
 
-        protected int m_Level;
+        [SerializeField] protected ESpellTarget m_SpellTarget;
+        protected int                           m_Level;
 
-        public int Level            => m_Level;
+        public ESpellTarget     SpellTarget         => m_SpellTarget;
+        public int              Level               => m_Level;
 
         #endregion
 
@@ -26,6 +31,28 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
         #endregion
 
 
+        #region Target
+
+        public Controller CalculateTarget(Controller caster)
+        {
+            switch (m_SpellTarget)
+            {
+                case ESpellTarget.Self:
+                    return caster;
+
+                case ESpellTarget.None:
+                case ESpellTarget.FirstEnemy:
+                    return GameManager.Instance.GetFirstEnemy(caster.Team);
+
+                default: 
+                    ErrorHandler.Error("SRequirement.CalculateTarget() - Unhandled case : " +  m_SpellTarget);
+                    return null;
+            }
+        }
+
+        #endregion
+
+
         #region Checkers
 
         /// <summary>
@@ -33,7 +60,7 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
         /// </summary>
         /// <param name="targetController"></param>
         /// <returns></returns>
-        public virtual bool CheckRequirement(Controller targetController)
+        public virtual bool CheckRequirement(Controller caster)
         {
             return true;
         }

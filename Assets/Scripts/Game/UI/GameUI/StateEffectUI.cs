@@ -1,4 +1,5 @@
 ﻿using Enums;
+using Game.Spells;
 using TMPro;
 using Tools;
 using UnityEngine;
@@ -38,10 +39,9 @@ namespace Game.UI
             m_StateEffectName = stateEffect;
 
             // Setup icon (if found)
-            Sprite icon = AssetLoader.LoadStateEffectIcon(stateEffect);
-            if (icon != null)
-                m_Icon.sprite = icon;
+            ReloadIcon(stateEffect);
 
+            // setup stacks and duration
             Refresh(duration, stacks);
         }
 
@@ -78,6 +78,13 @@ namespace Game.UI
 
             if (duration <= 0)
                 m_TimerFill.fillAmount = 0;
+        }
+
+        public void ReloadIcon(string iconName)
+        {
+            Sprite icon = AssetLoader.LoadStateEffectIcon(iconName);
+            if (icon != null)
+                m_Icon.sprite = icon;
         }
 
         public void SetIsHolding(bool isHolding)

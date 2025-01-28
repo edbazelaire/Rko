@@ -11,9 +11,13 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
 
         const string UPGRADE_FAILED_ANIMATION = "ChestShake";
 
+        [SerializeField] AudioClip m_BaseSoundFX;
+        [SerializeField] AudioClip m_OpenSoundFX;
+        [SerializeField] AudioClip m_UpgradeSoundFX;
+
         GameObject m_OnClickEffects;
         GameObject m_UpgradeEffects;
-        GameObject m_LocatedClickEffect;
+        
 
         #endregion
 
@@ -52,6 +56,7 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
         public override void ActivateIdle(bool withAura = false, bool withSound = false)
         {
             m_Animator.Play(IDLE_ANIMATION);
+            SoundFXManager.PlaySoundFXClip(m_BaseSoundFX, transform);
             ActivateAura(withAura);
         }
 
@@ -111,6 +116,8 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
         {
             var duration = 1f;
 
+            SoundFXManager.PlayOnce(m_UpgradeSoundFX);
+
             m_UpgradeEffects.SetActive(true);
 
             while (duration > 0f)
@@ -127,8 +134,6 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
 
         #region Open Effect
 
-
-
         public override IEnumerator PlayOpenAnimation()
         {
             if (m_AudioSource != null)
@@ -140,7 +145,7 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
 
             m_SpriteRenderer.enabled = false;
 
-            SoundFXManager.PlayOnce(SoundFXManager.OpenOrbSoundFX);
+            SoundFXManager.PlayOnce(m_OpenSoundFX);
 
             yield return new WaitForSeconds(0.5f);
 

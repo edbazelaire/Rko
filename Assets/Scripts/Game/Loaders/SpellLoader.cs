@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
+using Unity.Networking.Transport.Error;
 using UnityEngine;
 
 namespace Game.Loaders
@@ -534,6 +535,18 @@ namespace Game.Loaders
             return GetRuneData(rune.ToString(), level, destroy);
         }
 
+        #region State Effects
+
+        #endregion
+
+        #region Runes
+
+        public static bool PowerUpExists(string powerUpName, bool throwError = false)
+        {
+            return SRunePower.TrySplitPowerUpName(powerUpName, out string runeName, out ERuneActivation runeActivation, throwError: throwError);
+        }
+
+        #endregion
         /// <summary>
         /// 
         /// </summary>
@@ -642,6 +655,12 @@ namespace Game.Loaders
             return runes;
         }
 
+        /// <summary>
+        /// Get a power up from string formated name "RuneName - RuneActivation"
+        /// </summary>
+        /// <param name="powerUpName"></param>
+        /// <param name="level"></param>
+        /// <returns></returns>
         public static SRunePower GetPowerUp(string powerUpName, int level = 1)
         {
             if (! SRunePower.TrySplitPowerUpName(powerUpName, out string runeName, out ERuneActivation runeActivation, throwError: true))

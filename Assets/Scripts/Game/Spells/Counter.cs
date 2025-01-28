@@ -43,6 +43,9 @@ namespace Game.Spells
             m_CounterTimer  = m_SpellData.Duration;
             m_Shield        = m_SpellData.Shield;
 
+            if (m_SpellData.OnCounterProc != null)
+                m_SpellData.OnCounterProc.SetParent(m_SpellData.Parent);
+
             // apply self state effects
             ApplyAllyStateEffects(m_Controller);
 
@@ -181,6 +184,10 @@ namespace Game.Spells
 
                 // Recast the spell to the enemy
                 case ECounterType.Reflect:
+                    // set reflection parent
+                    enemySpell.SpellData.SetParent(m_SpellData.Parent);
+
+                    // if enemy spell is sub-spell of a multiprojectile spell : only cast one instance of the spell
                     if (enemySpell.SpellData.SpellType == ESpellType.MultiProjectiles)
                     {
                         ((MultiProjectilesData)enemySpell.SpellData).CastOneProjectile(OwnerClientId, targetPosition, transform.position);

@@ -15,17 +15,22 @@ MonoBehaviour:
   m_Description: Heal {0} hp every {1} seconds for {2} seconds
   m_DescriptionVariables: 0e0000000c00000001000000
   m_StateEffectType: 0
+  m_IsDisplayed: 1
   m_VisualEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 0
   m_DefaultState: 0
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
   m_Priority: 0
   m_Duration: 5
   m_IsInstantanious: 0
   m_MaxStacks: 1
   m_StackDecay: -1
+  m_Energy: 0
+  m_BonusStats: []
   m_SpeedBonus: 0
   m_CastSpeed: 0
   m_AttackSpeed: 0
@@ -37,6 +42,8 @@ MonoBehaviour:
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
   m_BonusLifeSteal: 0
+  m_BonusHeal: 0
+  m_BonusHealPerc: 0
   m_BonusBurnDamages: 0
   m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
@@ -45,6 +52,7 @@ MonoBehaviour:
   - StateEffectProperty: 14
     ScalingFactor: 0.1
   m_StateEffectScalingStacks: []
+  m_IsTrueDamages: 0
   m_Damages: 0
   m_EndDamages: 0
   m_Heal: 0
@@ -52,5 +60,7 @@ MonoBehaviour:
   m_LifeSteal: 0
   m_Tick: 1
   m_TickDamages: 0
-  m_TickHeal: 3
+  m_TickHeal: 5
   m_TickShield: 0
+  m_TickEnergy: 0
+  m_TickSpellRequirements: []

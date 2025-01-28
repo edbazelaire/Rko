@@ -153,7 +153,7 @@ namespace Game.Character
         }
 
         [ClientRpc]
-        public void CallSpellEventClientRPC(ESpellEvent spellEvent, string stateEffectName)
+        public void CallSpellEventClientRPC(ESpellEvent spellEvent, string stateEffectName, ulong casterId)
         {
             ErrorHandler.Log(stateEffectName + " " + spellEvent, ELogTag.StateEffectGFX);
 
@@ -169,7 +169,7 @@ namespace Game.Character
                 if (spawnPrefab.GFXLifetime.StartSpellPart != spellEvent)
                     continue;
 
-                spawnPrefab.Spawn(null, null, null, stateEffectName, m_Controller, transform.position);
+                spawnPrefab.Spawn(GameManager.Instance.GetPlayer(casterId), null, null, stateEffectName, m_Controller, transform.position);
             }
         }
 

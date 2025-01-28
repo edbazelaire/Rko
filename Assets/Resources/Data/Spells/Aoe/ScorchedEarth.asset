@@ -66,8 +66,8 @@ MonoBehaviour:
       Persistance: 1.5
     Size: 0
     OrderInLayer: 0
-    SpawnTarget: 2
-    SpawnLocation: 0
+    SpawnTarget: 4
+    SpawnLocation: 2
     BodyPart: 0
     IsFollowing: 0
     Offset: {x: 0, y: 0.5}
@@ -94,6 +94,7 @@ MonoBehaviour:
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 25
+  m_ExecutionDamages: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

@@ -24,6 +24,25 @@ MonoBehaviour:
   Linked: 1
   Graphics: {fileID: 2551266922917926074, guid: 03542376fa4f05e48b74725bdc40c3e9, type: 3}
   SpellEventActions:
+  - Prefab: {fileID: 1923825553450198, guid: 8dfef51ff3cf58147885052c6aed39cb, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 100
+      m_EndSpellPart: 300
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 2
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 0
+    BodyPart: 7
+    IsFollowing: 1
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
   - Prefab: {fileID: 1477782971762948, guid: 436de1d62436f8a47a696e5bdd7e6d69, type: 3}
     MaterialEffect: {fileID: 0}
     SoundFX: []
@@ -46,9 +65,9 @@ MonoBehaviour:
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
-  CastSoundFX: {fileID: 0}
+  CastSoundFX: {fileID: 8300000, guid: c54db205c3bae914c83d40a73826c616, type: 3}
   PermanantSoundFX: {fileID: 0}
-  OnHitSoundFX: {fileID: 0}
+  OnHitSoundFX: {fileID: 8300000, guid: 11390b4b43824e54e9eaada95422a366, type: 3}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 6
   m_ClampTargetPos: 1
