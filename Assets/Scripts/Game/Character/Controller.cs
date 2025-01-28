@@ -1,5 +1,4 @@
 using AI;
-using Assets.Scripts.Data.PowerUp;
 using Data;
 using Data.DataStructures;
 using Enums;
@@ -7,7 +6,6 @@ using Game;
 using Game.Character;
 using Game.Loaders;
 using Managers;
-using NUnit.Framework;
 using Save;
 using System;
 using System.Collections.Generic;

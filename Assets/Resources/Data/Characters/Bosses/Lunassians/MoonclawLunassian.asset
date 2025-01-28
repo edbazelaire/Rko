@@ -20,14 +20,14 @@ MonoBehaviour:
   m_Ultimate: MoonSilence
   Size: 1.9
   BaseSpeed: 0.5
-  BaseHealth: 1250
+  BaseHealth: 1700
   MaxEnergy: 100
   BaseEnergy: 10
   IsStructure: 0
   HealthScaleFactor: 0.12
   CharacterStatScaling:
   - StateEffectProperty: 11
-    BaseValue: 20
+    BaseValue: 30
     BonusValue: 0
     ScalingFactor: 0.1
     StateEffectStackFactors:
@@ -38,6 +38,11 @@ MonoBehaviour:
   - StateEffectProperty: 3
     BaseValue: 0.3
     BonusValue: 0
-    ScalingFactor: 0.2
+    ScalingFactor: 0.05
+    StateEffectStackFactors: []
+  - StateEffectProperty: 5
+    BaseValue: 10
+    BonusValue: 0
+    ScalingFactor: 0.15
     StateEffectStackFactors: []
   m_SpecialPowers: []

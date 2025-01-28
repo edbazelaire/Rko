@@ -281,12 +281,6 @@ namespace Game.Spells
             if (lifeSteal > 0 && finalDamages > 0)
             {
                 m_Controller.Life.Heal((int)Mathf.Round(lifeSteal * finalDamages), m_Controller.PlayerId, m_SpellData.Name, m_SpellData.SpellCategory);
-                
-                if (m_Controller.ClientAnalytics != null)
-                { 
-                    m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Heal, (int)Mathf.Round(lifeSteal * finalDamages));
-                    m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.LifeSteal, (int)Mathf.Round(lifeSteal * finalDamages));
-                }
             }
 
             // apply state effects specifics to enemies

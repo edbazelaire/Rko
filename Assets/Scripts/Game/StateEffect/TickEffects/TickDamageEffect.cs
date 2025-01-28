@@ -22,7 +22,7 @@ namespace Game.Spells
 
         private float m_TickTimer;
 
-        protected float FinalTickLifeSteal => Mathf.Max(0f, m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusTickLifeSteal, m_Controller) - 1);
+        protected float FinalTickLifeSteal => m_LifeSteal + Mathf.Max(0f, m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusTickLifeSteal, m_Controller) - 1);
 
         #endregion
 
@@ -80,7 +80,7 @@ namespace Game.Spells
 
             // ask state handler to fire the "OnHit" event to clients GFX
             StateEffectEvent?.Invoke(StateEffectName, EStateEffectEvent.OnTick, m_Controller.PlayerId, m_Caster.PlayerId);
-            m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnHit, StateEffectName);
+            m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnHit, StateEffectName, m_Caster.PlayerId);
 
             // CHECK : DAMAGES
             int damages = GetInt(EStateEffectProperty.TickDamages);

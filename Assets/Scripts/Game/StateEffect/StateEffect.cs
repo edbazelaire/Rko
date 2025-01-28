@@ -89,7 +89,7 @@ namespace Game.Spells
         [SerializeField] protected      float                       m_SpeedBonus            = 0f;
         [SerializeField] protected      float                       m_CastSpeed             = 0f;
         [SerializeField] protected      float                       m_AttackSpeed           = 0f;
-        [SerializeField] protected      int                         m_CooldownReduction     = 0;
+        [SerializeField] protected      float                       m_CooldownReduction     = 0f;
         [SerializeField] protected      float                       m_CooldownReductionPerc = 0f;
 
         [Header("Resistance & Shields")]
@@ -249,13 +249,15 @@ namespace Game.Spells
 
             ActivateHoldingStateEffects(true);
 
+            ApplyCooldownReduction();
+
             ApplySubStateEffect();
 
             ApplyOnStartStateEffects();
 
             // call state effect 
             StateEffectEvent?.Invoke(StateEffectName, EStateEffectEvent.OnApplied, m_Controller.PlayerId, m_Caster.PlayerId);
-            m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnSpawn, StateEffectName);
+            m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnSpawn, StateEffectName, m_Caster.PlayerId);
 
             // if instantatious effect : end after start
             if (m_IsInstantanious)
@@ -324,7 +326,7 @@ namespace Game.Spells
 
             UnRegisterListeners();
 
-            m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnEnd, StateEffectName);
+            m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnEnd, StateEffectName, m_Caster.PlayerId);
         }
 
         #endregion
@@ -448,6 +450,14 @@ namespace Game.Spells
                 m_Controller.StateHandler.AddHoldingStateEffects(m_HoldingStateEffects);
             else
                 m_Controller.StateHandler.RemoveHoldingStateEffects(m_HoldingStateEffects);
+        }
+
+        protected virtual void ApplyCooldownReduction()
+        {
+            if (m_CooldownReduction == 0)
+                return;
+
+            m_Controller.SpellHandler.ReduceCooldowns(m_CooldownReduction);
         }
 
         protected virtual void ApplySubStateEffect()

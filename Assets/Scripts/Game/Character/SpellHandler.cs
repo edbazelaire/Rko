@@ -84,6 +84,7 @@ namespace Game.Character
         // EVENTS
         public Action<string, ESpellEvent> OnPreSpellEvent;
         public Action<ESpell, ESpellSelectionState> SpellSelectionEvent;
+        public Action<ESpell, float> OnCooldownEvent;
 
         #endregion
 
@@ -531,7 +532,7 @@ namespace Game.Character
             // AT LEAST ONE : return SUCCESS
             foreach (SpellRequirements spellRequirement in spellData.SpellRequirements)
             {
-                if (spellRequirement.CheckRequirement(spellData.IsAllyTarget ? m_Controller : GameManager.Instance.GetFirstEnemy(m_Controller.Team)))
+                if (spellRequirement.CheckRequirement(m_Controller))
                     return true;
             }
 
@@ -545,8 +546,7 @@ namespace Game.Character
             
             foreach (SpellRequirements spellRequirement in spellData.SpellRequirements)
             {
-                var controller = spellData.IsAllyTarget ? m_Controller : GameManager.Instance.GetFirstEnemy(m_Controller.Team);
-                if (! spellRequirement.TryApplyRequirements(controller))
+                if (! spellRequirement.TryApplyRequirements(m_Controller))
                     return false;
             }
 
@@ -763,7 +763,7 @@ namespace Game.Character
         #endregion
 
 
-        #region Private Manipulators
+        #region Updates
 
         /// <summary>
         /// Update cooldowns
@@ -773,12 +773,9 @@ namespace Game.Character
             if (m_GlobalCooldown.Value > 0f)
                 m_GlobalCooldown.Value -= Time.deltaTime;
 
-            foreach (ESpell spell in Spells)
+            for (int i = 0; i < m_Cooldowns.Count; i++)
             {
-                if (GetCooldown(spell) <= 0f)
-                    continue;
-
-                SetCooldown(spell, GetCooldown(spell) - Time.deltaTime);
+                m_Cooldowns[i] -= Time.deltaTime;
             }
         }
 
@@ -830,6 +827,23 @@ namespace Game.Character
             }
             
             return m_Cooldowns[index];
+        }
+
+        public void ReduceCooldowns(float cooldownReduction)
+        {
+            Debug.Log("Reduce Cooldowns by : " + cooldownReduction);
+
+            for (int i = 0; i < m_Cooldowns.Count; i++)
+            {
+                if (m_Cooldowns[i] <= 0)
+                    continue;
+
+                // update cooldown server value
+                m_Cooldowns[i] = Mathf.Max(0, m_Cooldowns[i] - cooldownReduction);
+
+                // fire event that cooldown has been updated
+                OnCooldownEvent?.Invoke(Spells[i], m_Cooldowns[i]);
+            }
         }
 
         public void ResetCooldowns()

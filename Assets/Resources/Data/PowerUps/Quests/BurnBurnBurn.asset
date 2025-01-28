@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e83ee2023ecc7e04480ae9c612ad7749, type: 3}
+  m_Name: BurnBurnBurn
+  m_EditorClassIdentifier: 
+  Rarety: 0
+  m_Description: 
+  m_DescriptionVariables: []
+  Description: 
+  m_SpellElements: 
+  m_MinorPower:
+    Description: 
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: _QuestBurnBurnBurn - Minor
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 3
+      StateEffectName: Burn
+      NStateEffectActivationThreshold: 10
+      Delay: 0
+      Duration: 0
+      NActivations: 1
+      Cooldown: 0
+    m_BonusStats: []
+  m_MajorPower:
+    Description: 
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: _QuestBurnBurnBurn - Major
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 3
+      StateEffectName: Burn
+      NStateEffectActivationThreshold: 8
+      Delay: 0
+      Duration: 0
+      NActivations: 1
+      Cooldown: 0
+    m_BonusStats: []
+  m_PrimalPower:
+    Description: 'Quest : Consume [TriggerEffect.0] [Burn] effect\n\nReward : Reduce
+      cooldowns by 1 each time you consume a [Burn] effect'
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: _QuestBurnBurnBurn - Primal
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 3
+      StateEffectName: Burn
+      NStateEffectActivationThreshold: 5
+      Delay: 0
+      Duration: 0
+      NActivations: 1
+      Cooldown: 0
+    m_BonusStats: []
+  m_TriggerEffects: []

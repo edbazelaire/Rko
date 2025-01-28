@@ -1,5 +1,6 @@
 ﻿using Enums;
 using Game.Loaders;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -82,8 +83,9 @@ namespace Game.UI
             m_StateDisplayer = Finder.Find(gameObject, c_StateDisplayer);
             m_StateEffectsUI = new Dictionary<string, StateEffectUI>();
             UIHelper.CleanContent(m_StateDisplayer);
-            controller.StateHandler.OnStateEvent += OnStateEvent;
-            controller.StateHandler.HoldingStateEffects.OnListChanged += OnHoldingStateEffectsChanged;
+            controller.StateHandler.OnStateEvent                        += OnStateEvent;
+            controller.StateHandler.HoldingStateEffects.OnListChanged   += OnHoldingStateEffectsChanged;
+            controller.TriggerEffectHandler.QuestValueChanged           += OnQuestValueChanged;
         }
 
         private void OnDestroy()
@@ -97,6 +99,7 @@ namespace Game.UI
             m_Controller.EnergyHandler.MaxEnergy.OnValueChanged         -= m_EnergyBar.OnMaxValueChanged;
             m_Controller.EnergyHandler.Energy.OnValueChanged            -= m_EnergyBar.OnValueChanged;
             m_Controller.StateHandler.OnStateEvent                      -= OnStateEvent;
+            m_Controller.TriggerEffectHandler.QuestValueChanged         -= OnQuestValueChanged;
         }
 
         #endregion
@@ -148,7 +151,7 @@ namespace Game.UI
         void RemoveState(string state)
         {
             // if not in existing state, create it and add it to the list
-            if (! m_StateEffectsUI.ContainsKey(state))
+            if (!m_StateEffectsUI.ContainsKey(state))
             {
                 ErrorHandler.Error($"Unable to find remvoed state {state} in list");
                 return;
@@ -157,6 +160,36 @@ namespace Game.UI
             // destroy state and remove from list
             Destroy(m_StateEffectsUI[state].gameObject);
             m_StateEffectsUI.Remove(state);
+        }
+
+        #endregion
+
+
+        #region Quest Display
+
+        void OnQuestValueChanged(string effectName, int counter)
+        {
+            string effectId = TextHandler.TrimQuestEffectName(effectName, isActivated: true);
+            effectName = TextHandler.TrimQuestEffectName(effectName, isActivated: counter == 0);
+
+            // if already in existing state, refresh it
+            if (m_StateEffectsUI.ContainsKey(effectId))
+            {
+                // initialize the state (or refresh it)
+                m_StateEffectsUI[effectId].Refresh(-1, counter);
+
+                if (counter == 0)
+                    m_StateEffectsUI[effectId].ReloadIcon(effectName);
+
+                return;
+            }
+
+            // instantiate new StateEffectUI
+            GameObject stateEffectUI = Instantiate(m_TemplateStateEffect, m_StateDisplayer.transform);
+            m_StateEffectsUI.Add(effectId, stateEffectUI.GetComponent<StateEffectUI>());
+
+            // initialize the state (or refresh it)
+            m_StateEffectsUI[effectId].Initialize(effectName, counter, -1);
         }
 
         #endregion

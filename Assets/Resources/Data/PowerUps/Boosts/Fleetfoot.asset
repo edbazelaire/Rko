@@ -29,6 +29,7 @@ MonoBehaviour:
       BaseValue: 0
       BonusValue: 0.15
       ScalingFactor: 0
+      StateEffectStackFactors: []
   m_MajorPower:
     Description: Increase your speed by {0}
     m_DescriptionVariables:
@@ -41,6 +42,7 @@ MonoBehaviour:
       BaseValue: 0
       BonusValue: 0.3
       ScalingFactor: 0
+      StateEffectStackFactors: []
   m_PrimalPower:
     Description: Increase your speed by {0}
     m_DescriptionVariables:
@@ -53,4 +55,5 @@ MonoBehaviour:
       BaseValue: 0
       BonusValue: 0.5
       ScalingFactor: 0
+      StateEffectStackFactors: []
   m_BonusStats: []

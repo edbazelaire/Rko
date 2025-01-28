@@ -7,7 +7,6 @@ using System.Text;
 using Tools;
 using Unity.Services.CloudSave.Models;
 using Unity.VisualScripting;
-using UnityEngine;
 
 namespace Save
 {
@@ -385,7 +384,7 @@ namespace Save
         ///     - Each characters has 3 builds provided
         ///     - Each build has 4 different spells
         /// </summary>
-        void CheckCharactersBuilds()
+        void CheckAllCharactersBuilds()
         {
             Dictionary<ECharacter, SCharacterBuildData> buildsDictionary = m_Data[KEY_BUILDS] as Dictionary<ECharacter, SCharacterBuildData>;
 
@@ -400,64 +399,136 @@ namespace Save
             {
                 if (character == ECharacter.None)
                     continue;
-                
-                if (!buildsDictionary.ContainsKey(character))
-                {
-                    ErrorHandler.Warning("Character " + character + " is missing from the builds dictionary - adding it with only default builds");
-                    buildsDictionary[character] = new SCharacterBuildData(index: 0, builds: new ESpell[N_BUILDS][] { DEFAULT_BUILD, DEFAULT_BUILD, DEFAULT_BUILD });
-                }
 
-                // Check number of builds for each character
-                if (buildsDictionary[character].Builds.Length != N_BUILDS)
-                {
-                    ErrorHandler.Warning("Character " + character + " does not have exactly " + N_BUILDS + " builds provided => reseting to default");
-                    buildsDictionary[character] = new SCharacterBuildData(index: 0, builds: new ESpell[N_BUILDS][] { DEFAULT_BUILD, DEFAULT_BUILD, DEFAULT_BUILD });
-                }
-
-                // check number of runes
-                if (buildsDictionary[character].Runes == null || buildsDictionary[character].Runes.Length != N_BUILDS)
-                {
-                    ErrorHandler.Warning("Character " + character + " does not have exactly " + N_BUILDS + " runes provided => reseting to default");
-                    SCharacterBuildData characterData = buildsDictionary[character];
-                    DEFAULT_RUNES.CopyTo(characterData.Runes, 0);
-                    buildsDictionary[character] = characterData;
-                }
-
-                // Check each build for each character
-                for (int i = 0; i < buildsDictionary[character].Builds.Length; i++)
-                {
-                    ESpell[] build = buildsDictionary[character].Builds[i];
-
-                    bool hasError = false;
-
-                    // Check number of spells in each build
-                    if (build.Length != 4)
-                    {
-                        ErrorHandler.Error("Build " + i + " of Character " + character + "  has an incorrect number of spells (" + build.Length + ") - reseting to default data");
-                        hasError = true;
-                    }
-
-                    if (!hasError)
-                    {
-                        // Check for duplicated values within each build
-                        HashSet<ESpell> uniqueSpells = new HashSet<ESpell>();
-                        foreach (ESpell spell in build)
-                        {
-                            if (!uniqueSpells.Add(spell))
-                            {
-                                ErrorHandler.Error("Build " + i + " of Character " + character + "  has duplicated spell (" + spell + ") - reseting to default data");
-                                hasError = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (hasError)
-                        buildsDictionary[character].Builds[i] = DEFAULT_BUILD;
-                }
+                CheckCharacterBuild(character, ref buildsDictionary);
             }
 
             m_Data[KEY_BUILDS] = buildsDictionary;
+        }
+
+        /// <summary>
+        /// Check one character's build
+        ///     + Check CHARACTER  
+        ///         - character in dict keys
+        ///     + Check SPELLS 
+        ///         - correct number
+        ///         - spell existance
+        ///     + Check RUNES
+        ///         - correct number
+        ///         - rune existance
+        /// </summary>
+        /// <param name="character"></param>
+        /// <param name="buildsDictionary"></param>
+        void CheckCharacterBuild(ECharacter character, ref Dictionary<ECharacter, SCharacterBuildData> buildsDictionary)
+        {
+            // ======================================================================================
+            // CHARACTER
+            if (!buildsDictionary.ContainsKey(character))
+            {
+                ErrorHandler.Warning("Character " + character + " is missing from the builds dictionary - adding it with only default builds");
+                buildsDictionary[character] = new SCharacterBuildData(index: 0, builds: new ESpell[N_BUILDS][] { DEFAULT_BUILD, DEFAULT_BUILD, DEFAULT_BUILD });
+            }
+
+            // Check number of builds for each character
+            if (buildsDictionary[character].Builds.Length != N_BUILDS)
+            {
+                ErrorHandler.Warning("Character " + character + " does not have exactly " + N_BUILDS + " builds provided => reseting to default");
+                buildsDictionary[character] = new SCharacterBuildData(index: 0, builds: new ESpell[N_BUILDS][] { DEFAULT_BUILD, DEFAULT_BUILD, DEFAULT_BUILD });
+            }
+
+            // check number of runes
+            if (buildsDictionary[character].Runes == null || buildsDictionary[character].Runes.Length != N_BUILDS)
+            {
+                ErrorHandler.Warning("Character " + character + " does not have exactly " + N_BUILDS + " runes provided => reseting to default");
+                SCharacterBuildData characterData = buildsDictionary[character];
+                DEFAULT_RUNES.CopyTo(characterData.Runes, 0);
+                buildsDictionary[character] = characterData;
+            }
+
+            // ======================================================================================
+            // CHECK EACH BUILD (individually)
+            for (int buildIndex = 0; buildIndex < buildsDictionary[character].Builds.Length; buildIndex++)
+            {
+                buildsDictionary[character].Builds[buildIndex] = CheckCharacterBuildSpells(buildsDictionary[character].Builds[buildIndex], out string reason);
+                if (reason != "")
+                    ErrorHandler.Error("Build " + buildIndex + " of Character " + character + " : " + reason);
+
+                buildsDictionary[character].Runes[buildIndex] = CheckCharacterBuildRunes(buildsDictionary[character].Runes[buildIndex], out reason);
+                if (reason != "")
+                    ErrorHandler.Error("Build " + buildIndex + " of Character " + character + " : " + reason);
+            }
+        }
+
+        ESpell[] CheckCharacterBuildSpells(ESpell[] spells, out string reason)
+        {
+            reason = "";
+          
+            // Check number of spells in each build
+            if (spells.Length != 4)
+            {
+                reason = "bad length ("+ spells .Length + ") for number of spells in build (expected 4) - reseting with default build";
+                return DEFAULT_BUILD;
+            }
+
+            // Check for duplicated values within each build
+            HashSet<ESpell> uniqueSpells = new HashSet<ESpell>();
+            for (int i = 0; i < spells.Length; i++)
+            {
+                // do not raise error for duplicated None values
+                if (spells[i] == ESpell.None)
+                    continue;
+
+                // CHECK : spell exists
+                if (!Enum.IsDefined(typeof(ESpell), spells[i]))
+                {
+                    spells[i] = ESpell.None;
+                }
+
+                // CHECK : is unique
+                if (!uniqueSpells.Add(spells[i]))
+                {
+                    reason = "duplicated spell (" + spells[i] + ") - removing from build";
+                    spells[i] = ESpell.None;
+                }
+            }
+
+            return spells;
+        }
+
+        ERune[] CheckCharacterBuildRunes(ERune[] runes, out string reason)
+        {
+            reason = "";
+
+            // Check number of spells in each build
+            if (runes.Length != 3)
+            {
+                reason = "bad length ("+ runes .Length + ") for number of runes in build (expected 3) - reseting with default runes";
+                return DEFAULT_RUNES;
+            }
+
+            // Check for duplicated values within each build
+            HashSet<ERune> uniqueRunes = new HashSet<ERune>();
+            for (int i = 0; i < runes.Length; i++)
+            {
+                // do not raise error for duplicated None values
+                if (runes[i] == ERune.None)
+                    continue;
+
+                // CHECK : rune exists
+                if (! Enum.IsDefined(typeof(ERune), runes[i]))
+                {
+                    runes[i] = ERune.None;
+                }
+
+                // CHECK : is unique
+                if (!uniqueRunes.Add(runes[i]))
+                {
+                    reason = "duplicated rune (" + runes[i] + ") - removing from build";
+                    runes[i] = ERune.None;
+                }
+            }
+
+            return runes;
         }
 
         /// <summary>
@@ -491,7 +562,7 @@ namespace Save
             switch (key)
             {
                 case KEY_BUILDS:
-                    CheckCharactersBuilds();
+                    CheckAllCharactersBuilds();
                     break;
             }
         }
