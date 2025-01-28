@@ -137,7 +137,6 @@ namespace Data
         [Tooltip("Spell Casted when the counter procs"), MyBox.ConditionalField("CounterType", false, ECounterType.Proc)]
         public SpellData OnCounterProc;
 
-
         // ===================================================================================
         // Public Accessors
         public List<Enums.ESpellCategory>       DamageTypeActivation     => m_DamageTypeActivation;

@@ -6,8 +6,6 @@ using System.Linq;
 using Tools;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEngine.Rendering.DebugUI;
 
 namespace Assets.Scripts.Game
 {
@@ -38,6 +36,7 @@ namespace Assets.Scripts.Game
             foreach (EHitType hitType in Enum.GetValues(typeof(EHitType)))
             {
                 HitTypeValues[i] = new SHitTypeValue { HitType = hitType, Value = 0 };
+                i++;
             }
         }
 
@@ -47,7 +46,7 @@ namespace Assets.Scripts.Game
             var hitTypeIndex = Array.FindIndex(HitTypeValues, hit => hit.HitType == hitType);
             if (hitTypeIndex < 0)
             {
-                ErrorHandler.Error("Unable to find any HitTypeValue with HitType = " + hitType.ToString());
+                ErrorHandler.Error("("+SpellName+") : Unable to find any HitTypeValue with HitType = " + hitType.ToString());
                 return;    
             }
 
@@ -123,17 +122,17 @@ namespace Assets.Scripts.Game
                 InitializePlayerData(casterId);
 
             // Find or create data for the spell
-            var spellDataList = m_PlayersDataDamages[casterId];
-            var spellDataIndex = spellDataList.FindIndex(spellData => spellData.SpellName == spellName);
+            var spellDataIndex = m_PlayersDataDamages[casterId].FindIndex(spellData => spellData.SpellName == spellName);
+
             if (spellDataIndex >= 0)
             {
-                spellDataList[spellDataIndex].AddHit(qty, hitType);
+                m_PlayersDataDamages[casterId][spellDataIndex].AddHit(qty, hitType);
             }
             else
             {
                 var newSpellData = new SSpellHitTypeData(spellName);
                 newSpellData.AddHit(qty, hitType);
-                spellDataList.Add(newSpellData);
+                m_PlayersDataDamages[casterId].Add(newSpellData);
             }
 
             // Send data to damage displayer & damage client analytics
@@ -165,11 +164,8 @@ namespace Assets.Scripts.Game
 
         public void SendGameAnalytics()
         {
-            Debug.LogWarning("SENDING : End Game Analytics ");
-
             foreach (ulong playerId in m_PlayersDataDamages.Keys)
             {
-                Debug.Log("     + Player " + playerId + " : Sending " + m_PlayersDataDamages[playerId].Count + " data");
                 // Send the data to the player
                 List<SSpellHitTypeData> playerData = m_PlayersDataDamages[playerId];
                 SendPlayerDataClientRPC(playerData.ToArray(), playerId);
@@ -187,8 +183,6 @@ namespace Assets.Scripts.Game
             // Handle the data on the client side
             if (!NetworkManager.Singleton.IsClient)
                 return;
-
-            Debug.Log(" - CLIENT " + playerId + " : Received " + playerData.Length + " data");
 
             if (playerId != NetworkManager.LocalClientId)
                 return;

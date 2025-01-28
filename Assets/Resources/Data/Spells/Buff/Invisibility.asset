@@ -27,8 +27,8 @@ MonoBehaviour:
     - AudioClip: {fileID: 8300000, guid: 306a8a949c94ca448a2495d7c2fd7e40, type: 3}
       SoundDuration: 0
     GFXLifetime:
-      StartSpellPart: 1
-      EndSpellPart: 0
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
       Persistance: 1
@@ -37,13 +37,11 @@ MonoBehaviour:
     SpawnTarget: 1
     SpawnLocation: 2
     BodyPart: 0
-    IsFollowing: 1
+    IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -52,17 +50,28 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 4
-  LockTargetAt: 2
+  m_ClampTargetPos: 1
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
+  m_ExecutionDamages: 0
   m_Heal: 0
+  m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
   m_Duration: 0
-  Delay: 0.5
+  Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 3
     Value: 0.05
@@ -72,13 +81,16 @@ MonoBehaviour:
   AllyStateEffects:
   - StateEffect: 4
     Stacks: 1
+    BonusStacksPerLevel: 0
     OverridingProperties:
     - StateEffectProperty: 1
       Value: 3
+    - StateEffectProperty: 3
+      Value: 0.2
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 9
   IsCancellable: 1
   AnimationTimer: 0.3
-  m_Cooldown: 20
+  m_Cooldown: 25
   IsAttachedToTarget: 1

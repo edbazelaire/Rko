@@ -30,11 +30,11 @@ MonoBehaviour:
       Persistance: 0
     Size: 0
     OrderInLayer: 0
-    SpawnTarget: 0
+    SpawnTarget: 4
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 0
-    Offset: {x: 0, y: 0}
+    Offset: {x: 0, y: 0.5}
     Animation: 0
     SpellAnimation: 
     StateEffects: 
@@ -76,6 +76,7 @@ MonoBehaviour:
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 50
+  m_ExecutionDamages: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

@@ -36,7 +36,7 @@ namespace Assets.Scripts.Game
             else Destroy(gameObject);
         }
 
-        public void DisplayHit(ulong clientId, int damage, EHitType hitType, Enums.ESpellCategory damageType)
+        public void DisplayHit(ulong clientId, int damage, EHitType hitType, ESpellCategory damageType)
         {
             if (!m_HitQueues.ContainsKey(clientId))
             {
@@ -44,7 +44,7 @@ namespace Assets.Scripts.Game
             }
 
             // check if should be displayed
-            if (damageType == Enums.ESpellCategory.None || damageType == Enums.ESpellCategory.Tick)
+            if (damageType == ESpellCategory.None || (hitType == EHitType.Damage && damageType == ESpellCategory.Tick))
                 return;
 
             // Enqueue the hit data for the player

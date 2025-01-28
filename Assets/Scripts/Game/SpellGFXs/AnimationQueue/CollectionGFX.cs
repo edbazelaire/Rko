@@ -25,8 +25,8 @@ namespace Game.SpellGFXs
 
         // ================================================================================
         // Data
-        Vector3 m_BasePosition;
-        Controller m_Target;
+        protected Vector3 m_BasePosition;
+        protected Controller m_Target;
 
         #endregion
 

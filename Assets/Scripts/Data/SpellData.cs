@@ -439,12 +439,12 @@ namespace Data
             }
         }
 
-        public virtual void CalculateTarget(ref Vector3 target, ulong clientId) 
+        public virtual void CalculateTarget(ref Vector3 target, ulong casterId) 
         {
             if (!IsAutoTarget)
                 return;
 
-            Controller controller = GameManager.Instance.GetPlayer(clientId);
+            Controller controller = GameManager.Instance.GetPlayer(casterId);
             int direction = ArenaManager.GetAreaMovementDirection(controller.Team, IsEnemyTarget);
 
             switch (SpellTarget)
@@ -454,7 +454,7 @@ namespace Data
                     break;
 
                 case ESpellTarget.FirstAlly:
-                    target.x = GameManager.Instance.GetFirstAlly(controller.Team, clientId).transform.position.x;
+                    target.x = GameManager.Instance.GetFirstAlly(controller.Team, casterId).transform.position.x;
                     break;
 
                 case ESpellTarget.FirstEnemy:
@@ -497,7 +497,7 @@ namespace Data
 
             // CLAMP target in between available positions
             if (m_ClampTargetPos && SpellTarget != ESpellTarget.Self)
-                ClampTargetX(ref target, clientId);
+                ClampTargetX(ref target, casterId);
         }
 
         protected virtual void ClampTargetX(ref Vector3 target, ulong clientId) 

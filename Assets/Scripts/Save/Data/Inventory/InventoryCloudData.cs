@@ -273,7 +273,7 @@ namespace Save
             int index = GetCollectableIndex(collectable);
             if (index == -1)
             {
-                ErrorHandler.FatalError("Unable to find collectable " + collectable + " in collectables cloud data");
+                ErrorHandler.Error("Unable to find collectable " + collectable + " in collectables cloud data");
                 return default;
             }
 

@@ -293,7 +293,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
   randomSeed: 0
@@ -9992,6 +9992,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53396a3da1563184fbdcc4dce2b3a43d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_BaseSoundFX: {fileID: 8300000, guid: 035eb3b1298a8754a88123a28087e820, type: 3}
+  m_OpenSoundFX: {fileID: 8300000, guid: bfb3572dcdc45544db0b6cc3e9b69848, type: 3}
+  m_UpgradeSoundFX: {fileID: 8300000, guid: 23a9c82b77cdd0f4b9634bdc2b33d473, type: 3}
 --- !u!1 &2542328229235463359
 GameObject:
   m_ObjectHideFlags: 0
@@ -24669,7 +24672,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
   randomSeed: 0
@@ -34371,7 +34374,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 0
   randomSeed: 0

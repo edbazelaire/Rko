@@ -81,8 +81,8 @@ namespace Managers
             // Iterate through the List<string> and convert each element to FixedString32Bytes
             for (int i = 0; i < powerUps.Count; i++)
             {
-                // Convert each string to FixedString32Bytes
-                PowerUps[i] = new FixedString32Bytes(powerUps[i]);  // Automatically truncates if string is longer than 32 bytes
+                // Convert each string to FixedString128Bytes
+                PowerUps[i] = new FixedString128Bytes(powerUps[i]);  // Automatically truncates if string is longer than 32 bytes
             }
         }
 

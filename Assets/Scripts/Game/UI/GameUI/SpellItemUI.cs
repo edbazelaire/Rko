@@ -200,6 +200,7 @@ namespace Game.UI
             // listeners
             m_Owner.SpellHandler.SelectedSpellNet.OnValueChanged    += OnSpellSelected;
             m_Owner.SpellHandler.SpellSelectionEvent                += OnSpellSelectionStateChanged;
+            m_Owner.SpellHandler.OnCooldownEvent                    += OnCooldownChanged;
         }
 
         protected override void UnRegisterListeners()
@@ -208,6 +209,7 @@ namespace Game.UI
 
             m_Owner.SpellHandler.SelectedSpellNet.OnValueChanged    -= OnSpellSelected;
             m_Owner.SpellHandler.SpellSelectionEvent                -= OnSpellSelectionStateChanged;
+            m_Owner.SpellHandler.OnCooldownEvent                    -= OnCooldownChanged;
         }
 
         /// <summary>
@@ -264,6 +266,19 @@ namespace Game.UI
                     ErrorHandler.Warning("Unhandled case : " + spellSelectionState);
                     break;
             }
+        }
+
+        /// <summary>
+        /// Update the UI with new spell cooldown value
+        /// </summary>
+        /// <param name="spell"></param>
+        /// <param name="spellSelectionState"></param>
+        void OnCooldownChanged(ESpell spell, float newCooldown)
+        {
+            if (spell != m_Spell)
+                return;
+
+            m_CooldownTimer = newCooldown;
         }
 
         #endregion

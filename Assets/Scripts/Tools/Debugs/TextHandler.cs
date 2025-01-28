@@ -43,6 +43,7 @@ namespace Tools
 
             return text;
         }
+
         public static string CleanMaterialName(string name)
         {
             const string instanceSuffix = " (Instance)";
@@ -102,6 +103,30 @@ namespace Tools
 
                 text += (text != "" ? "\n" : "") + lineCleaned;
             }
+        }
+
+        /// <summary>
+        /// Clean the effect name of the quest to get the base name of the effect 
+        /// <example>
+        ///     "_QuestBurnBurnBurn - Major" -> "BurnBurnBurn"
+        /// </example>
+        /// </summary>
+        /// <param name="effectName"></param>
+        /// <returns></returns>
+        public static string TrimQuestEffectName(string effectName, bool isActivated = true)
+        {
+            // remove "_Quest" prefix
+            if (effectName.StartsWith("_Quest"))
+                effectName = effectName.Substring(6);
+
+            // remove tune activation suffix (ex: "Effect - Minor" -> "Effect")
+            if (effectName.Contains(" - "))
+                effectName = effectName.Split(" - ")[0];
+
+            if (!isActivated)
+                effectName += "_Inactive";
+
+            return effectName;
         }
 
         static bool HasTag(string text, string tag)

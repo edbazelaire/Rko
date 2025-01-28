@@ -1,9 +1,13 @@
 ﻿using Assets.Scripts.Data.PowerUp;
+using Data;
 using Data.DataStructures;
 using Enums;
+using NUnit.Framework.Internal;
+using System;
 using System.Collections.Generic;
 using Tools;
 using Unity.Netcode;
+using Unity.VisualScripting;
 
 namespace Game.Character
 {
@@ -11,11 +15,13 @@ namespace Game.Character
     {
         #region Members
 
+        public Action<string, int> QuestValueChanged;
+
         protected List<STriggerEffect>      m_TriggerEffects;
         protected List<PowerEffectData>     m_PowerEffects;     // TODO : Remove if not used (replacement to TriggerEffects)
 
-        protected bool m_IsActivated = false;
-        protected Controller m_Controller;
+        protected bool                      m_IsActivated = false;
+        protected Controller                m_Controller;
 
         #endregion
 
@@ -76,6 +82,40 @@ namespace Game.Character
         #endregion
 
 
+        #region Add / Remove
+
+        public void AddPowerUp(SRunePower runePower)
+        {
+            if (!IsServer)
+                return;
+
+            AddTriggerEffects(runePower.TriggerEffects);
+        }
+
+        public void AddTriggerEffects(List<STriggerEffect> triggerEffects)
+        {
+            if (triggerEffects.Count == 0)
+                return;
+
+            // add provided list of trigger effects to total list of trigger effects
+            m_TriggerEffects.AddRange(triggerEffects);
+
+            // check if has instant activation
+            foreach (var triggerEffect in triggerEffects)
+            {
+                CheckOnGameStartEffect(triggerEffect);
+            }
+        }
+
+        public void RemoveTriggerEffect(STriggerEffect triggerEffect)
+        {
+            if (m_TriggerEffects.Contains(triggerEffect))
+                m_TriggerEffects.Remove(triggerEffect);
+        }
+
+        #endregion
+
+
         #region OnGameStart & OnDeath
 
         protected virtual void OnGameStartEffect()
@@ -85,20 +125,25 @@ namespace Game.Character
 
             foreach (var effect in m_TriggerEffects)
             {
-                if (effect.SpellActivationEvent == ESpellActivation.GameStart)
-                {
-                    effect.Activate(m_Controller);
-                }
+                CheckOnGameStartEffect(effect);
+            }
+        }
 
-                else if (effect.SpellActivationEvent == ESpellActivation.Hp && effect.ActivationTreshold >= (float)m_Controller.Life.Hp.Value / m_Controller.Life.MaxHp.Value)
-                {
-                    effect.Activate(m_Controller);
-                }
-
-                else if (effect.SpellActivationEvent == ESpellActivation.Shield && effect.ActivationTreshold == 1 && m_Controller.Life.FinalShield.Value > 0)
-                {
-                    effect.Activate(m_Controller);
-                }
+        protected virtual void CheckOnGameStartEffect(STriggerEffect effect)
+        {
+            // =================================================================================================
+            // Spell Activation
+            if (effect.SpellActivationEvent == ESpellActivation.GameStart)
+            {
+                effect.Activate(m_Controller);
+            }
+            else if (effect.SpellActivationEvent == ESpellActivation.Hp && effect.ActivationTreshold >= (float)m_Controller.Life.Hp.Value / m_Controller.Life.MaxHp.Value)
+            {
+                effect.Activate(m_Controller);
+            }
+            else if (effect.SpellActivationEvent == ESpellActivation.Shield && effect.ActivationTreshold == 1 && m_Controller.Life.FinalShield.Value > 0)
+            {
+                effect.Activate(m_Controller);
             }
         }
 
@@ -160,13 +205,21 @@ namespace Game.Character
             for (int i = 0; i < m_TriggerEffects.Count; i++)
             {
                 var effect = m_TriggerEffects[i];
-                if (effect.SpellActivationEvent == ESpellActivation.Hp && effect.ActivationTreshold >= (float)newValue / m_Controller.Life.MaxHp.Value)
+                if (
+                    ! effect.IsActivated
+                    && effect.SpellActivationEvent == ESpellActivation.Hp 
+                    && effect.ActivationTreshold >= (float)newValue / m_Controller.Life.MaxHp.Value
+                )
                 {
                     effect.Activate(m_Controller);
                     m_TriggerEffects[i] = effect;
                 }
 
-                if (effect.SpellDeactivationEvent == ESpellActivation.Hp && effect.DeactivationTreshold >= (float)newValue / m_Controller.Life.MaxHp.Value)
+                if (
+                    effect.IsActivated 
+                    && effect.SpellDeactivationEvent == ESpellActivation.Hp 
+                    && effect.DeactivationTreshold <= (float)newValue / m_Controller.Life.MaxHp.Value
+                )
                 {
                     effect.Deactivate();
                     m_TriggerEffects[i] = effect;

@@ -20,7 +20,7 @@ MonoBehaviour:
   m_Ultimate: HealingField
   Size: 1.55
   BaseSpeed: 0.5
-  BaseHealth: 1100
+  BaseHealth: 1500
   MaxEnergy: 100
   BaseEnergy: 10
   IsStructure: 0
@@ -33,6 +33,11 @@ MonoBehaviour:
     StateEffectStackFactors: []
   - StateEffectProperty: 3
     BaseValue: 0.1
+    BonusValue: 0
+    ScalingFactor: 0.1
+    StateEffectStackFactors: []
+  - StateEffectProperty: 5
+    BaseValue: 10
     BonusValue: 0
     ScalingFactor: 0.1
     StateEffectStackFactors: []

@@ -8,6 +8,7 @@ using System.Collections;
 using System.Linq;
 using Tools;
 using Unity.Netcode;
+using UnityEditor;
 using UnityEngine;
 
 namespace Data.DataStructures
@@ -34,16 +35,20 @@ namespace Data.DataStructures
 
         public  EStateEffectEvent       StateEffectEvent;
         public  string                  StateEffectName;
+        public  int                     NStateEffectActivationThreshold;
 
         public  float                   Delay;
         public  float                   Duration;
         public  int                     NActivations;
         public  float                   Cooldown;
 
+        // ==================================================================================
+        // Data
         Controller  m_Caster;
         Controller  m_TargetController;
         Coroutine   m_Coroutine;
         int         m_NActivationsCtr;
+        int         m_NStateEffectActivationCtr;
         float       m_CooldownTimer;
         bool        m_IsActivated;
 
@@ -66,6 +71,7 @@ namespace Data.DataStructures
 
             serializer.SerializeValue(ref StateEffectEvent);
             serializer.SerializeValue(ref StateEffectName);
+            serializer.SerializeValue(ref NStateEffectActivationThreshold);
 
             serializer.SerializeValue(ref Delay);
             serializer.SerializeValue(ref Duration);
@@ -80,9 +86,9 @@ namespace Data.DataStructures
 
         public bool IsActivable()
         {
-            return (NActivations == -1          // infinite activations
-                || m_NActivationsCtr < (NActivations >= 1 ? NActivations : 1)) // OR below min activation 
-            && m_CooldownTimer <= 0;            // cooldown must be done
+            return (NActivations == -1                                          // infinite activations
+                || m_NActivationsCtr < (NActivations >= 1 ? NActivations : 1))  // OR below min activation
+            && m_CooldownTimer <= 0;                                            // AND not in cooldown
         }
 
         public void Activate(Controller controller)
@@ -90,8 +96,16 @@ namespace Data.DataStructures
             if (m_IsActivated)
                 return;
 
+            if (! IsActivable())
+                return;
+
             Debug.LogWarning("Activating " + SpellDataName);
-            
+
+            // TODO : remove
+            if (SpellDataName.StartsWith("_Effect"))
+                Debug.Log("fdsq");
+            // TODO : remove
+
             if (controller == null)
             {
                 ErrorHandler.Error("Provided Controller is null for " + SpellDataName);
@@ -110,12 +124,18 @@ namespace Data.DataStructures
         {
             yield return new WaitForSeconds(Delay);
 
+            if (NStateEffectActivationThreshold > 1)
+            {
+                m_Caster.TriggerEffectHandler.QuestValueChanged?.Invoke(SpellDataName, NStateEffectActivationThreshold);
+            }
+
             if (StateEffectEvent == EStateEffectEvent.None)
             {
                 ActivateEffect();
             } 
             else
             {
+                Debug.LogWarning("REGISTERING OnStateEffectEvent - " + SpellDataName);
                 StateEffect.StateEffectEvent += OnStateEffectEvent;
             }
 
@@ -163,6 +183,13 @@ namespace Data.DataStructures
                 m_TargetController.StateHandler.AddStateEffect(SpellLoader.GetStateEffect(SpellDataName, Level), m_Caster);
             }
 
+            else if (SpellLoader.PowerUpExists(SpellDataName))
+            {
+                Debug.Log("FOUND POWER UP : " + SpellDataName);
+                SRunePower powerUp = SpellLoader.GetPowerUp(SpellDataName, Level);
+                m_TargetController.TriggerEffectHandler.AddPowerUp(powerUp);
+            }
+
             else
                 ErrorHandler.Error(SpellDataName + " not recognize either as Spell or StateEffect");
         }
@@ -174,24 +201,21 @@ namespace Data.DataStructures
 
         public void End()
         {
-            if (StateEffectEvent != EStateEffectEvent.None)
-            {
-                StateEffect.StateEffectEvent -= OnStateEffectEvent;
-            }
+            Debug.LogWarning("END : " + SpellDataName);
+            Deactivate();
 
-            if (m_Coroutine != null)
-            {
-                m_TargetController.StopCoroutine(m_Coroutine);
-            }
+            m_TargetController.TriggerEffectHandler.RemoveTriggerEffect(this);
         }
 
         public void Deactivate()
         {
-            if (!m_IsActivated)
+            if (! m_IsActivated)
                 return;
 
-            m_IsActivated = false;
+            Debug.LogWarning("Deactivating " + SpellDataName);
             StateEffect.StateEffectEvent -= OnStateEffectEvent;
+
+            m_IsActivated = false;
 
             if (m_Caster == null)
             {
@@ -203,6 +227,11 @@ namespace Data.DataStructures
             {
                 ErrorHandler.Error("Unable to find TARGET controller when deactivating " + SpellDataName);
                 return;
+            }
+
+            if (m_Coroutine != null)
+            {
+                m_TargetController.StopCoroutine(m_Coroutine);
             }
 
             if (SpellLoader.StateEffectExists(SpellDataName))
@@ -265,23 +294,54 @@ namespace Data.DataStructures
 
         void OnStateEffectEvent(string stateEffectName, EStateEffectEvent stateEffectEvent, ulong targetId, ulong casterId)
         {
+            // SAFETY : has a caster provided
             if (m_Caster == null)
             {
                 ErrorHandler.Error("Provided Controller is null for state effect : " + stateEffectName + " - at event " + stateEffectEvent);
                 return;
             }
 
+            // SAFETY : is still active
+            if (! m_IsActivated)
+            {
+                //ErrorHandler.Error("Trying to activate effect (" + SpellDataName + ") that has been deactivated");
+                return;
+            }
+
+            // CHECK : has the provided stateEffect as one of activation effect
             if (! HasStateEffect(stateEffectName))
                 return;
 
+            // CHECK : the event is the required one
             if (stateEffectEvent != StateEffectEvent)
                 return;
 
+            // CHECK : comes from the correct caster
             if (casterId != m_Caster.PlayerId)
                 return;
 
+            // QUEST : increase number of activations
+            if (NStateEffectActivationThreshold > 0)
+            {
+                // increase counter of state activation
+                m_NStateEffectActivationCtr++;
+
+                // update decreasing counter of state effect activation
+                m_Caster.TriggerEffectHandler.QuestValueChanged?.Invoke(SpellDataName, NStateEffectActivationThreshold - m_NStateEffectActivationCtr);
+
+                if (m_NStateEffectActivationCtr < NStateEffectActivationThreshold)
+                    return;
+            }
+            
+            // ACTIVATE EFFECT
             m_TargetController = CalculateTarget(targetId);
             ActivateEffect();
+
+            // if QUEST completed : end the effect
+            if (NStateEffectActivationThreshold > 0 && m_NStateEffectActivationCtr >= NStateEffectActivationThreshold)
+            {
+                Deactivate();
+            }
         }
 
         #endregion
