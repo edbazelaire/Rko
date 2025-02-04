@@ -75,12 +75,12 @@ namespace Game.AI.BehaviorTrees
                             new SetState(m_Controller, EAtassutState.Counter.ToString())
                         }),
 
-                        // ASTRAL ICEFALL
-                        new TaskUseSpell(m_Controller, ESpell.AstralIcefall),
-
                         // USE SPECIAL ABILITY
                         new TaskUseSpell(m_Controller, ESpell.Scythefall, delay: 8f),
             
+                        // ASTRAL ICEFALL
+                        new TaskUseSpell(m_Controller, ESpell.AstralIcefall, delay: 12f),
+
                         // GREAT VORTEX
                         new TaskUseSpell(m_Controller, ESpell.GreatVortex, delay: 15f),
 
@@ -95,6 +95,26 @@ namespace Game.AI.BehaviorTrees
                     })
                 }),
             });
+        }
+
+        #endregion
+
+
+        #region State 
+
+        public override void OnStateChanged(string state)
+        {
+            base.OnStateChanged(state);
+
+            if (state == EAtassutState.Counter.ToString())
+            {
+                if (m_Controller.StateHandler.HasState("ShadowVeil"))
+                    m_Controller.StateHandler.RemoveStateEffect("ShadowVeil"); 
+            } 
+            else if (state == EAtassutState.Awake.ToString())
+            {
+                m_Controller.StateHandler.AddStateEffect("ShadowVeil", m_Controller, m_Controller.CharacterLevel);
+            }
         }
 
         #endregion

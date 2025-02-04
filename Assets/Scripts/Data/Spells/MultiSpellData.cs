@@ -187,6 +187,8 @@ namespace Data
 
             for (int i = 0; i < NProjectiles; i++)
             {
+                ErrorHandler.Log("          - " + Name + " Projectile (" + i + " / " + NProjectiles + ")", ELogTag.MultiSpells);
+
                 CastOneProjectile(
                     controller, 
                     target:     CalculateMultiSpellTarget(target, i, controller.Team),

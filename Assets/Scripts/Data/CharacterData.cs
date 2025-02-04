@@ -8,6 +8,7 @@ using Unity.Collections;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace Data
 {
@@ -71,6 +72,18 @@ namespace Data
             return BonusValue
                 + BaseValue * Mathf.Pow(1 + ScalingFactor, level - 1)
                 + GetStateEffectStackBonus(level, controller, targetController);
+        }
+
+        public float GetDefaultValue(int level)
+        {
+            float value = BonusValue + BaseValue * Mathf.Pow(1 + ScalingFactor, level - 1);
+
+            foreach (var stateEffectStackFactor in StateEffectStackFactors)
+            {
+                value += stateEffectStackFactor.GetBonusValue(level, nStacks: 1);
+            }
+
+            return value;
         }
 
         float GetStateEffectStackBonus(int level, Controller controller, Controller targetController)

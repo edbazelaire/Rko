@@ -5,6 +5,7 @@
         None = 0,   
 
         // -- screens
+        MainMenuScreen,
         LoadingScreen,
         RewardsScreen,
         AchievementRewardScreen,
@@ -68,9 +69,9 @@
         Hard,
         Painful,
         Brutal,
-        //HardCore,
         //Savage,
-        //Relentless
+        //Relentless,
+        //HardCore,
         //Torment,
         //Infernal,
         //Nightmare,
@@ -392,8 +393,10 @@
         OnCancelCast    = 200,
         OnCast          = 300,
         OnSpawn         = 400,
+        OnActivation    = 450,
         OnHit           = 500,
 
+        OnDeactivation  = 900,
         OnEnd           = 1000,
     }
 
@@ -984,6 +987,7 @@
         Lone_Wolf,
         Heal_Checker,
         Alpha_Tester,
+        The_Shadow,
 
         // Frost Arena ======================================================
         Winter_Soldier          = 1001,
@@ -1011,6 +1015,7 @@
         ChibiTao        = 9,
         Snowman         = 10,
         FrostMaster     = 11,
+        Assassin        = 12,
 
         BlueFlameChibi  = 101,
         CosmicChibi     = 102,
@@ -1045,6 +1050,7 @@
 
         // Others
         Sakura = 101,
+        Assassin = 102,
 
         // Speical Events
         Fire = 201,

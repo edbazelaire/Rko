@@ -8,6 +8,7 @@ using Save.RSDs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tools;
 using Unity.Collections;
@@ -32,7 +33,7 @@ namespace Save
         public SProfileDataNetwork(int accountLevel = 0, string gamerTag = default, string avatar = default, string border = default, string title = default, string[] badges = null)
         {
             if (gamerTag == default)
-                gamerTag = SProfileCurrentData.DEFAULT_GAMER_TAG;
+                gamerTag = SProfileCurrentData.DEFAULT_PSEUDO;
 
             if (avatar == default)
                 avatar = SProfileCurrentData.DEFAULT_AR[EAchievementReward.Avatar];
@@ -89,7 +90,7 @@ namespace Save
         // ========================================================================================================================
         // CONSTANTS
         /// <summary> default gamer tag </summary>
-        public const string DEFAULT_GAMER_TAG = "DEFAULT_PSEUDO";
+        public const string DEFAULT_PSEUDO = "DEFAULT_PSEUDO";
         public static Dictionary<EAchievementReward, string> DEFAULT_AR => new Dictionary<EAchievementReward, string>(){
             { EAchievementReward.Avatar,    EAvatar.None.ToString() },
             { EAchievementReward.Border,    EBorder.None.ToString() },
@@ -113,7 +114,7 @@ namespace Save
                 accountLevel = 1;
 
             if (gamerTag == default)
-                gamerTag = DEFAULT_GAMER_TAG;
+                gamerTag = ProfileCloudData.GenerateDefaultPseudo();
 
             if (avatar == default)
                 avatar = DEFAULT_AR[EAchievementReward.Avatar];
@@ -217,7 +218,7 @@ namespace Save
             if (GamerTag == null || GamerTag == "")
             {
                 ErrorHandler.Error("GamerTag not set : reseting with default");
-                GamerTag = DEFAULT_GAMER_TAG;
+                GamerTag = DEFAULT_PSEUDO;
                 return;
             }
         }
@@ -368,7 +369,7 @@ namespace Save
         public const int N_BADGES_DISPLAYED = 3;
         public const int MIN_CHAR_GAMER_TAG = 4;
         public const int MAX_CHAR_GAMER_TAG = 25;
-        public static List<char> FORBIDDEN_CHARACTERS => new (){ '#', ' ' };
+        public static List<char> FORBIDDEN_CHARACTERS => new (){ '#', ' ', '\\' };
 
         // KEYS ------------------------------------
         public const string KEY_TUTO_DONE               = "TutoDone";
@@ -430,7 +431,8 @@ namespace Save
         public static int                       AccountLevel    => CurrentProfileData.AccountLevel;
         public static Dictionary<string, int>   Achievements    => (Instance.m_Data[KEY_ACHIEVEMENTS] as Dictionary<string, int>);
         public static Dictionary<EAchievementReward, List<string>> AchievementRewards => (Instance.m_Data[KEY_ACHIEVEMENT_REWARDS] as Dictionary<EAchievementReward, List<string>>);
-        public static Dictionary<EBadge, ELeague> Badges => Instance.m_Badges;
+        public static Dictionary<EBadge, ELeague> Badges        => Instance.m_Badges;
+        public static bool                  HasDefaultPseudo    => Regex.IsMatch(GamerTag, @"^User_\d{6}$") || GamerTag == "DEFAULT_PSEUDO";
 
         #endregion
 
@@ -479,7 +481,7 @@ namespace Save
             Instance.SetData(KEY_CURRENT_PROFILE_DATA, data);
             Instance.SetData(KEY_GAMER_TAG, gamerTag);
 
-            if (gamerTag != SProfileCurrentData.DEFAULT_GAMER_TAG)
+            if (gamerTag != SProfileCurrentData.DEFAULT_PSEUDO)
                 Instance.SetData(KEY_PSEUDO_CHANGED, true);
 
             // update value in AuthService
@@ -518,7 +520,7 @@ namespace Save
 
         public static void ResetGamerTag()
         {
-            Instance.SetData(KEY_GAMER_TAG, SProfileCurrentData.DEFAULT_GAMER_TAG);
+            Instance.SetData(KEY_GAMER_TAG, SProfileCurrentData.DEFAULT_PSEUDO);
         }
 
         /// <summary>
@@ -931,6 +933,12 @@ namespace Save
             }
         }
 
+        public static string GenerateDefaultPseudo()
+        {
+            int randomNumber = UnityEngine.Random.Range(100000, 999999); // Generates a 6-digit random number
+            return $"User_{randomNumber}";
+        }
+
         #endregion
 
 
@@ -954,7 +962,7 @@ namespace Save
                     break;
 
                 case KEY_GAMER_TAG:
-                    SetGamerTag(SProfileCurrentData.DEFAULT_GAMER_TAG);
+                    SetGamerTag(SProfileCurrentData.DEFAULT_PSEUDO);
                     return;
                     
                 case KEY_TOKEN:

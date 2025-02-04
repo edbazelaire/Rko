@@ -1,5 +1,6 @@
 ﻿using Data.GameManagement;
 using Game.Loaders;
+using MyBox;
 using Save;
 using System.Collections.Generic;
 using Tools;
@@ -130,16 +131,16 @@ namespace Menu.PopUps
                 if (ProgressionCloudData.CurrentArena.Level > i)
                 {
                     string powerUpName = "";
-                    if (ProgressionCloudData.CurrentArena.PowerUps.Length <= i)
+                    if (ProgressionCloudData.CurrentArena.GetPowerUps().Length <= i)
                     {
-                        ErrorHandler.Error("Number of max PowerUps " + ProgressionCloudData.CurrentArena.PowerUps.Length + " is <= to expeted index " + i);
+                        ErrorHandler.Error("Number of max PowerUps " + ProgressionCloudData.CurrentArena.GetPowerUps().Length + " is <= to expeted index " + i);
                     }
                     else
                     {
-                        powerUpName = ProgressionCloudData.CurrentArena.PowerUps[i];
+                        powerUpName = ProgressionCloudData.CurrentArena.GetPowerUps()[i];
                     }
 
-                    var powerUpData = powerUpName == "" ? null : SpellLoader.GetPowerUp(powerUpName, InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter).Level);
+                    var powerUpData = powerUpName.IsNullOrEmpty() ? null : SpellLoader.GetPowerUp(powerUpName, InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter).Level);
                     m_PowerUpsSmallDisplayers[i].Initialize(powerUpData, i);
                 } 
                 else

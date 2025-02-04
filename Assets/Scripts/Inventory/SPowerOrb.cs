@@ -19,8 +19,8 @@ namespace Inventory
 
         public const int    MAX_STARS                   = 5;
         public const float  BASE_STAR_UPGRADE_PERC      = 0.1f;
-        public const int    FIX_STAR_BONUS              = 500;
-        public const float  PERC_STAR_BONUS             = 0.3f;
+        public const int    FIX_STAR_BONUS              = 5000;
+        public const float  PERC_STAR_BONUS             = 1f;
 
         protected int m_Power;
         protected ERarety m_Rarety;
@@ -29,7 +29,7 @@ namespace Inventory
         public ERarety  Rarety              => m_Rarety;
         protected int   FinalPower          => (int)Math.Round(
             m_Power * Mathf.Pow(1 + PERC_STAR_BONUS, (int)m_Rarety)     // percentage bonus from rarety
-            + FIX_STAR_BONUS * (Mathf.Pow(2, (int)m_Rarety) - 1)        // fix value bonus from rarety
+            + FIX_STAR_BONUS * (int)m_Rarety                            // fix value bonus from rarety
         );
 
         /// <summary>
@@ -39,26 +39,26 @@ namespace Inventory
         {
             // Currencies
             { ECurrency.Golds.ToString(),                   1       },
-            { ECurrency.Xp.ToString(),                      3       },
-            { ECurrency.Gems.ToString(),                    10      },
+            { ECurrency.Xp.ToString(),                      5       },
+            { ECurrency.Gems.ToString(),                    50      },
 
             // Spells
-            { "Spell_" + ERarety.Common.ToString(),         25      },
-            { "Spell_" + ERarety.Rare.ToString(),           75      },
-            { "Spell_" + ERarety.Epic.ToString(),           500     },
-            { "Spell_" + ERarety.Legendary.ToString(),      2500    },
+            { "Spell_" + ERarety.Common.ToString(),         50      },
+            { "Spell_" + ERarety.Rare.ToString(),           150     },
+            { "Spell_" + ERarety.Epic.ToString(),           1500    },
+            { "Spell_" + ERarety.Legendary.ToString(),      7500    },
 
             // Runes
-            { "Rune_" + ERarety.Common.ToString(),          75      },
-            { "Rune_" + ERarety.Rare.ToString(),            225     },
-            { "Rune_" + ERarety.Epic.ToString(),            1500    },
-            { "Rune_" + ERarety.Legendary.ToString(),       7500    },
+            { "Rune_" + ERarety.Common.ToString(),          150     },
+            { "Rune_" + ERarety.Rare.ToString(),            300     },
+            { "Rune_" + ERarety.Epic.ToString(),            3000    },
+            { "Rune_" + ERarety.Legendary.ToString(),       12000   },
 
             // Characters
-            { "Character_" + ERarety.Common.ToString(),     250     },
-            { "Character_" + ERarety.Rare.ToString(),       750     },
-            { "Character_" + ERarety.Epic.ToString(),       5000    },
-            { "Character_" + ERarety.Legendary.ToString(),  25000   },
+            { "Character_" + ERarety.Common.ToString(),     500     },
+            { "Character_" + ERarety.Rare.ToString(),       1500    },
+            { "Character_" + ERarety.Epic.ToString(),       15000   },
+            { "Character_" + ERarety.Legendary.ToString(),  50000   },
         };
 
         #endregion
@@ -320,7 +320,7 @@ namespace Inventory
         {
             string currencyName = rarity switch
             {
-                ERarety.Common => ECurrency.Golds.ToString(),
+                ERarety.Common => ECurrency.Xp.ToString(),
                 ERarety.Rare => ECurrency.Xp.ToString(),
                 ERarety.Epic => ECurrency.Gems.ToString(),
                 _ => null // Legendary should not result in a currency

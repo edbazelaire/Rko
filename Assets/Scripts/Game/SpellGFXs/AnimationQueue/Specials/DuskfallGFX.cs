@@ -1,7 +1,5 @@
-﻿using Data.GameManagement;
-using Enums;
+﻿using Enums;
 using System.Collections;
-using System.Collections.Generic;
 using Tools;
 using UnityEngine;
 
@@ -16,6 +14,10 @@ namespace Game.SpellGFXs
         // GameObjects & Components
         GameObject m_Charge;
 
+        // ================================================================================
+        // Data
+        Vector3 m_InitialPosition;
+
         #endregion
 
 
@@ -25,6 +27,11 @@ namespace Game.SpellGFXs
         {
             // Find all Particles
             m_Charge = Finder.Find(gameObject, "Charge");
+
+            // Find Initial position
+            m_InitialPosition = m_Controller.GFXHandler.CharacterPreview.transform.position;
+            // Block movement during the animation
+            m_Controller.Movement.CancelMovement(true);
 
             // deactivate all Particles
             m_Charge.SetActive(false);
@@ -41,8 +48,6 @@ namespace Game.SpellGFXs
         protected override void ApplyPostProcessing()
         {
             base.ApplyPostProcessing();
-
-            m_Controller.GFXHandler.EnableRigidBody(false);
         }
 
         protected override void StartAnimation()
@@ -54,7 +59,7 @@ namespace Game.SpellGFXs
         {
             base.OnDestroy();
 
-            m_Controller.GFXHandler.EnableRigidBody(true);
+            m_Controller.GFXHandler.CharacterPreview.transform.position = m_InitialPosition;
         }
 
         #endregion
@@ -73,8 +78,7 @@ namespace Game.SpellGFXs
 
             m_Charge.SetActive(true);
 
-            // Timer for the animation duration
-            m_Controller.transform.position = transform.position;
+            m_Controller.GFXHandler.CharacterPreview.transform.position = transform.position;
 
             yield return new WaitForSeconds(m_Duration * 0.9f);
 

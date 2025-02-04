@@ -1,3 +1,4 @@
+using Enums;
 using Menu.MainMenu.ShopTab;
 using Tools;
 using UnityEngine;
@@ -29,6 +30,18 @@ namespace Menu.MainMenu
             // initialization
             m_SpecialOfferUI.Initialize();
             m_ShopTabManager.Initialize();
+        }
+
+        #endregion
+
+
+        #region Tab Selection
+
+        public void SelectCurrency(ECurrency currency)
+        {
+            // all currencies are in the same "TabContent" for now and there is no specific section to go to.
+            // if there is one, use the provided "Currency" to select it
+            m_ShopTabManager.SelectTab(EShopTab.GoldsTab);
         }
 
         #endregion

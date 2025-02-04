@@ -3,6 +3,7 @@ using Data;
 using Data.GameManagement;
 using Enums;
 using Managers.Friends;
+using NUnit.Framework.Internal;
 using Save;
 using System;
 using System.Collections.Generic;
@@ -84,6 +85,9 @@ namespace Assets.Scripts.Managers
             if (CurrentVersion.CompareTo(new Version("0.2.0")) == -1)
                 test = UpdateVersion_0_2_0();
 
+            if (CurrentVersion.CompareTo(new Version("0.2.5")) == -1)
+                test = UpdateVersion_0_2_5();
+
             // if does not trigger any version until now, update to current version
             if (CurrentVersion.CompareTo(GameVersion) == -1)
                 SetVersion(Application.version);
@@ -158,7 +162,7 @@ namespace Assets.Scripts.Managers
 
             // check if GamerTag still respect rules (skip availability check since it is the player's own pseudo)
             (bool isValid, string reason) = await ProfileCloudData.IsGamerTagValid(ProfileCloudData.GamerTag, checkAvailable: false);
-            if (!isValid)
+            if (! isValid)
             {
                 // reset gamer's tag before PopUp
                 ProfileCloudData.ResetGamerTag();
@@ -336,6 +340,52 @@ namespace Assets.Scripts.Managers
             // save version
             if (! SetVersion("0.2.0"))
                 test = false;
+
+            return test;
+        }
+
+        static bool UpdateVersion_0_2_5()
+        {
+            var test = true;
+
+            // save version
+            if (!SetVersion("0.2.5"))
+                return false;
+
+            // clear current messagerie
+            NotificationCloudData.ClearMessages();
+
+            if (ProfileCloudData.AccountLevel < 3)
+                return test;
+
+            int missingXp = 0;
+            if (ProfileCloudData.AccountLevel >= 3)
+                missingXp += 500;
+            if (ProfileCloudData.AccountLevel >= 4)
+                missingXp += 1000;
+            if (ProfileCloudData.AccountLevel >= 5)
+                missingXp += 4000;
+            if (ProfileCloudData.AccountLevel >= 6)
+                missingXp += 10000;
+            if (ProfileCloudData.AccountLevel >= 7)
+                missingXp += 22500;
+            if (ProfileCloudData.AccountLevel >= 8)
+                missingXp += 40000;
+            if (ProfileCloudData.AccountLevel >= 9)
+                missingXp += 85000;
+
+            // send reward of missing xp to player
+            NotificationCloudData.AddMessage(new SMessage(
+                title: "Account level XP",
+                content: "Greatings Player !\n\nSince the account level curve was re-adjusted, here is the xp that was consumed by the previous system.",
+                rewardsData: new SRewardsData(
+                    currencyRewards: new List<SCurrencyReward>() {
+                        new SCurrencyReward(ECurrency.Xp, missingXp),
+                    }
+                )
+           ));
+
+
 
             return test;
         }

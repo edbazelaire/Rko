@@ -24,12 +24,22 @@ namespace Menu.PopUps.Messagerie
             m_MessageDisplayer = Finder.FindComponent<MessageDisplayer>(gameObject);
         }
 
-
         protected override void OnInitializationCompleted()
         {
             base.OnInitializationCompleted();
 
             m_MessageDisplayer.Initialize();
+
+            RefreshMessages();
+        }
+
+        #endregion
+
+
+        #region GUI Manipulators
+
+        void RefreshMessages()
+        {
             UIHelper.CleanContent(m_MessagesContainer);
 
             if (NotificationCloudData.Messages.Count == 0)
@@ -49,11 +59,6 @@ namespace Menu.PopUps.Messagerie
             m_MessageDisplayer.Display(NotificationCloudData.Messages[0]);
         }
 
-        #endregion
-
-
-        #region GUI Manipulators
-
         void SetupNoMessageUI()
         {
             m_MessageDisplayer.DisplayNoMessage();
@@ -63,6 +68,20 @@ namespace Menu.PopUps.Messagerie
 
 
         #region Listeners
+
+        protected override void RegisterListeners()
+        {
+            base.RegisterListeners();
+
+            NotificationCloudData.MessageCountChangedEvent += RefreshMessages;
+        }
+
+        protected override void UnRegisterListeners()
+        {
+            base.UnRegisterListeners();
+
+            NotificationCloudData.MessageCountChangedEvent -= RefreshMessages;
+        }
 
         void OnMessageClicked(SMessage message)
         {

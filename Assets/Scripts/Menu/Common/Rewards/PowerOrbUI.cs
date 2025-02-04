@@ -139,7 +139,8 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
             if (m_AudioSource != null)
                 Destroy(m_AudioSource);
 
-            yield return PlayAnimationOnce(OPEN_ANIMATION);
+            // TODO : remove open animation ?
+            //yield return PlayAnimationOnce(OPEN_ANIMATION);
 
             ActivateOpenParticles(true);
 

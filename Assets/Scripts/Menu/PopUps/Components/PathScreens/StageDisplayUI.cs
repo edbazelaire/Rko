@@ -23,7 +23,7 @@ namespace Menu.PopUps
         #region Members
 
         protected EStageRewardState     m_State;
-        protected NotificationDisplay   m_NotificationDisplay;
+        protected NotificationParticles   m_NotificationDisplay;
 
         protected StageSectionUI        m_StageSectionUI;
         protected RewardsDisplayer      m_RewardsDisplayer;
@@ -43,7 +43,7 @@ namespace Menu.PopUps
             m_StageSectionUI                = Finder.FindComponent<StageSectionUI>(gameObject);
             m_RewardsDisplayer              = Finder.FindComponent<RewardsDisplayer>(gameObject);
             m_RewardDisplayerBackground     = Finder.FindComponent<Image>(m_RewardsDisplayer.gameObject);
-            m_NotificationDisplay           = Finder.FindComponent<NotificationDisplay>(m_RewardsDisplayer.gameObject);
+            m_NotificationDisplay           = Finder.FindComponent<NotificationParticles>(m_RewardsDisplayer.gameObject);
             m_OverlayScreen                 = Finder.Find(m_RewardsDisplayer.gameObject, "OverlayScreen");
             m_CollectButton                 = Finder.FindComponent<Button>(gameObject, "CollectButton");
         }

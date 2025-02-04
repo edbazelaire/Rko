@@ -1,6 +1,7 @@
-﻿using Data.DataStructures;
+﻿using Assets.Scripts.Data.DataStructures.Common;
+using Assets.Scripts.Data.GameManagement;
+using Data.DataStructures;
 using Enums;
-using Inventory;
 using Managers;
 using Save;
 using System;
@@ -9,6 +10,7 @@ using System.Linq;
 using Tools;
 using Unity.Collections;
 using UnityEngine;
+
 
 namespace Data.GameManagement
 {
@@ -162,6 +164,11 @@ namespace Data.GameManagement
             return stageDataList[stage].SetBaseLevel(CurrentBaseCharacterLevel);
         }
 
+        public bool IsBoss(int arenaLevel, int arenaStage)
+        {
+            return arenaStage == m_ArenaLevelData[arenaLevel].StageData.Count - 1;
+        }
+
         public EBoss GetBoss(int arenaLevel)
         {
             if (arenaLevel > m_ArenaLevelData.Count)
@@ -227,33 +234,13 @@ namespace Data.GameManagement
         /// <returns></returns>
         public int CalculateOrbPowerReward(int arenaLevel, int arenaStage)
         {
-            // TODO : constants
-            int baseMobPower                = 15;
-            int baseBossPower               = 200;
-            float mobPowerIncreasePerLevel  = 0.2f;
-            float bossPowerIncreasePerLevel = 0.5f;
-            float bonusArenaDifficulty      = 0.3f;
-            float bonusArenaDifficultyLevel = 0.15f;
-            // TODO : constants
-
-            float basePowerIncreasePerLevel;
-            float basePower;
-            // MOB REWARD
-            if (arenaStage < m_ArenaLevelData[arenaLevel].StageData.Count - 1)
-            {
-                basePower = baseMobPower;
-                basePowerIncreasePerLevel = mobPowerIncreasePerLevel;
-            }
-            else
-            {
-                basePower = baseBossPower;
-                basePowerIncreasePerLevel = bossPowerIncreasePerLevel;
-            }
+            SScalingStat powerScaling = IsBoss(arenaLevel, arenaStage) ? ArenaManagementData.BossPowerDrop : ArenaManagementData.MobPowerDrop;
+            powerScaling.SetLevel(arenaLevel);
 
             return (int)Math.Round(
-                basePower * (1 + arenaLevel * basePowerIncreasePerLevel)        // base power level from current arena level
-                * Math.Pow(1 + bonusArenaDifficulty, (int)ArenaDifficulty)      // power level increase from arena difficulty (normal, hard, brutal, ...)
-                * (1 + bonusArenaDifficultyLevel * ArenaDifficultyLevel)        // power level increase from arena difficulty bonus level (+, ++, ... etc)
+                powerScaling.GetValue()        // base power level from current arena level
+                * Math.Pow(1 + ArenaManagementData.BonusArenaDifficulty, (int)ArenaDifficulty)      // power level increase from arena difficulty (normal, hard, brutal, ...)
+                * (1 + ArenaManagementData.BonusArenaDifficultyLevel * ArenaDifficultyLevel)        // power level increase from arena difficulty bonus level (+, ++, ... etc)
             );
         }
 

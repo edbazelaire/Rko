@@ -33,8 +33,8 @@ namespace Game.AI.BehaviorTrees
                 new TaskAttack(m_Controller, allowedSpellCategories: new List<ESpellTypeCategory> { ESpellTypeCategory.Ultimate }),
                 
                 // EXTRA SPELLS
-                new TaskUseSpell(m_Controller, ESpell.ExtraClaws),
-                new TaskUseSpell(m_Controller, ESpell.Crosslice, delay: 5f),
+                new TaskUseSpell(m_Controller, ESpell.ExtraClaws, delay: 25f),
+                new TaskUseSpell(m_Controller, ESpell.Crosslice, delay: 15f),
 
                 // MOVEMENT : dodge enemy zone spells
                 new Sequence(new List<Node> {

@@ -80,7 +80,8 @@ namespace Game.AI.BehaviorTrees
                                 new Sequence(new List<Node> {
                                     new CheckCount(m_Controller,        ESpell.AzurePowerOrbs.ToString(), 1),
                                     new TaskUseSpell(m_Controller,      ESpell.AzurePowerOrbs, spellEvent: ESpellEvent.OnCast, resetCooldown: true),
-                                    new IncreaseCounter(m_Controller,   ESpell.AzurePowerOrbs.ToString())
+                                    new IncreaseCounter(m_Controller,   ESpell.AzurePowerOrbs.ToString()),
+                                    new GainEnergy(m_Controller,        100)   // re-set energy to max to be sure that the value is maxed
                                 }),
                                 
                                 // CAST : Soaring

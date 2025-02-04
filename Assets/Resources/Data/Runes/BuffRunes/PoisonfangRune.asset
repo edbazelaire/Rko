@@ -18,39 +18,44 @@ MonoBehaviour:
   Description: 
   m_SpellElements: 
   m_MinorPower:
-    Description: Increase damages by 1% for each stacks of Poison on the target
-    m_DescriptionVariables: []
+    Description: Increase damages by {0} for each stacks of Poison on the target
+    m_DescriptionVariables:
+    - Name: BonusDamages
+      WithIcon: 1
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
-    - StateEffectProperty: 8
+    - StateEffectProperty: 7
       BaseValue: 0
       BonusValue: 0
       ScalingFactor: 0
       StateEffectStackFactors:
       - Target: 2
         StateEffect: 9
-        BaseValue: 0.01
-        LevelFactor: 0.05
+        BaseValue: 1
+        LevelFactor: 0.1
   m_MajorPower:
-    Description: Increase damages by 2% for each stacks of Poison on the target
-    m_DescriptionVariables: []
+    Description: Increase damages by {0} for each stacks of Poison on the target
+    m_DescriptionVariables:
+    - Name: BonusDamages
+      WithIcon: 1
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
-    - StateEffectProperty: 8
+    - StateEffectProperty: 7
       BaseValue: 0
       BonusValue: 0
       ScalingFactor: 0
       StateEffectStackFactors:
       - Target: 2
         StateEffect: 9
-        BaseValue: 0.02
-        LevelFactor: 0.05
+        BaseValue: 2
+        LevelFactor: 0.1
   m_PrimalPower:
-    Description: Increase damages by 5 fix + 2% for each stacks of Poison on the
-      target
-    m_DescriptionVariables: []
+    Description: Increase damages by {0} for each stacks of Poison on the target
+    m_DescriptionVariables:
+    - Name: BonusDamages
+      WithIcon: 1
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: 
@@ -62,6 +67,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: 0
@@ -74,14 +80,5 @@ MonoBehaviour:
       StateEffectStackFactors:
       - Target: 2
         StateEffect: 9
-        BaseValue: 3
+        BaseValue: 5
         LevelFactor: 0.1
-    - StateEffectProperty: 8
-      BaseValue: 0
-      BonusValue: 0
-      ScalingFactor: 0
-      StateEffectStackFactors:
-      - Target: 2
-        StateEffect: 9
-        BaseValue: 0.02
-        LevelFactor: 0.05

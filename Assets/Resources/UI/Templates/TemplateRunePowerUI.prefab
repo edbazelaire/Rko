@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4310573496759502993}
   - component: {fileID: -3943288294966962256}
   m_Layer: 5
-  m_Name: TemplateTunePowerUI
+  m_Name: TemplateRunePowerUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -337,19 +337,67 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2779756315992280465, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
       propertyPath: m_fontSize
-      value: 16.15
+      value: 20.4
       objectReference: {fileID: 0}
     - target: {fileID: 2779756315992280465, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
       propertyPath: m_fontAsset
       value: 
-      objectReference: {fileID: 11400000, guid: ea9047e1b820eda4c8a7c531f03baa0a, type: 2}
+      objectReference: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
     - target: {fileID: 2779756315992280465, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 9163967912550043050, guid: ea9047e1b820eda4c8a7c531f03baa0a, type: 2}
+      objectReference: {fileID: 2100000, guid: f2dcf029949142e28b974630369c8b4e, type: 2}
     - target: {fileID: 2779756315992280465, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2779756315992280465, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
+      propertyPath: m_fontColorGradient.topLeft.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2779756315992280465, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
+      propertyPath: m_fontColorGradient.topLeft.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2779756315992280465, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
+      propertyPath: m_fontColorGradient.topLeft.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2779756315992280465, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
+      propertyPath: m_fontColorGradient.topRight.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2779756315992280465, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
+      propertyPath: m_fontColorGradient.topRight.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2779756315992280465, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
+      propertyPath: m_fontColorGradient.topRight.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2779756315992280465, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
+      propertyPath: m_fontColorGradient.bottomLeft.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2779756315992280465, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
+      propertyPath: m_fontColorGradient.bottomLeft.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2779756315992280465, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
+      propertyPath: m_fontColorGradient.bottomLeft.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2779756315992280465, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
+      propertyPath: m_fontColorGradient.bottomRight.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2779756315992280465, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
+      propertyPath: m_fontColorGradient.bottomRight.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2779756315992280465, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
+      propertyPath: m_fontColorGradient.bottomRight.r
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3438603477479592758, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
       propertyPath: m_SizeDelta.x
@@ -470,6 +518,14 @@ PrefabInstance:
     - target: {fileID: 6497332604516313957, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
       propertyPath: m_ShowMaskGraphic
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6848676819392207087, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 49.6733
+      objectReference: {fileID: 0}
+    - target: {fileID: 6848676819392207087, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -11.0947
       objectReference: {fileID: 0}
     - target: {fileID: 7772141459941490126, guid: ffe4c2dda0ae72b4a90346742c507b1f, type: 3}
       propertyPath: m_TargetGraphic

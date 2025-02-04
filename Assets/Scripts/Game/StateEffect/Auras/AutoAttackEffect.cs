@@ -31,6 +31,9 @@ namespace Game.Spells
             if (m_ReplacementData == null)
                 return true;
 
+            // setup replacement data parent
+            m_ReplacementData.SetParent(StateEffectName);
+
             if (m_ReplacementData.SpellType == ESpellType.MultiProjectiles)
             {
                 var autoAttackData = SpellLoader.GetSpellData(m_Controller.SpellHandler.AutoAttack, level: m_Controller.CharacterLevel);

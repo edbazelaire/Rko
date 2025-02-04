@@ -77,7 +77,7 @@ MonoBehaviour:
   ApplyIfNotHitting: 0
   m_SpellRequirements: []
   MaxHit: 1
-  EnergyGain: 0
+  EnergyGain: 30
   EnergyCost: 0
   m_Damage: 120
   m_ExecutionDamages: 0
@@ -93,9 +93,9 @@ MonoBehaviour:
     m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
-    Value: 0.2
+    Value: 0.25
   - Property: 3
-    Value: 0.1
+    Value: 0.15
   m_Size: 8
   TriggerPlayer: 1
   EnemyStateEffects:

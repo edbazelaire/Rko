@@ -34,6 +34,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
@@ -43,10 +44,11 @@ MonoBehaviour:
   m_SubStateEffects: []
   m_HoldingStateEffects: []
   m_Priority: 0
-  m_Duration: 2
+  m_Duration: 3
   m_IsInstantanious: 0
   m_MaxStacks: -1
   m_StackDecay: -999
+  m_Energy: 0
   m_BonusStats: []
   m_SpeedBonus: 0
   m_CastSpeed: 0

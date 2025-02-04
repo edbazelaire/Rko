@@ -430,6 +430,16 @@ namespace Game
             return (ulong)(SPAWN_CLIENT_ID + m_SpawnId);
         }
 
+        public bool IsBotId(ulong clientId)
+        {
+            return BOT_CLIENT_ID <= clientId && clientId < SPAWN_CLIENT_ID;
+        }
+
+        public bool IsSpawnId(ulong clientId)
+        {
+            return SPAWN_CLIENT_ID <= clientId;
+        }
+
         #endregion
 
 

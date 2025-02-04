@@ -36,6 +36,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   - Prefab: {fileID: 0}
     MaterialEffect: {fileID: 2100000, guid: e126027060a31f64884cc4f789a639b6, type: 2}
@@ -54,6 +55,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   - Prefab: {fileID: 0}
     MaterialEffect: {fileID: 2100000, guid: e126027060a31f64884cc4f789a639b6, type: 2}
@@ -72,6 +74,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   - Prefab: {fileID: 4671482722521794687, guid: 317277684101c0e409d346456f2ce3ec, type: 3}
     MaterialEffect: {fileID: 0}
@@ -90,6 +93,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   OnHit: []
   OnHitSpellSpawn: 1
@@ -99,12 +103,18 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 6
+  m_ClampTargetPos: 1
+  TargetOffset:
+    X: 0
+    Y: 0
   LockTarget: 100
   ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 25
   EnergyCost: 0
-  m_Damage: 50
+  m_Damage: 100
+  m_ExecutionDamages: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -112,6 +122,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
@@ -124,15 +137,17 @@ MonoBehaviour:
   EnemyStateEffects:
   - StateEffect: 24
     Stacks: 3
+    BonusStacksPerLevel: 0.5
     OverridingProperties: []
   - StateEffect: 16
     Stacks: 1
+    BonusStacksPerLevel: 0
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 1.5
   Animation: 6
   IsCancellable: 0
-  AnimationTimer: 2.5
-  m_Cooldown: 12
+  AnimationTimer: 1.2
+  m_Cooldown: 15
   m_SpellSpawn: 1

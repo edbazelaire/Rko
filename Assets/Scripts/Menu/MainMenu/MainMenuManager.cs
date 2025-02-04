@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Menu.Common.Notifications;
+using System;
 using System.Collections;
 using Tools;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -180,7 +182,7 @@ namespace Menu.MainMenu
 
             // if exists select the new tab, otherwise the scroller will handle repositionning the tab window
             if (Enum.IsDefined(typeof(EMainMenuTabs), nextTab))
-                SelectTab((EMainMenuTabs)nextTab);
+                SelectTab((EMainMenuTabs)nextTab, withAnim: true);
             
         }
 
