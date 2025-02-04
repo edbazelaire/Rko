@@ -113,7 +113,7 @@ namespace Assets.Scripts.Data.DataStructures.SpellSubStructures
                     break;
             }
 
-            var offset = UnityEngine.Random.Range(m_OffsetMinMax.Min, m_OffsetMinMax.Max);
+            var offset = UnityEngine.Random.Range(m_OffsetMinMax.Min, m_OffsetMinMax.Max > m_OffsetMinMax.Min ? m_OffsetMinMax.Max : m_OffsetMinMax.Min);
             return Mathf.Clamp(value + offset, min, max);
         }
     }
@@ -202,7 +202,8 @@ namespace Assets.Scripts.Data.DataStructures.SpellSubStructures
     public class SMultiSpellSpawn
     {
         [SerializeField]
-        public SSpellTargetDim m_SpellTargetX = new SSpellTargetDim(EDimension.Y, EMultiSpellZone.None);
+        public SSpellTargetDim m_SpellTargetX = new SSpellTargetDim(EDimension.X, EMultiSpellZone.None);
+        [SerializeField]
         public SSpellTargetDim m_SpellTargetY = new SSpellTargetDim(EDimension.Y, EMultiSpellZone.None);
 
         public virtual Vector3 Recalculate(Vector3 position, int index, int team, int nProjectiles)

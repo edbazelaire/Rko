@@ -444,7 +444,7 @@ namespace Game.Character
         /// </summary>
         /// <param name="hidden"></param>
         public void HideCharacter(bool hidden)
-        {
+        { 
             Color color = INVISIBLE_COLOR;
             if (hidden)
                 AddColor(color);

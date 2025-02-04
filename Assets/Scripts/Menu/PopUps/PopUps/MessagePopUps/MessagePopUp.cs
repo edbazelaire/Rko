@@ -85,6 +85,5 @@ namespace Menu.PopUps
         }
 
         #endregion
-
     }
 }

@@ -656,6 +656,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2555077526267365462, guid: b540a06041e04f346856f797b58fc1ac, type: 3}
+      propertyPath: m_Spacing
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 2555077526267365462, guid: b540a06041e04f346856f797b58fc1ac, type: 3}
       propertyPath: m_Padding.m_Top
       value: 25
       objectReference: {fileID: 0}
@@ -751,9 +755,17 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5141128537227951536, guid: b540a06041e04f346856f797b58fc1ac, type: 3}
+      propertyPath: m_Padding.m_Top
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 5141128537227951536, guid: b540a06041e04f346856f797b58fc1ac, type: 3}
+      propertyPath: m_Padding.m_Bottom
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 5172249527573667240, guid: b540a06041e04f346856f797b58fc1ac, type: 3}
       propertyPath: m_fontSize
-      value: 72
+      value: 71.95
       objectReference: {fileID: 0}
     - target: {fileID: 5529344234866400586, guid: b540a06041e04f346856f797b58fc1ac, type: 3}
       propertyPath: m_Enabled

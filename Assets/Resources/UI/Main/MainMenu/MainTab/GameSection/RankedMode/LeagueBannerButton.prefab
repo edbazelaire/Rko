@@ -162,8 +162,8 @@ GameObject:
   - component: {fileID: 5106198483796954078}
   - component: {fileID: 3714680380203316988}
   - component: {fileID: 3988184215399802854}
-  - component: {fileID: 6073409264741093443}
   - component: {fileID: 7960656120582951852}
+  - component: {fileID: 8602381932160115922}
   m_Layer: 5
   m_Name: LeagueBannerButton
   m_TagString: Untagged
@@ -243,18 +243,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &6073409264741093443
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6553441682606756536}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e2baeccda82f7442affbc7f02d1461a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &7960656120582951852
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -265,5 +253,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f14df38343d2dd24ebc66f90b265cc0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8602381932160115922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6553441682606756536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 412781d898888f64ab40f960a199ca4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

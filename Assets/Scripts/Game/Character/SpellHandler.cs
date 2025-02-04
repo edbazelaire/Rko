@@ -877,7 +877,9 @@ namespace Game.Character
 
         public float CalculateCooldown(float baseCooldown)
         {
-            return Mathf.Max(0f, baseCooldown - m_Controller.StateHandler.GetInt(EStateEffectProperty.CooldownReduction)) * Mathf.Max(0f, 2 - m_Controller.StateHandler.GetFloat(EStateEffectProperty.CooldownReductionPerc));
+            var cooldownReduction = m_Controller.StateHandler.GetInt(EStateEffectProperty.CooldownReduction);
+            var cooldownPerc = 2 - m_Controller.StateHandler.GetFloat(EStateEffectProperty.CooldownReductionPerc);
+            return Mathf.Max(0f, (baseCooldown - cooldownReduction) * cooldownPerc);
         }
 
         #endregion

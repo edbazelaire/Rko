@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Enums;
+using UnityEngine;
 
 namespace Game.Spells
 {
@@ -8,6 +9,16 @@ namespace Game.Spells
         protected override void OnStart()
         {
             base.OnStart();
+
+            m_Controller.StateHandler.OnStateEvent += OnStateChanged;
+        }
+
+        void OnStateChanged(EListEvent listEvent, string name, int nStacks, float value)
+        {
+            if (m_IsActivated && (m_Controller.StateHandler.IsStunned || m_Controller.StateHandler.IsAirborned))
+                Deactivate();
+            else if (!m_IsActivated && !(m_Controller.StateHandler.IsStunned || m_Controller.StateHandler.IsAirborned))
+                Activate();
         }
     }
 }

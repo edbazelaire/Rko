@@ -36,6 +36,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: -1
@@ -67,6 +68,7 @@ MonoBehaviour:
         DeactivationTreshold: 1
         StateEffectEvent: 0
         StateEffectName: 
+        NStateEffectActivationThreshold: 0
         Delay: 0
         Duration: 0
         NActivations: 0
@@ -94,7 +96,22 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 5
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+    - SpellDataName: _PlagueArrows
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 3
+      ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
       Duration: 0
       NActivations: 0
       Cooldown: 0
@@ -143,6 +160,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 3
       Duration: 0
       NActivations: 0
@@ -169,18 +187,5 @@ MonoBehaviour:
     - m_Boss: 2
       m_BonusLevel: 0
       m_Spells: 
-      m_TriggerEffects:
-      - SpellDataName: ShadowVeil
-        Level: 7
-        Target: 4
-        SpellActivationEvent: 4
-        ActivationTreshold: 0
-        SpellDeactivationEvent: 4
-        DeactivationTreshold: 1
-        StateEffectEvent: 0
-        StateEffectName: 
-        Delay: 0
-        Duration: -1
-        NActivations: -1
-        Cooldown: 0
+      m_TriggerEffects: []
       m_BonusStats: []

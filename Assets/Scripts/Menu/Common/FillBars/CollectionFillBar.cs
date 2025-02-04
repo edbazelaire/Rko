@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using TMPro;
 using Tools;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -213,6 +214,7 @@ namespace Menu.Common
         public IEnumerator CollectionAnimationCoroutine(float amount)
         {
             m_AnimationAudio = SoundFXManager.PlaySoundFXClip(SoundFXManager.ProgressBarSoundFX, gameObject.transform);
+            m_AnimationAudio.loop = false;
 
             float goal = m_CurrentCollection + amount;
             float newValue = m_CurrentCollection;
@@ -227,7 +229,8 @@ namespace Menu.Common
                 }
             }
 
-            Destroy(m_AnimationAudio.gameObject);
+            if (m_AnimationAudio != null)
+                Destroy(m_AnimationAudio.gameObject);
 
             UpdateCollection(goal);
             m_Animation = null;

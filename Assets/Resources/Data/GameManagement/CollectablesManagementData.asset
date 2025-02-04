@@ -40,7 +40,7 @@ MonoBehaviour:
       Chests: 00000000
       Collectables: []
       AchievementRewards: []
-  - RequiredXp: 1500
+  - RequiredXp: 1000
     Rewards:
       Currencies: []
       Chests: 
@@ -49,13 +49,13 @@ MonoBehaviour:
         CollectableName: Marcus
         Qty: 1
       AchievementRewards: []
-  - RequiredXp: 3000
+  - RequiredXp: 2000
     Rewards:
       Currencies: []
       Chests: 01000000
       Collectables: []
       AchievementRewards: []
-  - RequiredXp: 7500
+  - RequiredXp: 3500
     Rewards:
       Currencies:
       - Currency: 0
@@ -63,13 +63,13 @@ MonoBehaviour:
       Chests: 01000000
       Collectables: []
       AchievementRewards: []
-  - RequiredXp: 15000
+  - RequiredXp: 5000
     Rewards:
       Currencies: []
       Chests: 0100000001000000
       Collectables: []
       AchievementRewards: []
-  - RequiredXp: 30000
+  - RequiredXp: 7500
     Rewards:
       Currencies: []
       Chests: 
@@ -78,19 +78,19 @@ MonoBehaviour:
         CollectableName: Srug
         Qty: 1
       AchievementRewards: []
-  - RequiredXp: 50000
+  - RequiredXp: 10000
     Rewards:
       Currencies: []
       Chests: 02000000
       Collectables: []
       AchievementRewards: []
-  - RequiredXp: 100000
+  - RequiredXp: 15000
     Rewards:
       Currencies: []
       Chests: 0100000002000000
       Collectables: []
       AchievementRewards: []
-  - RequiredXp: 150000
+  - RequiredXp: 25000
     Rewards:
       Currencies: []
       Chests: 
@@ -99,19 +99,25 @@ MonoBehaviour:
         CollectableName: Nagini
         Qty: 1
       AchievementRewards: []
-  - RequiredXp: 200000
+  - RequiredXp: 50000
     Rewards:
       Currencies: []
       Chests: 03000000
       Collectables: []
       AchievementRewards: []
-  - RequiredXp: 350000
+  - RequiredXp: 100000
     Rewards:
       Currencies: []
       Chests: 0200000003000000
       Collectables: []
       AchievementRewards: []
-  - RequiredXp: 500000
+  - RequiredXp: 150000
+    Rewards:
+      Currencies: []
+      Chests: 0300000003000000
+      Collectables: []
+      AchievementRewards: []
+  - RequiredXp: 200000
     Rewards:
       Currencies: []
       Chests: 0300000003000000
@@ -144,6 +150,8 @@ MonoBehaviour:
     RequiredQty: 75000
   - RequiredGolds: 150000
     RequiredQty: 100000
+  - RequiredGolds: 200000
+    RequiredQty: 150000
   SpellLevelData:
   - RequiredGolds: 5
     RequiredQty: 2
@@ -171,6 +179,8 @@ MonoBehaviour:
     RequiredQty: 3000
   - RequiredGolds: 100000
     RequiredQty: 5000
+  - RequiredGolds: 150000
+    RequiredQty: 7500
   RuneLevelData:
   - RequiredGolds: 50
     RequiredQty: 1
@@ -198,3 +208,5 @@ MonoBehaviour:
     RequiredQty: 200
   - RequiredGolds: 150000
     RequiredQty: 250
+  - RequiredGolds: 200000
+    RequiredQty: 350

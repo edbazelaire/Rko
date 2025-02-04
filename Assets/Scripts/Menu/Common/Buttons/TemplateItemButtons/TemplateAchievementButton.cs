@@ -2,6 +2,7 @@
 using Enums;
 using Menu.Common.Displayers;
 using Save;
+using System;
 using TMPro;
 using Tools;
 using UnityEngine;
@@ -14,8 +15,13 @@ namespace Menu.Common.Buttons
         #region Members
 
         // ==============================================================================================
+        // Actions
+        public static Action<bool> AchievementUpdateEvent;
+
+        // ==============================================================================================
         // Data
         AchievementData m_Achievement;
+        bool m_IsMaxed;
 
         // ==============================================================================================
         // GameObjects & Components
@@ -25,6 +31,7 @@ namespace Menu.Common.Buttons
         CollectionFillBar   m_FillBar;
 
         public Button Button => m_Button;
+        public bool IsMaxed => m_IsMaxed;
 
         #endregion
 
@@ -59,6 +66,7 @@ namespace Menu.Common.Buttons
             m_Title.text = TextLocalizer.SplitCamelCase(m_Achievement.name);
             m_FillBar.Initialize(m_Achievement.Count, m_Achievement.RequestedValue);
             RefreshReward();
+            RefreshIsMaxed();
         }
 
         #endregion
@@ -69,7 +77,7 @@ namespace Menu.Common.Buttons
         void RefreshUI()
         {
             RefreshReward();
-
+            RefreshIsMaxed();
             m_FillBar.UpdateCollection(m_Achievement.Count, m_Achievement.RequestedValue);
         }
 
@@ -90,6 +98,18 @@ namespace Menu.Common.Buttons
             }
             
             m_RewardDisplayer.Initialize(m_Achievement.Current.Value.Rewards, 2);
+        }
+
+        void RefreshIsMaxed()
+        {
+            // check if is a new completion (to update notifications)
+            bool isMaxed = m_Achievement.Count >= m_Achievement.RequestedValue;
+            if (isMaxed != m_IsMaxed)
+            {
+                AchievementUpdateEvent?.Invoke(isMaxed);
+            }
+
+            m_IsMaxed = isMaxed;
         }
 
         #endregion
@@ -125,9 +145,6 @@ namespace Menu.Common.Buttons
         {
             if (! m_Achievement.IsUnlockable)
             {
-                // ===========================================
-                // TODO : OPEN POPUP
-                // ===========================================
                 Debug.LogWarning("Achivement not unlockable");
                 return;
             }

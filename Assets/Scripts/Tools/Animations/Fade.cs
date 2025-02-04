@@ -48,6 +48,9 @@ namespace Tools.Animations
             // Set initial values immediately on initialization
             transform.localScale = Vector3.one * m_StartScale;
             SetOpacity(m_StartOpacity);
+
+            if (gameObject.activeInHierarchy)
+                gameObject.SetActive(true);
         }
 
         public override void Deactivate()

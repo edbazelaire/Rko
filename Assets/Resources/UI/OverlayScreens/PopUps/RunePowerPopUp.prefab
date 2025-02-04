@@ -308,8 +308,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: When your character dies, Resurrects him with 10% hp
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
+  m_sharedMaterial: {fileID: 2147374, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -646,8 +646,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Divine Resurretion
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 1ba5b045205208d4e82bdffcb4eef89e, type: 2}
-  m_sharedMaterial: {fileID: 7658495151606355865, guid: 1ba5b045205208d4e82bdffcb4eef89e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -671,7 +671,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 82.4
+  m_fontSize: 77.1
   m_fontSizeBase: 55
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1326,7 +1326,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7497723374904151655, guid: d46e2911829e1164dac04cc228c3f097, type: 3}
       propertyPath: m_fontSize
-      value: 54.85
+      value: 64.3
       objectReference: {fileID: 0}
     - target: {fileID: 7868452780964463860, guid: d46e2911829e1164dac04cc228c3f097, type: 3}
       propertyPath: m_Name
@@ -1903,6 +1903,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a619e6f79ed598418d99df0046e8f4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_IsBlockingQuickClose: 0
 --- !u!224 &5046432853360295685 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3058135637605800607, guid: b540a06041e04f346856f797b58fc1ac, type: 3}

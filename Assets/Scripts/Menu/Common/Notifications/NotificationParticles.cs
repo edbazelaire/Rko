@@ -1,12 +1,11 @@
-﻿using MyBox;
-using Tools;
+﻿using Tools;
 using Tools.Animations;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Menu.Common.Notifications
 {
-    public class NotificationDisplay : MObject
+    public class NotificationParticles : MObject, INotification
     {
         #region Members
 
@@ -24,10 +23,15 @@ namespace Menu.Common.Notifications
 
         #region Init & End
 
-        public static NotificationDisplay Add(GameObject gameObject, Image background, Vector2 size, string colorHexa = "#f4c633", float alpha = 0.75f)
+        public static NotificationParticles Add(GameObject gameObject, Image background, Vector2 size, string colorHexa = "#f4c633", float alpha = 0.75f)
         {
-            if (!gameObject.TryGetComponent<NotificationDisplay>(out var notificationDisplay))
-                notificationDisplay = gameObject.AddComponent<NotificationDisplay>();
+            // not existing on target : add component
+            if (!gameObject.TryGetComponent<NotificationParticles>(out var notificationDisplay))
+                notificationDisplay = gameObject.AddComponent<NotificationParticles>();
+
+            // if already active : do nothing
+            if (notificationDisplay.m_IsActivated)
+                return notificationDisplay;
 
             notificationDisplay.Initialize(background, size, colorHexa, alpha);
             notificationDisplay.Activate();
@@ -37,7 +41,7 @@ namespace Menu.Common.Notifications
 
         public static void Remove(GameObject gameObject)
         {
-            if (!gameObject.TryGetComponent<NotificationDisplay>(out var notificationDisplay))
+            if (!gameObject.TryGetComponent<NotificationParticles>(out var notificationDisplay))
                 return;
 
             notificationDisplay.Deactivate();

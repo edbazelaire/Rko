@@ -33,6 +33,8 @@ namespace Menu
         /// <summary> default tab opened </summary>
         protected virtual Enum m_DefaultTab { get; set; } = null;
 
+        /// <summary> dict of all Tabs buttons linked to their enum value </summary>
+        protected Dictionary<Enum, TabButton> m_TabButtons = new();
         /// <summary> dict of all Tabs tabs linked to their enum value </summary>
         protected Dictionary<Enum, TabContent> m_Tabs;
         /// <summary> default tab displayed on entering the menu </summary>
@@ -41,6 +43,28 @@ namespace Menu
 
         /// <summary> tab content currently displayed </summary>
         protected TabContent m_CurrentTabContent => m_CurrentTab != null ? m_Tabs[m_CurrentTab] : null;
+
+        public T GetCurrentTab<T>() where T : TabContent
+        {
+            if (m_CurrentTabContent == null)
+            {
+                ErrorHandler.Error("No tab is currently selected");
+                return null;
+            }
+
+            try
+            {
+                return (T)m_CurrentTabContent;
+            } 
+            catch (Exception e) 
+            {
+                ErrorHandler.Error("Unable to parse current tab content (" + m_CurrentTab.ToString() + ") as " + typeof(T));
+                ErrorHandler.Error(e.Message);
+                return null;
+            }
+        }
+
+        public TabButton GetTabButton(Enum tab) => m_TabButtons[tab];
 
         #endregion
 
@@ -93,6 +117,7 @@ namespace Menu
         protected virtual void RegisterTabs()
         {
             m_Tabs = new Dictionary<Enum, TabContent>();
+            m_TabButtons = new Dictionary<Enum, TabButton>();
             if (m_TabEnumType == null)
             {
                 ErrorHandler.FatalError("Enum of tabs was not provided for " + name + " : set m_TabEnumType");
@@ -153,9 +178,11 @@ namespace Menu
             if (tabButton != null)
             {
                 // register tab button click
-                tabButton.TabButtonClickedEvent += () => { SelectTab(tab); };
+                tabButton.TabButtonClickedEvent += () => { SelectTab(tab, withAnim: false); };
                 // deactivate tab button by default
                 tabButton.Activate(false);
+                // add to list of tab buttons
+                m_TabButtons[tab] = tabButton;
             }
 
             // deactivate tab by default

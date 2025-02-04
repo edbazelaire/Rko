@@ -38,7 +38,7 @@ public class Life : NetworkBehaviour
 
     public Controller Controller    => m_Controller;
     public int Shield               => m_Shield;
-    public float PercHp             => Mathf.Clamp(m_Hp.Value / m_MaxHp.Value, 0f, 1f);
+    public float PercHp             => Mathf.Clamp((float)m_Hp.Value / m_MaxHp.Value, 0f, 1f);
 
     /// <summary> Is the character alive </summary>
     public bool IsAlive             => m_Hp.Value > 0;

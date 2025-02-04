@@ -7,6 +7,7 @@ using Inventory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using Tools;
 using Unity.Services.CloudSave.Models;
 using UnityEngine;
@@ -29,9 +30,57 @@ namespace Save
         private bool            m_IsOver;
 
         public readonly EArenaDifficulty GetArenaDifficulty() => SArenaDifficulty.Difficulty;
+        public string[] GetPowerUps() => PowerUps ?? (new string[4]);
         public readonly bool InProgress() => ArenaType != EArenaType.None;
         public readonly bool IsOver() => m_IsOver || Losses >= ArenaData.MAX_LOSSES || Level > AssetLoader.LoadArenaData(ArenaType, SArenaDifficulty).MaxLevel;
-        public readonly bool IsBoss() => Stage == AssetLoader.LoadArenaData(ArenaType, SArenaDifficulty).GetArenaLevelData(Level).StageData.Count - 1;
+        public readonly bool IsBoss()
+        {
+            var arenaLevelData = ArenaLevelData();
+            if (arenaLevelData == null)
+                return false;
+
+            return Stage == arenaLevelData.Value.StageData.Count - 1;
+        }
+
+        public SArenaLevelData? ArenaLevelData()
+        {
+            var arenaData = LoadArenaData();
+
+            if (Level > arenaData.MaxLevel + 1)
+            {
+                ErrorHandler.Error($"CurrentArena.Level ({Level}) > max arena level + 1 ({arenaData.MaxLevel + 1}) for arena {ArenaType} at difficulty {SArenaDifficulty} - setting to max arena level");
+                Level = arenaData.MaxLevel + 1;
+            }
+
+            if (Level >= arenaData.MaxLevel + 1)
+                return null;
+
+            if (Level < 0)
+            {
+                ErrorHandler.Error($"CurrentArena.Level ({Level}) < 0 for arena {ArenaType} at difficulty {SArenaDifficulty} at arena level {Level} - setting to max arena level");
+                Level = 0;
+            }
+
+            return arenaData.ArenaLevelData[Level];
+        }
+
+        public bool IsArenaCompleted() => Level >= LoadArenaData().MaxLevel + 1;
+        public bool IsMaxArenaLevel() => Level >= LoadArenaData().MaxLevel;
+
+        public bool IsMaxStage()
+        {
+            if (! CheckCurrentStage())
+                return false;
+
+            var arenaLevelData = ArenaLevelData();
+            if (arenaLevelData == null)
+            {
+                ErrorHandler.Warning("Unable to check if is max stage - arena level data is null");
+                return true;
+            }
+
+            return Stage == arenaLevelData.Value.StageData.Count - 1;
+        }
 
         public SCurrentArenaCloudData(EArenaType arenaType, SArenaDifficulty sArenaDifficulty = default, int level = 0, int stage = 0, int losses = 0, float erosion = 0f, string[] powerUps = default, int rewardPower = 0, ERarety rewardRarety = 0, bool isOver = false)
         {
@@ -62,7 +111,7 @@ namespace Save
 
         #endregion
 
-        public ArenaData LoadArenaData()
+        public readonly ArenaData LoadArenaData()
         {
             return AssetLoader.LoadArenaData(ArenaType, SArenaDifficulty);
         }
@@ -86,6 +135,59 @@ namespace Save
 
             // return as list
             return powerUpList.ToList();
+        }
+
+        /// <summary>
+        /// Check that values are consistent - otherwise make the changes
+        /// </summary>
+        public bool Check()
+        {
+            bool test = true;
+
+            test = test && CheckArenaData();
+            test = test && CheckPowerUps();
+
+            return test;
+        }
+
+        public bool CheckArenaData()
+        {
+            if (ArenaType == EArenaType.None)
+            {
+                ErrorHandler.Error("Bad arena type provided : " + ArenaType);
+                return false;
+            }
+
+            CheckCurrentStage();
+
+            return true;
+        }
+
+        public bool CheckCurrentStage()
+        {
+            var arenaLevelData = ArenaLevelData();
+
+            if (Stage < 0)
+            {
+                ErrorHandler.Error($"CurrentArena.Stage ({Stage}) < 0 for arena {ArenaType} at difficulty {SArenaDifficulty} at arena level {Level} - setting to max arena level");
+                Stage = 0;
+                return false;
+            }
+
+            if (arenaLevelData == null)
+            {
+                ErrorHandler.Warning("Unable to check stage - arena data is null");
+                return true;
+            }    
+
+            if (Stage > arenaLevelData.Value.StageData.Count)
+            {
+                ErrorHandler.Error($"CurrentArena.Stage ({Stage}) > max arena stage ({arenaLevelData.Value.StageData.Count}) for arena {ArenaType} at difficulty {SArenaDifficulty} at arena level {Level} - setting to max arena level");
+                Stage = arenaLevelData.Value.StageData.Count - 1;
+                return false;
+            }
+
+            return true;
         }
 
         public bool CheckPowerUps()
@@ -517,10 +619,8 @@ namespace Save
             // Repeat the action nTimes
             for (int i = 0; i < nWins; i++)
             {
-                ArenaData arenaData = AssetLoader.LoadArenaData(CurrentArena.ArenaType, CurrentArena.SArenaDifficulty);
-
                 // ADD level 
-                if (CurrentArena.Stage == arenaData.CurrentArenaLevelData.StageData.Count - 1)
+                if (CurrentArena.IsMaxStage())
                     UpgradeCurrentArenaLevel(false);
 
                 // ADD stage
@@ -579,9 +679,7 @@ namespace Save
 
         public static void UpgradeCurrentArenaLevel(bool save = true)
         {
-            ArenaData arenaData = AssetLoader.LoadArenaData(CurrentArena.ArenaType, CurrentArena.SArenaDifficulty);
-
-            if (CurrentArena.Level >= arenaData.MaxLevel)
+            if (CurrentArena.IsMaxArenaLevel())
             {
                 if (CurrentArena.SArenaDifficulty == UnlockedArenas[CurrentArena.ArenaType])
                     UnlockNextArenaDifficulty(CurrentArena.ArenaType, save: true);
@@ -710,6 +808,10 @@ namespace Save
             if (erosion.HasValue)
                 currentArena.Erosion = erosion.Value;
 
+            // check that provided values are consistant 
+            currentArena.CheckArenaData();
+
+            // save
             Instance.SetData(KEY_CURRENT_ARENA, currentArena, save);
             CurrentArenaDataChangedEvent?.Invoke();
         }

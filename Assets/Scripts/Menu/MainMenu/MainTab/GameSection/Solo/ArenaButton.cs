@@ -13,7 +13,7 @@ public class ArenaButton : MObject
     EArenaType m_ArenaType;
     SArenaDifficulty m_ArenaDifficulty;
 
-    NotificationDisplay m_NotificationDisplay;
+    NotificationParticles m_NotificationDisplay;
     Button m_Button;
 
     public Button Button => m_Button;
@@ -27,7 +27,7 @@ public class ArenaButton : MObject
     {
         base.FindComponents();
 
-        m_NotificationDisplay = Finder.FindComponent<NotificationDisplay>(gameObject);
+        m_NotificationDisplay = Finder.FindComponent<NotificationParticles>(gameObject);
         m_Button = Finder.FindComponent<Button>(gameObject);
     }
 

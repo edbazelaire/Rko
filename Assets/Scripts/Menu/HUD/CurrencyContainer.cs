@@ -1,5 +1,7 @@
-﻿using Enums;
+﻿using Assets.Scripts.Managers;
+using Enums;
 using Inventory;
+using Menu.MainMenu;
 using Save;
 using TMPro;
 using Tools;
@@ -15,7 +17,7 @@ namespace Assets.Scripts.Menu
         [SerializeField] ECurrency m_Currency;
 
         Image       m_Icon;
-        GameObject  m_CurrencyContainer;
+        Button      m_Button;
         TMP_Text    m_TextValue;
 
         #endregion
@@ -26,16 +28,19 @@ namespace Assets.Scripts.Menu
         protected void Awake()
         {
             m_Icon = Finder.FindComponent<Image>(gameObject, "Icon");
+            m_Button = Finder.FindComponent<Button>(gameObject);
             m_TextValue = Finder.FindComponent<TMP_Text>(gameObject, "Value");
 
             m_Icon.sprite = AssetLoader.LoadCurrencyIcon(m_Currency);
             m_TextValue.text = TextHandler.FormatNumericalString(InventoryManager.GetCurrency(m_Currency));
 
+            m_Button.onClick.AddListener(OnCurrencyButtonClicked);
             InventoryCloudData.CurrencyChangedEvent += OnCurrencyChanged;
         }
 
         protected void OnDestroy()
         {
+            m_Button.onClick.RemoveAllListeners();
             InventoryCloudData.CurrencyChangedEvent -= OnCurrencyChanged;
         }
 
@@ -50,6 +55,22 @@ namespace Assets.Scripts.Menu
                 return;
 
             m_TextValue.text = InventoryManager.GetCurrency(m_Currency).ToString();
+        }
+
+        void OnCurrencyButtonClicked()
+        {
+            if (! ScreenManager.GoToScreen(EPopUpState.MainMenuScreen))
+                return;
+
+            ScreenManager.MainMenuManager.SelectTab(EMainMenuTabs.ShopTab, withAnim: false);
+            ShopTabContent tab = ScreenManager.MainMenuManager.GetCurrentTab<ShopTabContent>();
+            if (tab == null)
+            {
+                ErrorHandler.Error("Unable to select InventoryTab");
+                return;
+            }
+
+            tab.SelectCurrency(m_Currency);
         }
 
         #endregion

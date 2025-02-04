@@ -1,7 +1,11 @@
-﻿using Assets.Scripts.Managers.Sound;
+﻿using Assets.Scripts.Managers;
+using Assets.Scripts.Managers.Sound;
+using Enums;
+using System;
 using System.Collections;
 using Tools;
 using Tools.Animations;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -10,25 +14,59 @@ namespace Menu.PopUps
 {
     public class OverlayScreen : MObject
     {
-        const int ADDING_ORDER_IN_LAYER = 1000;
-        public static int OrderInLayer = 0;
+        #region Members
+        
+        [SerializeField, Tooltip("Is that screen blocking quick method to go to another screen")]
+        protected bool m_IsBlockingQuickClose = false;
 
         protected Canvas m_Canvas;
         protected float m_EndingTimer = 0f;
+        /// <summary> is the game object done displaying (or done exiting display) </summary>
+        protected bool m_IsDisplayed = false;
+
+        // ===========================================================================================================
+        // PUBLIC DEPENDENT MEMBERS
+        public bool IsCurrent => this == ScreenManager.CurrentScreen;
+        public Canvas Canvas => m_Canvas;
+        public bool Initialized => m_Initialized;
+        public bool IsDisplayed => ! gameObject.IsDestroyed() && m_IsDisplayed;
+
+        public string PopUpName
+        {
+            get
+            {
+                return name.Replace(" (Clone)", "");
+            }
+        }
+
+        public EPopUpState PopUpState
+        {
+            get
+            {
+                if (Enum.TryParse(PopUpName, out EPopUpState popupState))
+                    return EPopUpState.None;
+
+                return popupState;
+            }
+        }
+
+        #endregion
+
 
 
         #region Init & End
 
         public override void Initialize()
         {
-            OrderInLayer += ADDING_ORDER_IN_LAYER;
+            ScreenManager.AddScreen(this);
 
             gameObject.SetActive(false);
 
             OnEnter();
+
             CoroutineManager.DelayMethod(LoadAndSetup);
 
-            m_Initialized = true;
+            //m_Initialized = true;
         }
 
         /// <summary>
@@ -43,7 +81,8 @@ namespace Menu.PopUps
         {
             PlaySoundFX();
 
-            OrderInLayer -= ADDING_ORDER_IN_LAYER;
+            ScreenManager.RemoveScreen(this);
+
             UnRegisterButtons();
             UnRegisterListeners();
         }
@@ -80,7 +119,7 @@ namespace Menu.PopUps
          
             m_Canvas.worldCamera        = Camera.main;
             m_Canvas.sortingLayerName   = "Overlay";
-            m_Canvas.sortingOrder       = OrderInLayer;
+            m_Canvas.sortingOrder       = ScreenManager.OrderInLayer;
         }
         
         protected virtual void AdjustAspectRatio() { }
@@ -106,6 +145,8 @@ namespace Menu.PopUps
         {
             var fadeIn = gameObject.AddComponent<Fade>();
             fadeIn.Initialize("", duration: 0.35f, startOpacity: 0);
+
+            m_IsDisplayed = true;
         }
 
         #endregion
@@ -116,7 +157,7 @@ namespace Menu.PopUps
         /// <summary>
         /// Happens before destroying the game object
         /// </summary>
-        protected virtual void Exit()
+        public virtual void Exit()
         {
             OnExit();
 

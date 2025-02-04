@@ -2,6 +2,7 @@
 using Game;
 using System.Collections;
 using System.Collections.Generic;
+using Tools;
 using UnityEngine;
 
 namespace Assets.Scripts.Game
@@ -47,6 +48,10 @@ namespace Assets.Scripts.Game
             if (damageType == ESpellCategory.None || (hitType == EHitType.Damage && damageType == ESpellCategory.Tick))
                 return;
 
+            // check if is a spawn 
+            if (GameManager.Instance.IsSpawnId(clientId))
+                return;
+
             // Enqueue the hit data for the player
             HitDisplayData data = new(damage, hitType, damageType);
             m_HitQueues[clientId].Enqueue(data);
@@ -75,6 +80,10 @@ namespace Assets.Scripts.Game
 
         private void ShowDamage(ulong clientId, HitDisplayData data)
         {
+            var player = GameManager.Instance.GetPlayer(clientId);
+            if (player == null)
+                return;
+
             var pos = GameManager.Instance.GetPlayer(clientId).transform.position;
             pos.y += 0.7f;
             var damageText = Instantiate(m_FloatingTextPrefab, pos, Quaternion.identity);

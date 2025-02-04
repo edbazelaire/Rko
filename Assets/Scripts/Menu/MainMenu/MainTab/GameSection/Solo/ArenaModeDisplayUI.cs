@@ -12,6 +12,9 @@ using UnityEngine.UI;
 using Assets;
 using Assets.Scripts.Data.GameManagement;
 using Unity.VisualScripting;
+using Tools.Animations;
+using System.Collections;
+using Assets.Scripts.Managers;
 
 namespace Menu.MainMenu.MainTab
 {
@@ -25,8 +28,10 @@ namespace Menu.MainMenu.MainTab
 
         TMP_Dropdown        m_ArenaTypeDropdown;
         TMP_Dropdown        m_ArenaDifficultyDropdown;
+        GameObject          m_ArenaDifficultyAnimation;
         GameObject          m_ArenaSection;
         ArenaButton         m_ArenaButton;
+        LifesSectionUI      m_LifesSection;
         ArenaStageSectionUI m_StageSectionUI;
         GameObject          m_ButtonsSection;
         Button              m_SelectButton;
@@ -43,7 +48,9 @@ namespace Menu.MainMenu.MainTab
 
             m_ArenaTypeDropdown         = Finder.FindComponent<TMP_Dropdown>(gameObject, "DropdownButton");
             m_ArenaDifficultyDropdown   = Finder.FindComponent<TMP_Dropdown>(gameObject, "ArenaDifficultyDropdown");
+            m_ArenaDifficultyAnimation  = Finder.Find(m_ArenaDifficultyDropdown.gameObject, "Animation");
             m_ArenaSection              = Finder.Find(gameObject, "ArenaSection");
+            m_LifesSection              = Finder.FindComponent<LifesSectionUI>(gameObject, "LifesSection");
             m_StageSectionUI            = Finder.FindComponent<ArenaStageSectionUI>(gameObject, "StageSection");
             m_ButtonsSection            = Finder.Find(gameObject, "ButtonsSection");
             m_SelectButton              = Finder.FindComponent<Button>(m_ButtonsSection, "SelectButton");
@@ -54,6 +61,7 @@ namespace Menu.MainMenu.MainTab
         {
             base.SetUpUI();
 
+            m_LifesSection.Initialize(0, 0);
             SetUpArenaDropDown();
 
             if (ProgressionCloudData.CurrentArena.ArenaType != EArenaType.None)
@@ -115,6 +123,7 @@ namespace Menu.MainMenu.MainTab
             {
                 m_ArenaTypeDropdown.interactable = true;
                 m_ArenaDifficultyDropdown.interactable = true;
+                m_LifesSection.Activate(false);
                 m_StageSectionUI.transform.parent.gameObject.SetActive(false);
                 m_ButtonsSection.gameObject.SetActive(true);
                 m_SelectButton.gameObject.SetActive(true);
@@ -128,9 +137,7 @@ namespace Menu.MainMenu.MainTab
                     m_ArenaButton.UpdateArenaDifficulty(m_ArenaDifficulty);
 
                     // set this new unlocked value as current selected and add 
-                    m_ArenaDifficultyDropdown.SetValueWithoutNotify(m_ArenaDifficultyDropdown.options.FindIndex(option => option.text == m_ArenaDifficulty.ToString()));
-
-                    // TODO : Animation of the button for the notification
+                    ScreenManager.StoreEvent(EPopUpState.MainMenuScreen, () => StartCoroutine(NewArenaDifficultyAnim()));
 
                     // tell notifications that the value has been seen
                     NotificationCloudData.CollectUnlockedArena(m_ArenaType);
@@ -150,6 +157,7 @@ namespace Menu.MainMenu.MainTab
 
                 m_ArenaTypeDropdown.interactable = false;
                 m_ArenaDifficultyDropdown.interactable = false;
+                m_LifesSection.Activate(false);
                 m_StageSectionUI.transform.parent.gameObject.SetActive(false);
                 m_ButtonsSection.gameObject.SetActive(true);
                 m_SelectButton.gameObject.SetActive(false);
@@ -161,6 +169,8 @@ namespace Menu.MainMenu.MainTab
             {
                 m_ArenaTypeDropdown.interactable = false;
                 m_ArenaDifficultyDropdown.interactable = false;
+                m_LifesSection.Activate(true);
+                m_LifesSection.RefreshUI(ArenaData.MAX_LOSSES - ProgressionCloudData.CurrentArena.Losses, ArenaData.MAX_LOSSES);
                 m_StageSectionUI.transform.parent.gameObject.SetActive(true);
                 m_ButtonsSection.gameObject.SetActive(false);
                 m_StageSectionUI.Initialize(m_ArenaData.CurrentLevel, m_ArenaData);
@@ -200,6 +210,31 @@ namespace Menu.MainMenu.MainTab
             // add values to dropdown
             m_ArenaDifficultyDropdown.AddOptions(values);
         }
+
+        #endregion
+
+
+        #region Animation
+
+        IEnumerator NewArenaDifficultyAnim()
+        {
+            // play an animation
+            m_ArenaDifficultyAnimation.SetActive(true);
+            var fade = m_ArenaDifficultyAnimation.AddComponent<Fade>();
+            fade.Initialize(duration: 1f, startOpacity: 0f, endOpacity: 1f);
+
+            yield return new WaitForSeconds(1f);
+
+            // change value in the dropdown
+            m_ArenaDifficultyDropdown.SetValueWithoutNotify(m_ArenaDifficultyDropdown.options.FindIndex(option => option.text == m_ArenaDifficulty.ToString()));
+
+            yield return new WaitForSeconds(1.5f);
+
+            fade = m_ArenaDifficultyAnimation.AddComponent<Fade>();
+            fade.Initialize(duration: 1f, startOpacity: 1f, endOpacity: 0f);
+            m_ArenaDifficultyAnimation.SetActive(false);
+        }
+
 
         #endregion
 

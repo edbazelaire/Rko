@@ -1,4 +1,6 @@
 ﻿using Enums;
+using Menu.Common.Notifications;
+using Save;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;
@@ -32,6 +34,33 @@ namespace Assets.Scripts.Menu
             m_SettingsButton = Finder.FindComponent<Button>(m_ButtonsContainer, "SettingsButton");
         }
 
+        protected override void SetUpUI()
+        {
+            base.SetUpUI();
+
+            CoroutineManager.DelayMethod(() => SetMessagesNotification());
+        }
+
+        #endregion
+
+
+        #region GUI Manipulator
+
+        protected void SetMessagesNotification()
+        {
+            int nMessages = NotificationCloudData.NotSeenMessagesCount();
+            if (nMessages > 0)
+            {
+                NotificationPulse.Add(
+                    baseGameObject: m_MessagerieButton.gameObject,
+                    animationTarget: Finder.FindComponent<Image>(m_MessagerieButton.gameObject).gameObject,
+                    redDotTarget: m_MessagerieButton.gameObject,
+                    counter: nMessages,
+                    size: 1f
+                );
+            } 
+        }
+
         #endregion
 
 
@@ -43,13 +72,38 @@ namespace Assets.Scripts.Menu
 
             m_MessagerieButton.onClick.AddListener(() => Main.SetPopUp(EPopUpState.MessageriePopUp));
             m_SettingsButton.onClick.AddListener(() => Main.SetPopUp(EPopUpState.SettingsPopUp));
+
+            NotificationCloudData.MessageSeenEvent += OnMessageSeen;
+            NotificationCloudData.MessageCountChangedEvent += OnMessageCountChanged;
         }
 
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
 
+            m_MessagerieButton.onClick.RemoveAllListeners();
             m_SettingsButton.onClick.RemoveAllListeners();
+
+            NotificationCloudData.MessageSeenEvent -= OnMessageSeen;
+            NotificationCloudData.MessageCountChangedEvent -= OnMessageCountChanged;
+        }
+
+        protected void OnMessageSeen(string _)
+        {
+            OnMessageCountChanged();
+        }
+
+        protected void OnMessageCountChanged()
+        {
+            int nMessages = NotificationCloudData.NotSeenMessagesCount();
+            if (nMessages <= 0)
+            {
+                NotificationPulse.Remove(m_MessagerieButton.gameObject);
+            }
+            else
+            {
+                NotificationPulse.UpdateCounter(m_MessagerieButton.gameObject, nMessages);
+            }
         }
 
         #endregion

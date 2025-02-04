@@ -66,7 +66,7 @@ namespace Menu.MainMenu
         #endregion
 
 
-        #region Listeners
+        #region Tab Selection
 
         void SelectTab(Enum collectable)
         {
@@ -78,6 +78,12 @@ namespace Menu.MainMenu
 
             else if (collectable.GetType() == typeof(ECharacter))
                 m_ItemsTabManager.SelectTab(EInvetoryItemTab.CharactersTab);
+
+            else
+            {
+                ErrorHandler.Error("Unahandle case : " + collectable.GetType());
+                return;
+            }
         }
 
         #endregion

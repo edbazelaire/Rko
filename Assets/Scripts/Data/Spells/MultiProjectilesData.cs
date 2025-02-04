@@ -73,6 +73,10 @@ namespace Data
 
         public override void Cast(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default, bool recalculateTarget = true, bool recalculatePosition = true, bool recalculateRotation = true)
         {
+            // set parent of sub-spell data
+            if (ProjectileData != null)
+                ProjectileData.SetParent(Parent);
+
             // recalculate target depending on spell type
             if (recalculateTarget)
                 CalculateTarget(ref target, clientId);

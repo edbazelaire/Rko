@@ -29,6 +29,10 @@ namespace Menu
 
         protected bool m_Activated;
 
+        // ========================================================================================
+        // Public accessors
+        public Image BackgroundImage => m_BackgroundImage;
+
         #endregion
 
 

@@ -366,115 +366,7 @@ namespace Assets
 
         public static void SetPopUp(EPopUpState popUpState, params object[] args)
         {
-            var popUpPath = "";
-            if (popUpState.ToString().EndsWith("Screen"))
-            {
-                popUpPath = AssetLoader.c_OverlayPath;
-            } else if (popUpState.ToString().EndsWith("PopUp"))
-            {
-                popUpPath = AssetLoader.c_PopUpsPath;
-            } else
-            {
-                ErrorHandler.Error("Unknown PopUp type " + popUpState.ToString() + " : unable to find adequate path");
-            }
-
-            // instantiate object in the canvas
-            var obj = Instantiate(AssetLoader.Load<GameObject>(popUpState.ToString(), popUpPath));
-            if (obj == null)
-            {
-                ErrorHandler.Error("Unable to find popup : " + popUpState.ToString());
-                return;
-            }
-
-            // setup initalization depending on the popup state
-            switch (popUpState) {
-
-                // MESSAGE POP UPS -------------------------------------------------------
-                case EPopUpState.MessagePopUp:
-                    obj.GetComponent<MessagePopUp>().Initialize(message: (string)args[0], title: args.Count() > 1 ? (string)args[1] : "", onValidate: args.Count() > 2 ? (Action)args[2] : null, onCancel: args.Count() > 3 ? (Action)args[3] : null);
-                    break;
-
-                case EPopUpState.ConfirmPopUp:
-                    obj.GetComponent<ConfirmPopUp>().Initialize(message: (string)args[0], title: args.Count() > 1 ? (string)args[1] : "", onValidate: args.Count() > 2 ? (Action)args[2] : null, onCancel: args.Count() > 3 ? (Action)args[3] : null);
-                    break;
-
-                case EPopUpState.ConfirmBuyPopUp:
-                    obj.GetComponent<ConfirmBuyPopUp>().Initialize((string)args[0], (SPriceData)args[1], (SRewardsData)args[2], (Action)args[3], (Action)args[4]);
-                    break;
-
-                case EPopUpState.ConfirmBuyItemPopUp:
-                    obj.GetComponent<ConfirmBuyItemPopUp>().Initialize((SPriceData)args[0], (Enum)args[1], (int)args[2], (Action)args[3], (Action)args[4]);
-                    break;
-
-                case EPopUpState.ConfirmBuyBundlePopUp:
-                    obj.GetComponent<ConfirmBuyBundlePopUp>().Initialize((string)args[0], (SPriceData)args[1], (SRewardsData)args[2], (Action)args[3], (Action)args[4]);
-                    break;
-
-                // SCREENS -------------------------------------------------------
-                case EPopUpState.RewardsScreen:
-                    obj.GetComponent<RewardsScreen>().Initialize((SRewardsData)args[0], (string)args[1], args.Length > 2 ? (Action)args[2] : null, args.Length > 3 ? (string)args[3] : null);
-                    break;
-
-                case EPopUpState.AchievementRewardScreen:
-                    obj.GetComponent<AchievementRewardScreen>().Initialize((List<SAchievementReward>)args[0]);
-                    break;
-
-                case EPopUpState.ArenaPathScreen:
-                    obj.GetComponent<ArenaPathScreen>().Initialize((EArenaType)args[0], (SArenaDifficulty)args[1]);
-                    break;
-
-                case EPopUpState.LevelUpScreen:
-                    obj.GetComponent<LevelUpScreen>().Initialize(baseXp: (int)args[0], maxXp: (int)args[1], bonusXp: (int)args[2]);
-                    break;
-
-                case EPopUpState.PowerUpInfoScreen:
-                    obj.GetComponent<PowerUpInfoScreen>().Initialize((SRunePower)args[0]);
-                    break;
-
-                case EPopUpState.PowerUpSelectionScreen:
-                    obj.GetComponent<PowerUpSelectionScreen>().Initialize(args.Count() > 0 ? (int)args[0] : -1);
-                    break;
-
-                // INFO POP UPS -------------------------------------------------------
-                case EPopUpState.SpellInfoPopUp:
-                    bool infoOnly = args.Length > 2 && (bool)args[2];
-                    obj.GetComponent<SpellInfoPopUp>().Initialize((ESpell)args[0], (int)args[1], infoOnly);
-                    break;
-
-                case EPopUpState.RuneInfoPopUp:
-                    obj.GetComponent<RuneInfoPopUp>().Initialize((ERune)args[0], (int)args[1], args.Count() >= 3 ? (ERuneActivation)args[2] : ERuneActivation.None);
-                    break;
-
-                case EPopUpState.CollectableInfoPopUp:
-                case EPopUpState.CharacterInfoPopUp:
-                    obj.GetComponent<CollectableInfoPopUp>().Initialize((ECharacter)args[0], (int)args[1]);
-                    break;
-
-                case EPopUpState.StateEffectPopUp:
-                    obj.GetComponent<StateEffectPopUp>().Initialize((SStateEffectData)args[0], (int)args[1]);
-                    break;
-
-                case EPopUpState.TriggerEffectPopUp:
-                    obj.GetComponent<TriggerEffectPopUp>().Initialize((STriggerEffect)args[0]);
-                    break;
-
-                case EPopUpState.RunePowerPopUp:
-                    obj.GetComponent<RunePowerPopUp>().Initialize((SRunePower)args[0]);
-                    break;
-
-                // SETTINGS & OPTIONS -------------------------------------------------------
-                case EPopUpState.SettingsPopUp:
-                    obj.GetComponent<SettingsPopUp>().Initialize();
-                    break;
-
-                case EPopUpState.PseudoPopUp:
-                    obj.GetComponent<PseudoPopUp>().Initialize(args.Count() > 0 ? (string)args[0] : "");
-                    break;
-
-                default:
-                    obj.GetComponent<OverlayScreen>().Initialize();
-                    break;
-            }
+            ScreenManager.SetPopUp(popUpState, args);
         }
 
         public static void SetCollectableSelectionPopUp<TEnum>(Action<TEnum> onCollectableClicked, bool unlockedOnly = true)
@@ -493,7 +385,14 @@ namespace Assets
 
         public static void DisplayRewards(SRewardsData rewardsData, string context, Action OnRewardCollected = null, string title = null)
         {
-            Main.SetPopUp(EPopUpState.RewardsScreen, rewardsData, context, OnRewardCollected, title);
+            Action callback = () => Main.SetPopUp(EPopUpState.RewardsScreen, rewardsData, context, OnRewardCollected, title);
+            if (ScreenManager.HasScreen(EPopUpState.RewardsScreen))
+            {
+                ScreenManager.StoreEvent(EPopUpState.MainMenuScreen, callback);
+                return;
+            }
+
+            callback?.Invoke();
         }
      
         public static void DisplayAchievementRewards(List<SAchievementReward> rewardsData)
@@ -581,7 +480,7 @@ namespace Assets
         public static void CheckPseudoPopUp()
         {
             // pseudo already changed : no need to proc the popup
-            if (ProfileCloudData.PseudoChanged)
+            if (ProfileCloudData.PseudoChanged && ! ProfileCloudData.HasDefaultPseudo)
                 return;
 
             // store the change of the display PseudoPopUp for when the user will reach the MainMenu

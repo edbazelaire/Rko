@@ -129,6 +129,8 @@ namespace Game.Spells
         protected Controller            m_Caster;
         /// <summary> Level of the state effect </summary>
         protected int                   m_Level;
+        /// <summary> Is the effect currently active ? </summary>
+        protected bool                  m_IsActivated = true;
         /// <summary> Type of state effect </summary>
         protected EStateEffect          m_Type;
         /// <summary> source of audio </summary>
@@ -148,6 +150,7 @@ namespace Game.Spells
         public virtual EStateEffectType StateEffectType     => m_StateEffectType;
         public List<SStateEffectData>   SubStateEffects     => m_SubStateEffects;
 
+        public bool                     IsActivated         => m_IsActivated;
         public bool                     IsDisplayed         => m_IsDisplayed;
         public bool                     IsUnique            => StateEffectType == EStateEffectType.Incarnation || StateEffectType == EStateEffectType.AutoAttackBuff;
         public List<SpellPrefabSpawn>   VisualEffects       => m_VisualEffects;
@@ -327,6 +330,29 @@ namespace Game.Spells
             UnRegisterListeners();
 
             m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnEnd, StateEffectName, m_Caster.PlayerId);
+        }
+
+        #endregion
+
+
+        #region Activation / Deactivation
+
+        protected virtual void Activate()
+        {
+            if (m_IsActivated)
+                return;
+
+            m_IsActivated = true;
+            m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnActivation, StateEffectName, m_Caster.PlayerId);
+        }
+
+        protected virtual void Deactivate()
+        {
+            if (! m_IsActivated)
+                return;
+
+            m_IsActivated = false;
+            m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnDeactivation, StateEffectName, m_Caster.PlayerId);
         }
 
         #endregion
@@ -513,6 +539,9 @@ namespace Game.Spells
         /// <returns></returns>
         public virtual int HitShield(int damages)
         {
+            if (m_IsActivated)
+                return 0;
+
             m_RemainingShield -= damages;
             if (m_RemainingShield >= 0)
                 return 0;
@@ -722,6 +751,10 @@ namespace Game.Spells
             if (! m_BonusStats.Any(value => value.StateEffectProperty == property))
                 return false;
 
+            // deactivated - return default value
+            if (!m_IsActivated)
+                return true;
+
             // get bonus stats
             SBonusStats bonusStats = m_BonusStats.FirstOrDefault(value => value.StateEffectProperty == property);
 
@@ -740,6 +773,9 @@ namespace Game.Spells
 
         public virtual int GetInt(EStateEffectProperty property) 
         {
+            if (!m_IsActivated)
+                return 0;
+
             if (TryGetBonusStat(property, out float value))
                 return (int)Mathf.Round(value);
 
@@ -762,6 +798,9 @@ namespace Game.Spells
 
         public virtual float GetFloat(EStateEffectProperty property) 
         {
+            if (!m_IsActivated)
+                return 0;
+
             if (TryGetBonusStat(property, out float value))
                 return value;
 
