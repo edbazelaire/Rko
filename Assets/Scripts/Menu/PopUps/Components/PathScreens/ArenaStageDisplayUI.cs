@@ -24,6 +24,8 @@ namespace Menu.PopUps
         GameObject          m_EffectsSection;
         /// <summary> layout container for bonus effects </summary>
         GameObject          m_EffectsContainer;
+        /// <summary> layout container for runes effects </summary>
+        GameObject          m_RunesContainer;
         /// <summary> display the boss of this stage </summary>
         BossPreviewDisplay  m_BossPreviewDisplay;
 
@@ -38,6 +40,7 @@ namespace Menu.PopUps
 
             m_EffectsSection                = Finder.Find(gameObject, "EffectsSection");
             m_EffectsContainer              = Finder.Find(gameObject, "EffectsContainer");
+            m_RunesContainer                = Finder.Find(gameObject, "RunesContainer");
             m_BossPreviewDisplay            = Finder.FindComponent<BossPreviewDisplay>(gameObject, "BossPreviewDisplay");
         }
 
@@ -73,13 +76,19 @@ namespace Menu.PopUps
 
         void SetUpEffects()
         {
+            SetUpTriggerEffects();
+            SetUpRunePowers();
+        }
+
+        void SetUpTriggerEffects()
+        {
             // clean content (remove potential TEST displays)
             UIHelper.CleanContent(m_EffectsContainer);
 
             // no trigger effects : deactivate and return
-            if (m_ArenaLevelData.TriggerEffects.Count == 0 && m_ArenaLevelData.PowerUps.Count == 0)
+            if (m_ArenaLevelData.TriggerEffects.Count == 0)
             {
-                m_EffectsSection.SetActive(false);
+                m_EffectsContainer.SetActive(false);
                 return;
             }
 
@@ -95,13 +104,27 @@ namespace Menu.PopUps
                 TemplateTriggerEffectUI triggerEffectUI = Instantiate(template, m_EffectsContainer.transform);
                 triggerEffectUI.Initialize(triggerEffect);
             }
+        }
 
-            // add UI for each trigger effects
-            TemplateRunePowerUI templateRune = AssetLoader.LoadTemplateItem<TemplateRunePowerUI>();
+        void SetUpRunePowers()
+        {
+            UIHelper.CleanContent(m_RunesContainer);
+
+            // no trigger effects : deactivate and return
+            if (m_ArenaLevelData.PowerUps.Count == 0)
+            {
+                m_RunesContainer.SetActive(false);
+                return;
+            }
+
+            m_RunesContainer.SetActive(true);
+
+            // add UI for each PowerUp effects
+            TemplateRunePowerUI templateRune = AssetLoader.LoadTemplateItem<TemplateRunePowerUI>();     // load template
             foreach (string powerName in m_ArenaLevelData.PowerUps)
             {
                 SRunePower runePower = SpellLoader.GetPowerUp(powerName);
-                TemplateRunePowerUI runeItemUI = Instantiate(templateRune, m_EffectsContainer.transform);
+                TemplateRunePowerUI runeItemUI = Instantiate(templateRune, m_RunesContainer.transform);
                 runeItemUI.Initialize(runePower);
             }
         }

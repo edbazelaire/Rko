@@ -2,6 +2,7 @@
 using Assets.Scripts.Managers.Sound;
 using Data;
 using Enums;
+using Game.Character;
 using Game.Loaders;
 using Game.Spells.SpecialEffects;
 using MyBox;
@@ -491,7 +492,14 @@ namespace Game.Spells
             if (m_SpellData.ExecutionDamages <= 0)
                 return 0;
 
-            return (int)Math.Round(m_Controller.StateHandler.ApplyBonusDamages(m_SpellData.ExecutionDamages, target) * (1 - target.Life.PercHp));
+            var boostedDamages = m_Controller.StateHandler.ApplyBonusDamages(m_SpellData.ExecutionDamages, target);
+            var finalDamages = (int)Math.Round(boostedDamages * (1 - target.Life.PercHp));
+
+            ErrorHandler.Log("Execution Damages : " + m_SpellData.ExecutionDamages, ELogTag.Spells);
+            ErrorHandler.Log("BOOSTED Execution Damages : " + boostedDamages, ELogTag.Spells);
+            ErrorHandler.Log("Final Execution Damages : " + finalDamages + " (percHp "+ (100*target.Life.PercHp).ToString("0") + "%)", ELogTag.Spells);
+           
+            return finalDamages;
         }
 
         protected virtual void AddExtraEffects()

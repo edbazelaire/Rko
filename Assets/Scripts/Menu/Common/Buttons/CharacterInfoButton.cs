@@ -59,13 +59,13 @@ namespace Menu.Common.Buttons
         void SetAsInfo()
         {
             m_Image.sprite = AssetLoader.Load<Sprite>("CharacterInfoButton", AssetLoader.c_ButtonsPath);
-            NotificationDisplay.Remove(gameObject);
+            NotificationParticles.Remove(gameObject);
         }
 
         void SetAsUpgradable()
         {
             m_Image.sprite = AssetLoader.Load<Sprite>("CharacterInfoButtonUpgradable", AssetLoader.c_ButtonsPath);
-            NotificationDisplay.Add(
+            NotificationParticles.Add(
                 gameObject: gameObject, 
                 background: m_Image, 
                 size: Vector2.one,

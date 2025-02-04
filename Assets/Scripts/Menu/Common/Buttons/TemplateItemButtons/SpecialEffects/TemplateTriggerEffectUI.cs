@@ -34,7 +34,7 @@ namespace Menu.Common.Buttons.TemplateItemButtons
 
             m_Icon.sprite = AssetLoader.LoadSpellIcon(m_TriggerEffect.SpellDataName);
 
-            SetBottomOverlay("Level " + m_TriggerEffect.Level);
+            m_BottomOverlay.gameObject.SetActive(false);
         }
 
         #endregion

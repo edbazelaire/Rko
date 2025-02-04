@@ -34,11 +34,16 @@ namespace Assets.Scripts.Data.DataStructures.SpellSubStructures
         public float GetBonusValue(int level, Controller caster, Controller target)
         {
             var controller = GetTarget(caster, target);
-            var finalValue = BaseValue * Mathf.Pow(1 + LevelFactor, level - 1) * (controller != null ? controller.StateHandler.GetStacks(StateEffect) : 1);
+            var finalValue = GetBonusValue(level, controller.StateHandler.GetStacks(StateEffect));
 
             ErrorHandler.Log("Found " + controller.StateHandler.GetStacks(StateEffect) + " stacks of " + StateEffect + " on target " + controller.gameObject.name + " - adding " + finalValue + " to property", ELogTag.BonusStats);
 
             return finalValue;
+        }
+
+        public float GetBonusValue(int level, int nStacks)
+        {
+            return BaseValue * Mathf.Pow(1 + LevelFactor, level - 1) * nStacks;
         }
 
         public Controller GetTarget(Controller caster, Controller target)

@@ -1,4 +1,5 @@
-﻿using Enums;
+﻿using Assets.Scripts.Data.DataStructures.Common;
+using Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,11 +46,28 @@ namespace Assets.Scripts.Data.GameManagement
 
         static ArenaManagementData s_Instance;
 
+        [Header("Arena Management")]
         [SerializeField] private int m_NDifficultyLevels = 2;
         [SerializeField] private List<SPowerUpDropRate> m_PowerUpDropRates;
 
-        public static List<SPowerUpDropRate> PowerUpDropRates => Instance.m_PowerUpDropRates;
-        public static int NDifficultyLevels => Instance.m_NDifficultyLevels;
+        [Header("Orb Power Reward")]
+        [SerializeField, Tooltip("Quantity of power dropped by a MOB depending on level")]
+        SScalingStat m_MobPowerDrop = new SScalingStat(25f, 0.2f);
+        [SerializeField, Tooltip("Quantity of power dropped by a BOSS depending on level")]
+        SScalingStat m_BossPowerDrop = new SScalingStat(350f, 0.35f);
+        [SerializeField, Tooltip("Quantity of power increased at each Arena Difficulty")]
+        float m_BonusArenaDifficulty = 0.5f;
+        [SerializeField, Tooltip("Quantity of power increased for each extra arena difficulty level (+, ++, ...)")]
+        float m_BonusArenaDifficultyLevel = 0.15f;
+
+        // ================================================================================================
+        // Public Accessors
+        public static List<SPowerUpDropRate> PowerUpDropRates   => Instance.m_PowerUpDropRates;
+        public static int NDifficultyLevels                     => Instance.m_NDifficultyLevels;
+        public static SScalingStat MobPowerDrop                 => Instance.m_MobPowerDrop;
+        public static SScalingStat BossPowerDrop                => Instance.m_BossPowerDrop;
+        public static float BonusArenaDifficulty                => Instance.m_BonusArenaDifficulty;
+        public static float BonusArenaDifficultyLevel           => Instance.m_BonusArenaDifficultyLevel;
 
         #endregion
 

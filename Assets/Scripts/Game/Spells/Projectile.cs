@@ -162,14 +162,17 @@ namespace Game.Spells
                 End();
 
             // check if the spell has reached its target position
-            if (m_SpellData.StopOnTargetPos && (
-                (m_Target.x > m_OriginalPosition.x && transform.position.x >= m_Target.x)
-                || (m_Target.x < m_OriginalPosition.x && transform.position.x <= m_Target.x)
-                ))
+            if (m_SpellData.StopOnTargetPos 
+                && ((m_Target.x > m_OriginalPosition.x && transform.position.x >= m_Target.x)
+                    || (m_Target.x < m_OriginalPosition.x && transform.position.x <= m_Target.x))
+                )
                 End();
 
             // check if the spell is stuck in the void
-            if (transform.position.y - m_SpellData.Size / 2 <= 0 && ArenaManager.IsInVoid(transform.position.x))
+            if (m_SpellData.Trajectory != ESpellTrajectory.Straight
+                && transform.position.y - m_SpellData.Size / 2 <= 0 
+                && ArenaManager.IsInVoid(transform.position.x)
+                )
                 End();
         }
 

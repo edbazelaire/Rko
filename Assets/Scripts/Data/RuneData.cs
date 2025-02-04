@@ -120,7 +120,7 @@ namespace Data
             {
                 if (stat.StateEffectProperty == property)
                 {
-                    value = stat.BonusValue + stat.BaseValue * Mathf.Pow(1 + stat.ScalingFactor, m_Level - 1);
+                    value = stat.GetDefaultValue(m_Level);
                     return true;
                 }
             }

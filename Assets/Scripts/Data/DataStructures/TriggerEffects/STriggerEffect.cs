@@ -204,6 +204,9 @@ namespace Data.DataStructures
             Debug.LogWarning("END : " + SpellDataName);
             Deactivate();
 
+            if (m_TargetController == null)
+                return;
+
             m_TargetController.TriggerEffectHandler.RemoveTriggerEffect(this);
         }
 

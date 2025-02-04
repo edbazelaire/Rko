@@ -375,6 +375,21 @@ namespace Tools
         #endregion
 
 
+        #region UI Prefabs
+
+        public static T LoadComponentPrefab<T>(string name) where T : Object
+        {
+            return Load<T>(name, c_MainUIComponentsPath);
+        }
+
+        public static GameObject LoadComponentPrefab(string name)
+        {
+            return Load<GameObject>(name, c_MainUIComponentsPath);
+        }
+
+        #endregion
+
+
         #region Tutorial Sprites
 
         public static Sprite LoadCaption(ECaptionType captionType, ECaptionColor color = ECaptionColor.None)
@@ -449,7 +464,7 @@ namespace Tools
                 // no specific found : load any icon 
                 return Load<Sprite>(c_IconPrefix + itemName, c_IconPath);
             }
-            return Load<Sprite>(path + c_IconPrefix + itemName);
+            return Load<Sprite>(c_IconPrefix + itemName, path);
         }
 
         public static Sprite LoadIcon(System.Enum value)
@@ -459,12 +474,12 @@ namespace Tools
 
         public static Sprite LoadCharacterIcon(string character)
         {
-            return Load<Sprite>(c_IconCharactersPath + c_IconPrefix + character);
+            return Load<Sprite>(c_IconPrefix + character, c_IconCharactersPath);
         }
 
         public static Sprite LoadBossHead(string boss)
         {
-            return Load<Sprite>(c_IconBossesHeadsPath + boss + "_Head");
+            return Load<Sprite>(boss + "_Head", c_IconCharactersPath);
         }
 
         /// <summary>

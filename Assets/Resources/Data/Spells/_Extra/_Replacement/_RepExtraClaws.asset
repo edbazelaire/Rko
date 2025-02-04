@@ -27,6 +27,7 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 6
+  m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
@@ -37,6 +38,7 @@ MonoBehaviour:
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 0
+  m_ExecutionDamages: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -44,6 +46,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
@@ -62,15 +67,17 @@ MonoBehaviour:
   AnimationTimer: 0.7
   m_Cooldown: 0
   Trajectory: 1
+  m_TriggerGround: 1
   m_StopOnTargetPos: 0
   m_Speed: 0
   m_YSpawnPos: 0
   ProjectileData: {fileID: 0}
   MultiProjectileType: 1
+  m_RecalculatePosition: 1
   m_IsBlocking: 1
   m_NProjectiles: 3
-  m_ProjectileZoneSize: 18
-  m_DelayBetweenLaunches: 0
+  m_ProjectileZoneSize: 3
+  m_DelayBetweenLaunches: 0.4
   m_NWaves: 1
   m_DelayBetweenWaves: 0
   OnCastWaveSoundFX: {fileID: 0}

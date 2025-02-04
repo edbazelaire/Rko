@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Managers;
 using Menu.Common.Displayers;
 using Save;
 using TMPro;
@@ -48,19 +49,20 @@ namespace Menu.PopUps.Messagerie
             m_MessageTitle.text = message.Title;
             m_MessageContentText.text = message.Content;
 
+            // set that message has been seen
+            NotificationCloudData.SetMessageSeen(message.Id);
+
+            // activate / deactivate rewards and collect button if there is reward or not
             if (message.RewardsData.IsEmpty)
             {
                 m_RewardsDisplayer.gameObject.SetActive(false);
                 m_CollectButton.gameObject.SetActive(false);
-                NotificationCloudData.SetMessageSeen(message.Id);
             }
             else
             {
                 m_RewardsDisplayer.gameObject.SetActive(true);
                 m_RewardsDisplayer.Initialize(message.RewardsData);
                 m_CollectButton.gameObject.SetActive(true);
-
-                m_CollectButton.interactable = !m_Message.Seen;
             }
         }
 
@@ -91,7 +93,7 @@ namespace Menu.PopUps.Messagerie
 
         void OnRewardCollected()
         {
-            NotificationCloudData.SetMessageSeen(m_Message.Id);
+            NotificationCloudData.DeleteMessage(m_Message.Id);
             m_CollectButton.interactable = false;
         }
 

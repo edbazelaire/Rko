@@ -38,8 +38,12 @@ namespace Tools
 
         public static void Log(string message, ELogTag logTag = ELogTag.None, int frame = 0)
         {
-            if (!IsActivated)
+            if (! IsActivated)
                 return;
+
+            if (! ShouldDisplayLogTag(logTag))
+                return;
+
             AddError(message, EError.Log, frame + 1, logTag);
         }
 

@@ -21,7 +21,7 @@ namespace Assets.Scripts.Data.PowerUp
         [SerializeField]
         protected List<SCharacterStatScaling>   m_BonusStats;
         [SerializeField]
-        protected List<SRunePower>             m_SubPowerUps;
+        protected List<SRunePower>              m_SubPowerUps;
 
         public ESpellTarget                     Target => m_Target;
         public List<SCharacterStatScaling>      BonusStats => m_BonusStats;
@@ -181,7 +181,7 @@ namespace Assets.Scripts.Data.PowerUp
 
             foreach (var stat in m_BonusStats)
             {
-                infos.Add(stat.StateEffectProperty.ToString(), stat.BonusValue + stat.BaseValue * Mathf.Pow(1 + stat.ScalingFactor, m_Level - 1));
+                infos.Add(stat.StateEffectProperty.ToString(), stat.GetDefaultValue(m_Level));
             }
 
             return infos;

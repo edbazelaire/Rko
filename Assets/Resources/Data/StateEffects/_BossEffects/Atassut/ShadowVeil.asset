@@ -22,7 +22,7 @@ MonoBehaviour:
     SoundFX: []
     GFXLifetime:
       m_StartSpellPart: 400
-      m_EndSpellPart: 1000
+      m_EndSpellPart: 900
       StartAt: 0
       EndAt: 0
       Persistance: 0
@@ -34,6 +34,26 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
+    StateEffects: 
+  - Prefab: {fileID: 0}
+    MaterialEffect: {fileID: 2100000, guid: 811ec8534b97f234b8755309ae2f6864, type: 2}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 450
+      m_EndSpellPart: 900
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 2
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
     StateEffects: 
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
@@ -47,9 +67,10 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_MaxStacks: 1
   m_StackDecay: -1
+  m_Energy: 0
   m_BonusStats:
   - StateEffectProperty: 5
-    BaseValue: 50
+    BaseValue: 20
     LevelScalingFactor: 0.5
     StackScalingFactor: 0
   m_SpeedBonus: 0
@@ -63,6 +84,8 @@ MonoBehaviour:
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
   m_BonusLifeSteal: 0
+  m_BonusHeal: 0
+  m_BonusHealPerc: 0
   m_BonusBurnDamages: 0
   m_BonusSlowPerc: 0
   m_OnStartStateEffect: []

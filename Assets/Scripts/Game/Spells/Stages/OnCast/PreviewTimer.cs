@@ -16,6 +16,7 @@ namespace Game.Spells
         /// <summary> curent value of the timer </summary>
         protected float m_Timer;
 
+        protected float m_PercentageTimeRemaining => Mathf.Clamp01(m_Timer / m_Duration);
         public float Timer => m_Timer;
 
         #endregion

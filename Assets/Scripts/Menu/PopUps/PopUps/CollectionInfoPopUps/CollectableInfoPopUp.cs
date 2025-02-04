@@ -92,7 +92,7 @@ namespace Menu.PopUps
             SetUpButtons();
         }
 
-        protected override void Exit()
+        public override void Exit()
         {
             AnimationHandler.EndAnimation(UPGRADE_ANIMATION_ID);
             Destroy(m_Data);

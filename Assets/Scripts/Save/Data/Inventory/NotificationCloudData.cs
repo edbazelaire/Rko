@@ -4,6 +4,7 @@ using Enums;
 using Inventory;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Tools;
 using Unity.Services.CloudSave.Models;
 
@@ -48,6 +49,7 @@ namespace Save
         public static Action            ArenaRewardChangedEvent;
         public static Action            LeagueRewardChangedEvent;
         public static Action<string>    MessageSeenEvent;
+        public static Action            MessageCountChangedEvent;
 
         // ===============================================================================================
         // DATA
@@ -276,8 +278,29 @@ namespace Save
             message.Timestamp = IdHandler.GetCurrentTimestamp();
             Messages.Insert(0, message);
 
+            // send event that a new message has been sent
+            MessageCountChangedEvent?.Invoke();
+
             if (save)
                 Instance.SaveValue(KEY_MESSAGES);
+        }
+
+        public static void DeleteMessage(string id, bool save = true)
+        {
+            Messages.Remove(Messages.Where(msg => msg.Id == id).First());
+
+            // send event that a message has been deleted
+            MessageCountChangedEvent?.Invoke();
+
+            if (save)
+                Instance.SaveValue(KEY_MESSAGES);
+        }
+
+        public static void ClearMessages()
+        {
+            Messages.Clear();                       // clear local data
+            MessageCountChangedEvent?.Invoke();     // send event that a message has been deleted
+            Instance.SaveValue(KEY_MESSAGES);       // save to the cloud
         }
 
         public static void SetMessageSeen(string id)
@@ -295,6 +318,24 @@ namespace Save
             MessageSeenEvent?.Invoke(id);
             Instance.SaveValue(KEY_MESSAGES);
         }
+
+        public static int NotSeenMessagesCount()
+        {
+            int count = 0;
+            foreach (var message in Messages)
+            {
+                if (! message.Seen)
+                    count++;
+            }
+
+            return count;
+        }
+
+        public static int MessageCount()
+        {
+            return Messages.Count;
+        }
+
 
         #endregion
 

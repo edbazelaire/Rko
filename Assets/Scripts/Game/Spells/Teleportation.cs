@@ -65,6 +65,13 @@ namespace Game.Spells
             if (!IsServer)
                 return;
 
+            // check if spell went throught the "End()" method
+            if (! m_IsOver)
+            {
+                m_Controller.Collider.enabled = true;
+                m_Controller.GFXHandler.HideCharacterClientRPC(false);
+            }
+
             // reset player position
             m_OriginalPosition.y = 0;
             m_Controller.transform.position = m_OriginalPosition;

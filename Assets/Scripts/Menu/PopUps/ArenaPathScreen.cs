@@ -1,7 +1,8 @@
 ﻿using Assets;
+using Assets.Scripts.Managers;
 using Data.GameManagement;
+using DevTools;
 using Enums;
-using Inventory;
 using Menu.Common.Displayers;
 using Save;
 using System;
@@ -26,6 +27,9 @@ namespace Menu.PopUps
         ArenaStageDisplayUI     m_StageDisplayUIPrefab;
         ArenaInfoSidebar        m_ArenaInfoSidebar;
 
+        // dev tools
+        ArenaDevTool m_ArenaDevTool;
+
         List<ArenaStageDisplayUI> m_Stages;
 
         #endregion
@@ -44,6 +48,9 @@ namespace Menu.PopUps
             m_OverlayCanvas = Finder.FindComponent<Canvas>(gameObject, "OverlayCanvas");
             m_ScrollContent = Finder.Find(gameObject, "ScrollContent");
             m_Viewport = Finder.Find(gameObject, "Viewport");
+
+            // devtools
+            m_ArenaDevTool = Finder.FindComponent<ArenaDevTool>(gameObject, "ArenaDevTool");
         }
 
         public void Initialize(EArenaType arenaType, SArenaDifficulty arenaDifficulty)
@@ -60,12 +67,14 @@ namespace Menu.PopUps
 
             // rescale canvas to be above the rest
             m_OverlayCanvas.sortingLayerName = "Overlay";
-            m_OverlayCanvas.sortingOrder = OverlayScreen.OrderInLayer + 100;
+            m_OverlayCanvas.sortingOrder = ScreenManager.OrderInLayer + 100;
 
             // setup UI
             SetupOrbRewardDisplayer();
             SetupArenaInfoSidebar();
             SetupStagesDisplay();
+
+            m_ArenaDevTool.Initialize();
         }
 
         protected override void OnInitializationCompleted()
@@ -80,7 +89,7 @@ namespace Menu.PopUps
             fadeIn.Initialize("", duration: 0.6f, startOpacity: 0);
         }
 
-        #endregion
+#endregion
 
 
         #region GUI Manipulators

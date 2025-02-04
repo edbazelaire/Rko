@@ -13,7 +13,7 @@ public class LeagueBannerButton : MObject
     ELeague                 m_League;
 
     Image                   m_Icon;
-    NotificationDisplay     m_NotificationDisplay;
+    NotificationParticles     m_NotificationDisplay;
     Button                  m_Button;
 
     public Button Button => m_Button;
@@ -28,7 +28,7 @@ public class LeagueBannerButton : MObject
         base.FindComponents();
 
         m_Icon                  = Finder.FindComponent<Image>(gameObject, "Icon");
-        m_NotificationDisplay   = Finder.FindComponent<NotificationDisplay>(gameObject);
+        m_NotificationDisplay   = Finder.FindComponent<NotificationParticles>(gameObject);
         m_Button                = Finder.FindComponent<Button>(gameObject);
     }
 
