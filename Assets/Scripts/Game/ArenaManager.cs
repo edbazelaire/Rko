@@ -130,7 +130,18 @@ namespace Game
         /// <returns></returns>
         public static Transform GetTargettableArea(int team, bool enemyArea = true)
         {
-            return (team == 0 && enemyArea || team == 1 && ! enemyArea) ? Instance.m_TargettableAreas[1] : Instance.m_TargettableAreas[0];
+            return Instance.m_TargettableAreas[GetTargettableAreaIndex(team, enemyArea)];
+        }
+
+        /// <summary>
+        /// Get index of the arena side
+        /// </summary>
+        /// <param name="team"></param>
+        /// <param name="enemyArea"></param>
+        /// <returns></returns>
+        public static int GetTargettableAreaIndex(int team, bool enemyArea = true)
+        {
+            return (team == 0 && enemyArea || team == 1 && !enemyArea) ? 1 : 0;
         }
 
         /// <summary>
@@ -145,10 +156,30 @@ namespace Game
             return (team == 0 && enemyArea || team == 1 && !enemyArea) ? 1 : -1;
         }
 
+        /// <summary>
+        /// Check if xpos is in the bounds of the requested arena platform
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="team"></param>
+        /// <param name="enemyArea"></param>
+        /// <param name="marge"></param>
+        /// <returns></returns>
         public static bool IsInAreaBounds(float x, int team, bool enemyArea, float marge = 0f)
         {
             (float xMin, float xMax) = GetAreaBounds(team, enemyArea);
             return xMax + marge > x && x > xMin - marge;
+        } 
+
+        /// <summary>
+        /// Check if Xpos is on the requested arena side
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="team"></param>
+        /// <param name="enemyArea"></param>
+        /// <returns></returns>
+        public static bool IsOnArenaSide(float x, int team, bool enemyArea)
+        {
+            return GetTargettableAreaIndex(team, enemyArea) == 0 ? x < 0 : x > 0;
         } 
 
         public static (float Min, float Max) GetAreaBounds(float xPos)

@@ -175,6 +175,8 @@ namespace Assets.Scripts.Managers
             OrderInLayer += ADDING_ORDER_IN_LAYER;
             Screens.Add(screen);
 
+            Debug.Log("NEW SCREEN ("+screen.PopUpName+") - OrderInLayer : " + OrderInLayer);
+
             // stop current wait for screen focus
             if (m_WaitFocusCoroutine != null)
                 Main.Instance.StopCoroutine(m_WaitFocusCoroutine);
@@ -185,8 +187,18 @@ namespace Assets.Scripts.Managers
 
         public static void RemoveScreen(OverlayScreen screen) 
         {
-            Screens.Remove(screen);
-            RecalculateOrderInLayer();
+            int index = Screens.IndexOf(screen);
+            if (index == -1)
+            {
+                ErrorHandler.Error("Trying to remove screen " + screen.PopUpName + " from Screens but is not in list of screens");
+                return;
+            }
+
+            bool isLast = index == Screens.Count - 1;   
+            Screens.RemoveAt(index);
+
+            if (isLast)
+                RecalculateOrderInLayer();
 
             // stop current wait for screen focus
             if (m_WaitFocusCoroutine != null)
@@ -196,21 +208,29 @@ namespace Assets.Scripts.Managers
             m_WaitFocusCoroutine = Main.Instance.StartCoroutine(WaitScreenFocus(screen, false));
         }
 
+        public static void Clear()
+        {
+            Screens = new List<OverlayScreen>();
+            OrderInLayer = 0;
+        }
+
         static void RecalculateOrderInLayer()
         {
-            for (int i = 0; i < Screens.Count; i++)
+            for (int i = Screens.Count - 1; i >= 0; i--)
             {
                 var screen = Screens[i];
 
                 // timing issue - wait for 1 frame to recalculate order in layer
-                if (screen == null || screen.IsDestroyed() || screen.Canvas.IsDestroyed())
+                if (screen == null || screen.IsDestroyed() || screen.Canvas.IsDestroyed() || screen.Canvas == null)
                     continue;
 
                 OrderInLayer = screen.Canvas.sortingOrder;
+                Debug.Log("CHANGED CurrentScreen ("+ screen .PopUpName+ ") - OrderInLayer : " + OrderInLayer);
                 return;
             }
 
             OrderInLayer = 0;
+            Debug.Log("NO SCREEN - OrderInLayer : " + OrderInLayer);
         }
 
         public static bool HasScreen(EPopUpState popUpState)

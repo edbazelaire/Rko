@@ -386,11 +386,11 @@ namespace Assets
         public static void DisplayRewards(SRewardsData rewardsData, string context, Action OnRewardCollected = null, string title = null)
         {
             Action callback = () => Main.SetPopUp(EPopUpState.RewardsScreen, rewardsData, context, OnRewardCollected, title);
-            if (ScreenManager.HasScreen(EPopUpState.RewardsScreen))
-            {
-                ScreenManager.StoreEvent(EPopUpState.MainMenuScreen, callback);
-                return;
-            }
+            //if (ScreenManager.HasScreen(EPopUpState.RewardsScreen))
+            //{
+            //    ScreenManager.StoreEvent(EPopUpState.MainMenuScreen, callback);
+            //    return;
+            //}
 
             callback?.Invoke();
         }

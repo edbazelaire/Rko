@@ -1,4 +1,5 @@
 using Assets;
+using Assets.Scripts.Managers;
 using Assets.Scripts.Managers.Sound;
 using Assets.Scripts.UI;
 using Enums;
@@ -125,8 +126,12 @@ public class SceneLoader : MonoBehaviour
     /// </summary>
     void OnSceneLoaded()
     {
+        // set world camera as current camera
         Main.Canvas.worldCamera = Camera.main;
+        // clean current scene loading name
         m_SceneLoading = "";
+        // clear current scene manager
+        ScreenManager.Clear();
     }
 
     #endregion

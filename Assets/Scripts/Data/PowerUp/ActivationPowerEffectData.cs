@@ -177,11 +177,6 @@ namespace Assets.Scripts.Data.PowerUp
             if (m_SpellData != null)
             {
                 controller.StartCoroutine(m_SpellData.Clone(Level).CastDelay(controller.PlayerId, Vector3.zero, recalculateTarget: true));
-                foreach (SpellPrefabSpawn prefabSpawn in m_SpellData.SpellEventActions)
-                {
-                    if (prefabSpawn.GFXLifetime.StartSpellPart == ESpellEvent.OnCast)
-                        prefabSpawn.Spawn(controller, m_SpellData, null);
-                }
             }
 
             if (m_StateEffectData != null)

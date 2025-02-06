@@ -28,7 +28,7 @@ MonoBehaviour:
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
-  SpellTarget: 6
+  SpellTarget: 9
   m_ClampTargetPos: 1
   TargetOffset:
     X: 0
@@ -40,6 +40,7 @@ MonoBehaviour:
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
+  m_ExecutionDamages: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -62,11 +63,11 @@ MonoBehaviour:
   AnimationTimer: 0
   m_Cooldown: 0
   SubSpellData: {fileID: 11400000, guid: c5896b3995e21d24ab2deb61cb633a05, type: 2}
-  MultiProjectileType: 0
+  MultiProjectileType: 2
   SubSpellSpawn:
     m_SpellTargetX:
       m_Dimension: 1
-      m_MultiSpellTarget: 1
+      m_MultiSpellTarget: 0
       m_ZoneSize: -1
       m_NBreakPoints: 1
       m_OffsetMinMax:
@@ -83,13 +84,14 @@ MonoBehaviour:
   m_YMinMax:
     Min: 0
     Max: 0
+  m_RecalculateTarget: 0
   m_RecalculatePosition: 1
   m_IsBlocking: 0
-  m_NProjectiles: 1
-  m_NBreakPoints: 1
-  m_ProjectileZoneSize: 0
+  m_NProjectiles: 3
+  m_NBreakPoints: 0
+  m_ProjectileZoneSize: -1
   m_DelayBetweenLaunches: 0
   m_NWaves: 9999
-  m_DelayBetweenWaves: 15
+  m_DelayBetweenWaves: 20
   OnCastWaveSoundFX: {fileID: 0}
   OnCastProjectileSoundFX: {fileID: 0}

@@ -31,6 +31,8 @@ namespace Data
         public SMultiSpellSpawn SubSpellSpawn;
         [SerializeField, Description("Min/Max height of spell spawn")]
         protected SMinMax m_YMinMax;
+        [SerializeField, Tooltip("Should the subspell recalculate its target on spawn ?")]
+        protected bool m_RecalculateTarget = false;
         [SerializeField, Tooltip("Should the subspell recalculate its position on spawn ?")]
         protected bool m_RecalculatePosition = true;
         [SerializeField, Tooltip("Is the chacter blocked until the end of the cast ?")]
@@ -225,12 +227,9 @@ namespace Data
                 position:               position,
                 rotation:               rotation,
                 delay:                  SubSpellData.Delay,
-                recalculateTarget:      false,
+                recalculateTarget:      m_RecalculateTarget,
                 recalculatePosition:    m_RecalculatePosition
             ));
-
-            // spawn SubSpell - SpellGFX
-            controller.SpellHandler.CallSpellEvent(SubSpellData.name, ESpellEvent.OnCast, forcedPosition: target);
         }
 
         #endregion

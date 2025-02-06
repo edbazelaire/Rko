@@ -171,11 +171,15 @@ namespace Data.DataStructures
                 SpellData spellData = SpellLoader.GetSpellData(SpellDataName, Level);
 
                 m_TargetController.StartCoroutine(spellData.CastDelay(m_TargetController.PlayerId, Vector3.zero, recalculateTarget: true));
-                foreach (SpellPrefabSpawn prefabSpawn in spellData.SpellEventActions)
-                {
-                    if (prefabSpawn.GFXLifetime.StartSpellPart == ESpellEvent.OnCast)
-                        prefabSpawn.Spawn(m_TargetController, spellData, null);
-                }
+                
+                // ===========================================================================================
+                // TODO : Correctly moved inside the CastDelay() ? - REMOVE
+                //foreach (SpellPrefabSpawn prefabSpawn in spellData.SpellEventActions)
+                //{
+                //    if (prefabSpawn.GFXLifetime.StartSpellPart == ESpellEvent.OnCast)
+                //        prefabSpawn.Spawn(m_TargetController, spellData, null);
+                //}
+                // ===========================================================================================
             }
 
             else if (SpellLoader.StateEffectExists(SpellDataName))

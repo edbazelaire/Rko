@@ -689,9 +689,6 @@ namespace Game.Character
             if (spellData.EnergyCost > 0)
                 m_Controller.EnergyHandler.SpendEnergy(spellData.EnergyCost);
 
-            // inform that casting is done
-            CallSpellEvent(spellData.name, ESpellEvent.OnCast);
-
             // setup global cooldown
             m_GlobalCooldown.Value = c_GlobalCooldown;
 

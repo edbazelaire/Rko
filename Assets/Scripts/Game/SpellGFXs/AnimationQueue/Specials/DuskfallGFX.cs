@@ -29,7 +29,7 @@ namespace Game.SpellGFXs
             m_Charge = Finder.Find(gameObject, "Charge");
 
             // Find Initial position
-            m_InitialPosition = m_Controller.GFXHandler.CharacterPreview.transform.position;
+            m_InitialPosition = m_Controller.GFXHandler.CharacterPreview.transform.localPosition;
             // Block movement during the animation
             m_Controller.Movement.CancelMovement(true);
 
@@ -59,7 +59,7 @@ namespace Game.SpellGFXs
         {
             base.OnDestroy();
 
-            m_Controller.GFXHandler.CharacterPreview.transform.position = m_InitialPosition;
+            m_Controller.GFXHandler.CharacterPreview.transform.localPosition = m_InitialPosition;
         }
 
         #endregion

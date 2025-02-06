@@ -94,6 +94,12 @@ namespace Game.Spells
 
         protected virtual void OnHitWall(Collider2D collision)
         {
+            // CHECK : is ally wall
+            if (ArenaManager.IsOnArenaSide(collision.transform.position.x, m_Controller.Team, false))
+            {
+                return;
+            }
+
             // check if should apply on hit
             if (!m_SpellData.ApplyIfNotHitting)
             {
