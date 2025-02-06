@@ -54,6 +54,10 @@ namespace Assets.Scripts.Menu
 
             m_CurrentXp = InventoryManager.GetCurrency(ECurrency.TotalXp);
 
+            Debug.Log("ACCOUNT XP CONTAINER : RefreshUI()");
+            Debug.Log("     - Account : " + ProfileCloudData.AccountLevel.ToString());
+            Debug.Log("     - TotalXp : " + m_CurrentXp);
+
             m_LevelText.text = ProfileCloudData.AccountLevel.ToString();
             m_CollectionFillbar.Initialize(InventoryManager.GetCurrency(ECurrency.TotalXp), CollectablesManagementData.GetCurrentAccountLevelData().RequiredXp);
         }

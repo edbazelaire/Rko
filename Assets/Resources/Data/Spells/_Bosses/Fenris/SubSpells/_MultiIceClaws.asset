@@ -36,6 +36,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   OnHit: []
   OnHitSpellSpawn: 1
@@ -45,6 +46,7 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 6
+  m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
@@ -55,6 +57,7 @@ MonoBehaviour:
   EnergyGain: 15
   EnergyCost: 0
   m_Damage: 50
+  m_ExecutionDamages: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -62,9 +65,12 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
-    Value: 0.1
+    Value: 0.12
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects:

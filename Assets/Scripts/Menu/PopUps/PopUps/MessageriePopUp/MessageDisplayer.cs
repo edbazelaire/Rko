@@ -94,7 +94,6 @@ namespace Menu.PopUps.Messagerie
         void OnRewardCollected()
         {
             NotificationCloudData.DeleteMessage(m_Message.Id);
-            m_CollectButton.interactable = false;
         }
 
         #endregion

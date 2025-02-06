@@ -24,6 +24,7 @@ namespace AI
                         return m_State;
 
                     case NodeState.RUNNING:
+                        m_State = NodeState.RUNNING;
                         return m_State;
 
                     case NodeState.SUCCESS:

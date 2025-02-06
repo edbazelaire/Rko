@@ -430,6 +430,7 @@ namespace Network
                 m_JoinedLobby = m_HostLobby;
 
                 Debug.Log("Lobby created: " + m_HostLobby.Id);
+                Debug.Log("     - Region : " + ProfileCloudData.Region);
 
                 return true;
             }
@@ -844,6 +845,13 @@ namespace Network
                 // NO REGION: return empty lobbies
                 if (string.IsNullOrEmpty(ProfileCloudData.Region))
                     return lobbies;
+
+                // ========================================================================================
+                // TODO : remove
+                //QueryResponse test = await Lobbies.Instance.QueryLobbiesAsync();
+                //ErrorHandler.Log("Total Lobbies found: " + test.Results.Count, ELogTag.Lobby);
+                // TODO : remove
+                // ========================================================================================
 
                 QueryLobbiesOptions queryLobbiesOptions = new QueryLobbiesOptions
                 {

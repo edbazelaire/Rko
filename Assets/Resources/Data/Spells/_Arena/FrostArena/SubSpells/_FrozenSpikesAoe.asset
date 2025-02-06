@@ -37,7 +37,8 @@ MonoBehaviour:
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 60
+  m_Damage: 100
+  m_ExecutionDamages: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -50,7 +51,7 @@ MonoBehaviour:
     m_Duration: 0.2
   m_SpellsScalingLevel:
   - Property: 2
-    Value: 0.1
+    Value: 0.15
   - Property: 1
     Value: 0.1
   - Property: 3

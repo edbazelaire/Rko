@@ -67,7 +67,7 @@ namespace Save.RSDs
                     return data.IsAdmin;
             }
 
-            ErrorHandler.Error("Unable to find token " + token);
+            ErrorHandler.Warning("Unable to find token " + token);
             return false;
         }
 

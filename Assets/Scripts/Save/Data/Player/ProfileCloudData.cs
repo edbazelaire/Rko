@@ -418,6 +418,7 @@ namespace Save
         public static int                   LastSelectedBadgeIndex = 0;
         public static bool                  IsAdmin             => TokensRSD.IsTokenAdmin(Token);
         public static bool                  IsAccountMaxed      => AccountLevel > CollectablesManagementData.Instance.AccountLevelData.Count;
+        public static bool                  IsAccountUpgradable => ! IsAccountMaxed && CollectablesManagementData.GetCurrentAccountLevelData().RequiredXp <= InventoryCloudData.Instance.GetCurrency(ECurrency.TotalXp);
         public static string                PlayerName          => GamerTag + Tag;
         public static string                GamerTag            => (string)Instance.m_Data[KEY_GAMER_TAG];
         public static string                Tag                 => (string)Instance.m_Data[KEY_TAG];
@@ -633,7 +634,7 @@ namespace Save
 
         #region Account Level
 
-        public static void UpgradeAccountLevel()
+        public static void UpgradeAccountLevel(bool save = true)
         {
             if (IsAccountMaxed)
             {
@@ -652,7 +653,10 @@ namespace Save
             // level up account
             var currentProfileData = CurrentProfileData;
             currentProfileData.AccountLevel++;
-            Instance.SetData(KEY_CURRENT_PROFILE_DATA, currentProfileData);
+            Instance.m_Data[KEY_CURRENT_PROFILE_DATA] = currentProfileData;
+
+            if (save)
+                Instance.SaveValue(KEY_CURRENT_PROFILE_DATA);
 
             // update collectable
             InventoryManager.Spend(requiredXp, ECurrency.TotalXp, "AccountLevelUp");
