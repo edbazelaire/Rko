@@ -73,7 +73,7 @@ namespace Game.Spells
             }
 
             // reset player position
-            m_OriginalPosition.y = 0;
+            m_OriginalPosition.y = 0.1f;
             m_Controller.transform.position = m_OriginalPosition;
 
             // reset jump state

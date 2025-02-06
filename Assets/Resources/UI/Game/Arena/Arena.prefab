@@ -156,7 +156,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2096663750472604501, guid: 86be7cfc00908824eb5fb0b00f399a64, type: 3}
       propertyPath: m_SortingLayer
-      value: -2
+      value: -3
       objectReference: {fileID: 0}
     - target: {fileID: 2096663750472604501, guid: 86be7cfc00908824eb5fb0b00f399a64, type: 3}
       propertyPath: m_SortingLayerID
@@ -173,6 +173,10 @@ PrefabInstance:
     - target: {fileID: 4167788702336028127, guid: 86be7cfc00908824eb5fb0b00f399a64, type: 3}
       propertyPath: m_SortingLayer
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340608252163850054, guid: 86be7cfc00908824eb5fb0b00f399a64, type: 3}
+      propertyPath: m_SortingLayer
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 4994570504437008182, guid: 86be7cfc00908824eb5fb0b00f399a64, type: 3}
       propertyPath: m_Pivot.x
@@ -386,7 +390,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4730473835535051250, guid: a66a205906872814db9a54b78e7adaea, type: 3}
       propertyPath: m_SortingLayer
-      value: -2
+      value: -3
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 9220636264271607918, guid: a66a205906872814db9a54b78e7adaea, type: 3}
@@ -429,15 +433,23 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2096663750472604501, guid: 86be7cfc00908824eb5fb0b00f399a64, type: 3}
       propertyPath: m_SortingLayer
-      value: -2
+      value: -3
       objectReference: {fileID: 0}
     - target: {fileID: 3313618984980525670, guid: 86be7cfc00908824eb5fb0b00f399a64, type: 3}
       propertyPath: m_Name
       value: Plateform_1
       objectReference: {fileID: 0}
+    - target: {fileID: 4022211708526923923, guid: 86be7cfc00908824eb5fb0b00f399a64, type: 3}
+      propertyPath: m_SortingLayer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4167788702336028127, guid: 86be7cfc00908824eb5fb0b00f399a64, type: 3}
       propertyPath: m_SortingLayer
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4340608252163850054, guid: 86be7cfc00908824eb5fb0b00f399a64, type: 3}
+      propertyPath: m_SortingLayer
+      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 4994570504437008182, guid: 86be7cfc00908824eb5fb0b00f399a64, type: 3}
       propertyPath: m_Pivot.x

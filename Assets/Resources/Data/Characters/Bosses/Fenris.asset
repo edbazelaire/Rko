@@ -22,10 +22,15 @@ MonoBehaviour:
   BaseSpeed: 1.2
   BaseHealth: 2800
   MaxEnergy: 100
-  BaseEnergy: 10
+  BaseEnergy: 0
   IsStructure: 0
   HealthScaleFactor: 0.12
-  CharacterStatScaling: []
+  CharacterStatScaling:
+  - StateEffectProperty: 5
+    BaseValue: 30
+    BonusValue: 0
+    ScalingFactor: 0.1
+    StateEffectStackFactors: []
   m_SpecialPowers:
   - Description: 
     m_DescriptionVariables: []
@@ -40,6 +45,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: 0
@@ -53,6 +59,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: 0
@@ -66,6 +73,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: 0

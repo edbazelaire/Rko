@@ -35,7 +35,7 @@ namespace Menu.PopUps
         {
             get
             {
-                return name.Replace(" (Clone)", "");
+                return name.Replace("(Clone)", "");
             }
         }
 
@@ -43,7 +43,7 @@ namespace Menu.PopUps
         {
             get
             {
-                if (Enum.TryParse(PopUpName, out EPopUpState popupState))
+                if (! Enum.TryParse(PopUpName, out EPopUpState popupState))
                     return EPopUpState.None;
 
                 return popupState;
@@ -65,8 +65,6 @@ namespace Menu.PopUps
             OnEnter();
 
             CoroutineManager.DelayMethod(LoadAndSetup);
-
-            //m_Initialized = true;
         }
 
         /// <summary>

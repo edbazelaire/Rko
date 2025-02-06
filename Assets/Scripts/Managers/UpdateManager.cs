@@ -383,9 +383,34 @@ namespace Assets.Scripts.Managers
                         new SCurrencyReward(ECurrency.Xp, missingXp),
                     }
                 )
-           ));
+            ));
 
+            if ( ProfileCloudData.PlayerName == "Subrogue")
+            {
 
+                var avatar = new SAchievementReward();
+                avatar.Set(EAvatar.Assassin);
+                var border = new SAchievementReward();
+                border.Set(EBorder.Assassin);
+                var title = new SAchievementReward();
+                title.Set(ETitle.The_Shadow);
+                var badge = new SAchievementReward();
+                badge.Set(EBadge.DemonLord);
+
+                // send reward of missing xp to player
+                NotificationCloudData.AddMessage(new SMessage(
+                    title: "Uniques Rewards",
+                    content: "",
+                    rewardsData: new SRewardsData(
+                        achievementRewards: new List<SAchievementReward>() {
+                            avatar,
+                            border,
+                            title,
+                            badge,
+                        }
+                    )
+               ));
+            }
 
             return test;
         }

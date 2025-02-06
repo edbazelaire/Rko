@@ -27,6 +27,7 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 0
+  m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
@@ -36,13 +37,14 @@ MonoBehaviour:
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 0
+  m_Damage: 80
+  m_ExecutionDamages: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
-  m_Duration: 5
+  m_Duration: 10
   Delay: 0
   m_Force:
     m_Speed: 0
@@ -69,7 +71,7 @@ MonoBehaviour:
   m_InactiveTimer: 0
   m_ArmedTimer: 0
   m_TrigerredTimer: 0
-  m_ActivateTimer: 0
+  m_ActivateTimer: 0.4
   m_MineSpawnGFX:
   - Prefab: {fileID: 2272309172655654138, guid: 1f114e3677cc941458b3613e89a86792, type: 3}
     MaterialEffect: {fileID: 0}
@@ -88,13 +90,14 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
-  - Prefab: {fileID: 2272309172655654138, guid: f2bfe7ebca146b443921154617090fe0, type: 3}
+  - Prefab: {fileID: 2272309172655654138, guid: 28c510338d7a7ed45a8fb5ce9dbcf022, type: 3}
     MaterialEffect: {fileID: 0}
     SoundFX: []
     GFXLifetime:
-      m_StartSpellPart: 6
-      m_EndSpellPart: 0
+      m_StartSpellPart: 4
+      m_EndSpellPart: 6
       StartAt: 0
       EndAt: 0
       Persistance: 0
@@ -106,4 +109,24 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
+    StateEffects: 
+  - Prefab: {fileID: 2272309172655654138, guid: f2bfe7ebca146b443921154617090fe0, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 6
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0.6
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 3
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
     StateEffects: 

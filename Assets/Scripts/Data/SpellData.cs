@@ -17,6 +17,7 @@ using MyBox;
 using Assets.Scripts.Data.DataStructures;
 using Assets.Scripts.Data.DataStructures.SpellRequirement;
 using Assets.Scripts.Data.DataStructures.SpellSubStructures;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Data
 {
@@ -209,6 +210,9 @@ namespace Data
             if (recalculateTarget)
                 CalculateTarget(ref target, clientId);
 
+            // send event of "OnCast"
+            CallSpellEvent(GameManager.Instance.GetPlayer(clientId), ESpellEvent.OnCast, target);
+
             // wait end of delay
             while (delay > 0f)
             {
@@ -264,7 +268,7 @@ namespace Data
             spell.InitializeClientRpc(clientId, target, Name, m_Level);
 
             // call event that spell spawned
-            GameManager.Instance.GetPlayer(clientId).SpellHandler.CallSpellEvent(Name, ESpellEvent.OnSpawn);
+            CallSpellEvent(GameManager.Instance.GetPlayer(clientId), ESpellEvent.OnSpawn, target);
         }
 
         /// <summary>
@@ -300,6 +304,12 @@ namespace Data
 
 
         #region Spell GFX
+
+        void CallSpellEvent(Controller controller, ESpellEvent spellEvent, Vector3 target)
+        {
+            // spawn SubSpell - SpellGFX
+            controller.SpellHandler.CallSpellEvent(Name, spellEvent, forcedPosition: target);
+        }
 
         /// <summary>
         /// Check if this spell has GFX event linked to this event

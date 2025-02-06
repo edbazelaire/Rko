@@ -47,24 +47,24 @@ namespace Game.Spells
 
         protected override void End()
         {
-            base.End();
-
             if (!IsServer)
                 return;
 
-            // force pos to original Y
-            var pos = m_Controller.transform.position;
-            pos.y = 0;
-            m_Controller.transform.position = pos;
-
             // re activate collider
             m_Controller.Collider.enabled = true;
+
+            // force pos to original Y
+            var pos = m_Controller.transform.position;
+            pos.y = 0f;
+            m_Controller.transform.position = pos;
 
             if (m_SpellData.JumpType == EJumpType.Teleport)
             {
                 m_Controller.GFXHandler.HideCharacterClientRPC(false);
                 m_Controller.transform.position = transform.position;
             }
+
+            base.End();
         }
 
         public override void OnDestroy()
@@ -78,7 +78,7 @@ namespace Game.Spells
                 return;
 
             // reset player position
-            m_OriginalPosition.y = 0;
+            m_OriginalPosition.y = 0.5f;
             m_Controller.transform.position = m_OriginalPosition;
 
             // reset jump state
@@ -144,12 +144,11 @@ namespace Game.Spells
         }
 
         /// <summary>
-        /// Ignore walls
         /// </summary>
         /// <param name="collision"></param>
         protected override void OnHitWall(Collider2D collision)
         {
-            return;
+            base.OnHitWall(collision);
         }
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Managers;
 using Data.GameManagement;
 using Enums;
 using Save;
@@ -69,19 +70,26 @@ namespace Managers.MainMenu
             InventoryCloudData.CurrencyChangedEvent -= OnCurrencyChanged;
         }
 
-        void OnCurrencyChanged(ECurrency currency, int amount = 0)
+        void OnCurrencyChanged(ECurrency currency, int total = 0)
         {
             switch (currency)
             {
                 case ECurrency.TotalXp:
-                    int gainedXp = amount - m_CurrentXp;
+                    int gainedXp = total - m_CurrentXp;
+                    m_CurrentXp = total;
 
                     // if account can be upgraded : call level up screen
-                    if (CollectablesManagementData.IsAccountUpgradable)
-                        LevelUpAccount(gainedXp);
+                    if (gainedXp > 0 && CollectablesManagementData.IsAccountUpgradable)
+                    {
+                        // if is in "RewardScreen" -> wait for rewards to be over before displaying level up
+                        if (ScreenManager.CurrentScreen != null && ScreenManager.CurrentScreen.PopUpState == EPopUpState.RewardsScreen)
+                            ScreenManager.StoreEvent(ScreenManager.Screens.Count > 1 ? ScreenManager.Screens[^2].PopUpState : EPopUpState.MainMenuScreen, () => LevelUpAccount(gainedXp));
+                        else
+                            LevelUpAccount(gainedXp);
 
-                    // refresh current xp
-                    m_CurrentXp = InventoryCloudData.Instance.GetCurrency(ECurrency.TotalXp);
+                        return;
+                    }
+
                     break;
             }   
         }

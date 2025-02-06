@@ -2,6 +2,7 @@
 using Data.GameManagement;
 using Menu.Common;
 using Save;
+using System.Collections.Generic;
 using TMPro;
 using Tools;
 
@@ -18,6 +19,7 @@ namespace Menu.PopUps
 
         // =====================================================================================
         // Data
+        SRewardsData            m_Rewards = new();
         int                     m_BaseXp;
         int                     m_MaxXp;
         int                     m_BonusXp;
@@ -37,10 +39,18 @@ namespace Menu.PopUps
 
         public void Initialize(int baseXp, int maxXp, int bonusXp)
         {
+            m_Rewards = new();
             m_BaseXp    = baseXp;
             m_MaxXp     = maxXp;
             m_BonusXp   = bonusXp;
-            
+
+            // update account as many time as possible, and stack all rewards
+            while (ProfileCloudData.IsAccountUpgradable)
+            {
+                m_Rewards.Add(CollectablesManagementData.GetCurrentAccountLevelData().Rewards);
+                ProfileCloudData.UpgradeAccountLevel();
+            }
+
             // add golds to inventory manager
             base.Initialize();
         }
@@ -86,10 +96,7 @@ namespace Menu.PopUps
 
         void OnCollectionEnded()
         {
-            var rewards = CollectablesManagementData.GetCurrentAccountLevelData().Rewards;
-            ProfileCloudData.UpgradeAccountLevel();
-
-            Main.DisplayRewards(rewards, "AccountLevelUp", title: "Level up !");
+            Main.DisplayRewards(m_Rewards, "AccountLevelUp", title: "Level up !");
             Exit();
         }
 

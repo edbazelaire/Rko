@@ -115,7 +115,7 @@ public class TaskMove : BaseNode
 
         // duplicate array to be able to remove while going threw
         var allowedMovement = m_AllowedMovements.ToArray();
-
+         
         // for each remaining allowed movements, check if there is obstacles in that direction
         foreach (int moveX in allowedMovement)
         {
