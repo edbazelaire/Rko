@@ -1051,8 +1051,48 @@ namespace Game
             GetFirstEnemy(Owner.Team).Life.Hit(500, 999, "God", Enums.ESpellCategory.Direct, true);
         }
 
+        /// <summary>
+        /// Toggle activation of AIs (for tests)
+        /// </summary>
+        [Command(KeyCode.P)]
+        public void ToggleEnemy()
+        {
+            foreach (Controller controller in m_Controllers.Values)
+            {
+                // skip self
+                if (controller.PlayerId == Owner.PlayerId)
+                    continue;
+
+                if (controller.IsPlayer)
+                {
+                    controller.AutoAttackHandler.Activate(!controller.AutoAttackHandler.isActiveAndEnabled);
+                }
+                else
+                {
+                    controller.BehaviorTree.Activate(!controller.BehaviorTree.IsActivated);
+                }
+            }
+        }
+
         [Command(KeyCode.O)]
-        public void Invulnerability()
+        public void ToggleAutoAttack()
+        {
+            var controller = GetPlayer(Owner.PlayerId);
+            controller.AutoAttackHandler.Activate(! controller.AutoAttackHandler.isActiveAndEnabled);
+        }
+
+        [Command(KeyCode.I)]
+        public void InvulnerableSelf()
+        {
+            var controller = GetPlayer(Owner.PlayerId);
+            if (controller.StateHandler.HasState(EStateEffect.Invulnerable))
+                controller.StateHandler.RemoveStateEffect(EStateEffect.Invulnerable);
+            else
+                controller.StateHandler.AddStateEffect(EStateEffect.Invulnerable.ToString(), Owner);
+        }
+
+        [Command(KeyCode.U)]
+        public void InvulnerableEnemy()
         {
             var controller = GetFirstEnemy(Owner.Team);
             if (controller.StateHandler.HasState(EStateEffect.Invulnerable))
@@ -1065,21 +1105,6 @@ namespace Game
         public void GiveEnergy()
         {
             GetFirstEnemy(Owner.Team).EnergyHandler.AddEnergy(100);
-        }
-
-        /// <summary>
-        /// Toggle activation of AIs (for tests)
-        /// </summary>
-        [Command(KeyCode.P)]
-        public void ToggleAI()
-        {
-            foreach (Controller controller in m_Controllers.Values)
-            {
-                if (controller.IsPlayer)
-                    continue;
-
-                controller.BehaviorTree.Activate(!controller.BehaviorTree.IsActivated);
-            }
         }
 
         [Command(KeyCode.Space)]

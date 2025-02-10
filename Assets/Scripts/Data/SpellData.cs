@@ -17,7 +17,6 @@ using MyBox;
 using Assets.Scripts.Data.DataStructures;
 using Assets.Scripts.Data.DataStructures.SpellRequirement;
 using Assets.Scripts.Data.DataStructures.SpellSubStructures;
-using static UnityEngine.GraphicsBuffer;
 
 namespace Data
 {

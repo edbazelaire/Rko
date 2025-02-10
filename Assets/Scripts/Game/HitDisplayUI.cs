@@ -2,7 +2,6 @@
 using Game;
 using System.Collections;
 using System.Collections.Generic;
-using Tools;
 using UnityEngine;
 
 namespace Assets.Scripts.Game
@@ -88,6 +87,11 @@ namespace Assets.Scripts.Game
             pos.y += 0.7f;
             var damageText = Instantiate(m_FloatingTextPrefab, pos, Quaternion.identity);
             damageText.GetComponent<FloatingTextUI>().SetText(data.Damage, data.HitType);
+
+            if (GameManager.Instance.Owner.Team == 1)
+            {
+                damageText.transform.rotation = Quaternion.Euler(transform.rotation.x, -180f, transform.rotation.z);
+            }
         }
     }
 }

@@ -40,6 +40,12 @@
         MessageriePopUp,
     }
 
+    public enum EEnv
+    {
+        dev,
+        beta
+    }
+
     public enum EScreenAspect
     {
         Square,     // screen is more square shape than rectangle

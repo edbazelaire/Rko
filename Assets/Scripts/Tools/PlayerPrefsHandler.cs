@@ -209,7 +209,6 @@ namespace Tools
 
         public static bool GetDebug(EDebugOption option)
         {
-            // TODO : SET DEBUG MODE TO DEFAULT = 0 (after testing)
             return PlayerPrefs.GetInt(option.ToString(), 0) == 1;
         }
 

@@ -34,6 +34,7 @@ namespace Game.Spells
 
         #endregion
 
+
         #region Target & Position
 
         protected override Controller GetTargetController()
@@ -63,7 +64,7 @@ namespace Game.Spells
         protected override void OnHit(Controller controller) 
         {
             // add state effect specific to this spell (must have same name)
-            controller.StateHandler.AddStateEffect(m_SpellData.GetStateEffect(), m_Controller);
+            controller.StateHandler.AddStateEffect(m_SpellData.GetStateEffect(), controller);
 
             base.OnHit(controller);
         }

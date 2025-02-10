@@ -2,7 +2,6 @@
 using Assets.Scripts.Managers.Sound;
 using Data;
 using Enums;
-using Game.Character;
 using Game.Loaders;
 using Game.Spells.SpecialEffects;
 using MyBox;
