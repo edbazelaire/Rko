@@ -24,8 +24,6 @@ namespace Game.AI.BehaviorTrees
 
         public override Node GetDefaultTree()
         {
-            Debug.Log("GetDefaultTree() : Fenris");
-
             return new Selector(new List<Node>
             {
                 // NONE STATE               ===================================================

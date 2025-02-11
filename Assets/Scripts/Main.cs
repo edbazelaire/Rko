@@ -1,7 +1,6 @@
 ﻿using Assets.Scripts.Network;
 using Enums;
 using Game.Loaders;
-using Menu.PopUps;
 using Save;
 using System;
 using System.Collections;
@@ -14,17 +13,13 @@ using Data;
 using System.Linq;
 using Data.GameManagement;
 using System.Collections.Generic;
-using Scripts.Menu.PopUps;
 using Unity.Services.Core.Environments;
 using Network;
 using Assets.Scripts.Tools;
-using Data.DataStructures;
 using Assets.Scripts.Managers;
 using Managers.Friends;
-using Menu.PopUps.PopUps.MessagePopUps;
 using Unity.Services.Friends.Models;
 using UnityEngine.SceneManagement;
-using Menu.PopUps.OverlayScreens;
 
 
 #if UNITY_EDITOR
@@ -50,6 +45,7 @@ namespace Assets
         [SerializeField] bool m_ActivateSaveOnClose;
 
         [Header("Debug Section")]
+        [SerializeField] EEnv m_Env = EEnv.beta;
         [SerializeField] bool m_ForceIsNewPlayer;
         [SerializeField] bool m_StopPreventiveLoss;
         [SerializeField] List<ELogTag> m_LogTags;
@@ -137,7 +133,7 @@ namespace Assets
                 // initialize Unity Services 
                 var options = new InitializationOptions();
 #if UNITY_EDITOR
-                options.SetEnvironmentName("beta");
+                options.SetEnvironmentName(m_Env == EEnv.beta ? "beta" : "dev");
 #else
                 options.SetEnvironmentName("dev");
 #endif

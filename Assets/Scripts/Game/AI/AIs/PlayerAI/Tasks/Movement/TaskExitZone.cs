@@ -39,7 +39,7 @@ public class TaskExitZone : TaskMove
 
         SelectExitMovement(startX.Value, endX.Value);
 
-        m_Movement.SetMovementServerRPC(-m_CurrentMoveX);
+        m_Movement.SetMovement(-m_CurrentMoveX);
 
         return m_State;
     }

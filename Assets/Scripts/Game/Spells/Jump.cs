@@ -67,9 +67,9 @@ namespace Game.Spells
             base.End();
         }
 
-        public override void OnDestroy()
+        public override void OnNetworkDespawn()
         {
-            base.OnDestroy();
+            base.OnNetworkDespawn();
 
             // cancel animation
             m_Controller.AnimationHandler.CancelCastAnimation();

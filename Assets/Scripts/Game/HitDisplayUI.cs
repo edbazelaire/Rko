@@ -33,12 +33,20 @@ namespace Assets.Scripts.Game
 
         private void Awake()
         {
-            if (Instance == null) Instance = this;
-            else Destroy(gameObject);
+            if (Instance == null) 
+                Instance = this;
+            else 
+                Destroy(gameObject);
         }
 
-        public void DisplayHit(ulong clientId, int damage, EHitType hitType, ESpellCategory damageType)
+        public void DisplayHit(ulong clientId, int value, EHitType hitType, ESpellCategory damageType)
         {
+            if (value <= 0)
+            {
+                ErrorHandler.Warning("Value (" + value + ") <= 0");
+                return;
+            }
+
             if (!m_HitQueues.ContainsKey(clientId))
             {
                 m_HitQueues[clientId] = new Queue<HitDisplayData>();
@@ -53,7 +61,7 @@ namespace Assets.Scripts.Game
                 return;
 
             // Enqueue the hit data for the player
-            HitDisplayData data = new(damage, hitType, damageType);
+            HitDisplayData data = new(value, hitType, damageType);
             m_HitQueues[clientId].Enqueue(data);
 
             // If not currently displaying for this player, start processing their queue
@@ -88,6 +96,11 @@ namespace Assets.Scripts.Game
             pos.y += 0.7f;
             var damageText = Instantiate(m_FloatingTextPrefab, pos, Quaternion.identity);
             damageText.GetComponent<FloatingTextUI>().SetText(data.Damage, data.HitType);
+
+            if (GameManager.Instance.Owner.Team == 1)
+            {
+                damageText.transform.rotation = Quaternion.Euler(transform.rotation.x, -180f, transform.rotation.z);
+            }
         }
     }
 }

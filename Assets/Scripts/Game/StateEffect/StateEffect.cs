@@ -760,7 +760,7 @@ namespace Game.Spells
 
             // calculate scaling factors (levels and stacks)
             float levelFactor = (float)Math.Pow(1 + bonusStats.LevelScalingFactor, Math.Max(Level - 1, 0));
-            float stacksFactor = (float)Math.Pow(1 + bonusStats.StackScalingFactor, Math.Max(Stacks, 0));
+            float stacksFactor = bonusStats.StackScalingFactor * Stacks;
 
             value = bonusStats.BaseValue * levelFactor;
             if (m_Controller == null)

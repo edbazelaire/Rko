@@ -55,11 +55,10 @@ namespace Game.SpellGFXs
             base.StartAnimation();
         }
 
-        protected override void OnDestroy()
+        protected override void ForceEnd()
         {
-            base.OnDestroy();
-
             m_Controller.GFXHandler.CharacterPreview.transform.localPosition = m_InitialPosition;
+            base.ForceEnd();
         }
 
         #endregion

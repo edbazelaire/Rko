@@ -118,8 +118,6 @@ namespace Game.GameManagers.Components
 
         private IEnumerator WaitForClientReconnection()
         {
-            Debug.Log("WaitForHostReconnection()");
-
             // =====================================================================================
             // Not working because GameManager is destroyed when the server goes down
             float timePassed = Time.unscaledTime - m_DisconnectionTimestamp;
@@ -149,8 +147,6 @@ namespace Game.GameManagers.Components
 
         private IEnumerator WaitServerRestart()
         {
-            Debug.Log("WaitServerRestart()");
-
             float timePassed;
             do
             {
@@ -245,8 +241,6 @@ namespace Game.GameManagers.Components
         /// <param name="clientId"></param>
         void OnClientDisconnected(ulong clientId)
         {
-            Debug.Log("OnClientDisconnected : " + clientId);
-
             if (GameManager.IsGameOver)
                 return;
 
@@ -280,8 +274,6 @@ namespace Game.GameManagers.Components
         /// <param name="clientId"></param>
         void OnClientConnected(ulong clientId) 
         {
-            Debug.Log("OnClientConnected : " + clientId);
-
             if (GameManager.IsGameOver || !GameManager.Instance.IsGameLoaded)
                 return;
 

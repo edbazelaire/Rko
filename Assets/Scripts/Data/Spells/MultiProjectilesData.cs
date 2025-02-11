@@ -193,14 +193,14 @@ namespace Data
 
             // if specific projectile data are provided : use theme
             if (ProjectileData != null)
-                ProjectileData.Cast(
+                GameManager.Instance.StartCoroutine(ProjectileData.CastDelay(
                     clientId: clientId, 
                     target: target, 
                     position: position, 
                     rotation: rotation, 
                     recalculateTarget: false, 
                     recalculatePosition: m_RecalculatePosition
-                );
+                ));
 
             // otherwise use config of the file
             else

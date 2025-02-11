@@ -828,8 +828,6 @@ namespace Game.Character
 
         public void ReduceCooldowns(float cooldownReduction)
         {
-            Debug.Log("Reduce Cooldowns by : " + cooldownReduction);
-
             for (int i = 0; i < m_Cooldowns.Count; i++)
             {
                 if (m_Cooldowns[i] <= 0)
