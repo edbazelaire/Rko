@@ -389,14 +389,11 @@ namespace Game.Character
             var pastState = GetAnimationState();
             int stacks = overridingData != null ? overridingData.Value.GetStacks() : 1;
 
-            if (stateEffect.StateEffectName == "Invulnerable")
-                Debug.LogWarning("  ++ ADDING STATE : Invulnerable");
-
             // if already in the list of state effects, refresh it
             if (HasState(stateEffect.StateEffectName))
             {
                 if (stateEffect.StateEffectName == "Jump")
-                    Debug.LogError("  /!\\ REFRESHING STATE : Jump");
+                    ErrorHandler.Error("  /!\\ REFRESHING STATE : Jump");
 
                 RefreshEffect(stateEffect.StateEffectName, stateEffect.Level, stacks);
                 return;

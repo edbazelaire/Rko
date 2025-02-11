@@ -107,7 +107,7 @@ namespace Assets.Scripts.Game
             if (m_PlayersDataDamages.TryGetValue(playerId, out var data))
                 return data;
 
-            Debug.LogWarning($"Player data for ID {playerId} not found.");
+            ErrorHandler.Warning($"Player data for ID {playerId} not found.");
             return new List<SSpellHitTypeData>();
         }
 

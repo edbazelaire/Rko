@@ -28,10 +28,6 @@ namespace Game.SpellGFXs
 
         #region End
 
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-        }
 
         #endregion
 

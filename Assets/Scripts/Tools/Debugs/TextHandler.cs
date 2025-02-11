@@ -474,10 +474,13 @@ namespace Tools
                     continue;
                 }
 
+                var stateEffect = stateEffects[index];
+                stateEffect.SetLevel(spellData.Level);
+
                 // Replace token with the property value from ConvertDescriptionVariable
                 text = text.Replace(
                     token,
-                    stateEffects[index].Description
+                    stateEffect.Description
                 );
             }
 

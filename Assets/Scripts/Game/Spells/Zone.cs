@@ -32,6 +32,7 @@ namespace Game.Spells
         /// </summary>
         public override void OnNetworkSpawn()
         {
+            base.OnNetworkSpawn();
             m_Radius.OnValueChanged += OnRadiusChanged;
         }
 

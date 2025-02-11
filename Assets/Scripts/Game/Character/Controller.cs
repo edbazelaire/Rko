@@ -429,11 +429,11 @@ public class Controller : NetworkBehaviour
         // set to "true" the variable that the game has started
         m_GameRunning = true;
 
-        if (!IsServer)
-            return;
-
         // activate components allowing the player to make actions
         ActivateActionComponent(true);
+
+        if (!IsServer)
+            return;
 
         // when game starts, activate behavior tree
         if (! IsPlayer && m_BehaviorTree != null)
@@ -497,13 +497,17 @@ public class Controller : NetworkBehaviour
     /// <param name="active"></param>
     public void ActivateActionComponent(bool active)
     {
+        // movement is a client component too
+        m_Movement.Activate(active);
+
+        if (!IsServer)
+            return;
+
         m_StateHandler.enabled          = active;
         m_CounterHandler.enabled        = active;
 
         m_SpellHandler.Activate(active);
         m_TriggerEffectHandler.Activate(active);
-
-        m_Movement.Activate(active);
 
         if (m_AutoAttackHandler != null && m_SpellHandler.AutoAttack != ESpell.None)
             m_AutoAttackHandler.Activate(active);

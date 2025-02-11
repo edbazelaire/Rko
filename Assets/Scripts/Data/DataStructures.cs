@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Managers.Sound;
+﻿using Assets.Scripts.Game;
+using Assets.Scripts.Managers.Sound;
 using Enums;
 using Game.SpellGFXs;
 using Game.Spells;
@@ -234,7 +235,6 @@ namespace Data
             }
 
             GameObject go = Prefab == null ? new GameObject() : InstantiatePrefab(caster, spell, targetController, callFromPosition, targetPos);
-
             return InitializeGFXComponent(go, caster, spellData, spell, stateEffectName, targetController, forcedDuration);
         }
 
@@ -249,7 +249,7 @@ namespace Data
                 return null;
             }
 
-            return GameObject.Instantiate(Prefab, position, Quaternion.identity, IsFollowing ? parent : null);
+            return PoolManager.Pool(Prefab, position, Quaternion.identity, IsFollowing ? parent : null);
         }
 
         protected virtual BaseSpellGFX<TEnum> InitializeGFXComponent(

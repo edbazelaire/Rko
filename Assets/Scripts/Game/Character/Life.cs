@@ -2,6 +2,7 @@ using Assets.Scripts.Game;
 using Data;
 using Enums;
 using System;
+using Tools;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Netcode;
 using UnityEngine;
@@ -101,7 +102,7 @@ public class Life : NetworkBehaviour
         // check provided value
         if (damage < 0)
         {
-            Debug.LogError($"Damages ({damage}) < 0");
+            ErrorHandler.Error($"Damages ({damage}) < 0");
             return 0;
         }
 
@@ -111,9 +112,6 @@ public class Life : NetworkBehaviour
         // check provided value
         if (damage <= 0)
             return 0;
-
-        if (source.Contains("OnHit"))
-            Debug.LogWarning("ONHIT SOURCE DETECTED");
 
         GameAnalyticsManager.Instance.OnSpellHit(casterId, m_Controller.PlayerId, source, damage, EHitType.Damage, spellCategory);
 
@@ -146,16 +144,17 @@ public class Life : NetworkBehaviour
         // check provided value
         if (heal < 0)
         {
-            Debug.LogError($"Healing ({heal}) < 0");
+            ErrorHandler.Warning("Provided heal with value (" + heal + ")< 0");
             return 0;
         }
 
-        if (heal == 0)
-            return 0;
-
-        // apply heals
+        // check max heal
         if (m_Hp.Value + heal > m_MaxHp.Value)
             heal = m_MaxHp.Value - m_Hp.Value;
+
+        // check heal is not <= 0
+        if (heal <= 0)
+            return 0;
 
         m_Hp.Value += heal;
         GameAnalyticsManager.Instance.OnSpellHit(casterId, m_Controller.PlayerId, source, heal, EHitType.Heal, spellCategory);

@@ -21,10 +21,10 @@ namespace Game.Spells
         protected override void FindComponents()
         {
             base.FindComponents();
-            m_FadingArea = Finder.Find(gameObject, "FadingArea");
+            m_FadingArea = Finder.Find(gameObject, "FadingArea", false);
 
             // If FadingArea exists, only fade its children; otherwise, fade the entire object
-            GameObject target = m_FadingArea ? m_FadingArea : gameObject;
+            GameObject target = m_FadingArea != null ? m_FadingArea : gameObject;
 
             // Get all SpriteRenderers & ParticleSystems inside target
             m_SpriteRenderers = target.GetComponentsInChildren<SpriteRenderer>(true);

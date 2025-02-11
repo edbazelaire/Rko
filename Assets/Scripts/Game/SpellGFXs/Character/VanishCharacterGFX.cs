@@ -30,11 +30,10 @@ namespace Game.SpellGFXs
 
         #region End
 
-        protected override void OnDestroy()
+        protected override void ForceEnd()
         {
-            base.OnDestroy();
-
             m_Controller.GFXHandler.HideCharacter(false);
+            base.ForceEnd();
         }
 
         #endregion

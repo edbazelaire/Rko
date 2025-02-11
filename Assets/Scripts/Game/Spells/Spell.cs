@@ -2,7 +2,6 @@
 using Assets.Scripts.Managers.Sound;
 using Data;
 using Enums;
-using Game.Character;
 using Game.Loaders;
 using Game.Spells.SpecialEffects;
 using MyBox;
@@ -37,6 +36,7 @@ namespace Game.Spells
         SpellData m_SpellData  => m_BaseSpellData;
         protected Controller        m_Controller;
         protected Vector3           m_Target;
+        protected NetworkObject     m_NetworkObjectComponent;
         protected GameObject        m_GraphicsContainer;
         protected GameObject        m_Graphics;
 
@@ -67,11 +67,18 @@ namespace Game.Spells
 
         #region Init & End
 
-        public override void OnNetworkSpawn() { }
-
-        public override void OnDestroy()
+        public override void OnNetworkSpawn() 
         {
-            base.OnDestroy();
+            m_GraphicsContainer = Finder.Find(gameObject, c_GraphicsContainer, throwError: false);
+            if (m_GraphicsContainer == null)
+                m_GraphicsContainer = new GameObject(c_GraphicsContainer);
+
+            m_NetworkObjectComponent = Finder.FindComponent<NetworkObject>(gameObject);
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            base.OnNetworkDespawn();
 
             // call an end on client side (this method happens localy so no need to get throught RPC)
             CallSpellEvent(ESpellEvent.OnEnd);
@@ -81,6 +88,9 @@ namespace Game.Spells
 
             // unregister from any listeners
             UnRegisterListeners();
+
+            // deactivate game object (to make sure it happens after network despawn)
+            gameObject.SetActive(false);
         }
 
         protected virtual void SetSpellData(string spellName, int level, string parent = null)
@@ -144,10 +154,23 @@ namespace Game.Spells
             // ending effect
             SpawnOnHitPrefab();
 
-            // destroy the spell game object
-            StartCoroutine(DestroySpell());
+            // terminate spell 
+            Terminate();
 
             ErrorHandler.Log("End of spell : " + m_SpellData, ELogTag.Spells);
+        }
+
+        /// <summary>
+        /// Terminate a spell (just call end of spell with/without graphics)
+        /// </summary>
+        /// <param name="instant"></param>
+        public virtual void Terminate(bool instant = false)
+        {
+            // destroy the spell game object
+            if (instant)
+                PoolManager.ReturnObject(m_NetworkObjectComponent);
+            else
+                StartCoroutine(DestroySpell());
         }
 
         public virtual bool TryEnd()
@@ -171,7 +194,7 @@ namespace Game.Spells
             }
 
             // destroy the spell
-            Destroy(gameObject);
+            PoolManager.ReturnObject(m_NetworkObjectComponent);
         }
 
         #endregion
@@ -230,13 +253,9 @@ namespace Game.Spells
         /// </summary>
         protected virtual void InitGraphics()
         {
-            m_GraphicsContainer = Finder.Find(gameObject, c_GraphicsContainer, throwError: false);
-            if (m_GraphicsContainer == null)
-                m_GraphicsContainer = new GameObject(c_GraphicsContainer);
-
             if (m_SpellData.Graphics != null)
             {
-                m_Graphics = Instantiate(m_SpellData.Graphics, m_GraphicsContainer.transform);
+                m_Graphics = PoolManager.Pool(m_SpellData.Graphics, m_GraphicsContainer.transform);
                 SwapColliders(m_Graphics);
 
                 var audioSource = Finder.FindComponent<AudioSource>(m_Graphics);
@@ -699,13 +718,6 @@ namespace Game.Spells
 
 
         #region Debug
-
-        public virtual void DebugMessage()
-        {
-            Debug.Log("Spell " + m_SpellData.name);
-            Debug.Log("     + ClientId " + OwnerClientId);
-            Debug.Log("     + Target " + m_Target);
-        }
 
         #endregion
     }

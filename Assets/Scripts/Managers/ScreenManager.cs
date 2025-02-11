@@ -175,8 +175,6 @@ namespace Assets.Scripts.Managers
             OrderInLayer += ADDING_ORDER_IN_LAYER;
             Screens.Add(screen);
 
-            Debug.Log("NEW SCREEN ("+screen.PopUpName+") - OrderInLayer : " + OrderInLayer);
-
             // stop current wait for screen focus
             if (m_WaitFocusCoroutine != null)
                 Main.Instance.StopCoroutine(m_WaitFocusCoroutine);
@@ -225,12 +223,10 @@ namespace Assets.Scripts.Managers
                     continue;
 
                 OrderInLayer = screen.Canvas.sortingOrder;
-                Debug.Log("CHANGED CurrentScreen ("+ screen .PopUpName+ ") - OrderInLayer : " + OrderInLayer);
                 return;
             }
 
             OrderInLayer = 0;
-            Debug.Log("NO SCREEN - OrderInLayer : " + OrderInLayer);
         }
 
         public static bool HasScreen(EPopUpState popUpState)

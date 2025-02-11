@@ -432,12 +432,5 @@ namespace Game.Character
         }
 
         #endregion
-
-        public void DebugMessage()
-        {
-            Debug.Log("MoveX : " + m_MoveX.Value);
-            Debug.Log("IsMoving : " + IsMoving);
-            Debug.Log("Rotation : " + transform.rotation);
-        }
     }
 }

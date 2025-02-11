@@ -29,11 +29,9 @@ namespace Game.AI.BehaviorTrees
             {
                 case EArenaDifficulty.Easy:
                 case EArenaDifficulty.Normal:
-                    Debug.Log("Loading (Default Tree)");
                     return GetDefaultTree(m_Controller);
 
                 default:
-                    Debug.Log("Loading (Hard Tree)");
                     return GetTree_Hard(m_Controller);
             }
         }

@@ -78,6 +78,9 @@ namespace Save
 
         public CloudData GetCloudData(Type cloudDataType)
         {
+            if (m_CloudData == null)
+                return null;
+
             foreach (CloudData cloudData in m_CloudData)
             {
                 if (cloudData.GetType() == cloudDataType)

@@ -48,7 +48,6 @@ namespace Game.Spells
                 m_Stacks = Math.Min(enemyController.StateHandler.RemoveStateEffect(m_ConsumeState), m_MaxStacks);
             }
 
-            Debug.LogWarning("CURSED applied with " + m_Stacks + " stacks");
             m_Controller.StateHandler.AddStateEffect(EStateEffect.VoidPact, m_Controller, duration: m_Duration);
 
             return true;
