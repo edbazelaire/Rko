@@ -1,6 +1,5 @@
 ﻿using Enums;
 using Inventory;
-using MyBox;
 using Save;
 using System;
 using System.Collections.Generic;
@@ -27,7 +26,7 @@ namespace Tools
         /// <summary> displayer of game perfs monitors </summary>
         PerformanceMonitor m_PerformanceMonitor;
 
-        bool m_IsActivated => ProfileCloudData.IsAdmin && PlayerPrefsHandler.GetDebug(EDebugOption.DebugMode);
+        bool m_IsActivated => ProfileCloudData.Instance != null && ProfileCloudData.Instance.LoadingCompleted && ProfileCloudData.IsAdmin && PlayerPrefsHandler.GetDebug(EDebugOption.DebugMode);
 
         public static Debugger                          Instance            => s_Instance;
         public static PerformanceMonitor                PerformanceMonitor  => Instance.m_PerformanceMonitor;

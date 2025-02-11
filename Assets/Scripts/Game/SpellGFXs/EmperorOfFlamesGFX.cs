@@ -86,10 +86,12 @@ namespace Game.SpellGFXs
             base.End();
         }
 
-        protected override void OnDestroy()
+        protected override void ForceEnd()
         {
-            Destroy(m_FireEnergyCharge);
-            Destroy(m_EnergyExplosion);
+            m_FireEnergyCharge.gameObject.SetActive(false);
+            m_EnergyExplosion.gameObject.SetActive(false);
+
+            base.ForceEnd();
         }
 
         #endregion

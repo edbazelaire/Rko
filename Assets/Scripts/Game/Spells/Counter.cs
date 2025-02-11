@@ -86,12 +86,15 @@ namespace Game.Spells
             base.End();
         }
 
-        public override void OnDestroy()
+        public override void OnNetworkDespawn()
         {
+            if (!IsServer)
+                return;
+
             if (! m_IsOver) 
                 m_Controller.SpellHandler.OnPreSpellEvent -= OnPreSpellEvent;
 
-            base.OnDestroy();
+            base.OnNetworkDespawn();
         }
 
         #endregion
@@ -198,7 +201,7 @@ namespace Game.Spells
                     break;
 
                 default:
-                    Debug.LogError("Unhandled counter type : " + m_SpellData.CounterType);
+                    ErrorHandler.Error("Unhandled counter type : " + m_SpellData.CounterType);
                     break;
             }
 
@@ -210,7 +213,7 @@ namespace Game.Spells
 
             // Destroy the spell
             if (m_SpellData.IsDestroyingSpell)
-                Destroy(enemySpell.gameObject);
+                enemySpell.Terminate();
 
             // Call "OnHit" event for the Counter
             CallSpellEventClientRPC(ESpellEvent.OnHit);
@@ -223,7 +226,7 @@ namespace Game.Spells
             return true;
         }
 
-        public bool ProcCounter(int damages, Controller caster, Enums.ESpellCategory damageType)
+        public bool ProcCounter(int damages, Controller caster, ESpellCategory damageType)
         {
             if (!IsServer)
                 return false;
@@ -258,7 +261,7 @@ namespace Game.Spells
                     break;
 
                 default:
-                    Debug.LogError("Unhandled counter type : " + m_SpellData.CounterType);
+                    ErrorHandler.Error("Unhandled counter type : " + m_SpellData.CounterType);
                     break;
             }
 

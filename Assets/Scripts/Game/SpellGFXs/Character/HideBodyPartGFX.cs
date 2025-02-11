@@ -34,14 +34,14 @@ namespace Game.SpellGFXs
 
         #region End
 
-        protected override void OnDestroy()
+        protected override void ForceEnd()
         {
-            base.OnDestroy();
-
             if (m_BodyPart != EBodyPart.None)
                 m_Controller.GFXHandler.Hide(false, m_BodyPart.ToString());
             else
                 m_Controller.GFXHandler.HideCharacter(false);
+
+            base.ForceEnd();
         }
 
         #endregion

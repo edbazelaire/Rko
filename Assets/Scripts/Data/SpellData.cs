@@ -17,6 +17,7 @@ using MyBox;
 using Assets.Scripts.Data.DataStructures;
 using Assets.Scripts.Data.DataStructures.SpellRequirement;
 using Assets.Scripts.Data.DataStructures.SpellSubStructures;
+using Assets.Scripts.Game;
 
 namespace Data
 {
@@ -61,13 +62,13 @@ namespace Data
 
         [Header("Prefabs")]
         [Description("Prefab of the spell that will be instantiated when the spell is cast")]
-        public GameObject           Graphics;
+        public GameObject               Graphics;
 
         [Description("List of all Effects appening when the targets")]
         public List<SpellPrefabSpawn>   SpellEventActions;
 
         [Description("Prefab of the spell when it hits a target")]
-        public List<SpellData>      OnHit;
+        public List<SpellData>          OnHit;
 
         [Description("Where does the OnHit spawns")]
         public ESpellSpawn OnHitSpellSpawn = ESpellSpawn.Ground;
@@ -249,10 +250,7 @@ namespace Data
                 RecalculateRotation(ref rotation);
 
             // instantiate the prefab of the spell
-            GameObject spellGO = GameObject.Instantiate(GetSpellPrefab(), position, rotation);
-
-            // spawn in network
-            Finder.FindComponent<NetworkObject>(spellGO).SpawnWithOwnership(clientId);
+            NetworkObject spellGO = PoolManager.Pool(GetSpellPrefab(), clientId, position, rotation);
 
             // reparent if any
             Transform parent = FindParent(clientId);
@@ -260,7 +258,7 @@ namespace Data
                 spellGO.transform.SetParent(FindParent(clientId));
 
             // initialize the spell
-            var spell = Finder.FindComponent<Spell>(spellGO);
+            var spell = Finder.FindComponent<Spell>(spellGO.gameObject);
             spell.Initialize(clientId, target, Name, m_Level, m_Parent);
 
             // backpropagate the spell intialization to the client (for the preview)
@@ -391,9 +389,9 @@ namespace Data
 
         #region Spell Helpers
 
-        protected virtual GameObject GetSpellPrefab()
+        protected virtual NetworkObject GetSpellPrefab()
         {
-            return SpellLoader.GetSpellPrefab(Name, SpellType);
+            return SpellLoader.GetSpellPrefab(Name, SpellType).GetComponent<NetworkObject>();
         }
 
         /// <summary>

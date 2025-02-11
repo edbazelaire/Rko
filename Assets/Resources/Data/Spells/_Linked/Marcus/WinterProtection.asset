@@ -39,6 +39,7 @@ MonoBehaviour:
     IsFollowing: 1
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   OnHit: []
   OnHitSpellSpawn: 1
@@ -48,19 +49,28 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 4
+  m_ClampTargetPos: 1
+  TargetOffset:
+    X: 0
+    Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 0
+  m_ExecutionDamages: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
-  m_Duration: 3
+  m_Duration: 0.5
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
@@ -78,10 +88,13 @@ MonoBehaviour:
   m_Cooldown: 30
   CounterType: 1
   CounterActivation: 0
+  m_DamageTypeActivation: 01000000
   m_SpawnOffset: {x: 0, y: 0}
   m_IsFollowing: 1
   m_SpawnLocation: 1
+  IsDestroyingSpell: 1
   IsBlockingMovement: 1
   IsBlockingCast: 1
+  IsCanceledOnCast: 0
   m_DamageConversionEffects: []
   OnCounterProc: {fileID: 11400000, guid: 9446e1f6ed7bcfb47b7fcde576be6d56, type: 2}

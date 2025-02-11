@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Managers.Sound;
+﻿using Assets.Scripts.Game;
+using Assets.Scripts.Managers.Sound;
 using Data;
 using Data.GameManagement;
 using Enums;
@@ -159,10 +160,14 @@ namespace Game.SpellGFXs
         /// </summary>
         protected virtual void ForceEnd()
         {
+            // remove material applied
+            RemoveMaterial();
+
             // remove listeners
             UnRegisterListeners();
 
-            Destroy(this);
+            // provide game object back to the pool of similar objects
+            PoolManager.ReturnObject(gameObject);
         }
 
         /// <summary>
@@ -180,21 +185,13 @@ namespace Game.SpellGFXs
                 yield return null;
             }
 
-            // remove material applied
-            RemoveMaterial();
-
-            // destroy the spell
-            Destroy(gameObject);
+            // call end of the game object
+            ForceEnd();
         }
 
         protected virtual void SetPersistantTimer()
         {
             m_PersistanceTimer = m_PrefabSpawn.GFXLifetime.Persistance;
-        }
-
-        protected virtual void OnDestroy()
-        {
-            UnRegisterListeners();
         }
 
         #endregion
@@ -292,7 +289,7 @@ namespace Game.SpellGFXs
                     break;
 
                 default:
-                    Debug.LogError("SPrefabSpawn::Spawn() - Unknown spawn location " + prefabSpawn.SpawnLocation + " for prefab " + prefabSpawn.Prefab.name);
+                    ErrorHandler.Warning("SPrefabSpawn::Spawn() - Unknown spawn location " + prefabSpawn.SpawnLocation + " for prefab " + prefabSpawn.Prefab.name);
                     break;
             }
 

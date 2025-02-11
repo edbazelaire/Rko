@@ -99,13 +99,6 @@ namespace Data.DataStructures
             if (! IsActivable())
                 return;
 
-            Debug.LogWarning("Activating " + SpellDataName);
-
-            // TODO : remove
-            if (SpellDataName.StartsWith("_Effect"))
-                Debug.Log("fdsq");
-            // TODO : remove
-
             if (controller == null)
             {
                 ErrorHandler.Error("Provided Controller is null for " + SpellDataName);
@@ -135,7 +128,6 @@ namespace Data.DataStructures
             } 
             else
             {
-                Debug.LogWarning("REGISTERING OnStateEffectEvent - " + SpellDataName);
                 StateEffect.StateEffectEvent += OnStateEffectEvent;
             }
 
@@ -171,15 +163,6 @@ namespace Data.DataStructures
                 SpellData spellData = SpellLoader.GetSpellData(SpellDataName, Level);
 
                 m_TargetController.StartCoroutine(spellData.CastDelay(m_TargetController.PlayerId, Vector3.zero, recalculateTarget: true));
-                
-                // ===========================================================================================
-                // TODO : Correctly moved inside the CastDelay() ? - REMOVE
-                //foreach (SpellPrefabSpawn prefabSpawn in spellData.SpellEventActions)
-                //{
-                //    if (prefabSpawn.GFXLifetime.StartSpellPart == ESpellEvent.OnCast)
-                //        prefabSpawn.Spawn(m_TargetController, spellData, null);
-                //}
-                // ===========================================================================================
             }
 
             else if (SpellLoader.StateEffectExists(SpellDataName))
@@ -189,7 +172,6 @@ namespace Data.DataStructures
 
             else if (SpellLoader.PowerUpExists(SpellDataName))
             {
-                Debug.Log("FOUND POWER UP : " + SpellDataName);
                 SRunePower powerUp = SpellLoader.GetPowerUp(SpellDataName, Level);
                 m_TargetController.TriggerEffectHandler.AddPowerUp(powerUp);
             }
@@ -205,7 +187,6 @@ namespace Data.DataStructures
 
         public void End()
         {
-            Debug.LogWarning("END : " + SpellDataName);
             Deactivate();
 
             if (m_TargetController == null)
@@ -219,7 +200,6 @@ namespace Data.DataStructures
             if (! m_IsActivated)
                 return;
 
-            Debug.LogWarning("Deactivating " + SpellDataName);
             StateEffect.StateEffectEvent -= OnStateEffectEvent;
 
             m_IsActivated = false;

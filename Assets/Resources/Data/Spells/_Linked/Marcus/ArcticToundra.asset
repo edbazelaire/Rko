@@ -41,13 +41,19 @@ MonoBehaviour:
   PermanantSoundFX: {fileID: 8300000, guid: f8467e937c75c934c9865b5ec35e4e6e, type: 3}
   OnHitSoundFX: {fileID: 8300000, guid: 3ecced41c79ec3840824bd3813604df2, type: 3}
   OnEndSoundFX: {fileID: 8300000, guid: 299a1418d59067345b65a80b8a8b7e87, type: 3}
-  SpellTarget: 1
+  SpellTarget: 6
+  m_ClampTargetPos: 1
+  TargetOffset:
+    X: 0
+    Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 0
-  EnergyGain: 5
+  EnergyGain: 0
   EnergyCost: 100
   m_Damage: 0
+  m_ExecutionDamages: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -55,6 +61,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 1.5
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
@@ -63,6 +72,7 @@ MonoBehaviour:
   EnemyStateEffects:
   - StateEffect: 6
     Stacks: 1
+    BonusStacksPerLevel: 0
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
@@ -76,6 +86,9 @@ MonoBehaviour:
   m_TickDamages: 25
   m_TickHeal: 0
   m_TickShield: 0
+  m_ZoneForce:
+    m_Speed: 0
+    m_Duration: 0
   GrowSizeFactor: 1
   MaxSizeAt: 1
   PersistentStateEffects: []

@@ -904,7 +904,7 @@ namespace Game
 
         void OnProgressGameStartChanged(float oldValuen, float progress)
         {
-            //Debug.Log("Progress : " + progress);
+
         }
 
         void OnStateValueChanged(EGameState oldValue, EGameState newState)
@@ -1012,15 +1012,6 @@ namespace Game
 
 
         #region Debug Callbacks
-
-        [Command(KeyCode.I)]
-        public void Invulnerabiliy()
-        {
-            if (!Owner.StateHandler.HasState(EStateEffect.Invulnerable))
-                Owner.StateHandler.AddStateEffect(EStateEffect.Invulnerable, Owner);
-            else
-                Owner.StateHandler.RemoveStateEffect(EStateEffect.Invulnerable);
-        }
 
         public void AddStateEffect(string effect)
         {

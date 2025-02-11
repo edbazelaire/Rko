@@ -327,6 +327,10 @@
         ParasiteRune,
         PoisonfangRune,
         VampiricRune,
+        SwordRune,
+        GlacialImpact,
+        SparklingSpirit,
+        CorruptedFlame,
     }
 
     public enum EOrderBy
