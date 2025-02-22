@@ -956,6 +956,8 @@ namespace Game
 
         void OnPlayerDied()
         {
+            Debug.LogWarning("OnPlayerDied() EVENT");
+
             // END of the game is handled by the Tutorial Manager
             if (m_IsTuto)
                 return;
@@ -1054,7 +1056,7 @@ namespace Game
         [Command(KeyCode.L)]
         public void Hit()
         {
-            GetFirstEnemy(Owner.Team).Life.Hit(500, 999, "God", Enums.ESpellCategory.Direct, true);
+            GetFirstEnemy(Owner.Team).Life.Hit(1000, 0, "God", Enums.ESpellCategory.Direct, true);
         }
 
         /// <summary>
@@ -1111,6 +1113,14 @@ namespace Game
         public void GiveEnergy()
         {
             GetFirstEnemy(Owner.Team).EnergyHandler.AddEnergy(100);
+        }
+
+        [Command(KeyCode.J)]
+        public void IncreaseDamages()
+        {
+            Owner.StateHandler.CharacterData.AddBonusStats(new List<SCharacterStatScaling>() { 
+                new SCharacterStatScaling(EStateEffectProperty.BonusDamages, 100f, 0f, 0f) 
+            });
         }
 
         [Command(KeyCode.Space)]

@@ -51,12 +51,6 @@ namespace Game.SpellGFXs
 
         public virtual void Initialize(Controller controller, SpellData spellData, Spell spell, string stateEffectName, SPrefabSpawn<TEnum> prefabSpawn, float? forcedDuration = null)
         {
-            if (controller == null)
-            {
-                ErrorHandler.Error("Controller is null");
-                return;
-            }
-
             m_Controller        = controller;
             m_SpellData         = spellData;
             m_Spell             = spell;

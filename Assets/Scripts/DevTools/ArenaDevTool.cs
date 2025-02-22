@@ -35,14 +35,16 @@ namespace DevTools
             // make sure that is is inactive at start
             gameObject.SetActive(false);
 
-#if UNITY_EDITOR
-            // only display with current arena in progress
-            if (!ProgressionCloudData.HasArenaInProgress)
-                return;
+            // ADMIN ONLY
+            if (ProfileCloudData.IsAdmin)
+            {
+                // only display with current arena in progress
+                if (!ProgressionCloudData.HasArenaInProgress)
+                    return;
 
-            gameObject.SetActive(true);
-            RefreshInputFields();
-#endif
+                gameObject.SetActive(true);
+                RefreshInputFields();
+            }
         }
 
         void RefreshInputFields()

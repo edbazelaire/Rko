@@ -39,6 +39,7 @@ namespace Game.Character
 
         // ==============================================================================================
         // PUBLIC ACCESSORS
+        public CharacterData CharacterData => m_CharacterData;
         public List<StateEffect> StateEffects => m_StateEffects;
         public NetworkList<FixedString64Bytes> HoldingStateEffects => m_HoldingStateEffects;
         public bool IsStunned => 
