@@ -122,9 +122,11 @@ namespace Game.UI
                 case EListEvent.Add:
                     AddState(state, stack, duration);
                     break;
+
                 case EListEvent.Remove:
                     RemoveState(state);
                     break;
+
                 default:
                     Debug.Log("Unhandled case");
                     break;
@@ -153,7 +155,7 @@ namespace Game.UI
             // if not in existing state, create it and add it to the list
             if (!m_StateEffectsUI.ContainsKey(state))
             {
-                ErrorHandler.Error($"Unable to find remvoed state {state} in list");
+                ErrorHandler.Error($"Unable to find removed state {state} in list");
                 return;
             }
 

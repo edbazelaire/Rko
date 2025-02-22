@@ -220,7 +220,6 @@ namespace Game.Character
 
         void SetRotation(float y)
         {
-            Debug.Log("SetRotation() : " + y);
             transform.localRotation = Quaternion.Euler(0f, y, 0f);
         }
 
@@ -258,12 +257,7 @@ namespace Game.Character
             if (m_MovementInput == moveX)
                 return;
 
-            Debug.Log("new Movement INPUT : " + moveX + " - (from "+m_MovementInput+")");
-
             m_MovementInput = moveX;
-
-            //if (m_CanMoveClient)
-            //    UpdateRotation(m_Controller.Team == 0 ? moveX : -moveX);
         }
 
         void UpdateRotation(int moveX)

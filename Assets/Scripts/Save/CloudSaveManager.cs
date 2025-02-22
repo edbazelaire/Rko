@@ -135,16 +135,19 @@ namespace Save
 
 
         /// <summary> check that all cloud data have been loaded </summary>
-        public bool LoadingCompleted
+        public static bool LoadingCompleted
         {
             get
             {
+                if (Instance == null)
+                    return false;
+
                 // check initialized
-                if (m_CloudData == null || m_CloudData.Count == 0)
+                if (Instance.m_CloudData == null || Instance.m_CloudData.Count == 0)
                     return false;
 
                 // check all cloud data have beed loaded
-                foreach (CloudData cloudData in m_CloudData)
+                foreach (CloudData cloudData in Instance.m_CloudData)
                 {
                     if (! cloudData.LoadingCompleted)
                         return false;

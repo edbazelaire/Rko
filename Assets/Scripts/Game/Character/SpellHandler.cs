@@ -954,7 +954,6 @@ namespace Game.Character
         [ClientRpc]
         void SpellActivationEventClientRPC(ESpell spell, ESpellSelectionState spellActivation)
         {
-            Debug.LogWarning("["+m_Controller.PlayerId+ "] - SpellActivationEventClientRPC() - spell ("+spell+") | spellActivation ("+spellActivation+")");
             SpellSelectionEvent?.Invoke(spell, spellActivation);
         }
 

@@ -53,27 +53,6 @@ namespace Menu.PopUps.PopUps.MessagePopUps
         #endregion
 
 
-        #region Buttons
-
-        protected override void OnUIButton(string bname)
-        {
-            switch (bname)
-            {
-                case "Background":
-                    break;
-
-                case "ValidateButton":
-                    OnValidateButton();
-                    break;
-
-                default:
-                    base.OnUIButton(bname);
-                    break;
-            }
-        }
-
-        #endregion
-
 
         #region Listeners
 

@@ -471,6 +471,8 @@ public class Controller : NetworkBehaviour
     /// </summary>
     void OnDied()
     {
+        Debug.Log("OnDied() EVENT");
+
         if (IsSpawn)
         {
             Destroy(gameObject);

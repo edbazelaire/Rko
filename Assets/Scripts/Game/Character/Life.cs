@@ -77,8 +77,11 @@ public class Life : NetworkBehaviour
 
     public bool Kill(bool ignoreDeathEffects = false)
     {
+        Debug.Log("Kill()   --------------------------------------------");
+
         if (!ignoreDeathEffects && m_Controller.TriggerEffectHandler.OnDeathEffect())
         {
+            Debug.Log("     + Trigerred - OnDeathEffect");
             return false;
         }
 

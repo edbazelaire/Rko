@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Tools;
 using Unity.Netcode;
 using Unity.VisualScripting;
+using UnityEngine;
 
 namespace Game.Character
 {
@@ -171,6 +172,8 @@ namespace Game.Character
                 effect.Activate(m_Controller);
                 m_TriggerEffects[i] = effect;
                 success = true;
+
+                Debug.LogWarning("      + Trigerred DeathEffect : " + effect);
             }
 
             return success;
