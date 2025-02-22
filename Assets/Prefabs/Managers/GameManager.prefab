@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 6242915551385147530}
   - component: {fileID: 9025398823218707467}
   - component: {fileID: 1840164171120593076}
-  - component: {fileID: 6076081573167582694}
   - component: {fileID: 7971454446030943911}
   - component: {fileID: -7989639924032293450}
   m_Layer: 0
@@ -48,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1537733119
+  GlobalObjectIdHash: 1059153078
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -68,22 +67,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b484a69f5ba4974ba118a433f73169d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &6076081573167582694
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2429262360118711443}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e021ce51ffebd4458ced7c5c87e0620, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ReconnectionTimeout: 3
-  m_ServerDownMessage: The server went down for unexpected reasons
-  m_ReconnectionMessage: Your opponent has been disconnected
-  m_CountdownMessage: The game will end in... {0}
 --- !u!114 &7971454446030943911
 MonoBehaviour:
   m_ObjectHideFlags: 0

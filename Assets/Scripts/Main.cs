@@ -20,6 +20,8 @@ using Assets.Scripts.Managers;
 using Managers.Friends;
 using Unity.Services.Friends.Models;
 using UnityEngine.SceneManagement;
+using MyBox;
+
 
 
 #if UNITY_EDITOR
@@ -40,7 +42,6 @@ namespace Assets
         // ==========================================================================================================
         // SERIALIZED MEMBERS
         [SerializeField] Canvas m_Canvas;
-        [SerializeField] CloudSaveManager m_CloudSaveManager;
         [SerializeField] LeagueDataConfig m_LeagueDataConfig;
         [SerializeField] bool m_ActivateSaveOnClose;
 
@@ -62,11 +63,28 @@ namespace Assets
         bool m_SignedIn = false;
         /// <summary> Events to store until reaching a specific AppState </summary>
         Dictionary<EAppState, List<Action>> m_StoredEvents = new();
+        /// <summary> List of elements to wait init before loading the Main menu </summary>
+        List<bool> InitializedElements => new List<bool>()
+        {
+            CharacterLoader.Instance            != null,
+            TimeErrorWrapper.Instance           != null,
+            SceneLoader.Instance                != null,
+            LootManagementData.Instance         != null,
+            ItemLoader.ChestRewardData          != null,
+            AchievementLoader.Achievements      != null,
+            LobbyHandler.Instance               != null,
+            SpellLoader.Initialized,
+            RelayHandler.Initialized,
+            FriendsHandler.Initialized,
+            RSDManager.LoadingCompleted,
+            CloudSaveManager.LoadingCompleted,
+            m_SignedIn
+        };
 
         // ==========================================================================================================
         // PUBLIC DEPENDENT STATIC MEMBERS
         public static Main              Instance                => s_Instance;
-        public static CloudSaveManager  CloudSaveManager        => Instance.m_CloudSaveManager;
+        public static CloudSaveManager  CloudSaveManager        => CloudSaveManager.Instance;
         public static LeagueDataConfig  LeagueDataConfig        => Instance.m_LeagueDataConfig;
         public static EAppState         State                   => Instance.m_State;
         public static Canvas            Canvas                  => Instance.m_Canvas;
@@ -87,14 +105,20 @@ namespace Assets
             }
         }
 
-#endregion
+        #endregion
 
 
         #region Initialization 
 
-        // Use this for initialization
         async void Awake()
         {
+            if (s_Instance != null)
+            {
+                Debug.Log("================================================================");
+                Debug.Log("DESTROY CURRENT MAIN");
+                Destroy(s_Instance.gameObject);
+            }
+
             s_Instance = this;
 
             await Initialize();
@@ -143,11 +167,10 @@ namespace Assets
                 if (! AuthenticationService.Instance.IsSignedIn)
                 {
                     AuthenticationService.Instance.SignedIn += OnSignedIn;
-                    AuthenticationService.Instance.SignedIn += m_CloudSaveManager.LoadSave;
-                    await AuthenticationService.Instance.SignInAnonymouslyAsync();
-                } else
+                    AuthManager.Instance.SignIn();
+                }
+                else
                 {
-                    m_CloudSaveManager.LoadSave();
                     OnSignedIn();
                 }
             }
@@ -162,26 +185,14 @@ namespace Assets
 #if UNITY_EDITOR
             ErrorHandler.Log("UNITY EDITOR MODE", ELogTag.System);
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
-            ApplicationQuitEvent += m_CloudSaveManager.OnApplicationQuit;
+            ApplicationQuitEvent += CloudSaveManager.Instance.OnApplicationQuit;
 #endif
         }
 
-        List<bool> InitializedElements => new List<bool>()
+        public void Reload()
         {
-            CharacterLoader.Instance            != null,
-            TimeErrorWrapper.Instance           != null,
-            SceneLoader.Instance                != null,
-            LootManagementData.Instance         != null,
-            ItemLoader.ChestRewardData          != null,
-            AchievementLoader.Achievements      != null,
-            LobbyHandler.Instance               != null,
-            SpellLoader.Initialized,
-            RelayHandler.Initialized,
-            FriendsHandler.Initialized,
-            RSDManager.LoadingCompleted,
-            m_CloudSaveManager.LoadingCompleted,
-            m_SignedIn
-        };
+            SceneLoader.Instance.LoadScene("Release");
+        }
 
         /// <summary>
         /// Calculate percentage of initialization based on number of elements initialized
@@ -206,7 +217,7 @@ namespace Assets
         /// <returns></returns>
         IEnumerator CheckInitialization()
         {
-            ErrorHandler.Log("CheckInitialization()");
+            Debug.Log("CheckInitialization()");
 
             // set a timer of 30s to avoid inf loop
             if (TimeErrorWrapper.Instance != null)
@@ -264,7 +275,7 @@ namespace Assets
             }
 
             // Reload the active scene to restart from scratch
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            SceneManager.LoadScene("Release");
         }
 
         string GetInitializationInfoText()
@@ -279,7 +290,7 @@ namespace Assets
             return infoText;
         }
 
-#endregion
+        #endregion
 
 
         #region State Management
@@ -483,6 +494,20 @@ namespace Assets
             Main.AddStoredEvent(EAppState.MainMenu, () => SetPopUp(EPopUpState.PseudoPopUp));
         }
 
+        public static void CheckLogInPopUp()
+        {
+            // do nto proc this popup on new player
+            if (IsNewPlayer || ! ProfileCloudData.PseudoChanged || ProfileCloudData.HasDefaultPseudo)
+                return;
+
+            // already authenticated
+            if (AuthManager.Instance.AuthService != EAuthServices.Anonymous)
+                return;
+
+            // store the change of the display LoginPopUp for when the user will reach the MainMenu
+            Main.AddStoredEvent(EAppState.MainMenu, () => SetPopUp(EPopUpState.LoginPopUp));
+        }
+
         public static void CheckRegion()
         {
             if (ProfileCloudData.Region != "")
@@ -521,7 +546,7 @@ namespace Assets
 
             // reset all data (except token and pseudo)
             string pseudo = ProfileCloudData.GamerTag;
-            m_CloudSaveManager.ResetAll();
+            CloudSaveManager.Instance.ResetAll();
             ProfileCloudData.SetGamerTag(pseudo);
 
             PlayerPrefs.SetInt("Message_01", 1);
@@ -544,18 +569,22 @@ namespace Assets
 
         void OnSignedIn()
         {
+            // remove event signed in
+            AuthenticationService.Instance.SignedIn -= OnSignedIn;
+
             ErrorHandler.Log("SIGNED ID : " + AuthenticationService.Instance.PlayerId, ELogTag.System);
             m_SignedIn = true;
 
             // setup analytics
             MAnalytics.Initialize();
             FriendsHandler.Instance.Initialize();
+
+            // load cloud data
+            CloudSaveManager.Instance.LoadSave();
         }
 
         private void OnInitializationCompleted()
         {
-            Debug.Log("OnInitializationCompleted()");
-
             if (SceneLoader.Instance == null)
                 ErrorHandler.Log("SceneLoader is null", ELogTag.System);
 
@@ -567,9 +596,6 @@ namespace Assets
             } 
 
             ErrorHandler.Log("Initialization of the data completed : loading MainMenu", ELogTag.System);
-
-            // at the end of the initialization - check if PseudoPopUp should be displayed
-            CheckPseudoPopUp();
 
             // check that current version matches the last played version for the player (apply changes if needed)
             UpdateManager.CheckUpdates();

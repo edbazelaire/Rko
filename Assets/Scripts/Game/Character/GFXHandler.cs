@@ -10,6 +10,7 @@ using Tools;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Game.Character
 {
@@ -89,12 +90,12 @@ namespace Game.Character
             m_DefaultMaterial = m_SpriteRenderers[0].material;
 
             m_Controller.SpellHandler.OnPreSpellEvent               += OnPreSpellEvent;
-            m_Controller.StateHandler.StateEffectList.OnListChanged += OnStateEffectListChanged;
+            m_Controller.StateHandler.StateEffectListEvent          += OnStateEffectListChanged;
         }
 
         public override void OnDestroy()
         {
-            m_Controller.StateHandler.StateEffectList.OnListChanged -= OnStateEffectListChanged;
+            m_Controller.StateHandler.StateEffectListEvent          -= OnStateEffectListChanged;
         }
 
         #endregion
@@ -536,26 +537,26 @@ namespace Game.Character
         /// </summary>
         /// <param name="oldValue"></param>
         /// <param name="newValue"></param>
-        void OnStateEffectListChanged(NetworkListEvent<FixedString64Bytes> changeEvent)
+        void OnStateEffectListChanged(EListEvent listEvent, string stateEffect, int stacks, float duration)
         {
-            ErrorHandler.Log(changeEvent.Type + " " + changeEvent.Value, ELogTag.Animation);
+            ErrorHandler.Log(listEvent + " " + stateEffect, ELogTag.Animation);
 
             // ---------------------------------------------------------------------------------------
             // SPECIAL EFFECTS
-            if (changeEvent.Value == EStateEffect.Invisible.ToString())
+            if (stateEffect == EStateEffect.Invisible.ToString())
             {
                 float opacity = 1f;
 
-                if (changeEvent.Type != NetworkListEvent<FixedString64Bytes>.EventType.RemoveAt)
+                if (listEvent == EListEvent.Add)
                     opacity = IsOwner ? 0.5f : 0f;
 
                 SetColor(new Color(1f, 1f, 1f, opacity));
                 return;
             }
             
-            if (changeEvent.Value == EStateEffect.Vanish.ToString())
+            if (stateEffect == EStateEffect.Vanish.ToString())
             {
-                HideCharacter(changeEvent.Type != NetworkListEvent<FixedString64Bytes>.EventType.RemoveAt);
+                HideCharacter(listEvent == EListEvent.Add);
                 return;
             }
         }

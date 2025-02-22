@@ -251,7 +251,7 @@ namespace Assets.Scripts.Managers
             var test = true;
 
             // set IsTutoDone to true
-            Main.CloudSaveManager.ResetAll();
+            CloudSaveManager.Instance.ResetAll();
 
             // save version
             if (! SetVersion("0.1.12"))
@@ -271,7 +271,7 @@ namespace Assets.Scripts.Managers
 
             // DO NOT reset (for some testers)
             if (CurrentVersion.CompareTo(new Version("0.1.12")) == -1)
-                Main.CloudSaveManager.ResetAll();
+                CloudSaveManager.Instance.ResetAll();
 
             var alphaTesterTitle = new SAchievementReward();
             alphaTesterTitle.Set(ETitle.Alpha_Tester);

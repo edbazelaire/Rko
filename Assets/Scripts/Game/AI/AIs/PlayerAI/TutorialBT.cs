@@ -98,7 +98,7 @@ public class TutorialBT : BehaviorTree
 
     public void Move(int moveX)
     {
-        m_Controller.Movement.SetMovement(moveX);
+        m_Controller.Movement.SetMovement((sbyte)moveX);
     }
 
     public void Cast(ESpell spell)

@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Data.DataStructures.SpellRequirement;
 using Data;
 using Enums;
+using Game.Character;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
@@ -80,7 +81,7 @@ namespace Game.Spells
 
             // ask state handler to fire the "OnHit" event to clients GFX
             StateEffectEvent?.Invoke(StateEffectName, EStateEffectEvent.OnTick, m_Controller.PlayerId, m_Caster.PlayerId);
-            m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnHit, StateEffectName, m_Caster.PlayerId);
+            m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnHit, StateEffectName, m_Caster.PlayerId));
 
             // CHECK : DAMAGES
             int damages = GetInt(EStateEffectProperty.TickDamages);

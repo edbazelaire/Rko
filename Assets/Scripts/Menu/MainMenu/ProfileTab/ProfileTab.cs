@@ -4,7 +4,7 @@ using Menu.Common.Notifications;
 using Tools;
 using UnityEngine;
 
-namespace Menu.MainMenu
+namespace Menu.MainMenu.ProfileTab
 {
     public class ProfileTab : MainMenuTabContent
     {

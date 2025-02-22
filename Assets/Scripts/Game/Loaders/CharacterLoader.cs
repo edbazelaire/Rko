@@ -39,6 +39,13 @@ namespace Game.Loaders
 
         private void Start()
         {
+            // Check if another instance of this object already exists
+            if (s_Instance != null && s_Instance.gameObject != gameObject)
+            {
+                Destroy(gameObject);
+                return; // Stop further execution to avoid duplicates
+            }
+
             DontDestroyOnLoad(gameObject);
         }
 

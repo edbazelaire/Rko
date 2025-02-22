@@ -109,6 +109,21 @@ namespace Game
             m_GameAnalyticsManager  = Finder.FindComponent<GameAnalyticsManager>(gameObject);
 
             s_Instance = this;
+
+            AttachDebugMethods();
+        }
+
+        #endregion
+
+
+        #region Debug
+
+        void AttachDebugMethods()
+        {
+            NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("Debug_NamedMessage", (senderClientId, reader) =>
+            {
+                Debug.Log($"[NETWORK DEBUG] Named Message Received from {senderClientId}");
+            });
         }
 
         #endregion

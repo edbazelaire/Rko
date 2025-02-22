@@ -27,7 +27,7 @@ namespace Save
         /// <summary> list of remaining values to load</summary>
         List<string> m_KeysToLoad;
 
-        protected virtual IPlayerDataService CloudDatabase => CloudSaveService.Instance.Data.Player;
+        protected virtual IPlayerDataService CloudDatabase => CloudSaveManager.Instance.CloudDatabase;
 
         public Dictionary<string, object> Data => m_Data;
         public bool LoadingCompleted = false;
@@ -113,7 +113,7 @@ namespace Save
                 OnLoadingError(key, item);
                 return false;
             }
-        }
+}
 
         public virtual void Save()
         {
@@ -157,6 +157,11 @@ namespace Save
                 ErrorHandler.Error($"Error saving key ({key}) : " + ex.Message + "\nData : " + TextHandler.ToString(m_Data[key]));
                 ErrorHandler.Warning("Trace : \n" + error.GetTraceString());
             }
+        }
+
+        public virtual async void DeleteAllData()
+        {
+            await CloudDatabase.DeleteAllAsync();
         }
 
         #endregion

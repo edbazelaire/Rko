@@ -1,4 +1,5 @@
-﻿using Enums;
+﻿using Assets.Scripts.Managers;
+using Enums;
 using Save;
 using Tools;
 using UnityEngine;
@@ -89,6 +90,9 @@ namespace Menu.MainMenu
         {
             base.RegisterListeners();
 
+            // -- Account buttons
+            m_ProfileDisplayUI.PseudoChangeButton.onClick.AddListener(OnPseudoButtonClicked);
+
             // -- Achievement Reward Profile button
             m_ProfileDisplayUI.AvatarButtonUI.Button.onClick.AddListener(() => m_AchievementTabsManager.SelectTab(EAchievementTab.Avatars));
             m_ProfileDisplayUI.PlayerTitleButton.onClick.AddListener(() => m_AchievementTabsManager.SelectTab(EAchievementTab.Titles));
@@ -101,14 +105,15 @@ namespace Menu.MainMenu
             }
 
             // -- External listeners
-            ProfileCloudData.GamerTagChanged        += OnGamerTagChanged;
-            ProfileCloudData.CurrentDataChanged     += OnCurrentDataChanged;
+            ProfileCloudData.PseudoChangedEvent         += OnPseudoChanged;
+            ProfileCloudData.CurrentDataChanged         += OnCurrentDataChanged;
         }
 
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
 
+            m_ProfileDisplayUI.PseudoChangeButton.onClick.RemoveAllListeners();
             m_ProfileDisplayUI.AvatarButtonUI.Button.onClick.RemoveAllListeners();
             m_ProfileDisplayUI.PlayerTitleButton.onClick.RemoveAllListeners();
 
@@ -118,8 +123,14 @@ namespace Menu.MainMenu
                 m_ProfileDisplayUI.BadgeButtons[i].Button.onClick.RemoveAllListeners();
             }
 
-            ProfileCloudData.GamerTagChanged        -= OnGamerTagChanged;
+            ProfileCloudData.PseudoChangedEvent     -= OnPseudoChanged;
             ProfileCloudData.CurrentDataChanged     -= OnCurrentDataChanged;
+        }
+
+
+        void OnPseudoButtonClicked()
+        {
+            ScreenManager.SetPopUp(EPopUpState.PseudoPopUp);
         }
 
         void OnCurrentBadgeButtonClicked(int index)
@@ -165,9 +176,10 @@ namespace Menu.MainMenu
             }
         }
 
-        void OnGamerTagChanged()
+        void OnPseudoChanged()
         {
-            m_ProfileDisplayUI.SetGamerTag(ProfileCloudData.GamerTag);
+            m_ProfileDisplayUI.SetPseudo(ProfileCloudData.GamerTag);
+            m_ProfileDisplayUI.PseudoChangeButton.gameObject.SetActive(false);
         }
 
         #endregion

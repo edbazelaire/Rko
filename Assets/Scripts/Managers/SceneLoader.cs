@@ -14,7 +14,9 @@ using UnityEngine.SceneManagement;
 
 
 public class SceneLoader : MonoBehaviour
-{ 
+{
+    public static Action<bool> SceneLoadedEvent;
+
     static SceneLoader s_Instance;
 
     [SerializeField] LoadingScreen m_LoadingScreen;
@@ -27,13 +29,20 @@ public class SceneLoader : MonoBehaviour
 
     private void Awake()
     {
+        // Check if another instance of this object already exists
+        if (s_Instance != null && s_Instance.gameObject != gameObject)
+        {
+            Destroy(gameObject);
+            return; // Stop further execution to avoid duplicates
+        }
+
         DontDestroyOnLoad(this);
     }
 
 
     #region Scene Loading
 
-    public void LoadScene(string sceneName)
+    public void LoadScene(string sceneName, Action onSuccessCallback = null)
     {
         // can not load scene while an other scene is loading
         if (m_SceneLoading != "")
@@ -42,10 +51,10 @@ public class SceneLoader : MonoBehaviour
             return;
         }
 
-        StartCoroutine(LoadSceneAsync(sceneName));
+        StartCoroutine(LoadSceneAsync(sceneName, onSuccessCallback));
     }
 
-    IEnumerator LoadSceneAsync(string sceneName)
+    IEnumerator LoadSceneAsync(string sceneName, Action onSuccessCallback = null)
     {
         m_SceneLoading = sceneName;
 
@@ -111,6 +120,9 @@ public class SceneLoader : MonoBehaviour
 
         SoundFXManager.PlayStateMusic(Main.State);
         m_LoadingScreen.Display(false);
+
+        // call success callback if any
+        onSuccessCallback?.Invoke();
     }
 
     public async Task SceneLoadingAsync()
@@ -132,6 +144,9 @@ public class SceneLoader : MonoBehaviour
         m_SceneLoading = "";
         // clear current scene manager
         ScreenManager.Clear();
+
+        // send event that scene was loaded 
+        SceneLoadedEvent?.Invoke(true);
     }
 
     #endregion

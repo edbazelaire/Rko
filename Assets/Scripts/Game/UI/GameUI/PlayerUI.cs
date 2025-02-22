@@ -83,7 +83,7 @@ namespace Game.UI
             m_StateDisplayer = Finder.Find(gameObject, c_StateDisplayer);
             m_StateEffectsUI = new Dictionary<string, StateEffectUI>();
             UIHelper.CleanContent(m_StateDisplayer);
-            controller.StateHandler.OnStateEvent                        += OnStateEvent;
+            controller.StateHandler.StateEffectListEvent                        += OnStateEvent;
             controller.StateHandler.HoldingStateEffects.OnListChanged   += OnHoldingStateEffectsChanged;
             controller.TriggerEffectHandler.QuestValueChanged           += OnQuestValueChanged;
         }
@@ -98,7 +98,7 @@ namespace Game.UI
             m_Controller.Life.FinalShield.OnValueChanged                -= m_ShieldBar.OnValueChanged;
             m_Controller.EnergyHandler.MaxEnergy.OnValueChanged         -= m_EnergyBar.OnMaxValueChanged;
             m_Controller.EnergyHandler.Energy.OnValueChanged            -= m_EnergyBar.OnValueChanged;
-            m_Controller.StateHandler.OnStateEvent                      -= OnStateEvent;
+            m_Controller.StateHandler.StateEffectListEvent              -= OnStateEvent;
             m_Controller.TriggerEffectHandler.QuestValueChanged         -= OnQuestValueChanged;
         }
 

@@ -1,7 +1,12 @@
 ﻿using Assets;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Tools;
+using Unity.Services.Authentication;
+using Unity.Services.CloudSave;
+using Unity.Services.CloudSave.Internal;
+using Unity.Services.CloudSave.Models.Data.Player;
 using UnityEngine;
 
 namespace Save
@@ -10,21 +15,31 @@ namespace Save
     {
         #region Members
 
+        static CloudSaveManager s_Instance;
+        public static CloudSaveManager Instance => s_Instance;
+
         GameCloudData                       m_GameCloudData;
         List<CloudData>                     m_CloudData;
 
-        public GameCloudData GameCloudData => m_GameCloudData;
+        public virtual IPlayerDataService CloudDatabase => CloudSaveService.Instance.Data.Player;
+        public GameCloudData GameCloudData  => m_GameCloudData;
+        public List<CloudData> CloudData    => m_CloudData;
 
-        public List<CloudData> CloudData => m_CloudData;
-        
         #endregion
 
 
         #region Init & End
 
-        private void OnDestroy()
+        private void Awake()
         {
-            SaveAll();
+            if (s_Instance != null && s_Instance.gameObject != gameObject)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            s_Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
 
         public void OnApplicationQuit()
@@ -39,8 +54,6 @@ namespace Save
 
         public void LoadSave()
         {
-            //m_GameCloudData = new GameCloudData();
-
             m_CloudData = new()
             {
                 new CharacterBuildsCloudData(),
@@ -68,6 +81,30 @@ namespace Save
             foreach (CloudData data in m_CloudData)
             {
                 data.Save();
+            }
+        }
+
+        public async Task DeleteAccount()
+        {
+            await DeleteData();
+            await AuthenticationService.Instance.DeleteAccountAsync();
+        }
+
+        public async Task DeleteData()
+        {
+            try
+            {
+                // Deleting Private Data
+                await CloudDatabase.DeleteAllAsync();
+                Debug.Log("Private data deleted.");
+
+                // Deleting Public Data: Ensure permissions allow this
+                await CloudDatabase.DeleteAllAsync(new DeleteAllOptions(new PublicWriteAccessClassOptions()));
+                Debug.Log("Public data deleted.");
+            }
+            catch (CloudSaveException e)
+            {
+                Debug.LogError($"Error deleting cloud data: {e}");
             }
         }
 

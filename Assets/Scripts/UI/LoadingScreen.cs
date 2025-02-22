@@ -21,6 +21,13 @@ namespace Assets.Scripts.UI
         // Use this for initialization
         void Awake()
         {
+            // Check if another instance of this object already exists
+            if (GameObject.Find(gameObject.name) != gameObject)
+            {
+                Destroy(gameObject);
+                return; // Stop further execution to avoid duplicates
+            }
+
             m_LoadingBar = Finder.FindComponent<Image>(gameObject, c_LoadingBar);
             m_ProgressText = Finder.FindComponent<TMP_Text>(gameObject, "ProgressText");
             m_InfoText = Finder.FindComponent<TMP_Text>(gameObject, "InfoText");

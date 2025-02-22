@@ -49,28 +49,26 @@ namespace Game.Spells
         {
             base.RegisterListeners();
 
-            m_Controller.StateHandler.StateEffectList.OnListChanged += OnStateEffectListChanged;
+            m_Controller.StateHandler.StateEffectListEvent += OnStateEffectListEvent;
         }
 
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
 
-            m_Controller.StateHandler.StateEffectList.OnListChanged -= OnStateEffectListChanged;
+            m_Controller.StateHandler.StateEffectListEvent -= OnStateEffectListEvent;
         }
 
-        void OnStateEffectListChanged(NetworkListEvent<FixedString64Bytes> changeEvent)
+        void OnStateEffectListEvent(EListEvent listEvent, string stateEffect, int stacks, float duration)
         {
-            if (changeEvent.Type != NetworkListEvent<FixedString64Bytes>.EventType.Add)
+            if (listEvent != EListEvent.Add)
                 return;
 
-            if (!REFRESH_EFFECTS.Contains(changeEvent.Value.ToString()))
+            if (! REFRESH_EFFECTS.Contains(stateEffect))
                 return;
 
             m_Stacks = 1;
             Refresh();
-
-            m_Controller.StateHandler.OnStateEventClientRPC(EListEvent.Add, StateEffectName, Stacks, GetFloat(EStateEffectProperty.Duration));
         }
 
         #endregion

@@ -1,14 +1,11 @@
-﻿using Data.GameManagement;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using Tools;
 using UnityEngine;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 
 namespace Game.SpellGFXs
 {
-    public class ShardrotChargeGFX : AnimationQueueGFX
+    public class ScythefallGFX : AnimationQueueGFX
     {
         #region Members
 
@@ -19,7 +16,6 @@ namespace Game.SpellGFXs
 
         // ================================================================================
         // Data
-        Vector3 m_BasePosition;
         Vector3 m_TargetPosition;
 
         #endregion
@@ -46,7 +42,6 @@ namespace Game.SpellGFXs
         protected override void StartAnimation()
         {
             // check Data
-            m_BasePosition = transform.position;
             m_TargetPosition = m_Controller.SpellHandler.TargetPos;
 
             // enable animator

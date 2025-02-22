@@ -3,7 +3,6 @@ using Data;
 using Data.GameManagement;
 using Enums;
 using Game.Loaders;
-using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -172,9 +171,6 @@ namespace Inventory
             int nItems = 0;
             const int maxItems = 6;
 
-            // Determine bonus gold
-            int bonusGold = Mathf.RoundToInt(FinalPower * UnityEngine.Random.Range(0.05f, 0.15f));
-
             while (remainingPower > 0 && nItems < maxItems)
             {
                 // Step 1: Calculate power for this item
@@ -184,7 +180,7 @@ namespace Inventory
                 ERarety rarity = ChooseItemRarity();
 
                 // Step 3: Choose reward type based on RewardsTypePercs
-                ESubRewardType rewardType = ChooseRewardType(rarity);
+                ESubRewardType rewardType = ChooseRewardType();
 
                 // Step 4: Create reward
                 SReward reward = CreateReward(rewardType, itemPower, rarity);
@@ -200,8 +196,9 @@ namespace Inventory
                 }
             }
 
-            // Add bonus gold to the rewards
-            rewards.Add(new SReward(typeof(ECurrency), ECurrency.Golds.ToString(), bonusGold));
+            // Add BONUS CURRENCY REWARD
+            SReward bonusReward = CreateReward(ESubRewardType.Currency, Mathf.RoundToInt(FinalPower * UnityEngine.Random.Range(0.01f, 0.10f)), ChooseItemRarity());
+            rewards.Add(bonusReward);
 
             return rewards;
         }
@@ -272,15 +269,15 @@ namespace Inventory
         /// Chooses a reward type based on the RewardsTypePercs distribution.
         /// Ensures no Currency is selected for Legendary rarity.
         /// </summary>
-        private ESubRewardType ChooseRewardType(ERarety rarity = ERarety.Common)
+        private ESubRewardType ChooseRewardType()
         {
             float randomValue = UnityEngine.Random.Range(0f, 1f);
             float cumulative = 0;
 
             foreach (SSubRewardsTypePerc rewardTypePerc in LootManagementData.Instance.OrbSubRewardsTypePercs)
             {
-                // Avoid currency if rarity is Legendary
-                if (rarity == ERarety.Legendary && rewardTypePerc.SubRewardType == ESubRewardType.Currency)
+                // Avoid currency as random reward type
+                if (rewardTypePerc.SubRewardType == ESubRewardType.Currency)
                     continue;
 
                 cumulative += rewardTypePerc.Percentage;
