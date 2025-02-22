@@ -1,4 +1,5 @@
-﻿using Enums;
+﻿using Assets.Scripts.Managers;
+using Enums;
 using Menu.Common.Notifications;
 using Save;
 using Tools;
@@ -12,6 +13,7 @@ namespace Assets.Scripts.Menu
         #region Members
 
         GameObject m_ButtonsContainer;
+        Button m_LoginButton;
         Button m_MessagerieButton;
         Button m_SettingsButton;
 
@@ -30,6 +32,7 @@ namespace Assets.Scripts.Menu
             base.FindComponents();
 
             m_ButtonsContainer = Finder.Find(gameObject, "ButtonsContainer");
+            m_LoginButton = Finder.FindComponent<Button>(m_ButtonsContainer, "LoginButton");
             m_MessagerieButton = Finder.FindComponent<Button>(m_ButtonsContainer, "MessagerieButton");
             m_SettingsButton = Finder.FindComponent<Button>(m_ButtonsContainer, "SettingsButton");
         }
@@ -38,6 +41,7 @@ namespace Assets.Scripts.Menu
         {
             base.SetUpUI();
 
+            m_LoginButton.gameObject.SetActive(! AuthManager.Instance.IsLoggedIn);
             CoroutineManager.DelayMethod(() => SetMessagesNotification());
         }
 
@@ -70,9 +74,11 @@ namespace Assets.Scripts.Menu
         {
             base.RegisterListeners();
 
+            m_LoginButton.onClick.AddListener(OnLoginButtonClicked);
             m_MessagerieButton.onClick.AddListener(() => Main.SetPopUp(EPopUpState.MessageriePopUp));
             m_SettingsButton.onClick.AddListener(() => Main.SetPopUp(EPopUpState.SettingsPopUp));
 
+            AuthManager.LoginEvent += OnLogin;
             NotificationCloudData.MessageSeenEvent += OnMessageSeen;
             NotificationCloudData.MessageCountChangedEvent += OnMessageCountChanged;
         }
@@ -81,9 +87,11 @@ namespace Assets.Scripts.Menu
         {
             base.UnRegisterListeners();
 
+            m_LoginButton.onClick.RemoveAllListeners();
             m_MessagerieButton.onClick.RemoveAllListeners();
             m_SettingsButton.onClick.RemoveAllListeners();
 
+            AuthManager.LoginEvent -= OnLogin;
             NotificationCloudData.MessageSeenEvent -= OnMessageSeen;
             NotificationCloudData.MessageCountChangedEvent -= OnMessageCountChanged;
         }
@@ -104,6 +112,15 @@ namespace Assets.Scripts.Menu
             {
                 NotificationPulse.UpdateCounter(m_MessagerieButton.gameObject, nMessages);
             }
+        }
+        void OnLoginButtonClicked()
+        {
+            ScreenManager.SetPopUp(EPopUpState.LoginPopUp);
+        }
+
+        void OnLogin()
+        {
+            m_LoginButton.gameObject.SetActive(false);
         }
 
         #endregion

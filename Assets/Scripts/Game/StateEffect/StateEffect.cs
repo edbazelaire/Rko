@@ -2,6 +2,7 @@
 using Assets.Scripts.Managers.Sound;
 using Data;
 using Enums;
+using Game.Character;
 using Game.Loaders;
 using Game.SpellGFXs;
 using Game.UI;
@@ -260,7 +261,9 @@ namespace Game.Spells
 
             // call state effect 
             StateEffectEvent?.Invoke(StateEffectName, EStateEffectEvent.OnApplied, m_Controller.PlayerId, m_Caster.PlayerId);
-            m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnSpawn, StateEffectName, m_Caster.PlayerId);
+
+            // call event from StateHandler
+            m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnSpawn, StateEffectName, m_Caster.PlayerId, m_Stacks, m_Duration));
 
             // if instantatious effect : end after start
             if (m_IsInstantanious)
@@ -329,7 +332,7 @@ namespace Game.Spells
 
             UnRegisterListeners();
 
-            m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnEnd, StateEffectName, m_Caster.PlayerId);
+            m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnEnd, StateEffectName, m_Caster.PlayerId));
         }
 
         #endregion
@@ -343,7 +346,7 @@ namespace Game.Spells
                 return;
 
             m_IsActivated = true;
-            m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnActivation, StateEffectName, m_Caster.PlayerId);
+            m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnActivation, StateEffectName, m_Caster.PlayerId));
         }
 
         protected virtual void Deactivate()
@@ -352,7 +355,7 @@ namespace Game.Spells
                 return;
 
             m_IsActivated = false;
-            m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnDeactivation, StateEffectName, m_Caster.PlayerId);
+            m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnDeactivation, StateEffectName, m_Caster.PlayerId));
         }
 
         #endregion
@@ -381,7 +384,7 @@ namespace Game.Spells
                 else
                 {
                     Refresh(m_StackDecay);
-                    m_Controller.StateHandler.OnStateEventClientRPC(EListEvent.Add, StateEffectName, Stacks, GetFloat(EStateEffectProperty.Duration));
+                    m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnSpawn, StateEffectName, m_Caster.PlayerId, m_Stacks, m_Duration));
                 }
             }
         }
@@ -440,7 +443,7 @@ namespace Game.Spells
             m_Stacks -= nStacks;
 
             // refresh UI on client side
-            m_Controller.StateHandler.OnStateEventClientRPC(EListEvent.Add, StateEffectName, Stacks, GetFloat(EStateEffectProperty.Duration));
+            //m_Controller.StateHandler.OnStateEventClientRPC(EListEvent.Add, StateEffectName, Stacks, GetFloat(EStateEffectProperty.Duration));
             return nStacks;
         }
 

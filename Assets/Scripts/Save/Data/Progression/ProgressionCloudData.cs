@@ -363,7 +363,7 @@ namespace Save
     {
         #region Members
 
-        public new static ProgressionCloudData Instance => Main.CloudSaveManager.GetCloudData(typeof(ProgressionCloudData)) as ProgressionCloudData;
+        public new static ProgressionCloudData Instance => CloudSaveManager.Instance.GetCloudData(typeof(ProgressionCloudData)) as ProgressionCloudData;
 
         // ===============================================================================================
         // CONSTANTS

@@ -65,7 +65,7 @@ public class TaskMove : BaseNode
         }
 
         // apply movement (-1) because of team effect
-        m_Movement.SetMovement((-1) * m_CurrentMoveX);
+        m_Movement.SetMovement((sbyte)((-1) * m_CurrentMoveX));
 
         ErrorHandler.Log("TaskMove - " + m_State, ELogTag.AITaskMove);
 

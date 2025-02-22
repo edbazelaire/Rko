@@ -1,4 +1,6 @@
 ﻿using Assets.Scripts.Managers.Sound;
+using Enums;
+using Managers.MainMenu;
 using MyBox;
 using Save;
 using Save.RSDs;
@@ -13,7 +15,6 @@ namespace Menu.PopUps.PopUps.MessagePopUps
         #region Members
 
         TMP_InputField  m_InputField;
-        TMP_InputField  m_TokenInputField;
         TMP_Text        m_ErrorMessage;
 
         #endregion
@@ -26,15 +27,7 @@ namespace Menu.PopUps.PopUps.MessagePopUps
             base.FindComponents();
 
             m_InputField        = Finder.FindComponent<TMP_InputField>(m_WindowContent, "InputField");
-            m_TokenInputField   = Finder.FindComponent<TMP_InputField>(m_WindowContent, "TokenInputField");
             m_ErrorMessage      = Finder.FindComponent<TMP_Text>( m_WindowContent,      "ErrorMessage");
-
-            // ==================================================================================
-            // TODO : Remove tokens ?
-            m_TokenInputField.gameObject.SetActive(false);
-
-            //if (ProfileCloudData.Token == "")
-            //    m_TokenInputField.gameObject.SetActive(true);
         }
 
         protected override void OnPrefabLoaded()
@@ -98,40 +91,17 @@ namespace Menu.PopUps.PopUps.MessagePopUps
                 return;
             }
 
-            // CHECK : Token
-            success = await CheckToken();
-
             if (! success)
                 return;
 
+            // update value in cloud data
             ProfileCloudData.SetGamerTag(m_InputField.text);
+
+            // diseable popup in recurrent data
+            RecurrentPopupManager.Instance.Diseable(EPopUpState.PseudoPopUp);
 
             base.OnValidateButton();
             Exit();
-        }
-
-        async Task<bool> CheckToken()
-        {
-            return true;
-
-            // ==================================================================================
-            // TODO : Remove tokens ?
-            if (ProfileCloudData.Token == "")
-            {
-                (bool success, string reason) = await ProfileCloudData.IsTokenValid(m_TokenInputField.text);
-                if (!success)
-                {
-                    // play error sound
-                    SoundFXManager.PlayOnce(SoundFXManager.ErrorSoundFX);
-
-                    // display why is not valid
-                    m_ErrorMessage.text = reason;
-                    return false;
-                }
-
-                ProfileCloudData.SetToken(m_TokenInputField.text);
-                return success;
-            }
         }
 
         #endregion

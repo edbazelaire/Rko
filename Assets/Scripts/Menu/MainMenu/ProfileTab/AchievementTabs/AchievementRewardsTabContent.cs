@@ -1,10 +1,9 @@
 ﻿using Enums;
-using Menu.MainMenu;
 using Save;
 using Tools;
 using UnityEngine;
 
-namespace MainMenu.ProfileTab
+namespace Menu.MainMenu.ProfileTab
 {
     public class AchievementRewardsTabContent : TabContent
     {

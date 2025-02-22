@@ -18,6 +18,8 @@ using Assets.Scripts.Data.DataStructures;
 using Assets.Scripts.Data.DataStructures.SpellRequirement;
 using Assets.Scripts.Data.DataStructures.SpellSubStructures;
 using Assets.Scripts.Game;
+using Unity.Mathematics;
+using Game.NetworkStructures;
 
 namespace Data
 {
@@ -262,7 +264,7 @@ namespace Data
             spell.Initialize(clientId, target, Name, m_Level, m_Parent);
 
             // backpropagate the spell intialization to the client (for the preview)
-            spell.InitializeClientRpc(clientId, target, Name, m_Level);
+            spell.InitializeClientRpc(clientId, new Vector2Short(target), Name, (byte)m_Level);
 
             // call event that spell spawned
             CallSpellEvent(GameManager.Instance.GetPlayer(clientId), ESpellEvent.OnSpawn, target);
@@ -292,7 +294,7 @@ namespace Data
                 controller.StartCoroutine(onHitSpellData.CastDelay(clientId, target, position, rotation, recalculateTarget: false, recalculatePosition: false));
 
                 // call graphics event
-                controller.SpellHandler.CallSpellEvent(spellData.Name, ESpellEvent.OnStartCast);
+                CallSpellEvent(controller, ESpellEvent.OnStartCast, target);
             }   
         }
 
@@ -305,7 +307,7 @@ namespace Data
         void CallSpellEvent(Controller controller, ESpellEvent spellEvent, Vector3 target)
         {
             // spawn SubSpell - SpellGFX
-            controller.SpellHandler.CallSpellEvent(Name, spellEvent, forcedPosition: target);
+            controller.SpellHandler.CallSpellEvent(Name, spellEvent, targetPosition: target);
         }
 
         /// <summary>

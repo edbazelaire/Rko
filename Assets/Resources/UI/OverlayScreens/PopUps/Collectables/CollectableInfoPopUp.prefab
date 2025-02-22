@@ -819,10 +819,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 5613056459211566731}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 517.5, y: 0}
-  m_SizeDelta: {x: 1035, y: 0}
+  m_SizeDelta: {x: 1035, y: 205.01}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &3133158850863230779
 CanvasRenderer:
@@ -1093,10 +1093,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 5613056459211566731}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 517.5, y: 0}
-  m_SizeDelta: {x: 1035, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 517.5, y: -205.01}
+  m_SizeDelta: {x: 1035, y: 205.01}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &885272615024228287
 CanvasRenderer:
@@ -2534,6 +2534,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 349832937361a2d43959c9f230db9f70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_IsBlockingQuickClose: 0
 --- !u!224 &6175205907539173805 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4164304459294721079, guid: b540a06041e04f346856f797b58fc1ac, type: 3}

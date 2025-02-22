@@ -3,12 +3,15 @@ using Assets.Scripts.Managers.Sound;
 using Data;
 using Enums;
 using Game.Loaders;
+using Game.NetworkStructures;
 using Game.Spells.SpecialEffects;
 using MyBox;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using Tools;
+using Unity.Collections;
+using Unity.Mathematics;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -79,6 +82,9 @@ namespace Game.Spells
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
+
+            // make sure is over is called
+            m_IsOver = true;
 
             // call an end on client side (this method happens localy so no need to get throught RPC)
             CallSpellEvent(ESpellEvent.OnEnd);
@@ -156,8 +162,6 @@ namespace Game.Spells
 
             // terminate spell 
             Terminate();
-
-            ErrorHandler.Log("End of spell : " + m_SpellData, ELogTag.Spells);
         }
 
         /// <summary>
@@ -208,11 +212,11 @@ namespace Game.Spells
         /// <param name="target"></param>
         /// <param name="spellType"></param>
         [ClientRpc]
-        public void InitializeClientRpc(ulong clientId, Vector3 target, string spellName, int level)
+        public void InitializeClientRpc(ulong clientId, Vector2Short targetPos, FixedString32Bytes spellName, byte level)
         {
             if (IsHost)
                 return;
-            Initialize(clientId, target, spellName, level, "");
+            Initialize(clientId, targetPos, spellName.ToString(), level, "");
         }
 
         #endregion
