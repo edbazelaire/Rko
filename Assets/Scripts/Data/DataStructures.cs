@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Game;
 using Assets.Scripts.Managers.Sound;
 using Enums;
+using Game.Loaders;
 using Game.SpellGFXs;
 using Game.Spells;
 using MyBox;
@@ -66,6 +67,8 @@ namespace Data
         }
 
         public string Description => TextHandler.ReplaceStateEffectTokens($"apply {GetStacks()} stacks of [{StateEffect}]");
+
+        public string EffectDescription => SpellLoader.GetStateEffect(StateEffect, m_Level).GetDescription();
     }
 
     [Serializable]
@@ -243,7 +246,8 @@ namespace Data
             var parent = BaseSpellGFX<TEnum>.CalculateParent(this, caster, spell, targetController);
             var position = BaseSpellGFX<TEnum>.CalculatePosition(parent, this, caster, callFromPosition, targetPos);
 
-            if (position == Vector3.zero)
+            // SAFETY : do not display GFX spawning in void
+            if (position == Vector3.zero && SpawnTarget != ESpawnTarget.MapCenter)
             {
                 ErrorHandler.Warning($"Spell GFX spawned in void - spell : { (spell != null ? spell.name : "null")} | position : {position} | callFromPosition : {callFromPosition} | targetPos : {targetPos} ");
                 return null;

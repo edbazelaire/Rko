@@ -155,6 +155,10 @@ namespace Game.SpellGFXs
 
         void OnSpellEvent(ESpellEvent spellEvent)
         {
+            // TODO : REMOVE    =========================================================================
+            Debug.Log(m_SpellData.name + " : " + spellEvent.ToString());
+            // TODO : REMOVE    =========================================================================
+
             CheckEnd(spellEvent);
         }
 

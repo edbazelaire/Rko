@@ -340,10 +340,10 @@ public class Controller : NetworkBehaviour
 
     public override void OnDestroy()
     {
+        base.OnDestroy();
+
         OnDestroyedEvent?.Invoke();
         GameManager.GameStartedEvent -= OnGameStarted;
-
-        base.OnDestroy();
     }
 
     #endregion
@@ -465,14 +465,11 @@ public class Controller : NetworkBehaviour
 
     #region Death & Game Over Manipulators
 
-
     /// <summary>
     /// Remove Character display and 
     /// </summary>
     void OnDied()
     {
-        Debug.Log("OnDied() EVENT");
-
         if (IsSpawn)
         {
             Destroy(gameObject);
@@ -486,6 +483,12 @@ public class Controller : NetworkBehaviour
     {
         // stop all current coroutines
         StopAllCoroutines();
+
+        if (IsSpawn)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         // deactivate all "action" components
         ActivateActionComponent(false);

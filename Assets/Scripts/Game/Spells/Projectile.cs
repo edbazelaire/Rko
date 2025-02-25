@@ -95,7 +95,7 @@ namespace Game.Spells
         protected virtual void OnHitWall(Collider2D collision)
         {
             // CHECK : is ally wall
-            if (ArenaManager.IsOnArenaSide(collision.transform.position.x, m_Controller.Team, false))
+            if (ArenaManager.IsOnArenaSide(collision.transform.position.x, m_Team, false))
             {
                 return;
             }
@@ -108,7 +108,7 @@ namespace Game.Spells
             }
 
             // if "ApplyIfNotHitting" : apply effects to every not hit targets
-            var allControllers = m_SpellData.IsEnemyTarget ? GameManager.Instance.GetAllEnemies(m_Controller.Team) : GameManager.Instance.GetAllAllies(m_Controller.Team);
+            var allControllers = m_SpellData.IsEnemyTarget ? GameManager.Instance.GetAllEnemies(m_Team) : GameManager.Instance.GetAllAllies(m_Team);
             foreach (Controller controller in allControllers)
             {
                 OnHit(controller);
@@ -202,7 +202,7 @@ namespace Game.Spells
         float CalculateTargetOffsetX()
         {
             float offset = 0f;
-            int direction = ArenaManager.GetAreaMovementDirection(m_Controller.Team, m_SpellData.IsEnemyTarget);
+            int direction = ArenaManager.GetAreaMovementDirection(m_Team, m_SpellData.IsEnemyTarget);
 
             switch (m_SpellData.Trajectory)
             {

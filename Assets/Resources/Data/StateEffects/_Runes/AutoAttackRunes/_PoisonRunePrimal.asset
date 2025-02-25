@@ -12,19 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37a2110fb8b24914fb18b6f82bc81e62, type: 3}
   m_Name: _PoisonRunePrimal
   m_EditorClassIdentifier: 
-  m_Description: 
+  m_Description: '[EnemyStateEffect.0.EffectDescription]'
   m_DescriptionVariables: 
   m_StateEffectType: 0
+  m_IsDisplayed: 1
   m_VisualEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 0
   m_DefaultState: 0
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
+  m_Priority: 0
   m_Duration: -1
   m_IsInstantanious: 0
   m_MaxStacks: 1
   m_StackDecay: -1
+  m_Energy: 0
+  m_BonusStats: []
   m_SpeedBonus: 0
   m_CastSpeed: 0
   m_AttackSpeed: 0
@@ -36,6 +42,10 @@ MonoBehaviour:
   m_BonusDamages: 0
   m_BonusDamagesPerc: 0
   m_BonusLifeSteal: 0
+  m_BonusHeal: 0
+  m_BonusHealPerc: 0
+  m_BonusBurnDamages: 0
+  m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel: []
@@ -47,4 +57,5 @@ MonoBehaviour:
   m_EnemyStateEffects:
   - StateEffect: 24
     Stacks: 1
+    BonusStacksPerLevel: 0
     OverridingProperties: []

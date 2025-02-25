@@ -76,14 +76,14 @@ namespace Game.UI
             // Energy Bar
             m_EnergyBar = Finder.FindComponent<PlayerBarUI>(gameObject, c_EnergyBar);
             m_EnergyBar.Initialize(controller.EnergyHandler.Energy.Value, controller.EnergyHandler.MaxEnergy.Value);
-            controller.EnergyHandler.MaxEnergy.OnValueChanged   += m_EnergyBar.OnMaxValueChanged;
-            controller.EnergyHandler.Energy.OnValueChanged      += m_EnergyBar.OnValueChanged;
+            controller.EnergyHandler.MaxEnergy.OnValueChanged           += m_EnergyBar.OnMaxValueChanged;
+            controller.EnergyHandler.Energy.OnValueChanged              += m_EnergyBar.OnValueChanged;
 
             // State Displayer
             m_StateDisplayer = Finder.Find(gameObject, c_StateDisplayer);
             m_StateEffectsUI = new Dictionary<string, StateEffectUI>();
             UIHelper.CleanContent(m_StateDisplayer);
-            controller.StateHandler.StateEffectListEvent                        += OnStateEvent;
+            controller.StateHandler.StateEffectListEvent                += OnStateEvent;
             controller.StateHandler.HoldingStateEffects.OnListChanged   += OnHoldingStateEffectsChanged;
             controller.TriggerEffectHandler.QuestValueChanged           += OnQuestValueChanged;
         }

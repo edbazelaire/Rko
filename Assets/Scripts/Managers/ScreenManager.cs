@@ -159,6 +159,10 @@ namespace Assets.Scripts.Managers
                     obj.GetComponent<PseudoPopUp>().Initialize(args.Count() > 0 ? (string)args[0] : "");
                     break;
 
+                case EPopUpState.PromoCodePopUp:
+                    obj.GetComponent<PromoCodePopUp>().Initialize();
+                    break;
+
                 default:
                     obj.GetComponent<OverlayScreen>().Initialize();
                     break;

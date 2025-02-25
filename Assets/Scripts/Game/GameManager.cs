@@ -5,6 +5,7 @@ using Assets.Scripts.Tools;
 using Data;
 using Enums;
 using Externals;
+using Game.GameManagers.Components;
 using Game.Loaders;
 using Game.Spells;
 using Managers;
@@ -84,6 +85,7 @@ namespace Game
         public Dictionary<ulong, Controller> Spawns => m_Spawns;
         public NetworkVariable<float> ProgressGameStart => m_ProgressGameStart;
         public NetworkVariable<EGameState> State => m_State;
+
         /// <summary> check if GameManager exists, if has an Instance or the game object exists in the scene </summary>
         public static bool Exists => s_Instance != null || FindAnyObjectByType<GameManager>() != null;
         /// <summary> intro starting : game fully loaded </summary>
@@ -541,8 +543,13 @@ namespace Game
             if (! Instance.Owner.IsPlayer)
                 return;
 
+            // shut down controllers activity
             ShutDownControllers(team);
 
+            // destroy DisconnectionHandler
+            DisconnectionHandler.End();
+
+            // setup the UI for end of the game
             GameUIManager.Instance.SetUpGameOver(team == Instance.Owner.Team);
         }
 
@@ -1121,6 +1128,16 @@ namespace Game
             Owner.StateHandler.CharacterData.AddBonusStats(new List<SCharacterStatScaling>() { 
                 new SCharacterStatScaling(EStateEffectProperty.BonusDamages, 100f, 0f, 0f) 
             });
+        }
+
+        [Command(KeyCode.Y)]
+        public void KillSpawn()
+        {
+            var controller = GetFirstSpawn(Owner.Team, false);
+            if (controller == null)
+                return;
+
+            controller.Life.Kill();
         }
 
         [Command(KeyCode.Space)]

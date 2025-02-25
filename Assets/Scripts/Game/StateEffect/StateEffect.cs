@@ -14,6 +14,7 @@ using System.Reflection;
 using Tools;
 using Unity.Collections;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Game.Spells
@@ -380,7 +381,10 @@ namespace Game.Spells
 
                 // remove N stacks
                 if (m_StackDecay < 0)
+                {
                     RemoveStacks(Math.Abs(m_StackDecay));
+                    m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnSpawn, StateEffectName, m_Caster.PlayerId, m_Stacks, m_Duration));
+                }
                 else
                 {
                     Refresh(m_StackDecay);
@@ -414,15 +418,18 @@ namespace Game.Spells
                     return;     // no stacks consumed : do not refresh
             }
 
-            // keep max level as applied level
-            if (m_Level < level)
-                SetLevel(level);
+            // re-adjust level
+            level = (int)Math.Round((float)(m_Level * m_Stacks + level * stacks) / (m_Stacks + stacks));
+            SetLevel(level);
 
+            // check if should add energy
             if (m_Energy != 0)
                 m_Caster.EnergyHandler.AddEnergy(GetInt(EStateEffectProperty.Energy) * stacks);
 
             m_Stacks = Math.Min(m_MaxStacks, m_Stacks + stacks);
             RefreshStats();
+
+            m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnSpawn, StateEffectName, m_Caster.PlayerId, m_Stacks, m_Duration));
         }
 
         protected virtual void RefreshStats()
@@ -443,7 +450,7 @@ namespace Game.Spells
             m_Stacks -= nStacks;
 
             // refresh UI on client side
-            //m_Controller.StateHandler.OnStateEventClientRPC(EListEvent.Add, StateEffectName, Stacks, GetFloat(EStateEffectProperty.Duration));
+            m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnSpawn, StateEffectName, m_Caster.PlayerId, m_Stacks, m_Duration));
             return nStacks;
         }
 
@@ -968,8 +975,13 @@ namespace Game.Spells
             }
 
             var description = TextHandler.ReplaceStateEffectTokens(string.Format(m_Description, values.ToArray()));
-            description = TextHandler.ReplaceSubStateEffects(description, m_SubStateEffects);
+            ReplaceSubStateEffects(ref description);
             return description;
+        }
+
+        protected virtual void ReplaceSubStateEffects(ref string description)
+        {
+            description = TextHandler.ReplaceSubStateEffects(description, m_SubStateEffects);
         }
 
         #endregion

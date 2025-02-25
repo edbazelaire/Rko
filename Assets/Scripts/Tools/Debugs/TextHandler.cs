@@ -363,13 +363,13 @@ namespace Tools
 
         public static string GetTriggerEffectDescription(STriggerEffect triggerEffect)
         {
-            // description of the Rune is the description of the Trigger Effect (at the level of the current character)
+            // description of the Rune is the description of the Trigger Effect
             if (SpellLoader.SpellExists(triggerEffect.SpellDataName))
             {
                 return SpellLoader.GetSpellDescription(triggerEffect.SpellDataName, triggerEffect.Level);
             }
 
-            // description of the Rune is the description of the Trigger Effect (at the level of the current character)
+            // description of the Rune is the description of the Trigger Effect 
             else if (SpellLoader.StateEffectExists(triggerEffect.SpellDataName))
             {
                 return SpellLoader.GetStateEffectDescription(triggerEffect.SpellDataName, triggerEffect.Level);
@@ -415,34 +415,37 @@ namespace Tools
 
         public static string ReplaceSubStateEffects(string text, List<SStateEffectData> stateEffects)
         {
-            // Define a regex to find tokens in the format [SubSpellData.PROPERTY_NAME]
-            string pattern = @"\[([a-zA-Z]*StateEffect\.[0-9]+)\]";
+            // Updated regex to match both ".Description" and ".EffectDescription"
+            string pattern = @"\[([a-zA-Z]*StateEffect\.[0-9]+)\.(Description|EffectDescription)\]";
             MatchCollection matches = Regex.Matches(text, pattern);
 
             foreach (Match match in matches)
             {
-                string token = match.Value; // The full token, e.g., "[SubSpellData.PROPERTY_NAME]"
+                string token = match.Value;  // Full token, e.g., "[SubSpellStateEffect.2.Description]"
+                string baseToken = match.Groups[1].Value;  // Extracts "SubSpellStateEffect.2"
+                string property = match.Groups[2].Value;  // Extracts "Description" or "EffectDescription"
 
-                // Extract the index and target from name
-                int index = int.Parse(token.Split('.')[1].TrimEnd(']'));
-
-                if (index < 0)
+                // Extract index safely
+                int index;
+                if (!int.TryParse(baseToken.Split('.')[1], out index))
                 {
-                    ErrorHandler.Error("Error with token " + token + " : BAD index (" + index + ")");
+                    ErrorHandler.Error("❌ Error parsing index from token: " + token);
                     continue;
                 }
 
-                if (stateEffects.Count <= index)
+                if (index < 0 || index >= stateEffects.Count)
                 {
-                    ErrorHandler.Error("Error with token " + token + " : index (" + index + ") is >= number of StateEffects (" + stateEffects.Count + ")" );
+                    ErrorHandler.Error($"❌ Error with token {token}: Index ({index}) is out of range (Max: {stateEffects.Count - 1})");
                     continue;
                 }
 
-                // Replace token with the property value from ConvertDescriptionVariable
-                text = text.Replace(
-                    token,
-                    stateEffects[index].Description
-                );
+                // Determine the correct replacement based on property type
+                string replacement = (property == "Description")
+                    ? stateEffects[index].Description
+                    : stateEffects[index].EffectDescription;
+
+                // Replace token in text
+                text = text.Replace(token, replacement);
             }
 
             return text;

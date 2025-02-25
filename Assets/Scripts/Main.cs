@@ -140,7 +140,7 @@ namespace Assets
                 AchievementLoader.Initialize();
                 SpellLoader.Initialize();
                 ItemLoader.Initialize();
-                RSDManager.Intialize();
+                RSDManager.Initialize();
 
                 // init settings
                 Debug.Log("InitializeSettings");
