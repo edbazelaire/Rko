@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Tools;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -121,6 +122,12 @@ namespace Game.SpellGFXs
 
 
         #region End
+
+        protected virtual void OnDestroy()
+        {
+            // remove listeners
+            UnRegisterListeners();
+        }
 
         /// <summary>
         /// Start the end of the spell, enabling Persistance
@@ -503,7 +510,7 @@ namespace Game.SpellGFXs
             if (newState != EGameState.GameOver) 
                 return;
 
-            ForceEnd();
+            Destroy(gameObject);
         }
 
         #endregion

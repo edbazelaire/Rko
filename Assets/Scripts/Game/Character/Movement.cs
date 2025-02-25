@@ -31,6 +31,7 @@ namespace Game.Character
         float   m_InitialSpeed;
 
         public NetworkVariable<int> MoveX => m_MoveX;
+        private NetworkVariable<Vector2> m_NetworkPosition = new NetworkVariable<Vector2>(Vector2.zero);
         public float Speed => Math.Max(0, Settings.CharacterSpeedFactor * (m_InitialSpeed + m_SpeedBonus));
         public bool IsMoving => m_MoveX.Value != 0;
 
@@ -52,7 +53,8 @@ namespace Game.Character
             // CLIENT SIDE --------------------------------------------
             m_MoveX.OnValueChanged += OnMoveXChanged;
 
-            ShakeServerRpc();
+            if (IsOwner)
+                ShakeServerRpc();
         }
 
         /// <summary>
@@ -93,6 +95,29 @@ namespace Game.Character
 
             UpdateCanMove();
             UpdateMovement();
+        }
+
+        private void FixedUpdate()
+        {
+            // transform.position = Vector2.Lerp(transform.position, m_NetworkPosition.Value, 0.2f);
+
+            //if (!IsOwner)
+            //{
+            //    transform.position = Vector2.Lerp(transform.position, m_NetworkPosition.Value, 0.2f);
+
+            //    //float distance = Vector2.Distance(transform.position, m_NetworkPosition.Value);
+
+            //    //// If small desync, snap instantly
+            //    //if (distance < 0.05f)
+            //    //{
+            //    //    transform.position = m_NetworkPosition.Value;
+            //    //}
+            //    //// If large desync, smooth it out
+            //    //else
+            //    //{
+            //    //    transform.position = Vector2.Lerp(transform.position, m_NetworkPosition.Value, 0.4f);
+            //    //}
+            //}
         }
 
         #endregion
@@ -199,6 +224,11 @@ namespace Game.Character
             transform.position += new Vector3(
                 teamFactor * (m_MoveX.Value * Speed + Force) * Time.deltaTime, 
                 0f, 0f);
+
+            // ============================================================================
+            // TODO : REMOVE ?
+            //m_NetworkPosition.Value = transform.position;
+            // ============================================================================
         }
 
         /// <summary>
@@ -298,6 +328,9 @@ namespace Game.Character
         /// </summary>
         public void Shake()
         {
+            if (!IsServer)
+                return;
+
             // apply small movement and rotation
             transform.position += new Vector3(0.15f, 0, 0);
             transform.rotation = Quaternion.Euler(0.1f, 0.1f, 0.1f);
@@ -309,10 +342,7 @@ namespace Game.Character
         [ServerRpc]
         public void ShakeServerRpc()
         {
-            if (transform.position.x == 0)
-            {
-                Shake();
-            }
+            Shake();
         }
 
         public void CancelMovement(bool cancel)

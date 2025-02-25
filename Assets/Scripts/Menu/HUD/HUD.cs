@@ -14,6 +14,7 @@ namespace Assets.Scripts.Menu
 
         GameObject m_ButtonsContainer;
         Button m_LoginButton;
+        Button m_GiftButton;
         Button m_MessagerieButton;
         Button m_SettingsButton;
 
@@ -33,6 +34,7 @@ namespace Assets.Scripts.Menu
 
             m_ButtonsContainer = Finder.Find(gameObject, "ButtonsContainer");
             m_LoginButton = Finder.FindComponent<Button>(m_ButtonsContainer, "LoginButton");
+            m_GiftButton = Finder.FindComponent<Button>(m_ButtonsContainer, "GiftButton");
             m_MessagerieButton = Finder.FindComponent<Button>(m_ButtonsContainer, "MessagerieButton");
             m_SettingsButton = Finder.FindComponent<Button>(m_ButtonsContainer, "SettingsButton");
         }
@@ -76,6 +78,7 @@ namespace Assets.Scripts.Menu
 
             m_LoginButton.onClick.AddListener(OnLoginButtonClicked);
             m_MessagerieButton.onClick.AddListener(() => Main.SetPopUp(EPopUpState.MessageriePopUp));
+            m_GiftButton.onClick.AddListener(() => Main.SetPopUp(EPopUpState.PromoCodePopUp));
             m_SettingsButton.onClick.AddListener(() => Main.SetPopUp(EPopUpState.SettingsPopUp));
 
             AuthManager.LoginEvent += OnLogin;
@@ -89,6 +92,7 @@ namespace Assets.Scripts.Menu
 
             m_LoginButton.onClick.RemoveAllListeners();
             m_MessagerieButton.onClick.RemoveAllListeners();
+            m_GiftButton.onClick.RemoveAllListeners();
             m_SettingsButton.onClick.RemoveAllListeners();
 
             AuthManager.LoginEvent -= OnLogin;

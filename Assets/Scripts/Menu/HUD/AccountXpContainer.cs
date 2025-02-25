@@ -48,19 +48,21 @@ namespace Assets.Scripts.Menu
             if (ProfileCloudData.IsAccountMaxed)
             {
                 m_CollectionFillbar.Initialize(0, 0);
-                return;
+            }
+            else
+            {
+                m_CollectionFillbar.Initialize(InventoryManager.GetCurrency(ECurrency.TotalXp), CollectablesManagementData.GetCurrentAccountLevelData().RequiredXp);
             }
 
             m_CurrentXp = InventoryManager.GetCurrency(ECurrency.TotalXp);
             m_LevelText.text = ProfileCloudData.AccountLevel.ToString();
-            m_CollectionFillbar.Initialize(InventoryManager.GetCurrency(ECurrency.TotalXp), CollectablesManagementData.GetCurrentAccountLevelData().RequiredXp);
         }
 
         IEnumerator CollectXpCoroutine(int xpGained)
         {
             yield return m_CollectionFillbar.CollectionAnimationCoroutine(xpGained);
 
-            m_CurrentXp = InventoryManager.GetCurrency(ECurrency.TotalXp);
+            RefreshUI();
         }
 
         #endregion

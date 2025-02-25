@@ -1,10 +1,7 @@
-﻿using Assets;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Tools;
-using UnityEngine;
 using Save.RSDs;
-using System.Collections;
 
 namespace Save
 {
@@ -12,68 +9,59 @@ namespace Save
     {
         #region Members
 
-        public static List<RSD> m_RSDList;
-
-        public static List<RSD> RSDList => m_RSDList;
+        private static Dictionary<Type, object> m_RsdInstances = new();
 
         #endregion
 
-
         #region Init & End
 
-        public static void Intialize()
+        public static void Initialize()
         {
             LoadSave();
         }
 
         #endregion
 
-
         #region Load & Save
 
         public static void LoadSave()
         {
-            m_RSDList = new()
-            {
-                new TokensRSD(),
-            };
+            m_RsdInstances.Clear();
+
+            // Register known RSDs
+            m_RsdInstances[typeof(PromoCodeRSD)] = new PromoCodeRSD();
         }
 
         #endregion
 
-
         #region Accessors
 
-        public static T GetRSD<T>() where T : RSD, new()
+        public static T GetRSD<T>() where T : class, new()
         {
-            foreach (RSD rsd in m_RSDList)
+            if (m_RsdInstances.TryGetValue(typeof(T), out object rsd))
             {
-                if (rsd.GetType() == typeof(T))
-                    return (T)rsd;
+                return rsd as T;
             }
 
-            ErrorHandler.Warning($"RSD {typeof(T)} not found in CloudSaveManager - creating new one");
+            ErrorHandler.Warning($"RSD {typeof(T)} not found in RSDManager - creating new one");
 
-            // Create an instance of the class represented by rsdType
-            var instance = new T();
-            m_RSDList.Add(instance);
-
+            // Create and store a new instance if not found
+            T instance = new T();
+            m_RsdInstances[typeof(T)] = instance;
             return instance;
         }
 
-        /// <summary> check that all cloud data have been loaded </summary>
+        /// <summary> Check that all cloud data have been loaded </summary>
         public static bool LoadingCompleted
         {
             get
             {
-                // check initialized
-                if (m_RSDList == null || m_RSDList.Count == 0)
-                    return false;
+                if (m_RsdInstances.Count == 0) return false;
 
-                // check all cloud data have beed loaded
-                foreach (RSD rsd in m_RSDList)
+                // Check if all registered RSDs have completed loading
+                foreach (var rsd in m_RsdInstances.Values)
                 {
-                    if (!rsd.LoadingCompleted)
+                    if (rsd is ILoadable loadable && !loadable.LoadingCompleted)
                         return false;
                 }
 
@@ -82,6 +70,10 @@ namespace Save
         }
 
         #endregion
+    }
 
+    public interface ILoadable
+    {
+        bool LoadingCompleted { get; }
     }
 }

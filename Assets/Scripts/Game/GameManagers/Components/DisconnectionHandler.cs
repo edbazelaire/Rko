@@ -18,6 +18,9 @@ namespace Game.GameManagers.Components
 
     public class DisconnectionHandler : MonoBehaviour
     {
+        static DisconnectionHandler s_Instance;
+        public static DisconnectionHandler Instance => s_Instance;
+
         [SerializeField] float      m_ReconnectionTimeout   = 5f; // Timeout period in seconds
         [SerializeField] string     m_ServerDownMessage     = "The server went down for unexpected reasons"; 
         [SerializeField] string     m_ReconnectionMessage   = "Your opponent has been disconnected"; 
@@ -37,6 +40,8 @@ namespace Game.GameManagers.Components
 
         public void Start()
         {
+            s_Instance = this;
+
             m_DisconnectionReasons = new();
             m_DisconnectedClients = new();
 
@@ -48,12 +53,23 @@ namespace Game.GameManagers.Components
 
         public void OnDestroy()
         {
+            s_Instance = null;
+
             if (NetworkManager.Singleton == null) 
                 return;
 
             NetworkManager.Singleton.OnServerStopped            -= OnServerStopped;
+            NetworkManager.Singleton.OnServerStarted            -= OnServerStarted;
             NetworkManager.Singleton.OnClientConnectedCallback  -= OnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
+        }
+
+        public static void End()
+        {
+            if (s_Instance == null)
+                return;
+
+            Destroy(s_Instance.gameObject);
         }
 
         #endregion

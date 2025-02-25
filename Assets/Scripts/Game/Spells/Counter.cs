@@ -141,7 +141,7 @@ namespace Game.Spells
             Spell spell = Finder.FindComponent<Spell>(collision.gameObject);
 
             // check that this is not a spell from the same team
-            if (spell.Controller.Team == m_Controller.Team)
+            if (spell.Team == m_Team)
                 return;
 
             ProcCounter(spell);

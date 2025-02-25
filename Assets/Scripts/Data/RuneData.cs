@@ -139,16 +139,25 @@ namespace Data
         {
             List<string> values = new List<string>();
 
+            float value;
             foreach (SDescriptionVariable descriptionVariable in m_DescriptionVariables)
             {
+                // State Effect    --------------------------------------------------------------
                 if (Enum.TryParse(descriptionVariable.Name, out EStateEffect _))
                 {
                     values.Add(TextHandler.FormatStateEffectIcon(descriptionVariable.Name, descriptionVariable.WithIcon));
                 }
 
+                // Level            --------------------------------------------------------------
+                else if (descriptionVariable.Name.Trim() == "Level")
+                {
+                    values.Add($"<b>{m_Level}</b>");
+                }
+
+                // Property         --------------------------------------------------------------
                 else if (Enum.TryParse(descriptionVariable.Name, out EStateEffectProperty property))
                 {
-                    if (!TryGetProperty(property, out float value))
+                    if (!TryGetProperty(property, out value))
                     {
                         ErrorHandler.Error("Unable to find property " + property + " in RUNE " + this);
                         values.Add("<b>UNDEFINED</b>");
@@ -158,6 +167,7 @@ namespace Data
                     values.Add($"<b>{TextHandler.FormatPropertyValue(value, descriptionVariable.Name)}</b>");
                 }
 
+                // UNDEFINED        --------------------------------------------------------------
                 else
                 {
                     ErrorHandler.Error("Unable to find property " + descriptionVariable.Name + " in info dict of spell " + this);

@@ -419,7 +419,7 @@ namespace Save
         // DEPENDENT STATIC ACCESSORS
         public static int                   LastSelectedBadgeIndex = 0;
         public static bool                  IsAdmin             => (bool)Instance.m_Data[KEY_IS_ADMIN];
-        public static bool                  IsAccountMaxed      => AccountLevel > CollectablesManagementData.Instance.AccountLevelData.Count;
+        public static bool                  IsAccountMaxed      => AccountLevel >= CollectablesManagementData.Instance.AccountLevelData.Count;
         public static bool                  IsAccountUpgradable => ! IsAccountMaxed && CollectablesManagementData.GetCurrentAccountLevelData().RequiredXp <= InventoryCloudData.Instance.GetCurrency(ECurrency.TotalXp);
         public static string                PlayerName          => GamerTag + Tag;
         public static string                GamerTag            => (string)Instance.m_Data[KEY_GAMER_TAG];
@@ -578,27 +578,6 @@ namespace Save
 
 
         #region Check Public Data
-
-        /// <summary>
-        /// Check if provided token can be used as new token
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="reason"></param>
-        /// <returns></returns>
-        public async static Task<(bool Success, string Reason)> IsTokenValid(string token)
-        {
-            if (! TokensRSD.IsTokenAuthorized(token))
-            {
-                return (false, "Invalid token");
-            }
-
-            if (await Instance.FindPlayerWithValue(KEY_TOKEN, token) != null)
-            {
-                return (false, "Token already used");
-            }
-
-            return (true, "");
-        }
 
         /// <summary>
         /// 

@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: FrostRune
   m_EditorClassIdentifier: 
   Rarety: 2
+  m_Description: 
+  m_DescriptionVariables: []
   Description: 
   m_SpellElements: 02000000
   m_MinorPower:
@@ -21,18 +23,19 @@ MonoBehaviour:
     - Name: BonusSlowPerc
       WithIcon: 0
     m_BonusLevel: 0
-    m_IsOverwritten: 0
     m_TriggerEffects: []
     m_BonusStats:
     - StateEffectProperty: 113
       BaseValue: 0.2
       BonusValue: 0
       ScalingFactor: 0.05
+      StateEffectStackFactors: []
   m_MajorPower:
-    Description: Apply [Frost] on every auto attack
-    m_DescriptionVariables: []
+    Description: 'Apply [Frost] (level {0}) on every auto attack.\n\n[TriggerEffect.0]'
+    m_DescriptionVariables:
+    - Name: Level
+      WithIcon: 0
     m_BonusLevel: 0
-    m_IsOverwritten: 0
     m_TriggerEffects:
     - SpellDataName: _FrostRuneMajor
       Level: 0
@@ -43,6 +46,9 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
       NActivations: 0
       Cooldown: 0
     m_BonusStats: []
@@ -50,7 +56,6 @@ MonoBehaviour:
     Description: 
     m_DescriptionVariables: []
     m_BonusLevel: 0
-    m_IsOverwritten: 0
     m_TriggerEffects:
     - SpellDataName: _FrostRunePrimal
       Level: 0
@@ -61,6 +66,9 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 1
       StateEffectName: IceBreak
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
       NActivations: 0
       Cooldown: 0
     m_BonusStats: []

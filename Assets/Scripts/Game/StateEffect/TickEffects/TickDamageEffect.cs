@@ -2,9 +2,11 @@
 using Data;
 using Enums;
 using Game.Character;
+using System;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace Game.Spells
 {
@@ -28,7 +30,7 @@ namespace Game.Spells
         #endregion
 
 
-        #region Inherited Manipulators
+        #region Init & End
 
         public override bool Initialize(Controller controller, Controller caster, SStateEffectData? stateEffect)
         {
@@ -38,6 +40,11 @@ namespace Game.Spells
             m_TickTimer = m_Tick;
             return true;
         }
+
+        #endregion
+
+
+        #region Update
 
         public override void Update()
         {
@@ -55,6 +62,11 @@ namespace Game.Spells
             m_TickTimer = m_Tick;
         }
 
+        #endregion
+
+
+        #region Apply Effect
+        
         protected bool TryApplySpellRequirements(List<SpellRequirements> allSpellRequirements)
         {
             if (allSpellRequirements.Count == 0)

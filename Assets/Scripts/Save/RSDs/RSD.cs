@@ -1,5 +1,7 @@
 ﻿using Assets;
+using Data.GameManagement;
 using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -25,8 +27,6 @@ namespace Save.RSDs
 
 
         #region Init & End
-
-        public RSDData() { }
 
         public void Initialize(List<string> keys, List<string> values)
         {
@@ -98,7 +98,7 @@ namespace Save.RSDs
                 propertyInfo.SetValue(this, result);
             }
 
-            else if(propertyInfo.FieldType == typeof(float))
+            else if (propertyInfo.FieldType == typeof(float))
             {
                 if (!float.TryParse(value, out float result))
                 {
@@ -110,7 +110,7 @@ namespace Save.RSDs
                 propertyInfo.SetValue(this, result);
             }
 
-            else if(propertyInfo.FieldType == typeof(bool))
+            else if (propertyInfo.FieldType == typeof(bool))
             {
                 if (!bool.TryParse(value, out bool result))
                 {
@@ -127,6 +127,20 @@ namespace Save.RSDs
                 propertyInfo.SetValue(this, value);
             }
 
+            else if (propertyInfo.FieldType == typeof(SRewardsData))
+            {
+                try
+                {
+                    var rewards = JsonConvert.DeserializeObject<SRewardsData>(value);
+                    propertyInfo.SetValue(this, rewards);
+                }
+                catch (Exception ex)
+                {
+                    ErrorHandler.Error($"Failed to parse Rewards JSON: {value} - {ex.Message}");
+                    m_IsAborted = true;
+                }
+            }
+
             else
             {
                 ErrorHandler.Error("Unhandled case : " + propertyInfo.FieldType);
@@ -139,21 +153,23 @@ namespace Save.RSDs
         
     }
 
-    public class RSD
+    public class RSD<T> where T : RSDData
     {
         #region Members
 
-        public static RSD Instance => RSDManager.GetRSD<RSD>();
+        public static RSD<T> Instance;
 
         bool m_LoadingCompleted = false;
 
-        const string                API_KEY        = "AIzaSyDaxXaNw8fIOdB0hU2JTizoSiDnmx6ZZO8";
+        protected const string API_KEY = "AIzaSyDaxXaNw8fIOdB0hU2JTizoSiDnmx6ZZO8";
+        //protected const string      API_KEY        = "868af696cc622aa07b7916b103cb13b0e3a0539e";
         protected virtual string    m_SheetId      => "";
         protected virtual string    m_SheetName    => "";
+        protected string m_BaseUrl => "https://sheets.googleapis.com/v4/spreadsheets/" + m_SheetId + "/values/" + m_SheetName;
+        protected string m_SheetUrl => m_BaseUrl + "?alt=json&key=" + API_KEY;
 
-        public virtual List<TokenData> Data { get; set; }
-        string m_SheetUrl => "https://sheets.googleapis.com/v4/spreadsheets/" + m_SheetId + "/values/" + m_SheetName + "?alt=json&key=" + API_KEY;
-
+        protected List<T> m_Data;
+        public virtual List<T> Data => m_Data;
         public bool LoadingCompleted => m_LoadingCompleted;
 
         #endregion
@@ -170,7 +186,7 @@ namespace Save.RSDs
         #endregion
 
 
-        #region Loading & Saving
+        #region Loading
 
         /// <summary>
         /// Load data from the sheets URL, read, format and store them in Data
@@ -210,24 +226,18 @@ namespace Save.RSDs
             m_LoadingCompleted = true;
         }
 
-        /// <summary>
-        /// Must be override by the child to provide appropriated RSDData
-        /// </summary>
-        /// <param name="data"></param>
-        protected virtual void ReadSheetsData(SSheetsData data) { Data = FormatSheetData<TokenData>(data); }
+        protected virtual void ReadSheetsData(SSheetsData data)
+        {
+            m_Data = FormatSheetData(data);
+        }
 
-        /// <summary>
-        /// Format sheet data to the format of provided Type
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="sheetData"></param>
-        /// <returns></returns>
-        protected List<T> FormatSheetData<T>(SSheetsData sheetData) where T : RSDData, new ()
+        protected List<T> FormatSheetData(SSheetsData sheetData)
         {
             List<T> formattedData = new List<T>();
+
             for (int i = 1; i < sheetData.values.Count; i++)
             {
-                T data = new T();
+                T data = Activator.CreateInstance<T>();
                 data.Initialize(sheetData.values[0], sheetData.values[i]);
 
                 if (data.IsAborted())
@@ -237,6 +247,16 @@ namespace Save.RSDs
             }
 
             return formattedData;
+        }
+
+        #endregion
+
+
+        #region Update
+
+        public string UpdateUrl(int rowIndex)
+        {
+            return $"{m_BaseUrl}!B{rowIndex}:B{rowIndex}?valueInputOption=RAW";
         }
 
         #endregion

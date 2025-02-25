@@ -38,6 +38,7 @@
         // -- config popup
         SettingsPopUp,
         MessageriePopUp,
+        PromoCodePopUp,
         LoginPopUp,
     }
 
