@@ -1,9 +1,12 @@
 ﻿using Assets.Scripts.Data.DataStructures.SpellRequirement;
 using Data;
 using Enums;
+using Game.Character;
+using System;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace Game.Spells
 {
@@ -27,7 +30,7 @@ namespace Game.Spells
         #endregion
 
 
-        #region Inherited Manipulators
+        #region Init & End
 
         public override bool Initialize(Controller controller, Controller caster, SStateEffectData? stateEffect)
         {
@@ -37,6 +40,11 @@ namespace Game.Spells
             m_TickTimer = m_Tick;
             return true;
         }
+
+        #endregion
+
+
+        #region Update
 
         public override void Update()
         {
@@ -54,6 +62,11 @@ namespace Game.Spells
             m_TickTimer = m_Tick;
         }
 
+        #endregion
+
+
+        #region Apply Effect
+        
         protected bool TryApplySpellRequirements(List<SpellRequirements> allSpellRequirements)
         {
             if (allSpellRequirements.Count == 0)
@@ -80,7 +93,7 @@ namespace Game.Spells
 
             // ask state handler to fire the "OnHit" event to clients GFX
             StateEffectEvent?.Invoke(StateEffectName, EStateEffectEvent.OnTick, m_Controller.PlayerId, m_Caster.PlayerId);
-            m_Controller.StateHandler.CallSpellEventClientRPC(ESpellEvent.OnHit, StateEffectName, m_Caster.PlayerId);
+            m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnHit, StateEffectName, m_Caster.PlayerId));
 
             // CHECK : DAMAGES
             int damages = GetInt(EStateEffectProperty.TickDamages);

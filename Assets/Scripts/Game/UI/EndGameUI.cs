@@ -1,4 +1,5 @@
 ﻿using Analytics.Events;
+using Assets;
 using Assets.Scripts.Tools;
 using Data.GameManagement;
 using Enums;
@@ -380,6 +381,13 @@ public class EndGameUI : MObject
                     if (preventiveLossApplied)
                         ProgressionCloudData.AddArenaLoss(-1, false);
                     ProgressionCloudData.AddArenaWin();
+                }
+
+                // if preventive loss not applied, remove one life
+                else
+                {
+                    if (! preventiveLossApplied && ! Main.StopPreventiveLoss)
+                        ProgressionCloudData.AddArenaLoss();
                 }
                 break;
 

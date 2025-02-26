@@ -37,7 +37,7 @@ namespace Game.Character
             m_Controller = GetComponent<Controller>();
             m_Animator = animator;
 
-            m_Controller.StateHandler.StateEffectList.OnListChanged         += OnStateEffectListChanged;
+            m_Controller.StateHandler.StateEffectListEvent += OnStateEffectListChanged;
 
             if (HasParameter("HasCounter", AnimatorControllerParameterType.Bool))
                 m_Controller.CounterHandler.HasCounter.OnValueChanged           += OnHasCounterValueChanged;
@@ -268,18 +268,18 @@ namespace Game.Character
         /// </summary>
         /// <param name="oldValue"></param>
         /// <param name="newValue"></param>
-        void OnStateEffectListChanged(NetworkListEvent<FixedString64Bytes> changeEvent)
+        void OnStateEffectListChanged(EListEvent listEvent, string stateEffect, int stacks, float duration)
         {
-            ErrorHandler.Log(changeEvent.Type + " " + changeEvent.Value, ELogTag.Animation);
+            ErrorHandler.Log(stateEffect + " " + stateEffect, ELogTag.Animation);
 
-            if (changeEvent.Type != NetworkListEvent<FixedString64Bytes>.EventType.RemoveAt && changeEvent.Type != NetworkListEvent<FixedString64Bytes>.EventType.Remove)
-                OnAddStateEffect(changeEvent.Value.ToString());
+            if (listEvent == EListEvent.Add)
+                OnAddStateEffect(stateEffect);
             else
-                OnRemoveStateEffect(changeEvent.Value.ToString());
+                OnRemoveStateEffect(stateEffect);
 
-            if (changeEvent.Value == EStateEffect.Jump.ToString())
+            if (stateEffect == EStateEffect.Jump.ToString())
             {
-                if (changeEvent.Type == NetworkListEvent<FixedString64Bytes>.EventType.Add)
+                if (listEvent == EListEvent.Add)
                 {
                     m_Controller.Collider.enabled = false;
                     m_Animator.SetTrigger(EAnimation.Jump.ToString());

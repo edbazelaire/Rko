@@ -94,7 +94,7 @@ namespace Game.SpellGFXs
                 m_Spell.OnSpellEvent += OnSpellEvent;
 
             if (m_StateEffectName != null)
-                m_Controller.StateHandler.OnStateEffectEvent += OnStateEffectEvent;
+                m_Controller.StateHandler.StateEffectEvent += OnStateEffectEvent;
         }
 
         protected override void UnRegisterListeners()
@@ -108,7 +108,7 @@ namespace Game.SpellGFXs
                 m_Spell.OnSpellEvent -= OnSpellEvent;
 
             if (m_StateEffectName != null)
-                m_Controller.StateHandler.OnStateEffectEvent -= OnStateEffectEvent;
+                m_Controller.StateHandler.StateEffectEvent -= OnStateEffectEvent;
 
             Spell.OnSpellSpawn -= OnSpellSpawn;
         }
@@ -155,6 +155,10 @@ namespace Game.SpellGFXs
 
         void OnSpellEvent(ESpellEvent spellEvent)
         {
+            // TODO : REMOVE    =========================================================================
+            Debug.Log(m_SpellData.name + " : " + spellEvent.ToString());
+            // TODO : REMOVE    =========================================================================
+
             CheckEnd(spellEvent);
         }
 

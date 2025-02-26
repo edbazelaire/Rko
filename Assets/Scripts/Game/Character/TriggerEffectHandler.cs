@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Tools;
 using Unity.Netcode;
 using Unity.VisualScripting;
+using UnityEngine;
 
 namespace Game.Character
 {
@@ -41,12 +42,14 @@ namespace Game.Character
         public override void OnNetworkDespawn()
         {
             base.OnNetworkDespawn();
+
             if (!IsServer || m_TriggerEffects == null)
                 return;
 
             foreach(var triggerEffect in m_TriggerEffects)
             {
-                triggerEffect.End();
+                if(triggerEffect.IsActivated)
+                    triggerEffect.End();
             }
 
             // Clear the collection to remove all trigger effects
@@ -135,6 +138,11 @@ namespace Game.Character
             // Spell Activation
             if (effect.SpellActivationEvent == ESpellActivation.GameStart)
             {
+                // =================================================================================================
+                // TODO : remove 
+                if (effect.SpellDataName == "_SnowStorm")
+                    Debug.LogWarning("Activating " + effect.SpellDataName);
+                // =================================================================================================
                 effect.Activate(m_Controller);
             }
             else if (effect.SpellActivationEvent == ESpellActivation.Hp && effect.ActivationTreshold >= (float)m_Controller.Life.Hp.Value / m_Controller.Life.MaxHp.Value)
@@ -171,6 +179,8 @@ namespace Game.Character
                 effect.Activate(m_Controller);
                 m_TriggerEffects[i] = effect;
                 success = true;
+
+                Debug.LogWarning("      + Trigerred DeathEffect : " + effect);
             }
 
             return success;

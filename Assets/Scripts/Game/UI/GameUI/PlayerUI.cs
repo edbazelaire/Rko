@@ -76,14 +76,14 @@ namespace Game.UI
             // Energy Bar
             m_EnergyBar = Finder.FindComponent<PlayerBarUI>(gameObject, c_EnergyBar);
             m_EnergyBar.Initialize(controller.EnergyHandler.Energy.Value, controller.EnergyHandler.MaxEnergy.Value);
-            controller.EnergyHandler.MaxEnergy.OnValueChanged   += m_EnergyBar.OnMaxValueChanged;
-            controller.EnergyHandler.Energy.OnValueChanged      += m_EnergyBar.OnValueChanged;
+            controller.EnergyHandler.MaxEnergy.OnValueChanged           += m_EnergyBar.OnMaxValueChanged;
+            controller.EnergyHandler.Energy.OnValueChanged              += m_EnergyBar.OnValueChanged;
 
             // State Displayer
             m_StateDisplayer = Finder.Find(gameObject, c_StateDisplayer);
             m_StateEffectsUI = new Dictionary<string, StateEffectUI>();
             UIHelper.CleanContent(m_StateDisplayer);
-            controller.StateHandler.OnStateEvent                        += OnStateEvent;
+            controller.StateHandler.StateEffectListEvent                += OnStateEvent;
             controller.StateHandler.HoldingStateEffects.OnListChanged   += OnHoldingStateEffectsChanged;
             controller.TriggerEffectHandler.QuestValueChanged           += OnQuestValueChanged;
         }
@@ -98,7 +98,7 @@ namespace Game.UI
             m_Controller.Life.FinalShield.OnValueChanged                -= m_ShieldBar.OnValueChanged;
             m_Controller.EnergyHandler.MaxEnergy.OnValueChanged         -= m_EnergyBar.OnMaxValueChanged;
             m_Controller.EnergyHandler.Energy.OnValueChanged            -= m_EnergyBar.OnValueChanged;
-            m_Controller.StateHandler.OnStateEvent                      -= OnStateEvent;
+            m_Controller.StateHandler.StateEffectListEvent              -= OnStateEvent;
             m_Controller.TriggerEffectHandler.QuestValueChanged         -= OnQuestValueChanged;
         }
 
@@ -122,9 +122,11 @@ namespace Game.UI
                 case EListEvent.Add:
                     AddState(state, stack, duration);
                     break;
+
                 case EListEvent.Remove:
                     RemoveState(state);
                     break;
+
                 default:
                     Debug.Log("Unhandled case");
                     break;
@@ -153,7 +155,7 @@ namespace Game.UI
             // if not in existing state, create it and add it to the list
             if (!m_StateEffectsUI.ContainsKey(state))
             {
-                ErrorHandler.Error($"Unable to find remvoed state {state} in list");
+                ErrorHandler.Error($"Unable to find removed state {state} in list");
                 return;
             }
 

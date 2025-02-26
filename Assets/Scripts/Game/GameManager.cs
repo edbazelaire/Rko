@@ -5,6 +5,7 @@ using Assets.Scripts.Tools;
 using Data;
 using Enums;
 using Externals;
+using Game.GameManagers.Components;
 using Game.Loaders;
 using Game.Spells;
 using Managers;
@@ -84,6 +85,7 @@ namespace Game
         public Dictionary<ulong, Controller> Spawns => m_Spawns;
         public NetworkVariable<float> ProgressGameStart => m_ProgressGameStart;
         public NetworkVariable<EGameState> State => m_State;
+
         /// <summary> check if GameManager exists, if has an Instance or the game object exists in the scene </summary>
         public static bool Exists => s_Instance != null || FindAnyObjectByType<GameManager>() != null;
         /// <summary> intro starting : game fully loaded </summary>
@@ -109,6 +111,21 @@ namespace Game
             m_GameAnalyticsManager  = Finder.FindComponent<GameAnalyticsManager>(gameObject);
 
             s_Instance = this;
+
+            AttachDebugMethods();
+        }
+
+        #endregion
+
+
+        #region Debug
+
+        void AttachDebugMethods()
+        {
+            NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("Debug_NamedMessage", (senderClientId, reader) =>
+            {
+                Debug.Log($"[NETWORK DEBUG] Named Message Received from {senderClientId}");
+            });
         }
 
         #endregion
@@ -526,8 +543,13 @@ namespace Game
             if (! Instance.Owner.IsPlayer)
                 return;
 
+            // shut down controllers activity
             ShutDownControllers(team);
 
+            // destroy DisconnectionHandler
+            DisconnectionHandler.End();
+
+            // setup the UI for end of the game
             GameUIManager.Instance.SetUpGameOver(team == Instance.Owner.Team);
         }
 
@@ -941,6 +963,8 @@ namespace Game
 
         void OnPlayerDied()
         {
+            Debug.LogWarning("OnPlayerDied() EVENT");
+
             // END of the game is handled by the Tutorial Manager
             if (m_IsTuto)
                 return;
@@ -1039,7 +1063,7 @@ namespace Game
         [Command(KeyCode.L)]
         public void Hit()
         {
-            GetFirstEnemy(Owner.Team).Life.Hit(500, 999, "God", Enums.ESpellCategory.Direct, true);
+            GetFirstEnemy(Owner.Team).Life.Hit(1000, 0, "God", Enums.ESpellCategory.Direct, true);
         }
 
         /// <summary>
@@ -1096,6 +1120,24 @@ namespace Game
         public void GiveEnergy()
         {
             GetFirstEnemy(Owner.Team).EnergyHandler.AddEnergy(100);
+        }
+
+        [Command(KeyCode.J)]
+        public void IncreaseDamages()
+        {
+            Owner.StateHandler.CharacterData.AddBonusStats(new List<SCharacterStatScaling>() { 
+                new SCharacterStatScaling(EStateEffectProperty.BonusDamages, 100f, 0f, 0f) 
+            });
+        }
+
+        [Command(KeyCode.Y)]
+        public void KillSpawn()
+        {
+            var controller = GetFirstSpawn(Owner.Team, false);
+            if (controller == null)
+                return;
+
+            controller.Life.Kill();
         }
 
         [Command(KeyCode.Space)]

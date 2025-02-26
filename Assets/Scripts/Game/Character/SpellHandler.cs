@@ -4,11 +4,13 @@ using Data;
 using Data.GameManagement;
 using Enums;
 using Game.Loaders;
+using Game.NetworkStructures;
 using Game.Spells;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using Tools;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -360,7 +362,7 @@ namespace Game.Character
                 return;
 
             m_SpellSelectionStates[spell] = spellSelectionState;
-            SpellActionvationEventClientRPC(spell, spellSelectionState);
+            SpellActivationEventClientRPC(spell, spellSelectionState);
         }
 
         public ESpellSelectionState GetSpellSelectionState(ESpell spell)
@@ -950,12 +952,12 @@ namespace Game.Character
         }
 
         [ClientRpc]
-        void SpellActionvationEventClientRPC(ESpell spell, ESpellSelectionState spellActivation)
+        void SpellActivationEventClientRPC(ESpell spell, ESpellSelectionState spellActivation)
         {
             SpellSelectionEvent?.Invoke(spell, spellActivation);
         }
 
-        public void CallSpellEvent(string spellName, ESpellEvent spellEvent, float? forcedDuration = null, Vector2? forcedPosition = null)
+        public void CallSpellEvent(string spellName, ESpellEvent spellEvent, Vector2? targetPosition = null, float? forcedDuration = null, Vector2? forcedPosition = null)
         {
             var spellData = SpellLoader.GetSpellData(spellName, destroy: true);
 
@@ -970,13 +972,18 @@ namespace Game.Character
                 return;
             }
 
-            // FORCED POSTION REQUESTED
+            ushort spellEventByte = (ushort)spellEvent;
+
+            if (targetPosition == null)
+                targetPosition = m_TargetPos.Value;
+
+            // FORCED POSITION REQUESTED
             if (forcedPosition != null)
             {
                 if (forcedDuration == null)
-                    CallSpellEventClientRPC(spellName, spellEvent, forcedPosition.Value);
+                    CallSpellEventClientRPC(spellName, spellEventByte, new Vector2Short(forcedPosition.Value));
                 else
-                    CallSpellEventClientRPC(spellName, spellEvent, forcedDuration.Value);
+                    CallSpellEventClientRPC(spellName, spellEventByte, new Vector2Short(forcedPosition.Value), forcedDuration.Value);
             }
 
             // HAS TARGET POS REQUESTED
@@ -984,9 +991,9 @@ namespace Game.Character
             {
                 // POSITION REQUESTED : add target pos to the variables
                 if (forcedDuration == null)
-                    CallSpellEventClientRPC(spellName, spellEvent, m_TargetPos.Value);
+                    CallSpellEventClientRPC(spellName, spellEventByte, new Vector2Short(targetPosition.Value));
                 else
-                    CallSpellEventClientRPC(spellName, spellEvent, m_TargetPos.Value, forcedDuration.Value);
+                    CallSpellEventClientRPC(spellName, spellEventByte, new Vector2Short(targetPosition.Value), forcedDuration.Value);
                
             }
 
@@ -994,38 +1001,58 @@ namespace Game.Character
             else
             {
                 if (forcedDuration == null)
-                    CallSpellEventClientRPC(spellName, spellEvent);
+                    CallSpellEventClientRPC(spellName, spellEventByte);
                 else
-                    CallSpellEventClientRPC(spellName, spellEvent, forcedDuration.Value);
+                    CallSpellEventClientRPC(spellName, spellEventByte, forcedDuration.Value);
             }
         }
 
         [ClientRpc]
-        public void CallSpellEventClientRPC(string spellName, ESpellEvent spellEvent)
+        public void CallSpellEventClientRPC(FixedString32Bytes spellName, ushort spellEvent)
         {
-            m_Controller.GFXHandler.SpawnSpellGFX(spellName, spellEvent);
-            OnPreSpellEvent?.Invoke(spellName, spellEvent);
+            //Debug.LogWarning("CallSpellEventClientRPC() - Player " + m_Controller.PlayerId);
+            //Debug.Log("     + spellEvent : " + (ESpellEvent)spellEvent);
+            //Debug.Log("     + spellName : " + spellName);
+
+            m_Controller.GFXHandler.SpawnSpellGFX(spellName.ToString(), (ESpellEvent)spellEvent);
+            OnPreSpellEvent?.Invoke(spellName.ToString(), (ESpellEvent)spellEvent);
         }
 
         [ClientRpc]
-        public void CallSpellEventClientRPC(string spellName, ESpellEvent spellEvent, float forcedDuration)
+        public void CallSpellEventClientRPC(FixedString32Bytes spellName, ushort spellEvent, float forcedDuration)
         {
-            m_Controller.GFXHandler.SpawnSpellGFX(spellName, spellEvent);
-            OnPreSpellEvent?.Invoke(spellName, spellEvent);
+            //Debug.LogWarning("CallSpellEventClientRPC() - Player " + m_Controller.PlayerId);
+            //Debug.Log("     + spellEvent : " + (ESpellEvent)spellEvent);
+            //Debug.Log("     + spellName : " + spellName);
+            //Debug.Log("     + forcedDuration : " + forcedDuration);
+
+            m_Controller.GFXHandler.SpawnSpellGFX(spellName.ToString(), (ESpellEvent)spellEvent, forcedDuration: forcedDuration);
+            OnPreSpellEvent?.Invoke(spellName.ToString(), (ESpellEvent)spellEvent);
         }
 
         [ClientRpc]
-        public void CallSpellEventClientRPC(string spellName, ESpellEvent spellEvent, Vector3 targetPos)
+        public void CallSpellEventClientRPC(FixedString32Bytes spellName, ushort spellEvent, Vector2Short targetPos)
         {
-            m_Controller.GFXHandler.SpawnSpellGFX(spellName, spellEvent, targetPos);
-            OnPreSpellEvent?.Invoke(spellName, spellEvent);
+            //Debug.LogWarning("CallSpellEventClientRPC() - Player " + m_Controller.PlayerId);
+            //Debug.Log("     + spellEvent : " + (ESpellEvent)spellEvent);
+            //Debug.Log("     + spellName : " + spellName);
+            //Debug.Log("     + targetPos : " + targetPos);
+
+            m_Controller.GFXHandler.SpawnSpellGFX(spellName.ToString(), (ESpellEvent)spellEvent, targetPos);
+            OnPreSpellEvent?.Invoke(spellName.ToString(), (ESpellEvent)spellEvent);
         }
 
         [ClientRpc]
-        public void CallSpellEventClientRPC(string spellName, ESpellEvent spellEvent, Vector3 targetPos, float forcedDuration)
+        public void CallSpellEventClientRPC(FixedString32Bytes spellName, ushort spellEvent, Vector2Short targetPos, float forcedDuration)
         {
-            m_Controller.GFXHandler.SpawnSpellGFX(spellName, spellEvent, targetPos, forcedDuration);
-            OnPreSpellEvent?.Invoke(spellName, spellEvent);
+            //Debug.LogWarning("CallSpellEventClientRPC() - Player " + m_Controller.PlayerId);
+            //Debug.Log("     + spellEvent : " + (ESpellEvent)spellEvent);
+            //Debug.Log("     + spellName : " + spellName);
+            //Debug.Log("     + targetPos : " + targetPos);
+            //Debug.Log("     + forcedDuration : " + forcedDuration);
+
+            m_Controller.GFXHandler.SpawnSpellGFX(spellName.ToString(), (ESpellEvent)spellEvent, targetPos, forcedDuration);
+            OnPreSpellEvent?.Invoke(spellName.ToString(), (ESpellEvent)spellEvent);
         }
         
         #endregion

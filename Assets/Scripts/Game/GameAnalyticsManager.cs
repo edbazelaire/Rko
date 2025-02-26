@@ -136,24 +136,27 @@ namespace Assets.Scripts.Game
             }
 
             // Send data to damage displayer & damage client analytics
-            DisplaySpellHitClientRPC(casterId, targetId, spellName, qty, hitType, spellCategory);
+            DisplaySpellHitClientRPC(casterId, targetId, spellName, (ushort)qty, (byte)hitType, (byte)spellCategory);
         }
 
         [ClientRpc]
-        public void DisplaySpellHitClientRPC(ulong casterClientId, ulong targetClientId, string spellName, int qty, EHitType hitType, ESpellCategory spellCategory)
+        public void DisplaySpellHitClientRPC(ulong casterClientId, ulong targetClientId, string spellName, ushort amount, byte hitTypeByte, byte spellCategoryByte)
         {
             var caster = GameManager.Instance.GetPlayer(casterClientId);
+
+            EHitType hitType = (EHitType)hitTypeByte;
+            ESpellCategory spellCategory = (ESpellCategory)spellCategoryByte;
 
             // Display to the DamageDisplayManager
             if (PlayerPrefs.GetInt("DisplayDamages", 1) == 1)
             {
-                HitDisplayUI.Instance?.DisplayHit(targetClientId, qty, hitType, spellCategory);
+                HitDisplayUI.Instance?.DisplayHit(targetClientId, amount, hitType, spellCategory);
             }
 
             // Send data to Analytics
             if (caster != null && caster.ClientAnalytics != null)
             {
-                caster.ClientAnalytics.SendSpellData(spellName, hitType, qty);
+                caster.ClientAnalytics.SendSpellData(spellName, hitType, amount);
             }
         }
 

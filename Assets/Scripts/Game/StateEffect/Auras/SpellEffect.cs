@@ -1,6 +1,7 @@
 ﻿using Data;
 using Enums;
 using System.Collections.Generic;
+using Tools;
 using UnityEngine;
 
 namespace Game.Spells
@@ -36,6 +37,18 @@ namespace Game.Spells
                 return false;
 
             return true;
+        }
+
+        #endregion
+
+
+        #region Description
+
+        protected override void ReplaceSubStateEffects(ref string description)
+        {
+            var effects = m_EnemyStateEffects;
+            effects.AddRange(m_AllyStateEffects);
+            description = TextHandler.ReplaceSubStateEffects(description, effects);
         }
 
         #endregion

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Menu.Common.Dots;
+using System.Collections;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;
@@ -65,10 +66,10 @@ namespace Menu.MainMenu.MainTab
         {
             UIHelper.CleanContent(m_Container);
 
-            for (int i = 1; i < m_MaxValue + 1; i++)
+            for (int i = 1; i <= m_MaxValue; i++)
             {
-                var dot = Instantiate(AssetLoader.LoadComponentPrefab("Dot"), m_Container.transform);
-                dot.GetComponent<Image>().color = i <= m_CurrentValue ? m_EnableColor : m_DiseableColor;
+                var dot = Instantiate(AssetLoader.LoadComponentPrefab<DotUI>("Dot"), m_Container.transform);
+                dot.Initialize(i <= m_CurrentValue);
             }
         }
 

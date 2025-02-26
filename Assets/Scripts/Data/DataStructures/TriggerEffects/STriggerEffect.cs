@@ -187,6 +187,9 @@ namespace Data.DataStructures
 
         public void End()
         {
+            if (GameManager.IsGameOver)
+                return;
+
             Deactivate();
 
             if (m_TargetController == null)

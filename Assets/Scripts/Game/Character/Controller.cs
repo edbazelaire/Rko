@@ -85,6 +85,7 @@ public class Controller : NetworkBehaviour
     public Collider2D       Collider                    => m_GFXHandler.Collider;
     /// <summary> y position of the character's Height point </summary>
     public float            CharacterHeight             => Collider.transform.position.y + Collider.bounds.extents.y;
+  
     #endregion
 
 
@@ -339,10 +340,10 @@ public class Controller : NetworkBehaviour
 
     public override void OnDestroy()
     {
+        base.OnDestroy();
+
         OnDestroyedEvent?.Invoke();
         GameManager.GameStartedEvent -= OnGameStarted;
-
-        base.OnDestroy();
     }
 
     #endregion
@@ -464,7 +465,6 @@ public class Controller : NetworkBehaviour
 
     #region Death & Game Over Manipulators
 
-
     /// <summary>
     /// Remove Character display and 
     /// </summary>
@@ -483,6 +483,12 @@ public class Controller : NetworkBehaviour
     {
         // stop all current coroutines
         StopAllCoroutines();
+
+        if (IsSpawn)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         // deactivate all "action" components
         ActivateActionComponent(false);

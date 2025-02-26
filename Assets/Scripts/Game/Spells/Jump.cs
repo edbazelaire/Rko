@@ -94,6 +94,9 @@ namespace Game.Spells
 
         protected override void Update()
         {
+            if (m_IsOver) 
+                return;
+
             base.Update();
 
             // only server can check for distance and update the Controller position
@@ -109,6 +112,9 @@ namespace Game.Spells
         /// </summary>
         void UpdatePlayerPosition()
         {
+            if (m_IsOver)
+                return;
+
             Vector3 pos = transform.position;
             pos.y += m_CharacterOffsetY;
             m_Controller.transform.position = pos;

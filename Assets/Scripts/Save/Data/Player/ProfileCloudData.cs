@@ -361,7 +361,7 @@ namespace Save
     {
         #region Members
 
-        public new static ProfileCloudData Instance => Main.CloudSaveManager.GetCloudData(typeof(ProfileCloudData)) as ProfileCloudData;
+        public new static ProfileCloudData Instance => CloudSaveManager.Instance.GetCloudData(typeof(ProfileCloudData)) as ProfileCloudData;
 
         // ===============================================================================================
         // CONSTANTS
@@ -375,6 +375,7 @@ namespace Save
         public const string KEY_TUTO_DONE               = "TutoDone";
         public const string KEY_PSEUDO_CHANGED          = "PseudoChanged";
         public const string KEY_GAMER_TAG               = "GamerTag";
+        public const string KEY_IS_ADMIN                = "IsAdmin";
         public const string KEY_TAG                     = "Tag";
         public const string KEY_TOKEN                   = "Token";
         public const string KEY_REGION                  = "Region";
@@ -388,7 +389,7 @@ namespace Save
         public static Action                                AccountLevelUpEvent;
         public static Action<EAchievementReward, string>    AchievementRewardCollectedEvent;
         public static Action<string>                        AchievementCompletedEvent;
-        public static Action                                GamerTagChanged;
+        public static Action                                PseudoChangedEvent;
         public static Action<EAchievementReward>            CurrentDataChanged;
         public static Action<int>                           CurrentBadgeChangedEvent;
         public static Action<EBadge, ELeague>               BadgeUnlockedEvent;
@@ -402,6 +403,7 @@ namespace Save
             { KEY_TUTO_DONE,                true                                                },
             { KEY_PSEUDO_CHANGED,           false                                               },
             { KEY_GAMER_TAG,                ""                                                  },
+            { KEY_IS_ADMIN,                 false                                               },
             { KEY_TAG,                      ""                                                  },
             { KEY_TOKEN,                    ""                                                  },
             { KEY_REGION,                   ""                                                  },
@@ -416,8 +418,8 @@ namespace Save
         // ===============================================================================================
         // DEPENDENT STATIC ACCESSORS
         public static int                   LastSelectedBadgeIndex = 0;
-        public static bool                  IsAdmin             => TokensRSD.IsTokenAdmin(Token);
-        public static bool                  IsAccountMaxed      => AccountLevel > CollectablesManagementData.Instance.AccountLevelData.Count;
+        public static bool                  IsAdmin             => (bool)Instance.m_Data[KEY_IS_ADMIN];
+        public static bool                  IsAccountMaxed      => AccountLevel >= CollectablesManagementData.Instance.AccountLevelData.Count;
         public static bool                  IsAccountUpgradable => ! IsAccountMaxed && CollectablesManagementData.GetCurrentAccountLevelData().RequiredXp <= InventoryCloudData.Instance.GetCurrency(ECurrency.TotalXp);
         public static string                PlayerName          => GamerTag + Tag;
         public static string                GamerTag            => (string)Instance.m_Data[KEY_GAMER_TAG];
@@ -489,7 +491,7 @@ namespace Save
             AuthenticationService.Instance.UpdatePlayerNameAsync(gamerTag);
 
             MAnalytics.SendEvent(new PlayerDataEvent(gamerTag, Token, Region));
-            GamerTagChanged?.Invoke();
+            PseudoChangedEvent?.Invoke();
         }
 
         /// <summary>
@@ -576,27 +578,6 @@ namespace Save
 
 
         #region Check Public Data
-
-        /// <summary>
-        /// Check if provided token can be used as new token
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="reason"></param>
-        /// <returns></returns>
-        public async static Task<(bool Success, string Reason)> IsTokenValid(string token)
-        {
-            if (! TokensRSD.IsTokenAuthorized(token))
-            {
-                return (false, "Invalid token");
-            }
-
-            if (await Instance.FindPlayerWithValue(KEY_TOKEN, token) != null)
-            {
-                return (false, "Token already used");
-            }
-
-            return (true, "");
-        }
 
         /// <summary>
         /// 
@@ -991,6 +972,10 @@ namespace Save
                     };
 
                     Instance.m_Badges = Instance.FilterHighestLeague(EAchievementReward.Badge);
+                    break;
+
+                case KEY_IS_ADMIN:
+                    Instance.m_Data[key] = false;
                     break;
 
                 default:

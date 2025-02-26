@@ -28,8 +28,10 @@ namespace Game.AI.BehaviorTrees
             switch (m_ArenaDifficulty)
             {
                 case EArenaDifficulty.Easy:
+                    return GetTree_Easy(m_Controller);
+
                 case EArenaDifficulty.Normal:
-                    return GetDefaultTree(m_Controller);
+                    return GetTree_Normal(m_Controller);
 
                 default:
                     return GetTree_Hard(m_Controller);
@@ -38,7 +40,28 @@ namespace Game.AI.BehaviorTrees
 
         #region Trees
 
-        static Node GetDefaultTree(Controller controller)
+        static Node GetTree_Easy(Controller controller)
+        {
+            return new Selector(new List<Node>
+            {
+                // ULTI : as soon as available
+                new TaskUseSpell(controller, controller.SpellHandler.Ultimate),
+
+                // use Special Ability in 10f seconds
+                new TaskUseSpell(controller, controller.SpellHandler.SpecialAbility, delay: 10f),
+
+                // Auto Attack
+                new TaskUseSpell(controller, controller.SpellHandler.AutoAttack, delay: 3f, nTimes: 10),
+
+                // MOVE
+                new TaskMove(controller, checkZones: false, checkProjectiles: false),         
+                
+                // Default
+                new TaskWait(controller),
+            });
+        }
+
+        static Node GetTree_Normal(Controller controller)
         {
             return new Selector(new List<Node>
             {
@@ -79,7 +102,7 @@ namespace Game.AI.BehaviorTrees
                 }),
 
                 // Attack 4 times 
-                new TaskUseSpell(controller, controller.SpellHandler.AutoAttack, delay: 3f, nTimes: 3),
+                new TaskUseSpell(controller, controller.SpellHandler.AutoAttack, delay: 3f, nTimes: 4),
 
                 // MOVE
                 new TaskMove(controller, checkZones: true, checkProjectiles: false),         

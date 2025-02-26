@@ -1,4 +1,5 @@
-﻿using Enums;
+﻿using Assets.Scripts.Managers;
+using Enums;
 using Menu.Common.Buttons;
 using Menu.PopUps.Components.ProfilePopUp;
 using Save;
@@ -19,9 +20,11 @@ namespace Menu.MainMenu
 
         // -- avatar section
         AvatarButtonUI      m_AvatarButtonUI;
-        // -- player name & title
+        // -- pseudo
         GameObject          m_PseudoSection;
         TMP_Text            m_Pseudo;
+        // -- account manipulation buttons
+        Button              m_PseudoChangeButton;
         // -- title
         Button              m_PlayerTitleButton;
         TMP_Text            m_PlayerTitle;
@@ -32,6 +35,7 @@ namespace Menu.MainMenu
         // ===============================================================================
         // Public Acessors
         public AvatarButtonUI           AvatarButtonUI      => m_AvatarButtonUI;
+        public Button                   PseudoChangeButton  => m_PseudoChangeButton;
         public Button                   PlayerTitleButton   => m_PlayerTitleButton;
         public List<BadgeButtonUI>      BadgeButtons        => m_BadgeButtons;
 
@@ -45,17 +49,19 @@ namespace Menu.MainMenu
             base.FindComponents();
 
             // -- avatar section
-            m_AvatarButtonUI    = Finder.FindComponent<AvatarButtonUI>(gameObject);
+            m_AvatarButtonUI        = Finder.FindComponent<AvatarButtonUI>(gameObject);
 
-            // -- gamer tag
-            m_PseudoSection   = Finder.Find(gameObject, "PseudoSection");
-            m_Pseudo            = Finder.FindComponent<TMP_Text>(m_PseudoSection, "Pseudo");
+            // -- pseudo
+            m_PseudoSection         = Finder.Find(gameObject, "PseudoSection");
+            m_Pseudo                = Finder.FindComponent<TMP_Text>(m_PseudoSection, "Pseudo");
+            // -- account manipulation buttons
+            m_PseudoChangeButton    = Finder.FindComponent<Button>(gameObject, "PseudoChangeButton");
             // -- title
-            m_PlayerTitleButton = Finder.FindComponent<Button>(gameObject, "PlayerTitleButton");
-            m_PlayerTitle       = Finder.FindComponent<TMP_Text>(gameObject, "PlayerTitle");
+            m_PlayerTitleButton     = Finder.FindComponent<Button>(gameObject, "PlayerTitleButton");
+            m_PlayerTitle           = Finder.FindComponent<TMP_Text>(gameObject, "PlayerTitle");
             // -- badges
-            m_BadgesSection     = Finder.Find(gameObject, "BadgesSection");
-            m_BadgeButtons      = Finder.FindComponents<BadgeButtonUI>(m_BadgesSection);
+            m_BadgesSection         = Finder.Find(gameObject, "BadgesSection");
+            m_BadgeButtons          = Finder.FindComponents<BadgeButtonUI>(m_BadgesSection);
         }
 
         public void Initialize(SProfileCurrentData profileCurrentData)
@@ -69,9 +75,7 @@ namespace Menu.MainMenu
             m_Pseudo.text = profileCurrentData.GamerTag.ToString();
 
             // setup Title 
-            m_PlayerTitle.text = TextHandler.Split(profileCurrentData.Title.ToString());
-            if (m_PlayerTitle.text == ETitle.None.ToString())
-                m_PlayerTitle.text = "";
+            SetTitle(profileCurrentData.Title.ToString());
 
             // setup Badges
             InitBadges(profileCurrentData.Badges.Select(badge => badge.ToString()).ToArray());
@@ -91,9 +95,7 @@ namespace Menu.MainMenu
             m_Pseudo.text = profileCurrentData.GamerTag.ToString();
 
             // setup Title 
-            m_PlayerTitle.text = TextHandler.Split(profileCurrentData.Title.ToString());
-            if (m_PlayerTitle.text == ETitle.None.ToString())
-                m_PlayerTitle.text = "";
+            SetTitle(profileCurrentData.Title.ToString());
 
             // setup Badges
             InitBadges(profileCurrentData.Badges.Select(badge => badge.ToString()).ToArray());
@@ -113,20 +115,32 @@ namespace Menu.MainMenu
         /// <param name="active"></param>
         public void SetButtonsActive(bool active)
         {
+            // account manipulation buttons
+            m_PseudoChangeButton.gameObject.SetActive(active && ! ProfileCloudData.PseudoChanged);
+            m_PseudoChangeButton.gameObject.SetActive(active && ! AuthManager.Instance.IsLoggedIn);
+
+            // account achievements buttons
             m_AvatarButtonUI.Button.interactable = active;
             m_PlayerTitleButton.interactable = active;
-
             foreach (var badgeButton in m_BadgeButtons)
                 badgeButton.Button.interactable = active;
         }
 
-        public void SetGamerTag(string gamerTag)
+        public void SetPseudo(string pseudo)
         {
-            m_Pseudo.text = ProfileCloudData.GamerTag;
+            m_Pseudo.text = pseudo;
         }
 
         public void SetTitle(string title)
         {
+            // clean title value into string
+            title = TextHandler.Split(title);
+
+            // set to empty title if title is "None"
+            if (title == ETitle.None.ToString())
+                title = "";
+
+            // display title
             m_PlayerTitle.text = TextHandler.Split(title);
         }
 
@@ -162,6 +176,13 @@ namespace Menu.MainMenu
         {
             m_BadgeButtons[index].SetSelected(false);
         }
+
+        #endregion
+
+
+        #region Listeners
+
+
 
         #endregion
 

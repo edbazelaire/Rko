@@ -46,7 +46,7 @@ namespace Save
     {
         #region Members
 
-        public new static ChestsCloudData Instance => Main.CloudSaveManager.GetCloudData(typeof(ChestsCloudData)) as ChestsCloudData;
+        public new static ChestsCloudData Instance => CloudSaveManager.Instance.GetCloudData(typeof(ChestsCloudData)) as ChestsCloudData;
 
         public const string KEY_CHESTS = "Chests";
 

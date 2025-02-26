@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Game.SpellGFXs
 {
-    public class ScythefallGFX : AnimationQueueGFX
+    public class ScythefallChargeGFX : AnimationQueueGFX
     {
         #region Members
 
@@ -127,7 +127,7 @@ namespace Game.SpellGFXs
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
             // Apply the rotation around the Z-axis
-            transform.rotation = Quaternion.Euler(0, 0, angle);
+            transform.localRotation = Quaternion.Euler(0, 0, angle);
         }
 
         #endregion

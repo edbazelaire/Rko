@@ -1,11 +1,10 @@
 ﻿using Data;
 using Game.Loaders;
 using Menu.Common.Buttons;
-using Menu.MainMenu;
 using Tools;
 using UnityEngine;
 
-namespace MainMenu.ProfileTab
+namespace Menu.MainMenu.ProfileTab
 {
     public class AchievementsTabContent : TabContent
     {

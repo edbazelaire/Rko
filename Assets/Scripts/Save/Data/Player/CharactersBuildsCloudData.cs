@@ -48,7 +48,7 @@ namespace Save
     public class CharacterBuildsCloudData : CloudData
     {
         #region Members
-        public new static CharacterBuildsCloudData Instance => Main.CloudSaveManager.GetCloudData(typeof(CharacterBuildsCloudData)) as CharacterBuildsCloudData;
+        public new static CharacterBuildsCloudData Instance => CloudSaveManager.Instance.GetCloudData(typeof(CharacterBuildsCloudData)) as CharacterBuildsCloudData;
 
         // ===============================================================================================
         // CONSTANTS

@@ -18,8 +18,10 @@ MonoBehaviour:
   Description: 
   m_SpellElements: 04000000
   m_MinorPower:
-    Description: Add a stack of [Cursed] on every auto attack
-    m_DescriptionVariables: []
+    Description: Add a stack of [Cursed] (level {0}) on every auto attack
+    m_DescriptionVariables:
+    - Name: Level
+      WithIcon: 0
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: _CurseRuneMinor
@@ -31,14 +33,17 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: 0
       Cooldown: 0
     m_BonusStats: []
   m_MajorPower:
-    Description: Add a stack of [Cursed] on every hit
-    m_DescriptionVariables: []
+    Description: Add a stack of [Cursed] (level {0}) on every hit
+    m_DescriptionVariables:
+    - Name: Level
+      WithIcon: 0
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: _CurseRuneMajor
@@ -50,6 +55,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: 0
@@ -69,6 +75,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 3
       StateEffectName: Cursed
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: 0

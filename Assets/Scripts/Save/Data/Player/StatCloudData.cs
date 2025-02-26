@@ -15,7 +15,7 @@ namespace Save
     {
         #region Members
 
-        public new static StatCloudData Instance => Main.CloudSaveManager.GetCloudData(typeof(StatCloudData)) as StatCloudData;
+        public new static StatCloudData Instance => CloudSaveManager.Instance.GetCloudData(typeof(StatCloudData)) as StatCloudData;
 
         // ===============================================================================================
         // CONSTANTS
@@ -159,7 +159,7 @@ namespace Save
             // default check
             if (Instance.m_Data[key] == null)
             {
-                Reset(key);
+                Reset(key, false);
             }
         }
 

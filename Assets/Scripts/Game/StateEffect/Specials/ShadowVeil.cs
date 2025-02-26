@@ -10,7 +10,7 @@ namespace Game.Spells
         {
             base.OnStart();
 
-            m_Controller.StateHandler.OnStateEvent += OnStateChanged;
+            m_Controller.StateHandler.StateEffectListEvent += OnStateChanged;
         }
 
         void OnStateChanged(EListEvent listEvent, string name, int nStacks, float value)

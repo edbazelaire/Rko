@@ -17,8 +17,6 @@ namespace Game.Character
         Controller                  m_Controller;
 
         NetworkVariable<int>        m_MoveX                 = new(0);
-        NetworkVariable<bool>       m_MovementCancelled     = new(false);
-        NetworkVariable<bool>       m_MovementBlocked       = new(false);
 
         // [Server Data]
         List<SForce> m_Forces = new List<SForce>();
@@ -27,10 +25,13 @@ namespace Game.Character
         bool    m_IsActive          = false;
         bool    m_CanMoveClient     = true;
         int     m_MovementInput     = 0;
+        bool    m_MovementBlocked   = false;
+        bool    m_MovementCancelled = false;
         float   m_SpeedBonus        = 0f;
         float   m_InitialSpeed;
 
         public NetworkVariable<int> MoveX => m_MoveX;
+        private NetworkVariable<Vector2> m_NetworkPosition = new NetworkVariable<Vector2>(Vector2.zero);
         public float Speed => Math.Max(0, Settings.CharacterSpeedFactor * (m_InitialSpeed + m_SpeedBonus));
         public bool IsMoving => m_MoveX.Value != 0;
 
@@ -50,10 +51,10 @@ namespace Game.Character
                 return;
 
             // CLIENT SIDE --------------------------------------------
-            if (IsOwner)
-                m_MoveX.OnValueChanged += OnMoveXChanged;
+            m_MoveX.OnValueChanged += OnMoveXChanged;
 
-            ShakeServerRpc();
+            if (IsOwner)
+                ShakeServerRpc();
         }
 
         /// <summary>
@@ -96,6 +97,29 @@ namespace Game.Character
             UpdateMovement();
         }
 
+        private void FixedUpdate()
+        {
+            // transform.position = Vector2.Lerp(transform.position, m_NetworkPosition.Value, 0.2f);
+
+            //if (!IsOwner)
+            //{
+            //    transform.position = Vector2.Lerp(transform.position, m_NetworkPosition.Value, 0.2f);
+
+            //    //float distance = Vector2.Distance(transform.position, m_NetworkPosition.Value);
+
+            //    //// If small desync, snap instantly
+            //    //if (distance < 0.05f)
+            //    //{
+            //    //    transform.position = m_NetworkPosition.Value;
+            //    //}
+            //    //// If large desync, smooth it out
+            //    //else
+            //    //{
+            //    //    transform.position = Vector2.Lerp(transform.position, m_NetworkPosition.Value, 0.4f);
+            //    //}
+            //}
+        }
+
         #endregion
 
 
@@ -104,13 +128,16 @@ namespace Game.Character
         [ServerRpc]
         public void SetMovementServerRPC(int moveX)
         {
-            SetMovement(moveX);
+            if (m_MovementCancelled)
+                m_MovementCancelled = false;
+            else 
+                SetMovement(moveX);
         }
 
         [ServerRpc]
         public void ResetCancelMovementServerRPC()
         {
-            m_MovementCancelled.Value = false;
+            m_MovementCancelled = false;
         }
 
         public void SetMovement(int moveX)
@@ -197,6 +224,11 @@ namespace Game.Character
             transform.position += new Vector3(
                 teamFactor * (m_MoveX.Value * Speed + Force) * Time.deltaTime, 
                 0f, 0f);
+
+            // ============================================================================
+            // TODO : REMOVE ?
+            //m_NetworkPosition.Value = transform.position;
+            // ============================================================================
         }
 
         /// <summary>
@@ -218,7 +250,7 @@ namespace Game.Character
 
         void SetRotation(float y)
         {
-            transform.rotation = Quaternion.Euler(0f, y, 0f);
+            transform.localRotation = Quaternion.Euler(0f, y, 0f);
         }
 
         /// <summary>
@@ -231,14 +263,6 @@ namespace Game.Character
 
             if (! m_Controller.IsPlayer)
                 return;
-
-            // if movement has been cancelled, wait for all inputs to be released
-            if (m_MovementCancelled.Value)
-            {
-                if (Input.GetKeyUp(KeyCode.Q) || Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.D))
-                    ResetCancelMovementServerRPC();
-                return;
-            }
 
             int moveX = 0;
 
@@ -264,9 +288,6 @@ namespace Game.Character
                 return;
 
             m_MovementInput = moveX;
-
-            if (m_CanMoveClient)
-                UpdateRotation(m_Controller.Team == 0 ? moveX : -moveX);
         }
 
         void UpdateRotation(int moveX)
@@ -307,6 +328,9 @@ namespace Game.Character
         /// </summary>
         public void Shake()
         {
+            if (!IsServer)
+                return;
+
             // apply small movement and rotation
             transform.position += new Vector3(0.15f, 0, 0);
             transform.rotation = Quaternion.Euler(0.1f, 0.1f, 0.1f);
@@ -318,10 +342,7 @@ namespace Game.Character
         [ServerRpc]
         public void ShakeServerRpc()
         {
-            if (transform.position.x == 0)
-            {
-                Shake();
-            }
+            Shake();
         }
 
         public void CancelMovement(bool cancel)
@@ -335,7 +356,7 @@ namespace Game.Character
             if (cancel && ! IsMoving)
                 return;
 
-            m_MovementCancelled.Value = cancel;
+            m_MovementCancelled = cancel;
             m_MoveX.Value = 0;
         }
 
@@ -345,7 +366,7 @@ namespace Game.Character
                 return;
 
             CancelMovement(block);
-            m_MovementBlocked.Value = block;
+            m_MovementBlocked = block;
         }
 
         #endregion
@@ -403,13 +424,13 @@ namespace Game.Character
                     return false;
                 }
 
-                if (m_MovementBlocked.Value)
+                if (m_MovementBlocked)
                 {
                     ErrorHandler.Log("CanMove - FALSE : Movement is blocked", ELogTag.Movement);
                     return false;
                 }
 
-                if (m_MovementCancelled.Value)
+                if (m_MovementCancelled)
                 {
                     ErrorHandler.Log("CanMove - FALSE : Movement is cancelled", ELogTag.Movement);
                     return false;

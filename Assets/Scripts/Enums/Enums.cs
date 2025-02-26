@@ -38,6 +38,8 @@
         // -- config popup
         SettingsPopUp,
         MessageriePopUp,
+        PromoCodePopUp,
+        LoginPopUp,
     }
 
     public enum EEnv
@@ -1128,5 +1130,13 @@
         None,
         White,
         Black,
+    }
+
+    public enum EAuthServices
+    {
+        Anonymous,
+        UnityPlayerAccount,
+        Apple,
+        Google,
     }
 }

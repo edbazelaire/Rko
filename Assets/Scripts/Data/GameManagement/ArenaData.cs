@@ -311,7 +311,7 @@ namespace Data.GameManagement
                 gamerTag: CurrentStageData.Boss.ToString(),
                 avatar: EAvatar.None.ToString(),
                 border: GetBorder().ToString(),
-                title: ETitle.None.ToString()
+                title: ""
             );
         }
 

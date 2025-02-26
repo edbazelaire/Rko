@@ -3,12 +3,16 @@ using Assets.Scripts.Managers.Sound;
 using Data;
 using Enums;
 using Game.Loaders;
+using Game.NetworkStructures;
 using Game.Spells.SpecialEffects;
 using MyBox;
+using NUnit.Framework.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using Tools;
+using Unity.Collections;
+using Unity.Mathematics;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -39,6 +43,7 @@ namespace Game.Spells
         protected NetworkObject     m_NetworkObjectComponent;
         protected GameObject        m_GraphicsContainer;
         protected GameObject        m_Graphics;
+        protected int               m_Team;
 
         /// <summary> in case of persistance of graphisme, allows to stop spell behavior </summary>
         protected bool              m_IsOver = false;   
@@ -59,6 +64,7 @@ namespace Game.Spells
         public Controller   Controller  => m_Controller;
         public Vector3      Target      => m_Target;
         public GameObject   Graphics    => m_Graphics;
+        public int          Team        => m_Team;
 
         public bool IsAutoAttack => m_SpellData.Name == m_Controller.SpellHandler.AutoAttack.ToString();
 
@@ -80,6 +86,9 @@ namespace Game.Spells
         {
             base.OnNetworkDespawn();
 
+            // make sure is over is called
+            m_IsOver = true;
+
             // call an end on client side (this method happens localy so no need to get throught RPC)
             CallSpellEvent(ESpellEvent.OnEnd);
 
@@ -91,6 +100,16 @@ namespace Game.Spells
 
             // deactivate game object (to make sure it happens after network despawn)
             gameObject.SetActive(false);
+        }
+
+        public override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            if (GameManager.IsGameOver)
+                return;
+
+            OnNetworkDespawn();
         }
 
         protected virtual void SetSpellData(string spellName, int level, string parent = null)
@@ -109,6 +128,7 @@ namespace Game.Spells
         public virtual void Initialize(ulong clientId, Vector3 target, string spellName, int level, string parent)
         {
             m_Controller = GameManager.Instance.GetPlayer(clientId);
+            m_Team = m_Controller.Team;
             SetSpellData(spellName, level, parent);
             m_HittedPlayerId    = new List<ulong>();
 
@@ -156,8 +176,6 @@ namespace Game.Spells
 
             // terminate spell 
             Terminate();
-
-            ErrorHandler.Log("End of spell : " + m_SpellData, ELogTag.Spells);
         }
 
         /// <summary>
@@ -208,11 +226,11 @@ namespace Game.Spells
         /// <param name="target"></param>
         /// <param name="spellType"></param>
         [ClientRpc]
-        public void InitializeClientRpc(ulong clientId, Vector3 target, string spellName, int level)
+        public void InitializeClientRpc(ulong clientId, Vector2Short targetPos, FixedString32Bytes spellName, byte level)
         {
             if (IsHost)
                 return;
-            Initialize(clientId, target, spellName, level, "");
+            Initialize(clientId, targetPos, spellName.ToString(), level, "");
         }
 
         #endregion
@@ -622,15 +640,24 @@ namespace Game.Spells
         /// <param name="targetController"></param>
         protected virtual void CallSpellEvent(ESpellEvent spellEvent, Controller targetController = null)
         {
+            OnSpellEvent?.Invoke(spellEvent);
+
+            // =================================================================================================
+            // TODO : remove 
+            if (m_SpellData.Name == "_SnowStorm" && spellEvent == ESpellEvent.OnSpawn)
+                Debug.LogWarning(m_SpellData.Name + " CallSpellEvent : " + spellEvent);
+            // TODO : remove 
+            // =================================================================================================
+
             if (gameObject == null || gameObject.IsDestroyed())
             {
-                ErrorHandler.Warning("Unable to display graphism for spell event " + spellEvent + " : GameObject is destroyed");
+                ErrorHandler.Error("Unable to display graphism for spell event " + spellEvent + " : GameObject is destroyed");
                 return;
             }
 
             if (m_SpellData == null)
             {
-                ErrorHandler.Warning("Unable to display graphism for spell event " + spellEvent + " : SpellData is null");
+                ErrorHandler.Error("Unable to display graphism for spell event " + spellEvent + " : SpellData is null");
                 return;
             }
 
@@ -641,8 +668,6 @@ namespace Game.Spells
 
                 spawnPrefab.Spawn(m_Controller, m_SpellData, this, null, targetController, transform.position, m_Target);
             }
-
-            OnSpellEvent?.Invoke(spellEvent);
         }
 
         #endregion

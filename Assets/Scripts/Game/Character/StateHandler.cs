@@ -6,8 +6,10 @@ using System;
 using System.Collections.Generic;
 using Tools;
 using Unity.Collections;
+using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Game.Character
 {
@@ -16,9 +18,15 @@ namespace Game.Character
         #region Members
 
         // ==============================================================================================
+        // EVENTS
+        // used to signal when a state is added / removed
+        public event Action<EListEvent, string, int, float> StateEffectListEvent;
+        // used to signal client GFX about spell events
+        public event Action<ESpellEvent, string> StateEffectEvent;
+
+        // ==============================================================================================
         // PRIVATE ACCESSORS
         // -- Network Variables
-        MNetworkList<FixedString64Bytes>    m_StateEffectList;
         MNetworkList<FixedString64Bytes>    m_HoldingStateEffects;
         NetworkVariable<float>              m_SpeedBonus = new(1f);
         NetworkVariable<EAnimation>         m_AnimationState = new(EAnimation.None);
@@ -31,7 +39,8 @@ namespace Game.Character
 
         // ==============================================================================================
         // PUBLIC ACCESSORS
-        public NetworkList<FixedString64Bytes> StateEffectList => m_StateEffectList;
+        public CharacterData CharacterData => m_CharacterData;
+        public List<StateEffect> StateEffects => m_StateEffects;
         public NetworkList<FixedString64Bytes> HoldingStateEffects => m_HoldingStateEffects;
         public bool IsStunned => 
             ! IsUncontrollable
@@ -75,13 +84,6 @@ namespace Game.Character
         public int RemainingShield                          => m_RemainingShield;
         public NetworkVariable<EAnimation> AnimationState   => m_AnimationState;
 
-        // ==============================================================================================
-        // EVENTS
-        // used to signal when a state is added / removed
-        public event Action<EListEvent, string, int, float> OnStateEvent;
-        // used to signal client GFX about spell events
-        public event Action<ESpellEvent, string>            OnStateEffectEvent;
-
         #endregion
 
 
@@ -90,7 +92,6 @@ namespace Game.Character
         private void Awake()
         {
             // init network lists
-            m_StateEffectList       = new MNetworkList<FixedString64Bytes>();
             m_HoldingStateEffects   = new MNetworkList<FixedString64Bytes>();
 
             // init components 
@@ -141,23 +142,28 @@ namespace Game.Character
         #region Client RPC
 
         [ClientRpc]
-        public void OnStateEventClientRPC(EListEvent listEvent, string stateEffect, int stacks, float duration)
+        public void CallSpellEventClientRPC(SpellEventData spellData)
         {
-            if (GameManager.IsGameOver)
-                return;
+            // Call UI event
+            CallOnStateEventUI(spellData.SpellEvent, spellData.StateEffectName.ToString(), spellData.Stacks, spellData.Duration);
 
-            OnStateEvent?.Invoke(listEvent, stateEffect, stacks, duration);
-
-            if (listEvent == EListEvent.Add)
-                SpellLoader.GetStateEffect(stateEffect).PlaySoundEffect();
+            // Call SpellGFX event
+            CallOnStateEffectEvent(spellData.SpellEvent, spellData.StateEffectName.ToString(), spellData.CasterId);
         }
 
-        [ClientRpc]
-        public void CallSpellEventClientRPC(ESpellEvent spellEvent, string stateEffectName, ulong casterId)
+        void CallOnStateEventUI(ESpellEvent spellEvent, string stateEffectName, int stacks, float duration)
+        {
+            if (spellEvent == ESpellEvent.OnSpawn)
+                StateEffectListEvent?.Invoke(EListEvent.Add, stateEffectName, stacks, duration);
+            else if (spellEvent == ESpellEvent.OnEnd)
+                StateEffectListEvent?.Invoke(EListEvent.Remove, stateEffectName, stacks, duration);
+        }
+
+        void CallOnStateEffectEvent(ESpellEvent spellEvent, string stateEffectName, ulong casterId)
         {
             ErrorHandler.Log(stateEffectName + " " + spellEvent, ELogTag.StateEffectGFX);
 
-            OnStateEffectEvent?.Invoke(spellEvent, stateEffectName);
+            StateEffectEvent?.Invoke(spellEvent, stateEffectName);
 
             StateEffect stateEffect = SpellLoader.GetStateEffect(stateEffectName);
 
@@ -178,21 +184,12 @@ namespace Game.Character
 
         #region Public Accessors
 
-        public bool HasState(string state)
+        public bool HasState(string stateEffectName)
         {
             if (GameManager.IsGameOver)
                 return false;
             
-            try
-            {
-                return m_StateEffectList.Contains(state);
-            } 
-            catch (Exception e)
-            {
-                ErrorHandler.Error(e.Message);
-                m_StateEffectList = new MNetworkList<FixedString64Bytes>();
-                return false;
-            }
+            return m_StateEffects.FindIndex(stateEffect => stateEffect.StateEffectName == stateEffectName) != -1;
         }
 
         public bool HasState(EStateEffect state)
@@ -333,7 +330,7 @@ namespace Game.Character
                     continue;
 
                 effect.Refresh(stacks, level);
-                OnStateEventClientRPC(EListEvent.Add, effect.StateEffectName, effect.Stacks, effect.GetFloat(EStateEffectProperty.Duration));
+                //OnStateEventClientRPC(EListEvent.Add, effect.StateEffectName, effect.Stacks, effect.GetFloat(EStateEffectProperty.Duration));
                 RecalculateBonus();
                 return;
             }
@@ -414,10 +411,6 @@ namespace Game.Character
 
             // add the state effect to the list of active effects
             m_StateEffects.Add(stateEffect);
-            m_StateEffectList.Add(stateEffect.StateEffectName);
-
-            // send event to clients (for UI update)
-            OnStateEventClientRPC(EListEvent.Add, stateEffect.StateEffectName, stateEffect.Stacks, stateEffect.GetFloat(EStateEffectProperty.Duration));
 
             // recheck bonus potentially provided by this new stateEffect
             RecalculateBonus();
@@ -449,20 +442,20 @@ namespace Game.Character
         /// <summary>
         /// Remove a state effect from the character
         /// </summary>
-        /// <param name="state"></param>
-        public int RemoveStateEffect(string state, bool consume = false, int maxStacks = 0)
+        /// <param name="stateEffect"></param>
+        public int RemoveStateEffect(string stateEffect, bool consume = false, int maxStacks = 0)
         {
             if (!IsServer)
                 return 0;
 
-            if (state == "Invulnerable")
+            if (stateEffect == "Invulnerable")
                 Debug.LogWarning("  ++ REMOVING STATE : Invulnerable");
 
             // remove effect type from list of active effects
-            int index = m_StateEffectList.IndexOf(state);
+            int index = GetIndexOf(stateEffect);
             if (index == -1)
             {
-                ErrorHandler.Error($"Unable to find state {state} in list");
+                ErrorHandler.Error($"Unable to find state {stateEffect} in list");
                 return 0;
             }
 
@@ -500,12 +493,8 @@ namespace Game.Character
                 m_StateEffects[index].OnConsumed();
             }
 
-            // send event to clients (for UI update)
-            OnStateEventClientRPC(EListEvent.Remove, m_StateEffects[index].StateEffectName, m_StateEffects[index].Stacks, 0f);
-
             // remove effect from list on Server side
             Destroy(m_StateEffects[index]);
-            m_StateEffectList.RemoveAt(index);
             m_StateEffects.RemoveAt(index);
 
             // recalculate bonuses givent by state effects
@@ -531,6 +520,11 @@ namespace Game.Character
 
                 Debug.LogWarning("Remove StateEffect " + stateEffect);
             }
+        }
+
+        public int GetIndexOf(string stateEffectName)
+        {
+            return m_StateEffects.FindIndex(stateEffect => stateEffect.StateEffectName == stateEffectName);
         }
 
         public int GetStacks(EStateEffect state)
@@ -708,5 +702,37 @@ namespace Game.Character
 
         #endregion
 
+    }
+
+    [Serializable]
+    public struct SpellEventData : INetworkSerializable
+    {
+        public ESpellEvent          SpellEvent;
+        public FixedString64Bytes   StateEffectName;
+        public ulong                CasterId;
+        public byte                 Stacks;
+        public half                 Duration;
+
+        // Constructor with optional parameters
+        public SpellEventData(ESpellEvent spellEvent, string stateEffectName, ulong casterId, int stacks = 1, float duration = -1f)
+        {
+            SpellEvent      = spellEvent;
+            StateEffectName = stateEffectName;
+            CasterId        = casterId;
+            Stacks          = (byte)stacks;
+            Duration        = (half)duration;
+        }
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref SpellEvent);
+            serializer.SerializeValue(ref StateEffectName);
+            serializer.SerializeValue(ref CasterId);
+            serializer.SerializeValue(ref Stacks);
+
+            float tempDuration = (float)Duration;
+            serializer.SerializeValue(ref tempDuration);
+            Duration = (half)tempDuration;
+        }
     }
 }

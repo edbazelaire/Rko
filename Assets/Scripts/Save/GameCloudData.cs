@@ -1,13 +1,8 @@
 ﻿using Assets;
-using Enums;
-using Managers;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Services.Authentication;
-using Unity.Services.CloudSave;
 using Unity.Services.CloudSave.Models;
-using UnityEngine;
 
 namespace Save
 {
@@ -23,7 +18,7 @@ namespace Save
     {
         #region Members
 
-        public new static GameCloudData Instance => Main.CloudSaveManager.GameCloudData;
+        public new static GameCloudData Instance => CloudSaveManager.Instance.GameCloudData;
 
         // ===============================================================================================
         // CONSTANTS
