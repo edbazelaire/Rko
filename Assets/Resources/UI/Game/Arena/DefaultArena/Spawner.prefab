@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &320693353550750680
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6421286701752872066}
+  - component: {fileID: 4108881496787906812}
+  m_Layer: 5
+  m_Name: Spawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6421286701752872066
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 320693353550750680}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 2.0196533, y: 0}
+  m_SizeDelta: {x: 4.0392, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &4108881496787906812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 320693353550750680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98a88ac89fc552e4aa165cdbf81e21c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CloudObject: {fileID: 6677778661905671980, guid: aa800078ce912cc43a91abc0b3eb6522, type: 3}
+  m_NLayers: 7
+  m_CloudSpeed: 0.1
+  m_YPosition:
+    Min: 0
+    Max: 5
+  m_CloudSize:
+    Min: 0.08
+    Max: 0.12
+  m_ProcInterval:
+    Min: 5
+    Max: 20
+  m_Clouds:
+  - {fileID: 3472422298390757109, guid: a4cdb6e02cbd0644585c72b233b0c326, type: 3}
+  - {fileID: 7573003476096068098, guid: a4cdb6e02cbd0644585c72b233b0c326, type: 3}
+  - {fileID: -2252448253012411626, guid: a4cdb6e02cbd0644585c72b233b0c326, type: 3}
+  - {fileID: -621712412509912360, guid: a4cdb6e02cbd0644585c72b233b0c326, type: 3}
+  - {fileID: -1017163360237076983, guid: a4cdb6e02cbd0644585c72b233b0c326, type: 3}
+  - {fileID: -8704274816812558081, guid: a4cdb6e02cbd0644585c72b233b0c326, type: 3}
+  - {fileID: 169785227513439532, guid: a4cdb6e02cbd0644585c72b233b0c326, type: 3}
+  - {fileID: 4230624520254030009, guid: a4cdb6e02cbd0644585c72b233b0c326, type: 3}

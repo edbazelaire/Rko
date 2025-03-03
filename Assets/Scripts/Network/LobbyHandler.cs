@@ -56,14 +56,14 @@ namespace Network
         }
 
         // Error management
-        const string LOBBY_TIME_WRAPPER_ID  = "Lobby";
-        const float LOBBY_ERROR_TIMER       = 15f;
+        const string LOBBY_TIME_WRAPPER_ID      = "Lobby";
+        const float LOBBY_ERROR_TIMER           = 15f;
 
         // Update & Heartbeat management
-        const string    KEY_GAME_MODE          = "GameMode";
-        const string    KEY_REGION             = "Region";
-        const string    KEY_SUB_REGION         = "SubRegion";
-        const string    KEY_RELAY_CODE         = "RelayCode";
+        const string    KEY_GAME_MODE           = "GameMode";
+        const string    KEY_REGION              = "Region";
+        const string    KEY_SUB_REGION          = "SubRegion";
+        const string    KEY_RELAY_CODE          = "RelayCode";
         const float     HEARTBEAT_TIMER         = 15f;
         const float     UPDATE_LOBBY_TIMER      = 1.5f;
 
@@ -74,12 +74,13 @@ namespace Network
         private Lobby       m_JoinedLobby;
         private string      m_RelayCode;
         private bool        m_CancelRetry;
+        private bool        m_IsTuto;
 
-        private EGameMode m_GameMode                = EGameMode.Arena;
-        private EArenaType m_ArenaType              = EArenaType.FrostArena;
+        private EGameMode m_GameMode            = EGameMode.Arena;
+        private EArenaType m_ArenaType          = EArenaType.FrostArena;
 
-        private float m_HeartbeatTimer    = 0.0f;
-        private float m_UpdateLobbyTimer  = 0.0f;
+        private float m_HeartbeatTimer          = 0.0f;
+        private float m_UpdateLobbyTimer        = 0.0f;
 
         bool m_RequestInProgress = false;
         private Coroutine m_CurrentCoroutine;
@@ -89,10 +90,12 @@ namespace Network
 
         public EGameMode        GameMode            { get => m_GameMode; set => m_GameMode = value; }
         public EArenaType       ArenaType           { get => m_ArenaType; set => m_ArenaType = value; }
-        public int              NPlayers    => m_JoinedLobby != null ? m_JoinedLobby.Players.Count : 0;
-        public int              MaxPlayers  => m_MaxPlayers;
-        public ELobbyState      State       => m_State;
-        public bool             IsActive    => m_State != ELobbyState.Inactive;
+        public string           RelayCode           => m_RelayCode;
+        public int              NPlayers            => m_JoinedLobby != null ? m_JoinedLobby.Players.Count : 0;
+        public int              MaxPlayers          => m_MaxPlayers;
+        public ELobbyState      State               => m_State;
+        public bool             IsActive            => m_State != ELobbyState.Inactive;
+        public bool             IsTuto              { get => m_IsTuto; set => m_IsTuto = value; }
 
         #endregion
 
@@ -231,6 +234,16 @@ namespace Network
 
                     case ELobbyState.SendingPlayerData:
                         var playerData = StaticPlayerData.ToStruct();
+
+                        // TUTO : overwrite data
+                        if (IsTuto)
+                        {
+                            playerData.Character = CharacterBuildsCloudData.DEFAULT_CHARACTER.ToString();
+                            playerData.Spells = CharacterBuildsCloudData.DEFAULT_BUILD;
+                            playerData.Runes = new ERune[3];
+                        }
+                        
+                        // ADD ARENA POWER UPS
                         if (GameMode == EGameMode.Arena)
                             playerData.SetPowerUps(ProgressionCloudData.CurrentArena.GetActivePowerUps());
 
@@ -611,7 +624,7 @@ namespace Network
                 // ================================================================================================
                 // TRAINING MODE : based on provided one in the Training tab
                 case EGameMode.Training:
-                    if (Main.ForceIsNewPlayer || ! ProfileCloudData.TutoDone)
+                    if (IsTuto)
                     {
                         return new SPlayerData(
                             ECharacter.Kahnan.ToString(),

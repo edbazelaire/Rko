@@ -72,10 +72,23 @@ namespace Assets.Scripts.Game
             }
         }
 
+        /// <summary>
+        /// Display the queued events
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
         private IEnumerator DisplayQueue(ulong clientId)
         {
             while (m_HitQueues.ContainsKey(clientId) && m_HitQueues[clientId].Count > 0)
             {
+                // GAME OVER : stop this coroutine
+                if (GameManager.IsGameOver)
+                {
+                    Destroy(gameObject);
+                    yield break;
+                }
+
+                // display last data
                 HitDisplayData data = m_HitQueues[clientId].Dequeue();
                 ShowDamage(clientId, data);
 
@@ -86,6 +99,11 @@ namespace Assets.Scripts.Game
             m_ActiveDisplays.Remove(clientId);
         }
 
+        /// <summary>
+        /// Display Damages text on the target
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <param name="data"></param>
         private void ShowDamage(ulong clientId, HitDisplayData data)
         {
             var player = GameManager.Instance.GetPlayer(clientId);

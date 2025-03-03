@@ -330,7 +330,6 @@ namespace Game.Character
                     continue;
 
                 effect.Refresh(stacks, level);
-                //OnStateEventClientRPC(EListEvent.Add, effect.StateEffectName, effect.Stacks, effect.GetFloat(EStateEffectProperty.Duration));
                 RecalculateBonus();
                 return;
             }

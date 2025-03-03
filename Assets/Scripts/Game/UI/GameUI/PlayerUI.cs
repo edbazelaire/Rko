@@ -39,6 +39,10 @@ namespace Game.UI
 
         Dictionary<string, StateEffectUI> m_StateEffectsUI;
 
+        public PlayerBarUI HealthBar => m_HealthBar;
+        public PlayerBarUI ShieldBar => m_ShieldBar;
+        public PlayerBarUI EnergyBar => m_EnergyBar;
+
         #region Init & End
 
         public void Initialize(ulong clientId)

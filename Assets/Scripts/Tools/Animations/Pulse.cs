@@ -44,6 +44,8 @@ namespace Tools.Animations
 
         protected override IEnumerator AnimationFrame()
         {
+            yield return base.AnimationFrame();
+
             float[] stages = new float[] { m_MaxSize, 1f, m_MinSize, 1f };
             // divide pulse stage duration by number of stages
             float pulseDuration = m_PulseDuration / stages.Length;
@@ -68,7 +70,6 @@ namespace Tools.Animations
 
                         // update timer
                         pulseTimer += Time.deltaTime;
-                        m_Timer += Time.deltaTime;
                         yield return null;
                     }
 
@@ -82,7 +83,6 @@ namespace Tools.Animations
             while (pauseTimer > 0f)
             {
                 pauseTimer -= Time.deltaTime;
-                m_Timer += Time.deltaTime;
                 yield return null;
             }
         }

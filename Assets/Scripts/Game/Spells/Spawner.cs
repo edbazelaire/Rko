@@ -240,7 +240,7 @@ namespace Game.Spells
                 if (i > m_Spawns.Count)
                     return;
 
-                m_Spawns[i].OnDestroyedEvent -= () => { OnSpawnDestroyed(m_Spawns[i]); };
+                m_Spawns[i].OnDestroyedEvent = null;
             }
         }
 

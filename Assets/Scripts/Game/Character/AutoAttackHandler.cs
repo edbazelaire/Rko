@@ -33,7 +33,7 @@ namespace Game.Character
                 StopAllCoroutines();
 
                 // deactivate but is currently casting autoattack
-                if (!m_Controller.SpellHandler.IsCasting && m_Controller.SpellHandler.SelectedSpell == m_Controller.SpellHandler.AutoAttack)
+                if (m_Controller.SpellHandler.IsCasting && m_Controller.SpellHandler.SelectedSpell == m_Controller.SpellHandler.AutoAttack)
                     m_Controller.SpellHandler.CancelCast();
             }
             else

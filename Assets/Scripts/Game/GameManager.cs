@@ -95,7 +95,6 @@ namespace Game
         /// <summary> game is over </summary>
         public static bool IsGameOver => s_Instance == null || Instance.m_State.Value >= EGameState.GameOver || ErrorHandler.IsExiting;
 
-
         #endregion
 
 
@@ -143,7 +142,7 @@ namespace Game
 
             m_Controllers               = new Dictionary<ulong, Controller>();
             m_InitOnClientSide          = false;
-            m_IsTuto                    = Main.ForceIsNewPlayer || !ProfileCloudData.TutoDone;
+            m_IsTuto                    = LobbyHandler.Instance.IsTuto;
 
             // instantiate listeners
             m_ProgressGameStart.OnValueChanged  += OnProgressGameStartChanged;
@@ -482,7 +481,7 @@ namespace Game
 
             // activate TUTO
             if (IsServer)
-                TutoGameManager.Instance.Activate(m_Controllers[0], m_Controllers[BOT_CLIENT_ID]);
+                TutoGameManager.Instance.Activate(m_Controllers[0], m_Controllers[BOT_CLIENT_ID + 1]);
         }
 
         IEnumerator PlayIntro()
@@ -699,7 +698,11 @@ namespace Game
         [ClientRpc]
         void PlayStateMusicClientRPC(EGameState state)
         {
-            SoundFXManager.PlayStateMusic(state);
+            string context = "";
+            if (LobbyHandler.Instance.GameMode == EGameMode.Arena && ProgressionCloudData.CurrentArena.IsBoss())
+                context = "Boss";
+
+            SoundFXManager.PlayGameStateMusic(state, LobbyHandler.Instance.GameMode, context);
         }
 
         #endregion
@@ -963,8 +966,6 @@ namespace Game
 
         void OnPlayerDied()
         {
-            Debug.LogWarning("OnPlayerDied() EVENT");
-
             // END of the game is handled by the Tutorial Manager
             if (m_IsTuto)
                 return;

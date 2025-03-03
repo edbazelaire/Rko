@@ -33,6 +33,9 @@ namespace Assets.Scripts.Game
 
         public static GameObject Pool(GameObject prefab, Transform parent)
         {
+            if (prefab == null)
+                prefab = new GameObject("Default_GameObject");
+
             string key = prefab.name;
 
             GameObject obj;
@@ -83,27 +86,31 @@ namespace Assets.Scripts.Game
 
         public static void ReturnObject(GameObject obj)
         {
-            string key = obj.name;
+            string key = obj.name.Replace("(Clone)", "");
 
-            if (!Instance.m_GameObjectPool.ContainsKey(key))
+            if (! Instance.m_GameObjectPool.ContainsKey(key))
             {
                 Instance.m_GameObjectPool[key] = new Queue<GameObject>();
             }
 
-            obj.gameObject.SetActive(false);
+            obj.SetActive(false);
             Instance.m_GameObjectPool[key].Enqueue(obj);
         }
 
         public static void ReturnObject(NetworkObject obj)
         {
-            string key = obj.name;
+            string key = obj.name.Replace("(Clone)", "");
 
             if (! Instance.m_NetworkObjectPool.ContainsKey(key))
             {
                 Instance.m_NetworkObjectPool[key] = new Queue<NetworkObject>();
             }
 
-            obj.Despawn(false); // Do not destroy the object
+            // despawn and deactivate object
+            obj.Despawn(false);                 
+            obj.gameObject.SetActive(false);
+
+            // add object at the end of the queue
             Instance.m_NetworkObjectPool[key].Enqueue(obj);
         }
 

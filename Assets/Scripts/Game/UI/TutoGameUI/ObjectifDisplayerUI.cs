@@ -12,6 +12,7 @@ namespace Game.UI
         #region Members
 
         TMP_Text m_Objectif;
+        TMP_Text m_SubText;
 
         // ===============================================================================
         // Data
@@ -28,6 +29,7 @@ namespace Game.UI
             base.FindComponents();
 
             m_Objectif = Finder.FindComponent<TMP_Text>(gameObject, "Objectif");
+            m_SubText = Finder.FindComponent<TMP_Text>(gameObject, "SubText");
         }
 
         public override void Initialize()
@@ -52,10 +54,11 @@ namespace Game.UI
             gameObject.SetActive(activate);
         }
 
-        public void SetObjectif(string name, int value)
+        public void SetObjectif(string name, int value, string subtext = "")
         {
             m_ObjectifName = name;
             m_ObjectifValue = value;
+            m_SubText.text = subtext;
 
             UpdateObjectif(0);
             Activate(true);

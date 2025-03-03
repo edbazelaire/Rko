@@ -80,6 +80,10 @@ namespace Game.Spells
                 m_GraphicsContainer = new GameObject(c_GraphicsContainer);
 
             m_NetworkObjectComponent = Finder.FindComponent<NetworkObject>(gameObject);
+
+            m_BaseSpellData = null;
+            m_IsOver = false;
+            UIHelper.CleanContent(m_GraphicsContainer);
         }
 
         public override void OnNetworkDespawn()
@@ -281,7 +285,7 @@ namespace Game.Spells
                     SoundFXManager.AdjustVolume(ref audioSource);
             }
 
-            transform.localScale = new Vector3(m_SpellData.Size, m_SpellData.Size, m_SpellData.Size);
+            transform.localScale = Vector3.one * m_SpellData.Size;
 
             if (m_SpellData.PermanantSoundFX != null)
                 SoundFXManager.PlaySoundFXClip(m_SpellData.PermanantSoundFX, transform);
@@ -641,13 +645,6 @@ namespace Game.Spells
         protected virtual void CallSpellEvent(ESpellEvent spellEvent, Controller targetController = null)
         {
             OnSpellEvent?.Invoke(spellEvent);
-
-            // =================================================================================================
-            // TODO : remove 
-            if (m_SpellData.Name == "_SnowStorm" && spellEvent == ESpellEvent.OnSpawn)
-                Debug.LogWarning(m_SpellData.Name + " CallSpellEvent : " + spellEvent);
-            // TODO : remove 
-            // =================================================================================================
 
             if (gameObject == null || gameObject.IsDestroyed())
             {

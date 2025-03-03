@@ -772,10 +772,10 @@
         SpellHandler        = 105,      // casting error/success messages, cancel, all stages of spell casting, spell ending, ...
         Animation           = 106,      // animations playing
         StateEffects        = 107,      // state effects changes
-        SpellGFX            = 107,      // spell graphics playing
-        StateEffectGFX      = 108,      // spell graphics playing
-        BonusStats          = 109,      // track increased statistiques
-        Movement            = 110,      // track increased statistiques
+        SpellGFX            = 108,      // spell graphics playing
+        StateEffectGFX      = 109,      // spell graphics playing
+        BonusStats          = 110,      // track increased statistiques
+        Movement            = 111,      // track increased statistiques
 
         // AI
         AI                  = 200,
@@ -942,6 +942,7 @@
         Rune            = 5,
         Spells          = 6,
         SpellLevels     = 7,
+        GameId          = 8,
 
         // InGame data
         Spell           = 50,

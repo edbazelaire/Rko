@@ -80,6 +80,11 @@ namespace Game.Character
             }
 
             m_IsActive = activate;
+
+            if (IsServer)
+            {
+                m_MoveX.Value = 0;
+            }
         }
 
 

@@ -1,9 +1,5 @@
-﻿using Assets;
-using MyBox;
-using System;
+﻿using System;
 using System.Collections;
-using System.Threading;
-using System.Xml.Linq;
 using UnityEngine;
 
 namespace Tools.Animations
@@ -14,9 +10,9 @@ namespace Tools.Animations
 
         // ========================================================================================================
         // Scriptable Properties
-        [SerializeField] protected bool     m_IsActivated = true;
-        [SerializeField] protected float    m_Duration = -1f;
-        [SerializeField] AnimationCurve     m_AnimationCurve;
+        [SerializeField] protected bool             m_IsActivated = true;
+        [SerializeField] protected float            m_Duration = -1f;
+        [SerializeField] protected AnimationCurve   m_AnimationCurve;
 
         // ========================================================================================================
         // Actions
@@ -67,7 +63,7 @@ namespace Tools.Animations
             Activate();
         }
 
-        public void Initialize(string id = "", float duration = -1f)
+        public virtual void Initialize(string id = "", float duration = -1f)
         {
             m_IsOver    = false;
             m_Id        = id == "" ? AnimationHandler.GenerateRandomId() : id;

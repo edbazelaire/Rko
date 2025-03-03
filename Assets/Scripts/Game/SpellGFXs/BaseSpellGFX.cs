@@ -52,12 +52,15 @@ namespace Game.SpellGFXs
 
         public virtual void Initialize(Controller controller, SpellData spellData, Spell spell, string stateEffectName, SPrefabSpawn<TEnum> prefabSpawn, float? forcedDuration = null)
         {
+            ErrorHandler.Log("Initialize SPELL GFX : " + this.name, ELogTag.SpellGFX);
+
             m_Controller        = controller;
             m_SpellData         = spellData;
             m_Spell             = spell;
             m_StateEffectName   = stateEffectName;
             m_PrefabSpawn       = prefabSpawn;
             m_BodyPart          = prefabSpawn.BodyPart;
+            m_EndStarted        = false;
 
             if (forcedDuration != null) 
                 m_Duration = forcedDuration.Value;
@@ -69,7 +72,7 @@ namespace Game.SpellGFXs
             FindComponents();
 
             // set Parent & Position based on provided data
-            transform.localScale *= prefabSpawn.Size > 0 ? prefabSpawn.Size : (spellData != null ? spellData.Size : 1);
+            transform.localScale = Vector3.one * (prefabSpawn.Size > 0 ? prefabSpawn.Size : (spellData != null ? spellData.Size : 1));
 
             // adjust rotation depending on team
             transform.rotation = Quaternion.Euler(0f, controller.Team == 0 ? 0f : 180f, 0f); 
@@ -137,7 +140,7 @@ namespace Game.SpellGFXs
             if (m_EndStarted)
                 return;
 
-            ErrorHandler.Log("ENDED SPELL GFX : " + this.name, ELogTag.SpellGFX);
+            ErrorHandler.Log("End() SPELL GFX : " + this.name, ELogTag.SpellGFX);
 
             // call that end has already started
             m_EndStarted = true;
@@ -161,6 +164,8 @@ namespace Game.SpellGFXs
         /// </summary>
         protected virtual void ForceEnd()
         {
+            ErrorHandler.Log("ForceEnd() SPELL GFX : " + this.name, ELogTag.SpellGFX);
+
             // remove material applied
             RemoveMaterial();
 
@@ -496,6 +501,9 @@ namespace Game.SpellGFXs
 
         protected virtual void RegisterListeners()
         {
+            // unregister potential previous listeners
+            UnRegisterListeners();
+
             GameManager.Instance.State.OnValueChanged += OnGameStateChanged;
         }
 

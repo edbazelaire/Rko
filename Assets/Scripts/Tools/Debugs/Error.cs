@@ -3,6 +3,7 @@ using Enums;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using UnityEngine.UIElements.Experimental;
 
 namespace Tools
@@ -94,7 +95,14 @@ namespace Tools
 
         private string FormatErrorMessage(string message, EError errorType, int frame)
         {
-            return $"{m_Trace[0]} : {message}";
+            string pattern = @"(?:\w+\.)*(\w+)(?:`[\d\[\], ]+)?\.(\w+)\(\)";
+            Match match = Regex.Match(m_Trace[0], pattern);
+            if (match.Success)
+            {
+                return $"{match.Groups[1].Value}.{match.Groups[2].Value}(): {message}";
+            } 
+           
+            return message;
         }
 
         StackTrace GetStackTrace(int frame)

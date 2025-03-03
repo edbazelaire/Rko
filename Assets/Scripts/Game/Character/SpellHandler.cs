@@ -713,7 +713,7 @@ namespace Game.Character
             ResetCastProperties();
 
             // call PreSpellEvent
-            CallSpellEvent(m_SelectedSpell.ToString(), ESpellEvent.OnEnd);
+            CallSpellEvent(m_SelectedSpell.ToString(), ESpellEvent.OnCancelCast);
         }
 
         public void OnCastCompleted()

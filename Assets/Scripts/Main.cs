@@ -648,6 +648,8 @@ namespace Assets
         async void LoadTutorial()
         {
             LobbyHandler.Instance.GameMode = EGameMode.Training;
+            LobbyHandler.Instance.IsTuto = true;
+
             int i = 0;
             do
             {

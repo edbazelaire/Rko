@@ -2,6 +2,7 @@
 using Inventory;
 using Menu.Common.Displayers;
 using System;
+using TMPro;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,6 +19,7 @@ namespace Menu.PopUps
         protected SRewardsData      m_RewardsData;
 
         // GameObjects & Components
+        protected TMP_Text          m_ButtonsErrorMessage;
         protected Button            m_BuyButton;
         protected PriceDisplay      m_BuyButtonDisplay;
 
@@ -33,6 +35,7 @@ namespace Menu.PopUps
         {
             base.FindComponents();
 
+            m_ButtonsErrorMessage = Finder.FindComponent<TMP_Text>(gameObject, "ButtonsErrorMessage");
             m_BuyButton = Finder.FindComponent<Button>(m_Buttons, "BuyButton");
             m_BuyButtonDisplay = Finder.FindComponent<PriceDisplay>(m_BuyButton.gameObject);
         }
@@ -49,6 +52,7 @@ namespace Menu.PopUps
         {
             base.OnPrefabLoaded();
 
+            m_ButtonsErrorMessage.text = "";
             m_BuyButtonDisplay.Initialize(m_PriceData);
         }
 
@@ -85,8 +89,8 @@ namespace Menu.PopUps
         {
             if (! InventoryManager.CanBuy(m_PriceData.Price, m_PriceData.Currency))
             {
-                // TODO : CAN'T BUY ANIMATION & TEXT
-                Debug.Log("UNABLE TO BUY");
+                m_ButtonsErrorMessage.text = $"You do not have enough {m_PriceData.Currency} to buy this item";
+                AnimationHandler.ClickErrorAnimation(m_BuyButton.gameObject);
                 return;
             }
 
