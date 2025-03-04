@@ -10,6 +10,7 @@ using NUnit.Framework.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using Tools;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -81,7 +82,13 @@ namespace Game.Spells
 
             m_NetworkObjectComponent = Finder.FindComponent<NetworkObject>(gameObject);
 
-            m_BaseSpellData = null;
+            // destroy data (to avoid charging memory)
+            if (m_BaseSpellData != null)
+            {
+                Destroy(m_BaseSpellData);
+                m_BaseSpellData = null;
+            }
+
             m_IsOver = false;
             UIHelper.CleanContent(m_GraphicsContainer);
         }
@@ -95,9 +102,6 @@ namespace Game.Spells
 
             // call an end on client side (this method happens localy so no need to get throught RPC)
             CallSpellEvent(ESpellEvent.OnEnd);
-
-            // destroy data (to avoid charging memory)
-            Destroy(m_SpellData);
 
             // unregister from any listeners
             UnRegisterListeners();
@@ -275,17 +279,18 @@ namespace Game.Spells
         /// </summary>
         protected virtual void InitGraphics()
         {
+            transform.localScale = Vector3.one * m_SpellData.Size;
+
             if (m_SpellData.Graphics != null)
             {
                 m_Graphics = PoolManager.Pool(m_SpellData.Graphics, m_GraphicsContainer.transform);
+                m_Graphics.transform.localScale = Vector3.one;
                 SwapColliders(m_Graphics);
 
                 var audioSource = Finder.FindComponent<AudioSource>(m_Graphics);
                 if (audioSource != null)
                     SoundFXManager.AdjustVolume(ref audioSource);
             }
-
-            transform.localScale = Vector3.one * m_SpellData.Size;
 
             if (m_SpellData.PermanantSoundFX != null)
                 SoundFXManager.PlaySoundFXClip(m_SpellData.PermanantSoundFX, transform);

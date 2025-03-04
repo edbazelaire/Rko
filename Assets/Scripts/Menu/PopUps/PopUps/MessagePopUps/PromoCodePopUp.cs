@@ -48,11 +48,19 @@ namespace Menu.PopUps.PopUps.MessagePopUps
 
         #region Listeners
 
-        protected override void OnValidateButton()
+        protected async override void OnValidateButton()
         {
             // CHECK : Code
-            (bool success, string reason) = PromoCodeRSD.Instance.IsPromoCodeValid(m_InputField.text.Trim(), out SPromoCodeData data);
-            if (! success)
+            (bool success, string reason) = GiftCodeRSD.Instance.IsPromoCodeValid(m_InputField.text.Trim(), out SPromoCodeData data);
+
+            // TRY : collection
+            if (success)
+            {
+                // Collect code rewards
+                (success, reason) = await GiftCodeRSD.Instance.Collect(data);
+            }
+
+            if (!success)
             {
                 // play error sound
                 SoundFXManager.PlayOnce(SoundFXManager.ErrorSoundFX);
@@ -61,12 +69,6 @@ namespace Menu.PopUps.PopUps.MessagePopUps
                 m_ErrorMessage.text = reason;
                 return;
             }
-
-            if (! success)
-                return;
-
-            // Collect code rewards
-            PromoCodeRSD.Instance.Collect(data);
 
             base.OnValidateButton();
             Exit();

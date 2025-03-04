@@ -48,7 +48,7 @@ namespace Assets.Scripts.Game
             {
                 // Otherwise, retrieve an object from the pool
                 obj = Instance.m_GameObjectPool[key].Dequeue();
-                obj.transform.parent = parent;
+                obj.transform.SetParent(parent);
                 obj.gameObject.SetActive(true);
             }
 

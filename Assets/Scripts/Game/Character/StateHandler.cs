@@ -28,7 +28,7 @@ namespace Game.Character
         // PRIVATE ACCESSORS
         // -- Network Variables
         MNetworkList<FixedString64Bytes>    m_HoldingStateEffects;
-        NetworkVariable<float>              m_SpeedBonus = new(1f);
+        NetworkVariable<float>              m_SpeedBonus = new(0f);
         NetworkVariable<EAnimation>         m_AnimationState = new(EAnimation.None);
 
         // -- SERVER SIDE

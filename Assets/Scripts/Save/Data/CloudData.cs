@@ -123,20 +123,23 @@ namespace Save
             }
         }
 
-        public virtual async void SaveValue(string key)
+        public async virtual Task<bool> SaveValueAsync(string key)
         {
+            string reason;
             if (!m_Data.ContainsKey(key))
             {
-                ErrorHandler.Error("Unable to find key " + key + " in data of " + this.GetType().FullName);
-                return;
+                reason = "Unable to find key " + key + " in data of " + this.GetType().FullName;
+                ErrorHandler.Error(reason);
+                return false;
             }
 
             var playerData = new Dictionary<string, object> { { key, m_Data[key] } };
 
             if (playerData == null)
             {
-                ErrorHandler.Error($"Data of key ({key}) is null");
-                return;
+                reason = $"Data of key ({key}) is null";
+                ErrorHandler.Error(reason);
+                return false;
             }
 
             // to keep the trace (because async exception creates a "bad" trace)
@@ -145,18 +148,28 @@ namespace Save
             try
             {
                 await CloudDatabase.SaveAsync(playerData, m_PublicKeys.Contains(key) ? new SaveOptions(new PublicWriteAccessClassOptions()) : new SaveOptions(new DefaultWriteAccessClassOptions()));
+                return true;
             }
             catch (CloudSaveConflictException ex)
             {
-                ErrorHandler.Error($"Conflict error saving key ({key}) : " + ex.Message + "\nData : " + TextHandler.ToString(m_Data[key]));
+                reason = $"Conflict error saving key ({key}) : " + ex.Message + "\nData : " + TextHandler.ToString(m_Data[key]);
+                ErrorHandler.Error(reason);
                 ErrorHandler.Warning("Trace : \n" + error.GetTraceString());
                 await ResolveConflictAsync(key, playerData);
             }
             catch (Exception ex)
             {
-                ErrorHandler.Error($"Error saving key ({key}) : " + ex.Message + "\nData : " + TextHandler.ToString(m_Data[key]));
+                reason = $"Error saving key ({key}) : " + ex.Message + "\nData : " + TextHandler.ToString(m_Data[key]);
+                ErrorHandler.Error(reason);
                 ErrorHandler.Warning("Trace : \n" + error.GetTraceString());
             }
+
+            return false;
+        }
+
+        public async virtual void SaveValue(string key)
+        {
+            await SaveValueAsync(key);
         }
 
         public virtual async void DeleteAllData()

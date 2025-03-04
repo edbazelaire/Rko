@@ -8,12 +8,6 @@ namespace Tools.Animations
         #region Members
 
         [SerializeField] private float m_Intensity = 10f;
-        [SerializeField]
-        protected new AnimationCurve m_AnimationCurve = new AnimationCurve(
-            new Keyframe(0f, 0f),       // Start at 0
-            new Keyframe(0.5f, 1f),     // mid picked
-            new Keyframe(1f, 0f)        // End at 0
-        );
         private Vector3 m_OriginalPosition;
 
         #endregion
@@ -25,6 +19,15 @@ namespace Tools.Animations
         {
             m_Intensity = intensity;
             m_OriginalPosition = transform.localPosition;
+
+            if (m_AnimationCurve == null || m_AnimationCurve == default)
+            {
+                m_AnimationCurve = new AnimationCurve(
+                    new Keyframe(0f, 0f),       // Start at 0
+                    new Keyframe(0.5f, 1f),     // mid picked
+                    new Keyframe(1f, 0f)        // End at 0
+                );
+            }
 
             base.Initialize(id, duration);
         }

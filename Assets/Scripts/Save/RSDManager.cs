@@ -29,7 +29,7 @@ namespace Save
             m_RsdInstances.Clear();
 
             // Register known RSDs
-            m_RsdInstances[typeof(PromoCodeRSD)] = new PromoCodeRSD();
+            m_RsdInstances[typeof(GiftCodeRSD)] = new GiftCodeRSD();
         }
 
         #endregion
