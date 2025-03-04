@@ -45,8 +45,10 @@ public class GameUIManager : MonoBehaviour
     GameObject          m_SpellContainer;
     /// <summary> container for SpellItemUI(s) of linked spells </summary>
     GameObject          m_LinkedSpellsContainer;
-    /// <summary> containers for PlayerUI(s) </summary>
+    /// <summary> containers for PlayerUI(s) of each team (using team as index) </summary>
     List<GameObject>    m_PlayerUIContainers;
+    /// <summary> containers for PlayerUI(s) of each player (using clientId as index) </summary>
+    Dictionary<ulong, PlayerUI> m_PlayerUIs;
     /// <summary> list of instantiated SpellItemUI(s) </summary>
     List<SpellItemUI>   m_SpellItems;
 
@@ -103,6 +105,7 @@ public class GameUIManager : MonoBehaviour
         m_EndGameUI.gameObject.SetActive(false);
         m_ErrorGameUI.gameObject.SetActive(false);
         m_TutoGameUI.gameObject.SetActive(false);
+        m_PlayerUIs = new Dictionary<ulong, PlayerUI> { };
 
         LoadArena();
 
@@ -163,7 +166,7 @@ public class GameUIManager : MonoBehaviour
 
     public static void ClearAllSpells()
     {
-        if (!GameManager.Instance.IsServer)
+        if (! GameManager.Instance.IsServer)
             return;
 
         var allSpells = FindObjectsByType<Spell>(FindObjectsSortMode.None);
@@ -184,10 +187,18 @@ public class GameUIManager : MonoBehaviour
     /// <summary>
     /// Set the health bar for this controller
     /// </summary>
-    public void SetPlayersUI(ulong ClientId, int team)
+    public void SetPlayersUI(ulong clientId, int team)
     {
-        PlayerUI playerUI = Finder.FindComponent<PlayerUI>(Instantiate(m_PlayerUITemplate, m_PlayerUIContainers[GameManager.Instance.Owner.Team == team ? 0 : 1].transform));
-        playerUI.Initialize(ClientId);
+        if (m_PlayerUIs == null)
+            m_PlayerUIs = new Dictionary<ulong, PlayerUI> { };
+
+        m_PlayerUIs.Add(clientId, Finder.FindComponent<PlayerUI>(Instantiate(m_PlayerUITemplate, m_PlayerUIContainers[GameManager.Instance.Owner.Team == team ? 0 : 1].transform)));
+        m_PlayerUIs[clientId].Initialize(clientId);
+    }
+
+    public PlayerUI GetPlayerUI(ulong clientId)
+    {
+        return m_PlayerUIs[clientId];
     }
 
     /// <summary>
@@ -292,13 +303,15 @@ public class GameUIManager : MonoBehaviour
         switch (LobbyHandler.Instance.GameMode)
         {
             case EGameMode.Arena:
-                arenaManager = AssetLoader.LoadArena(LobbyHandler.Instance.ArenaType.ToString());
+                arenaManager = AssetLoader.LoadArena(LobbyHandler.Instance.ArenaType.ToString(), ProgressionCloudData.CurrentArena.IsBoss());
+                break;
+
+            case EGameMode.Ranked:
+                arenaManager = AssetLoader.LoadArena("VoidArena");
                 break;
 
             default:
                 arenaManager = AssetLoader.LoadArena("DefaultArena");
-                //arenaManager = AssetLoader.LoadArena("FrostArena");
-                //arenaManager = AssetLoader.LoadArena("VoidArena");
                 break;
         }
 

@@ -22,13 +22,19 @@ namespace Game
         public static Vector3 EnemySpawnPosition => new Vector3(5f, 0.8f, 0f);
 
         // =====================================================================
+        // GameObjects & Components
+        FocusManager    m_FocusManager;
+        PositionMarker  m_PositionMarker;
+
+        // =====================================================================
         // Data
         Controller      m_Controller;
         TutorialBT      m_Enemy;
-        PositionMarker  m_PositionMarker;
+        string          m_CurrentCoroutineName;
 
         bool m_IsWaitingForSpell = false;
         bool m_EndStarted = false;
+        bool m_HealAnimationDone = false;
 
         bool m_IsWaiting => m_IsWaitingForSpell;
 
@@ -59,6 +65,7 @@ namespace Game
         {
             base.FindComponents();
 
+            m_FocusManager = Finder.FindComponent<FocusManager>(GameUIManager.TutoGameUI.gameObject);
             m_PositionMarker = AssetLoader.Load<PositionMarker>("PositionMarker", AssetLoader.c_TutoGameObjectsPath);
         }
 
@@ -125,6 +132,9 @@ namespace Game
 
             // start game
             GameManager.Instance.SetState(EGameState.GameRunning);
+
+            // deactivate spells
+            LockSpells();
 
             // deactivate auto attacks
             m_Controller.AutoAttackHandler.Activate(false);     
@@ -233,20 +243,25 @@ namespace Game
 
             yield return DodgeFireBarrage();
 
+            // 3 - stage : Heal
+            //yield return StartEnemyUltimateAnimation();
+            if (!m_HealAnimationDone)
+                yield return StartHealAnimation();
+
             // SET PAUSE
             Pause(true);
 
-            // 3 - stage : Activate AutoAttacks
+            // 4 - stage : Activate AutoAttacks
             // -- Alexander
             yield return GameUIManager.TutoGameUI.Speaker.Write("Now this is OUR turn !", ECaptionType.Exclamation, showSpeaker: true);
             yield return GameUIManager.TutoGameUI.Speaker.WriteOnce("Stay still to attack", ECaptionType.Normal, showSpeaker: true);
 
             yield return WaitUntilShot(5);
 
-            // 4 - stage : Use special ability
+            // 5 - stage : Use special ability
             // -- Alexander
             yield return GameUIManager.TutoGameUI.Speaker.Write("Well done !", ECaptionType.Exclamation, showSpeaker: true);
-            yield return GameUIManager.TutoGameUI.Speaker.Write("Now use a Special Ability !", ECaptionType.Normal, showSpeaker: true);
+            yield return GameUIManager.TutoGameUI.Speaker.WriteOnce("Now use a Special Ability !", ECaptionType.Normal, showSpeaker: true);
             GameUIManager.TutoGameUI.Speaker.Activate(false);
 
             StartCoroutine(WaitForSpell(ESpell.RockShower, m_Controller, ESpellEvent.OnEnd, 1));
@@ -255,7 +270,7 @@ namespace Game
             yield return new WaitUntil(() => m_IsWaiting);
             yield return new WaitForSeconds(0.5f);
 
-            // 5 - stage : FIGHT
+            // 6 - stage : FIGHT
             yield return GameUIManager.TutoGameUI.Speaker.Write("You've done it", ECaptionType.Normal, showSpeaker: true);
             yield return GameUIManager.TutoGameUI.Speaker.WriteOnce("Now... Let's FIGHT !", ECaptionType.Exclamation, showSpeaker: true);
 
@@ -350,21 +365,6 @@ namespace Game
             Spell.OnSpellSpawn -= OnSpellSpawn;
 
             yield return new WaitForSeconds(1f);
-
-            // if player full life 
-            if (m_Controller.Life.Hp == m_Controller.Life.MaxHp)
-            {
-                // Make enemy cast undodgeable ULTIMATE
-                yield return GameUIManager.TutoGameUI.Speaker.Write("Well done Hero !", ECaptionType.Normal, showSpeaker: true);
-                yield return GameUIManager.TutoGameUI.Speaker.Write("Hey what is that !", ECaptionType.Exclamation, showSpeaker: true);
-
-                StartCoroutine(WaitForSpell(m_Enemy.Controller.SpellHandler.Ultimate, m_Enemy.Controller));
-                m_Enemy.Controller.EnergyHandler.AddEnergy(100);
-                m_Enemy.Cast(m_Enemy.Controller.SpellHandler.Ultimate);
-                yield return new WaitUntil(() => m_IsWaiting);
-            }
-
-            yield return StartHealAnimation();
         }
 
         public IEnumerator WaitUntilShot(int n)
@@ -392,6 +392,9 @@ namespace Game
 
         IEnumerator StartHealAnimation()
         {
+            m_CurrentCoroutineName = "StartHealAnimation";
+            m_HealAnimationDone = true;
+
             // start the pause
             Pause(true);
 
@@ -411,17 +414,40 @@ namespace Game
             Pause(false);
         }
 
+        IEnumerator StartEnemyUltimateAnimation()
+        {
+            m_CurrentCoroutineName = "StartEnemyUltimateAnimation";
+
+            // Make enemy cast undodgeable ULTIMATE
+            yield return GameUIManager.TutoGameUI.Speaker.Write("Well done Hero !", ECaptionType.Normal, showSpeaker: true);
+            yield return GameUIManager.TutoGameUI.Speaker.WriteOnce("Oh no... What's now !?", ECaptionType.Exclamation, showSpeaker: true);
+
+            StartCoroutine(WaitForSpell(m_Enemy.Controller.SpellHandler.Ultimate, m_Enemy.Controller, ESpellEvent.OnHit));
+            m_Enemy.Controller.EnergyHandler.AddEnergy(100);
+            m_Enemy.Cast(m_Enemy.Controller.SpellHandler.Ultimate);
+
+            yield return new WaitUntil(() => m_IsWaiting);
+            yield return new WaitForSeconds(0.5f);
+        }
+
         IEnumerator StartFinishAnimation()
         {
+            m_CurrentCoroutineName = "StartFinishAnimation";
+            
             m_EndStarted = true;
 
             Pause(true);
 
             m_Controller.EnergyHandler.AddEnergy(100);
 
-            yield return GameUIManager.TutoGameUI.Speaker.Write("You energy bar is full", ECaptionType.Normal, showSpeaker: true);
-            yield return GameUIManager.TutoGameUI.Speaker.Write("Now ! Use your ULTIMATE ability", ECaptionType.Normal, showSpeaker: false);
+            // FOCUS : Energy Bar
+            m_FocusManager.Focus(GameUIManager.Instance.GetPlayerUI(m_Controller.PlayerId).EnergyBar.gameObject);
+            yield return GameUIManager.TutoGameUI.Speaker.Write("You energy bar is full", ECaptionType.Normal, showSpeaker: false);
+            yield return GameUIManager.TutoGameUI.Speaker.WriteOnce("This means... ", ECaptionType.Normal, showSpeaker: false);
+            m_FocusManager.RemoveFocus();
 
+            // USE ULTIMATE
+            yield return GameUIManager.TutoGameUI.Speaker.WriteOnce("You can use your ULTIMATE ability", ECaptionType.Normal, showSpeaker: false);
             StartCoroutine(WaitForSpell(m_Controller.SpellHandler.Ultimate, m_Controller));
             yield return LockOnSpell(m_Controller.SpellHandler.Ultimate);
 
@@ -430,13 +456,12 @@ namespace Game
             GameUIManager.TutoGameUI.Speaker.ShowSpeaker(false);
 
             // -- dialog : Kahnan
-            yield return GameUIManager.TutoGameUI.SpeakerEnemy.Write("Arrrgh !", ECaptionType.Exclamation, showSpeaker: true);
-            StartCoroutine(GameUIManager.TutoGameUI.SpeakerEnemy.WriteOnce("I'll be... baaaack !", ECaptionType.Exclamation, showSpeaker: true));
+            yield return GameUIManager.TutoGameUI.SpeakerEnemy.Write("Arrrgh !", ECaptionType.Exclamation, showSpeaker: true);
+            StartCoroutine(GameUIManager.TutoGameUI.SpeakerEnemy.WriteOnce("I'll be... baaaack !", ECaptionType.Exclamation, showSpeaker: true));
             // -- dialog : Alexander
-            StartCoroutine(GameUIManager.TutoGameUI.Speaker.Write("We've done it Hero !", ECaptionType.Exclamation, true));
+            yield return GameUIManager.TutoGameUI.Speaker.WriteOnce("We've done it Hero !", ECaptionType.Exclamation, true);
 
-            // call game over and save that Tuto was completed
-            ProfileCloudData.Instance.SetData(ProfileCloudData.KEY_TUTO_DONE, true, true);
+            // call game over
             GameManager.Instance.GameOver(m_Controller.Team);
         }
 
@@ -502,8 +527,13 @@ namespace Game
                 if (spell == m_Controller.SpellHandler.AutoAttack)
                     continue;
 
-                GameUIManager.Instance.GetSpellItemUI(spell).Activate(false);
+                LockSpell(spell);
             }
+        }
+
+        void LockSpell(ESpell spell)
+        {
+            GameUIManager.Instance.GetSpellItemUI(spell).Activate(false);
         }
 
         void UnlockSpells()
@@ -552,6 +582,9 @@ namespace Game
         protected void OnHpChanged(int _, int hp)
         {
             if (hp > 500)
+                return;
+
+            if (m_CurrentCoroutineName == "StartHealAnimation")
                 return;
 
             StartCoroutine(StartHealAnimation());

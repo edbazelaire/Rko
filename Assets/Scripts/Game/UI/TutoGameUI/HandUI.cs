@@ -68,9 +68,17 @@ namespace Game.UI
 
             Activate(true);
 
-            m_Animator.Play("ClickOn");
-
-            yield return new WaitUntil(() => clicked);
+            float timer = 0f;
+            while (! clicked)
+            {
+                timer -= Time.deltaTime;
+                if (timer <= 0)
+                {
+                    timer = 2.5f;
+                    m_Animator.Play("ClickOn");
+                }
+                yield return null;
+            }
 
             Activate(false);
             button.onClick.RemoveListener(WaitButtonClicked);

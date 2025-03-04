@@ -41,7 +41,7 @@ namespace Game.Character
                 return;
 
             // send event to analytics
-            MAnalytics.SendEvent(new InGameEvent(LobbyHandler.Instance.GameMode, StaticPlayerData.Character, spell, hitType.ToString(), qty));
+            MAnalytics.SendEvent(new InGameEvent(LobbyHandler.Instance.GameMode, LobbyHandler.Instance.RelayCode, StaticPlayerData.Character, spell, hitType.ToString(), qty));
         }
 
         #endregion

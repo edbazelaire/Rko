@@ -4,7 +4,6 @@ using Data.GameManagement;
 using Enums;
 using Inventory;
 using MyBox;
-using Save.RSDs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -382,6 +381,7 @@ namespace Save
         public const string KEY_CURRENT_PROFILE_DATA    = "CurrentProfileData";
         public const string KEY_ACHIEVEMENTS            = "Achievements";
         public const string KEY_ACHIEVEMENT_REWARDS     = "AchievementRewards";
+        public const string KEY_GIFT_CODES              = "GiftCodes";
 
         // ===============================================================================================
         // EVENTS
@@ -410,6 +410,7 @@ namespace Save
             { KEY_CURRENT_PROFILE_DATA,     new SProfileCurrentData()                           },
             { KEY_ACHIEVEMENTS,             new Dictionary<string, int>()                       },
             { KEY_ACHIEVEMENT_REWARDS,      new Dictionary<EAchievementReward, List<string>>()  },
+            { KEY_GIFT_CODES,               new List<string>()                                  },
         };
 
         /// <summary> dictionary of currently unlocked badges linked to max league </summary>
@@ -431,10 +432,11 @@ namespace Save
         public static SProfileCurrentData   CurrentProfileData  => (SProfileCurrentData)Instance.m_Data[KEY_CURRENT_PROFILE_DATA];
         public static string[]              CurrentBadges       => CurrentProfileData.Badges;
 
-        public static int                       AccountLevel    => CurrentProfileData.AccountLevel;
+        public static int                   AccountLevel    => CurrentProfileData.AccountLevel;
         public static Dictionary<string, int>   Achievements    => (Instance.m_Data[KEY_ACHIEVEMENTS] as Dictionary<string, int>);
         public static Dictionary<EAchievementReward, List<string>> AchievementRewards => (Instance.m_Data[KEY_ACHIEVEMENT_REWARDS] as Dictionary<EAchievementReward, List<string>>);
         public static Dictionary<EBadge, ELeague> Badges        => Instance.m_Badges;
+        public static List<string>          GiftCodes           => Instance.m_Data[KEY_GIFT_CODES] as List<string>;
         public static bool                  HasDefaultPseudo    => Regex.IsMatch(GamerTag, @"^User_\d{6}$") || GamerTag == "DEFAULT_PSEUDO";
 
         #endregion
@@ -855,6 +857,31 @@ namespace Save
         #endregion
 
 
+        #region Gift Codes
+
+        public async static Task<bool> AddGiftCode(string code, bool save = true)
+        {
+            if (HasGiftCode(code))
+                return false;
+
+            GiftCodes.Add(code);
+
+            if (save)
+            {
+                return await Instance.SaveValueAsync(KEY_GIFT_CODES);
+            }
+
+            return true;
+        }
+
+        public static bool HasGiftCode(string code)
+        {
+            return GiftCodes.Contains(code);
+        }
+
+        #endregion
+
+
         #region Helpers
 
         public static bool TryGetType(Enum ar, out EAchievementReward arType, bool throwError = true)
@@ -972,6 +999,10 @@ namespace Save
                     };
 
                     Instance.m_Badges = Instance.FilterHighestLeague(EAchievementReward.Badge);
+                    break;
+
+                case KEY_GIFT_CODES:
+                    Instance.m_Data[key] = new List<string>();
                     break;
 
                 case KEY_IS_ADMIN:
@@ -1139,6 +1170,16 @@ namespace Save
             Instance.SetData(KEY_CURRENT_PROFILE_DATA, data);
         }
 
+        void CheckGiftCodes()
+        {
+            if (! m_Data.ContainsKey(KEY_GIFT_CODES) || GiftCodes == null)
+            {
+                ErrorHandler.Warning(KEY_GIFT_CODES + " are empty : reset value");
+                Reset(KEY_GIFT_CODES);
+                return;
+            }
+        }
+
         public async Task<EntityData> FindPlayerWithValue(string key, string value)
         {
             var query = new Query(
@@ -1234,6 +1275,7 @@ namespace Save
             m_Badges = FilterHighestLeague(EAchievementReward.Badge);
             CheckAchievements();
             CheckCurrentData();
+            CheckGiftCodes();
         }
 
         /// <summary>

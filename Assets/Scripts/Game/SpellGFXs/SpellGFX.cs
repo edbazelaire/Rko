@@ -144,7 +144,7 @@ namespace Game.SpellGFXs
             if (spellName != m_SpellData.Name)
                 return;
 
-            if (spellEvent == ESpellEvent.OnCancelCast)
+            if (spellEvent == ESpellEvent.OnCancelCast || spellEvent == ESpellEvent.OnEnd)
             {
                 End();
                 return;
@@ -155,10 +155,6 @@ namespace Game.SpellGFXs
 
         void OnSpellEvent(ESpellEvent spellEvent)
         {
-            // TODO : REMOVE    =========================================================================
-            Debug.Log(m_SpellData.name + " : " + spellEvent.ToString());
-            // TODO : REMOVE    =========================================================================
-
             CheckEnd(spellEvent);
         }
 

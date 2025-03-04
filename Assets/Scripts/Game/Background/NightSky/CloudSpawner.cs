@@ -18,7 +18,10 @@ namespace Game.Background.NightSky
 
         [SerializeField] Cloud m_CloudObject;
 
+        [SerializeField] string m_LayerName;
         [SerializeField] int m_NLayers;
+        [SerializeField] int m_BaseSorterOrder;
+        [SerializeField] int m_SorterOrderLayerFactor;
         [SerializeField] float m_CloudSpeed;
         [SerializeField] SMinMax m_YPosition;
         [SerializeField] SMinMax m_CloudSize;
@@ -34,6 +37,11 @@ namespace Game.Background.NightSky
 
 
         #region Init & End
+
+        private void Awake()
+        {
+            Initialize();
+        }
 
         protected override void FindComponents()
         {
@@ -97,7 +105,13 @@ namespace Game.Background.NightSky
             Cloud cloud = Instantiate(m_CloudObject, transform.position, Quaternion.identity, m_Canvas.transform);
             var yPos = Random.Range(m_YPosition.Min, m_YPosition.Max);
             cloud.transform.position = new Vector3(xPos, yPos, 0f);
-            cloud.Initialize(m_Clouds[Random.Range(0, m_Clouds.Count)], m_CloudSpeed * (sorterOrder + 1 / m_NLayers + 1), (sorterOrder + 1 / m_NLayers + 1) * Random.Range(m_CloudSize.Min, m_CloudSize.Max), m_Canvas.sortingOrder + sorterOrder, m_Canvas.sortingLayerName);
+            cloud.Initialize(
+                m_Clouds[Random.Range(0, m_Clouds.Count)], 
+                m_CloudSpeed * (sorterOrder + 1 / m_NLayers + 1), 
+                (sorterOrder + 1 / m_NLayers + 1) * Random.Range(m_CloudSize.Min, m_CloudSize.Max), 
+                m_Canvas.sortingOrder + m_BaseSorterOrder + sorterOrder * m_SorterOrderLayerFactor,
+                m_LayerName == "" ? m_Canvas.sortingLayerName : m_LayerName
+            );
         }
 
         #endregion
