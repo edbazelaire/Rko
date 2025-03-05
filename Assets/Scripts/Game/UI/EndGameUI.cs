@@ -263,16 +263,24 @@ public class EndGameUI : MObject
 
         m_RewardsSection.SetActive(true);
 
-        SRewardCalculator reward = win ? Rewarder.WinGameReward : Rewarder.LossGameReward;
-        reward.SetCurrencyMultiplicator(CalculateCurrencyMultiplicator());
+        SRewardCalculator rewardCalculator = win ? Rewarder.WinGameReward : Rewarder.LossGameReward;
+        rewardCalculator.SetCurrencyMultiplicator(CalculateCurrencyMultiplicator());
 
         // no rewards for training mode
-        if (LobbyHandler.Instance.GameMode == EGameMode.Training)
-            reward = new SRewardCalculator(0, 0, 0, 0, new List<SChestDropPercentage>());
+        if (LobbyHandler.Instance.IsTuto)
+        {
+            rewardCalculator = new SRewardCalculator(0, 0, 0, 0, new List<SChestDropPercentage>() {
+                new SChestDropPercentage(new Dictionary<EChest, float>() { { EChest.Common, 1f } })
+            });
+        }
+        else if (LobbyHandler.Instance.GameMode == EGameMode.Training)
+        {
+            rewardCalculator = new SRewardCalculator(0, 0, 0, 0, new List<SChestDropPercentage>());
+        }
 
         // ----------------------------------------------------------------------------
         // Xp   
-        int xp = reward.GetXp();
+        int xp = rewardCalculator.GetXp();
         ErrorHandler.Log("         + XP : " + xp, ELogTag.Rewards);
         if (xp > 0)
         {
@@ -283,7 +291,7 @@ public class EndGameUI : MObject
 
         // ----------------------------------------------------------------------------
         // GOLDS   
-        int golds = reward.GetGolds();
+        int golds = rewardCalculator.GetGolds();
         ErrorHandler.Log("         + GOLDS : " + golds, ELogTag.Rewards);
         if (golds > 0)
         {
@@ -294,7 +302,7 @@ public class EndGameUI : MObject
 
         // ----------------------------------------------------------------------------
         // Gems   
-        int gems = reward.GetGems();
+        int gems = rewardCalculator.GetGems();
         ErrorHandler.Log("         + XP : " + xp, ELogTag.Rewards);
         if (gems > 0)
         {
@@ -311,7 +319,7 @@ public class EndGameUI : MObject
 
         // check if any index is available to store the chest (otherwise : no chest reward)
         if (InventoryManager.GetFirstAvailableIndex(out int index))
-            chests = reward.GetChests();
+            chests = rewardCalculator.GetChests();
 
         if (chests.Count == 0)
         {
@@ -401,6 +409,11 @@ public class EndGameUI : MObject
 
             // no progression on training game
             case EGameMode.Training:
+                if (LobbyHandler.Instance.IsTuto)
+                {
+                    ProfileCloudData.Instance.SetData(ProfileCloudData.KEY_TUTO_DONE, true, true);
+                    LobbyHandler.Instance.IsTuto = false;
+                }
                 break;
 
             default:

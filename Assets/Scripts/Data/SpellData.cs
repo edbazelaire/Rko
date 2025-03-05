@@ -294,11 +294,10 @@ namespace Data
                 controller.StartCoroutine(onHitSpellData.CastDelay(clientId, target, position, rotation, recalculateTarget: false, recalculatePosition: false));
 
                 // call graphics event
-                CallSpellEvent(controller, ESpellEvent.OnStartCast, target);
-            }   
+                controller.SpellHandler.CallSpellEvent(onHitSpellData.Name, ESpellEvent.OnStartCast, targetPosition: target);
+            }
         }
 
-        
         #endregion
 
 

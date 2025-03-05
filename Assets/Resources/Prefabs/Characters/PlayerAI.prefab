@@ -428,7 +428,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffd860517640e164484eff3495b9244c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Collider: {fileID: 5824950955040578389}
 --- !u!114 &7432711300283882174
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -525,8 +524,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SyncPositionX: 1
-  SyncPositionY: 1
+  SyncPositionX: 0
+  SyncPositionY: 0
   SyncPositionZ: 0
   SyncRotAngleX: 0
   SyncRotAngleY: 1

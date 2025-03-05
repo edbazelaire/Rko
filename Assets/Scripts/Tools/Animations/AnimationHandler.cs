@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Assets.Scripts.Managers.Sound;
+using MyBox;
+using System.Collections.Generic;
 using Tools.Animations;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -168,6 +170,23 @@ namespace Tools
 
             // destroy object at the end of animation
             rotateAnim.OnAnimationEnded += () => GameObject.Destroy(raycast);
+        }
+
+        #endregion
+
+
+        #region Error Animations
+
+        public static void ClickErrorAnimation(GameObject button)
+        {
+            if (button.HasComponent<ShakeAnimation>())
+            {
+                return;
+            }
+
+            var shakeAnimation = button.AddComponent<ShakeAnimation>();
+            SoundFXManager.PlayOnce(SoundFXManager.UpgradeFailSoundFX);
+            shakeAnimation.Initialize("", 0.5f);
         }
 
         #endregion

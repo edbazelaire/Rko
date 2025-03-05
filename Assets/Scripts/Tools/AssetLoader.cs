@@ -251,8 +251,11 @@ namespace Tools
         #region Arena Loading
 
 
-        public static ArenaManager LoadArena(string arenaName)
+        public static ArenaManager LoadArena(string arenaName, bool isBoss = false)
         {
+            if (isBoss)
+                arenaName += "_2";
+
             return Load<ArenaManager>(arenaName, c_ArenaBackgroundPath);
         }
 

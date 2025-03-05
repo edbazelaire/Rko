@@ -35,6 +35,7 @@ namespace Assets.Scripts.Managers.Sound
         [Description("List of clips played based on app state")]
         [SerializeField] private List<SAppStateMusic> m_AppStateMusics;
         [SerializeField] private List<SGameStateMusic> m_GameStateMusics;
+        [SerializeField] private List<SGameStateMusic> m_BossStateMusics;
 
         [Header("Menu")]
         [SerializeField] private AudioClip m_ClickButtonSoundFX;
@@ -128,13 +129,19 @@ namespace Assets.Scripts.Managers.Sound
             PlayMusic(Instance.m_AppStateMusics[index].AudioClip);
         }
 
-        public static void PlayStateMusic(EGameState gameState)
+        public static void PlayGameStateMusic(EGameState gameState, EGameMode gameMode, string context = "")
         {
-            int index = Instance.m_GameStateMusics.FirstIndex(stateMusic => stateMusic.State == gameState);
+            var gameMusics = gameMode switch
+            {
+                EGameMode.Arena => context == "Boss" ? Instance.m_BossStateMusics : Instance.m_GameStateMusics,
+                _ => Instance.m_GameStateMusics,
+            };
+
+            int index = gameMusics.FirstIndex(stateMusic => stateMusic.State == gameState);
             if (index == -1)
                 return;
 
-            PlayMusic(Instance.m_GameStateMusics[index].AudioClip);
+            PlayMusic(gameMusics[index].AudioClip);
         }
 
         #endregion  

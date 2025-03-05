@@ -58,7 +58,7 @@ namespace Game.Spells
                     break;
 
                 default:
-                    ErrorHandler.Error("Unhandled case : " + m_SpellData.SpellTarget);
+                    ErrorHandler.Error("("+m_SpellData.Name+") Unhandled case : " + m_SpellData.SpellTarget);
                     return;
             }
 

@@ -14,21 +14,21 @@ namespace Game.Character
     {
         #region Members
 
-        Controller                  m_Controller;
+        Controller m_Controller;
 
-        NetworkVariable<int>        m_MoveX                 = new(0);
+        NetworkVariable<int> m_MoveX = new(0);
 
         // [Server Data]
         List<SForce> m_Forces = new List<SForce>();
 
         // [Client Data]
-        bool    m_IsActive          = false;
-        bool    m_CanMoveClient     = true;
-        int     m_MovementInput     = 0;
-        bool    m_MovementBlocked   = false;
-        bool    m_MovementCancelled = false;
-        float   m_SpeedBonus        = 0f;
-        float   m_InitialSpeed;
+        bool m_IsActive = false;
+        bool m_CanMoveClient = true;
+        int m_MovementInput = 0;
+        bool m_MovementBlocked = false;
+        bool m_MovementCancelled = false;
+        float m_SpeedBonus = 0f;
+        float m_InitialSpeed;
 
         public NetworkVariable<int> MoveX => m_MoveX;
         private NetworkVariable<Vector2> m_NetworkPosition = new NetworkVariable<Vector2>(Vector2.zero);
@@ -45,7 +45,7 @@ namespace Game.Character
             m_Controller = GetComponent<Controller>();
         }
 
-        public override void OnNetworkSpawn() 
+        public override void OnNetworkSpawn()
         {
             if (IsServer)
                 return;
@@ -73,19 +73,24 @@ namespace Game.Character
 
         public void Activate(bool activate)
         {
-            if (! activate)
+            if (!activate)
             {
                 SetMovement(0);
                 ResetRotation();
             }
 
             m_IsActive = activate;
+
+            if (IsServer)
+            {
+                m_MoveX.Value = 0;
+            }
         }
 
 
         void Update()
         {
-            if (! m_Controller.GameRunning || ! m_IsActive)
+            if (!m_Controller.GameRunning || !m_IsActive)
                 return;
 
             CheckInputs();
@@ -130,7 +135,7 @@ namespace Game.Character
         {
             if (m_MovementCancelled)
                 m_MovementCancelled = false;
-            else 
+            else
                 SetMovement(moveX);
         }
 
@@ -203,11 +208,11 @@ namespace Game.Character
             // depending on team, the camera is rotated implying that movement is inverted
             float teamFactor = m_Controller.Team == 0 ? 1f : -1f;
 
-            if (! CanMove || m_MovementInput == 0)
+            if (!CanMove || m_MovementInput == 0)
             {
                 if (m_MoveX.Value != 0)
                     m_MoveX.Value = 0;
-            } 
+            }
             else
             {
                 if (m_MoveX.Value != m_MovementInput)
@@ -219,10 +224,10 @@ namespace Game.Character
                 else if (teamFactor * m_MoveX.Value == -1)
                     SetRotation(180f);
             }
-            
+
             // apply movement and Force
             transform.position += new Vector3(
-                teamFactor * (m_MoveX.Value * Speed + Force) * Time.deltaTime, 
+                teamFactor * (m_MoveX.Value * Speed + Force) * Time.deltaTime,
                 0f, 0f);
 
             // ============================================================================
@@ -237,7 +242,7 @@ namespace Game.Character
         /// </summary>
         void UpdateCanMove()
         {
-            if (! IsServer) 
+            if (!IsServer)
                 return;
 
             bool canMove = CanMove;
@@ -258,10 +263,10 @@ namespace Game.Character
         /// </summary>
         void CheckInputs()
         {
-            if (! IsOwner)
+            if (!IsOwner)
                 return;
 
-            if (! m_Controller.IsPlayer)
+            if (!m_Controller.IsPlayer)
                 return;
 
             int moveX = 0;
@@ -353,7 +358,7 @@ namespace Game.Character
             if (cancel)
                 ResetRotationClientRPC();
 
-            if (cancel && ! IsMoving)
+            if (cancel && !IsMoving)
                 return;
 
             m_MovementCancelled = cancel;
@@ -362,7 +367,7 @@ namespace Game.Character
 
         public void ForceBlockMovement(bool block)
         {
-            if (! IsServer)
+            if (!IsServer)
                 return;
 
             CancelMovement(block);
@@ -388,7 +393,7 @@ namespace Game.Character
 
 
         #region Dependent Attributes
-       
+
 
         public bool CanMove
         {

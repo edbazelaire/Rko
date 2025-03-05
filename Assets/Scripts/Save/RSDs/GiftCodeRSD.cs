@@ -15,19 +15,18 @@ namespace Save.RSDs
     public class SPromoCodeData : RSDData
     {
         public string               Code;
-        public bool                 IsUsed;
         public SRewardsData         Rewards;
     }
 
 
-    public class PromoCodeRSD : RSD<SPromoCodeData>
+    public class GiftCodeRSD : RSD<SPromoCodeData>
     {
         #region Members
 
-        public new static PromoCodeRSD Instance => RSDManager.GetRSD<PromoCodeRSD>();
+        public new static GiftCodeRSD Instance => RSDManager.GetRSD<GiftCodeRSD>();
 
         protected override string m_SheetId => "1xzYKzmTha3LlA2uX_gzLUpDEBurEmSz-2qsuKhsyoLk";
-        protected override string m_SheetName => "PromoCodes";
+        protected override string m_SheetName => "GiftCodes";
 
         #endregion
 
@@ -61,7 +60,7 @@ namespace Save.RSDs
                 ErrorHandler.Warning("Found same code ("+code+") multiple times");
             }
 
-            if (data[0].IsUsed)
+            if (ProfileCloudData.HasGiftCode(data[0].Code))
             {
                 return (false, "Code as already been used");
             }
@@ -71,13 +70,22 @@ namespace Save.RSDs
             return (true, null);
         }
 
-        public void Collect(SPromoCodeData codeData)
+        public async Task<(bool, string)> Collect(SPromoCodeData codeData)
         {
-            Main.DisplayRewards(codeData.Rewards, "PromoCode");
+            if (!await ProfileCloudData.AddGiftCode(codeData.Code))
+                return (false, "Unable to reach the database");
 
-            Main.Instance.StartCoroutine(MarkCodeAsUsed(codeData));
+            Main.DisplayRewards(codeData.Rewards, "PromoCode");
+            return (true, null);
         }
 
+        /// <summary>
+        /// [OLD METHOD] - Remove or keep as example ?
+        /// 
+        /// This is how to update a value directly in the Sheets
+        /// </summary>
+        /// <param name="promoCode"></param>
+        /// <returns></returns>
         IEnumerator MarkCodeAsUsed(SPromoCodeData promoCode)
         {
             int rowIndex = m_Data.FindIndex(t => t.Code == promoCode.Code);
@@ -125,7 +133,7 @@ namespace Save.RSDs
             }
 
             // Update value locally
-            promoCode.IsUsed = true;
+            //promoCode.IsUsed = true;
         }
 
         #endregion

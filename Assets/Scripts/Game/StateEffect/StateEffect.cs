@@ -4,8 +4,6 @@ using Data;
 using Enums;
 using Game.Character;
 using Game.Loaders;
-using Game.SpellGFXs;
-using Game.UI;
 using MyBox;
 using System;
 using System.Collections.Generic;
@@ -14,7 +12,6 @@ using System.Reflection;
 using Tools;
 using Unity.Collections;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Game.Spells
@@ -583,12 +580,16 @@ namespace Game.Spells
             ApplyNewLevelFactorAll(level);
             m_Level = level;
 
-            for (int i = 0; i < m_SubStateEffects.Count; i++)
+            if (m_SubStateEffects != null)
             {
-                var stateEffect = m_SubStateEffects[i];
-                stateEffect.SetLevel(level);
-                m_SubStateEffects[i] = stateEffect;
+                for (int i = 0; i < m_SubStateEffects.Count; i++)
+                {
+                    var stateEffect = m_SubStateEffects[i];
+                    stateEffect.SetLevel(level);
+                    m_SubStateEffects[i] = stateEffect;
+                }
             }
+            
         }
 
         protected virtual void ApplyNewLevelFactorAll(int newLevel)

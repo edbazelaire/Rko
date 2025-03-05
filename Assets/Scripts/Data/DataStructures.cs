@@ -237,7 +237,7 @@ namespace Data
                 return null;
             }
 
-            GameObject go = Prefab == null ? new GameObject() : InstantiatePrefab(caster, spell, targetController, callFromPosition, targetPos);
+            GameObject go = InstantiatePrefab(caster, spell, targetController, callFromPosition, targetPos);
             return InitializeGFXComponent(go, caster, spellData, spell, stateEffectName, targetController, forcedDuration);
         }
 
@@ -252,6 +252,9 @@ namespace Data
                 ErrorHandler.Warning($"Spell GFX spawned in void - spell : { (spell != null ? spell.name : "null")} | position : {position} | callFromPosition : {callFromPosition} | targetPos : {targetPos} ");
                 return null;
             }
+
+            if (Prefab.name.Contains("FireTrail"))
+                Debug.Log("InstantiatePrefab() FireTrail GFX");
 
             return PoolManager.Pool(Prefab, position, Quaternion.identity, IsFollowing ? parent : null);
         }

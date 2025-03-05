@@ -28,7 +28,7 @@ namespace Game.Character
         // PRIVATE ACCESSORS
         // -- Network Variables
         MNetworkList<FixedString64Bytes>    m_HoldingStateEffects;
-        NetworkVariable<float>              m_SpeedBonus = new(1f);
+        NetworkVariable<float>              m_SpeedBonus = new(0f);
         NetworkVariable<EAnimation>         m_AnimationState = new(EAnimation.None);
 
         // -- SERVER SIDE
@@ -330,7 +330,6 @@ namespace Game.Character
                     continue;
 
                 effect.Refresh(stacks, level);
-                //OnStateEventClientRPC(EListEvent.Add, effect.StateEffectName, effect.Stacks, effect.GetFloat(EStateEffectProperty.Duration));
                 RecalculateBonus();
                 return;
             }
