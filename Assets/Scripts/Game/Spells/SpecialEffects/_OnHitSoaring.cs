@@ -26,6 +26,9 @@ namespace Game.Spells.SpecialEffects
         {
             base.Initialize(level);
 
+            if (GameManager.IsGameOver || ! GameManager.Instance.IsServer)
+                return;
+
             CheckPowerOrbs();
         }
 

@@ -224,6 +224,11 @@ namespace Game.Character
 
         #region Events Listeners
 
+        void OnMovementChanged(int _)
+        {
+            MoveAnimation(m_Controller.Movement.IsMoving);
+        }
+
         /// <summary>
         /// Change MovementSpeed parameter in the Animator when the speed value changes
         /// </summary>

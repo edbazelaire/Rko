@@ -33,7 +33,7 @@ namespace Assets.Scripts.Managers
                 return;
 
             FriendsHandler.SendFriendRequestToAll();
-            SetVersion(Application.version);
+            SetVersion(GameVersion.ToString());
         }
 
         /// <summary>

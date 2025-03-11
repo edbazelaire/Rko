@@ -74,12 +74,12 @@ namespace Game.Spells
             // cancel animation
             m_Controller.AnimationHandler.CancelCastAnimation();
 
-            if (!IsServer)
-                return;
-
             // reset player position
             m_OriginalPosition.y = 0.5f;
             m_Controller.transform.position = m_OriginalPosition;
+
+            if (!IsServer)
+                return;
 
             // reset jump state
             m_Controller.StateHandler.SetStateJump(false);
@@ -100,8 +100,8 @@ namespace Game.Spells
             base.Update();
 
             // only server can check for distance and update the Controller position
-            if (!IsServer)
-                return;
+            //if (!IsServer)
+            //    return;
 
             if (m_SpellData.JumpType != EJumpType.Teleport)
                 UpdatePlayerPosition();

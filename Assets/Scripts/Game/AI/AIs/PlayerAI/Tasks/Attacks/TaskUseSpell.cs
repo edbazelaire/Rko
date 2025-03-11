@@ -1,5 +1,6 @@
 ﻿using AI;
 using Enums;
+using Game.Character;
 using System.Collections;
 using Tools;
 using UnityEngine;
@@ -120,6 +121,9 @@ namespace Game.AI
             // wait for the Controller to start the cast
             if (m_CastState == ECastState.Casting)
             {
+                // make sure movement is set to 0
+                m_Controller.Movement.SetMovement(0);
+                
                 // check is currently casting the spell
                 if (m_Controller.SpellHandler.IsCasting && m_Controller.SpellHandler.SelectedSpell == m_Spell)
                 {
@@ -196,6 +200,7 @@ namespace Game.AI
                     m_State = NodeState.RUNNING;
                     m_NTimesCounter = 0;
 
+                    // cancel movement on attacking
                     m_Controller.SpellHandler.OnPreSpellEvent += CountAttacks;
                     break;
 

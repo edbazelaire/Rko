@@ -67,14 +67,14 @@ namespace Game.Spells
                 m_Controller.GFXHandler.HideCharacterClientRPC(false);
             }
 
+            // reset player position
+            m_OriginalPosition.y = 0.1f;
+            m_Controller.transform.position = m_OriginalPosition;
+
             base.OnNetworkDespawn();
 
             if (!IsServer)
                 return;
-
-            // reset player position
-            m_OriginalPosition.y = 0.1f;
-            m_Controller.transform.position = m_OriginalPosition;
 
             // reset jump state
             m_Controller.StateHandler.SetStateJump(false);

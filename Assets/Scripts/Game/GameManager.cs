@@ -111,6 +111,9 @@ namespace Game
 
             s_Instance = this;
 
+            if (! GameUIManager.Initialized)
+                GameUIManager.Instance.Initialize();
+
             AttachDebugMethods();
         }
 
@@ -271,7 +274,7 @@ namespace Game
             if (playerData.IsPlayer)
             {
                 // create player prefab and spawn it
-                playerPrefab = Instantiate(CharacterLoader.Instance.PlayerPrefab, ArenaManager.Instance.transform);
+                playerPrefab = Instantiate(CharacterLoader.Instance.PlayerPrefab, ArenaManager.Instance.Spawns[team][0].position, Quaternion.identity, ArenaManager.Instance.transform);
                 playerPrefab.GetComponent<NetworkObject>().SpawnWithOwnership(clientId, true);
             }
             else

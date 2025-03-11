@@ -22,10 +22,16 @@ namespace Game.Character
 
         // ===================================================================================
         // CONSTANTS
-        const float                         c_GlobalCooldown        = 0f; 
+        const float                         c_GlobalCooldown        = 0f;
 
         // ===================================================================================
         // NETWORK VARIABLES       
+        /// <summary> enum of the character's auto attack </summary>
+        NetworkVariable<ESpell>             m_AutoAttack            = new NetworkVariable<ESpell>(ESpell.None);
+        /// <summary> enum of the character's special ability </summary>
+        NetworkVariable<ESpell>             m_SpecialAbility        = new NetworkVariable<ESpell>(ESpell.None);
+        /// <summary> enum of the character's ultimate </summary>
+        NetworkVariable<ESpell>             m_Ultimate              = new NetworkVariable<ESpell>(ESpell.None);
         /// <summary> list of spells that links spellID to spellValue <summary>
         NetworkList<int>                    m_SpellsNet;
         /// <summary> list of spells that links spellID to spellValue <summary>
@@ -45,12 +51,6 @@ namespace Game.Character
         Controller                          m_Controller;
         /// <summary> coroutine of casting a spell </summary>
         Coroutine                           m_CastCoroutine;
-        /// <summary> enum of the character's auto attack </summary>
-        ESpell                              m_AutoAttack;
-        /// <summary> enum of the character's special ability </summary>
-        ESpell                              m_SpecialAbility;
-        /// <summary> enum of the character's ultimate </summary>
-        ESpell                              m_Ultimate;
         /// <summary> overriding spell data (in case of replacement or someting) </summary>
         Dictionary<ESpell, SpellData>       m_OverridingSpellData;
         /// <summary> is the player currently casting a spell ? </summary>
@@ -76,9 +76,9 @@ namespace Game.Character
         public bool                         IsCastingUncancellable  => m_IsCasting && ! m_IsCurrentSpellCancellable;
         public float                        AnimationTimer          => m_AnimationTimer;
         public ESpell                       SelectedSpell           => m_SelectedSpell;
-        public ESpell                       AutoAttack              => m_AutoAttack;
-        public ESpell                       SpecialAbility          => m_SpecialAbility;
-        public ESpell                       Ultimate                => m_Ultimate;
+        public ESpell                       AutoAttack              => m_AutoAttack.Value;
+        public ESpell                       SpecialAbility          => m_SpecialAbility.Value;
+        public ESpell                       Ultimate                => m_Ultimate.Value;
         public Transform                    SpellSpawn              => m_SpellSpawn;
         public Vector3                      TargetPos               => m_TargetPos.Value;   
 
@@ -138,9 +138,9 @@ namespace Game.Character
             if (!IsServer)
                 return;
           
-            m_AutoAttack = autoAttack;
-            m_SpecialAbility = specialAbility;
-            m_Ultimate = ultimate;
+            m_AutoAttack.Value        = autoAttack;
+            m_SpecialAbility.Value    = specialAbility;
+            m_Ultimate.Value          = ultimate;
 
             // insert autoattack and ultimate at the start (not necessary but i prefer)
             if (autoAttack != ESpell.None)
@@ -309,7 +309,7 @@ namespace Game.Character
             if (!CanSelect(spell))
                 return false;
 
-            if (spell != ESpell.None && spell != AutoAttack)
+            if (spell != ESpell.None && spell != m_AutoAttack.Value)
             {
                 ErrorHandler.Log("TrySelectSpell " + spell, ELogTag.SpellHandler);
                 ErrorHandler.Log("     -- CHECK : is already Casting (" + m_SelectedSpell + ") : " + m_IsCasting, ELogTag.SpellHandler);
@@ -567,7 +567,7 @@ namespace Game.Character
         /// <param name="spell"></param>
         public bool TryStartCastSpell(ESpell spell, out string reason)
         {
-            if ((m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI)) && spell != m_AutoAttack)
+            if ((m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI)) && spell != m_AutoAttack.Value)
                 ErrorHandler.Log("TryStartCastSpell : " + spell, ELogTag.SpellHandler);
 
             if (!IsServer)
@@ -886,7 +886,7 @@ namespace Game.Character
 
         public void ReplaceAutoAttack(SpellData spellData)
         {
-            ReplaceSpell(AutoAttack, spellData);
+            ReplaceSpell(m_AutoAttack.Value, spellData);
         } 
 
         public void ReplaceSpell(ESpell spell, SpellData spellData)
@@ -963,14 +963,6 @@ namespace Game.Character
 
             // call just on server side
             OnPreSpellEvent?.Invoke(spellName, spellEvent);
-
-            // check has effect linked to that event
-            if (! spellData.HasGfxEventAt(spellEvent))
-            {
-                if (spellEvent == ESpellEvent.OnCast && spellData.CastSoundFX != null)
-                    GameManager.Instance.PlayCastSoundClientRPC(spellName);
-                return;
-            }
 
             ushort spellEventByte = (ushort)spellEvent;
 

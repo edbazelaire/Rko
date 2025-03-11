@@ -37,7 +37,7 @@ MonoBehaviour:
     SpawnLocation: 2
     BodyPart: 0
     IsFollowing: 0
-    Offset: {x: -0.75, y: 0}
+    Offset: {x: -0.5, y: 0}
     Animation: 0
     SpellAnimation: 
     StateEffects: 
@@ -53,20 +53,21 @@ MonoBehaviour:
   TargetOffset:
     X: -0.5
     Y: 0
-  LockTarget: 300
+  LockTarget: 400
   ApplyIfNotHitting: 0
   m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
+  m_ExecutionDamages: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
   m_Duration: -1
-  Delay: 0
+  Delay: 1
   m_Force:
     m_Speed: 0
     m_Duration: 0

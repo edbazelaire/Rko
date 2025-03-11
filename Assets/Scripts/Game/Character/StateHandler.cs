@@ -1,4 +1,5 @@
-﻿using Data;
+﻿using Assets.Scripts.Game.Character.Netcode;
+using Data;
 using Enums;
 using Game.Loaders;
 using Game.Spells;
@@ -202,6 +203,7 @@ namespace Game.Character
             if (!IsServer)
                 return;
 
+            // diseable collider
             m_Controller.Collider.enabled = !on;
 
             if (on)
@@ -379,7 +381,7 @@ namespace Game.Character
             if (! IsServer)
                 return;
 
-            if (! CheckCanBeApplied(stateEffect))
+            if (! CheckCanBeApplied(stateEffect, caster))
                 return;
 
             var pastState = GetAnimationState();
@@ -625,9 +627,9 @@ namespace Game.Character
 
         #region Checkers
 
-        public bool CheckCanBeApplied(StateEffect stateEffect)
+        public bool CheckCanBeApplied(StateEffect stateEffect, Controller caster)
         {
-            if (IsImmuneToEffects && ! IsFriendlyEffect(stateEffect))
+            if (IsImmuneToEffects && ! (IsFriendlyEffect(stateEffect) || caster.Team == m_Controller.Team))
                 return false;
 
             return true;

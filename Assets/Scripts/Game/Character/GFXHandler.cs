@@ -367,9 +367,17 @@ namespace Game.Character
             if (spellEvent >= ESpellEvent.OnSpawn && spellEvent != ESpellEvent.OnEnd)
                 return;
 
+            // check has effect linked to that event
+            var spellData = SpellLoader.GetSpellData(spellName);
+            if (! spellData.HasGfxEventAt(spellEvent))
+            {
+                if (spellEvent == ESpellEvent.OnCast && spellData.CastSoundFX != null)
+                    GameManager.Instance.PlayCastSoundClientRPC(spellName);
+                return;
+            }
+
             ErrorHandler.Log(spellName + " SpawnSpellGFX : " + spellEvent, ELogTag.SpellGFX);
 
-            var spellData = SpellLoader.GetSpellData(spellName);
             foreach (SPrefabSpawn<ESpellEvent> prefabSpawn in spellData.SpellEventActions)
             {
                 if (prefabSpawn.GFXLifetime.StartSpellPart != spellEvent)
@@ -539,8 +547,6 @@ namespace Game.Character
         /// <param name="newValue"></param>
         void OnStateEffectListChanged(EListEvent listEvent, string stateEffect, int stacks, float duration)
         {
-            ErrorHandler.Log(listEvent + " " + stateEffect, ELogTag.Animation);
-
             // ---------------------------------------------------------------------------------------
             // SPECIAL EFFECTS
             if (stateEffect == EStateEffect.Invisible.ToString())

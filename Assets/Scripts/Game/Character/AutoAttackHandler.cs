@@ -53,7 +53,7 @@ namespace Game.Character
 
         private void Update()
         {
-            if (!IsServer)
+            if (! IsServer)
                 return;
 
             if (m_IntervalTimer > 0)
@@ -62,11 +62,11 @@ namespace Game.Character
                 return;
             }
 
-            if (!CanCastAutoAttack)
+            if (! CanCastAutoAttack)
                 return;
 
             bool success = m_Controller.SpellHandler.TryStartCastSpell(m_Controller.SpellHandler.AutoAttack);
-            if (!success)
+            if (! success)
                 return;
 
             m_IntervalTimer = m_Interval;
@@ -77,10 +77,10 @@ namespace Game.Character
         {
             get
             {
-                if (!m_Controller.GameRunning)
+                if (! m_Controller.GameRunning)
                     return false;
 
-                if (m_Controller.Movement.MoveX.Value != 0)
+                if (m_Controller.Movement.IsMoving)
                     return false;
 
                 if (m_Controller.SpellHandler.IsCasting)

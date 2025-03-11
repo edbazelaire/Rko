@@ -131,7 +131,10 @@ public class Controller : NetworkBehaviour
         // add controller on client side
         if (!newValue)
             return;
-        
+
+        if (IsPlayer)
+            transform.position = ArenaManager.Instance.Spawns[m_Team.Value][0].position;
+
         if (! IsSpawn)
         {
             GameManager.Instance.AddController(PlayerId, this);

@@ -31,6 +31,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 1
       StateEffectName: Frozen
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: -1
@@ -39,7 +40,7 @@ MonoBehaviour:
   m_MajorPower:
     Description: 
     m_DescriptionVariables: []
-    m_BonusLevel: 5
+    m_BonusLevel: 8
     m_TriggerEffects:
     - SpellDataName: ToxicWater
       Level: 0
@@ -50,6 +51,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 1
       StateEffectName: Frozen
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: -1
@@ -58,7 +60,7 @@ MonoBehaviour:
   m_PrimalPower:
     Description: 
     m_DescriptionVariables: []
-    m_BonusLevel: 10
+    m_BonusLevel: 18
     m_TriggerEffects:
     - SpellDataName: ToxicWater
       Level: 0
@@ -69,6 +71,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 1
       StateEffectName: Frozen
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: -1
