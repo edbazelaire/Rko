@@ -657,9 +657,9 @@ namespace Game.Spells
                 return;
             }
 
+            // if spell data were destroyed - exit
             if (m_SpellData == null)
             {
-                ErrorHandler.Error("Unable to display graphism for spell event " + spellEvent + " : SpellData is null");
                 return;
             }
 

@@ -253,8 +253,8 @@ namespace Data
                 return null;
             }
 
-            if (Prefab.name.Contains("FireTrail"))
-                Debug.Log("InstantiatePrefab() FireTrail GFX");
+            //if (Prefab.name.Contains("FireTrail"))
+            //    Debug.Log("InstantiatePrefab() FireTrail GFX");
 
             return PoolManager.Pool(Prefab, position, Quaternion.identity, IsFollowing ? parent : null);
         }

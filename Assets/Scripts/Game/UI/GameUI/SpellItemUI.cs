@@ -47,9 +47,6 @@ namespace Game.UI
             if (GameManager.IsGameOver)
                 return;
 
-            // not locked -> skip update
-            if (m_State != EButtonState.Locked)
-                return;
             
             UpdateCooldown();            
         }
@@ -142,21 +139,23 @@ namespace Game.UI
         /// <param name="changeEvent"></param>
         void UpdateCooldown()
         {
+            // not locked -> skip update cooldown
+            if (m_State != EButtonState.Locked)
+                return;
+
+            // cooldown <= 0 : keep this LOCK state (without cooldown display) until Server changes the State
             if (m_CooldownTimer <= 0)
             {
                 m_CooldownCtr.gameObject.SetActive(false);
                 return;
             }
 
-            if (m_CooldownCtr == null || !m_CooldownCtr.isActiveAndEnabled)
-                return;
-
             // update cooldown 
             m_CooldownTimer -= Time.deltaTime;
             if (m_CooldownTimer <= 0)
                 m_CooldownTimer = 0;        // cooldown over : wait for server to say its ok before changing state
 
-            if (m_IsUltimateSpell)
+            if (m_CooldownCtr == null)
                 return;
 
             m_CooldownCtr.text = m_CooldownTimer.ToString("0");
@@ -174,9 +173,15 @@ namespace Game.UI
 
             switch (state)
             {
+                case EButtonState.Normal:
+                    m_CooldownTimer = 0;
+                    break;
+
                 case EButtonState.Locked:
                     if (m_CooldownTimer <= 0)
                         m_CooldownCtr.gameObject.SetActive(false);
+                    else
+                        m_CooldownCtr.gameObject.SetActive(true);
                     break;
             }
         }
@@ -257,9 +262,8 @@ namespace Game.UI
                     break;
 
                 case ESpellSelectionState.Cooldown:
-                    SetState(EButtonState.Locked);
                     m_CooldownTimer = m_Owner.SpellHandler.CalculateCooldown(m_BaseCooldown);
-                    m_CooldownCtr.gameObject.SetActive(true);
+                    SetState(EButtonState.Locked);
                     break;
 
                 default:
@@ -277,6 +281,11 @@ namespace Game.UI
         {
             if (spell != m_Spell)
                 return;
+
+            // =====================================================================
+            // TODO : Remove
+            Debug.Log("OnCooldownChanged("+ spell + ") : " + newCooldown);
+            // =====================================================================
 
             m_CooldownTimer = newCooldown;
         }

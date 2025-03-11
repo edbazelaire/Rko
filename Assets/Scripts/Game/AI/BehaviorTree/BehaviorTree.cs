@@ -78,7 +78,6 @@ namespace AI
 
             if (activated == false && m_Controller.IsServer) 
             {
-                m_Controller.Movement.MoveX.Value = 0;
                 m_Controller.Movement.SetMovement(0);
                 m_Controller.AnimationHandler.CancelCastAnimation();
             }

@@ -39,6 +39,7 @@ MonoBehaviour:
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 0
+  m_ExecutionDamages: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -68,7 +69,7 @@ MonoBehaviour:
   m_Cooldown: 0
   m_ActivationData: {fileID: 11400000, guid: 05924addffdc1a34d8a9047eee0e11fb, type: 2}
   m_NumActivations: -1
-  m_InactiveTimer: 2
+  m_InactiveTimer: 0.5
   m_ArmedTimer: 0
   m_TrigerredTimer: 0
   m_ActivateTimer: 0
