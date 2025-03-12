@@ -4,6 +4,7 @@ using Data;
 using Data.GameManagement;
 using Enums;
 using Game.Spells;
+using Google.Apis.Sheets.v4.Data;
 using MyBox;
 using System;
 using System.Collections;
@@ -60,7 +61,6 @@ namespace Game.SpellGFXs
             m_StateEffectName   = stateEffectName;
             m_PrefabSpawn       = prefabSpawn;
             m_BodyPart          = prefabSpawn.BodyPart;
-            m_EndStarted        = false;
 
             if (forcedDuration != null) 
                 m_Duration = forcedDuration.Value;
@@ -70,6 +70,9 @@ namespace Game.SpellGFXs
 
             // find components if any
             FindComponents();
+
+            // refresh data in case of re-using an existant object
+            RefreshData();
 
             // set Parent & Position based on provided data
             transform.localScale = Vector3.one * (prefabSpawn.Size > 0 ? prefabSpawn.Size : (spellData != null ? spellData.Size : 1));
@@ -117,6 +120,11 @@ namespace Game.SpellGFXs
 
             // start animation
             StartAnimation();
+        }
+
+        protected virtual void RefreshData() 
+        {
+            m_EndStarted = false;
         }
 
         protected virtual void StartAnimation() { }
@@ -217,6 +225,7 @@ namespace Game.SpellGFXs
         {
             switch (prefabSpawn.SpawnTarget)
             {
+                case ESpawnTarget.None:
                 case ESpawnTarget.MapCenter:
                 case ESpawnTarget.TargetPos:
                     return null;
@@ -251,7 +260,7 @@ namespace Game.SpellGFXs
                     return spell.transform;
 
                 default:
-                    ErrorHandler.Warning("SPrefabSpawn::Spawn() - Unhandled spawn Target " + prefabSpawn.SpawnTarget + " for prefab " + prefabSpawn.Prefab.name);
+                    ErrorHandler.Warning("SPrefabSpawn::Spawn() - Unhandled spawn Target " + prefabSpawn.SpawnTarget + " for prefab " + prefabSpawn.Prefab != null ? prefabSpawn.Prefab.name : null);
                     return null;
             }
         }

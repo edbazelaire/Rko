@@ -775,7 +775,8 @@
         SpellGFX            = 108,      // spell graphics playing
         StateEffectGFX      = 109,      // spell graphics playing
         BonusStats          = 110,      // track increased statistiques
-        Movement            = 111,      // track increased statistiques
+        Movement            = 111,      // display movement variables and inputs
+        Forces              = 112,      // display FORCES adding / removing
 
         // AI
         AI                  = 200,

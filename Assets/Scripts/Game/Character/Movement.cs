@@ -1,12 +1,15 @@
 using Assets.Scripts.Data.DataStructures.SpellSubStructures;
+using Assets.Scripts.Game.Character.Netcode;
 using Data.GameManagement;
 using Enums;
+using Game.Character.Netcode;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using Tools;
 using Unity.Netcode;
 using UnityEngine;
+using Utilities;
 
 namespace Game.Character
 {
@@ -14,26 +17,67 @@ namespace Game.Character
     {
         #region Members
 
+        // ===================================================================================================
+        // Events
+        public Action<int> MovementInputChangedEvent;
+        public Action<int> MoveXChangedEvent;
+
+        // ===================================================================================================
+        // Constants
+        const float SERVER_TICK_RATE = 60f;
+        const int BUFFER_SIZE = 1024;
+
+        // ===================================================================================================
+        // GameObjects & Components
         Controller m_Controller;
+        ClientNetworkTransform m_ClientNetworkTransform;
 
-        NetworkVariable<int> m_MoveX = new(0);
+        // Network Variables
+        NetworkVariable<float>  m_InitialSpeed      = new(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        NetworkVariable<float>  m_Force             = new(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-        // [Server Data]
-        List<SForce> m_Forces = new List<SForce>();
-
-        // [Client Data]
         bool m_IsActive = false;
-        bool m_CanMoveClient = true;
-        int m_MovementInput = 0;
-        bool m_MovementBlocked = false;
-        bool m_MovementCancelled = false;
-        float m_SpeedBonus = 0f;
-        float m_InitialSpeed;
 
-        public NetworkVariable<int> MoveX => m_MoveX;
-        private NetworkVariable<Vector2> m_NetworkPosition = new NetworkVariable<Vector2>(Vector2.zero);
-        public float Speed => Math.Max(0, Settings.CharacterSpeedFactor * (m_InitialSpeed + m_SpeedBonus));
-        public bool IsMoving => m_MoveX.Value != 0;
+        // Netcode general
+        NetworkTimer m_NetworkTimer;
+        CountdownTimer m_ReconciliationCooldown;
+
+        // Netcode client specific
+        CircularBuffer<SStatePayload> m_ClientStateBuffer;
+        CircularBuffer<SInputPayload> m_ClientInputBuffer;
+        SStatePayload m_LastServerState;
+        SStatePayload m_LastProcessedState;
+
+        // Netcode server specific
+        CircularBuffer<SStatePayload> m_ServerStateBuffer;
+        Queue<SInputPayload> m_ServerInputQueue;
+
+        [Header("Netcode")]
+        float m_ReconciliationThreshold = 0.2f;
+        float m_ReconciliationCooldownTime = 1f;
+        float m_ExtrapolationLimit = 0.5f;      // 500 ms
+        float m_ExtrapolationMultiplier = 1.2f;
+
+        SStatePayload m_ExtrapolationState;
+        CountdownTimer m_ExtrapolationCooldown;
+
+        // Shared Data
+        int m_MoveX = 0;
+
+        // Server Data
+        List<SForce>    m_Forces = new List<SForce>();
+        bool            m_MovementBlocked = false;
+        bool            m_MovementCancelled = false;
+
+        // Client Data
+        int m_MovementInput = 0;
+        bool m_CanMoveClient = true;
+
+        public float Speed      => Math.Max(0, Settings.CharacterSpeedFactor * (m_InitialSpeed.Value + m_Controller.StateHandler.SpeedBonus.Value));
+        public bool IsMoving    => m_MoveX != 0;
+        public int MoveX        => m_MoveX;
+
+        protected float GetVelocity(int direction) => direction * Speed + m_Force.Value;
 
         #endregion
 
@@ -43,220 +87,279 @@ namespace Game.Character
         void Awake()
         {
             m_Controller = GetComponent<Controller>();
+            m_ClientNetworkTransform = GetComponent<ClientNetworkTransform>();
+
+            m_NetworkTimer          = new NetworkTimer(SERVER_TICK_RATE);
+            m_ClientStateBuffer     = new CircularBuffer<SStatePayload>(BUFFER_SIZE);
+            m_ClientInputBuffer     = new CircularBuffer<SInputPayload>(BUFFER_SIZE);
+            m_ServerStateBuffer     = new CircularBuffer<SStatePayload>(BUFFER_SIZE);
+            m_ServerInputQueue      = new Queue<SInputPayload>(BUFFER_SIZE);
+
+            m_ReconciliationCooldown = new CountdownTimer(m_ReconciliationCooldownTime);
+            m_ExtrapolationCooldown = new CountdownTimer(m_ExtrapolationLimit);
+
+            m_ReconciliationCooldown.OnTimerStart += () =>
+            {
+                m_ExtrapolationCooldown.Stop();
+            };
+
+            m_ExtrapolationCooldown.OnTimerStart += () =>
+            {
+                m_ReconciliationCooldown.Stop();
+
+                ChangeAuthority(AuthorityMode.Server);
+                m_ClientNetworkTransform.SyncPositionX = false;
+                m_ClientNetworkTransform.SyncPositionY = false;
+            };
+
+            m_ExtrapolationCooldown.OnTimerStop += () =>
+            {
+                m_ExtrapolationState = default;
+
+                ChangeAuthority(AuthorityMode.Client);
+                m_ClientNetworkTransform.SyncPositionX = true;
+                m_ClientNetworkTransform.SyncPositionY = true;
+            };
         }
 
         public override void OnNetworkSpawn()
         {
             if (IsServer)
                 return;
-
-            // CLIENT SIDE --------------------------------------------
-            m_MoveX.OnValueChanged += OnMoveXChanged;
-
-            if (IsOwner)
-                ShakeServerRpc();
         }
 
-        /// <summary>
-        /// Initialize player movement speed
-        /// </summary>
-        /// <param name="characterSpeed"></param>
         public void Initialize(float characterSpeed)
         {
-            m_Controller.StateHandler.SpeedBonus.OnValueChanged += OnSpeedBonusValueChanged;
-
-            if (!IsServer)
-                return;
-
-            m_InitialSpeed = characterSpeed;
+            m_InitialSpeed.Value = characterSpeed;
         }
 
         public void Activate(bool activate)
         {
-            if (!activate)
+            if (! activate)
             {
+                SetMovementInput(0);
                 SetMovement(0);
                 ResetRotation();
+                UnRegisterListeners();
+            }
+            else
+            {
+                RegisterListeners();
             }
 
             m_IsActive = activate;
-
-            if (IsServer)
-            {
-                m_MoveX.Value = 0;
-            }
         }
 
+        #endregion
+
+
+        #region Updates
 
         void Update()
         {
+            // must be in game and active to process
             if (!m_Controller.GameRunning || !m_IsActive)
                 return;
 
-            CheckInputs();
-
-            if (!IsServer)
+            // has to be a player to update this (ISSUE WITH INVOCATIONS ??)
+            if (!m_Controller.IsPlayer)
                 return;
 
-            UpdateCanMove();
-            UpdateMovement();
-        }
-
-        private void FixedUpdate()
-        {
-            // transform.position = Vector2.Lerp(transform.position, m_NetworkPosition.Value, 0.2f);
-
-            //if (!IsOwner)
-            //{
-            //    transform.position = Vector2.Lerp(transform.position, m_NetworkPosition.Value, 0.2f);
-
-            //    //float distance = Vector2.Distance(transform.position, m_NetworkPosition.Value);
-
-            //    //// If small desync, snap instantly
-            //    //if (distance < 0.05f)
-            //    //{
-            //    //    transform.position = m_NetworkPosition.Value;
-            //    //}
-            //    //// If large desync, smooth it out
-            //    //else
-            //    //{
-            //    //    transform.position = Vector2.Lerp(transform.position, m_NetworkPosition.Value, 0.4f);
-            //    //}
-            //}
-        }
-
-        #endregion
-
-
-        #region ServerRPC Methods
-
-        [ServerRpc]
-        public void SetMovementServerRPC(int moveX)
-        {
-            if (m_MovementCancelled)
-                m_MovementCancelled = false;
-            else
-                SetMovement(moveX);
-        }
-
-        [ServerRpc]
-        public void ResetCancelMovementServerRPC()
-        {
-            m_MovementCancelled = false;
-        }
-
-        public void SetMovement(int moveX)
-        {
-            if (!IsServer)
-                return;
-
-            m_MovementInput = moveX;
-        }
-
-        #endregion
-
-
-        #region Force
-
-        public float Force
-        {
-            get
+            if (IsOwner)
             {
-                float force = 0f;
-                foreach (var sforce in m_Forces)
+                CheckInputs();
+            }
+
+            m_NetworkTimer.Update(Time.deltaTime);
+            m_ReconciliationCooldown.Tick(Time.deltaTime);
+            m_ExtrapolationCooldown.Tick(Time.deltaTime);
+
+            // Update or Fixed Update ? Or Both ?
+            Extrapolate();
+        }
+
+        void FixedUpdate()
+        {
+            // must be in game and active to process
+            if (!m_Controller.GameRunning || !m_IsActive)
+                return;
+
+            if (IsServer)
+                UpdateCanMove();
+
+            // --------------------------------------------------
+            // AI Movement
+            if (! m_Controller.IsPlayer)
+            {
+                if (IsServer)
+                    Move(m_MoveX);
+                return;
+            }
+
+            // --------------------------------------------------
+            // Player synchronized movement
+            while (m_NetworkTimer.ShouldTick())
+            {
+                HandleClientTick();
+                HandleServerTick();
+            }
+        }
+
+        void HandleServerTick()
+        {
+            if (!IsServer) return;
+
+            SInputPayload inputPayload = default;
+            SStatePayload statePayload;
+            var bufferIndex = -1;
+
+            while (m_ServerInputQueue.Count > 0)
+            {
+                inputPayload = m_ServerInputQueue.Dequeue();
+                bufferIndex = inputPayload.Tick % BUFFER_SIZE;
+
+                if (IsHost && IsOwner) //If we dont check if its host then we will have double input from host. I mean host will move twice faster then he should
                 {
-                    force += sforce.Speed;
+                    statePayload = new SStatePayload()
+                    {
+                        Tick = inputPayload.Tick,
+                        Position = transform.position,
+                        Velocity = GetVelocity(inputPayload.Direction)
+                    };
+
+                    m_ServerStateBuffer.Add(statePayload, bufferIndex);
+                    SendToClientRPC(statePayload);
+                    continue;
                 }
-                return force;
+
+                statePayload = ProcessMovement(inputPayload);
+                m_ServerStateBuffer.Add(statePayload, bufferIndex);
+            }
+
+            if (bufferIndex == -1) return;
+
+            SendToClientRPC(m_ServerStateBuffer.Get(bufferIndex));
+            HandleExtrapolation(m_ServerStateBuffer.Get(bufferIndex), CalculateLatencyInMillis(inputPayload));
+        }
+
+        void HandleClientTick()
+        {
+            if (!IsClient) return;
+
+            var currentTick = m_NetworkTimer.CurrentTick;
+            var bufferIndex = currentTick % BUFFER_SIZE;
+
+            SInputPayload inputPayload = new SInputPayload()
+            {
+                Tick        = currentTick,
+                Timestamp   = DateTime.Now,
+                Direction   = m_MovementInput,
+            };
+
+            // only owner can handle Inputs
+            if (IsOwner)
+            {
+                m_ClientInputBuffer.Add(inputPayload, bufferIndex);
+                SendToServerRPC(inputPayload);
+            }
+
+            SStatePayload statePayload = ProcessMovement(inputPayload);
+            m_ClientStateBuffer.Add(statePayload, bufferIndex);
+
+            HandleServerReconciliation();
+        }
+
+        bool ShouldReconcile()
+        {
+            bool isNewServerState = !m_LastServerState.Equals(default);
+            bool isLastStateUndefinedOrDifferent = m_LastProcessedState.Equals(default)
+                || !m_LastProcessedState.Equals(m_LastServerState);
+
+            return isNewServerState 
+                && isLastStateUndefinedOrDifferent 
+                && !m_ReconciliationCooldown.IsRunning 
+                && !m_ExtrapolationCooldown.IsRunning;
+        }
+
+        void HandleServerReconciliation()
+        {
+            if (!ShouldReconcile()) return;
+
+            float positionError;
+            int bufferIndex;
+
+            bufferIndex = m_LastServerState.Tick % BUFFER_SIZE;
+            if (bufferIndex <= 0) return;   // not enough data to reconcile
+
+            SStatePayload rewindState = IsHost ? m_ServerStateBuffer.Get(bufferIndex - 1) : m_LastServerState;
+            SStatePayload clientState = IsHost ? m_ClientStateBuffer.Get(bufferIndex - 1) : m_ClientStateBuffer.Get(bufferIndex);
+            positionError = Vector3.Distance(rewindState.Position, clientState.Position);
+
+            if (positionError > m_ReconciliationThreshold)
+                ReconcileState(rewindState);
+
+            m_LastProcessedState = m_LastServerState;
+        }
+
+        void ReconcileState(SStatePayload rewindState)
+        {
+            m_ReconciliationCooldown.Start();
+
+            transform.position = rewindState.Position;
+
+            if (!rewindState.Equals(m_LastServerState))
+                return;
+
+            m_ClientStateBuffer.Add(rewindState, rewindState.Tick);
+
+            // replay all inputs from the rewind state to the current data
+            int tickToReplay = m_LastServerState.Tick;
+
+            while (tickToReplay < m_NetworkTimer.CurrentTick)
+            {
+                int bufferIndex = tickToReplay % BUFFER_SIZE;
+                SStatePayload statePayload = ProcessMovement(m_ClientInputBuffer.Get(bufferIndex));
+                m_ClientStateBuffer.Add(statePayload, bufferIndex);
+                tickToReplay++;
             }
         }
 
-        public void AddForce(SForce force)
+        [ServerRpc]
+        void SendToServerRPC(SInputPayload inputPayload)
         {
-            if (force == null || force == default)
-                return;
-
-            if (force.Duration > 0)
-                StartCoroutine(StartForceTimer(force));
-
-            m_Forces.Add(force);
+            m_ServerInputQueue.Enqueue(inputPayload);
         }
 
-        public void RemoveForce(SForce force)
+        [ClientRpc]
+        void SendToClientRPC(SStatePayload statePayload)
         {
-            if (!m_Forces.Contains(force))
-                return;
-            m_Forces.Remove(force);
+            // TODO ??????????????????????????????
+            //if (!IsOwner) return;
+            // TODO ??????????????????????????????
+
+            m_LastServerState = statePayload;
         }
 
-        IEnumerator StartForceTimer(SForce force)
+        SStatePayload ProcessMovement(SInputPayload input)
         {
-            yield return new WaitForSeconds(force.Duration);
-            m_Forces.Remove(force);
+            // Update movement input
+            SetMovementInput(input.Direction);
+
+            // Move character
+            Move(input.Direction);
+
+            return new SStatePayload()
+            {
+                Tick        = input.Tick,
+                Position    = transform.position,
+                Velocity    = GetVelocity(input.Direction)
+            };
         }
 
         #endregion
 
 
-        #region Private Manipulators
-
-        /// <summary>
-        /// Apply speed on position
-        /// </summary>
-        void UpdateMovement()
-        {
-            // depending on team, the camera is rotated implying that movement is inverted
-            float teamFactor = m_Controller.Team == 0 ? 1f : -1f;
-
-            if (!CanMove || m_MovementInput == 0)
-            {
-                if (m_MoveX.Value != 0)
-                    m_MoveX.Value = 0;
-            }
-            else
-            {
-                if (m_MoveX.Value != m_MovementInput)
-                    m_MoveX.Value = m_MovementInput;
-
-                // update rotation depending on movement (and team)
-                if (teamFactor * m_MoveX.Value == 1)
-                    SetRotation(0f);
-                else if (teamFactor * m_MoveX.Value == -1)
-                    SetRotation(180f);
-            }
-
-            // apply movement and Force
-            transform.position += new Vector3(
-                teamFactor * (m_MoveX.Value * Speed + Force) * Time.deltaTime,
-                0f, 0f);
-
-            // ============================================================================
-            // TODO : REMOVE ?
-            //m_NetworkPosition.Value = transform.position;
-            // ============================================================================
-        }
-
-        /// <summary>
-        /// Check if movement allowed (on server side) is the same as most recent value provided to the Client.
-        /// If not -> send the correct value to the client
-        /// </summary>
-        void UpdateCanMove()
-        {
-            if (!IsServer)
-                return;
-
-            bool canMove = CanMove;
-            if (m_CanMoveClient != canMove)
-            {
-                canMove = CanMove;
-                SetCanMoveClientRPC(canMove);
-            }
-        }
-
-        void SetRotation(float y)
-        {
-            transform.localRotation = Quaternion.Euler(0f, y, 0f);
-        }
+        #region Movement Input Methods
 
         /// <summary>
         /// Check if movement inputs have beed pressed
@@ -280,20 +383,140 @@ namespace Game.Character
                 moveX = 1;
             }
 
-            if (m_MovementInput != moveX)
+            SetMovementInput(moveX);
+        }
+
+        void SetMovementInput(int direction)
+        {
+            if (m_MovementInput == direction)
+                return;
+
+            if (m_MovementCancelled)
             {
-                SetMovementInput(moveX);
-                SetMovementServerRPC(moveX);
+                m_MovementCancelled = false;
+                direction = 0;
+            }
+
+            m_MovementInput = direction;
+            MovementInputChangedEvent?.Invoke(direction);
+        }
+
+        public void SetMovement(int moveX)
+        {
+            if (m_MoveX == moveX)
+                return;
+
+            m_MoveX = moveX;
+            MoveXChangedEvent?.Invoke(m_MoveX);
+
+            if (IsServer)
+                SetMovementClientRPC(moveX);
+        }
+
+        [ClientRpc]
+        void SetMovementClientRPC(int moveX)
+        {
+            if (IsOwner)
+                return;
+
+            SetMovementInput(moveX);
+            SetMovement(moveX);
+        }
+
+        #endregion
+
+
+        #region Force
+
+        public void AddForce(SForce force)
+        {
+            if (! IsServer)
+                return;
+
+            if (force == null || force == default || force.Speed == 0)
+                return;
+
+            if (force.Duration > 0)
+                StartCoroutine(StartForceTimer(force));
+
+            m_Forces.Add(force);
+            UpdateForce();
+        }
+
+        public void RemoveForce(SForce force)
+        {
+            if (!IsServer)
+                return;
+
+            if (force == null || force == default || force.Speed == 0)
+                return;
+
+            Debug.LogWarning("RemoveForce() : " + force.Speed);
+
+            if (m_Forces.Contains(force))
+                m_Forces.Remove(force);
+
+            UpdateForce();
+        }
+
+        public void UpdateForce()
+        {
+            float force = 0f;
+            foreach (var sforce in m_Forces)
+            {
+                force += sforce.Speed;
+            }
+
+            m_Force.Value = force;
+        }
+
+        IEnumerator StartForceTimer(SForce force)
+        {
+            yield return new WaitForSeconds(force.Duration);
+            RemoveForce(force);
+        }
+
+        #endregion
+
+
+        #region Movement Logic
+
+        /// <summary>
+        /// Server authoritative movement calculation
+        /// </summary>
+        void Move(int direction)
+        {
+            if (! m_CanMoveClient)
+            {
+                direction = 0;
+            }
+
+            // Update movement to expected direction
+            SetMovement(direction);
+
+            float teamFactor = m_Controller.Team == 0 ? 1f : -1f;
+            transform.position += new Vector3(
+                teamFactor * GetVelocity(m_MoveX) * Time.deltaTime,
+                0f, 0f);
+        }
+
+        void UpdateCanMove()
+        {
+            if (!IsServer)
+                return;
+
+            bool canMove = CanMove;
+            if (m_CanMoveClient != canMove)
+            {
+                m_CanMoveClient = canMove;
+                SetCanMoveClientRPC(canMove);
             }
         }
 
-        void SetMovementInput(int moveX)
-        {
-            if (m_MovementInput == moveX)
-                return;
+        #endregion
 
-            m_MovementInput = moveX;
-        }
+
+        #region Rotation
 
         void UpdateRotation(int moveX)
         {
@@ -306,11 +529,61 @@ namespace Game.Character
             ResetRotation();
         }
 
-        [ClientRpc]
-        void ResetRotationClientRPC()
+        void ResetRotation()
         {
-            ResetRotation();
+            SetRotation(m_Controller.Team == 0 ? 0f : -180f);
         }
+
+        void SetRotation(float y)
+        {
+            transform.localRotation = Quaternion.Euler(0f, y, 0f);
+        }
+
+        #endregion
+
+
+        #region Extrapolation
+
+        static float CalculateLatencyInMillis(SInputPayload inputPayload)
+        {
+            return (DateTime.Now - inputPayload.Timestamp).Milliseconds / 1000f;
+        }
+
+        bool ShouldExtrapolate(float latency) => latency < m_ExtrapolationLimit && latency > Time.fixedDeltaTime;
+
+        void HandleExtrapolation(SStatePayload latestPayload, float latency)
+        {
+            if (ShouldExtrapolate(latency))
+            {
+                if (m_ExtrapolationState.Position != default)
+                {
+                    latestPayload = m_ExtrapolationState;
+                }
+
+                float teamFactor = m_Controller.Team == 0 ? 1f : -1f;
+                m_ExtrapolationState.Position = new Vector3(
+                    teamFactor * latestPayload.Velocity * (1 + latency * m_ExtrapolationMultiplier),
+                0f, 0f);
+                m_ExtrapolationState.Velocity = latestPayload.Velocity;
+            }
+            else
+            {
+                m_ExtrapolationCooldown.Stop();
+            }
+        }
+
+        void Extrapolate()
+        {
+            if (IsServer && m_ExtrapolationCooldown.IsRunning)
+            {
+                transform.position += new Vector3(m_ExtrapolationState.Position.x, m_ExtrapolationState.Position.y, 0f);
+            }
+        }
+
+        #endregion
+
+
+        #region Client Sync
 
         [ClientRpc]
         void SetCanMoveClientRPC(bool value)
@@ -318,37 +591,16 @@ namespace Game.Character
             m_CanMoveClient = value;
         }
 
-        void ResetRotation()
+        [ClientRpc]
+        void ResetRotationClientRPC()
         {
-            SetRotation(m_Controller.Team == 0 ? 0f : -180f);
+            ResetRotation();
         }
 
         #endregion
 
 
         #region Public Manipulators
-
-        /// <summary>
-        /// Add a little bit of movement and a reset rotation on server side to be sure that the clients synchronized properly
-        /// </summary>
-        public void Shake()
-        {
-            if (!IsServer)
-                return;
-
-            // apply small movement and rotation
-            transform.position += new Vector3(0.15f, 0, 0);
-            transform.rotation = Quaternion.Euler(0.1f, 0.1f, 0.1f);
-
-            // reset to default values next frame
-            CoroutineManager.DelayMethod(ResetRotation);
-        }
-
-        [ServerRpc]
-        public void ShakeServerRpc()
-        {
-            Shake();
-        }
 
         public void CancelMovement(bool cancel)
         {
@@ -362,7 +614,7 @@ namespace Game.Character
                 return;
 
             m_MovementCancelled = cancel;
-            m_MoveX.Value = 0;
+            m_MoveX = 0;
         }
 
         public void ForceBlockMovement(bool block)
@@ -377,23 +629,44 @@ namespace Game.Character
         #endregion
 
 
-        #region Listeners
+        #region Helpers
 
-        void OnMoveXChanged(int oldValue, int moveX)
+        public void ChangeAuthority(AuthorityMode authority)
         {
-            UpdateRotation(moveX);
+            m_ClientNetworkTransform.AuthorityMode = authority;
         }
 
-        private void OnSpeedBonusValueChanged(float oldValue, float newValue)
+        #endregion
+
+
+        #region Listeners
+
+        void RegisterListeners()
         {
-            m_SpeedBonus = newValue;
+            if (IsClient)
+            {
+                MoveXChangedEvent += OnMoveXChanged;
+            }
+        }
+
+        void UnRegisterListeners()
+        {
+            if (IsClient)
+            {
+                MoveXChangedEvent -= OnMoveXChanged;
+            }
+        }
+
+        void OnMoveXChanged(int moveX)
+        {
+            // update rotation (on client side) to match the moving direction
+            UpdateRotation(moveX);
         }
 
         #endregion
 
 
         #region Dependent Attributes
-
 
         public bool CanMove
         {

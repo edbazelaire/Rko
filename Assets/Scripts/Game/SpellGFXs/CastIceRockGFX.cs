@@ -20,7 +20,6 @@ namespace Game.SpellGFXs
         protected override void FindComponents()
         {
             m_IceRock = Finder.FindComponent<SpriteRenderer>(gameObject, "IceRock");
-
             m_IceRock.gameObject.SetActive(false);
         }
 
@@ -43,7 +42,7 @@ namespace Game.SpellGFXs
             while (m_Timer > m_Duration * 0.6f) 
                 yield return null;
 
-           transform.parent = m_Controller.GFXHandler.GetBodyPart(EBodyPart.R_Hand).transform;
+            transform.SetParent(m_Controller.GFXHandler.GetBodyPart(EBodyPart.R_Hand).transform);
         }
 
 

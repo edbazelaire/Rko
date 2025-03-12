@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ToxicWater
   m_EditorClassIdentifier: 
   m_Description: 'While the target is [Frozen] holds the duration of [Poison] and
-    [Infected].\nAlso [SubStateEffect.0]'
+    [Infected].\nAlso [SubStateEffect.0.Description]'
   m_DescriptionVariables: 
   m_StateEffectType: 0
   m_IsDisplayed: 0
@@ -36,6 +36,7 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_MaxStacks: 1
   m_StackDecay: -1
+  m_Energy: 0
   m_BonusStats: []
   m_SpeedBonus: 0
   m_CastSpeed: 0

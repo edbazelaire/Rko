@@ -17,6 +17,14 @@ namespace Game.SpellGFXs
 
         #region Init
 
+        protected override void RefreshData()
+        {
+            base.RefreshData();
+
+            m_AnimationQueue = new Queue<IEnumerator>();
+            m_Timer = 0f;
+        }
+
         protected override void ApplyPostProcessing()
         {
             base.ApplyPostProcessing();

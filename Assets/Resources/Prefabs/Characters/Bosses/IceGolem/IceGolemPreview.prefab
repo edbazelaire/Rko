@@ -772,7 +772,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1567751014378060819}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ad8deae8091111f4eb30a56c1f4e0d3e, type: 3}
   m_Name: 
@@ -860,6 +860,20 @@ MonoBehaviour:
     OriginatingState: 628269469
     DestinationState: 2081823275
     TransitionDuration: 0
+    TriggerNameHash: 890595506
+    TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 370850502
+    DestinationState: 2081823275
+    TransitionDuration: 0.25
+    TriggerNameHash: 890595506
+    TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -303717695
+    DestinationState: 2081823275
+    TransitionDuration: 0.25
     TriggerNameHash: 890595506
     TransitionIndex: 0
   m_Animator: {fileID: 314913181824088977}

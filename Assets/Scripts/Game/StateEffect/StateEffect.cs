@@ -149,6 +149,7 @@ namespace Game.Spells
         public virtual EStateEffectType StateEffectType     => m_StateEffectType;
         public List<SStateEffectData>   SubStateEffects     => m_SubStateEffects;
 
+        public Controller               Caster              => m_Caster;
         public bool                     IsActivated         => m_IsActivated;
         public bool                     IsDisplayed         => m_IsDisplayed;
         public bool                     IsUnique            => StateEffectType == EStateEffectType.Incarnation || StateEffectType == EStateEffectType.AutoAttackBuff;

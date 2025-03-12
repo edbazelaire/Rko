@@ -2,7 +2,6 @@
 using AppleAuth.Enums;
 using AppleAuth.Interfaces;
 using AppleAuth.Native;
-using Assets.Scripts.Tools;
 using Enums;
 using Managers.MainMenu;
 using MyBox;
