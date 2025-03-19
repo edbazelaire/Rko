@@ -13,6 +13,7 @@ namespace Menu
         [SerializeField] protected Color m_BorderColorActivated;
         [SerializeField] protected Color m_BackgroundColorActivated;
         [SerializeField] protected Color m_ColorActivated;
+        [SerializeField] protected Color m_TextSelectedColor;
 
         public Action TabButtonClickedEvent;
 
@@ -26,6 +27,7 @@ namespace Menu
         protected Color m_BaseBorderColor;
         protected Color m_BaseBackgroundColor;
         protected Color m_BaseColor;
+        protected Color m_BaseTextColor;
 
         protected bool m_Activated;
 
@@ -54,8 +56,9 @@ namespace Menu
             if (m_ColorActivated != null)
             {
                 if (m_Text != null)
-                    m_BaseColor = m_Text.color;
-                else if (m_Icon != null)
+                    m_BaseTextColor = m_Text.color;
+                
+                if (m_Icon != null)
                     m_BaseColor = m_Icon.color;
             }
                 
@@ -104,7 +107,10 @@ namespace Menu
                 m_Icon.transform.localScale = activate ? new Vector3(1.2f, 1.2f, 1f) : Vector3.one;
 
             if (m_Text != null)
+            {
                 m_Text.transform.localScale = activate ? new Vector3(1.2f, 1.2f, 1f) : Vector3.one;
+            }
+                
         }
 
         protected virtual void SetActivationColor(bool activate)
@@ -117,9 +123,9 @@ namespace Menu
                 m_Icon.color = activate ? m_ColorActivated : m_BaseColor;
             }
 
-            if (m_Text != null)
+            if (m_Text != null && m_TextSelectedColor != default)
             {
-                m_Text.color = activate ? m_ColorActivated : m_BaseColor;
+                m_Text.color = activate ? m_TextSelectedColor : m_BaseTextColor;
             }
         }
 

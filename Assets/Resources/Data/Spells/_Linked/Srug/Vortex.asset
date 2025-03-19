@@ -22,9 +22,6 @@ MonoBehaviour:
   Linked: 1
   Graphics: {fileID: 6943126035498906454, guid: a41a16f244058b0459bfc2c28f7a5799, type: 3}
   SpellEventActions: []
-  Preview: {fileID: 0}
-  OnAnimation: []
-  OnCastPrefabs: []
   OnHit: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -33,23 +30,34 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 2
-  LockTargetAt: 2
+  m_ClampTargetPos: 1
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: -1
   EnergyGain: 5
   EnergyCost: 0
   m_Damage: 0
+  m_ExecutionDamages: 0
   m_Heal: 0
+  m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
   m_Duration: 2
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 4
     Value: 0.05
   - Property: 3
     Value: 0.05
-  m_Size: 2.5
+  m_Size: 3.5
   TriggerPlayer: 0
   EnemyStateEffects: []
   AllyStateEffects: []
@@ -61,11 +69,14 @@ MonoBehaviour:
   m_Cooldown: 45
   CounterType: 2
   CounterActivation: 1
+  m_DamageTypeActivation: 01000000
   m_SpawnOffset: {x: 0.25, y: 0}
   m_IsFollowing: 0
   m_SpawnLocation: 2
+  IsDestroyingSpell: 1
   IsBlockingMovement: 0
   IsBlockingCast: 0
+  IsCanceledOnCast: 0
   m_DamageConversionEffects:
   - m_Ratio: 0.05
     m_Target: 6
@@ -73,4 +84,3 @@ MonoBehaviour:
     m_MinValue: 0
     m_MaxValue: 10
   OnCounterProc: {fileID: 0}
-  ColorSwap: {r: 0, g: 0, b: 0, a: 0}

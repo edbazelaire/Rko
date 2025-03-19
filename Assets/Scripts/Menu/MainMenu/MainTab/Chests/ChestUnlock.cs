@@ -43,7 +43,7 @@ namespace Menu
 
         ChestData m_ChestData   => (ChestsCloudData.Instance.Data[ChestsCloudData.KEY_CHESTS] as ChestData[])[m_Index];
         EChestLockState m_State => m_ChestData == null ? EChestLockState.Empty : m_ChestData.GetState();
-        int UnlockedIn => (int)(m_ChestData.UnlockedAt - DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+        int UnlockedIn => (int)(m_ChestData.GetUnlockedTime() - DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
 
         #endregion

@@ -779,7 +779,7 @@ namespace Game.Spells
                 return true;
 
             value = m_Controller.StateHandler.ApplyBonus(value, property, null);    // Bonus values applied to the property
-            value *= Stacks * stacksFactor;                                         // apply Stack bonus 
+            value *= stacksFactor;                                         // apply Stack bonus 
             return true;
         }
 

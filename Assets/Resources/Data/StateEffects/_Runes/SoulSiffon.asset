@@ -104,6 +104,7 @@ MonoBehaviour:
   m_TickEnergy: 0
   m_TickSpellRequirements:
   - m_StateEffectRequirements:
-    - m_StateEffect: Cursed
+    - m_SpellTarget: 50
+      m_StateEffect: Cursed
       m_Stacks: 3
       m_NStacksReductionPerLevel: 0

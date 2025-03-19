@@ -708,7 +708,7 @@ namespace Save
         public static void AddAchievementReward(EAchievementReward achievementReward, string value, bool save = true)
         {
             ErrorHandler.Log("AddAchievementReward() : " + value, ELogTag.Achievements);
-            if (AchievementRewards[achievementReward].Contains(value))
+            if (HasAchievementReward(achievementReward, value))
             {
                 ErrorHandler.Error("Trying to unlock achievement REWARD already unlocked : " + achievementReward.ToString() + " - " + value);
                 return;
@@ -730,7 +730,7 @@ namespace Save
 
         void RemoveAchievementReward(EAchievementReward achievementReward, string value, bool save = true)
         {
-            if (! AchievementRewards[achievementReward].Contains(value))
+            if (! HasAchievementReward(achievementReward, value))
             {
                 ErrorHandler.Warning("Trying to remove value " + value + " in " + achievementReward.ToString() + " but the value was not found");
                 return;
@@ -741,6 +741,11 @@ namespace Save
             if (save)
                 Instance.SaveValue(KEY_ACHIEVEMENT_REWARDS);
         } 
+
+        public static bool HasAchievementReward(EAchievementReward achievementReward, string value)
+        {
+            return AchievementRewards[achievementReward].Contains(value);
+        }
 
         #endregion
 

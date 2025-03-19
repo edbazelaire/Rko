@@ -1,5 +1,4 @@
-﻿using Assets;
-using Enums;
+﻿using Enums;
 using Game.Loaders;
 using System;
 using System.Collections.Generic;
@@ -22,6 +21,17 @@ namespace Save
             UnlockedAt = unlockedAt;
         }
 
+        public long GetUnlockedTime()
+        {
+            var time = UnlockedAt;
+
+            // (Special Case) CHEST SPEED BOOST : Divides the "unlock time" by 2
+            if (TimeCloudData.HasBoost(EBoost.ChestSpeedBoost))
+                time = UnlockedAt - (ItemLoader.GetChestRewardData(ChestType).UnlockTime / 2);
+
+            return time;
+        }
+
         public void SetUnlockTime()
         {
             UnlockedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + ItemLoader.GetChestRewardData(ChestType).UnlockTime;
@@ -32,7 +42,7 @@ namespace Save
             if (UnlockedAt == 0)
                 return EChestLockState.Locked;
 
-            if (UnlockedAt > DateTimeOffset.UtcNow.ToUnixTimeSeconds())
+            if (GetUnlockedTime() > DateTimeOffset.UtcNow.ToUnixTimeSeconds())
                 return EChestLockState.Unlocking;
 
             return EChestLockState.Ready;

@@ -43,7 +43,7 @@ namespace Assets.Scripts.UI
 
             m_PseudoText.text       = ProfileCloudData.GamerTag;
             m_PlayerIdText.text     = AuthenticationService.Instance.PlayerId;
-            m_VersionText.text      = UpdateManager.CurrentVersion.ToString();
+            m_VersionText.text      = UpdateManager.GameVersion.ToString();
 
             await SetUpDropdown();
         }

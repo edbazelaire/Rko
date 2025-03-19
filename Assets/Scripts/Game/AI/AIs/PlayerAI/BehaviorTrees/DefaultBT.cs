@@ -12,8 +12,8 @@ namespace Game.AI.BehaviorTrees
         protected Controller m_Controller;
         protected EArenaDifficulty m_ArenaDifficulty;
 
-        public DefaultBT(Controller controller, EArenaDifficulty arenaDifficulty) 
-        { 
+        public DefaultBT(Controller controller, EArenaDifficulty arenaDifficulty)
+        {
             m_Controller = controller;
             m_ArenaDifficulty = arenaDifficulty;
         }
