@@ -1,4 +1,5 @@
 ﻿using Menu.Common.Notifications;
+using Save;
 using System;
 using System.Collections;
 using Tools;
@@ -64,6 +65,10 @@ namespace Menu.MainMenu
 
         private void Update()
         {
+            // CHECK BOOSTS
+            TimeCloudData.CheckBoosts();
+
+            // CHECK INPUTS (scrolling)
             if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended) || Input.GetMouseButtonUp(0))
                 OnClickedEvent?.Invoke();
 

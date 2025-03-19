@@ -33,12 +33,20 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
 
         #region Target
 
-        public Controller CalculateTarget(Controller caster)
+        public Controller CalculateTarget(Controller caster, Controller targetController = null)
         {
             switch (m_SpellTarget)
             {
                 case ESpellTarget.Self:
                     return caster;
+
+                case ESpellTarget.CurrentTarget:
+                    if (targetController == null)
+                    {
+                        ErrorHandler.Error("SRequirement.CalculateTarget() - Current Target is required but is null");
+                        return null;
+                    }
+                    return targetController;
 
                 case ESpellTarget.None:
                 case ESpellTarget.FirstEnemy:
@@ -72,7 +80,7 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
         /// <returns></returns>
         public virtual bool TryApplyRequirements(Controller targetController)
         {
-            if (!CheckRequirement(targetController))
+            if (! CheckRequirement(targetController))
                 return false;
 
             return true;

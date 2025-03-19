@@ -534,7 +534,7 @@ namespace Game.Character
             // AT LEAST ONE : return SUCCESS
             foreach (SpellRequirements spellRequirement in spellData.SpellRequirements)
             {
-                if (spellRequirement.CheckRequirement(m_Controller))
+                if (spellRequirement.CheckRequirement(m_Controller, null))
                     return true;
             }
 
@@ -548,7 +548,7 @@ namespace Game.Character
             
             foreach (SpellRequirements spellRequirement in spellData.SpellRequirements)
             {
-                if (! spellRequirement.TryApplyRequirements(m_Controller))
+                if (! spellRequirement.TryApplyRequirements(m_Controller, null))
                     return false;
             }
 

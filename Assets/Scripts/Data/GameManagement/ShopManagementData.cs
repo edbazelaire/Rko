@@ -123,6 +123,12 @@ namespace Data.GameManagement
             PowerOrbs.Add(powerOrb);
         }
 
+        public void Add(SAchievementReward achievementReward)
+        {
+            AchievementRewards ??= new List<SAchievementReward>();
+            AchievementRewards.Add(achievementReward);
+        }
+
         public void Add(SRewardsData rewardsData)
         {
             if (rewardsData.Currencies != null)

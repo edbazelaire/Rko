@@ -2,7 +2,11 @@
 using Data;
 using Data.GameManagement;
 using Enums;
+using Game.Loaders;
+using Inventory;
 using Managers.Friends;
+using Menu.Common.Buttons;
+using MyBox;
 using NUnit.Framework.Internal;
 using Save;
 using System;
@@ -29,10 +33,7 @@ namespace Assets.Scripts.Managers
         /// <returns></returns>
         static void InitNewPlayer()
         {
-            if (CurrentVersion.CompareTo(new Version("0.0.0")) == 0)
-                return;
-
-            FriendsHandler.SendFriendRequestToAll();
+            //FriendsHandler.SendFriendRequestToAll();
             SetVersion(GameVersion.ToString());
         }
 
@@ -92,6 +93,9 @@ namespace Assets.Scripts.Managers
             if (CurrentVersion.CompareTo(GameVersion) == -1)
                 SetVersion(Application.version);
 
+            // on updates - check if there were changes in achievements that needs to be provided to the player
+            CheckAchievements();
+
             return test;
         }
 
@@ -111,6 +115,49 @@ namespace Assets.Scripts.Managers
             Debug.Log($"Version Updated from {CurrentVersion} to {version}");
             PlayerPrefs.SetString("LastVersion", version);
             return true;
+        }
+
+        /// <summary>
+        /// Check if there were rewards in Achivements that has been changed during last update
+        /// </summary>
+        static void CheckAchievements()
+        {
+            SRewardsData missingRewards = new SRewardsData();
+            missingRewards.SetDefaultData();
+
+            foreach (AchievementData achievementData in AchievementLoader.Achievements)
+            {
+                int currentIndex = ProfileCloudData.GetAchievementIndex(achievementData.Name);
+
+                // check all achievements so far to see if any reward is missing
+                for (int i = 0; i < currentIndex; i++)
+                {
+                    var rewards = achievementData.AchievementSubData[i].Rewards;
+
+                    // only check AchievementRewards data
+                    if (rewards.AchievementRewards.IsNullOrEmpty())
+                        continue;
+
+                    foreach (SAchievementReward achievementReward in rewards.AchievementRewards)
+                    {
+                        // already unlocked - skip
+                        if (ProfileCloudData.HasAchievementReward(achievementReward.AchievementReward, achievementReward.Value))
+                            continue;
+
+                        missingRewards.Add(achievementReward);
+                    }
+                }
+            }
+
+            if (missingRewards.IsEmpty)
+                return;
+
+            NotificationCloudData.AddMessage(new SMessage()
+            {
+                Title = "Achivement Rewards",
+                Content = "We've made some exciting updates to the Achievement rewards!\nTake a look at the new rewards you've earned so far.",
+                RewardsData = missingRewards
+            });
         }
 
         #endregion

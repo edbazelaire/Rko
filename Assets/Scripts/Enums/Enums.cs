@@ -127,6 +127,7 @@
         Stalacmite      = 1,
         DarkVeil        = 2,
         AzurePowerOrb   = 3,
+        ChemicalSlime   = 4,
     }
 
     public enum ESpell
@@ -190,6 +191,8 @@
         EclipseBlade,
         ShadowStrike,
         Duskfall,
+        DirtBomb,
+        ChemicalSlime,
 
         // ======================================================================
         // BOSSES ABILITIES
@@ -234,6 +237,10 @@
         Howling             = 100012,
         GlacialOrb          = 100013,
         FerociousBite       = 100015,
+
+        // ======================================================================
+        // SPAWN ABILITIES
+        ChemicalSlimeAttack = 1000001,
     }
 
     public enum ESpellType
@@ -333,6 +340,7 @@
         GlacialImpact,
         SparklingSpirit,
         CorruptedFlame,
+        RottingFlame,
     }
 
     public enum EOrderBy
@@ -990,21 +998,42 @@
     {
         None = 0,
 
-        Dicks_Slayer,
-        Noobs_Crusher,
-        Rank_1,
-        First,
-        Forever_Alone,
-        Le_Charclo,
-        The_Money_Maker,
-        Cresus,
-        Lone_Wolf,
-        Heal_Checker,
-        Alpha_Tester,
-        The_Shadow,
+        Dicks_Slayer        = 1,
+        Noobs_Crusher       = 2,
+        Rank_1              = 3,
+        First               = 4,
+        Heal_Checker        = 10,
+        Alpha_Tester        = 11,
+        The_Shadow          = 12,
 
+        // [Wins] Achievement ======================================================
+        The_Unbeatable      = 13,
+
+        // [Golds] Achievement ======================================================
+        Le_Charclo              = 6,
+        The_Money_Maker         = 7,
+        Gold_Digger             = 19,
+        Cresus                  = 8,
+        Aurum_Sovereign         = 20,
+        Great_Monarch_of_Coins  = 21,   // -- not used yet
+
+        // [SoloGames] Achievement ======================================================
+        Forever_Alone       = 5,
+        Lone_Wolf           = 9,
+
+        // [Damages] Achievement ======================================================
+        Slapper             = 14,
+        Certified_Smacker   = 15,
+        The_Pain_Train      = 16,
+        Worldbreaker        = 17,
+        Walking_Cataclysm   = 18,
+
+
+        /************************************
+         *              ARENAS              *
+         ************************************/
         // Frost Arena ======================================================
-        Winter_Soldier          = 1001,
+        Winter_Soldier = 1001,
         The_Iceborned           = 1002,
         Arctic_Vanquisher       = 1003,
         Glacial_Conqueror       = 1004,
@@ -1065,6 +1094,9 @@
         // Others
         Sakura = 101,
         Assassin = 102,
+        Devil = 103,
+        Flowers = 104,
+        Ribbon = 105,
 
         // Speical Events
         Fire = 201,
@@ -1110,6 +1142,13 @@
         Avatar      = 2,
         Border      = 3,
         Title       = 4,
+    }
+
+    public enum EBoost
+    {
+        None = 0,
+
+        ChestSpeedBoost = 1,
     }
 
     public enum EVolumeOption

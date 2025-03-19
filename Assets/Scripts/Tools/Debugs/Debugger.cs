@@ -487,6 +487,20 @@ namespace Tools
         #endregion
 
 
+        #region Boosts
+
+        [Command(KeyCode.W)]
+        public void ToggleChestSpeedBoost()
+        {
+            if (! TimeCloudData.HasBoost(EBoost.ChestSpeedBoost))
+                TimeCloudData.AddBoost(EBoost.ChestSpeedBoost, 3600 * 48);
+            else
+                TimeCloudData.RemoveBoost(EBoost.ChestSpeedBoost);
+        }
+
+        #endregion
+
+
         #region Debug Achievements
 
         [Command]

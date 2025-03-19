@@ -4,8 +4,10 @@ using Data.GameManagement;
 using Enums;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Tools;
 using Unity.Services.CloudSave.Models;
+using UnityEngine;
 
 namespace Save
 {
@@ -56,24 +58,29 @@ namespace Save
         // ===============================================================================================
         // CONSTANTS
         public const string KEY_TIME_DATA       = "TimeData";
+        public const string KEY_BOOSTS          = "Boosts";
 
         public const string DAILY_SHOP_ID       = "DailyShopOffer_";
         public const string SPECIAL_OFFER_ID    = "SpecialOffer_";
 
         // ===============================================================================================
         // ACTIONS
-        public static Action<string> TimeDataChangedEvent;
+        public static Action<string>        TimeDataChangedEvent;
+        /// <summary> event fired when a boost has been added or removed. string : name of the boost | bool : added ? (false = removed) </summary>
+        public static Action<string, bool>  BoostChangedEvent;
 
         // ===============================================================================================
         // DATA
         /// <summary> default data for the Inventory </summary>
         protected override Dictionary<string, object> m_Data { get; set; } = new Dictionary<string, object>() {
             { KEY_TIME_DATA,            new List<STimeData>() },
+            { KEY_BOOSTS,               new List<STimeData>() },
         };
 
         // ===============================================================================================
         // DEPENDENT STATIC ACCESSORS
         public static List<STimeData> TimeData     => Instance.m_Data[KEY_TIME_DATA] as List<STimeData>;
+        public static List<STimeData> Boosts       => Instance.m_Data[KEY_BOOSTS] as List<STimeData>;
 
         #endregion
 
@@ -96,7 +103,7 @@ namespace Save
         #endregion
 
 
-        #region General Accessors
+        #region Time Data Accessors
 
         public static STimeData? GetTimeData(string name)
         {
@@ -234,6 +241,84 @@ namespace Save
         #endregion
 
 
+        #region Boosts
+
+        public static STimeData? GetBoost(EBoost boost)
+        {
+            int index = GetBoostIndex(boost);
+            if (index == -1)
+                return null;
+
+            return Boosts[index];
+        }
+
+        public static int GetBoostIndex(EBoost boost)
+        {
+            for (int index = 0; index < Boosts.Count; index++)
+            {
+                if (Boosts[index].Name == boost.ToString())
+                    return index;
+            }
+
+            return -1;
+        }
+
+        public static bool HasBoost(EBoost boost)
+        {
+            return Boosts.Where(timeData => timeData.Name == boost.ToString()).Count() > 0;
+        }
+
+        public static void AddBoost(EBoost boost, int duration, bool save = true)
+        {
+            var boosts = Boosts;
+            boosts.Add(new STimeData() { 
+                Name                = boost.ToString(),
+                NCollectionLeft     = 1,
+                ResetAt             = (int)(new DateTimeOffset(DateTime.UtcNow)).ToUnixTimeSeconds() + duration,
+                MetaData            = null,
+            });
+            Instance.m_Data[KEY_BOOSTS] = boosts;
+
+            if (save)
+                Instance.SaveValue(KEY_BOOSTS);
+
+            BoostChangedEvent?.Invoke(boost.ToString(), true);
+        }
+
+        public static void RemoveBoost(EBoost boost, bool save = true)
+        {
+            int index = GetBoostIndex(boost);
+            if (index < 0)
+            {
+                ErrorHandler.Error("Unable to find boost " + boost + " in list of current active boosts");
+                return;
+            }
+
+            RemoveBoostAt(index, false);
+        }
+
+        public static void RemoveBoostAt(int index, bool save = true)
+        {
+            if (index < 0 || index >= Boosts.Count)
+            {
+                ErrorHandler.Error("Trying to remove boost but bad index provided " + index);
+                return;
+            }
+
+            var boosts = Boosts;
+            string boostName = Boosts[index].Name;
+            boosts.RemoveAt(index);
+
+            Instance.m_Data[KEY_BOOSTS] = boosts;
+            if (save)
+                Instance.SaveValue(KEY_BOOSTS);
+
+            BoostChangedEvent?.Invoke(boostName, false);
+        }
+
+        #endregion
+
+
         #region Time Management
 
         public int GetNextDayTimestamp()
@@ -324,6 +409,11 @@ namespace Save
                     m_Data[key] = new List<STimeData>();
                     CheckTimeData();
                     break;
+
+                case KEY_BOOSTS:
+                    m_Data[key] = new List<STimeData>();
+                    CheckBoosts();
+                    break;
             }
 
             if (save)
@@ -389,6 +479,24 @@ namespace Save
             return updated;
         }
 
+        public static void CheckBoosts()
+        {
+            bool save = false;
+
+            int nBoosts = Boosts.Count - 1;
+            for (int index = nBoosts; index >= 0; index--)
+            {
+                var boost = Boosts[index];
+                if (!boost.IsExpired())
+                    continue;
+                
+                RemoveBoostAt(index, save: false);
+                save = true;
+            }
+
+            if (save)
+                Instance.SaveValue(KEY_BOOSTS);
+        }
 
         #endregion
 
@@ -410,6 +518,10 @@ namespace Save
             {
                 case KEY_TIME_DATA:
                     CheckTimeData();
+                    break;
+
+                case KEY_BOOSTS:
+                    CheckBoosts();
                     break;
             }
         }

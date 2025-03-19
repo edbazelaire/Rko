@@ -18,8 +18,8 @@ MonoBehaviour:
   Description: 
   m_SpellElements: 0200000004000000
   m_MinorPower:
-    Description: On proccing [IceBreak]  [TriggerEffect.0]. This effect can only
-      happen once every 9 seconds
+    Description: On proccing [IceBreak] [TriggerEffect.0]. This effect can only happen
+      once every 9 seconds
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
@@ -32,6 +32,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: IceBreak
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: -1
@@ -52,6 +53,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: IceBreak
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: -1
@@ -71,6 +73,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: IceBreak
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: -1

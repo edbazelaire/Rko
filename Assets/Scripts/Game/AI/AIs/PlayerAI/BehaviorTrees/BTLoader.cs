@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using AI;
 using Enums;
+using Game.Loaders;
 using Save;
 using Tools;
 
@@ -32,6 +33,10 @@ namespace Game.AI.BehaviorTrees
                 || characterName == EBoss.MoonclawLunassian.ToString()
                 || characterName == EBoss.ElderLunassian.ToString())
                 return new LunassianBT(controller, arenaDifficulty);
+
+            // DEFAULT SPAWN BT
+            if (CharacterLoader.IsSpawn(characterName))
+                return new DefaultSpawnBT(controller, arenaDifficulty);
 
             return new DefaultBT(controller, arenaDifficulty);
         }
