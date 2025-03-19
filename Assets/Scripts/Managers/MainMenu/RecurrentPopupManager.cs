@@ -146,13 +146,6 @@ namespace Managers.MainMenu
                     break;
 
                 case EPopUpState.LoginPopUp:
-                    // force enable login popup for new account
-                    if (AuthManager.Instance.Token.IsNullOrEmpty())
-                    {
-                        // reset enabled and current treshold
-                        popUpDisplay.Enabled = true;
-                        popUpDisplay.CurrentTreshold = -1;
-                    }
                     break;
             }
         }

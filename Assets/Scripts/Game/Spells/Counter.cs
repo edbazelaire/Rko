@@ -238,7 +238,8 @@ namespace Game.Spells
             if (! CanBeProc(damageType))
                 return false;
 
-            var targetPosition = caster.transform.position;
+            // if caster is null (dead spawn, for exemple) get first available enemy
+            var targetPosition = caster != null ? caster.transform.position : GameManager.Instance.GetFirstEnemy(m_Controller.Team).transform.position;
             targetPosition.y = 0;
             switch (m_SpellData.CounterType)
             {

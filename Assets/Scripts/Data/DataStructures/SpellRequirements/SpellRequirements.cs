@@ -54,11 +54,11 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
         /// </summary>
         /// <param name="targetController"></param>
         /// <returns></returns>
-        public bool CheckRequirement(Controller caster)
+        public bool CheckRequirement(Controller caster, Controller targetController)
         {
             foreach (var requirement in Requirements)
             {
-                if (! requirement.CheckRequirement(requirement.CalculateTarget(caster)))
+                if (! requirement.CheckRequirement(requirement.CalculateTarget(caster, targetController)))
                     return false;
             }
 
@@ -70,11 +70,11 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
         /// </summary>
         /// <param name="targetController"></param>
         /// <returns></returns>
-        public bool TryApplyRequirements(Controller caster)
+        public bool TryApplyRequirements(Controller caster, Controller targetController)
         {
             foreach (var requirement in Requirements)
             {
-                if (!requirement.TryApplyRequirements(requirement.CalculateTarget(caster)))
+                if (! requirement.TryApplyRequirements(requirement.CalculateTarget(caster, targetController)))
                     return false;
             }
 

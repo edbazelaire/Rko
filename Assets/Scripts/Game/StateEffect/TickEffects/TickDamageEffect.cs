@@ -75,7 +75,7 @@ namespace Game.Spells
             // if at least one is true, requirements are met
             foreach (var spellRequirements in allSpellRequirements)
             {
-                if (spellRequirements.TryApplyRequirements(m_Controller)) 
+                if (spellRequirements.TryApplyRequirements(m_Caster, m_Controller)) 
                     return true;
             }
 

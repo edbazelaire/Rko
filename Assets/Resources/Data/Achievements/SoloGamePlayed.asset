@@ -95,13 +95,91 @@ MonoBehaviour:
         League: 4
   - MaxValue: 375
     Rewards:
-      Currencies:
-      - Currency: 0
-        Qty: 10000
+      Currencies: []
       Chests: 01000000
       Collectables: []
       AchievementRewards: []
   - MaxValue: 500
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 4
+        Title: 9
+        Avatar: 0
+        Border: 0
+        Badge: 0
+        League: 0
+  - MaxValue: 750
+    Rewards:
+      Currencies: []
+      Chests: 01000000
+      Collectables: []
+      AchievementRewards: []
+  - MaxValue: 1000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 1
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Badge: 201
+        League: 5
+  - MaxValue: 1500
+    Rewards:
+      Currencies:
+      - Currency: 1
+        Qty: 50
+      Chests: 
+      Collectables: []
+      AchievementRewards: []
+  - MaxValue: 2000
+    Rewards:
+      Currencies: []
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards: []
+  - MaxValue: 2500
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 3
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Badge: 201
+        League: 6
+  - MaxValue: 3000
+    Rewards:
+      Currencies: []
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards: []
+  - MaxValue: 3500
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 4
+        Title: 5
+        Avatar: 0
+        Border: 0
+        Badge: 0
+        League: 0
+  - MaxValue: 4000
+    Rewards:
+      Currencies: []
+      Chests: 03000000
+      Collectables: []
+      AchievementRewards: []
+  - MaxValue: 5000
     Rewards:
       Currencies: []
       Chests: 
@@ -113,7 +191,7 @@ MonoBehaviour:
         Border: 0
         Badge: 202
         League: 0
-  - MaxValue: 750
+  - MaxValue: 10000
     Rewards:
       Currencies: []
       Chests: 

@@ -79,7 +79,7 @@ namespace Data
         [SerializeField] protected SMultiSpellTarget    m_SpawnTarget;
         [SerializeField] protected int                  m_NSpawns = -1;
         [SerializeField] protected List<SSpawnElement>  m_SpawnElements;
-
+        
         public int NSpawns                              => m_NSpawns;
         public bool IsUnique                            => m_IsUnique;
         public bool DestroySpawnsOnEnd                  => m_DestroySpawnsOnEnd;
@@ -89,11 +89,15 @@ namespace Data
         #endregion
 
 
+        #region Target
+
         public override void CalculateTarget(ref Vector3 target, ulong clientId)
         {
             target.y = 0;
             base.CalculateTarget(ref target, clientId);
         }
+
+        #endregion
 
 
         #region Infos
@@ -102,9 +106,10 @@ namespace Data
         {
             var infos = base.GetInfos();
 
-            if (IsStruct)
+            if (IsUniqueSpawn)
             {
                 var charData = CharacterLoader.GetCharacterData(m_SpawnElements[0].CharacterName);
+                charData.SetLevel(m_Level);
                 infos["Hp"] = charData.MaxHealth;
             }
 
@@ -116,13 +121,16 @@ namespace Data
             if (IsStruct)
                 return "Structure";
 
-            return base.GetTargetTypeInfo();
+            return base.GetTypeInfo();
         }
 
         public bool IsStruct => 
-            m_SpawnElements.Count == 1
-            && m_SpawnElements[0].MaxSpawns == 1
+            IsUniqueSpawn
             && CharacterLoader.GetCharacterData(m_SpawnElements[0].CharacterName).IsStructure;
+
+        public bool IsUniqueSpawn => 
+            m_SpawnElements.Count == 1
+            && m_SpawnElements[0].MaxSpawns == 1;
 
         #endregion
     }

@@ -436,6 +436,8 @@ namespace Game.Character
             if (force == null || force == default || force.Speed == 0)
                 return;
 
+            ErrorHandler.Log("AddForce() : " + force.Speed, ELogTag.Forces);
+
             if (force.Duration > 0)
                 StartCoroutine(StartForceTimer(force));
 

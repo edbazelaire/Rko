@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e83ee2023ecc7e04480ae9c612ad7749, type: 3}
+  m_Name: RottingFlame
+  m_EditorClassIdentifier: 
+  Rarety: 2
+  m_Description: 
+  m_DescriptionVariables: []
+  Description: 
+  m_SpellElements: 01000000
+  m_MinorPower:
+    Description: 'Every time you proc a [Burn] effect [TriggerEffect.0]'
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: _RottingFlameMinor
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 3
+      StateEffectName: Burn
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: -1
+      Cooldown: 0
+    m_BonusStats: []
+  m_MajorPower:
+    Description: 'Every time you proc a [Burn] effect [TriggerEffect.0]'
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: _RottingFlameMajor
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 3
+      StateEffectName: Burn
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: -1
+      Cooldown: 0
+    m_BonusStats: []
+  m_PrimalPower:
+    Description: 'Every time you proc a [Burn] effect [TriggerEffect.0]'
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: _RottingFlamePrimal
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 3
+      StateEffectName: Burn
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: -1
+      Cooldown: 0
+    m_BonusStats: []
+  m_TriggerEffects: []
