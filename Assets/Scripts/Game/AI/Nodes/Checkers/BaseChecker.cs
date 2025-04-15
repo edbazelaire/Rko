@@ -69,7 +69,7 @@ namespace AI
 
         IEnumerator SetStateCoroutine(NodeState state)
         {
-            var reactionTime = Random.Range(m_Controller.BehaviorTree.ReactionTime / 2f, 1.5f * m_Controller.BehaviorTree.ReactionTime);
+            var reactionTime = Random.Range(m_Controller.BehaviorTree.BotData.MinReactionTime, m_Controller.BehaviorTree.BotData.MaxReactionTime);
             while (reactionTime > 0)
             {
                 // state already set - exit

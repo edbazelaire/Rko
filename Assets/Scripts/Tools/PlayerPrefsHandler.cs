@@ -21,6 +21,8 @@ namespace Tools
         TrainingDecisionRefresh,
         TrainingRandomness,
         TrainingReactionTime,
+        TrainingMovementTime,
+        TrainingMovementRefresh,
     }
 
     public enum EDebugOption

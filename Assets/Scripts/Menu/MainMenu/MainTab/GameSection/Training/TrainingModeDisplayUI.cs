@@ -15,19 +15,21 @@ namespace Menu.MainMenu.MainTab.GameSection.Training
     {
         #region Members
 
-        Button              m_OptionButton;
+        Button                      m_OptionButton;
 
-        GameObject          m_CharacterSelectionContent;
-        GameObject          m_CharacterPreviewContainer;
-        Button              m_CharacterPreviewButton;
-        GameObject          m_RunePreviewContainer;
-        GameObject          m_BuildContainer;
+        GameObject                  m_CharacterSelectionContent;
+        GameObject                  m_CharacterPreviewContainer;
+        Button                      m_CharacterPreviewButton;
+        GameObject                  m_RunePreviewContainer;
+        GameObject                  m_BuildContainer;
 
-        GameObject          m_OptionsContent;
-        TMP_Dropdown        m_DifficultyDropdown;
-        SynchronizedSlider  m_DecisionRefreshSlider;
-        SynchronizedSlider  m_RandomnessSlider;
-        SynchronizedSlider  m_ReactionTimeSlider;
+        GameObject                  m_OptionsContent;
+        TMP_Dropdown                m_DifficultyDropdown;
+        SynchronizedSlider          m_DecisionRefreshSlider;
+        SynchronizedSlider          m_RandomnessSlider;
+        SynchronizedDoubleSlider    m_ReactionTimeSlider;
+        SynchronizedDoubleSlider    m_MovementTimeSlider;
+        SynchronizedDoubleSlider    m_MovementRefreshSlider;
 
         #endregion
 
@@ -50,7 +52,9 @@ namespace Menu.MainMenu.MainTab.GameSection.Training
             m_DifficultyDropdown            = Finder.FindComponent<TMP_Dropdown>(gameObject, "DifficultyDropdown");
             m_DecisionRefreshSlider         = Finder.FindComponent<SynchronizedSlider>(gameObject, "DecisionRefreshSlider");
             m_RandomnessSlider              = Finder.FindComponent<SynchronizedSlider>(gameObject, "RandomnessSlider");
-            m_ReactionTimeSlider            = Finder.FindComponent<SynchronizedSlider>(gameObject, "ReactionTimeSlider");
+            m_ReactionTimeSlider            = Finder.FindComponent<SynchronizedDoubleSlider>(gameObject, "ReactionTimeSlider");
+            m_MovementTimeSlider            = Finder.FindComponent<SynchronizedDoubleSlider>(gameObject, "MovementTimeSlider");
+            m_MovementRefreshSlider         = Finder.FindComponent<SynchronizedDoubleSlider>(gameObject, "MovementRefreshSlider");
         }
 
         protected override void SetUpUI()
@@ -68,7 +72,24 @@ namespace Menu.MainMenu.MainTab.GameSection.Training
             // init sliders
             m_RandomnessSlider.Initialize("Randomness", EPlayerPref.TrainingRandomness, 0.5f, 0f, 1f);
             m_DecisionRefreshSlider.Initialize("Decision Refresh", EPlayerPref.TrainingDecisionRefresh, 0.1f, 0.05f, 1f);
-            m_ReactionTimeSlider.Initialize("Reaction Time", EPlayerPref.TrainingReactionTime, 0.25f, 0f, 1f);
+            m_ReactionTimeSlider.Initialize("Reaction Time", EPlayerPref.TrainingReactionTime, 
+                baseMinValue: 0.05f, 
+                baseMaxValue: 0.2f, 
+                minValue: 0f, 
+                maxValue: 1f
+            );
+            m_MovementTimeSlider.Initialize("Movement Duration", EPlayerPref.TrainingMovementTime, 
+                baseMinValue: 0.5f, 
+                baseMaxValue: 2f, 
+                minValue: 0f, 
+                maxValue: 5f
+            );
+            m_MovementRefreshSlider.Initialize("Movement Refresh", EPlayerPref.TrainingMovementRefresh, 
+                baseMinValue: 0.05f, 
+                baseMaxValue: 0.5f, 
+                minValue: 0f, 
+                maxValue: 5f
+            );
 
             // refresh preview of rune and character
             CoroutineManager.DelayMethod(RefreshCharacterPreview);

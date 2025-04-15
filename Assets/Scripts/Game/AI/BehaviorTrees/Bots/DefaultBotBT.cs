@@ -39,11 +39,8 @@ namespace Game.AI.BehaviorTrees
                 case ELeague.Silver:
                     return LoadBasicTree();
 
-                case ELeague.Gold:
-                    return LoadAdvancedTree();
-
                 default:
-                    return LoadAdvancedTree();
+                    return LoadBasicTree();
             }
         }
 
@@ -53,19 +50,6 @@ namespace Game.AI.BehaviorTrees
 
             return new Selector(new List<Node>
             {
-                // RANDOM ACTION
-                new Sequence(new List<Node> {
-                    new CheckRandom(m_Controller),
-                    new Selector(new List<Node>
-                    {
-                        new TaskAttack(m_Controller),
-                        new TaskCounter(m_Controller),
-                        new TaskJump(m_Controller),
-                        new TaskMove(m_Controller),
-                        new TaskUseSpell(m_Controller, m_Controller.SpellHandler.AutoAttack),
-                    }, random: true),
-                }),
-
                 // Check Immediat Threats (Zones & Projectiles)
                 new Sequence(new List<Node> {
                     new CheckImmediatThreat(m_Controller),
@@ -76,10 +60,10 @@ namespace Game.AI.BehaviorTrees
                         {
                             new TaskCounter(m_Controller),
                             new TaskJump(m_Controller),
-                        }, weight: () => { return 1 - m_Controller.BehaviorTree.Randomness; }),
+                        }, weight: () => { return 1 - m_Controller.BehaviorTree.BotData.Randomness; }),
 
                         // Ignore threat and attack
-                        AttackGroupNode(weight: () => { return m_Controller.BehaviorTree.Randomness; }),
+                        AttackGroupNode(weight: () => { return m_Controller.BehaviorTree.BotData.Randomness; }),
                     })
                 }),
 
@@ -112,6 +96,7 @@ namespace Game.AI.BehaviorTrees
 
                 // Default action : move
                 new TaskMove(m_Controller),
+                //new TaskUseSpell(m_Controller, m_Controller.SpellHandler.AutoAttack),
             });
         }
 

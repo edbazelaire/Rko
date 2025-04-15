@@ -295,7 +295,10 @@ namespace Data.GameManagement
                 botData :       new SBotData(
                     ArenaDifficulty.ToString(),
                     decisionRefresh:    GetDecisionRefresh(CurrentStageData.Level), 
-                    randomness:         GetRandomness(CurrentStageData.Level)
+                    randomness:         GetRandomness(CurrentStageData.Level),
+                    reactionTime:       (0f, 0f),
+                    movementTime:       (0f, 0f),
+                    movementRefresh:    (-1f, -1f)
                 )
             );
         }

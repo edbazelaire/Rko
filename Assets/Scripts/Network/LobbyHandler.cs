@@ -668,7 +668,9 @@ namespace Network
                             difficulty:         PlayerPrefs.GetString(EPlayerPref.TrainingDifficulty.ToString(), ELeague.Silver.ToString()), 
                             decisionRefresh:    PlayerPrefs.GetFloat(EPlayerPref.TrainingDecisionRefresh.ToString(), 0.05f), 
                             randomness:         PlayerPrefs.GetFloat(EPlayerPref.TrainingRandomness.ToString(), 0f),
-                            reactionTime:       PlayerPrefs.GetFloat(EPlayerPref.TrainingReactionTime.ToString(), 0f)
+                            reactionTime:       (PlayerPrefs.GetFloat(EPlayerPref.TrainingReactionTime.ToString() + "Min", 0f), PlayerPrefs.GetFloat(EPlayerPref.TrainingReactionTime.ToString() + "Max", 0.5f)),
+                            movementTime:       (PlayerPrefs.GetFloat(EPlayerPref.TrainingMovementTime.ToString() + "Min", 0f), PlayerPrefs.GetFloat(EPlayerPref.TrainingMovementTime.ToString() + "Max", 1f)),
+                            movementRefresh:    (PlayerPrefs.GetFloat(EPlayerPref.TrainingMovementRefresh.ToString() + "Min", 0f), PlayerPrefs.GetFloat(EPlayerPref.TrainingMovementRefresh.ToString() + "Max", 0.5f))
                         )
                     );
 

@@ -28,7 +28,7 @@ namespace AI
 
         protected virtual bool RandomActivation()
         {
-            return m_Controller.BehaviorTree.Randomness > Random.Range(0f, 1f);
+            return m_Controller.BehaviorTree.BotData.Randomness > Random.Range(0f, 1f);
         }
 
         #endregion

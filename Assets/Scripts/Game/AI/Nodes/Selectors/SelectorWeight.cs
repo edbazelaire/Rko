@@ -5,40 +5,23 @@ using UnityEngine;
 
 namespace AI
 {
-    public class SelectorWeight : Selector
+    public class SelectorWeight : RandomSelector
     {
         #region Members
-
-        Node m_SelectedNode = null;
 
         #endregion
 
 
         #region Core
 
-        public SelectorWeight(List<Node> nodes, Func<float> weight = null) : base(nodes, false, weight)
+        public SelectorWeight(List<Node> nodes, Func<float> weight = null) : base(nodes, weight)
         {
             
         }
 
-        public override NodeState Evaluate()
+        protected override void SelectNode()
         {
-            // If a node is already selected, evaluate and return its state
-            if (m_SelectedNode != null)
-            {
-                // reset node randomly
-                if (m_State == NodeState.SUCCESS && UnityEngine.Random.value > 0.9f)
-                {
-                    Reset();
-                }
-
-                // Evaluate Current Node
-                else
-                {
-                    SetNodeState(m_SelectedNode.Evaluate());
-                    return m_State;
-                }
-            }
+            m_SelectedNode = null;
 
             // Compute total weight considering only activated nodes
             float totalWeight = 0f;
@@ -58,8 +41,8 @@ namespace AI
             // Return failure if no activated nodes
             if (activatedNodes.Count == 0)
             {
-                m_State = NodeState.FAILURE;
-                return m_State;
+                SetNodeState(NodeState.FAILURE);
+                return;
             }
 
             // Select node randomly based on weights
@@ -75,15 +58,6 @@ namespace AI
                     break;
                 }
             }
-
-            m_State = m_SelectedNode != null ? m_SelectedNode.Evaluate() : NodeState.FAILURE;
-            return m_State;
-        }
-
-        public override void Reset()
-        {
-            base.Reset();
-            m_SelectedNode = null;
         }
 
         #endregion

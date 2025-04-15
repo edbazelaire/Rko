@@ -12,14 +12,14 @@ public class SynchronizedSlider : MObject
 
     public event Action<float> ValueChangedEvent;
 
-    TMP_Text m_Title;
+    protected TMP_Text m_Title;
     private Slider m_Slider;
     private TMP_InputField m_InputField;
 
-    EPlayerPref m_Option;
+    protected EPlayerPref m_Option;
+    protected float m_MinValue;
+    protected float m_MaxValue;
     float m_BaseValue;
-    float m_MinValue;
-    float m_MaxValue;
 
     #endregion
 

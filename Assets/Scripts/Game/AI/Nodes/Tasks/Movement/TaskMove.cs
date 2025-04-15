@@ -5,6 +5,7 @@ using Game;
 using Game.AI;
 using Game.Character;
 using Game.Spells;
+using Managers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -59,8 +60,6 @@ public class TaskMove : BaseTask
 
     public override NodeState Evaluate()
     {
-        base.Evaluate();
-
         // select a movement direction
         SelectMovement();
 
@@ -81,7 +80,7 @@ public class TaskMove : BaseTask
     protected virtual void SelectMovement()
     {
         if (m_State != NodeState.RUNNING)
-            m_State = NodeState.FAILURE;
+            SetNodeState(NodeState.FAILURE);
 
         if (! m_Movement.CanMove)
         {
@@ -116,7 +115,19 @@ public class TaskMove : BaseTask
             m_CurrentMoveX = movements[0];
         }
 
-        m_State = NodeState.SUCCESS;
+        SetNodeState(NodeState.RUNNING);
+    }
+
+    #endregion
+
+
+    #region State Management
+
+    protected override void OnRunning()
+    {
+        base.OnRunning();
+
+        m_Controller.StartCoroutine(CheckMovementDuration());
     }
 
     #endregion
@@ -328,12 +339,31 @@ public class TaskMove : BaseTask
     #endregion
 
 
-    #region Random Events
+    #region Coroutines
+
+    IEnumerator CheckMovementDuration()
+    {
+        var timer = UnityEngine.Random.Range(m_Controller.BehaviorTree.BotData.MinMovementTime, m_Controller.BehaviorTree.BotData.MaxMovementTime);
+
+        while (timer > 0f)
+        {
+            if (m_State != NodeState.RUNNING)
+                yield break;
+
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+
+        SetNodeState(NodeState.SUCCESS);
+    }
 
     IEnumerator CheckRefreshMovement()
     {
         m_RefreshMovement = false;
-        var timer = UnityEngine.Random.Range(0.1f, 0.5f);
+        if (m_Controller.BehaviorTree.BotData.MinMovementRefresh < 0 || m_Controller.BehaviorTree.BotData.MaxMovementRefresh < 0)
+            yield break;
+
+        var timer = UnityEngine.Random.Range(m_Controller.BehaviorTree.BotData.MinMovementRefresh, m_Controller.BehaviorTree.BotData.MaxMovementRefresh);
 
         while (timer > 0f)
         {

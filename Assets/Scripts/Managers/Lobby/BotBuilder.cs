@@ -66,7 +66,9 @@ namespace Managers.Lobby
                     difficulty:         playerLeagueData.CurrentLeague.ToString(), 
                     decisionRefresh:    CalculateDecisionRefresh(playerLeagueData.CurrentLeague), 
                     randomness:         CalculateRandomness(playerLeagueData.CurrentLeague), 
-                    reactionTime:       CalculateReactionTime(playerLeagueData.CurrentLeague)
+                    reactionTime:       CalculateReactionTime(playerLeagueData.CurrentLeague),
+                    movementTime:       (0.1f, 1f),
+                    movementRefresh:    (0.1f, 0.5f)
                 )
             );
         }
@@ -81,28 +83,37 @@ namespace Managers.Lobby
             return Random.Range(0f, 0.5f);
         }
 
-        static float CalculateReactionTime(ELeague league)
+        static (float, float) CalculateReactionTime(ELeague league)
         {
+            float baseValue;
             switch (league)
             {
                 case ELeague.Iron:
-                    return 0.3f;
+                    baseValue = 0.3f;
+                    break;
 
                 case ELeague.Bronze:
-                    return Random.Range(0.2f, 0.3f);
+                    baseValue = Random.Range(0.2f, 0.3f);
+                    break;
 
                 case ELeague.Silver:
-                    return Random.Range(0.15f, 0.25f);
+                    baseValue = Random.Range(0.15f, 0.25f);
+                    break;
 
                 case ELeague.Gold:
-                    return Random.Range(0.15f, 0.2f);
+                    baseValue = Random.Range(0.15f, 0.2f);
+                    break;
 
                 case ELeague.Platinum:
-                    return Random.Range(0.1f, 0.15f);
+                    baseValue = Random.Range(0.1f, 0.15f);
+                    break;
 
                 default:
-                    return 0.1f;
+                    baseValue = 0.1f;
+                    break;
             }
+
+            return (baseValue / 2,  baseValue * 2);
         }
 
         #endregion

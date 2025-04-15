@@ -28,20 +28,16 @@ namespace AI
         protected Dictionary<string, float> m_Timers    = new Dictionary<string, float>();
         protected List<string> m_FrozenTimers           = new ();
         protected Dictionary<string, int> m_Counters    = new Dictionary<string, int>();
-        protected float m_Randomness                    = 0f;
-        protected float m_DecisionRefresh               = 0f;
-        protected float m_ReactionTime                  = 0f;
+        protected SBotData m_BotData;
 
         protected float m_DecisionTimer                 = 0f;
 
         public Controller   Controller          => m_Controller;
+        public SBotData     BotData             => m_BotData;
         public Node         RootNode            => m_Root;
         public int          Phase               => m_Phase;
         public string       State               => m_State;
         public bool         IsActivated         => m_IsActivated;
-        public float        Randomness          => m_Randomness;
-        public float        DecisionRefresh     => m_DecisionRefresh;
-        public float        ReactionTime        => m_ReactionTime;
 
         #endregion
 
@@ -66,9 +62,7 @@ namespace AI
             SetupCallbacks(botData.Difficulty.ToString());
 
             m_Timers            = new Dictionary<string, float>();
-            m_Randomness        = botData.Randomness;
-            m_DecisionRefresh   = botData.DecisionRefresh;
-            m_ReactionTime      = botData.ReactionTime;
+            m_BotData           = botData;
         }
 
         public virtual void Activate(bool activated = true)
@@ -140,7 +134,7 @@ namespace AI
                 return;
             }
 
-            m_DecisionTimer = m_DecisionRefresh;
+            m_DecisionTimer = m_BotData.DecisionRefresh;
 
             if (m_Root != null)
                 m_Root.Evaluate();

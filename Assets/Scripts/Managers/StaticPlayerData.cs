@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
-using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.UI.ScrollRect;
 
 namespace Managers
 {
@@ -21,16 +21,22 @@ namespace Managers
         public FixedString32Bytes       Difficulty;
         public float                    DecisionRefresh;
         public float                    Randomness;
-        public float                    ReactionTime;
+        public float                    MinReactionTime;
+        public float                    MaxReactionTime;
+        public float                    MinMovementTime;
+        public float                    MaxMovementTime;
         public float                    MinMovementRefresh;
         public float                    MaxMovementRefresh;
 
-        public SBotData(string difficulty, float decisionRefresh = 0f, float randomness = 0f, float reactionTime = 0f, (float, float) movementRefresh = default)
+        public SBotData(string difficulty, float decisionRefresh = 0f, float randomness = 0f, (float, float) reactionTime = default, (float, float) movementTime = default, (float, float) movementRefresh = default)
         {
             Difficulty          = difficulty;
             DecisionRefresh     = decisionRefresh;
             Randomness          = randomness;
-            ReactionTime        = reactionTime;
+            MinReactionTime     = reactionTime.Item1;
+            MaxReactionTime     = reactionTime.Item2;
+            MinMovementTime     = movementTime.Item1;
+            MaxMovementTime     = movementTime.Item2;
             MinMovementRefresh  = movementRefresh.Item1;
             MaxMovementRefresh  = movementRefresh.Item2;
         }
@@ -40,7 +46,8 @@ namespace Managers
             serializer.SerializeValue(ref Difficulty);
             serializer.SerializeValue(ref DecisionRefresh);
             serializer.SerializeValue(ref Randomness);
-            serializer.SerializeValue(ref ReactionTime);
+            serializer.SerializeValue(ref MinReactionTime);
+            serializer.SerializeValue(ref MaxReactionTime);
             serializer.SerializeValue(ref MinMovementRefresh);
             serializer.SerializeValue(ref MaxMovementRefresh);
         }

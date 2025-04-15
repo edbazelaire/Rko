@@ -1083,7 +1083,7 @@
         LeagueSilver    = 20,
         LeagueGold      = 30,
         LeaguePlatinum  = 40,
-        LeagueDiamant   = 50,
+        LeagueDiamond   = 50,
         LeagueMaster    = 60,
         LeagueChampion  = 70,
         //LeagueLegend    = 80,

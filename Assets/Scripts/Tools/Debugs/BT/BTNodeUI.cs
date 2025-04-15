@@ -20,10 +20,6 @@ namespace Tools.Debugs.BT
         Image       m_Selection;
         Image       m_Background;
         TMP_Text    m_Weight;
-        Transform   m_DotsContainer;
-
-        DotUI       m_DotPrefab;
-
         bool        m_HasWeight = false;
 
         #endregion
@@ -35,12 +31,10 @@ namespace Tools.Debugs.BT
         {
             base.FindComponents();
 
-            m_NodeName      = Finder.FindComponent<TMP_Text>(gameObject, "NodeName");
-            m_Selection     = Finder.FindComponent<Image>(gameObject, "Selection");
-            m_Background    = Finder.FindComponent<Image>(gameObject, "Background");
-            m_Weight        = Finder.FindComponent<TMP_Text>(gameObject, "Weight");
-            m_DotsContainer = Finder.FindComponent<Transform>(gameObject, "DotsContainer");
-            m_DotPrefab     = AssetLoader.LoadComponentPrefab<DotUI>("Dot");
+            m_NodeName      = Finder.FindComponent<TMP_Text>(gameObject,    "NodeName");
+            m_Selection     = Finder.FindComponent<Image>(gameObject,       "Selection");
+            m_Background    = Finder.FindComponent<Image>(gameObject,       "Background");
+            m_Weight        = Finder.FindComponent<TMP_Text>(gameObject,    "Weight");
 
             m_HasWeight = m_Node.WeightMethod != null;
         }
@@ -60,9 +54,6 @@ namespace Tools.Debugs.BT
 
             if (! m_HasWeight)
                 m_Weight.gameObject.SetActive(false);
-
-            // TODO : SET DOTS
-            SetOptionDots();
         }
 
         #endregion
@@ -112,13 +103,7 @@ namespace Tools.Debugs.BT
 
         void RefreshWeight()
         {
-            m_Weight.text = m_Node.Weight.ToString();
-        }
-
-        void SetOptionDots()
-        {
-            //var dot = Instantiate(m_DotPrefab, m_DotsContainer).GetComponent<Image>();
-            //dot.color = isSelected ? Color.red : Color.white;
+            m_Weight.text = m_Node.Weight.ToString("F2");
         }
 
         #endregion
