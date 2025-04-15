@@ -1,3 +1,4 @@
+using Assets;
 using Assets.Scripts.Game;
 using Assets.Scripts.Managers.Sound;
 using Enums;
@@ -11,6 +12,7 @@ using Network;
 using Save;
 using System.Collections.Generic;
 using Tools;
+using Tools.Debugs.BT;
 using UnityEngine;
 
 public class GameUIManager : MonoBehaviour
@@ -25,6 +27,7 @@ public class GameUIManager : MonoBehaviour
     private EndGameUI       m_EndGameUI;
     private ErrorGameUI     m_ErrorGameUI;
     private TutoGameUI      m_TutoGameUI;
+    private BTDebugger      m_BTDebugger;
 
     const string        c_PlayerUIContainerPrefix   = "PlayerUIContainer_";
     const string        c_SpellsContainer           = "SpellsContainer";
@@ -70,6 +73,7 @@ public class GameUIManager : MonoBehaviour
     public static ErrorGameUI ErrorGameUI                   => Instance.m_ErrorGameUI;
     public static EndGameUI EndGameUI                       => Instance.m_EndGameUI;
     public static TutoGameUI TutoGameUI                     => Instance.m_TutoGameUI;
+    public static BTDebugger BTDebugger                     => Instance.m_BTDebugger;
     public static HitDisplayUI DamageDisplayManager => HitDisplayUI.Instance;
     public static List<SpellItemUI> SpellItems              => Instance.m_SpellItems;
     public static MovementButtonsContainer MovementButtonsContainer => Instance.m_MovementButtonsContainer;
@@ -87,6 +91,7 @@ public class GameUIManager : MonoBehaviour
         m_EndGameUI     = Finder.FindComponent<EndGameUI>(transform.parent.gameObject,      "EndGameUI");
         m_ErrorGameUI   = Finder.FindComponent<ErrorGameUI>(transform.parent.gameObject,    "ErrorGameUI");
         m_TutoGameUI    = Finder.FindComponent<TutoGameUI>(transform.parent.gameObject,     "TutoGameUI");
+        m_BTDebugger    = Finder.FindComponent<BTDebugger>(transform.parent.gameObject,     "BTDebugger");
 
         FindMovementButtons();
         FindPlayerUIContainers();
@@ -105,6 +110,7 @@ public class GameUIManager : MonoBehaviour
         m_EndGameUI.gameObject.SetActive(false);
         m_ErrorGameUI.gameObject.SetActive(false);
         m_TutoGameUI.gameObject.SetActive(false);
+        m_BTDebugger.gameObject.SetActive(false);
         m_PlayerUIs = new Dictionary<ulong, PlayerUI> { };
 
         LoadArena();
@@ -329,6 +335,9 @@ public class GameUIManager : MonoBehaviour
 
     public void SetUpGameOver(bool win)
     {
+        if (m_BTDebugger != null)
+            Destroy(m_BTDebugger.gameObject);
+
         SoundFXManager.PlayOnce(win ? SoundFXManager.WinSoundFX : SoundFXManager.LossSoundFX);
 
         m_EndGameUI.Activate(win, m_PreventiveLossApplied);

@@ -31,10 +31,11 @@ namespace Inventory
             + FIX_STAR_BONUS * (int)m_Rarety                            // fix value bonus from rarety
         );
 
+        // TODO : Set in SETTINGS or MANAGEMENT class  =========================================================
         /// <summary>
         /// Associate Reward with its price in "Power"
         /// </summary>
-        Dictionary<string, int> RewardsPrice = new Dictionary<string, int>()
+        public static readonly Dictionary<string, int> RewardsPrice = new Dictionary<string, int>()
         {
             // Currencies
             { ECurrency.Golds.ToString(),                   1       },
@@ -59,6 +60,7 @@ namespace Inventory
             { "Character_" + ERarety.Epic.ToString(),       15000   },
             { "Character_" + ERarety.Legendary.ToString(),  50000   },
         };
+        // TODO ===============================================================================================
 
         #endregion
 

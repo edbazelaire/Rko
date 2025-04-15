@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
-using Unity.Networking.Transport.Error;
 using UnityEngine;
 
 namespace Game.Loaders
@@ -457,6 +456,34 @@ namespace Game.Loaders
             return spells;
         }
 
+        public static void FilterByElement<T>(ref List<T> collectables, List<ESpellElement> spellElementFilters) where T : CollectableData
+        {
+            // CHECK : Spell Element
+            if (spellElementFilters != null && spellElementFilters.Count > 0)
+            {
+                return;
+            }
+
+            var filteredCollectables = new List<T>();
+            foreach (T collectableData in collectables)
+            {
+                if (collectableData.SpellElements == null || collectableData.SpellElements.Count == 0)
+                {
+                    // CHECK : NEUTRAL type
+                    if (!spellElementFilters.Contains(ESpellElement.Neutral))
+                        continue;
+                }
+
+                // CHECK : has at least one of required elements
+                else if (collectableData.SpellElements.Where(element => spellElementFilters.Contains(element)).ToList().Count() == 0)
+                    continue;
+
+                filteredCollectables.Add(collectableData);
+            }
+
+            collectables = filteredCollectables;
+        }
+
         /// <summary>
         /// Order spells by a specific metric
         /// </summary>
@@ -538,6 +565,7 @@ namespace Game.Loaders
         #region State Effects
 
         #endregion
+
 
         #region Runes
 

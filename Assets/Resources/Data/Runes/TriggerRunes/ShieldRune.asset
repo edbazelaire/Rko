@@ -15,8 +15,8 @@ MonoBehaviour:
   Rarety: 0
   m_Description: 
   m_DescriptionVariables: []
+  m_SpellElements: 00000000
   Description: 
-  m_SpellElements: 
   m_MinorPower:
     Description: 'On reaching 50% hp, [TriggerEffect.0]'
     m_DescriptionVariables: []
@@ -31,6 +31,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: 1
@@ -50,6 +51,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: 1
@@ -63,6 +65,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: 1
@@ -82,6 +85,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: 1
@@ -95,6 +99,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: 1
@@ -108,6 +113,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: 1
@@ -123,6 +129,7 @@ MonoBehaviour:
     DeactivationTreshold: 0
     StateEffectEvent: 0
     StateEffectName: 
+    NStateEffectActivationThreshold: 0
     Delay: 0
     Duration: 0
     NActivations: 0

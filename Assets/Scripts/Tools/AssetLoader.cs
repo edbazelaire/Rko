@@ -58,6 +58,7 @@ namespace Tools
         public const string c_AchievementsTemplatesPath     = c_TemplatesUIPath + "Achievements/";
         public const string c_PowerOrbsTemplatesPath        = c_TemplatesUIPath + "PowerOrbs/";
         public const string c_PowerUpsTemplatesPath         = c_TemplatesUIPath + "PowerUps/";
+        public const string c_BoostsTemplatesPath           = c_TemplatesUIPath + "Boosts/";
         // ---- Commons
         public const string c_CommonPath                    = c_UIPath + "Common/";
         public const string c_ButtonPath                    = c_CommonPath + "Buttons/";
@@ -373,6 +374,11 @@ namespace Tools
         public static PowerUpItem LoadPowerUpItem(ERuneActivation runeActivation)
         {
             return Load<PowerUpItem>("PowerUpItem_" + runeActivation.ToString(), c_PowerUpsTemplatesPath);
+        }
+
+        public static GameObject LoadBoostTemplate(EBoost boost)
+        {
+            return Load<GameObject>(boost.ToString(), c_BoostsTemplatesPath);
         }
 
         #endregion

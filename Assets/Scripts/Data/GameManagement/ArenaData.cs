@@ -293,9 +293,12 @@ namespace Data.GameManagement
                 powerUps:       CurrentArenaLevelData.PowerUps.Select(str => new FixedString128Bytes(str)).ToArray(),
                 bonusStats:     CurrentStageData.BonusStats.ToArray(),
                 botData :       new SBotData(
-                    ArenaDifficulty,
-                    GetDecisionRefresh(CurrentStageData.Level), 
-                    GetRandomness(CurrentStageData.Level)
+                    ArenaDifficulty.ToString(),
+                    decisionRefresh:    GetDecisionRefresh(CurrentStageData.Level), 
+                    randomness:         GetRandomness(CurrentStageData.Level),
+                    reactionTime:       (0f, 0f),
+                    movementTime:       (0f, 0f),
+                    movementRefresh:    (-1f, -1f)
                 )
             );
         }

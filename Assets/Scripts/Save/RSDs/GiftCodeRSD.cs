@@ -64,7 +64,6 @@ namespace Save.RSDs
             {
                 return (false, "Code as already been used");
             }
-
             codeData = data[0];
 
             return (true, null);

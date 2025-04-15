@@ -2,7 +2,9 @@
 using Enums;
 using Game.Spells;
 using Menu.Common.Buttons;
+using Save;
 using System;
+using TMPro;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,13 +15,21 @@ namespace Menu.MainMenu.MainTab.GameSection.Training
     {
         #region Members
 
-        GameObject      m_CharacterPreviewContainer;
-        Button          m_CharacterPreviewButton;
-        GameObject      m_RunePreviewContainer;
-        GameObject      m_BuildContainer;
+        Button                      m_OptionButton;
 
-        SynchronizedSlider m_DecisionRefreshSlider;
-        SynchronizedSlider m_RandomnessSlider;
+        GameObject                  m_CharacterSelectionContent;
+        GameObject                  m_CharacterPreviewContainer;
+        Button                      m_CharacterPreviewButton;
+        GameObject                  m_RunePreviewContainer;
+        GameObject                  m_BuildContainer;
+
+        GameObject                  m_OptionsContent;
+        TMP_Dropdown                m_DifficultyDropdown;
+        SynchronizedSlider          m_DecisionRefreshSlider;
+        SynchronizedSlider          m_RandomnessSlider;
+        SynchronizedDoubleSlider    m_ReactionTimeSlider;
+        SynchronizedDoubleSlider    m_MovementTimeSlider;
+        SynchronizedDoubleSlider    m_MovementRefreshSlider;
 
         #endregion
 
@@ -30,22 +40,56 @@ namespace Menu.MainMenu.MainTab.GameSection.Training
         {
             base.FindComponents();
 
+            m_OptionButton                  = Finder.FindComponent<Button>(gameObject, "OptionButton");
+
+            m_CharacterSelectionContent     = Finder.Find(gameObject, "CharacterSelectionContent");
             m_CharacterPreviewContainer     = Finder.Find(gameObject, "CharacterPreviewContainer");
             m_CharacterPreviewButton        = Finder.FindComponent<Button>(m_CharacterPreviewContainer);
             m_RunePreviewContainer          = Finder.Find(gameObject, "RunePreviewContainer");
             m_BuildContainer                = Finder.Find(gameObject, "BuildContainer");
 
+            m_OptionsContent                = Finder.Find(gameObject, "OptionsContent");
+            m_DifficultyDropdown            = Finder.FindComponent<TMP_Dropdown>(gameObject, "DifficultyDropdown");
             m_DecisionRefreshSlider         = Finder.FindComponent<SynchronizedSlider>(gameObject, "DecisionRefreshSlider");
             m_RandomnessSlider              = Finder.FindComponent<SynchronizedSlider>(gameObject, "RandomnessSlider");
+            m_ReactionTimeSlider            = Finder.FindComponent<SynchronizedDoubleSlider>(gameObject, "ReactionTimeSlider");
+            m_MovementTimeSlider            = Finder.FindComponent<SynchronizedDoubleSlider>(gameObject, "MovementTimeSlider");
+            m_MovementRefreshSlider         = Finder.FindComponent<SynchronizedDoubleSlider>(gameObject, "MovementRefreshSlider");
         }
 
         protected override void SetUpUI()
         {
             base.SetUpUI();
 
+            // init dropdown
+            if (! Enum.TryParse(PlayerPrefs.GetString(EPlayerPref.TrainingDifficulty.ToString(), ELeague.Silver.ToString()), out ELeague league))
+            {
+                ErrorHandler.Error("Unable to parse Training league as league enum");
+                league = ELeague.Silver;
+            }
+            UIHelper.SetUpDropdown(m_DifficultyDropdown, league, (ELeague value) => { PlayerPrefs.SetString(EPlayerPref.TrainingDifficulty.ToString(), value.ToString()); }); 
+
             // init sliders
-            m_RandomnessSlider.Initialize("Randomness", PlayerPrefs.GetFloat(EPlayerPref.TrainingRandomness.ToString(), 0f), 0f, 1f);
-            m_DecisionRefreshSlider.Initialize("Decision Refresh", PlayerPrefs.GetFloat(EPlayerPref.TrainingDecisionRefresh.ToString(), 0.05f), 0.05f, 1f);
+            m_RandomnessSlider.Initialize("Randomness", EPlayerPref.TrainingRandomness, 0.5f, 0f, 1f);
+            m_DecisionRefreshSlider.Initialize("Decision Refresh", EPlayerPref.TrainingDecisionRefresh, 0.1f, 0.05f, 1f);
+            m_ReactionTimeSlider.Initialize("Reaction Time", EPlayerPref.TrainingReactionTime, 
+                baseMinValue: 0.05f, 
+                baseMaxValue: 0.2f, 
+                minValue: 0f, 
+                maxValue: 1f
+            );
+            m_MovementTimeSlider.Initialize("Movement Duration", EPlayerPref.TrainingMovementTime, 
+                baseMinValue: 0.5f, 
+                baseMaxValue: 2f, 
+                minValue: 0f, 
+                maxValue: 5f
+            );
+            m_MovementRefreshSlider.Initialize("Movement Refresh", EPlayerPref.TrainingMovementRefresh, 
+                baseMinValue: 0.05f, 
+                baseMaxValue: 0.5f, 
+                minValue: 0f, 
+                maxValue: 5f
+            );
 
             // refresh preview of rune and character
             CoroutineManager.DelayMethod(RefreshCharacterPreview);
@@ -53,6 +97,12 @@ namespace Menu.MainMenu.MainTab.GameSection.Training
 
             // create build items
             SetUpBuild();
+
+            // hide options
+            m_CharacterSelectionContent.SetActive(true);
+            m_OptionsContent.SetActive(false);
+            // -- hide option button for non admins
+            m_OptionButton.gameObject.SetActive(ProfileCloudData.IsAdmin);
         }
 
         #endregion
@@ -90,13 +140,14 @@ namespace Menu.MainMenu.MainTab.GameSection.Training
 
             for (int index = 0; index < 3; index++)
             {
+                int runeIndex = index;
                 ERune rune = PlayerPrefsHandler.GetString<ERune>(EPlayerPref.TrainingRune, index);
 
                 var runeItem = Instantiate(AssetLoader.LoadTemplateItem(rune), m_RunePreviewContainer.transform).GetComponent<TemplateRuneItemUI>();
                 runeItem.Initialize(rune, asIconOnly: true);
                 runeItem.Button.interactable = true;
                 runeItem.Button.onClick.RemoveAllListeners();
-                runeItem.Button.onClick.AddListener(() => Main.SetCollectableSelectionPopUp<ERune>(OnRuneSelectedCallback(runeItem, index), false));
+                runeItem.Button.onClick.AddListener(() => Main.SetCollectableSelectionPopUp<ERune>(OnRuneSelectedCallback(runeItem, runeIndex), false));
             }
         }
 
@@ -109,6 +160,7 @@ namespace Menu.MainMenu.MainTab.GameSection.Training
         {
             base.RegisterListeners();
 
+            m_OptionButton.onClick.AddListener(ToggleOptions);
             m_CharacterPreviewButton.onClick.AddListener(() => Main.SetCollectableSelectionPopUp<ECharacter>(OnCharacterSelected, false));
             m_DecisionRefreshSlider.ValueChangedEvent   += OnDecisionRefreshValueChanged;
             m_RandomnessSlider.ValueChangedEvent        += OnRandomnessValueChanged;
@@ -118,9 +170,16 @@ namespace Menu.MainMenu.MainTab.GameSection.Training
         {
             base.UnRegisterListeners();
 
+            m_OptionButton.onClick.RemoveAllListeners();
             m_CharacterPreviewButton.onClick.RemoveAllListeners();
             m_DecisionRefreshSlider.ValueChangedEvent   -= OnDecisionRefreshValueChanged;
             m_RandomnessSlider.ValueChangedEvent        -= OnRandomnessValueChanged;
+        }
+
+        void ToggleOptions()
+        {
+            m_CharacterSelectionContent.SetActive(m_OptionsContent.activeInHierarchy);
+            m_OptionsContent.SetActive(!m_OptionsContent.activeInHierarchy);
         }
 
         void OnCharacterSelected(ECharacter character)

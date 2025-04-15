@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9636473c97c881409724f59dc7c4dde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ActivationColor: {r: 1, g: 0, b: 0, a: 0.4}
+  m_ActivationColor: {r: 1, g: 0.031372547, b: 0.08132276, a: 0.31764707}
   IsTriggered: 0
 --- !u!212 &5494425146060988
 SpriteRenderer:
@@ -300,9 +300,9 @@ GameObject:
   - component: {fileID: -927820376416270423}
   - component: {fileID: 6285027811574116592}
   - component: {fileID: -3965553549312345165}
-  - component: {fileID: -5779417410852913318}
   - component: {fileID: 8146864751764597168}
   - component: {fileID: 4829500195178583324}
+  - component: {fileID: 340277270075024069}
   m_Layer: 7
   m_Name: PlayerAI
   m_TagString: Player
@@ -408,7 +408,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1722083933
+  GlobalObjectIdHash: 3061309347
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -542,18 +542,6 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 0
   SlerpPosition: 0
---- !u!114 &-5779417410852913318
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6187705959729963238}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cac3a455852934bd58420354c7c24dc0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &8146864751764597168
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -576,6 +564,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d35497445451e0445b94d599fd049c9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &340277270075024069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6187705959729963238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cac3a455852934bd58420354c7c24dc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &8130017764725158727
@@ -666,7 +666,6 @@ MonoBehaviour:
   m_Controller: {fileID: 6022859989042461128}
   m_SpriteRenderer: {fileID: 6122247831073093839}
   m_Collider: {fileID: 5486597006991288940}
-  IsTriggered: 0
 --- !u!212 &6122247831073093839
 SpriteRenderer:
   m_ObjectHideFlags: 0

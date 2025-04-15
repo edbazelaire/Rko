@@ -57,7 +57,7 @@ namespace Data.GameManagement
 
         [Description("Specific data for each rarety type of spells")]
         public List<SRaretyData>        RaretyData;
-        [Description("Specific data for each rarety type of spells")]
+        [Description("Required xp of each account levelup + associated rewards")]
         public List<SAccountLevelData>  AccountLevelData;
         [Description("Quantity and Golds required for each Character level up")]
         public List<SLevelData>         CharacterLevelData;

@@ -28,6 +28,7 @@ MonoBehaviour:
     with the strength of a king and the compassion of a guardian, driven by the hope
     of forging a lasting peace for Maedonis."
   m_DescriptionVariables: []
+  m_SpellElements: 00000000
   m_AutoAttack: AxeThrow
   m_SpecialAbility: ThickSkin
   m_Ultimate: Erasement
@@ -35,13 +36,18 @@ MonoBehaviour:
   BaseSpeed: 0.9
   BaseHealth: 1500
   MaxEnergy: 100
+  BaseEnergy: 10
+  IsStructure: 0
   HealthScaleFactor: 0.1
   CharacterStatScaling:
   - StateEffectProperty: 5
     BaseValue: 10
     BonusValue: 0
     ScalingFactor: 0.1
+    StateEffectStackFactors: []
   - StateEffectProperty: 8
     BaseValue: -0.1
     BonusValue: 0
     ScalingFactor: 0
+    StateEffectStackFactors: []
+  m_SpecialPowers: []

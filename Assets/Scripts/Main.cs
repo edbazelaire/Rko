@@ -49,6 +49,7 @@ namespace Assets
         [SerializeField] EEnv m_Env = EEnv.beta;
         [SerializeField] bool m_ForceIsNewPlayer;
         [SerializeField] bool m_StopPreventiveLoss;
+        [SerializeField] bool m_InfinitGiftCodes;
         [SerializeField] List<ELogTag> m_LogTags;
 
         // ==========================================================================================================
@@ -99,6 +100,18 @@ namespace Assets
 #if UNITY_EDITOR
                 // only works in EDITOR mode
                 return Instance.m_StopPreventiveLoss;
+#else
+                return false;
+#endif
+            }
+        }
+        public static bool InfinitGiftCodes
+        {
+            get
+            {
+#if UNITY_EDITOR
+                // only works in EDITOR mode
+                return Instance.m_InfinitGiftCodes;
 #else
                 return false;
 #endif
@@ -393,12 +406,6 @@ namespace Assets
         public static void DisplayRewards(SRewardsData rewardsData, string context, Action OnRewardCollected = null, string title = null)
         {
             Action callback = () => Main.SetPopUp(EPopUpState.RewardsScreen, rewardsData, context, OnRewardCollected, title);
-            //if (ScreenManager.HasScreen(EPopUpState.RewardsScreen))
-            //{
-            //    ScreenManager.StoreEvent(EPopUpState.MainMenuScreen, callback);
-            //    return;
-            //}
-
             callback?.Invoke();
         }
      

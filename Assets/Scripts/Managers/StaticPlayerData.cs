@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
-using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.UI.ScrollRect;
 
 namespace Managers
 {
@@ -18,22 +18,38 @@ namespace Managers
     [Serializable]
     public struct SBotData : INetworkSerializable
     {
-        public EArenaDifficulty     ArenaDifficulty;
-        public float                DecisionRefresh;
-        public float                Randomness;
+        public FixedString32Bytes       Difficulty;
+        public float                    DecisionRefresh;
+        public float                    Randomness;
+        public float                    MinReactionTime;
+        public float                    MaxReactionTime;
+        public float                    MinMovementTime;
+        public float                    MaxMovementTime;
+        public float                    MinMovementRefresh;
+        public float                    MaxMovementRefresh;
 
-        public SBotData(EArenaDifficulty arenaDifficulty, float decisionRefresh, float randomness)
+        public SBotData(string difficulty, float decisionRefresh = 0f, float randomness = 0f, (float, float) reactionTime = default, (float, float) movementTime = default, (float, float) movementRefresh = default)
         {
-            ArenaDifficulty     = arenaDifficulty;
+            Difficulty          = difficulty;
             DecisionRefresh     = decisionRefresh;
             Randomness          = randomness;
+            MinReactionTime     = reactionTime.Item1;
+            MaxReactionTime     = reactionTime.Item2;
+            MinMovementTime     = movementTime.Item1;
+            MaxMovementTime     = movementTime.Item2;
+            MinMovementRefresh  = movementRefresh.Item1;
+            MaxMovementRefresh  = movementRefresh.Item2;
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
-            serializer.SerializeValue(ref ArenaDifficulty);
+            serializer.SerializeValue(ref Difficulty);
             serializer.SerializeValue(ref DecisionRefresh);
             serializer.SerializeValue(ref Randomness);
+            serializer.SerializeValue(ref MinReactionTime);
+            serializer.SerializeValue(ref MaxReactionTime);
+            serializer.SerializeValue(ref MinMovementRefresh);
+            serializer.SerializeValue(ref MaxMovementRefresh);
         }
     }
 

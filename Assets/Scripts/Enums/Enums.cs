@@ -833,11 +833,11 @@
 
     public enum ECurrency
     {
-        Golds,
-        Gems,
-        Dollars,
-        Xp,
-        TotalXp,
+        Golds       = 0,
+        Gems        = 1,
+        Dollars     = 2,
+        Xp          = 3,
+        TotalXp     = 4,
     }
 
     public enum EChest
@@ -979,7 +979,7 @@
         Bronze,
         Silver,
         Gold,
-        Platinium,
+        Platinum,
         Diamond,
         Master,
         Champion
@@ -1079,24 +1079,30 @@
         None = 0,
 
         // Ranking Borders
-        LeagueBronze    = 1,
-        LeagueSilver    = 2,
-        LeagueGold      = 3,
-        //LeaguePlatinium = 4,
-        //LeagueRubis     = 5,
-        //LeagueDiamant   = 6,
-        //LeagueMaster    = 7,
-        //LeagueLegend    = 8,
+        LeagueBronze    = 10,
+        LeagueSilver    = 20,
+        LeagueGold      = 30,
+        LeaguePlatinum  = 40,
+        LeagueDiamond   = 50,
+        LeagueMaster    = 60,
+        LeagueChampion  = 70,
+        //LeagueLegend    = 80,
 
         // Special ranking border
         Rank1 = 11,
 
         // Others
-        Sakura = 101,
-        Assassin = 102,
-        Devil = 103,
-        Flowers = 104,
-        Ribbon = 105,
+        Sakura          = 101,
+        Assassin        = 102,
+        Devil           = 103,
+        Flowers         = 104,
+        Ribbon          = 105,
+        Bloody          = 106,
+        Plumo           = 107,
+        Demonic         = 108,
+        King            = 109,
+        Noble           = 110, 
+        Domination      = 111, 
 
         // Speical Events
         Fire = 201,

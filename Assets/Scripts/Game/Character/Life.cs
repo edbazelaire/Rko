@@ -217,23 +217,4 @@ public class Life : NetworkBehaviour
     }
 
     #endregion
-
-
-    #region Debug
-
-    void DisplayLife(float timer = 2f)
-    {
-        if (debugTimer > 0f)
-        {
-            debugTimer -= Time.deltaTime;
-            return;
-        }
-
-        print("Client: " + OwnerClientId);
-        print("     + Life: " + m_Hp.Value);
-
-        debugTimer = timer;
-    }
-
-    #endregion
 }

@@ -27,6 +27,7 @@ namespace Menu
         [SerializeField] Color m_EmptyColor;
         [SerializeField] Color m_LockedColor;
         [SerializeField] Color m_UnlockingColor;
+        [SerializeField] Color m_BoostedColor;
         [SerializeField] Color m_ReadyColor;
 
         Button      m_Button;
@@ -69,21 +70,6 @@ namespace Menu
             m_ChestPreviewContainer     = Finder.Find(gameObject, c_ChestPreviewContainer);
             m_ChestContainer            = Finder.Find(m_ChestPreviewContainer, c_ChestContainer);
             m_ChestTimer                = Finder.FindComponent<TMP_Text>(m_ChestPreviewContainer, c_ChestTimer);
-        }
-
-        protected override void RegisterListeners()
-        {
-            base.RegisterListeners();
-
-            m_Button.onClick.AddListener(OnButtonClicked);
-        }
-
-        protected override void UnRegisterListeners()
-        {
-            base.UnRegisterListeners();
-
-            if (m_Button != null)
-                m_Button.onClick.RemoveAllListeners();
         }
 
         #endregion
@@ -166,7 +152,7 @@ namespace Menu
                     break;
 
                 case EChestLockState.Unlocking:
-                    m_Background.color = m_UnlockingColor;
+                    m_Background.color = TimeCloudData.HasBoost(EBoost.ChestSpeedBoost) ? m_BoostedColor : m_UnlockingColor;
                     // delay on frame because gameobject might no be init yet
                     CoroutineManager.DelayMethod(() => { m_ChestUI.ActivateIdle(false); });
                     break;
@@ -227,6 +213,24 @@ namespace Menu
 
         #region Listeners
 
+        protected override void RegisterListeners()
+        {
+            base.RegisterListeners();
+
+            m_Button.onClick.AddListener(OnButtonClicked);
+            TimeCloudData.BoostChangedEvent += OnBoostChanged;
+        }
+
+        protected override void UnRegisterListeners()
+        {
+            base.UnRegisterListeners();
+
+            if (m_Button != null)
+                m_Button.onClick.RemoveAllListeners();
+
+            TimeCloudData.BoostChangedEvent -= OnBoostChanged;
+        }
+
         void OnButtonClicked()
         {
             switch (m_State)
@@ -254,6 +258,17 @@ namespace Menu
                     UnlockChest();
                     return;
             }
+        }
+
+        void OnBoostChanged(string boostName, bool activate)
+        {
+            if (m_State != EChestLockState.Unlocking)
+                return;
+
+            if (boostName != EBoost.ChestSpeedBoost.ToString())
+                return;
+
+            m_Background.color = activate ? m_BoostedColor : m_UnlockingColor;
         }
 
         #endregion

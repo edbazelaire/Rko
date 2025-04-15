@@ -57,8 +57,6 @@ namespace Data
 
         // ===========================================================================
         // Serialized Data
-        [SerializeField, Description("List of Element catagories of the spell")]
-        protected List<ESpellElement>   m_SpellElements;
         [Description("Is this spell linked to a specific character")]
         public bool                     Linked;
 
@@ -95,7 +93,7 @@ namespace Data
         public bool                         ApplyIfNotHitting       = false;
         
         [Header("Requirements")]
-        [SerializeField, Description("Is the spell effect applied when NOT hitting the target ?")]
+        [SerializeField, Tooltip("Is the spell effect applied when NOT hitting the target ?")]
         protected List<SpellRequirements>   m_SpellRequirements    = new List<SpellRequirements>();
 
         [Header("Stats")]
@@ -105,21 +103,21 @@ namespace Data
         public int                          EnergyGain              = 10;
         [Description("Request amount on energy to be able to cast this spell")]
         public int                          EnergyCost          = 0;
-        [SerializeField, Description("Damage of the spell")]
+        [SerializeField, Tooltip("Damage of the spell")]
         public int                          m_Damage            = 0;
-        [SerializeField, Description("Execution damage of the spell (growing with missing life)")]
+        [SerializeField, Tooltip("Execution damage of the spell (growing with missing life)")]
         public int                          m_ExecutionDamages  = 0;
-        [SerializeField, Description("Heals provided to the target")]
+        [SerializeField, Tooltip("Heals provided to the target")]
         public int                          m_Heal              = 0;
-        [SerializeField, Description("Quantity of (permanant) shield provided to the target")] 
+        [SerializeField, Tooltip("Quantity of (permanant) shield provided to the target")] 
         public int                          m_Shield            = 0;
-        [SerializeField, Description("Percentage of damages healed on hit")]
+        [SerializeField, Tooltip("Percentage of damages healed on hit")]
         protected float                     m_LifeSteal         = 0f;
         [Description("Max distance of the spell")]
         public float                        Distance            = -1f;
         [Description("List of properties that are overriten on the <OnHit> spells")]
         public List<ESpellProperty>         OverrideOnHitProperties;
-        [SerializeField, Description("Duration of the spell")]
+        [SerializeField, Tooltip("Duration of the spell")]
         public float                        m_Duration          = 0f;
         [Description("Delay of the spell to be instantiated after cast")]
         public float                        Delay               = 0f;
@@ -167,7 +165,6 @@ namespace Data
         // ===========================================================================
         // Dependent Members
         public virtual string Parent => m_Parent.IsNullOrEmpty() ? Name : m_Parent;
-        public virtual List<ESpellElement> SpellElements => m_SpellElements;
         public virtual  List<SpellRequirements> SpellRequirements => m_SpellRequirements;
         public virtual ESpellType   SpellType   => ESpellType.InstantSpell;
         public float                BaseSize    => m_Size;
@@ -393,6 +390,25 @@ namespace Data
         protected virtual NetworkObject GetSpellPrefab()
         {
             return SpellLoader.GetSpellPrefab(Name, SpellType).GetComponent<NetworkObject>();
+        }
+
+        /// <summary>
+        /// Does the spell (or its sub spells) has the expected state effect
+        /// </summary>
+        /// <param name="stateEffect"></param>
+        /// <returns></returns>
+        public bool HasStateEffect(EStateEffect stateEffect)
+        {
+            if (EnemyStateEffects.Where(t => t.StateEffect == stateEffect).Count() > 0)
+                return true;
+
+            foreach (var subSpellData in OnHit)
+            {
+                if (subSpellData.HasStateEffect(stateEffect))
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>

@@ -192,9 +192,6 @@ namespace Data
         [Description("Description informations of the Rune")]
         public string Description;
 
-        [Description("List of Element catagories of the spell")]
-        [SerializeField] protected List<ESpellElement> m_SpellElements;
-
         [SerializeField, Tooltip("Default power of the Rune")]
         protected SRunePower m_MinorPower;
         [SerializeField, Tooltip("Secondary power of the Rune")]
@@ -209,7 +206,6 @@ namespace Data
         // DEPENDENT PROPERTIES
         protected override Type m_EnumType => typeof(ERune);
         public ERune Rune => Enum.TryParse(Name, out ERune rune) ? rune : ERune.None;
-        public List<ESpellElement> SpellElements => m_SpellElements;
 
 
         #region Rune Power Activation

@@ -23,12 +23,14 @@ MonoBehaviour:
         Chests: 
         Collectables: []
         AchievementRewards: []
+        Boosts: []
     - NStages: 3
       Rewards:
         Currencies: []
         Chests: 00000000
         Collectables: []
         AchievementRewards: []
+        Boosts: []
     - NStages: 3
       Rewards:
         Currencies:
@@ -42,9 +44,10 @@ MonoBehaviour:
         - AchievementReward: 3
           Title: 0
           Avatar: 0
-          Border: 1
+          Border: 10
           Badge: 0
           League: 0
+        Boosts: []
   - League: 2
     LevelData:
     - NStages: 3
@@ -55,12 +58,14 @@ MonoBehaviour:
         Chests: 
         Collectables: []
         AchievementRewards: []
+        Boosts: []
     - NStages: 3
       Rewards:
         Currencies: []
         Chests: 01000000
         Collectables: []
         AchievementRewards: []
+        Boosts: []
     - NStages: 4
       Rewards:
         Currencies:
@@ -68,25 +73,28 @@ MonoBehaviour:
           Qty: 2500
         - Currency: 3
           Qty: 150
-        Chests: 01000000
+        Chests: 0000000000000000
         Collectables: []
         AchievementRewards:
         - AchievementReward: 3
           Title: 0
           Avatar: 0
-          Border: 2
+          Border: 20
           Badge: 0
           League: 0
+        Boosts: []
   - League: 3
     LevelData:
     - NStages: 3
       Rewards:
-        Currencies:
-        - Currency: 3
-          Qty: 250
+        Currencies: []
         Chests: 
-        Collectables: []
+        Collectables:
+        - CollectableType: 1
+          CollectableName: Kahnan
+          Qty: 1
         AchievementRewards: []
+        Boosts: []
     - NStages: 4
       Rewards:
         Currencies:
@@ -95,6 +103,7 @@ MonoBehaviour:
         Chests: 
         Collectables: []
         AchievementRewards: []
+        Boosts: []
     - NStages: 4
       Rewards:
         Currencies:
@@ -102,12 +111,220 @@ MonoBehaviour:
           Qty: 150
         - Currency: 0
           Qty: 2500
+        Chests: 01000000
+        Collectables: []
+        AchievementRewards:
+        - AchievementReward: 3
+          Title: 0
+          Avatar: 0
+          Border: 30
+          Badge: 0
+          League: 0
+        Boosts: []
+  - League: 4
+    LevelData:
+    - NStages: 4
+      Rewards:
+        Currencies: []
+        Chests: 
+        Collectables:
+        - CollectableType: 2
+          CollectableName: PlagueArrows
+          Qty: 5
+        AchievementRewards: []
+        Boosts: []
+    - NStages: 4
+      Rewards:
+        Currencies:
+        - Currency: 3
+          Qty: 1000
+        Chests: 
+        Collectables: []
+        AchievementRewards: []
+        Boosts: []
+    - NStages: 4
+      Rewards:
+        Currencies: []
+        Chests: 01000000
+        Collectables: []
+        AchievementRewards: []
+        Boosts: []
+    - NStages: 5
+      Rewards:
+        Currencies:
+        - Currency: 0
+          Qty: 5000
+        - Currency: 3
+          Qty: 300
+        Chests: 
+        Collectables:
+        - CollectableType: 1
+          CollectableName: Subrog
+          Qty: 1
+        AchievementRewards:
+        - AchievementReward: 3
+          Title: 0
+          Avatar: 0
+          Border: 40
+          Badge: 0
+          League: 0
+        Boosts: []
+  - League: 5
+    LevelData:
+    - NStages: 5
+      Rewards:
+        Currencies:
+        - Currency: 1
+          Qty: 50
+        - Currency: 0
+          Qty: 2500
+        Chests: 
+        Collectables: []
+        AchievementRewards: []
+        Boosts: []
+    - NStages: 5
+      Rewards:
+        Currencies: []
+        Chests: 01000000
+        Collectables: []
+        AchievementRewards: []
+        Boosts: []
+    - NStages: 6
+      Rewards:
+        Currencies: []
+        Chests: 
+        Collectables:
+        - CollectableType: 2
+          CollectableName: Blazeburst
+          Qty: 1
+        AchievementRewards: []
+        Boosts: []
+    - NStages: 6
+      Rewards:
+        Currencies:
+        - Currency: 3
+          Qty: 750
+        - Currency: 0
+          Qty: 5000
         Chests: 02000000
         Collectables: []
         AchievementRewards:
         - AchievementReward: 3
           Title: 0
           Avatar: 0
-          Border: 3
+          Border: 50
           Badge: 0
           League: 0
+        Boosts: []
+  - League: 6
+    LevelData:
+    - NStages: 5
+      Rewards:
+        Currencies: []
+        Chests: 
+        Collectables:
+        - CollectableType: 3
+          CollectableName: ResurrectionRune
+          Qty: 1
+        AchievementRewards: []
+        Boosts: []
+    - NStages: 6
+      Rewards:
+        Currencies: []
+        Chests: 01000000
+        Collectables: []
+        AchievementRewards: []
+        Boosts: []
+    - NStages: 7
+      Rewards:
+        Currencies:
+        - Currency: 1
+          Qty: 80
+        Chests: 
+        Collectables:
+        - CollectableType: 2
+          CollectableName: Meteor
+          Qty: 10
+        AchievementRewards: []
+        Boosts: []
+    - NStages: 8
+      Rewards:
+        Currencies: []
+        Chests: 02000000
+        Collectables: []
+        AchievementRewards: []
+        Boosts: []
+    - NStages: 10
+      Rewards:
+        Currencies:
+        - Currency: 1
+          Qty: 150
+        - Currency: 3
+          Qty: 2000
+        Chests: 03000000
+        Collectables: []
+        AchievementRewards:
+        - AchievementReward: 3
+          Title: 0
+          Avatar: 0
+          Border: 60
+          Badge: 0
+          League: 0
+        Boosts: []
+  - League: 7
+    LevelData:
+    - NStages: 10
+      Rewards:
+        Currencies: []
+        Chests: 02000000
+        Collectables: []
+        AchievementRewards: []
+        Boosts: []
+    - NStages: 10
+      Rewards:
+        Currencies:
+        - Currency: 3
+          Qty: 1000
+        Chests: 
+        Collectables:
+        - CollectableType: 3
+          CollectableName: SoulSiffonRune
+          Qty: 5
+        - CollectableType: 3
+          CollectableName: RottingFlame
+          Qty: 5
+        AchievementRewards: []
+        Boosts: []
+    - NStages: 10
+      Rewards:
+        Currencies:
+        - Currency: 1
+          Qty: 50
+        - Currency: 0
+          Qty: 2500
+        Chests: 0100000001000000
+        Collectables: []
+        AchievementRewards: []
+        Boosts: []
+    - NStages: 10
+      Rewards:
+        Currencies: []
+        Chests: 02000000
+        Collectables: []
+        AchievementRewards: []
+        Boosts: []
+    - NStages: 10
+      Rewards:
+        Currencies:
+        - Currency: 0
+          Qty: 25000
+        Chests: 03000000
+        Collectables: []
+        AchievementRewards:
+        - AchievementReward: 3
+          Title: 0
+          Avatar: 0
+          Border: 70
+          Badge: 0
+          League: 0
+        Boosts: []

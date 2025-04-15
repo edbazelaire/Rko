@@ -16,7 +16,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
+using Tools.Debugs.BT;
 using Unity.Netcode;
+using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -267,26 +269,26 @@ namespace Game
         {
             if (!IsServer)
                 return;
-
             int team = m_Controllers.Count;
 
-            GameObject playerPrefab;
+            GameObject playerPrefab = CharacterLoader.GetPrefab(playerData.Character.ToString(), playerData.IsPlayer, m_IsTuto);
             if (playerData.IsPlayer)
             {
                 // create player prefab and spawn it
-                playerPrefab = Instantiate(CharacterLoader.Instance.PlayerPrefab, ArenaManager.Instance.Spawns[team][0].position, Quaternion.identity, ArenaManager.Instance.transform);
+                playerPrefab = Instantiate(playerPrefab, ArenaManager.Instance.Spawns[team][0].position, Quaternion.identity, ArenaManager.Instance.transform);
                 playerPrefab.GetComponent<NetworkObject>().SpawnWithOwnership(clientId, true);
             }
             else
             {
                 // create an AI prefab and spawn it
-                playerPrefab = Instantiate(m_IsTuto ? CharacterLoader.Instance.PlayerTutoAIPrefab : CharacterLoader.Instance.PlayerAIPrefab, ArenaManager.Instance.transform);
-                playerPrefab.GetComponent<NetworkObject>().Spawn();
+                playerPrefab = Instantiate(playerPrefab, ArenaManager.Instance.transform);
+                playerPrefab.GetComponent<NetworkObject>().Spawn(true);
             }
            
             // add player to list of player controllers
             Controller controller = Finder.FindComponent<Controller>(playerPrefab);
 
+            // postprocess player data if needed
             UpdatePlayerData(ref playerData);
 
             // initialize player data
@@ -302,16 +304,16 @@ namespace Game
 
         /// <summary>
         /// Update player data depending on game mode.
-        /// [Arena]
+        /// [Ranked || Arena]
         ///     No changes
         /// 
-        /// [Ranked || Test]
+        /// [Training]
         ///     For test purpuses, all data (char and spells) are set to level 9
         /// </summary>
         /// <param name="playerData"></param>
         void UpdatePlayerData(ref SPlayerData playerData)
         {
-            if (LobbyHandler.Instance.GameMode == EGameMode.Arena)
+            if (LobbyHandler.Instance.GameMode != EGameMode.Training)
                 return;
 
             playerData.CharacterLevel = DEFAULT_PVP_LEVEL;
@@ -365,6 +367,8 @@ namespace Game
             // call clients to check if they are 
             while (m_ClientsInitialized.Count != LobbyHandler.Instance.MaxPlayers)
             {
+                if (CheckIsFilledWithBots())
+                    break;
                 CheckInitializedClientRPC();
                 yield return null;
             }
@@ -374,6 +378,21 @@ namespace Game
 
             // goto intro
             SetState(EGameState.Intro);
+        }
+
+        bool CheckIsFilledWithBots()
+        {
+            if (LobbyHandler.Instance.GameMode != EGameMode.Ranked)
+                return false;
+
+            int nBots = 1; // 1 because Host is server side so it count has one initialized on Server side
+            foreach (Controller controller in m_Controllers.Values)
+            {
+                if (! controller.IsPlayer)
+                    nBots++;
+            }
+
+            return nBots == LobbyHandler.Instance.MaxPlayers;
         }
 
         /// <summary>
@@ -958,6 +977,16 @@ namespace Game
                     break;
 
                 case EGameState.GameRunning:
+                    // initialize BT debugger if enemy is bot
+                    if (! GetFirstEnemy(Owner.Team).IsPlayer)
+                    {
+                        if (IsServer && ProfileCloudData.IsAdmin && PlayerPrefsHandler.GetDebug(EDebugOption.DebugBots))
+                        {
+                            GameUIManager.BTDebugger.Initialize(GetFirstEnemy(Owner.Team));
+                            GameUIManager.BTDebugger.gameObject.SetActive(true);
+                        }
+                    }
+
                     TimeErrorWrapper.Instance.Cancel(TIME_WRAPPER_ID);
                     break;
 
