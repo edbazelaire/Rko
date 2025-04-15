@@ -881,7 +881,7 @@ namespace Save
 
         public static bool HasGiftCode(string code)
         {
-            return GiftCodes.Contains(code);
+            return GiftCodes.Contains(code) && ! Main.InfinitGiftCodes;
         }
 
         #endregion

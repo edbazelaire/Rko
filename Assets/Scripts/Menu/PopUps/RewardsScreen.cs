@@ -300,6 +300,10 @@ namespace Menu.PopUps
             {
                 yield return DisplayAchievementReward(arType, reward.RewardName);
             }
+            else if (reward.RewardType == typeof(EBoost) && Enum.TryParse(reward.RewardName, out EBoost boost))
+            {
+                yield return DisplayBoostReward(boost, reward.Qty);
+            }
             else
             {
                 var collectable = CollectablesManagementData.Cast(reward.RewardName, reward.RewardType);
@@ -553,6 +557,40 @@ namespace Menu.PopUps
             yield return new WaitUntil(() => m_Skip);
         }
 
+        IEnumerator DisplayBoostReward(EBoost boost, int duration)
+        {
+            ErrorHandler.Log("DisplayBoostReward : ", ELogTag.Rewards);
+            ErrorHandler.Log("      + EBoost : " + boost,   ELogTag.Rewards);
+            ErrorHandler.Log("      + duration : " + duration,    ELogTag.Rewards);
+
+            // play sound effect
+            SoundFXManager.PlayOnce(SoundFXManager.AchievementRewardCollectedSoundFX);
+
+            // activate rewards display container
+            m_RewardDisplayContainer.SetActive(true);
+            m_RewardInfosSection.SetActive(false);
+            // deactivate chest containers
+            m_ChestContainer.SetActive(false);
+
+            // clean content before next display
+            UIHelper.CleanContent(m_RewardIconSection);
+
+            // setup ui of the new template
+            SetUpBoostRewardTemplate(boost);
+            if (m_CurrentTemplateItem == null)
+                yield break;
+
+            yield return PlayAchievementRewardAnimation();
+
+            AnimationHandler.AddRaycast(m_RewardIconSection, size: 2f, color: new Color(1f, 1f, 1f, 0.3f));
+
+            // add reward to collection of rewards
+            TimeCloudData.AddBoost(boost, duration);
+
+            // wait for click to display next
+            yield return new WaitUntil(() => m_Skip);
+        }
+
         void SetUpTemplateItem(Enum collectable, int qty)
         {
             m_CurrentTemplateItem = Instantiate(AssetLoader.LoadTemplateItem(collectable), m_RewardIconSection.transform);
@@ -675,6 +713,16 @@ namespace Menu.PopUps
             fadeIn.Initialize(duration: 0.35f, startScale: 0.8f, endScale:2f);
 
             yield return WaitAnimationOrSkip(fadeIn);
+        }
+
+        #endregion
+
+
+        #region Boosts
+
+        void SetUpBoostRewardTemplate(EBoost boost)
+        {
+            m_CurrentTemplateItem = Instantiate(AssetLoader.LoadBoostTemplate(boost), m_RewardIconSection.transform);
         }
 
         #endregion

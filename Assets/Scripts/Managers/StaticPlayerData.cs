@@ -18,22 +18,31 @@ namespace Managers
     [Serializable]
     public struct SBotData : INetworkSerializable
     {
-        public EArenaDifficulty     ArenaDifficulty;
-        public float                DecisionRefresh;
-        public float                Randomness;
+        public FixedString32Bytes       Difficulty;
+        public float                    DecisionRefresh;
+        public float                    Randomness;
+        public float                    ReactionTime;
+        public float                    MinMovementRefresh;
+        public float                    MaxMovementRefresh;
 
-        public SBotData(EArenaDifficulty arenaDifficulty, float decisionRefresh, float randomness)
+        public SBotData(string difficulty, float decisionRefresh = 0f, float randomness = 0f, float reactionTime = 0f, (float, float) movementRefresh = default)
         {
-            ArenaDifficulty     = arenaDifficulty;
+            Difficulty          = difficulty;
             DecisionRefresh     = decisionRefresh;
             Randomness          = randomness;
+            ReactionTime        = reactionTime;
+            MinMovementRefresh  = movementRefresh.Item1;
+            MaxMovementRefresh  = movementRefresh.Item2;
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
-            serializer.SerializeValue(ref ArenaDifficulty);
+            serializer.SerializeValue(ref Difficulty);
             serializer.SerializeValue(ref DecisionRefresh);
             serializer.SerializeValue(ref Randomness);
+            serializer.SerializeValue(ref ReactionTime);
+            serializer.SerializeValue(ref MinMovementRefresh);
+            serializer.SerializeValue(ref MaxMovementRefresh);
         }
     }
 

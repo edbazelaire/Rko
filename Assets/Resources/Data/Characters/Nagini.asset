@@ -31,6 +31,7 @@ MonoBehaviour:
     cursed by the Vile Shards or simply a victim of a cruel fate, Nagini\u2019s legend
     remains a grim warning to all who would dare seek it."
   m_DescriptionVariables: []
+  m_SpellElements: 03000000
   m_AutoAttack: PoisonSpit
   m_SpecialAbility: VenomousBite
   m_Ultimate: PoisonFury
@@ -38,13 +39,18 @@ MonoBehaviour:
   BaseSpeed: 1.15
   BaseHealth: 1100
   MaxEnergy: 100
+  BaseEnergy: 10
+  IsStructure: 0
   HealthScaleFactor: 0.1
   CharacterStatScaling:
   - StateEffectProperty: 101
     BaseValue: 0.1
     BonusValue: 0
     ScalingFactor: 0
+    StateEffectStackFactors: []
   - StateEffectProperty: 16
     BaseValue: 0.1
     BonusValue: 0
     ScalingFactor: 0.05
+    StateEffectStackFactors: []
+  m_SpecialPowers: []

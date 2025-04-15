@@ -18,6 +18,9 @@ namespace Data
         [SerializeField] protected string m_Description = "";
         [SerializeField] protected List<SDescriptionVariable> m_DescriptionVariables = new List<SDescriptionVariable>();
 
+        [SerializeField, Tooltip("List of Element types of this collectable")]
+        protected List<ESpellElement> m_SpellElements;
+
         // ===================================================================================================
         // Private Data
         protected int m_Level = 1;
@@ -26,6 +29,7 @@ namespace Data
         // ===================================================================================================
         // Dependent Data
         public int Level => m_Level;
+        public List<ESpellElement>  SpellElements => m_SpellElements;
 
         public string Name
         {

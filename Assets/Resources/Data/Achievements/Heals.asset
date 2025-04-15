@@ -27,6 +27,7 @@ MonoBehaviour:
       Chests: 
       Collectables: []
       AchievementRewards: []
+      Boosts: []
   - MaxValue: 10000
     Rewards:
       Currencies: []
@@ -39,6 +40,7 @@ MonoBehaviour:
         Border: 0
         Badge: 0
         League: 0
+      Boosts: []
   - MaxValue: 15000
     Rewards:
       Currencies:
@@ -47,6 +49,7 @@ MonoBehaviour:
       Chests: 
       Collectables: []
       AchievementRewards: []
+      Boosts: []
   - MaxValue: 25000
     Rewards:
       Currencies: []
@@ -59,6 +62,7 @@ MonoBehaviour:
         Border: 0
         Badge: 4
         League: 2
+      Boosts: []
   - MaxValue: 35000
     Rewards:
       Currencies:
@@ -67,6 +71,7 @@ MonoBehaviour:
       Chests: 
       Collectables: []
       AchievementRewards: []
+      Boosts: []
   - MaxValue: 50000
     Rewards:
       Currencies:
@@ -75,6 +80,7 @@ MonoBehaviour:
       Chests: 
       Collectables: []
       AchievementRewards: []
+      Boosts: []
   - MaxValue: 75000
     Rewards:
       Currencies:
@@ -85,6 +91,7 @@ MonoBehaviour:
       Chests: 
       Collectables: []
       AchievementRewards: []
+      Boosts: []
   - MaxValue: 100000
     Rewards:
       Currencies: []
@@ -97,18 +104,21 @@ MonoBehaviour:
         Border: 0
         Badge: 4
         League: 3
+      Boosts: []
   - MaxValue: 150000
     Rewards:
       Currencies: []
       Chests: 00000000
       Collectables: []
       AchievementRewards: []
+      Boosts: []
   - MaxValue: 200000
     Rewards:
       Currencies: []
       Chests: 00000000
       Collectables: []
       AchievementRewards: []
+      Boosts: []
   - MaxValue: 250000
     Rewards:
       Currencies: []
@@ -121,12 +131,14 @@ MonoBehaviour:
         Border: 0
         Badge: 4
         League: 4
+      Boosts: []
   - MaxValue: 300000
     Rewards:
       Currencies: []
       Chests: 01000000
       Collectables: []
       AchievementRewards: []
+      Boosts: []
   - MaxValue: 400000
     Rewards:
       Currencies: []
@@ -139,6 +151,7 @@ MonoBehaviour:
         Border: 0
         Badge: 4
         League: 4
+      Boosts: []
   - MaxValue: 500000
     Rewards:
       Currencies: []
@@ -151,3 +164,17 @@ MonoBehaviour:
         Border: 0
         Badge: 4
         League: 7
+      Boosts: []
+  - MaxValue: 1000000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 3
+        Title: 0
+        Avatar: 0
+        Border: 107
+        Badge: 4
+        League: 7
+      Boosts: []

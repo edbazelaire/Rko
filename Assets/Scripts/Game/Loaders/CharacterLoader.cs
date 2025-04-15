@@ -19,6 +19,7 @@ namespace Game.Loaders
 
         public GameObject PlayerPrefab;
         public GameObject PlayerAIPrefab;
+        public GameObject BotPrefab;
         public GameObject PlayerTutoAIPrefab;
         public GameObject StructurePrefab;
 
@@ -282,15 +283,28 @@ namespace Game.Loaders
 
         #region Prefabs
 
-        public static GameObject GetPrefab(string characterName, bool isPlayer)
+        public static GameObject GetPrefab(string characterName, bool isPlayer, bool isTuto = false)
         {
+            // PLAYER
+            if (isPlayer)
+                return Instance.PlayerPrefab;
+
+            // TUTORIAL AI
+            else if (isTuto)
+                return Instance.PlayerTutoAIPrefab;    
+
+            // non Player character : BOT
+            else if (Enum.TryParse(characterName, out ECharacter _))
+                return Instance.BotPrefab;
+
+            // check character data for type 
             var characterData = GetCharacterData(characterName);
+            // -- STRUCTURE
             if (characterData.IsStructure)
                 return Instance.StructurePrefab;
-            else if (isPlayer)
-                return Instance.PlayerPrefab;
-            else
-                return Instance.PlayerAIPrefab;
+
+            // -- Mob or Spawn
+            return Instance.PlayerAIPrefab;
         }
 
         #endregion

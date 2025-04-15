@@ -162,7 +162,6 @@ namespace Save.RSDs
         bool m_LoadingCompleted = false;
 
         protected const string API_KEY = "AIzaSyDaxXaNw8fIOdB0hU2JTizoSiDnmx6ZZO8";
-        //protected const string      API_KEY        = "868af696cc622aa07b7916b103cb13b0e3a0539e";
         protected virtual string    m_SheetId      => "";
         protected virtual string    m_SheetName    => "";
         protected string m_BaseUrl => "https://sheets.googleapis.com/v4/spreadsheets/" + m_SheetId + "/values/" + m_SheetName;

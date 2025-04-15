@@ -17,8 +17,10 @@ namespace Tools
         TrainingCharacter,
         TrainingSpell,
         TrainingRune,
+        TrainingDifficulty,
         TrainingDecisionRefresh,
         TrainingRandomness,
+        TrainingReactionTime,
     }
 
     public enum EDebugOption
@@ -27,6 +29,7 @@ namespace Tools
         Monitor,
         ErrorHandler,
         DebugMode,
+        DebugBots,
     }
 
     public static class PlayerPrefsHandler

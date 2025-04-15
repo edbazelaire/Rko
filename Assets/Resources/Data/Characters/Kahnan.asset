@@ -30,6 +30,7 @@ MonoBehaviour:
     obstacle in his path, be it demon or human, to see his mission fulfilled and
     the true king restored."
   m_DescriptionVariables: []
+  m_SpellElements: 01000000
   m_AutoAttack: Fireball
   m_SpecialAbility: IgnitionVeil
   m_Ultimate: PyroBlast
@@ -37,17 +38,23 @@ MonoBehaviour:
   BaseSpeed: 1
   BaseHealth: 800
   MaxEnergy: 100
+  BaseEnergy: 10
+  IsStructure: 0
   HealthScaleFactor: 0.1
   CharacterStatScaling:
   - StateEffectProperty: 8
     BaseValue: 0.15
     BonusValue: 0
     ScalingFactor: 0.05
+    StateEffectStackFactors: []
   - StateEffectProperty: 17
     BaseValue: 0.1
     BonusValue: 0
     ScalingFactor: 0.05
+    StateEffectStackFactors: []
   - StateEffectProperty: 4
     BaseValue: 500
     BonusValue: 0
     ScalingFactor: 0.1
+    StateEffectStackFactors: []
+  m_SpecialPowers: []

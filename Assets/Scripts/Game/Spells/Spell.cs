@@ -285,6 +285,7 @@ namespace Game.Spells
             {
                 m_Graphics = PoolManager.Pool(m_SpellData.Graphics, m_GraphicsContainer.transform);
                 m_Graphics.transform.localScale = Vector3.one;
+                m_Graphics.SetActive(true);
                 SwapColliders(m_Graphics);
 
                 var audioSource = Finder.FindComponent<AudioSource>(m_Graphics);

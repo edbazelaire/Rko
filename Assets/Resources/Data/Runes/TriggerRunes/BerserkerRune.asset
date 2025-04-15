@@ -13,12 +13,14 @@ MonoBehaviour:
   m_Name: BerserkerRune
   m_EditorClassIdentifier: 
   Rarety: 2
+  m_Description: 
+  m_DescriptionVariables: []
+  m_SpellElements: 00000000
   Description: 
   m_MinorPower:
     Description: 'Apply the Berserker rage effect when your hp reach 50%\n[TriggerEffect.0]'
     m_DescriptionVariables: []
     m_BonusLevel: 0
-    m_IsOverwritten: 0
     m_TriggerEffects:
     - SpellDataName: BerserkerRune
       Level: 0
@@ -29,6 +31,9 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
       NActivations: 1
       Cooldown: 0
     m_BonusStats: []
@@ -36,7 +41,6 @@ MonoBehaviour:
     Description: 'Apply the Berserker rage effect when your hp reach 50%\n[TriggerEffect.0]'
     m_DescriptionVariables: []
     m_BonusLevel: 6
-    m_IsOverwritten: 0
     m_TriggerEffects:
     - SpellDataName: BerserkerRune
       Level: 0
@@ -47,6 +51,9 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
       NActivations: 1
       Cooldown: 0
     m_BonusStats: []
@@ -54,7 +61,6 @@ MonoBehaviour:
     Description: 'Apply the Berserker rage effect when your hp reach 50%\n[TriggerEffect.0]'
     m_DescriptionVariables: []
     m_BonusLevel: 12
-    m_IsOverwritten: 0
     m_TriggerEffects:
     - SpellDataName: BerserkerRune
       Level: 0
@@ -65,6 +71,9 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
       NActivations: 1
       Cooldown: 0
     m_BonusStats: []
@@ -78,5 +87,8 @@ MonoBehaviour:
     DeactivationTreshold: 0
     StateEffectEvent: 0
     StateEffectName: 
+    NStateEffectActivationThreshold: 0
+    Delay: 0
+    Duration: 0
     NActivations: 1
     Cooldown: 0
