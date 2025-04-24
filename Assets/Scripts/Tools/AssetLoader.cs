@@ -8,6 +8,7 @@ using Menu.Common.Rewards;
 using Save;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Video;
 
 namespace Tools
 {
@@ -48,6 +49,7 @@ namespace Tools
         public const string c_ItemsPrefabPath               = c_PrefabsPath + "Items/";
         public const string c_PowerOrbPrefabPath            = c_ItemsPrefabPath + "Orbs/";
         public const string c_ParticlesPrefabPath           = c_PrefabsPath + "Particles/";
+        public const string c_EmotsPath                     = c_ItemsPrefabPath + "Emots/";
 
         // =============================================================================================================
         // UI 
@@ -72,6 +74,7 @@ namespace Tools
         // ---- Arena Background
         public const string c_GameContentPath               = c_UIPath + "Game/";
         public const string c_GameUIContentPath             = c_GameContentPath + "GameUI/";
+        public const string c_EmotsSectionUIPath            = c_GameUIContentPath + "EmotsSectionUI/";
         public const string c_SpawnUIContentPath            = c_GameUIContentPath + "Spawns/";
         public const string c_ArenaBackgroundPath           = c_GameContentPath + "Arena/";
         public const string c_TutoGameObjectsPath           = c_GameContentPath + "Tuto/";
@@ -96,6 +99,7 @@ namespace Tools
         public const string c_RaysPath                      = c_UISpritesPath + "Rays/";
         public const string c_TutoUIPath                    = c_UISpritesPath + "Tuto/";
         public const string c_CaptionsPath                  = c_TutoUIPath + "Captions/";
+        public const string c_EmotsSpritePath               = c_SpritesPath + "Emots/";
         
         // -- Backgrounds
         public const string c_BackgroundsImagePath         = c_SpritesPath + "Backgrounds/";
@@ -130,8 +134,14 @@ namespace Tools
         public const string c_AnimationParticlesPath        = c_AnimationPath + "Particles/";
         public const string c_AnimationBackgroundsPath      = c_AnimationPath + "Backgrounds/";
 
+        // =============================================================================================================
         // SOUNDS
         public const string c_SoundsPath                = "Sounds/";
+
+        // =============================================================================================================
+        // CLIPS
+        public const string c_ClipsPath = "Clips/";
+        public const string c_SpellClipsPath = c_ClipsPath + "Spells/";
 
 
         #region Default Methods
@@ -524,7 +534,7 @@ namespace Tools
                 return Load<Sprite>(c_CurrenciesPath + c_IconPrefix + currency.ToString());
            
             float factor = currency == ECurrency.Gems ? 500f : 5000f;
-            int packNumber = Mathf.Clamp((int)Mathf.Round(qty.Value / factor), 1, currency == ECurrency.Golds ? 4 : 3);
+            int packNumber = Mathf.Clamp((int)Mathf.Round(qty.Value / factor), 1, currency == ECurrency.Gold ? 4 : 3);
             return Load<Sprite>(c_ShopPath + currency.ToString() + "Pack_0" + packNumber.ToString());
         }
 
@@ -604,6 +614,16 @@ namespace Tools
         public static GameObject LoadBackgroundAnimation(string name)
         {
             return Load<GameObject>(name, c_AnimationBackgroundsPath);
+        }
+
+        #endregion
+
+
+        #region Clips
+
+        public static VideoClip GetSpellPreviewClip(string spell)
+        {
+            return Load<VideoClip>(c_SpellClipsPath + spell);
         }
 
         #endregion

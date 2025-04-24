@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using UnityEngine;
 
 
 namespace Menu.PopUps
@@ -8,7 +6,8 @@ namespace Menu.PopUps
     public enum ESpellInfosTabs
     {
         Infos,
-        Description
+        Description,
+        Clip
     }
 
     public class SpellInfosTabManager : TabsManager

@@ -214,9 +214,9 @@ namespace Data
 
         #region Infos & Description
 
-        public override Dictionary<string, object> GetInfos()
+        public override Dictionary<string, object> GetInfo()
         {
-            var infos = base.GetInfos();
+            var infos = base.GetInfo();
 
             var description = "";
             switch (CounterType)

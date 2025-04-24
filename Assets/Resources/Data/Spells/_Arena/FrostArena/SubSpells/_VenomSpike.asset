@@ -16,7 +16,7 @@ MonoBehaviour:
   m_Description: A venomous spike erupts from the ground, inflicting {0} damage,
     4 stacks of [Infection] and applying Airborne for 2 second.
   m_DescriptionVariables:
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   m_SpellElements: 
   Linked: 1
@@ -98,7 +98,7 @@ MonoBehaviour:
   EnergyGain: 15
   EnergyCost: 0
   m_Damage: 100
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

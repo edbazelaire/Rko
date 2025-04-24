@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: FrostbiteTouch
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: AoE of size {0} applying {1} effect and {2} damages on hitting a
+  m_Description: AoE of size {0} applying {1} effect and {2} damage on hitting a
     target
   m_DescriptionVariables:
   - Name: Size
     WithIcon: 0
   - Name: Frozen
     WithIcon: 1
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   m_SpellElements: 02000000
   Linked: 0
@@ -43,6 +43,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   OnHit: []
   OnHitSpellSpawn: 1
@@ -52,6 +53,7 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 8300000, guid: 3ecced41c79ec3840824bd3813604df2, type: 3}
   OnEndSoundFX: {fileID: 8300000, guid: 299a1418d59067345b65a80b8a8b7e87, type: 3}
   SpellTarget: 101
+  m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
@@ -62,6 +64,7 @@ MonoBehaviour:
   EnergyGain: 15
   EnergyCost: 0
   m_Damage: 120
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -69,6 +72,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 0.8
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1

@@ -197,7 +197,7 @@ namespace Menu.MainMenu.ShopTab
                 name:           "",
                 icon:           AssetLoader.LoadIcon(spell),
                 rewards:        rewards,
-                currency:       ECurrency.Golds,
+                currency:       ECurrency.Gold,
                 cost:           price,
                 maxCollection:  1
             );

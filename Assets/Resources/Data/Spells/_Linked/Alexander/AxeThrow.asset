@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: AxeThrow
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: Throw an axe dealing {0} damages
+  m_Description: Throw an axe dealing {0} damage
   m_DescriptionVariables:
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   m_SpellElements: 
   Linked: 1
@@ -78,7 +78,7 @@ MonoBehaviour:
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 110
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

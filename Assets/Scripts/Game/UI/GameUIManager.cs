@@ -28,6 +28,7 @@ public class GameUIManager : MonoBehaviour
     private ErrorGameUI     m_ErrorGameUI;
     private TutoGameUI      m_TutoGameUI;
     private BTDebugger      m_BTDebugger;
+    private EmotsSectionUI  m_EmotsSectionUI;
 
     const string        c_PlayerUIContainerPrefix   = "PlayerUIContainer_";
     const string        c_SpellsContainer           = "SpellsContainer";
@@ -74,6 +75,7 @@ public class GameUIManager : MonoBehaviour
     public static EndGameUI EndGameUI                       => Instance.m_EndGameUI;
     public static TutoGameUI TutoGameUI                     => Instance.m_TutoGameUI;
     public static BTDebugger BTDebugger                     => Instance.m_BTDebugger;
+    public static EmotsSectionUI EmotsSectionUI             => Instance.m_EmotsSectionUI;
     public static HitDisplayUI DamageDisplayManager => HitDisplayUI.Instance;
     public static List<SpellItemUI> SpellItems              => Instance.m_SpellItems;
     public static MovementButtonsContainer MovementButtonsContainer => Instance.m_MovementButtonsContainer;
@@ -87,11 +89,12 @@ public class GameUIManager : MonoBehaviour
 
     void FindComponents()
     {
-        m_IntroGameUI   = Finder.FindComponent<IntroGameUI>(transform.parent.gameObject,    "IntroGameUI");
-        m_EndGameUI     = Finder.FindComponent<EndGameUI>(transform.parent.gameObject,      "EndGameUI");
-        m_ErrorGameUI   = Finder.FindComponent<ErrorGameUI>(transform.parent.gameObject,    "ErrorGameUI");
-        m_TutoGameUI    = Finder.FindComponent<TutoGameUI>(transform.parent.gameObject,     "TutoGameUI");
-        m_BTDebugger    = Finder.FindComponent<BTDebugger>(transform.parent.gameObject,     "BTDebugger");
+        m_IntroGameUI       = Finder.FindComponent<IntroGameUI>(transform.parent.gameObject,    "IntroGameUI");
+        m_EndGameUI         = Finder.FindComponent<EndGameUI>(transform.parent.gameObject,      "EndGameUI");
+        m_ErrorGameUI       = Finder.FindComponent<ErrorGameUI>(transform.parent.gameObject,    "ErrorGameUI");
+        m_TutoGameUI        = Finder.FindComponent<TutoGameUI>(transform.parent.gameObject,     "TutoGameUI");
+        m_BTDebugger        = Finder.FindComponent<BTDebugger>(transform.parent.gameObject,     "BTDebugger");
+        m_EmotsSectionUI    = Finder.FindComponent<EmotsSectionUI>(gameObject,                  "EmotsSectionUI");
 
         FindMovementButtons();
         FindPlayerUIContainers();

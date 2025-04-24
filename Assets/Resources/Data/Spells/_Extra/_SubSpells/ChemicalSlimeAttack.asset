@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: ChemicalSlimeAttack
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: Spits poison to the enemy, dealing {0} damages and applying {1}
+  m_Description: Spits poison to the enemy, dealing {0} damage and applying {1}
   m_DescriptionVariables:
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   - Name: Poison
     WithIcon: 1
@@ -63,7 +63,7 @@ MonoBehaviour:
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 25
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

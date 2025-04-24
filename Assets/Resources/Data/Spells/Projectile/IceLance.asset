@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rarety: 1
   m_Description: Throw an ice lance in a straight line to your enemy dealing {0}
-    damages to your target and applying {1}. If the target is {2} breaks the shield
-    dealing a great amount of extra damages
+    damage to your target and applying {1}. If the target is {2} breaks the shield
+    dealing a great amount of extra damage
   m_DescriptionVariables:
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   - Name: Frost
     WithIcon: 1
@@ -65,6 +65,7 @@ MonoBehaviour:
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 50
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

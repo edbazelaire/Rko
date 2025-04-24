@@ -91,12 +91,13 @@
     {
         None = -1,
 
-        Kahnan,
-        Alexander,
-        Srug,
-        Marcus,
-        Nagini,
-        Subrog,
+        Kahnan      = 0,
+        Alexander   = 1,
+        Srug        = 2,
+        Marcus      = 3,
+        Nagini      = 4,
+        Subrog      = 5,
+        NeedleJack  = 6,
     }
 
     public enum EBoss
@@ -193,6 +194,9 @@
         Duskfall,
         DirtBomb,
         ChemicalSlime,
+        Quickfix,
+        Leaner,
+        Overdose,
 
         // ======================================================================
         // BOSSES ABILITIES
@@ -623,6 +627,10 @@
         DragonicRest    = 10002,
         AzurePowerOrb   = 10003,
         Howling         = 10004,
+
+        // ======================================================================
+        // Special Effects (characters)
+        Junkheal = 20001,
     }
 
     public enum EStateEffectType
@@ -638,7 +646,7 @@
         None,
 
         Heal,
-        Damages,
+        Damage,
         Cooldowns,
         Duration,
         LifeSteal,
@@ -650,12 +658,12 @@
         Size,
         DurationTick,
         GrowSizeFactor,
-        TickDamages,
+        TickDamage,
         TickHeal,
         TickShield,
         Shield,
         Delay,
-        ExecutionDamages,
+        ExecutionDamage,
     }
 
     public enum EStateEffectProperty
@@ -668,14 +676,14 @@
         Shield                  = 4,
         ResistanceFix           = 5,
         ResistancePerc          = 6,
-        BonusDamages            = 7,
-        BonusDamagesPerc        = 8,
+        BonusDamage             = 7,
+        BonusDamagePerc         = 8,
         BonusLifeSteal          = 9,
         MissingLifeFactor       = 10,
-        Damages                 = 11,
+        Damage                  = 11,
 
         Tick                    = 12,
-        TickDamages             = 13,
+        TickDamage              = 13,
         TickHeal                = 14,
         TickShield              = 15,
         AttackSpeed             = 16,
@@ -685,8 +693,8 @@
         CooldownReduction       = 19,
         CooldownReductionPerc   = 20,
 
-        BonusTickDamages        = 100,
-        BonusTickDamagesPerc    = 101,
+        BonusTickDamage         = 100,
+        BonusTickDamagePerc     = 101,
         BonusTickHeal           = 102,
         BonusTickShield         = 103,
         BonusTickLifeSteal      = 117,
@@ -695,12 +703,14 @@
         LifeSteal           = 105,
         BonusHeal           = 106,
         BonusHealPerc       = 107,
+        HealReduction       = 117,
+        HealReductionPerc   = 118,
 
-        EndDamages          = 108,
+        EndDamage           = 108,
         EndHeal             = 109,
         Stacks              = 110,
         Hp                  = 111,
-        BonusBurnDamages    = 112,
+        BonusBurnDamage     = 112,
         BonusSlowPerc       = 113,
         Priority            = 114,
         TickEnergy          = 115,
@@ -833,7 +843,7 @@
 
     public enum ECurrency
     {
-        Golds       = 0,
+        Gold        = 0,
         Gems        = 1,
         Dollars     = 2,
         Xp          = 3,
@@ -1005,12 +1015,13 @@
         Heal_Checker        = 10,
         Alpha_Tester        = 11,
         The_Shadow          = 12,
+        Le_Charclo          = 22,
 
         // [Wins] Achievement ======================================================
         The_Unbeatable      = 13,
 
-        // [Golds] Achievement ======================================================
-        Le_Charclo              = 6,
+        // [Gold] Achievement ======================================================
+        The_Hobo                = 6,
         The_Money_Maker         = 7,
         Gold_Digger             = 19,
         Cresus                  = 8,
@@ -1021,7 +1032,7 @@
         Forever_Alone       = 5,
         Lone_Wolf           = 9,
 
-        // [Damages] Achievement ======================================================
+        // [Damage] Achievement ======================================================
         Slapper             = 14,
         Certified_Smacker   = 15,
         The_Pain_Train      = 16,
@@ -1089,7 +1100,7 @@
         //LeagueLegend    = 80,
 
         // Special ranking border
-        Rank1 = 11,
+        Rank1 = 1001,
 
         // Others
         Sakura          = 101,
@@ -1104,10 +1115,9 @@
         Noble           = 110, 
         Domination      = 111, 
 
-        // Speical Events
+        // Arena
         Fire = 201,
         Frost = 202,
-
     }
 
     public enum EBadge
@@ -1117,7 +1127,7 @@
         // Games
         PlayedGame  = 1,
         Wins        = 2,
-        Damages     = 3,
+        Damage      = 3,
         Heals       = 4,
         // -- speciaux
         DamageDealer = 50,
@@ -1148,6 +1158,18 @@
         Avatar      = 2,
         Border      = 3,
         Title       = 4,
+    }
+
+    public enum EEmot
+    {
+        //Test        = 0,
+        Ah          = 1,
+        SadKitty    = 2,
+        Omg         = 3,
+        Pidgeon     = 4,
+        Pokerface   = 5,
+        ThumbUp     = 6,
+        Trollol     = 7,
     }
 
     public enum EBoost

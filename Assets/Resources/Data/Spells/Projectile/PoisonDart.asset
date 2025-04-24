@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: PoisonDart
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: Shoot a projectile in a straight line, applying {0} damages and
-    [EnemyStateEffect.0] on hitted enemy
+  m_Description: Shoot a projectile in a straight line, applying {0} damage and [EnemyStateEffect.0]
+    on hitted enemy
   m_DescriptionVariables:
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   m_SpellElements: 03000000
   Linked: 0
@@ -62,6 +62,7 @@ MonoBehaviour:
   EnergyGain: 5
   EnergyCost: 0
   m_Damage: 20
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

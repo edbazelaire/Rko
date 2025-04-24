@@ -15,9 +15,9 @@ MonoBehaviour:
   Rarety: 3
   m_Description: Consume all {0} stacks on your enemy to corrupt your character for
     {1} seconds. The effect of the incarnation is multiplied for each stacks consummed.<br>Replaces
-    your auto attack by an explosive projectile, dealing 80 damages in a zone of
-    size 2, applying 3 stacks of {2}.<br>Only one buff of type "Incarnation" can
-    be active on your character.
+    your auto attack by an explosive projectile, dealing 80 damage in a zone of size
+    2, applying 3 stacks of {2}.<br>Only one buff of type "Incarnation" can be active
+    on your character.
   m_DescriptionVariables:
   - Name: Cursed
     WithIcon: 1
@@ -86,7 +86,7 @@ MonoBehaviour:
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 0
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

@@ -40,12 +40,12 @@ MonoBehaviour:
   m_Shield: 0
   m_ResistanceFix: 0
   m_ResistancePerc: 0
-  m_BonusDamages: 0
-  m_BonusDamagesPerc: 0
+  m_BonusDamage: 0
+  m_BonusDamagePerc: 0
   m_BonusLifeSteal: 0
   m_BonusHeal: 0
   m_BonusHealPerc: 0
-  m_BonusBurnDamages: 0
+  m_BonusBurnDamage: 0
   m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
@@ -53,14 +53,14 @@ MonoBehaviour:
   - StateEffectProperty: 13
     ScalingFactor: 0.15
   m_StateEffectScalingStacks: []
-  m_IsTrueDamages: 0
-  m_Damages: 0
-  m_EndDamages: 0
+  m_IsTrueDamage: 0
+  m_Damage: 0
+  m_EndDamage: 0
   m_Heal: 0
   m_EndHeal: 0
   m_LifeSteal: 0
   m_Tick: 0.5
-  m_TickDamages: 25
+  m_TickDamage: 25
   m_TickHeal: 0
   m_TickShield: 0
   m_TickEnergy: 0

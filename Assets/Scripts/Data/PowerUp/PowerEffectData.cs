@@ -172,9 +172,9 @@ namespace Assets.Scripts.Data.PowerUp
 
         #region Info & Description
 
-        public override Dictionary<string, object> GetInfos()
+        public override Dictionary<string, object> GetInfo()
         {
-            var infos = base.GetInfos();
+            var infos = base.GetInfo();
 
             if (m_BonusStats == null)
                 return infos;

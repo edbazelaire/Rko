@@ -1,9 +1,11 @@
 ﻿using Data;
+using Game.Spells;
 using Menu.Common.Infos;
 using System;
 using System.Collections.Generic;
 using TMPro;
 using Tools;
+using UnityEngine.Video;
 
 namespace Menu.PopUps
 {
@@ -15,6 +17,7 @@ namespace Menu.PopUps
         // GameObjects & Components
         StateEffectsInfoRow     m_StateEffectsInfoRow;
         TMP_Text                m_DescriptionText;
+        ClipTabContent          m_ClipTabContent;
 
         // =========================================================================================
         // Dependent Members
@@ -32,6 +35,7 @@ namespace Menu.PopUps
 
             m_StateEffectsInfoRow = Finder.FindComponent<StateEffectsInfoRow>(gameObject, "StateEffectsInfoRow");
             m_DescriptionText = Finder.FindComponent<TMP_Text>(gameObject, "Description");
+            m_ClipTabContent = Finder.FindComponent<ClipTabContent>(gameObject);
         }
 
         protected override void OnPrefabLoaded()
@@ -41,6 +45,7 @@ namespace Menu.PopUps
             SetUpStateEffects();
             SetupCollectionFillbar();
             SetUpDescription();
+            m_ClipTabContent.SetUpVideo(m_SpellData.Spell);
         }
 
         #endregion
@@ -84,7 +89,7 @@ namespace Menu.PopUps
 
         void SetUpStateEffects()
         {
-            var spellData = m_Data.GetInfos();
+            var spellData = m_Data.GetInfo();
             List<SStateEffectData> effectsData = spellData.ContainsKey("Effects") ? spellData["Effects"] as List<SStateEffectData> : new List<SStateEffectData>();
 
             if (effectsData.Count == 0)

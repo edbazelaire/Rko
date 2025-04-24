@@ -20,6 +20,7 @@ using Assets.Scripts.Data.DataStructures.SpellSubStructures;
 using Assets.Scripts.Game;
 using Unity.Mathematics;
 using Game.NetworkStructures;
+using UnityEngine.Serialization;
 
 namespace Data
 {
@@ -58,17 +59,17 @@ namespace Data
         // ===========================================================================
         // Serialized Data
         [Description("Is this spell linked to a specific character")]
-        public bool                     Linked;
+        public bool Linked;
 
         [Header("Prefabs")]
         [Description("Prefab of the spell that will be instantiated when the spell is cast")]
-        public GameObject               Graphics;
+        public GameObject Graphics;
 
         [Description("List of all Effects appening when the targets")]
-        public List<SpellPrefabSpawn>   SpellEventActions;
+        public List<SpellPrefabSpawn> SpellEventActions;
 
         [Description("Prefab of the spell when it hits a target")]
-        public List<SpellData>          OnHit;
+        public List<SpellData> OnHit;
 
         [Description("Where does the OnHit spawns")]
         public ESpellSpawn OnHitSpellSpawn = ESpellSpawn.Ground;
@@ -82,60 +83,60 @@ namespace Data
 
         [Header("Target & Position")]
         [Description("Type of targetting for the spell")]
-        public ESpellTarget                 SpellTarget             = ESpellTarget.FirstEnemy;
+        public ESpellTarget SpellTarget = ESpellTarget.FirstEnemy;
         [SerializeField, Tooltip("Clamp target position between arena bounds")]
-        protected bool m_ClampTargetPos                             = true;
+        protected bool m_ClampTargetPos = true;
         [Description("Target offset X/Y")]
-        public SOffset                      TargetOffset            = new SOffset(0, 0);
+        public SOffset TargetOffset = new SOffset(0, 0);
         [Description("Type of targetting for the spell")]
-        public ESpellEvent                  LockTarget              = ESpellEvent.OnCast;
+        public ESpellEvent LockTarget = ESpellEvent.OnCast;
         [Description("Is the spell effect applied when NOT hitting the target ?")]
-        public bool                         ApplyIfNotHitting       = false;
-        
+        public bool ApplyIfNotHitting = false;
+
         [Header("Requirements")]
         [SerializeField, Tooltip("Is the spell effect applied when NOT hitting the target ?")]
-        protected List<SpellRequirements>   m_SpellRequirements    = new List<SpellRequirements>();
+        protected List<SpellRequirements> m_SpellRequirements = new List<SpellRequirements>();
 
         [Header("Stats")]
         [Description("Maximum number of target that this spell can hit")]
-        public int                          MaxHit                  = 1;
+        public int MaxHit = 1;
         [Description("Energy gained when this spell hits his target")]
-        public int                          EnergyGain              = 10;
+        public int EnergyGain = 10;
         [Description("Request amount on energy to be able to cast this spell")]
-        public int                          EnergyCost          = 0;
+        public int EnergyCost = 0;
         [SerializeField, Tooltip("Damage of the spell")]
-        public int                          m_Damage            = 0;
+        public int m_Damage = 0;
         [SerializeField, Tooltip("Execution damage of the spell (growing with missing life)")]
-        public int                          m_ExecutionDamages  = 0;
+        public int m_ExecutionDamage = 0;
         [SerializeField, Tooltip("Heals provided to the target")]
-        public int                          m_Heal              = 0;
-        [SerializeField, Tooltip("Quantity of (permanant) shield provided to the target")] 
-        public int                          m_Shield            = 0;
+        public int m_Heal = 0;
+        [SerializeField, Tooltip("Quantity of (permanant) shield provided to the target")]
+        public int m_Shield = 0;
         [SerializeField, Tooltip("Percentage of damages healed on hit")]
-        protected float                     m_LifeSteal         = 0f;
+        protected float m_LifeSteal = 0f;
         [Description("Max distance of the spell")]
-        public float                        Distance            = -1f;
+        public float Distance = -1f;
         [Description("List of properties that are overriten on the <OnHit> spells")]
-        public List<ESpellProperty>         OverrideOnHitProperties;
+        public List<ESpellProperty> OverrideOnHitProperties;
         [SerializeField, Tooltip("Duration of the spell")]
-        public float                        m_Duration          = 0f;
+        public float m_Duration = 0f;
         [Description("Delay of the spell to be instantiated after cast")]
-        public float                        Delay               = 0f;
+        public float Delay = 0f;
         [SerializeField, Description("Force applied on hitting the target")]
-        protected SForce                    m_Force             = default;
+        protected SForce m_Force = default;
 
         [Header("Scaling")]
-        [SerializeField] protected List<SSpellPropertyScaling> m_SpellsScalingLevel = new() { 
-            new SSpellPropertyScaling(ESpellProperty.Damages, 0.1f), 
-            new SSpellPropertyScaling(ESpellProperty.Heal, 0.1f), 
-            new SSpellPropertyScaling(ESpellProperty.Cooldowns, 0.05f), 
+        [SerializeField] protected List<SSpellPropertyScaling> m_SpellsScalingLevel = new() {
+            new SSpellPropertyScaling(ESpellProperty.Damage, 0.1f),
+            new SSpellPropertyScaling(ESpellProperty.Heal, 0.1f),
+            new SSpellPropertyScaling(ESpellProperty.Cooldowns, 0.05f),
         };
 
         [Header("Collision")]
         [Description("Size of the spell (and hitbox)")]
-        [SerializeField] public float   m_Size = 1f;
+        [SerializeField] public float m_Size = 1f;
         [Description("Does the spell get trigger on touching a player")]
-        public bool                     TriggerPlayer = true;
+        public bool TriggerPlayer = true;
 
         [Header("State Effects")]
         [Description("List of effects that proc on hitting an enemy")]
@@ -165,18 +166,19 @@ namespace Data
         // ===========================================================================
         // Dependent Members
         public virtual string Parent => m_Parent.IsNullOrEmpty() ? Name : m_Parent;
-        public virtual  List<SpellRequirements> SpellRequirements => m_SpellRequirements;
-        public virtual ESpellType   SpellType   => ESpellType.InstantSpell;
-        public float                BaseSize    => m_Size;
-        public float                Size        => m_Size >= 0 ? m_Size * Settings.SpellSizeFactor : ArenaManager.Instance.TargettableAreaSize;
-        protected override Type     m_EnumType  => typeof(ESpell);
-        public ESpell               Spell       => Id == null ? ESpell.None : (ESpell)Id;
+        public virtual List<SpellRequirements> SpellRequirements => m_SpellRequirements;
+        public virtual ESpellType SpellType => ESpellType.InstantSpell;
+        public float BaseSize => m_Size;
+        public float Size => m_Size >= 0 ? m_Size * Settings.SpellSizeFactor : ArenaManager.Instance.TargettableAreaSize;
+        protected override Type m_EnumType => typeof(ESpell);
+        public ESpell Spell => Id == null ? ESpell.None : (ESpell)Id;
 
         // ===========================================================================
         // Level Dependent Members
-        public virtual float Cooldown           => Mathf.Max(Mathf.Round(100f * m_Cooldown / GetSpellLevelFactor(ESpellProperty.Cooldowns)) / 100f, 0f);
-        public virtual int Damage               => (int)Math.Round(m_Damage * GetSpellLevelFactor(ESpellProperty.Damages));
-        public virtual int ExecutionDamages     => (int)Math.Round(m_ExecutionDamages * GetSpellLevelFactor(ESpellProperty.ExecutionDamages));
+        public virtual float Cooldown => Mathf.Max(Mathf.Round(100f * m_Cooldown / GetSpellLevelFactor(ESpellProperty.Cooldowns)) / 100f, 0f);
+        public virtual int Damage => (int)Math.Round(m_Damage * GetSpellLevelFactor(ESpellProperty.Damage));
+        public virtual int ExecutionDamage => (int)Math.Round(m_ExecutionDamage * GetSpellLevelFactor(ESpellProperty.ExecutionDamage));
+
         public virtual int Heal                 => (int)Math.Round(m_Heal * GetSpellLevelFactor(ESpellProperty.Heal));
         public virtual int Shield               => (int)Math.Round(m_Shield * GetSpellLevelFactor(ESpellProperty.Shield));
         public virtual float LifeSteal          => m_LifeSteal * GetSpellLevelFactor(ESpellProperty.LifeSteal);
@@ -587,7 +589,7 @@ namespace Data
             // handle special cases first
             switch (property)
             {
-                case ESpellProperty.Damages:
+                case ESpellProperty.Damage:
                     propertyName = "m_Damage";
                     break;
 
@@ -743,9 +745,9 @@ namespace Data
 
         #region Infos & Description
 
-        public override Dictionary<string, object> GetInfos()
+        public override Dictionary<string, object> GetInfo()
         {
-            var infosDict = base.GetInfos();
+            var infosDict = base.GetInfo();
             
             infosDict.Add("Type", GetTypeInfo());
             infosDict.Add("Target", GetTargetTypeInfo());
@@ -755,9 +757,9 @@ namespace Data
             if (EnergyCost > 0)
                 infosDict.Add("EnergyCost", EnergyCost);
             if (Damage > 0)
-                infosDict.Add("Damages", Damage);
-            if (ExecutionDamages > 0)
-                infosDict.Add("ExecutionDamages", ExecutionDamages);
+                infosDict.Add("Damage", Damage);
+            if (ExecutionDamage > 0)
+                infosDict.Add("ExecutionDamage", ExecutionDamage);
             if (Heal > 0)
                 infosDict.Add("Heal", Heal);
             if (Duration > 0)
@@ -845,9 +847,9 @@ namespace Data
         public void AddAsSubSpellInfos(ref Dictionary<string, object> infosDict)
         {
             string[] keysToIgnore = new string[] { "Type", "Target", "Cooldown", "CastDuration", "Distance", "EnergyCost", "Delay" };        // keys to ignore as overwrite  
-            string[] keysToAdd = new string[] { "Damages", "Heal", "TickDamages", "TickHeal", "Effects" };                                // keys that are not overritten but additionned 
+            string[] keysToAdd = new string[] { "Damage", "Heal", "TickDamage", "TickHeal", "Effects" };                                // keys that are not overritten but additionned 
 
-            var subSpellInfos = GetInfos();
+            var subSpellInfos = GetInfo();
             foreach (var info in subSpellInfos)
             {
                 // skip some keys

@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: _OHScorchedEarth
   m_EditorClassIdentifier: 
   Rarety: 1
-  m_Description: Burning zone of size {0} applying a {1} effect and {2} damages each
+  m_Description: Burning zone of size {0} applying a {1} effect and {2} damage each
     {3} seconds for {4} seconds
   m_DescriptionVariables:
   - Name: Size
     WithIcon: 0
   - Name: Burn
     WithIcon: 1
-  - Name: TickDamages
+  - Name: TickDamage
     WithIcon: 1
   - Name: DurationTick
     WithIcon: 0
@@ -49,7 +49,7 @@ MonoBehaviour:
   EnergyGain: 5
   EnergyCost: 0
   m_Damage: 0
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -79,7 +79,7 @@ MonoBehaviour:
   m_Cooldown: 0
   m_SpellSpawn: 1
   DurationTick: 0.5
-  m_TickDamages: 15
+  m_TickDamage: 15
   m_TickHeal: 0
   m_TickShield: 0
   m_ZoneForce:

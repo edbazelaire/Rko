@@ -5,6 +5,7 @@ using Enums;
 using Game;
 using Game.Character;
 using Game.Loaders;
+using Game.UI;
 using Managers;
 using Save;
 using System;
@@ -217,6 +218,9 @@ public class Controller : NetworkBehaviour
 
         // setup the seplls icons buttons
         SetupSpellUI();
+
+        // setup Emots
+        GameUIManager.EmotsSectionUI.Initialize(new List<EEmot> { EEmot.Trollol, EEmot.Ah, EEmot.SadKitty, EEmot.ThumbUp });
 
         // select auto attack by default (if not IsAutoTarget)
         bool isAutoTarget = true;           // TODO : use PlayerPref to set isAutoTarget or not by default

@@ -72,6 +72,9 @@ namespace Game.SpellGFXs
 
         public override void End()
         {
+            if (m_EndStarted)
+                return;
+
             // deactivate energu charge
             m_FireEnergyCharge.gameObject.SetActive(false);
 

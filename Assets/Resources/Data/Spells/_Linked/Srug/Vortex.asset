@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rarety: 0
   m_Description: Creates a Vortex that blocks every projectiles touching it and converts
-    the damages into {0} stacks on the Enemy
+    the damage into {0} stacks on the Enemy
   m_DescriptionVariables:
   - Name: Cursed
     WithIcon: 1
@@ -41,7 +41,7 @@ MonoBehaviour:
   EnergyGain: 5
   EnergyCost: 0
   m_Damage: 0
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

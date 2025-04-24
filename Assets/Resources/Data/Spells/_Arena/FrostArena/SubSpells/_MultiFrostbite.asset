@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: _MultiFrostbite
   m_EditorClassIdentifier: 
   Rarety: 1
-  m_Description: AoE of size {0} applying {1} effect and {2} damages on hitting a
+  m_Description: AoE of size {0} applying {1} effect and {2} damage on hitting a
     target
   m_DescriptionVariables:
   - Name: Size
     WithIcon: 0
   - Name: Frozen
     WithIcon: 1
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   m_SpellElements: 02000000
   Linked: 0
@@ -64,6 +64,7 @@ MonoBehaviour:
   EnergyGain: 15
   EnergyCost: 0
   m_Damage: 40
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

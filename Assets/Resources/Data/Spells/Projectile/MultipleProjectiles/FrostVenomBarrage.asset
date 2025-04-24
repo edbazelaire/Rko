@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: FrostVenomBarrage
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: Shoots {0} projectiles {1} times. Each dealing {2} damages, applying
+  m_Description: Shoots {0} projectiles {1} times. Each dealing {2} damage, applying
     {3} and {4}
   m_DescriptionVariables:
   - Name: Projectiles
     WithIcon: 1
   - Name: Waves
     WithIcon: 1
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   - Name: Frost
     WithIcon: 1
@@ -49,6 +49,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   OnHit: []
   OnHitSpellSpawn: 1
@@ -58,6 +59,7 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 6
+  m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
@@ -68,6 +70,7 @@ MonoBehaviour:
   EnergyGain: 5
   EnergyCost: 0
   m_Damage: 45
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -75,6 +78,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
@@ -103,10 +109,13 @@ MonoBehaviour:
   AnimationTimer: 0.55
   m_Cooldown: 20
   Trajectory: 1
+  m_TriggerGround: 1
   m_StopOnTargetPos: 0
   m_Speed: 10
+  m_YSpawnPos: 0
   ProjectileData: {fileID: 0}
   MultiProjectileType: 1
+  m_RecalculatePosition: 1
   m_IsBlocking: 1
   m_NProjectiles: 3
   m_ProjectileZoneSize: 6

@@ -56,7 +56,7 @@ public class TaskAttack : BaseTask
         m_SpellCategories[ESpellTypeCategory.Heal]                  = IsAllowed(ESpellTypeCategory.Heal)                ? FilterSpellsByProperty(ESpellProperty.Heal)       : new List<ESpell>() { };
         m_SpellCategories[ESpellTypeCategory.Buff]                  = IsAllowed(ESpellTypeCategory.Buff)                ? FilterSpellsByType(ESpellType.Buff)               : new List<ESpell>() { };
         m_SpellCategories[ESpellTypeCategory.ConsumeStateEffect]    = IsAllowed(ESpellTypeCategory.ConsumeStateEffect)  ? FilterSpellsWithConsumeStateEffect()              : new List<ESpell>() { };
-        m_SpellCategories[ESpellTypeCategory.Damage]                = IsAllowed(ESpellTypeCategory.Damage)              ? FilterSpellsByProperty(ESpellProperty.Damages)    : new List<ESpell>() { };
+        m_SpellCategories[ESpellTypeCategory.Damage]                = IsAllowed(ESpellTypeCategory.Damage)              ? FilterSpellsByProperty(ESpellProperty.Damage)    : new List<ESpell>() { };
         m_SpellCategories[ESpellTypeCategory.AutoAttack]            = IsAllowed(ESpellTypeCategory.AutoAttack)          ? new List<ESpell>() { m_SpellHandler.AutoAttack }  : new List<ESpell>() { };
     }
 
@@ -143,7 +143,7 @@ public class TaskAttack : BaseTask
         // check : IronSkin
         CheckStateEffectsConsum(ref spell);
       
-        // check : Damages
+        // check : Damage
         CheckDamageSpells(ref spell);
 
         // ===========================================================
@@ -364,7 +364,7 @@ public class TaskAttack : BaseTask
                 continue;
 
             // TODO : BETTER
-            var spellInfos = spellData.GetInfos();
+            var spellInfos = spellData.GetInfo();
             // try get value
             if (! spellInfos.ContainsKey(property.ToString()) || ! float.TryParse(spellInfos[property.ToString()].ToString(), out float value))
                 continue;

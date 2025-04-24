@@ -2,6 +2,7 @@
 using Data;
 using Data.GameManagement;
 using Enums;
+using MyBox;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -271,17 +272,34 @@ namespace Save
         public static void AddBoost(EBoost boost, int duration, bool save = true)
         {
             var boosts = Boosts;
-            boosts.Add(new STimeData() { 
-                Name                = boost.ToString(),
-                NCollectionLeft     = 1,
-                ResetAt             = (int)(new DateTimeOffset(DateTime.UtcNow)).ToUnixTimeSeconds() + duration,
-                MetaData            = null,
-            });
-            Instance.m_Data[KEY_BOOSTS] = boosts;
 
+            // check if already has this boost
+            if (HasBoost(boost))
+            {
+                // increase duration
+                int index = Boosts.FirstIndex(timeData => timeData.Name == boost.ToString());
+                var currentBoost = Boosts[index];
+                currentBoost.ResetAt += duration;
+                boosts[index] = currentBoost;
+            } 
+            else
+            {
+                // add as new boost
+                boosts.Add(new STimeData()
+                {
+                    Name = boost.ToString(),
+                    NCollectionLeft = 1,
+                    ResetAt = (int)(new DateTimeOffset(DateTime.UtcNow)).ToUnixTimeSeconds() + duration,
+                    MetaData = null,
+                });
+            }
+
+            // update and save changes
+            Instance.m_Data[KEY_BOOSTS] = boosts;
             if (save)
                 Instance.SaveValue(KEY_BOOSTS);
 
+            // call event that a boost has been added
             BoostChangedEvent?.Invoke(boost.ToString(), true);
         }
 

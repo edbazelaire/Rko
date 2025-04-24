@@ -19,7 +19,7 @@ using Unity.Services.Lobbies.Models;
 using Unity.Services.Relay;
 using UnityEngine;
 using Unity.Services.Core;
-using Managers.Lobby;
+using Managers.Bots;
 
 namespace Network
 {

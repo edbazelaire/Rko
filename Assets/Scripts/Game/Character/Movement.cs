@@ -402,6 +402,10 @@ namespace Game.Character
             if (m_MoveX == moveX)
                 return;
 
+            // TODO : REMOVE
+            Debug.LogWarning("moveX : " + moveX);
+            // TODO : REMOVE
+            
             m_MoveX = moveX;
             MoveXChangedEvent?.Invoke(m_MoveX);
 
@@ -612,7 +616,9 @@ namespace Game.Character
                 return;
 
             m_MovementCancelled = cancel;
-            m_MoveX = 0;
+
+            if (cancel)
+                SetMovement(0);
         }
 
         public void ForceBlockMovement(bool block)

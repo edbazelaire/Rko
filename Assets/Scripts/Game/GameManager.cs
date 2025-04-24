@@ -16,9 +16,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
-using Tools.Debugs.BT;
 using Unity.Netcode;
-using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -786,9 +784,12 @@ namespace Game
             return GetPlayer(slefId);
         }
 
-        public List<Controller> GetAllEnemies(int team)
+        public List<Controller> GetAllEnemies(int team, bool spawnIncluded = true)
         {
-            return m_Controllers.Values.Where(controller => controller.Team != team).ToList();
+            if (spawnIncluded)
+                return m_Controllers.Values.Where(controller => controller.Team != team).ToList();
+
+            return m_Controllers.Values.Where(controller => controller.Team != team && ! controller.IsSpawn).ToList();
         }
 
         public List<Controller> GetAllAllies(int team)
@@ -1156,10 +1157,10 @@ namespace Game
         }
 
         [Command(KeyCode.J)]
-        public void IncreaseDamages()
+        public void IncreaseDamage()
         {
             Owner.StateHandler.CharacterData.AddBonusStats(new List<SCharacterStatScaling>() { 
-                new SCharacterStatScaling(EStateEffectProperty.BonusDamages, 100f, 0f, 0f) 
+                new SCharacterStatScaling(EStateEffectProperty.BonusDamage, 100f, 0f, 0f) 
             });
         }
 

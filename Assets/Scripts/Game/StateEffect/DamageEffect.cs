@@ -7,10 +7,10 @@ namespace Game.Spells
     [CreateAssetMenu(fileName = "DamageEffect", menuName = "Game/StateEffects/DamageEffect")]
     public class DamageEffect : StateEffect
     {
-        [Header("Damages")]
-        [SerializeField] protected bool     m_IsTrueDamages = false;
-        [SerializeField] protected int      m_Damages       = 0;
-        [SerializeField] protected int      m_EndDamages    = 0;
+        [Header("Damage")]
+        [SerializeField] protected bool     m_IsTrueDamage  = false;
+        [SerializeField] protected int      m_Damage        = 0;
+        [SerializeField] protected int      m_EndDamage     = 0;
         [SerializeField] protected int      m_Heal          = 0;
         [SerializeField] protected int      m_EndHeal       = 0;
         [SerializeField] protected float    m_LifeSteal     = 0f;
@@ -23,7 +23,7 @@ namespace Game.Spells
         protected override void OnStart()
         {
             // hit
-            var damages = m_Controller.Life.Hit(GetInt(EStateEffectProperty.Damages), m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct, ignoreRes: m_IsTrueDamages);
+            var damages = m_Controller.Life.Hit(GetInt(EStateEffectProperty.Damage), m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct, ignoreRes: m_IsTrueDamage);
 
             // apply lifesteal (on caster)
             m_Caster.Life.Heal((int)Mathf.Round(damages * FinalLifeSteal), m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct);
@@ -49,14 +49,14 @@ namespace Game.Spells
         protected virtual void ApplyEndHits()
         {
             // calculate spell damages
-            var damages = GetInt(EStateEffectProperty.EndDamages);
+            var damages = GetInt(EStateEffectProperty.EndDamage);
 
             // add special bonus damages
             if (StateEffectName == EStateEffect.Burn.ToString())
-                damages += m_Caster.StateHandler.GetInt(EStateEffectProperty.BonusBurnDamages);
+                damages += m_Caster.StateHandler.GetInt(EStateEffectProperty.BonusBurnDamage);
 
             // hit
-            damages = m_Controller.Life.Hit(damages, m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct, ignoreRes: m_IsTrueDamages);
+            damages = m_Controller.Life.Hit(damages, m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct, ignoreRes: m_IsTrueDamage);
 
             // apply lifesteal (on caster)
             m_Caster.Life.Heal((int)Mathf.Round(damages * FinalLifeSteal), m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct);

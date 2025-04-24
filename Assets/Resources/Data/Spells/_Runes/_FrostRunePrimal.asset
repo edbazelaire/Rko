@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: _FrostRunePrimal
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: 'Deal and extra {0} damages on [IceBreak] '
+  m_Description: 'Deal and extra {0} damage on [IceBreak] '
   m_DescriptionVariables:
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   m_SpellElements: 
   Linked: 0
@@ -40,7 +40,7 @@ MonoBehaviour:
   EnergyGain: 1
   EnergyCost: 0
   m_Damage: 100
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

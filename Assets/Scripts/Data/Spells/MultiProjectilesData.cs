@@ -307,13 +307,13 @@ namespace Data
 
         #region Info Display
 
-        public override Dictionary<string, object> GetInfos()
+        public override Dictionary<string, object> GetInfo()
         {
             string[] keysToIgnore = new string[] { "Cooldown", "Cast" };
-            var infoDict = base.GetInfos();
+            var infoDict = base.GetInfo();
             if (ProjectileData != null)
             {
-                foreach (var item in ProjectileData.GetInfos())
+                foreach (var item in ProjectileData.GetInfo())
                 {
                     if (keysToIgnore.Contains(item.Key))
                         continue;

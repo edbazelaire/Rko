@@ -158,6 +158,12 @@ namespace Data.GameManagement
             AchievementRewards.Add(achievementReward);
         }
 
+        public void Add(List<SAchievementReward> achievementRewards)
+        {
+            AchievementRewards ??= new List<SAchievementReward>();
+            AchievementRewards.AddRange(achievementRewards);
+        }
+
         public void Add(SRewardsData rewardsData)
         {
             if (rewardsData.Currencies != null)
@@ -453,7 +459,7 @@ namespace Data.GameManagement
             }
 
             ErrorHandler.Error("No price data found for collectable " + collectable + " of rarety " + rarety);
-            return new SPriceData(0, ECurrency.Golds);
+            return new SPriceData(0, ECurrency.Gold);
         }
 
         #endregion

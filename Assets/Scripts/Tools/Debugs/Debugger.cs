@@ -455,7 +455,7 @@ namespace Tools
         [Command]
         public void Babylon()
         {
-            InventoryManager.UpdateCurrency(ECurrency.Golds, 9999999, "DebugTool");
+            InventoryManager.UpdateCurrency(ECurrency.Gold, 9999999, "DebugTool");
             InventoryManager.UpdateCurrency(ECurrency.Gems, 9999999, "DebugTool");
             InventoryManager.UpdateCurrency(ECurrency.TotalXp, 9999999, "DebugTool");
         }

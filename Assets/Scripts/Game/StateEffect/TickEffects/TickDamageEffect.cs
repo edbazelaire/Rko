@@ -17,7 +17,7 @@ namespace Game.Spells
 
         [Header("Tick")]
         [SerializeField] protected float                    m_Tick;
-        [SerializeField] protected int                      m_TickDamages;
+        [SerializeField] protected int                      m_TickDamage;
         [SerializeField] protected int                      m_TickHeal;
         [SerializeField] protected int                      m_TickShield;
         [SerializeField] protected int                      m_TickEnergy;
@@ -96,7 +96,7 @@ namespace Game.Spells
             m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnHit, StateEffectName, m_Caster.PlayerId));
 
             // CHECK : DAMAGES
-            int damages = GetInt(EStateEffectProperty.TickDamages);
+            int damages = GetInt(EStateEffectProperty.TickDamage);
             if (damages > 0)
             {
                 if (m_Controller.CounterHandler.CheckCounters(damages, m_Caster, spellCategory: ESpellCategory.Tick))

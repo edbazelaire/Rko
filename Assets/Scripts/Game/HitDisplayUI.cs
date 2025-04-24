@@ -100,7 +100,7 @@ namespace Assets.Scripts.Game
         }
 
         /// <summary>
-        /// Display Damages text on the target
+        /// Display Damage text on the target
         /// </summary>
         /// <param name="clientId"></param>
         /// <param name="data"></param>

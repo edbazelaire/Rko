@@ -34,7 +34,7 @@ public class EndGameUI : MObject
 {
     #region Members
 
-    const string GOLDS_FORMAT = "+ {0}";
+    const string GOLD_FORMAT = "+ {0}";
 
     // Data
     EEndGameState m_State;
@@ -54,8 +54,8 @@ public class EndGameUI : MObject
     PowerUpSection      m_PowerUpSection;
     GameObject          m_XpRewardDisplay;
     TMP_Text            m_XpQty;
-    GameObject          m_GoldsRewardDisplay;
-    TMP_Text            m_GoldsQty;
+    GameObject          m_GoldRewardDisplay;
+    TMP_Text            m_GoldQty;
     GameObject          m_GemsRewardDisplay;
     TMP_Text            m_GemsQty;
     GameObject          m_OrbPowerRewardDisplay;
@@ -88,8 +88,8 @@ public class EndGameUI : MObject
         m_RewardsContent            = Finder.Find(gameObject, "RewardsContent");
         m_XpRewardDisplay           = Finder.Find(m_RewardsContent, "XpRewardDisplay");
         m_XpQty                     = Finder.FindComponent<TMP_Text>(m_XpRewardDisplay, "Qty");
-        m_GoldsRewardDisplay        = Finder.Find(m_RewardsContent, "GoldsRewardDisplay");
-        m_GoldsQty                  = Finder.FindComponent<TMP_Text>(m_GoldsRewardDisplay, "Qty");
+        m_GoldRewardDisplay         = Finder.Find(m_RewardsContent, "GoldsRewardDisplay");
+        m_GoldQty                   = Finder.FindComponent<TMP_Text>(m_GoldRewardDisplay, "Qty");
         m_GemsRewardDisplay         = Finder.Find(m_RewardsContent, "GemsRewardDisplay");
         m_GemsQty                   = Finder.FindComponent<TMP_Text>(m_GemsRewardDisplay, "Qty");
         m_OrbPowerRewardDisplay     = Finder.Find(m_RewardsContent, "OrbPowerRewardDisplay");
@@ -257,7 +257,7 @@ public class EndGameUI : MObject
 
         m_GemsRewardDisplay.SetActive(false);
         m_XpRewardDisplay.SetActive(false);
-        m_GoldsRewardDisplay.SetActive(false);
+        m_GoldRewardDisplay.SetActive(false);
         m_OrbPowerRewardDisplay.SetActive(false);   
         m_PowerOrbUpgradeRewardIcon.SetActive(false);
 
@@ -285,19 +285,19 @@ public class EndGameUI : MObject
         if (xp > 0)
         {
             m_XpRewardDisplay.SetActive(true);
-            m_XpQty.text = string.Format(GOLDS_FORMAT, xp);
+            m_XpQty.text = string.Format(GOLD_FORMAT, xp);
             NotificationCloudData.AddXp(xp);
         }
 
         // ----------------------------------------------------------------------------
         // GOLDS   
-        int golds = rewardCalculator.GetGolds();
-        ErrorHandler.Log("         + GOLDS : " + golds, ELogTag.Rewards);
+        int golds = rewardCalculator.GetGold();
+        ErrorHandler.Log("         + GOLD : " + golds, ELogTag.Rewards);
         if (golds > 0)
         {
-            m_GoldsRewardDisplay.SetActive(true);
-            m_GoldsQty.text = string.Format(GOLDS_FORMAT, golds);
-            InventoryManager.UpdateCurrency(ECurrency.Golds, golds, ERewardContext.EndGameChest.ToString());
+            m_GoldRewardDisplay.SetActive(true);
+            m_GoldQty.text = string.Format(GOLD_FORMAT, golds);
+            InventoryManager.UpdateCurrency(ECurrency.Gold, golds, ERewardContext.EndGameChest.ToString());
         }
 
         // ----------------------------------------------------------------------------
@@ -307,7 +307,7 @@ public class EndGameUI : MObject
         if (gems > 0)
         {
             m_GemsRewardDisplay.SetActive(true);
-            m_GemsQty.text = string.Format(GOLDS_FORMAT, gems);
+            m_GemsQty.text = string.Format(GOLD_FORMAT, gems);
             InventoryManager.UpdateCurrency(ECurrency.Gems, gems, ERewardContext.EndGameChest.ToString());
         }
 
@@ -342,7 +342,7 @@ public class EndGameUI : MObject
             SPowerOrb currentPowerOrb = ProgressionCloudData.CurrentArena.GetPowerOrb();
             int orbPower = m_ArenaData.CalculateOrbPowerReward(m_CurrentLevel, m_CurrentStage);
             m_OrbPowerRewardDisplay.SetActive(true);
-            m_OrbPowerRewardQty.text = string.Format(GOLDS_FORMAT, orbPower);
+            m_OrbPowerRewardQty.text = string.Format(GOLD_FORMAT, orbPower);
 
             // check if a bonus star has been provided
             if (m_IsBossFight && currentPowerOrb.TryUpgradeRarety())
