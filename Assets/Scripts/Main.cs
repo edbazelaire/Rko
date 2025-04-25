@@ -305,6 +305,10 @@ namespace Assets
 
         string GetInitializationInfoText()
         {
+            // only if debug is activated
+            if (PlayerPrefs.GetInt(EDebugOption.DebugMode.ToString(), 0) != 1)
+                return "";
+
             string infoText = "[";
             foreach (bool isInit in InitializedElements)
             {

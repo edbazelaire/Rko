@@ -41,6 +41,11 @@ namespace Assets.Scripts.Managers
         /// </summary>
         public static void CheckUpdates()
         {
+            // ====================================================================
+            // TODO : REMOVE
+            RenameGoldKey();
+            // ====================================================================
+
             if (CurrentVersion.CompareTo(new Version("0.0.0")) == 0)
             {
                 InitNewPlayer();
