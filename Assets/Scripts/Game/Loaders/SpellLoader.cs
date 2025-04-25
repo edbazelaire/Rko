@@ -292,7 +292,7 @@ namespace Game.Loaders
         public static Dictionary<string, object> GetSpellInfos(string spellName, int level = 1)
         {
             var spellData = GetSpellData(spellName, level);
-            var infos = spellData.GetInfos();
+            var infos = spellData.GetInfo();
             GameObject.Destroy(spellData);
             return infos;
         }
@@ -415,7 +415,7 @@ namespace Game.Loaders
                 // FILTER : State Effects
                 if (stateEffectFilters != null && stateEffectFilters.Count > 0)
                 {
-                    var spellInfos = spellData.GetInfos();
+                    var spellInfos = spellData.GetInfo();
 
                     // no effects on spell - continue
                     if (!spellInfos.ContainsKey("Effects"))

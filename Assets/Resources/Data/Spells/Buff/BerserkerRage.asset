@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rarety: 2
   m_Description: For {0} seconds increase your Damages by {1}, your Movement Speed
-    by {2} and your Attack Speed by {3}. Also makes you heal for {4} of the damages
+    by {2} and your Attack Speed by {3}. Also makes you heal for {4} of the damage
     delt. This effectiveness of the boosts is multiply by the percentage of missing
     health
   m_DescriptionVariables:
   - Name: Duration
     WithIcon: 1
-  - Name: BonusDamagesPerc
+  - Name: BonusDamagePerc
     WithIcon: 1
   - Name: SpeedBonus
     WithIcon: 1
@@ -40,12 +40,18 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 4
+  m_ClampTargetPos: 1
+  TargetOffset:
+    X: 0
+    Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -53,6 +59,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 3
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 4
     Value: 0.1

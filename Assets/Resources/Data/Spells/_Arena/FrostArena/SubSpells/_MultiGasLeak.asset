@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: _MultiGasLeak
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: creates a GasLeak for {0} seconds that delas {1} damages, also [EnemyStateEffect.1]
+  m_Description: creates a GasLeak for {0} seconds that delas {1} damage, also [EnemyStateEffect.1]
     and [Frost] each {2} seconds
   m_DescriptionVariables:
   - Name: Duration
     WithIcon: 0
-  - Name: TickDamages
+  - Name: TickDamage
     WithIcon: 1
   - Name: DurationTick
     WithIcon: 0
@@ -43,6 +43,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   OnHit: []
   OnHitSpellSpawn: 1
@@ -52,6 +53,7 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 6
+  m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
@@ -61,7 +63,8 @@ MonoBehaviour:
   MaxHit: 1
   EnergyGain: 2
   EnergyCost: 0
-  m_Damage: 50
+  m_Damage: 15
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -69,6 +72,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 5
   Delay: 3
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
@@ -96,9 +102,12 @@ MonoBehaviour:
   m_Cooldown: 0
   m_SpellSpawn: 1
   DurationTick: 1
-  m_TickDamages: 15
+  m_TickDamage: 15
   m_TickHeal: 0
   m_TickShield: 0
+  m_ZoneForce:
+    m_Speed: 0
+    m_Duration: 0
   GrowSizeFactor: 0
   MaxSizeAt: 1
   PersistentStateEffects: []

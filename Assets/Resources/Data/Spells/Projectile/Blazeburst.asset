@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rarety: 3
   m_Description: Charging energy for {0} seconds to launch a powerfull missile in
-    a straight line, dealing {1} damages and applying a {2} for 2 seconds
+    a straight line, dealing {1} damage and applying a {2} for 2 seconds
   m_DescriptionVariables:
   - Name: CastDuration
     WithIcon: 0
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   - Name: Stun
     WithIcon: 1
@@ -83,7 +83,7 @@ MonoBehaviour:
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 130
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

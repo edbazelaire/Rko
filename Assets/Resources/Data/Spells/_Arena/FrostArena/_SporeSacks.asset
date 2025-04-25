@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rarety: 0
   m_Description: After [SubSpellData.Delay] seconds, creates a Void Mine on the character.\nThe
-    VoidMine gets triggered in contact with a player and explodes dealing {0} damages,
+    VoidMine gets triggered in contact with a player and explodes dealing {0} damage,
     applying [Frost] and 20 [Cursed] stacks
   m_DescriptionVariables:
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   m_SpellElements: 
   Linked: 0
@@ -42,7 +42,7 @@ MonoBehaviour:
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -90,6 +90,7 @@ MonoBehaviour:
   m_YMinMax:
     Min: 0.3
     Max: 1.2
+  m_RecalculateTarget: 0
   m_RecalculatePosition: 0
   m_IsBlocking: 0
   m_NProjectiles: 5

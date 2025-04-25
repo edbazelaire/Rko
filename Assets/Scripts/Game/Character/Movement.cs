@@ -612,7 +612,9 @@ namespace Game.Character
                 return;
 
             m_MovementCancelled = cancel;
-            m_MoveX = 0;
+
+            if (cancel)
+                SetMovement(0);
         }
 
         public void ForceBlockMovement(bool block)

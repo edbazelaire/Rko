@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Erasement
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: Jumps on the enemy to inflict {0} damages and a {1} of 2 seconds
+  m_Description: Jumps on the enemy to inflict {0} damage and a {1} of 2 seconds
     in an area of size {2}. Requires {3} energy to be used
   m_DescriptionVariables:
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   - Name: Stun
     WithIcon: 1
@@ -67,6 +67,7 @@ MonoBehaviour:
   EnergyGain: 0
   EnergyCost: 100
   m_Damage: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

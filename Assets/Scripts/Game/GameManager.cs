@@ -16,9 +16,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
-using Tools.Debugs.BT;
 using Unity.Netcode;
-using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -96,7 +94,8 @@ namespace Game
         public bool IsGameStarted => m_State.Value > EGameState.Intro;
         /// <summary> game is over </summary>
         public static bool IsGameOver => s_Instance == null || Instance.m_State.Value >= EGameState.GameOver || ErrorHandler.IsExiting;
-
+        /// <summary> is game currently running ? </summary>
+        public static bool IsGameRunning => Instance.IsGameStarted && ! IsGameOver;
         #endregion
 
 
@@ -571,7 +570,18 @@ namespace Game
             DisconnectionHandler.End();
 
             // setup the UI for end of the game
-            GameUIManager.Instance.SetUpGameOver(team == Instance.Owner.Team);
+            GameUIManager.Instance.SetUpGameOver(GetGameResult(team));
+        }
+
+        EGameResult GetGameResult(int team)
+        {
+            if (team < 0)
+                return EGameResult.Draw;
+
+            if (team == Instance.Owner.Team)
+                return EGameResult.Win;
+
+            return EGameResult.Loss;
         }
 
         void ShutDownControllers(int team)
@@ -786,9 +796,12 @@ namespace Game
             return GetPlayer(slefId);
         }
 
-        public List<Controller> GetAllEnemies(int team)
+        public List<Controller> GetAllEnemies(int team, bool spawnIncluded = true)
         {
-            return m_Controllers.Values.Where(controller => controller.Team != team).ToList();
+            if (spawnIncluded)
+                return m_Controllers.Values.Where(controller => controller.Team != team).ToList();
+
+            return m_Controllers.Values.Where(controller => controller.Team != team && ! controller.IsSpawn).ToList();
         }
 
         public List<Controller> GetAllAllies(int team)
@@ -1005,6 +1018,14 @@ namespace Game
             CheckGameEnd();
         }
 
+        public void OnTimerEnd()
+        {
+            if (!IsServer)
+                return;
+
+            GameOver(-1);
+        }
+
         #endregion
 
 
@@ -1156,10 +1177,10 @@ namespace Game
         }
 
         [Command(KeyCode.J)]
-        public void IncreaseDamages()
+        public void IncreaseDamage()
         {
             Owner.StateHandler.CharacterData.AddBonusStats(new List<SCharacterStatScaling>() { 
-                new SCharacterStatScaling(EStateEffectProperty.BonusDamages, 100f, 0f, 0f) 
+                new SCharacterStatScaling(EStateEffectProperty.BonusDamage, 100f, 0f, 0f) 
             });
         }
 

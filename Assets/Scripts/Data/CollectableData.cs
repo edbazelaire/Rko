@@ -30,7 +30,7 @@ namespace Data
         // Dependent Data
         public int Level => m_Level;
         public List<ESpellElement>  SpellElements => m_SpellElements;
-
+    
         public string Name
         {
             get
@@ -104,9 +104,25 @@ namespace Data
         #endregion
 
 
+        #region Debug
+
+        public string BaseDescription => m_Description;
+        public void SetBaseDescription(string description)
+        {
+            m_Description = description;
+        }
+        public List<SDescriptionVariable> DescriptionVariables => m_DescriptionVariables;
+        public void SetDescriptionVariables(List<SDescriptionVariable> descriptionVariables)
+        {
+            m_DescriptionVariables = descriptionVariables;
+        }
+
+        #endregion
+
+
         #region Infos
 
-        public virtual Dictionary<string, object> GetInfos()
+        public virtual Dictionary<string, object> GetInfo()
         {
             return new Dictionary<string, object>();
         }
@@ -118,7 +134,7 @@ namespace Data
         public virtual string GetDescription()
         {
             List<string> values = new List<string>();
-            var infos = GetInfos();
+            var infos = GetInfo();
 
             foreach (SDescriptionVariable descriptionVariable in m_DescriptionVariables)
             {

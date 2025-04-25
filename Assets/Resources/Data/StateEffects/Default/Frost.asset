@@ -15,14 +15,22 @@ MonoBehaviour:
   m_Description: Slow the enemy by {0} for {1} seconds
   m_DescriptionVariables: 0300000001000000
   m_StateEffectType: 0
+  m_IsDisplayed: 1
   m_VisualEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 0
   m_DefaultState: 0
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
+  m_Priority: 0
   m_Duration: 5
+  m_IsInstantanious: 0
   m_MaxStacks: 1
+  m_StackDecay: -1
+  m_Energy: 0
+  m_BonusStats: []
   m_SpeedBonus: -0.15
   m_CastSpeed: 0
   m_AttackSpeed: 0
@@ -31,9 +39,13 @@ MonoBehaviour:
   m_Shield: 0
   m_ResistanceFix: 0
   m_ResistancePerc: 0
-  m_BonusDamages: 0
-  m_BonusDamagesPerc: 0
+  m_BonusDamage: 0
+  m_BonusDamagePerc: 0
   m_BonusLifeSteal: 0
+  m_BonusHeal: 0
+  m_BonusHealPerc: 0
+  m_BonusBurnDamage: 0
+  m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel:

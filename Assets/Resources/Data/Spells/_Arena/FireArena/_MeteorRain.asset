@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rarety: 0
   m_Description: '{0} Meteors falling from the sky every {1} seconds.\nEach dealing
-    {2} damages and applying 3 stacks of {3} and 1 stack of {4}'
+    {2} damage and applying 3 stacks of {3} and 1 stack of {4}'
   m_DescriptionVariables:
   - Name: Projectiles
     WithIcon: 1
   - Name: DelayBetweenWaves
     WithIcon: 1
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   - Name: Cursed
     WithIcon: 1
@@ -38,6 +38,7 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 1
+  m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
@@ -48,6 +49,7 @@ MonoBehaviour:
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -55,6 +57,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
@@ -71,10 +76,13 @@ MonoBehaviour:
   AnimationTimer: 0
   m_Cooldown: 0
   Trajectory: 0
+  m_TriggerGround: 1
   m_StopOnTargetPos: 0
   m_Speed: 0
+  m_YSpawnPos: 0
   ProjectileData: {fileID: 11400000, guid: 2c9ea39538d0f4e40a36d7cf2b20f0e2, type: 2}
   MultiProjectileType: 2
+  m_RecalculatePosition: 1
   m_IsBlocking: 1
   m_NProjectiles: 1
   m_ProjectileZoneSize: -1

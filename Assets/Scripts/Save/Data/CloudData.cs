@@ -113,7 +113,24 @@ namespace Save
                 OnLoadingError(key, item);
                 return false;
             }
-}
+        }
+
+        public async Task<T> TryGet<T>(string key)
+        {
+            Item item;
+            try
+            {
+                Dictionary<string, Item> cloudData = await CloudDatabase.LoadAsync(new HashSet<string> { key }, m_PublicKeys.Contains(key) ? new LoadOptions(new PublicReadAccessClassOptions()) : new LoadOptions(new DefaultReadAccessClassOptions()));
+                if (! cloudData.TryGetValue(key, out item))
+                    return default;
+            }
+            catch
+            {
+                return default;
+            }
+
+            return item.Value.GetAs<T>();
+        }
 
         public virtual void Save()
         {
@@ -175,6 +192,11 @@ namespace Save
         public virtual async void DeleteAllData()
         {
             await CloudDatabase.DeleteAllAsync();
+        }
+
+        public virtual async void DeleteKey(string key)
+        {
+            await CloudSaveService.Instance.Data.Player.DeleteAsync(key);
         }
 
         #endregion

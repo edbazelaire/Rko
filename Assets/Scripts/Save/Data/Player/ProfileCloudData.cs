@@ -850,7 +850,7 @@ namespace Save
             // parse the badge name into the expected enum
             if (!Enum.TryParse(badgeName, out badge))
             {
-                ErrorHandler.Error("Unable to parse badge name (" + badgeName + ") into badge / leage");
+                ErrorHandler.Error("Unable to parse badge name (" + badgeName + ") into badge / league");
                 badge = EBadge.None;
                 return false;
             }

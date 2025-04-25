@@ -179,7 +179,7 @@ namespace Game.Spells
                 case ECounterType.Block:
                     if (m_SpellData.Shield > 0)
                     {
-                        HitShield(enemySpell.GetBoostedDamages(m_Controller) + enemySpell.GetBoostedExecutionDamages(m_Controller));
+                        HitShield(enemySpell.GetBoostedDamage(m_Controller) + enemySpell.GetBoostedExecutionDamage(m_Controller));
                     }
 
                     enemySpell.CallSpellEventClientRPC(ESpellEvent.OnHit, m_Controller.PlayerId);

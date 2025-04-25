@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rarety: 0
   m_Description: Channel the duality of light and shadow with each strike to inflict
-    {0} damages (+ {1} execution)
+    {0} damage (+ {1} execution)
   m_DescriptionVariables:
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
-  - Name: ExecutionDamages
+  - Name: ExecutionDamage
     WithIcon: 0
   m_SpellElements: 00000000
   Linked: 1
@@ -81,7 +81,7 @@ MonoBehaviour:
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 90
-  m_ExecutionDamages: 60
+  m_ExecutionDamage: 60
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

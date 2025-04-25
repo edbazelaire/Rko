@@ -354,7 +354,7 @@ namespace Tools
                 // Replace token with the property value from ConvertDescriptionVariable
                 text = text.Replace(
                     token,
-                    propertyName == "Description" ? subSpellData.GetDescription().FirstCharacterToLower() : subSpellData.ConvertDescriptionVariable(new SDescriptionVariable(propertyName, true), subSpellData.GetInfos())
+                    propertyName == "Description" ? subSpellData.GetDescription().FirstCharacterToLower() : subSpellData.ConvertDescriptionVariable(new SDescriptionVariable(propertyName, true), subSpellData.GetInfo())
                 );
             }
 

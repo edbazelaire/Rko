@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: RockShower
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: Shoots {0} rocks at once on the enemy's side, each dealing {1} damages
+  m_Description: Shoots {0} rocks at once on the enemy's side, each dealing {1} damage
   m_DescriptionVariables:
   - Name: Projectiles
     WithIcon: 1
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   m_SpellElements: 
   Linked: 0
@@ -82,7 +82,7 @@ MonoBehaviour:
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 90
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

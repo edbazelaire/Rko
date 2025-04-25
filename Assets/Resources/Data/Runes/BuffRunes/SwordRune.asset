@@ -18,9 +18,9 @@ MonoBehaviour:
   m_SpellElements: 00000000
   Description: 
   m_MinorPower:
-    Description: Gain {0} damages
+    Description: Gain {0} damage
     m_DescriptionVariables:
-    - Name: BonusDamages
+    - Name: BonusDamage
       WithIcon: 1
     m_BonusLevel: 0
     m_TriggerEffects: []
@@ -33,7 +33,7 @@ MonoBehaviour:
   m_MajorPower:
     Description: Gain {0} Damages
     m_DescriptionVariables:
-    - Name: BonusDamages
+    - Name: BonusDamage
       WithIcon: 1
     m_BonusLevel: 0
     m_TriggerEffects: []
@@ -46,7 +46,7 @@ MonoBehaviour:
   m_PrimalPower:
     Description: Gain {0} Damages
     m_DescriptionVariables:
-    - Name: BonusDamages
+    - Name: BonusDamage
       WithIcon: 1
     m_BonusLevel: 0
     m_TriggerEffects: []

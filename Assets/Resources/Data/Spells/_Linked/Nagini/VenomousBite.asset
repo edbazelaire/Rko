@@ -16,7 +16,7 @@ MonoBehaviour:
   m_Description: Jumps on the enemy , dealing {0} Damages for each stack of {1} on
     him and applying {2}
   m_DescriptionVariables:
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   - Name: Poison
     WithIcon: 1
@@ -66,7 +66,7 @@ MonoBehaviour:
   EnergyGain: 15
   EnergyCost: 0
   m_Damage: 15
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 1

@@ -96,9 +96,9 @@ namespace Game.Spells
         [SerializeField] protected      int                         m_ResistanceFix         = 0;
         [SerializeField] protected      float                       m_ResistancePerc        = 0f;
 
-        [Header("Damages")]
-        [SerializeField] protected      int                         m_BonusDamages          = 0;
-        [SerializeField] protected      float                       m_BonusDamagesPerc      = 0f;
+        [Header("Damage")]
+        [SerializeField] protected      int                         m_BonusDamage          = 0;
+        [SerializeField] protected      float                       m_BonusDamagePerc      = 0f;
         [SerializeField] protected      float                       m_BonusLifeSteal        = 0f;
 
         [Header("Heal")]
@@ -106,7 +106,7 @@ namespace Game.Spells
         [SerializeField] protected      float                       m_BonusHealPerc         = 0f;
 
         [Header("Elementary")]
-        [SerializeField] protected      int                         m_BonusBurnDamages      = 0;
+        [SerializeField] protected      int                         m_BonusBurnDamage      = 0;
         [SerializeField] protected      float                       m_BonusSlowPerc         = 0f;
 
         [Header("Extra Effects")]
@@ -207,22 +207,33 @@ namespace Game.Spells
             if (stateEffectData.HasValue && stateEffectData.Value.OverridingProperties != null && stateEffectData.Value.OverridingProperties.Count > 0)
                 OverrideStateEffectData(stateEffectData.Value);
 
-            if (!CheckBeforeGraphicInit())
+            // allow children to pre-process before starting
+            ApplyPreProcessing();
+
+            // check if has condition to be enabled
+            if (! CheckBeforeGraphicInit())
             {
                 return false;
             }
 
+            // reset data before start
             RefreshStats();
 
+            // activate effects that applies when the spell is ready
             OnStart();
 
             // if spell is instantanious do not proceed after initalization in state handler
             if (m_IsInstantanious)
                 return false;
 
+            // is that type of effect currently "Holding" (= duration timer is frozen)
             m_IsHolding = m_Controller.StateHandler.IsHolding(StateEffectName);
 
+            // register spell listeners
             RegisterListeners();
+
+            // allow children to call post-processing methods
+            ApplyPostProcessing();
 
             return true;
         }
@@ -231,6 +242,11 @@ namespace Game.Spells
 
 
         #region At Init 
+
+        /// <summary>
+        /// Allow children to run code BEFORE enabling the spell
+        /// </summary>
+        protected virtual void ApplyPreProcessing() { }
 
         /// <summary>
         /// Method that allows children to make a verification before instantiating this
@@ -245,6 +261,9 @@ namespace Game.Spells
             return m_Stacks > 0;
         }
 
+        /// <summary>
+        /// Call all method that applies when the spell starts
+        /// </summary>
         protected virtual void OnStart()
         {
             if (m_Energy != 0)
@@ -269,9 +288,18 @@ namespace Game.Spells
                 End();
         }
 
+        /// <summary>
+        /// Allow children to run code AFTER enabling the spell
+        /// </summary>
+        protected virtual void ApplyPostProcessing() { }
+
+        /// <summary>
+        /// Allow wraper data to override the state effect's data
+        /// </summary>
         public void OverrideStateEffectData(SStateEffectData stateEffectData)
         {
-            name = stateEffectData.StateEffect.ToString();
+            if (stateEffectData.OverridingProperties == null)
+                return;
 
             foreach (SStateEffectProperty overridingProperty in stateEffectData.OverridingProperties)
             {
@@ -381,12 +409,10 @@ namespace Game.Spells
                 if (m_StackDecay < 0)
                 {
                     RemoveStacks(Math.Abs(m_StackDecay));
-                    m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnSpawn, StateEffectName, m_Caster.PlayerId, m_Stacks, m_Duration));
                 }
                 else
                 {
                     Refresh(m_StackDecay);
-                    m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnSpawn, StateEffectName, m_Caster.PlayerId, m_Stacks, m_Duration));
                 }
             }
         }
@@ -448,7 +474,8 @@ namespace Game.Spells
             m_Stacks -= nStacks;
 
             // refresh UI on client side
-            m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnSpawn, StateEffectName, m_Caster.PlayerId, m_Stacks, m_Duration));
+            m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnActivation, StateEffectName, m_Caster.PlayerId, m_Stacks, m_Duration));
+
             return nStacks;
         }
 

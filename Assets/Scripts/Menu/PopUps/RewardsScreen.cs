@@ -456,8 +456,15 @@ namespace Menu.PopUps
             // deactivate chest container
             m_ChestContainer.SetActive(false);
 
+            // set title
             string title = (isBonus ? "(Bonus) " : "") + currency.ToString();
+
+            // Xp -> converted to TotalXp
+            if (currency == ECurrency.Xp)
+                currency = ECurrency.TotalXp;
+
             int currentlyOwnValue = InventoryManager.GetCurrency(currency);
+            int maxValue = currency == ECurrency.Xp || currency == ECurrency.TotalXp ? CollectablesManagementData.GetCurrentAccountLevelData().RequiredXp : currentlyOwnValue + qty;
 
             // init default template and clean previous content
             UIHelper.CleanContent(m_RewardIconSection);
@@ -472,7 +479,7 @@ namespace Menu.PopUps
             m_RewardTitle.text = title;
 
             // -- setup collection fill bar
-            m_CollectionFillBar.Initialize(currentlyOwnValue, currentlyOwnValue + qty);
+            m_CollectionFillBar.Initialize(currentlyOwnValue, maxValue);
             yield return WaitForCoroutineOrSkip(m_CollectionFillBar.CollectionAnimationCoroutine(qty));
 
             // make sure that audio source is destroyed (in case of skip)
@@ -480,7 +487,7 @@ namespace Menu.PopUps
                 Destroy(m_CollectionFillBar.AudioSource.gameObject);    
 
             // add reward to collection of rewards
-            InventoryManager.UpdateCurrency(currency, qty, m_Context);
+            InventoryManager.UpdateCurrency(currency == ECurrency.TotalXp ? ECurrency.Xp : currency, qty, m_Context);
         }
 
         IEnumerator DisplayCollectableReward(Enum collectable, int qty)

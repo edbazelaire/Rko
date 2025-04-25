@@ -572,6 +572,9 @@ namespace Save
             leagueCloudData.CurrentLeague = newLeague;
 
             SetLeagueData(leagueCloudData, save);
+
+            // add chest open boost on unlocking new league
+            TimeCloudData.AddBoost(EBoost.ChestSpeedBoost, 48 * 3600);
         }
 
         public static void SetLeagueData(SLeagueCloudData leagueCloudData, bool save = true)

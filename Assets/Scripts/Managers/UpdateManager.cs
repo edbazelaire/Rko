@@ -33,7 +33,6 @@ namespace Assets.Scripts.Managers
         /// <returns></returns>
         static void InitNewPlayer()
         {
-            //FriendsHandler.SendFriendRequestToAll();
             SetVersion(GameVersion.ToString());
         }
 
@@ -88,6 +87,9 @@ namespace Assets.Scripts.Managers
 
             if (CurrentVersion.CompareTo(new Version("0.2.5")) == -1)
                 test = UpdateVersion_0_2_5();
+
+            //if (CurrentVersion.CompareTo(new Version("0.3.0")) == -1)
+            //    test = UpdateVersion_0_3_0();
 
             // if does not trigger any version until now, update to current version
             if (CurrentVersion.CompareTo(GameVersion) == -1)
@@ -333,7 +335,7 @@ namespace Assets.Scripts.Managers
                     },
                     currencyRewards: new List<SCurrencyReward>() {
                         new SCurrencyReward(ECurrency.Xp, 250),
-                        new SCurrencyReward(ECurrency.Golds, 5000),
+                        new SCurrencyReward(ECurrency.Gold, 5000),
                         new SCurrencyReward(ECurrency.Gems, 150)
                     },
                     achievementRewards: new List<SAchievementReward> {
@@ -375,7 +377,7 @@ namespace Assets.Scripts.Managers
                     },
                     currencyRewards: new List<SCurrencyReward>() {
                         new SCurrencyReward(ECurrency.Xp,       250),
-                        new SCurrencyReward(ECurrency.Golds,    5000),
+                        new SCurrencyReward(ECurrency.Gold,    5000),
                         new SCurrencyReward(ECurrency.Gems,     150)
                     },
                     achievementRewards: new List<SAchievementReward> {
@@ -461,6 +463,29 @@ namespace Assets.Scripts.Managers
 
             return test;
         }
+
+        #endregion
+
+
+        #region v0.3.0
+
+        static void UpdateVersion_0_3_0()
+        {
+            RenameGoldKey();
+        }
+
+        static async void RenameGoldKey()
+        {
+            int oldValue = await InventoryCloudData.Instance.TryGet<int>("Golds");
+            if (oldValue == 0)
+                return;
+
+            InventoryCloudData.Instance.SetCurrency(ECurrency.Gold, oldValue);
+            InventoryCloudData.Instance.DeleteKey("Golds");
+
+            Debug.Log($"[UpdateManager] Successfully updated 'Golds' → '{ECurrency.Gold}' with value {oldValue}.");
+        }
+
 
         #endregion
 

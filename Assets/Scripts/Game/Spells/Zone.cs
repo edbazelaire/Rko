@@ -258,30 +258,30 @@ namespace Game.Spells
             if (controller.Team == m_Controller.Team)
                 return false;
 
-            // no base Damages, StateEffects or OnHit effects - return
-            if (m_SpellData.TickDamages <= 0 && m_SpellData.EnemyStateEffects.Count == 0 && m_SpellData.OnHit.Count == 0)
+            // no base Damage, StateEffects or OnHit effects - return
+            if (m_SpellData.TickDamage <= 0 && m_SpellData.EnemyStateEffects.Count == 0 && m_SpellData.OnHit.Count == 0)
                 return false;
 
-            // add bonus damages from state bonus & boosts 
-            int damages = m_SpellData.TickDamages;
+            // add bonus damage from state bonus & boosts 
+            int damage = m_SpellData.TickDamage;
             if (m_SpellData.StateEffectStackFactor != EStateEffect.None)
             {
-                damages *= controller.StateHandler.GetStacks(m_SpellData.StateEffectStackFactor);
+                damage *= controller.StateHandler.GetStacks(m_SpellData.StateEffectStackFactor);
             }
-            damages = m_Controller.StateHandler.ApplyBonusInt(damages, EStateEffectProperty.TickDamages, controller);
+            damage = m_Controller.StateHandler.ApplyBonusInt(damage, EStateEffectProperty.TickDamage, controller);
 
-            // get final damages after shields and resistances
-            int finalDamages = controller.Life.Hit(damages, m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
-            if (finalDamages > 0 && m_Controller.ClientAnalytics != null)
-                m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Damage, finalDamages);
+            // get final damage after shields and resistances
+            int finalDamage = controller.Life.Hit(damage, m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
+            if (finalDamage > 0 && m_Controller.ClientAnalytics != null)
+                m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Damage, finalDamage);
 
-            ErrorHandler.Log(m_SpellData.Name + " : " + finalDamages, ELogTag.Spells);
+            ErrorHandler.Log(m_SpellData.Name + " : " + finalDamage, ELogTag.Spells);
 
             // apply lifesteal if any (remove 1 because floats values are always based on 1 as default value)
             float lifeSteal = SpellData.LifeSteal + Mathf.Max(0f, m_Controller.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal) - 1);
-            if (lifeSteal > 0 && finalDamages > 0)
+            if (lifeSteal > 0 && finalDamage > 0)
             {
-                m_Controller.Life.Heal((int)Mathf.Round(lifeSteal * finalDamages), m_Controller.PlayerId, m_SpellData.Name, m_SpellData.SpellCategory);
+                m_Controller.Life.Heal((int)Mathf.Round(lifeSteal * finalDamage), m_Controller.PlayerId, m_SpellData.Name, m_SpellData.SpellCategory);
             }
 
             // apply state effects specifics to enemies

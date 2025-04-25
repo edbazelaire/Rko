@@ -185,7 +185,7 @@ namespace Data
         public AudioClip OpenSoundFX;
 
         [Header("Collectables")]
-        [Description("Min/Max Golds from that chest")]
+        [Description("Min/Max Gold from that chest")]
         public SCurrencyDistributionData[] Currencies;
         [Description("Total Number of spells in the chest")]
         public SExtraCardData ExtraCardData;

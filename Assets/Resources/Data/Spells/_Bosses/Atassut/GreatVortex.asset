@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rarety: 0
   m_Description: Creates a Vortex that blocks every projectiles touching it and converts
-    the damages into {0} stacks on the Enemy
+    the damage into {0} stacks on the Enemy
   m_DescriptionVariables:
   - Name: Cursed
     WithIcon: 1
@@ -30,6 +30,7 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 2
+  m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
@@ -40,6 +41,7 @@ MonoBehaviour:
   EnergyGain: 5
   EnergyCost: 0
   m_Damage: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -47,6 +49,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 2
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 4
     Value: 0.05

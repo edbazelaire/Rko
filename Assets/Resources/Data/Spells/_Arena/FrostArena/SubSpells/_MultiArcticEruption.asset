@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: _MultiArcticEruption
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: An eruption of frozen flames that applies {0} damages with [Frozen]
+  m_Description: An eruption of frozen flames that applies {0} damage with [Frozen]
     and [Combustion] on hitting
   m_DescriptionVariables:
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   m_SpellElements: 
   Linked: 0
@@ -39,6 +39,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   - Prefab: {fileID: 130346, guid: f6b761e122bd69347b6dcfeeb1873bf0, type: 3}
     MaterialEffect: {fileID: 0}
@@ -57,6 +58,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 16
+    SpellAnimation: 
     StateEffects: 
   OnHit: []
   OnHitSpellSpawn: 1
@@ -66,6 +68,7 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 0
+  m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
@@ -75,7 +78,8 @@ MonoBehaviour:
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 150
+  m_Damage: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -83,6 +87,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 3
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
@@ -110,9 +117,12 @@ MonoBehaviour:
   m_Cooldown: 0
   m_SpellSpawn: 1
   DurationTick: 0
-  m_TickDamages: 0
+  m_TickDamage: 0
   m_TickHeal: 0
   m_TickShield: 0
+  m_ZoneForce:
+    m_Speed: 0
+    m_Duration: 0
   GrowSizeFactor: 0
   MaxSizeAt: 1
   PersistentStateEffects: []

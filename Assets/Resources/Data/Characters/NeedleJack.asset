@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
+  m_Name: NeedleJack
+  m_EditorClassIdentifier: 
+  Rarety: 2
+  m_Description: "He moves through the shadows like smoke, leaving only whispers
+    and corpses behind. Known on the streets as \"Needle\", he is both assassin and
+    alchemist, a junkie with a taste for his own venom. Where others fear poison,
+    he craves it \u2014 mixing deadly concoctions in the flickering light of filthy
+    back-alley labs, testing each new formula first on himself. His veins carry more
+    toxins than blood; every dose a gamble between enlightenment and oblivion. The
+    scars on his arms aren\u2019t just from the syringes \u2014 they\u2019re maps
+    of where death kissed him and walked away disappointed.\\n\\nNeedle\u2019s eyes
+    burn with the hollow intensity of someone who has seen too much and cares too
+    little. His grin is cracked and crooked, a side effect of too many near-death
+    highs. Despite the chaos of his addiction, his hands never shake. Each blade
+    he carries is laced with poisons of his own design \u2014 hallucinogens, paralytics,
+    slow burners that make the kill last hours if he\u2019s feeling particularly
+    cruel.\\n\\nHe doesn't take contracts for the money. He takes them for the thrill,
+    the art, the chemical experiments. Killing is just another part of his process,
+    another ingredient in his endless search for the perfect high. Rumors say he
+    once dosed an entire crime syndicate with vaporized fear toxin, then sat cross-legged
+    among their twitching bodies, watching their nightmares play out like theater.\\n\\nHe's
+    thin, wiry, with a frame more shadow than flesh, wrapped in tattered leathers
+    stained with who-knows-what. Pouches and vials clink softly at his belt, each
+    one a secret, each one a sin. His scent is a cocktail of coppery blood, sour
+    sweat, and sweet chemical rot. But beneath the madness, there\u2019s a mind as
+    sharp as his needles \u2014 calculating, patient, and endlessly inventive.\\n\\nEvery
+    job is a test. Every kill, an experiment. And if the poison doesn\u2019t drop
+    his target fast enough\u2026 well, he\u2019ll just slip a little under his own
+    tongue and see what happens next."
+  m_DescriptionVariables: []
+  m_SpellElements: 03000000
+  m_AutoAttack: Quickfix
+  m_SpecialAbility: Leaner
+  m_Ultimate: Overdose
+  Size: 1
+  BaseSpeed: 1
+  BaseHealth: 2000
+  MaxEnergy: 100
+  BaseEnergy: 10
+  IsStructure: 0
+  HealthScaleFactor: 0.1
+  CharacterStatScaling:
+  - StateEffectProperty: 8
+    BaseValue: 0.03
+    BonusValue: 0
+    ScalingFactor: 0.15
+    StateEffectStackFactors: []
+  m_SpecialPowers:
+  - Description: Junkheal
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: Junkheal
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: 1
+      Cooldown: 0
+    m_BonusStats: []

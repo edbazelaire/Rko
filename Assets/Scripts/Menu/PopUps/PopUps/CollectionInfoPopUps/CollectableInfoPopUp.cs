@@ -192,9 +192,9 @@ namespace Menu.PopUps
             // -- get new data if spell is updatable
             Dictionary<string, object> newDataInfos = null;
             if (! m_IsMaxedLevel)
-                newDataInfos = m_Data.Clone(m_Level + 1, true).GetInfos();
+                newDataInfos = m_Data.Clone(m_Level + 1, true).GetInfo();
 
-            var infos = m_Data.GetInfos();
+            var infos = m_Data.GetInfo();
             foreach (var item in infos)
             {
                 SetUpInfoRow(item.Key, item.Value, newDataInfos != null ? newDataInfos[item.Key] : null);
@@ -250,11 +250,11 @@ namespace Menu.PopUps
             if (!m_IsMaxedLevel)
             {
                 var newSpell = m_Data.Clone(m_Level + 1);
-                newSpelLDataInfos = newSpell.GetInfos();
+                newSpelLDataInfos = newSpell.GetInfo();
                 Destroy(newSpell);
             }
 
-            foreach (var item in m_Data.GetInfos())
+            foreach (var item in m_Data.GetInfo())
             {
                 if (!m_InfoRows.ContainsKey(item.Key))
                     continue;
@@ -280,7 +280,7 @@ namespace Menu.PopUps
             }
 
             m_UpgradeButton.interactable = m_CanUpgrade;
-            m_CostText.text = CollectablesManagementData.GetLevelData(m_Collectable, m_Level).RequiredGolds.ToString();
+            m_CostText.text = CollectablesManagementData.GetLevelData(m_Collectable, m_Level).RequiredGold.ToString();
         }
 
         #endregion
@@ -352,10 +352,10 @@ namespace Menu.PopUps
                 return;
 
             var pulse = m_CollectableItemUI.IconObject.AddComponent<Pulse>();
-            pulse.Initialize(UPGRADE_ANIMATION_ID, 2f, 0.9f, 1.1f, pulseDuration: 0.5f, pauseDuration:0f);
+            pulse.Initialize(UPGRADE_ANIMATION_ID, duration: 2f, minSize: 0.9f, maxSize: 1.1f, pulseDuration: 0.5f, pauseDuration:0f);
 
             var particles = m_CollectableItemUI.IconObject.AddComponent<ParticlesAnimation>();
-            particles.Initialize(UPGRADE_ANIMATION_ID, 2f, particlesName: "LevelUpAnimation", size: Vector2.one, layer: "Overlay");
+            particles.Initialize(UPGRADE_ANIMATION_ID, duration: 2f, particlesName: "LevelUpAnimation", size: Vector2.one, layer: "Overlay");
         }
 
         /// <summary>

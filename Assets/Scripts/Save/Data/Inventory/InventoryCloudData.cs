@@ -12,6 +12,8 @@ using Unity.VisualScripting;
 
 namespace Save
 {
+    #region Structures
+
     [Serializable]
     public struct SCollectableCloudData
     {
@@ -159,6 +161,8 @@ namespace Save
             this.DefaultData = DefaultData;
         }
     }
+   
+    #endregion
 
 
     public class InventoryCloudData : CloudData
@@ -175,7 +179,7 @@ namespace Save
         public Enum[] IGNORED_COLLECTABLES                  => new Enum[] { ESpell.None, ECharacter.None , ERune.None };
 
         // -- Keys
-        public const string KEY_GOLDS       = "Golds";
+        public const string KEY_GOLD        = "Gold";
         public const string KEY_GEMS        = "Gems";
         public const string KEY_TOTAL_XP    = "TotalXp";
         public const string KEY_XP          = "Xp";
@@ -186,7 +190,7 @@ namespace Save
         // -- Informations
         public Dictionary<Type, SInfoCollectable> InfoCollectables = new Dictionary<Type, SInfoCollectable>
         {
-            { typeof(ECharacter),   new SInfoCollectable(KEY_CHARACTERS,  new Enum[] { CharacterBuildsCloudData.DEFAULT_CHARACTER, ECharacter.Nagini, ECharacter.Kahnan, ECharacter.Srug, ECharacter.Marcus , ECharacter.Subrog } ) },
+            { typeof(ECharacter),   new SInfoCollectable(KEY_CHARACTERS,  new Enum[] { CharacterBuildsCloudData.DEFAULT_CHARACTER } ) },
             { typeof(ESpell),       new SInfoCollectable(KEY_SPELLS,      CharacterBuildsCloudData.DEFAULT_BUILD.Cast<Enum>().ToArray() ) },
             { typeof(ERune),        new SInfoCollectable(KEY_RUNES,       new Enum[] { } ) }
         };
@@ -209,7 +213,7 @@ namespace Save
         // DATA
         /// <summary> default data for the Inventory </summary>
         protected override Dictionary<string, object> m_Data { get; set; } = new Dictionary<string, object>() {
-            { KEY_GOLDS,        0                                   },
+            { KEY_GOLD,         0                                   },
             { KEY_GEMS,         0                                   },
             { KEY_XP,           0                                   },
             { KEY_TOTAL_XP,     0                                   },
@@ -401,9 +405,9 @@ namespace Save
 
             switch (key)
             {
-                case KEY_GOLDS:
-                    m_Data[KEY_GOLDS] = 0;
-                    CurrencyChangedEvent?.Invoke(ECurrency.Golds, 0);
+                case KEY_GOLD:
+                    m_Data[KEY_GOLD] = 0;
+                    CurrencyChangedEvent?.Invoke(ECurrency.Gold, 0);
                     break;
 
                 case KEY_GEMS:
@@ -515,10 +519,10 @@ namespace Save
 
         void CheckCurrencies()
         {
-            if ((int)m_Data[KEY_GOLDS] < 0)
+            if ((int)m_Data[KEY_GOLD] < 0)
             {
-                ErrorHandler.Error("Golds (" + (int)m_Data[KEY_GOLDS] + ") < 0 : reseting back to 0");
-                Reset(KEY_GOLDS);
+                ErrorHandler.Error("Gold (" + (int)m_Data[KEY_GOLD] + ") < 0 : reseting back to 0");
+                Reset(KEY_GOLD);
             }
 
             if ((int)m_Data[KEY_GEMS] < 0)

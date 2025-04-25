@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: _FrostBites
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: Every {0} seconds, creates an area of frost that deals {1} damages
+  m_Description: Every {0} seconds, creates an area of frost that deals {1} damage
     and applies [Frozen] effect
   m_DescriptionVariables:
   - Name: DelayBetweenWaves
     WithIcon: 0
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   m_SpellElements: 
   Linked: 0
@@ -43,6 +43,7 @@ MonoBehaviour:
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -90,6 +91,7 @@ MonoBehaviour:
   m_YMinMax:
     Min: 0
     Max: 0
+  m_RecalculateTarget: 0
   m_RecalculatePosition: 1
   m_IsBlocking: 0
   m_NProjectiles: 1

@@ -16,7 +16,7 @@ MonoBehaviour:
   m_Description: A shadow spike erupts from the ground, inflicting {0} damage and
     applying Airborne for 1 second.
   m_DescriptionVariables:
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   m_SpellElements: 
   Linked: 1
@@ -60,7 +60,7 @@ MonoBehaviour:
   EnergyGain: 15
   EnergyCost: 0
   m_Damage: 120
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 120
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

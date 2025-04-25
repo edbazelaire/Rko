@@ -102,9 +102,9 @@ namespace Data
 
         #region Infos
 
-        public override Dictionary<string, object> GetInfos()
+        public override Dictionary<string, object> GetInfo()
         {
-            var infos = base.GetInfos();
+            var infos = base.GetInfo();
 
             if (IsUniqueSpawn)
             {

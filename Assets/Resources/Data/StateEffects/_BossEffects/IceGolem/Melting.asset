@@ -34,6 +34,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   - Prefab: {fileID: 0}
     MaterialEffect: {fileID: 2100000, guid: a88f55187fa96cf44aeb3997c986c1bc, type: 2}
@@ -52,6 +53,7 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
@@ -65,6 +67,7 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_MaxStacks: 1
   m_StackDecay: -1
+  m_Energy: 0
   m_BonusStats: []
   m_SpeedBonus: 1.25
   m_CastSpeed: 0
@@ -74,10 +77,12 @@ MonoBehaviour:
   m_Shield: 0
   m_ResistanceFix: -20
   m_ResistancePerc: -1
-  m_BonusDamages: 50
-  m_BonusDamagesPerc: 0
+  m_BonusDamage: 50
+  m_BonusDamagePerc: 0
   m_BonusLifeSteal: 0
-  m_BonusBurnDamages: 0
+  m_BonusHeal: 0
+  m_BonusHealPerc: 0
+  m_BonusBurnDamage: 0
   m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []

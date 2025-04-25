@@ -34,17 +34,21 @@ MonoBehaviour:
     IsFollowing: 1
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 0
   m_DefaultState: 0
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
   m_Priority: 0
   m_Duration: 8
   m_IsInstantanious: 0
   m_MaxStacks: 1
   m_StackDecay: -1
+  m_Energy: 0
   m_BonusStats: []
   m_SpeedBonus: 0
   m_CastSpeed: 0
@@ -54,10 +58,12 @@ MonoBehaviour:
   m_Shield: 0
   m_ResistanceFix: 0
   m_ResistancePerc: 0
-  m_BonusDamages: 0
-  m_BonusDamagesPerc: 0
+  m_BonusDamage: 0
+  m_BonusDamagePerc: 0
   m_BonusLifeSteal: 0
-  m_BonusBurnDamages: 0
+  m_BonusHeal: 0
+  m_BonusHealPerc: 0
+  m_BonusBurnDamage: 0
   m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
@@ -72,8 +78,10 @@ MonoBehaviour:
   m_EnemyStateEffects:
   - StateEffect: 9
     Stacks: 1
+    BonusStacksPerLevel: 0
     OverridingProperties: []
   - StateEffect: 24
     Stacks: 1
+    BonusStacksPerLevel: 0
     OverridingProperties: []
   m_ReplacementData: {fileID: 0}

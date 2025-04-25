@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rarety: 2
   m_Description: '{0} Pleague Arrows rain on the enemy area each delayed by 0.5 seconds.
-    Each arrow deals {1} damages and applies {2}'
+    Each arrow deals {1} damage and applies {2}'
   m_DescriptionVariables:
   - Name: Projectiles
     WithIcon: 1
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   - Name: Infected
     WithIcon: 1
@@ -66,7 +66,7 @@ MonoBehaviour:
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 80
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
