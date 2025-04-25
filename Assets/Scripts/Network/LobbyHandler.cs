@@ -67,7 +67,6 @@ namespace Network
         const string    KEY_RELAY_CODE              = "RelayCode";
         const float     HEARTBEAT_TIMER             = 15f;
         const float     UPDATE_LOBBY_TIMER          = 1.5f;
-        const float     WAIT_FOR_PLAYER_DURATION    = 1f;
 
         public Action<ulong, ECharacter> OnRelayJoined;
 
@@ -99,6 +98,9 @@ namespace Network
         public ELobbyState      State               => m_State;
         public bool             IsActive            => m_State != ELobbyState.Inactive;
         public bool             IsTuto              { get => m_IsTuto; set => m_IsTuto = value; }
+
+        /// <summary> time waiting in ranked before filling with bots </summary>
+        public float WaitForPlayerDuration => Main.SkipWaitingRanked ? 0f : UnityEngine.Random.Range(1f, 5f * ((int)ProgressionCloudData.CurrentLeague + 1)); 
 
         #endregion
 
@@ -282,7 +284,7 @@ namespace Network
 
         IEnumerator WaitLobbyFullCoroutine()
         {
-            float timer = WAIT_FOR_PLAYER_DURATION;
+            float timer = WaitForPlayerDuration;
 
             m_FillWithBots = false;
             while (m_JoinedLobby.Players.Count != m_JoinedLobby.MaxPlayers)

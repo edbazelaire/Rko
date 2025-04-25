@@ -396,6 +396,13 @@
         Heal,
     }
 
+    public enum EGameResult
+    {
+        Loss,
+        Win,
+        Draw
+    }
+
     public enum ESpellActivation
     {
         None = 0, 

@@ -113,6 +113,9 @@ public class SpellDataChecker : EditorWindow
         }
 
         var descriptionVars = runePower.DescriptionVariables;
+        if (descriptionVars == null)
+            return modified;
+
         for (int i = 0; i < descriptionVars.Count; i++)
         {
             if (descriptionVars[i].Name.Contains("Damages"))

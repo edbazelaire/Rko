@@ -651,7 +651,6 @@ namespace Game.Character
                 if ((spellData.IsCancellable && m_Controller.Movement.IsMoving) || HasStateBlockingCast() || ! CheckEnemyTargetable(spell))
                 {
                     // reset Animator
-                    Debug.Log("CANCEL CAST : IsMoving = " + m_Controller.Movement.IsMoving);
                     CancelCast();
                     yield break;
                 }

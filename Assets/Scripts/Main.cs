@@ -20,7 +20,6 @@ using Assets.Scripts.Managers;
 using Managers.Friends;
 using Unity.Services.Friends.Models;
 using UnityEngine.SceneManagement;
-using MyBox;
 
 
 
@@ -49,6 +48,7 @@ namespace Assets
         [SerializeField] EEnv m_Env = EEnv.beta;
         [SerializeField] bool m_ForceIsNewPlayer;
         [SerializeField] bool m_StopPreventiveLoss;
+        [SerializeField] bool m_SkipWaitingRanked;
         [SerializeField] bool m_InfinitGiftCodes;
         [SerializeField] List<ELogTag> m_LogTags;
 
@@ -112,6 +112,18 @@ namespace Assets
 #if UNITY_EDITOR
                 // only works in EDITOR mode
                 return Instance.m_InfinitGiftCodes;
+#else
+                return false;
+#endif
+            }
+        }
+        public static bool SkipWaitingRanked
+        {
+            get
+            {
+#if UNITY_EDITOR
+                // only works in EDITOR mode
+                return Instance.m_SkipWaitingRanked;
 #else
                 return false;
 #endif

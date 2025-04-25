@@ -92,13 +92,8 @@ public class Controller : NetworkBehaviour
 
     #region Initialization 
 
-    /// <summary>
-    /// Called when the controller is spawned on the network
-    /// </summary>
-    public override void OnNetworkSpawn()
+    protected virtual void FindComponents()
     {
-        ErrorHandler.Log("Controller.OnNetworkSpawn()", ELogTag.GameSystem);   
-
         // setup components
         m_Life                  = Finder.FindComponent<Life>(gameObject);
         m_EnergyHandler         = Finder.FindComponent<EnergyHandler>(gameObject);
@@ -116,7 +111,17 @@ public class Controller : NetworkBehaviour
         m_BehaviorTree = Finder.FindComponent<BehaviorTree>(gameObject, throwError: false);
         if (! IsServer && m_BehaviorTree != null)
             m_BehaviorTree.enabled = false;
-        
+    }
+
+    /// <summary>
+    /// Called when the controller is spawned on the network
+    /// </summary>
+    public override void OnNetworkSpawn()
+    {
+        ErrorHandler.Log("Controller.OnNetworkSpawn()", ELogTag.GameSystem);
+
+        FindComponents();
+
         // add event to call UI initialization after NetworkVariable update 
         m_IsInitialized.OnValueChanged  += OnInitializedChanged;
         m_Life.DiedEvent                += OnDied;
@@ -220,7 +225,7 @@ public class Controller : NetworkBehaviour
         SetupSpellUI();
 
         // setup Emots
-        GameUIManager.EmotsSectionUI.Initialize(new List<EEmot> { EEmot.Trollol, EEmot.Ah, EEmot.SadKitty, EEmot.ThumbUp });
+        GameUIManager.EmotsSectionUI.Initialize(new List<EEmot> { EEmot.ThumbUp, EEmot.Trollol, EEmot.Ah, EEmot.SadKitty, EEmot.Ah, EEmot.Pidgeon });
 
         // select auto attack by default (if not IsAutoTarget)
         bool isAutoTarget = true;           // TODO : use PlayerPref to set isAutoTarget or not by default
@@ -241,7 +246,7 @@ public class Controller : NetworkBehaviour
     /// <summary>
     /// Implement all data related to the Character
     /// </summary>
-    void InitializeCharacterData(SPlayerData playerData)
+    protected virtual void InitializeCharacterData(SPlayerData playerData)
     {
         if (! IsServer)
             return;
@@ -508,7 +513,7 @@ public class Controller : NetworkBehaviour
     /// activate / deactivate players "action" components (that allows player to take actions)
     /// </summary>
     /// <param name="active"></param>
-    public void ActivateActionComponent(bool active)
+    public virtual void ActivateActionComponent(bool active)
     {
         // movement is a client component too
         m_Movement.Activate(active);

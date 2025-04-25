@@ -405,7 +405,7 @@ namespace Tools
             }
         }
 
-        [Command(KeyCode.V)]
+        [Command]
         public void ToggleCursor()
         {
             Cursor.visible = !Cursor.visible;

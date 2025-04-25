@@ -94,7 +94,8 @@ namespace Game
         public bool IsGameStarted => m_State.Value > EGameState.Intro;
         /// <summary> game is over </summary>
         public static bool IsGameOver => s_Instance == null || Instance.m_State.Value >= EGameState.GameOver || ErrorHandler.IsExiting;
-
+        /// <summary> is game currently running ? </summary>
+        public static bool IsGameRunning => Instance.IsGameStarted && ! IsGameOver;
         #endregion
 
 
@@ -569,7 +570,18 @@ namespace Game
             DisconnectionHandler.End();
 
             // setup the UI for end of the game
-            GameUIManager.Instance.SetUpGameOver(team == Instance.Owner.Team);
+            GameUIManager.Instance.SetUpGameOver(GetGameResult(team));
+        }
+
+        EGameResult GetGameResult(int team)
+        {
+            if (team < 0)
+                return EGameResult.Draw;
+
+            if (team == Instance.Owner.Team)
+                return EGameResult.Win;
+
+            return EGameResult.Loss;
         }
 
         void ShutDownControllers(int team)
@@ -1004,6 +1016,14 @@ namespace Game
                 return;
 
             CheckGameEnd();
+        }
+
+        public void OnTimerEnd()
+        {
+            if (!IsServer)
+                return;
+
+            GameOver(-1);
         }
 
         #endregion

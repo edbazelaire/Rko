@@ -152,7 +152,7 @@ namespace Game.Character
 
         void CallOnStateEventUI(ESpellEvent spellEvent, string stateEffectName, int stacks, float duration)
         {
-            if (spellEvent == ESpellEvent.OnSpawn)
+            if (spellEvent == ESpellEvent.OnSpawn || spellEvent == ESpellEvent.OnActivation)
                 StateEffectListEvent?.Invoke(EListEvent.Add, stateEffectName, stacks, duration);
             else if (spellEvent == ESpellEvent.OnEnd)
                 StateEffectListEvent?.Invoke(EListEvent.Remove, stateEffectName, stacks, duration);

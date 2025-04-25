@@ -6,6 +6,7 @@ using Game;
 using Game.SpellGFXs;
 using Game.Spells;
 using Game.UI;
+using Game.UI.GameUI;
 using Managers;
 using Menu.Common.Buttons;
 using Network;
@@ -29,6 +30,7 @@ public class GameUIManager : MonoBehaviour
     private TutoGameUI      m_TutoGameUI;
     private BTDebugger      m_BTDebugger;
     private EmotsSectionUI  m_EmotsSectionUI;
+    private GameTimerUI     m_GameTimerUI;
 
     const string        c_PlayerUIContainerPrefix   = "PlayerUIContainer_";
     const string        c_SpellsContainer           = "SpellsContainer";
@@ -76,7 +78,8 @@ public class GameUIManager : MonoBehaviour
     public static TutoGameUI TutoGameUI                     => Instance.m_TutoGameUI;
     public static BTDebugger BTDebugger                     => Instance.m_BTDebugger;
     public static EmotsSectionUI EmotsSectionUI             => Instance.m_EmotsSectionUI;
-    public static HitDisplayUI DamageDisplayManager => HitDisplayUI.Instance;
+    public static GameTimerUI GameTimerUI                   => Instance.m_GameTimerUI;
+    public static HitDisplayUI DamageDisplayManager         => HitDisplayUI.Instance;
     public static List<SpellItemUI> SpellItems              => Instance.m_SpellItems;
     public static MovementButtonsContainer MovementButtonsContainer => Instance.m_MovementButtonsContainer;
     public static bool LeftMovementButtonPressed            => Instance.m_LeftMovementButtonPressed;
@@ -95,6 +98,7 @@ public class GameUIManager : MonoBehaviour
         m_TutoGameUI        = Finder.FindComponent<TutoGameUI>(transform.parent.gameObject,     "TutoGameUI");
         m_BTDebugger        = Finder.FindComponent<BTDebugger>(transform.parent.gameObject,     "BTDebugger");
         m_EmotsSectionUI    = Finder.FindComponent<EmotsSectionUI>(gameObject,                  "EmotsSectionUI");
+        m_GameTimerUI       = Finder.FindComponent<GameTimerUI>(gameObject,                     "GameTimerUI");
 
         FindMovementButtons();
         FindPlayerUIContainers();
@@ -115,6 +119,12 @@ public class GameUIManager : MonoBehaviour
         m_TutoGameUI.gameObject.SetActive(false);
         m_BTDebugger.gameObject.SetActive(false);
         m_PlayerUIs = new Dictionary<ulong, PlayerUI> { };
+
+        // display or not the Timer
+        if (LobbyHandler.Instance.GameMode != EGameMode.Ranked)
+            Destroy(m_GameTimerUI.gameObject);
+        else
+            m_GameTimerUI.Initialize();
 
         LoadArena();
 
@@ -336,14 +346,14 @@ public class GameUIManager : MonoBehaviour
 
     #region GameOver
 
-    public void SetUpGameOver(bool win)
+    public void SetUpGameOver(EGameResult gameResult)
     {
         if (m_BTDebugger != null)
             Destroy(m_BTDebugger.gameObject);
 
-        SoundFXManager.PlayOnce(win ? SoundFXManager.WinSoundFX : SoundFXManager.LossSoundFX);
+        SoundFXManager.PlayOnce(gameResult == EGameResult.Win ? SoundFXManager.WinSoundFX : SoundFXManager.LossSoundFX);
 
-        m_EndGameUI.Activate(win, m_PreventiveLossApplied);
+        m_EndGameUI.Activate(gameResult, m_PreventiveLossApplied);
 
         // destroy self
         DeleteGameUI();

@@ -473,10 +473,8 @@ namespace Game.Spells
 
             m_Stacks -= nStacks;
 
-            // TODO ??? Call an event when a stack is removed ?
             // refresh UI on client side
-            //m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnSpawn, StateEffectName, m_Caster.PlayerId, m_Stacks, m_Duration));
-            // TODO ??? Call an event when a stack is removed ?
+            m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnActivation, StateEffectName, m_Caster.PlayerId, m_Stacks, m_Duration));
 
             return nStacks;
         }

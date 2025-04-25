@@ -352,10 +352,10 @@ namespace Menu.PopUps
                 return;
 
             var pulse = m_CollectableItemUI.IconObject.AddComponent<Pulse>();
-            pulse.Initialize(UPGRADE_ANIMATION_ID, 2f, 0.9f, 1.1f, pulseDuration: 0.5f, pauseDuration:0f);
+            pulse.Initialize(UPGRADE_ANIMATION_ID, duration: 2f, minSize: 0.9f, maxSize: 1.1f, pulseDuration: 0.5f, pauseDuration:0f);
 
             var particles = m_CollectableItemUI.IconObject.AddComponent<ParticlesAnimation>();
-            particles.Initialize(UPGRADE_ANIMATION_ID, 2f, particlesName: "LevelUpAnimation", size: Vector2.one, layer: "Overlay");
+            particles.Initialize(UPGRADE_ANIMATION_ID, duration: 2f, particlesName: "LevelUpAnimation", size: Vector2.one, layer: "Overlay");
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using Game.UI;
+﻿using Enums;
+using Game.UI;
 using System.Collections;
 using System.Collections.Generic;
 using Tools;
@@ -198,7 +199,7 @@ namespace Game.GameManagers.Components
             // no host or server - insta display end of game
             if (m_IsHostDisconnected || m_IsWaitingServer)
             {
-                GameUIManager.Instance.SetUpGameOver(true);
+                GameUIManager.Instance.SetUpGameOver(EGameResult.Win);
                 return;
             }
 
