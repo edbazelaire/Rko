@@ -1,4 +1,5 @@
-﻿using Data;
+﻿using Assets.Scripts.Game;
+using Data;
 using Enums;
 using Game.Loaders;
 using Game.UI;
@@ -41,7 +42,7 @@ namespace Game.Spells
                 return;
 
             m_CounterTimer  = m_SpellData.Duration;
-            m_Shield        = m_SpellData.Shield;
+            SetShield(m_SpellData.Shield);
 
             if (m_SpellData.OnCounterProc != null)
                 m_SpellData.OnCounterProc.SetParent(m_SpellData.Parent);
@@ -182,7 +183,7 @@ namespace Game.Spells
                         HitShield(enemySpell.GetBoostedDamage(m_Controller) + enemySpell.GetBoostedExecutionDamage(m_Controller));
                     }
 
-                    enemySpell.CallSpellEventClientRPC(ESpellEvent.OnHit, m_Controller.PlayerId);
+                    enemySpell.CallSpellEvent(ESpellEvent.OnHit, m_Controller);
                     break;
 
                 // Recast the spell to the enemy
@@ -216,7 +217,7 @@ namespace Game.Spells
                 enemySpell.Terminate();
 
             // Call "OnHit" event for the Counter
-            CallSpellEventClientRPC(ESpellEvent.OnHit);
+            CallSpellEvent(ESpellEvent.OnHit);
             
             // Check MaxHit
             m_HittedPlayerId.Add(0);
@@ -270,7 +271,7 @@ namespace Game.Spells
             m_Controller.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
 
             // Call "OnHit" event for the Counter
-            CallSpellEventClientRPC(ESpellEvent.OnHit);
+            CallSpellEvent(ESpellEvent.OnHit);
             
             // Check MaxHit
             m_HittedPlayerId.Add(0);
@@ -317,19 +318,28 @@ namespace Game.Spells
             m_Controller.Life.RecalculateShield();
         }
 
-        public void AddShield(int shield)
+        public void SetShield(int shield)
         {
             if (shield < 0)
             {
-                ErrorHandler.Warning("Trying to add negative shield : " + shield);
+                ErrorHandler.Warning("Trying to set negative shield : " + shield);
                 return;
-            } 
-            
+            }
+
             if (shield == 0)
                 return;
 
-            m_Shield += shield;
+            shield = m_Controller.StateHandler.ApplyBonusShield(shield, m_Controller);
+
+            GameAnalyticsManager.Instance.OnSpellHit(m_Controller.PlayerId, m_Controller.PlayerId, m_SpellData.Name, shield, EHitType.Shield, ESpellCategory.Direct);
+
+            m_Shield = shield;
             m_Controller.Life.RecalculateShield();
+        }
+
+        public void AddShield(int shield)
+        {
+            SetShield(m_Shield + shield);
         }
 
         #endregion

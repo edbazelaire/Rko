@@ -25,7 +25,7 @@ namespace Game.Spells
 
             // if character is not in his area during cast (can happen for some special animations) get center of his area as original position
             if (!ArenaManager.IsInAreaBounds(m_OriginalPosition.x, m_Controller.Team, false))
-                m_OriginalPosition = new Vector3(ArenaManager.GetTargettableArea(m_Controller.Team, false).transform.position.x, 0f, 0f);
+                m_OriginalPosition = new Vector3(ArenaManager.GetTargettableAreaTransform(m_Controller.Team, false).transform.position.x, 0f, 0f);
 
             // hide character
             m_Controller.GFXHandler.HideCharacter(true);

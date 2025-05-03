@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Tools;
 using Unity.Netcode;
+using Unity.VisualScripting;
 
 namespace Game.Character
 {
@@ -70,9 +71,16 @@ namespace Game.Character
             if (GameManager.Instance.GetPlayer(spell.OwnerClientId).Team == m_Controller.Team)
                 return false;
 
+            // duplicate to avoid inference during loop
+            var counters = m_Counters.ToArray();
+
             // find first counter that has an "OnHit" proc effect
-            foreach (Counter counter in m_Counters)
+            foreach (Counter counter in counters)
             {
+                // check still exists
+                if (counter == null || counter.IsDestroyed())
+                    continue;
+
                 // check has right type
                 if (counter.SpellData.CounterActivation != ECounterActivation.OnHitPlayer)
                     continue;
@@ -133,8 +141,8 @@ namespace Game.Character
             // add counter to list of counters
             m_Counters.Add(counterSpell);
 
-            if (!m_HasCounter.Value)
-                m_HasCounter.Value = true;
+            if (counterSpell.SpellData.CounterAnimation != EAnimation.None)
+                m_Controller.AnimationHandler.PlayAnimationClientRPC(counterSpell.SpellData.CounterAnimation);
 
             // now that this spell has been added, check if there is still blocking actions
             CheckBlockingActions();
@@ -169,7 +177,14 @@ namespace Game.Character
             CheckBlockingActions();
 
             // check if still has counter
-            m_HasCounter.Value = m_Counters.Count > 0;
+            for(int i = m_Counters.Count - 1; i >= 0; i--)
+            {
+                if (m_Counters[i].SpellData.CounterAnimation != EAnimation.None)
+                {
+                    m_Controller.AnimationHandler.PlayAnimationClientRPC(m_Counters[i].SpellData.CounterAnimation);
+                    break;
+                }
+            }
         }
 
         #endregion

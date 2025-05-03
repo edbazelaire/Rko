@@ -64,7 +64,7 @@ namespace Assets.Scripts.Data.PowerUp
 
         public virtual PowerEffectData FromTriggerEffect(STriggerEffect triggerEffect, ERarety rarety)
         {
-            Rarety                  = rarety;
+            m_Rarety                = rarety;
             m_Target                = triggerEffect.Target;
             m_SpellActivationEvent  = triggerEffect.SpellActivationEvent;
             m_BonusStats            = new List<SCharacterStatScaling>();

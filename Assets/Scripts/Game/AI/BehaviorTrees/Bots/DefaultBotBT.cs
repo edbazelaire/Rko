@@ -79,7 +79,7 @@ namespace Game.AI.BehaviorTrees
                     new SelectorWeight(new List<Node>
                     {
                         // DODGE : "+0.5f" is weight bias towards Dodging
-                        new TaskDodge(m_Controller, weight: () => { return 0.5f + 1f - ((CharacterBT)m_Controller.BehaviorTree).OffensiveMeter; }),
+                        new TaskDodge(m_Controller, checkZones: false, weight: () => { return 0.5f + 1f - ((CharacterBT)m_Controller.BehaviorTree).OffensiveMeter; }),
                         
                         // IGNORE DODGE : attack instead
                         new TaskAttack(m_Controller, weight: () => { return ((CharacterBT)m_Controller.BehaviorTree).OffensiveMeter; }),
@@ -87,16 +87,15 @@ namespace Game.AI.BehaviorTrees
                 }),
 
                 new SelectorWeight(new List<Node> {
-                    // "+1f" weight bias towards Attacking
-                    AttackGroupNode(weight: () => { return 1f + ((CharacterBT)m_Controller.BehaviorTree).OffensiveMeter; }),
+                    // "+Xf" weight bias towards Attacking
+                    AttackGroupNode(weight: () => { return 3f + ((CharacterBT)m_Controller.BehaviorTree).OffensiveMeter; }),
 
                     // Move
                     new TaskMove(m_Controller, weight: () => { return 1 - ((CharacterBT)m_Controller.BehaviorTree).OffensiveMeter; }),
                 }),
 
-                // Default action : move
-                new TaskMove(m_Controller),
-                //new TaskUseSpell(m_Controller, m_Controller.SpellHandler.AutoAttack),
+                // Default action : AutoAttack
+                new TaskUseSpell(m_Controller, m_Controller.SpellHandler.AutoAttack),
             });
         }
 

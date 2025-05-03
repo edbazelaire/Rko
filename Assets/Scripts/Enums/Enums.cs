@@ -98,6 +98,7 @@
         Nagini      = 4,
         Subrog      = 5,
         NeedleJack  = 6,
+        Iztac       = 7,
     }
 
     public enum EBoss
@@ -197,6 +198,10 @@
         Quickfix,
         Leaner,
         Overdose,
+        Cryock,
+        Shardskin,
+        Icension,
+        Maelstrom,
 
         // ======================================================================
         // BOSSES ABILITIES
@@ -429,6 +434,8 @@
 
         OnDeactivation  = 900,
         OnEnd           = 1000,
+
+        OnOver          = 1500
     }
 
     public enum EStateEffectEvent
@@ -637,7 +644,8 @@
 
         // ======================================================================
         // Special Effects (characters)
-        Junkheal = 20001,
+        Junkheal        = 20001,
+        HeavyHitter     = 20002,
     }
 
     public enum EStateEffectType
@@ -681,6 +689,7 @@
         MaxStacks               = 2,
         SpeedBonus              = 3,
         Shield                  = 4,
+        BonusShieldPerc         = 21,
         ResistanceFix           = 5,
         ResistancePerc          = 6,
         BonusDamage             = 7,
@@ -744,7 +753,7 @@
         Frozen              = 12,
         Silenced            = 13,
         CastHight           = 14,
-        Airborne             = 15,
+        Airborne            = 15,
         CastDiagonal        = 16,
         PrepareCharge       = 17,
         Charge              = 18,

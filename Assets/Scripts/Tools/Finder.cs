@@ -18,6 +18,13 @@ namespace Tools
 
         public static GameObject Find(GameObject parent,  string name, bool throwError = true)
         {
+            if (parent == null)
+            {
+                if (throwError)
+                    ErrorHandler.Error("Provided parent " + parent.name + " is null when looking for " + name);
+                return null;
+            }
+
             foreach (Transform child in parent.transform)
             {
                 if (child.name == name)

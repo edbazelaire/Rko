@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2413bf9bea7a81d44a0b645bca9d69f8, type: 3}
   m_Name: Slicide
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: 
   m_DescriptionVariables: []
   m_SpellElements: 0200000003000000
@@ -57,7 +57,27 @@ MonoBehaviour:
     Animation: 0
     SpellAnimation: 
     StateEffects: 
+  - Prefab: {fileID: 1364846237022580, guid: 3246df0eaec7fb54892f3d5f09626809, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 1000
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1.5
+    Size: 0.5
+    OrderInLayer: 0
+    SpawnTarget: 3
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 8300000, guid: 970fd9b105ac0f04e92babbcfc2ac8f1, type: 3}
   CastSoundFX: {fileID: 0}
@@ -71,6 +91,14 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 10

@@ -30,13 +30,13 @@ namespace Game.Spells
             return (int)Mathf.Round(GetFloat(property));
         }
 
-        public override float GetFloat(EStateEffectProperty property)
+        public override float GetFloat(EStateEffectProperty property, bool ignoreConversion = false)
         {
             if (m_Controller == null)
-                return ApplyMissingLifeFactor(base.GetFloat(property), 0, 1);
+                return ApplyMissingLifeFactor(base.GetFloat(property, ignoreConversion), 0, 1);
 
             var controller = GetTarget(m_Caster, null);
-            return ApplyMissingLifeFactor(base.GetFloat(property), controller.Life.Hp.Value, controller.Life.MaxHp.Value);
+            return ApplyMissingLifeFactor(base.GetFloat(property, ignoreConversion), controller.Life.Hp.Value, controller.Life.MaxHp.Value);
         }
 
         #endregion

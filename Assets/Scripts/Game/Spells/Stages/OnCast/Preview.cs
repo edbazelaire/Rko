@@ -11,6 +11,8 @@ namespace Game.Spells
         #region Members
 
         [SerializeField] protected bool m_UpdatePosition;
+        [SerializeField] protected bool m_ScaleX = true;
+        [SerializeField] protected bool m_ScaleY = true;
 
         #endregion
 
@@ -20,6 +22,14 @@ namespace Game.Spells
         protected override void ApplyPostProcessing()
         {
             base.ApplyPostProcessing();
+
+            var currentScale = transform.localScale;
+            if (!m_ScaleX)
+                currentScale.x = 1;
+            if (!m_ScaleY) 
+                currentScale.y = 1;
+
+            transform.localScale = currentScale;
         }
 
         #endregion
@@ -36,30 +46,36 @@ namespace Game.Spells
         {
             if (!m_UpdatePosition)
                 return;
-
             var direction = ArenaManager.GetAreaMovementDirection(m_Controller.Team, true);
-            
-            switch (m_SpellData.SpellTarget)
+
+            if (m_SpellData.SpellRelocation.Lifetime.StartSpellPart != ESpellEvent.None)
             {
-                case ESpellTarget.Mirror:
-                    transform.position = new Vector3(-m_Controller.transform.position.x, 0f, 0f);
-                    break;
+                transform.position = m_Controller.SpellHandler.TargetPos;
+            } 
+            else
+            {
+                switch (m_SpellData.SpellTarget)
+                {
+                    case ESpellTarget.Mirror:
+                        transform.position = new Vector3(-m_Controller.transform.position.x, 0f, 0f);
+                        break;
 
-                case ESpellTarget.Fixed:
-                    transform.position = new Vector3(m_Controller.transform.position.x + direction * Settings.SpellFixedDistance, 0f, 0f);
-                    break;
+                    case ESpellTarget.Fixed:
+                        transform.position = new Vector3(m_Controller.transform.position.x + direction * Settings.SpellFixedDistance, 0f, 0f);
+                        break;
 
-                case ESpellTarget.FirstEnemy:
-                    transform.position = new Vector3(GameManager.Instance.GetFirstEnemy(m_Controller.Team).transform.position.x, 0f, 0f);
-                    break;
+                    case ESpellTarget.FirstEnemy:
+                        transform.position = new Vector3(GameManager.Instance.GetFirstEnemy(m_Controller.Team).transform.position.x, 0f, 0f);
+                        break;
 
-                case ESpellTarget.FirstAlly:
-                    transform.position = new Vector3(m_Controller.transform.position.x, 0f, 0f);
-                    break;
+                    case ESpellTarget.FirstAlly:
+                        transform.position = new Vector3(m_Controller.transform.position.x, 0f, 0f);
+                        break;
 
-                default:
-                    ErrorHandler.Error("("+m_SpellData.Name+") Unhandled case : " + m_SpellData.SpellTarget);
-                    return;
+                    default:
+                        ErrorHandler.Error("(" + m_SpellData.Name + ") Unhandled case : " + m_SpellData.SpellTarget);
+                        return;
+                }
             }
 
             // add offset

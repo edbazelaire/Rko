@@ -4,14 +4,14 @@ using System;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Data
 {
     public class CollectableData : ScriptableObject
     {
         #region Members
-
-        public ERarety Rarety;
+        [SerializeField, FormerlySerializedAs("Rarety")] protected ERarety m_Rarety;
 
         // ===================================================================================================
         // Protected Serialize Data
@@ -30,6 +30,7 @@ namespace Data
         // Dependent Data
         public int Level => m_Level;
         public List<ESpellElement>  SpellElements => m_SpellElements;
+        public virtual ERarety Rarety => m_Rarety;
     
         public string Name
         {

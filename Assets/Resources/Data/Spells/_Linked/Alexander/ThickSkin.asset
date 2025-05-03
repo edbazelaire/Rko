@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: ThickSkin
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: Grants a Shield of {0} for {1} seconds
+  m_Description: Grants a Shield of {0} and increase resistance by {1} for {2} seconds
   m_DescriptionVariables:
   - Name: Shield
+    WithIcon: 1
+  - Name: ResistanceFix
     WithIcon: 1
   - Name: Duration
     WithIcon: 1
@@ -43,6 +45,7 @@ MonoBehaviour:
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -56,6 +59,14 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 10

@@ -20,6 +20,7 @@ using Tools.Animations;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.FilePathAttribute;
 
 namespace Menu.PopUps
 {
@@ -375,9 +376,6 @@ namespace Menu.PopUps
 
         IEnumerator DisplayOrbReward(SPowerOrb powerOrb)
         {
-            ErrorHandler.Log("DisplayOrbReward() : ");
-            ErrorHandler.Log("      + rarety : " + powerOrb.Rarety);
-
             m_Skip = false;
 
             // displaying a list of rewards add a new depth in the coroutine management
@@ -503,9 +501,11 @@ namespace Menu.PopUps
             UIHelper.CleanContent(m_RewardIconSection);
 
             // if is character but has already been unlocked
+            bool isConverted = false;
             if (collectable.GetType() == typeof(ECharacter) && InventoryCloudData.Instance.GetCollectable(collectable).Level > 0)
             {
-                qty = 1500;
+                qty = CollectablesManagementData.ConvertCharacterToXp((ECharacter)collectable);
+                isConverted = true;
             }
 
             // setup ui of the new collectable
@@ -515,8 +515,16 @@ namespace Menu.PopUps
             // skip one frame to be sure that the layout components are adjusted properly
             yield return null;
 
-            // -- play collectable animation
-            yield return PlayRewardAnimation();
+            // IF CONVERTED - play the conversion animation and display the new reward
+            if (isConverted)
+            {
+                // -- play collectable animation with Collectable beeing replaced with XP
+                yield return PlayRewardAnimation(ECurrency.Xp, qty);
+            } else
+            {
+                // -- play collectable animation
+                yield return PlayRewardAnimation();
+            }
 
             // -- play collection fill bar animation
             m_Skip = false;
@@ -641,7 +649,7 @@ namespace Menu.PopUps
         /// Play animation of a new reward
         /// </summary>
         /// <returns></returns>
-        IEnumerator PlayRewardAnimation()
+        IEnumerator PlayRewardAnimation(ECurrency? replaceWithCurrency = null, int? qty = null)
         {
             // deactivate infos content && remove layout of TemplateIcon
             DisplayRewardInfosContent(false);
@@ -650,6 +658,9 @@ namespace Menu.PopUps
 
             // animation of removing the mystery icon (if any)
             yield return RemoveMysteryIcon();
+
+            if (replaceWithCurrency.HasValue)
+                yield return ReplaceWithCurrency(replaceWithCurrency.Value, qty.Value);
 
             // move on the side
             var move = m_RewardIconSection.AddComponent<MoveAnimation>();
@@ -707,6 +718,33 @@ namespace Menu.PopUps
                 yield break;
             }
 
+        }
+
+        IEnumerator ReplaceWithCurrency(ECurrency currency, int qty)
+        {
+            m_Skip = false;
+            var previousTemplate = m_CurrentTemplateItem;
+
+            // init currency template
+            TemplateCurrencyItem template = Instantiate(AssetLoader.LoadTemplateItem("CurrencyItem"), m_RewardIconSection.transform).GetComponent<TemplateCurrencyItem>();
+            // -- ignore layout to not mess with Layout
+            var layoutElement = template.AddComponent<LayoutElement>();
+            layoutElement.ignoreLayout = true;
+            // -- init new template and save as current template
+            template.Initialize(currency, qty);
+            m_CurrentTemplateItem = template.gameObject;
+            // -- Put new template behind the old one
+            template.transform.SetSiblingIndex(previousTemplate.transform.GetSiblingIndex());
+            // -- setup size and pos
+            var newRectT = template.GetComponent<RectTransform>();
+            var oldRectT = previousTemplate.GetComponent<RectTransform>();
+            newRectT.sizeDelta = oldRectT.sizeDelta;
+            newRectT.anchoredPosition = oldRectT.anchoredPosition;
+
+            // wait until current reward template is vanished
+            var fade = previousTemplate.AddComponent<Fade>();
+            fade.Initialize(endOpacity: 0f);
+            yield return WaitAnimationOrSkip(fade);
         }
 
         #endregion

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a54727096f1b9a14e931ac401f233989, type: 3}
   m_Name: RockShower
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: Shoots {0} rocks at once on the enemy's side, each dealing {1} damage
   m_DescriptionVariables:
   - Name: Projectiles
@@ -48,7 +48,7 @@ MonoBehaviour:
     - AudioClip: {fileID: 8300000, guid: 5de6e42ee7e354f4f9a10f5914763658, type: 3}
       SoundDuration: 0
     GFXLifetime:
-      m_StartSpellPart: 500
+      m_StartSpellPart: 1000
       m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
@@ -64,6 +64,7 @@ MonoBehaviour:
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: ce85a30d00b33094595b944cf9eb00e5, type: 3}
@@ -77,6 +78,14 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 10

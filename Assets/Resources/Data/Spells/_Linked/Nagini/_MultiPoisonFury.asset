@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2413bf9bea7a81d44a0b645bca9d69f8, type: 3}
   m_Name: _MultiPoisonFury
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: Spits poison to the enemy, dealing {0} damage and applying {1}
   m_DescriptionVariables:
   - Name: Damage
@@ -48,7 +48,7 @@ MonoBehaviour:
     - AudioClip: {fileID: 8300000, guid: b5777fefd0161b7458fa131622c84f3c, type: 3}
       SoundDuration: 0
     GFXLifetime:
-      m_StartSpellPart: 500
+      m_StartSpellPart: 1000
       m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
@@ -64,6 +64,7 @@ MonoBehaviour:
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 2f5fa469f5b8ed9489b48966de42b93f, type: 3}
@@ -77,6 +78,14 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 0

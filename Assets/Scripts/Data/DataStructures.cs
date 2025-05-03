@@ -82,7 +82,7 @@ namespace Data
         public float Persistance;
 
         public TEnum StartSpellPart => m_StartSpellPart;
-        public TEnum EndSpellPart   => m_EndSpellPart;
+        public TEnum EndSpellPart => m_EndSpellPart;
 
         public SGFXLifetime(TEnum startSpellPart, TEnum endSpellPart, float startAt = 0f, float endAt = 1f, float persistance = 0f)
         {
@@ -252,9 +252,6 @@ namespace Data
                 ErrorHandler.Warning($"Spell GFX spawned in void - spell : { (spell != null ? spell.name : "null")} | position : {position} | callFromPosition : {callFromPosition} | targetPos : {targetPos} ");
                 return null;
             }
-
-            //if (Prefab.name.Contains("FireTrail"))
-            //    Debug.Log("InstantiatePrefab() FireTrail GFX");
 
             return PoolManager.Pool(Prefab, position, Quaternion.identity, IsFollowing ? parent : null);
         }

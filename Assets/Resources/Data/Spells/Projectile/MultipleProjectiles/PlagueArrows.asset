@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a54727096f1b9a14e931ac401f233989, type: 3}
   m_Name: PlagueArrows
   m_EditorClassIdentifier: 
-  Rarety: 2
+  m_Rarety: 2
   m_Description: '{0} Pleague Arrows rain on the enemy area each delayed by 0.5 seconds.
     Each arrow deals {1} damage and applies {2}'
   m_DescriptionVariables:
@@ -51,7 +51,7 @@ MonoBehaviour:
     - AudioClip: {fileID: 8300000, guid: ab7f421ad803a894fb4f2fae8fa250a4, type: 3}
       SoundDuration: 0
     GFXLifetime:
-      m_StartSpellPart: 500
+      m_StartSpellPart: 1000
       m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
@@ -67,6 +67,7 @@ MonoBehaviour:
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 2d433fc235c1d3848abd1f356b4509fa, type: 3}
@@ -80,6 +81,14 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 10

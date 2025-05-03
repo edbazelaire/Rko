@@ -41,7 +41,7 @@ namespace Data
 
         #region Postion & Target
 
-        public override void CalculateTarget(ref Vector3 target, ulong clientId)
+        public override void CalculateTarget(ref Vector3 target, ulong clientId, ulong? targetId = null)
         {
             switch (Trajectory)
             {

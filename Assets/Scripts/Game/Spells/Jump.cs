@@ -132,7 +132,7 @@ namespace Game.Spells
         protected override void OnHitGround(Collider2D collision)
         {
             // check if is caster's arena : do not collide with our arena
-            var arenaTransform = ArenaManager.GetTargettableArea(m_Controller.Team, false);
+            var arenaTransform = ArenaManager.GetTargettableAreaTransform(m_Controller.Team, false);
             if (arenaTransform == collision.transform)
                 return;
 

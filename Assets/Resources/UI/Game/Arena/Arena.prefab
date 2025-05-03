@@ -158,10 +158,6 @@ PrefabInstance:
       propertyPath: m_SortingLayer
       value: -3
       objectReference: {fileID: 0}
-    - target: {fileID: 2096663750472604501, guid: 86be7cfc00908824eb5fb0b00f399a64, type: 3}
-      propertyPath: m_SortingLayerID
-      value: -807379463
-      objectReference: {fileID: 0}
     - target: {fileID: 3313618984980525670, guid: 86be7cfc00908824eb5fb0b00f399a64, type: 3}
       propertyPath: m_Name
       value: Plateform_0
@@ -322,11 +318,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3862402540849366144, guid: a66a205906872814db9a54b78e7adaea, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 4.3148
+      value: 1.1034
       objectReference: {fileID: 0}
     - target: {fileID: 3862402540849366144, guid: a66a205906872814db9a54b78e7adaea, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 1.1615
+      objectReference: {fileID: 0}
+    - target: {fileID: 3862402540849366144, guid: a66a205906872814db9a54b78e7adaea, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3862402540849366144, guid: a66a205906872814db9a54b78e7adaea, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3862402540849366144, guid: a66a205906872814db9a54b78e7adaea, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3862402540849366144, guid: a66a205906872814db9a54b78e7adaea, type: 3}
       propertyPath: m_LocalPosition.x
@@ -362,7 +370,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3862402540849366144, guid: a66a205906872814db9a54b78e7adaea, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.68
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3862402540849366144, guid: a66a205906872814db9a54b78e7adaea, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -375,6 +383,10 @@ PrefabInstance:
     - target: {fileID: 3862402540849366144, guid: a66a205906872814db9a54b78e7adaea, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4444587806532636244, guid: a66a205906872814db9a54b78e7adaea, type: 3}
+      propertyPath: m_RenderMode
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4444587806532636244, guid: a66a205906872814db9a54b78e7adaea, type: 3}
       propertyPath: m_PixelPerfect

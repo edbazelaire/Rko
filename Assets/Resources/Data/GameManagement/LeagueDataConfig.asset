@@ -26,20 +26,21 @@ MonoBehaviour:
         Boosts: []
     - NStages: 3
       Rewards:
-        Currencies: []
-        Chests: 00000000
+        Currencies:
+        - Currency: 3
+          Qty: 100
+        Chests: 
         Collectables: []
         AchievementRewards: []
         Boosts: []
     - NStages: 3
       Rewards:
-        Currencies:
-        - Currency: 0
-          Qty: 1000
-        - Currency: 3
-          Qty: 150
+        Currencies: []
         Chests: 00000000
-        Collectables: []
+        Collectables:
+        - CollectableType: 1
+          CollectableName: Kahnan
+          Qty: 1
         AchievementRewards:
         - AchievementReward: 3
           Title: 0
@@ -62,15 +63,13 @@ MonoBehaviour:
     - NStages: 3
       Rewards:
         Currencies: []
-        Chests: 01000000
+        Chests: 00000000
         Collectables: []
         AchievementRewards: []
         Boosts: []
     - NStages: 4
       Rewards:
         Currencies:
-        - Currency: 0
-          Qty: 2500
         - Currency: 3
           Qty: 150
         Chests: 0000000000000000
@@ -91,15 +90,15 @@ MonoBehaviour:
         Chests: 
         Collectables:
         - CollectableType: 1
-          CollectableName: Kahnan
+          CollectableName: Nagini
           Qty: 1
         AchievementRewards: []
         Boosts: []
     - NStages: 4
       Rewards:
         Currencies:
-        - Currency: 0
-          Qty: 5000
+        - Currency: 1
+          Qty: 100
         Chests: 
         Collectables: []
         AchievementRewards: []
@@ -137,7 +136,7 @@ MonoBehaviour:
       Rewards:
         Currencies:
         - Currency: 3
-          Qty: 1000
+          Qty: 500
         Chests: 
         Collectables: []
         AchievementRewards: []
@@ -152,8 +151,8 @@ MonoBehaviour:
     - NStages: 5
       Rewards:
         Currencies:
-        - Currency: 0
-          Qty: 5000
+        - Currency: 1
+          Qty: 100
         - Currency: 3
           Qty: 300
         Chests: 

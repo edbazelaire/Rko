@@ -236,8 +236,7 @@ namespace Game.Spells
                 return;
 
             // call spell event that spell has touched something
-            if (m_SpellData.HasGfxEventAt(ESpellEvent.OnHit, checkEnd: false))
-                CallSpellEventClientRPC(ESpellEvent.OnHit, controller.PlayerId);
+            CallSpellEvent(ESpellEvent.OnHit, controller);
 
             // energy gain
             m_Controller.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
