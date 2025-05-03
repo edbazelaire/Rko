@@ -382,6 +382,33 @@ namespace Data.GameManagement
         #endregion
 
 
+        #region Conversion
+
+        public static int ConvertCharacterToXp(ECharacter character)
+        {
+            switch (GetRaretyData(character).Rarety)
+            {
+                case ERarety.Common:
+                    return 100;
+
+                case ERarety.Rare:
+                    return 300;
+
+                case ERarety.Epic:
+                    return 3000;
+
+                case ERarety.Legendary:
+                    return 10000;
+
+                default:
+                    ErrorHandler.Warning("Unhanlded case : " + GetRaretyData(character).Rarety);
+                    return 0;
+            }
+        }
+
+        #endregion
+
+
         #region Order & Filters
 
         /// <summary>

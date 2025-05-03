@@ -442,13 +442,23 @@ namespace Assets
         /// <param name="collectable"></param>
         /// <param name="qty"></param>
         /// <param name="OnPurchase"></param>
-        public static void ConfirmBuyCollectable(SPriceData priceData, Enum collectable, int qty, Action<bool> OnPurchase)
+        public static void ConfirmBuyCollectable(Enum collectable, int qty = 1, Action<bool> OnPurchase = default, string context = "")
         {
             if (! CollectablesManagementData.TryGetCollectableType(collectable, out var collectableType))
                 return;
 
-            SRewardsData rewardsData = new SRewardsData(collectableRewards: new List<SCollectableReward>() { new SCollectableReward(collectableType, collectable.ToString(), qty) }) ;
-            ConfirmBuyRewards(collectable.ToString(), priceData, rewardsData, OnPurchase);
+            SRewardsData rewardsData = new SRewardsData(collectableRewards: new List<SCollectableReward>() { new SCollectableReward(collectableType, collectable.ToString(), qty) });
+
+            if (OnPurchase == default)
+            {
+                OnPurchase = (bool isPurchased) => {
+                    if (!isPurchased)
+                        return;
+                    DisplayRewards(rewardsData, context);
+                };
+            }
+
+            ConfirmBuyRewards(collectable.ToString(), ShopManagementData.GetPrice(collectable), rewardsData, OnPurchase);
         }
 
         /// <summary>

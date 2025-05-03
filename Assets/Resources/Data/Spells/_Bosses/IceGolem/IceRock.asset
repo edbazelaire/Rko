@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2413bf9bea7a81d44a0b645bca9d69f8, type: 3}
   m_Name: IceRock
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: 
   m_DescriptionVariables: []
   m_SpellElements: 02000000
@@ -40,7 +40,7 @@ MonoBehaviour:
     Animation: 0
     SpellAnimation: 
     StateEffects: 
-  - Prefab: {fileID: 1364846237022580, guid: 22c789d4aeb32564fb89f8f010588840, type: 3}
+  - Prefab: {fileID: 1364846237022580, guid: d93a08c8096462842b396cd9ed86c9fc, type: 3}
     MaterialEffect: {fileID: 0}
     SoundFX:
     - AudioClip: {fileID: 8300000, guid: 20a4974705b8d5642bb2ebfc243b2b5d, type: 3}
@@ -62,6 +62,7 @@ MonoBehaviour:
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -75,6 +76,14 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 30

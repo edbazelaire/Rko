@@ -124,6 +124,8 @@ namespace Data
         protected Vector2           m_SpawnOffset                           = new Vector2(0, 0);
         [SerializeField, Tooltip("")]
         protected bool              m_IsFollowing                           = true;
+        [SerializeField, Tooltip("")]
+        protected EAnimation        m_CounterAnimation                      = EAnimation.Counter;
         [SerializeField, Tooltip("Location where the counter is spawning")] 
         protected ESpawnLocation    m_SpawnLocation                         = ESpawnLocation.Center;
         public bool                 IsDestroyingSpell                       = true;
@@ -139,10 +141,11 @@ namespace Data
 
         // ===================================================================================
         // Public Accessors
-        public List<Enums.ESpellCategory>       DamageTypeActivation     => m_DamageTypeActivation;
+        public List<Enums.ESpellCategory>       DamageTypeActivation    => m_DamageTypeActivation;
         public bool                             IsLinkedCounter         => IsBlockingCast || IsBlockingMovement || CounterActivation == ECounterActivation.OnHitPlayer;
         public List<SDamageConversionEffects>   DamageConversionEffects => m_DamageConversionEffects;
         public Vector2                          SpawnOffset             => m_SpawnOffset;
+        public EAnimation                       CounterAnimation        => m_CounterAnimation;
 
 
         #region Target & Position 
@@ -222,11 +225,11 @@ namespace Data
             switch (CounterType)
             {
                 case ECounterType.Proc:
-                    description = "Cast the spell " + OnCounterProc.Name;
+                    description = "Trigger effect";
                     break;
 
                 case ECounterType.Reflect:
-                    description = "Reflect the enemy spells";
+                    description = "Reflect enemy spells";
                     break;
 
                 case ECounterType.Block:

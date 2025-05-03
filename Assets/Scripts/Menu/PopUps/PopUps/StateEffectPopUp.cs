@@ -47,7 +47,7 @@ namespace Menu.PopUps
             m_Description = Finder.FindComponent<TMP_Text>(iconSection, "Description");
             m_PropertiesContainer = Finder.Find(m_WindowContent, "PropertiesContainer");
 
-            m_Title.text = m_StateEffect.StateEffectName;
+            m_Title.text = TextHandler.SplitCamelCase(m_StateEffect.StateEffectName);
             m_Icon.sprite = AssetLoader.LoadStateEffectIcon(m_StateEffect.StateEffectName);
             m_Description.text = m_StateEffect.GetDescription();
 

@@ -50,4 +50,23 @@ MonoBehaviour:
     BonusValue: 0
     ScalingFactor: 0
     StateEffectStackFactors: []
-  m_SpecialPowers: []
+  m_SpecialPowers:
+  - Description: 
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: HeavyHitter
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: -1
+      NActivations: 0
+      Cooldown: 0
+    m_BonusStats: []

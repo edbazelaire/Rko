@@ -6,6 +6,7 @@ using Game.Loaders;
 using Inventory;
 using Menu.Common.Buttons;
 using Menu.Common.Infos;
+using MyBox;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -28,6 +29,7 @@ namespace Menu.PopUps
         protected bool                                  m_InfoOnly;
         protected GameObject                            m_InfoPrefab;
         protected GameObject                            m_TemplateItemUI;
+        protected GameObject                            m_TemplateInfoTitleSection;
         protected Dictionary<string, SpellInfoRowUI>    m_InfoRows;
 
         // =========================================================================================
@@ -36,6 +38,7 @@ namespace Menu.PopUps
         protected TMP_Text                              m_RaretyText;
         protected TemplateCollectableItemUI             m_CollectableItemUI;
         protected GameObject                            m_PreviewContainer;
+        protected GameObject                            m_InfosSection;
         protected GameObject                            m_InfosContent;
         protected Button                                m_UpgradeButton;
         protected TMP_Text                              m_CostText;
@@ -65,7 +68,8 @@ namespace Menu.PopUps
             base.FindComponents();
 
             m_PreviewContainer      = Finder.Find(m_WindowContent, "PreviewContainer");
-            m_InfosContent          = Finder.Find(m_WindowContent, "InfosContent", false);
+            m_InfosSection          = Finder.Find(m_WindowContent, "Infos", throwError: false);
+            m_InfosContent          = Finder.Find(m_InfosSection, "InfosContent", throwError: false);
 
             m_UpgradeButton         = Finder.FindComponent<Button>(m_Buttons, "UpgradeSubButton", false);
             if (m_UpgradeButton != null)
@@ -76,6 +80,7 @@ namespace Menu.PopUps
                 m_RaretyText = Finder.FindComponent<TMP_Text>(m_RaretyContainer.gameObject, "RaretyText", false);
 
             m_InfoPrefab = AssetLoader.Load<GameObject>("SpellInfoRow", AssetLoader.c_MainUIComponentsInfosPath);
+            m_TemplateInfoTitleSection = AssetLoader.Load<GameObject>("InfoTitleSection", AssetLoader.c_MainUIComponentsInfosPath);
 
             // load data of the item
             m_TemplateItemUI = AssetLoader.LoadTemplateItem(m_Collectable);
@@ -185,19 +190,34 @@ namespace Menu.PopUps
             if (m_InfosContent == null)
                 return;
 
+            SetUpInfos(m_InfosContent, m_Data); 
+        }
+
+        protected virtual void SetUpInfos(GameObject container, CollectableData data, List<string> ignoredProperties = default)
+        {
+            if (container == null)
+            {
+                ErrorHandler.Error("Provided container is null");
+                return;
+            }
+
             // clean previous content
-            UIHelper.CleanContent(m_InfosContent);
+            UIHelper.CleanContent(container);
             m_InfoRows = new();
 
             // -- get new data if spell is updatable
             Dictionary<string, object> newDataInfos = null;
-            if (! m_IsMaxedLevel)
-                newDataInfos = m_Data.Clone(m_Level + 1, true).GetInfo();
+            if (!m_IsMaxedLevel)
+                newDataInfos = data.Clone(m_Level + 1, true).GetInfo();
 
-            var infos = m_Data.GetInfo();
+            var infos = data.GetInfo();
             foreach (var item in infos)
             {
-                SetUpInfoRow(item.Key, item.Value, newDataInfos != null ? newDataInfos[item.Key] : null);
+                // check if key should be ignored
+                if (!ignoredProperties.IsNullOrEmpty() && ignoredProperties.Contains(item.Key))
+                    continue;
+
+                SetUpInfoRow(container, item.Key, item.Value, newDataInfos != null ? newDataInfos[item.Key] : null);
             }
         }
 
@@ -207,10 +227,10 @@ namespace Menu.PopUps
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="newDataValue"></param>
-        protected virtual void SetUpInfoRow(string key, object value, object newDataValue = null)
+        protected virtual void SetUpInfoRow(GameObject container, string key, object value, object newDataValue = null)
         {
             // spawn a spellRowInfo from prefab and init with spell data
-            SpellInfoRowUI spellRowInfo = Instantiate(m_InfoPrefab, m_InfosContent.transform).GetComponent<SpellInfoRowUI>();
+            SpellInfoRowUI spellRowInfo = Instantiate(m_InfoPrefab, container.transform).GetComponent<SpellInfoRowUI>();
             spellRowInfo.Initialize(key, value, newDataValue);
             m_InfoRows.Add(key, spellRowInfo);
         }

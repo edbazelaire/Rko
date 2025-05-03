@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2413bf9bea7a81d44a0b645bca9d69f8, type: 3}
   m_Name: _MultiComets
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: 
   m_DescriptionVariables: []
   m_SpellElements: 
@@ -23,7 +23,7 @@ MonoBehaviour:
     MaterialEffect: {fileID: 0}
     SoundFX: []
     GFXLifetime:
-      m_StartSpellPart: 500
+      m_StartSpellPart: 1000
       m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
@@ -36,8 +36,10 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -45,12 +47,26 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 1
+  m_ClampTargetPos: 1
+  TargetOffset:
+    X: 0
+    Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
+  m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 5
   EnergyCost: 0
   m_Damage: 30
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -58,6 +74,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
@@ -66,9 +85,11 @@ MonoBehaviour:
   EnemyStateEffects:
   - StateEffect: 8
     Stacks: 1
+    BonusStacksPerLevel: 0
     OverridingProperties: []
   - StateEffect: 13
     Stacks: 3
+    BonusStacksPerLevel: 0
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
@@ -78,5 +99,7 @@ MonoBehaviour:
   AnimationTimer: 0
   m_Cooldown: 5
   Trajectory: 3
+  m_TriggerGround: 1
   m_StopOnTargetPos: 0
   m_Speed: 7
+  m_YSpawnPos: 0

@@ -1,4 +1,5 @@
 ﻿using Enums;
+using Game.Arena;
 using Game.Background;
 using Network;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace Game
 
         GameObject              m_Arena;
         Transform               m_TargetHight;
-        List<Transform>         m_TargettableAreas;
+        List<TargettableArea>   m_TargettableAreas;
         List<List<Transform>>   m_Spawns;
 
         ArenaBackground         m_ArenaBackground;
@@ -87,7 +88,7 @@ namespace Game
         /// </summary>
         void InitializeTargetabbleArea()
         {
-            m_TargettableAreas = new List<Transform>();
+            m_TargettableAreas = new List<TargettableArea>();
 
             // re-order targettable areas by id
             int i = 0;
@@ -97,13 +98,17 @@ namespace Game
                 // set end to true by default
                 end = true;
 
-                foreach (Transform area in Finder.FindComponents<Transform>(Arena, c_TargettableAreaPrefix))
+                foreach (TargettableArea area in Finder.FindComponents<TargettableArea>(Arena, c_TargettableAreaPrefix))
                 {
                     // if a targettable area with this id is found
                     if (area.gameObject.name.EndsWith(i.ToString()))
                     {
+                        // init the are
+                        area.Initialize();
+
                         // add it to the list
                         m_TargettableAreas.Add(area);
+
                         // continue to search
                         end = false;
                         break;
@@ -114,7 +119,7 @@ namespace Game
                 i++;
             }
 
-            m_TargettableAreaSize = m_TargettableAreas[0].GetComponent<RectTransform>().rect.width;
+            m_TargettableAreaSize = m_TargettableAreas[0].Size;
         }
 
         #endregion
@@ -128,9 +133,20 @@ namespace Game
         /// <param name="team"></param>
         /// <param name="enemyArea"></param>
         /// <returns></returns>
-        public static Transform GetTargettableArea(int team, bool enemyArea = true)
+        public static TargettableArea GetTargettableArea(int team, bool enemyArea = true)
         {
             return Instance.m_TargettableAreas[GetTargettableAreaIndex(team, enemyArea)];
+        }
+
+        /// <summary>
+        /// Depending on the team, the enemy and ally areas are inverted
+        /// </summary>
+        /// <param name="team"></param>
+        /// <param name="enemyArea"></param>
+        /// <returns></returns>
+        public static Transform GetTargettableAreaTransform(int team, bool enemyArea = true)
+        {
+            return GetTargettableArea(team, enemyArea).transform;
         }
 
         /// <summary>
@@ -184,13 +200,13 @@ namespace Game
 
         public static (float Min, float Max) GetAreaBounds(float xPos)
         {
-            var area = xPos <= 0 ? Instance.m_TargettableAreas[0] : Instance.m_TargettableAreas[1];
+            var area = (xPos <= 0 ? Instance.m_TargettableAreas[0] : Instance.m_TargettableAreas[1]).transform;
             return (area.position.x - Instance.TargettableAreaSize / 2 + (area.position.x < 0 ? 0.5f : 0.1f), area.position.x + Instance.TargettableAreaSize / 2 - (area.position.x > 0 ? 0.5f : 0.1f));
         }
 
         public static (float Min, float Max) GetAreaBounds(int team, bool enemyArea = true)
         {
-            var area = GetTargettableArea(team, enemyArea);
+            var area = GetTargettableAreaTransform(team, enemyArea);
             return (area.position.x - Instance.TargettableAreaSize / 2 + (area.position.x < 0 ? 0.5f : 0.1f), area.position.x + Instance.TargettableAreaSize / 2 - (area.position.x > 0 ? 0.5f : 0.1f));
         }
 

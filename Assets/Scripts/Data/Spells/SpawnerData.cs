@@ -91,10 +91,10 @@ namespace Data
 
         #region Target
 
-        public override void CalculateTarget(ref Vector3 target, ulong clientId)
+        public override void CalculateTarget(ref Vector3 target, ulong clientId, ulong? targetId)
         {
             target.y = 0;
-            base.CalculateTarget(ref target, clientId);
+            base.CalculateTarget(ref target, clientId, targetId);
         }
 
         #endregion

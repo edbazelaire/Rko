@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2413bf9bea7a81d44a0b645bca9d69f8, type: 3}
   m_Name: Shardrot
   m_EditorClassIdentifier: 
-  Rarety: 2
+  m_Rarety: 2
   m_Description: Shard of ice infected with a virulent poison inflecting {0} damage
     while applying 3 stacks of {1}  and {2}
   m_DescriptionVariables:
@@ -68,7 +68,29 @@ MonoBehaviour:
     Animation: 0
     SpellAnimation: 
     StateEffects: 
+  - Prefab: {fileID: 1364846237022580, guid: 3246df0eaec7fb54892f3d5f09626809, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX:
+    - AudioClip: {fileID: 8300000, guid: cba85bef03a3211428440324a7ff7f12, type: 3}
+      SoundDuration: 0
+    GFXLifetime:
+      m_StartSpellPart: 1000
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1.5
+    Size: 1
+    OrderInLayer: 0
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: c4df1116793652246b4b567e1c59276e, type: 3}
@@ -82,6 +104,14 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 10

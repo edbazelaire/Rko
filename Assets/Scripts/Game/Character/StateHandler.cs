@@ -256,6 +256,11 @@ namespace Game.Character
             return Math.Max(0, (int)Mathf.Round(heal * GetFloat(EStateEffectProperty.BonusHealPerc, targetController)));   
         }
 
+        public int ApplyBonusShield(int shield, Controller targetController)
+        {
+            return Math.Max(0, (int)Mathf.Round(shield * GetFloat(EStateEffectProperty.BonusShieldPerc, targetController)));
+        }
+
         public float ApplyBonus(float baseValue, EStateEffectProperty stateEffectProperty, Controller targetController)
         {
             switch (stateEffectProperty)
@@ -273,6 +278,9 @@ namespace Game.Character
                 case EStateEffectProperty.Heal:
                 case EStateEffectProperty.EndHeal:
                     return ApplyBonusHeal((int)Mathf.Round(baseValue), targetController);
+
+                case EStateEffectProperty.Shield:
+                    return ApplyBonusShield((int)Mathf.Round(baseValue), targetController);
 
                 default:
                     return baseValue;
@@ -658,7 +666,7 @@ namespace Game.Character
 
         #region Public Data Accessors
 
-        public float GetFloat(EStateEffectProperty property, Controller targetController = null)
+        public float GetFloat(EStateEffectProperty property, Controller targetController = null, bool ignoreConversion = false)
         {
             // only server can calculate speed factor
             if (!IsServer)
@@ -676,7 +684,7 @@ namespace Game.Character
             {
                 if (! effect.HasEffectProperty(property))
                     continue;
-                value += effect.GetFloat(property);
+                value += effect.GetFloat(property, ignoreConversion);
             }
 
             ErrorHandler.Log("Final value (" + property + ") : " + value, ELogTag.BonusStats);

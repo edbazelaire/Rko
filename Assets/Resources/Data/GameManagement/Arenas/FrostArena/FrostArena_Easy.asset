@@ -21,7 +21,10 @@ MonoBehaviour:
       - Currency: 3
         Qty: 50
       Chests: 
-      Collectables: []
+      Collectables:
+      - CollectableType: 1
+        CollectableName: Marcus
+        Qty: 1
       AchievementRewards:
       - AchievementReward: 2
         Title: 0
@@ -29,6 +32,7 @@ MonoBehaviour:
         Border: 0
         Badge: 0
         League: 0
+      Boosts: []
     TriggerEffects: []
     m_PowerUps: []
     StageData:
@@ -60,6 +64,7 @@ MonoBehaviour:
         DeactivationTreshold: 1
         StateEffectEvent: 0
         StateEffectName: 
+        NStateEffectActivationThreshold: 0
         Delay: 0
         Duration: 0
         NActivations: 0

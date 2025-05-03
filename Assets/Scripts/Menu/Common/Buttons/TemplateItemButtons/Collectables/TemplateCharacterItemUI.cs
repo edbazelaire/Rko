@@ -1,4 +1,6 @@
-﻿using Data.GameManagement;
+﻿using Assets;
+using Assets.Scripts.Managers;
+using Data.GameManagement;
 using Enums;
 using Menu.Common.Displayers;
 using Save;
@@ -52,6 +54,14 @@ namespace Menu.Common.Buttons
         {
             base.UnRegisterListeners();
             CharacterBuildsCloudData.SelectedCharacterChangedEvent  -= OnSelectedCharacterChanged;
+        }
+
+        protected override void OnClickLocked()
+        {
+            base.OnClickLocked();
+
+            // display "Buy" popup
+            Main.ConfirmBuyCollectable(Collectable);
         }
 
         protected void OnSelectedCharacterChanged()

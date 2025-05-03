@@ -85,6 +85,7 @@ public class TaskMove : BaseTask
         if (! m_Movement.CanMove)
         {
             ErrorHandler.Log("TaskMove - " + m_State + " : m_Movement.CanMove = false", ELogTag.AITaskMove);
+            SetNodeState(NodeState.FAILURE);
             return;
         }
 

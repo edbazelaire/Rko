@@ -1,4 +1,6 @@
-﻿using Enums;
+﻿using Assets;
+using Data.GameManagement;
+using Enums;
 using Inventory;
 using Save;
 using System;
@@ -458,6 +460,14 @@ namespace Tools
             InventoryManager.UpdateCurrency(ECurrency.Gold, 9999999, "DebugTool");
             InventoryManager.UpdateCurrency(ECurrency.Gems, 9999999, "DebugTool");
             InventoryManager.UpdateCurrency(ECurrency.TotalXp, 9999999, "DebugTool");
+        }
+
+        [Command]
+        public void UnlockMarcus()
+        {
+            var reward = new SRewardsData();
+            reward.Add(ECharacter.Marcus, 1);
+            Main.DisplayRewards(reward, "DebugTool");
         }
 
         [Command]
