@@ -20,8 +20,6 @@ using Assets.Scripts.Data.DataStructures.SpellSubStructures;
 using Assets.Scripts.Game;
 using Game.NetworkStructures;
 using Data.DataStructures.SpellSubStructures;
-using Google.Apis.Sheets.v4.Data;
-using Unity.Android.Gradle.Manifest;
 
 namespace Data
 {

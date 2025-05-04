@@ -20,7 +20,6 @@ using Tools.Animations;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.FilePathAttribute;
 
 namespace Menu.PopUps
 {

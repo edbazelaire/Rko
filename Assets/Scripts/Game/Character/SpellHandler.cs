@@ -13,7 +13,6 @@ using Tools;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 namespace Game.Character
 {
