@@ -12,16 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8d2bcd733533b8499b0cb4a21b59b82, type: 3}
   m_Name: ChemicalSlime
   m_EditorClassIdentifier: 
-  Rarety: 1
+  m_Rarety: 1
   m_Description: 'Invoke a Chemical Slime, that attacks applying [Burn] and [Poison]'
   m_DescriptionVariables:
   - Name: Duration
     WithIcon: 0
-  m_SpellElements: 02000000
+  m_SpellElements: 0300000001000000
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions: []
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -35,12 +36,20 @@ MonoBehaviour:
     Y: 0
   LockTarget: 400
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

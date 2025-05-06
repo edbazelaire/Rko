@@ -5,6 +5,7 @@ using Enums;
 using Game;
 using Game.Character;
 using Game.Loaders;
+using Game.UI;
 using Managers;
 using Save;
 using System;
@@ -35,6 +36,7 @@ public class Controller : NetworkBehaviour
 
     // -- Server Variable
     RuneData[] m_RuneData;
+    CharacterData m_CharacterData;
 
     // -- local variables
     bool m_GameRunning = false;
@@ -60,6 +62,7 @@ public class Controller : NetworkBehaviour
     public SPlayerData      PlayerData          => m_PlayerData.Value;
     public string           PlayerName          => m_PlayerName.Value.ToString();
     public string           Character           => m_Character.Value.ToString();
+    public CharacterData    CharacterData       => m_CharacterData;
     public int              CharacterLevel      => m_CharacterLevel.Value;
     public RuneData[]       RuneData            => m_RuneData;
     public int              Team                => m_Team.Value;
@@ -91,13 +94,8 @@ public class Controller : NetworkBehaviour
 
     #region Initialization 
 
-    /// <summary>
-    /// Called when the controller is spawned on the network
-    /// </summary>
-    public override void OnNetworkSpawn()
+    protected virtual void FindComponents()
     {
-        ErrorHandler.Log("Controller.OnNetworkSpawn()", ELogTag.GameSystem);   
-
         // setup components
         m_Life                  = Finder.FindComponent<Life>(gameObject);
         m_EnergyHandler         = Finder.FindComponent<EnergyHandler>(gameObject);
@@ -115,7 +113,17 @@ public class Controller : NetworkBehaviour
         m_BehaviorTree = Finder.FindComponent<BehaviorTree>(gameObject, throwError: false);
         if (! IsServer && m_BehaviorTree != null)
             m_BehaviorTree.enabled = false;
-        
+    }
+
+    /// <summary>
+    /// Called when the controller is spawned on the network
+    /// </summary>
+    public override void OnNetworkSpawn()
+    {
+        ErrorHandler.Log("Controller.OnNetworkSpawn()", ELogTag.GameSystem);
+
+        FindComponents();
+
         // add event to call UI initialization after NetworkVariable update 
         m_IsInitialized.OnValueChanged  += OnInitializedChanged;
         m_Life.DiedEvent                += OnDied;
@@ -218,6 +226,9 @@ public class Controller : NetworkBehaviour
         // setup the seplls icons buttons
         SetupSpellUI();
 
+        // setup Emots
+        GameUIManager.EmotsSectionUI.Initialize(new List<EEmot> { EEmot.ThumbUp, EEmot.Trollol, EEmot.Ah, EEmot.SadKitty, EEmot.Ah, EEmot.Pidgeon });
+
         // select auto attack by default (if not IsAutoTarget)
         bool isAutoTarget = true;           // TODO : use PlayerPref to set isAutoTarget or not by default
         if (! (isAutoTarget || SpellLoader.GetSpellData(m_SpellHandler.AutoAttack).IsAutoTarget))
@@ -237,7 +248,7 @@ public class Controller : NetworkBehaviour
     /// <summary>
     /// Implement all data related to the Character
     /// </summary>
-    void InitializeCharacterData(SPlayerData playerData)
+    protected virtual void InitializeCharacterData(SPlayerData playerData)
     {
         if (! IsServer)
             return;
@@ -271,6 +282,7 @@ public class Controller : NetworkBehaviour
 
         CharacterData characterData = CharacterLoader.GetCharacterData(playerData.Character.ToString(), playerData.CharacterLevel, destroy: true);
         characterData.AddBonusStats(GetBonusStats());
+        m_CharacterData = characterData;
 
         // initialize SpellHandler with character's spells
         m_SpellHandler.Initialize(characterData.AutoAttack, characterData.SpecialAbility, characterData.Ultimate, playerData.Spells.ToList(), playerData.SpellLevels.ToList());
@@ -504,7 +516,7 @@ public class Controller : NetworkBehaviour
     /// activate / deactivate players "action" components (that allows player to take actions)
     /// </summary>
     /// <param name="active"></param>
-    public void ActivateActionComponent(bool active)
+    public virtual void ActivateActionComponent(bool active)
     {
         // movement is a client component too
         m_Movement.Activate(active);

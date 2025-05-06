@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: DirtBomb
   m_EditorClassIdentifier: 
   Rarety: 1
-  m_Description: 'Throw a dirt bomb that deals {0} damages and applies [Combustion]
+  m_Description: 'Throw a dirt bomb that deals {0} damage and applies [Combustion]
     and [Poison]'
   m_DescriptionVariables:
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   m_SpellElements: 01000000
   Linked: 0
@@ -61,7 +61,7 @@ MonoBehaviour:
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 50
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

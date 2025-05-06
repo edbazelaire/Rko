@@ -91,10 +91,10 @@ namespace Menu.Common.Infos
 
         void DisplayStacks()
         {
-            if (m_StateEffectData.Stacks > 1)
+            if (m_StateEffectData.GetStacks() > 1)
             {
                 m_StateEffectTextContainer.gameObject.SetActive(true);
-                m_StateEffectText.text = m_StateEffectData.Stacks.ToString();
+                m_StateEffectText.text = m_StateEffectData.GetStacks().ToString();
             }
             else
             {

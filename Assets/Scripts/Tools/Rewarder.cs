@@ -40,7 +40,7 @@ namespace Tools
             return (int)Mathf.Round(Gems * CurrencyMultiplicator);
         }
 
-        public int GetGolds()
+        public int GetGold()
         {
             return (int)Mathf.Round(Random.Range(MinGolds, MaxGolds) * CurrencyMultiplicator);
         }

@@ -34,11 +34,11 @@ public class EndGameUI : MObject
 {
     #region Members
 
-    const string GOLDS_FORMAT = "+ {0}";
+    const string GOLD_FORMAT = "+ {0}";
 
     // Data
     EEndGameState m_State;
-    bool m_Win;
+    EGameResult m_GameResult;
     bool m_IsBossFight = false;
     // -- arena
     ArenaData m_ArenaData = null;
@@ -54,8 +54,8 @@ public class EndGameUI : MObject
     PowerUpSection      m_PowerUpSection;
     GameObject          m_XpRewardDisplay;
     TMP_Text            m_XpQty;
-    GameObject          m_GoldsRewardDisplay;
-    TMP_Text            m_GoldsQty;
+    GameObject          m_GoldRewardDisplay;
+    TMP_Text            m_GoldQty;
     GameObject          m_GemsRewardDisplay;
     TMP_Text            m_GemsQty;
     GameObject          m_OrbPowerRewardDisplay;
@@ -88,8 +88,8 @@ public class EndGameUI : MObject
         m_RewardsContent            = Finder.Find(gameObject, "RewardsContent");
         m_XpRewardDisplay           = Finder.Find(m_RewardsContent, "XpRewardDisplay");
         m_XpQty                     = Finder.FindComponent<TMP_Text>(m_XpRewardDisplay, "Qty");
-        m_GoldsRewardDisplay        = Finder.Find(m_RewardsContent, "GoldsRewardDisplay");
-        m_GoldsQty                  = Finder.FindComponent<TMP_Text>(m_GoldsRewardDisplay, "Qty");
+        m_GoldRewardDisplay         = Finder.Find(m_RewardsContent, "GoldsRewardDisplay");
+        m_GoldQty                   = Finder.FindComponent<TMP_Text>(m_GoldRewardDisplay, "Qty");
         m_GemsRewardDisplay         = Finder.Find(m_RewardsContent, "GemsRewardDisplay");
         m_GemsQty                   = Finder.FindComponent<TMP_Text>(m_GemsRewardDisplay, "Qty");
         m_OrbPowerRewardDisplay     = Finder.Find(m_RewardsContent, "OrbPowerRewardDisplay");
@@ -137,23 +137,22 @@ public class EndGameUI : MObject
     }
 
     // Use this for initialization
-    public void Activate(bool win, bool preventiveLossApplied)
+    public void Activate(EGameResult gameResult, bool preventiveLossApplied)
     {
-        ErrorHandler.Log("END OF GAME : " + LobbyHandler.Instance.GameMode + " - " + (win ? "WIN" : "LOSS"), ELogTag.GameSystem);
+        ErrorHandler.Log("END OF GAME : " + LobbyHandler.Instance.GameMode + " - " + gameResult.ToString(), ELogTag.GameSystem);
 
         // make sure that into is deactivated
         GameUIManager.IntroGameUI.Deactivate();
 
         // save if this is win or not
-        m_Win = win;
-        
+        m_GameResult = gameResult;
+
         // set color and text according to context
-        m_TitleText.text = m_Win ? "Victory" : "Defeat";
-        m_TitleText.color = m_Win ? Color.green : Color.red;
+        SetUpTitle();
 
         // handle data processing before animation & stuff
-        HandleEndGameData(win);
-        HandleProgression(win, preventiveLossApplied);
+        HandleEndGameData();
+        HandleProgression(preventiveLossApplied);
 
         // clean game data
         PlayerPrefs.SetString(EPlayerPref.CurrentGameId.ToString(), "");
@@ -214,9 +213,8 @@ public class EndGameUI : MObject
                 break;
 
             case EEndGameState.PowerUps:
-
                 // check if should skip power up selection
-                if (! m_Win || ! m_IsBossFight || ProgressionCloudData.CurrentArena.IsOver())
+                if (m_GameResult != EGameResult.Win || ! m_IsBossFight || ProgressionCloudData.CurrentArena.IsOver())
                 {
                     NextState();
                     return;
@@ -226,7 +224,7 @@ public class EndGameUI : MObject
                 break;
 
             case EEndGameState.Rewards:
-                DisplayRewards(m_Win);
+                DisplayRewards();
                 break;
 
             case EEndGameState.Exit:
@@ -251,19 +249,19 @@ public class EndGameUI : MObject
 
     #region Reward & EndGame
 
-    void DisplayRewards(bool win)
+    void DisplayRewards()
     {
         ErrorHandler.Log("HandleReward() : start", ELogTag.Rewards);
 
         m_GemsRewardDisplay.SetActive(false);
         m_XpRewardDisplay.SetActive(false);
-        m_GoldsRewardDisplay.SetActive(false);
+        m_GoldRewardDisplay.SetActive(false);
         m_OrbPowerRewardDisplay.SetActive(false);   
         m_PowerOrbUpgradeRewardIcon.SetActive(false);
 
         m_RewardsSection.SetActive(true);
 
-        SRewardCalculator rewardCalculator = win ? Rewarder.WinGameReward : Rewarder.LossGameReward;
+        SRewardCalculator rewardCalculator = m_GameResult == EGameResult.Win ? Rewarder.WinGameReward : Rewarder.LossGameReward;
         rewardCalculator.SetCurrencyMultiplicator(CalculateCurrencyMultiplicator());
 
         // no rewards for training mode
@@ -285,19 +283,19 @@ public class EndGameUI : MObject
         if (xp > 0)
         {
             m_XpRewardDisplay.SetActive(true);
-            m_XpQty.text = string.Format(GOLDS_FORMAT, xp);
+            m_XpQty.text = string.Format(GOLD_FORMAT, xp);
             NotificationCloudData.AddXp(xp);
         }
 
         // ----------------------------------------------------------------------------
         // GOLDS   
-        int golds = rewardCalculator.GetGolds();
-        ErrorHandler.Log("         + GOLDS : " + golds, ELogTag.Rewards);
+        int golds = rewardCalculator.GetGold();
+        ErrorHandler.Log("         + GOLD : " + golds, ELogTag.Rewards);
         if (golds > 0)
         {
-            m_GoldsRewardDisplay.SetActive(true);
-            m_GoldsQty.text = string.Format(GOLDS_FORMAT, golds);
-            InventoryManager.UpdateCurrency(ECurrency.Golds, golds, ERewardContext.EndGameChest.ToString());
+            m_GoldRewardDisplay.SetActive(true);
+            m_GoldQty.text = string.Format(GOLD_FORMAT, golds);
+            InventoryManager.UpdateCurrency(ECurrency.Gold, golds, ERewardContext.EndGameChest.ToString());
         }
 
         // ----------------------------------------------------------------------------
@@ -307,7 +305,7 @@ public class EndGameUI : MObject
         if (gems > 0)
         {
             m_GemsRewardDisplay.SetActive(true);
-            m_GemsQty.text = string.Format(GOLDS_FORMAT, gems);
+            m_GemsQty.text = string.Format(GOLD_FORMAT, gems);
             InventoryManager.UpdateCurrency(ECurrency.Gems, gems, ERewardContext.EndGameChest.ToString());
         }
 
@@ -337,12 +335,12 @@ public class EndGameUI : MObject
 
         // ----------------------------------------------------------------------------
         // Orb Power  
-        if (LobbyHandler.Instance.GameMode == EGameMode.Arena && win)
+        if (LobbyHandler.Instance.GameMode == EGameMode.Arena && m_GameResult == EGameResult.Win)
         {
             SPowerOrb currentPowerOrb = ProgressionCloudData.CurrentArena.GetPowerOrb();
             int orbPower = m_ArenaData.CalculateOrbPowerReward(m_CurrentLevel, m_CurrentStage);
             m_OrbPowerRewardDisplay.SetActive(true);
-            m_OrbPowerRewardQty.text = string.Format(GOLDS_FORMAT, orbPower);
+            m_OrbPowerRewardQty.text = string.Format(GOLD_FORMAT, orbPower);
 
             // check if a bonus star has been provided
             if (m_IsBossFight && currentPowerOrb.TryUpgradeRarety())
@@ -372,10 +370,10 @@ public class EndGameUI : MObject
         }
     }
 
-    void HandleProgression(bool win, bool preventiveLossApplied)
+    void HandleProgression(bool preventiveLossApplied)
     {
         // if a preventive loss has already been applied and this is a loss - exit
-        if (!win && preventiveLossApplied)
+        if (m_GameResult == EGameResult.Loss && preventiveLossApplied)
             return;
        
         switch (LobbyHandler.Instance.GameMode)
@@ -384,27 +382,56 @@ public class EndGameUI : MObject
                 ErrorHandler.Log("HandleProgression() : Loading Arena Data : " + PlayerPrefsHandler.GetArenaType().ToString(), ELogTag.GameSystem);
 
                 // if preventive loss has been applied, remove life loss
-                if (win)
+                switch(m_GameResult)
                 {
-                    if (preventiveLossApplied)
-                        ProgressionCloudData.AddArenaLoss(-1, false);
-                    ProgressionCloudData.AddArenaWin();
-                }
+                    case EGameResult.Win:
+                        if (preventiveLossApplied)
+                            ProgressionCloudData.AddArenaLoss(-1, false);
+                        ProgressionCloudData.AddArenaWin();
+                        break;
 
-                // if preventive loss not applied, remove one life
-                else
-                {
-                    if (! preventiveLossApplied && ! Main.StopPreventiveLoss)
-                        ProgressionCloudData.AddArenaLoss();
+                    case EGameResult.Loss:
+                        if (!preventiveLossApplied && !Main.StopPreventiveLoss)
+                            ProgressionCloudData.AddArenaLoss();
+                        break;
+
+                    case EGameResult.Draw:
+                        ErrorHandler.Error("Draw in Arena Mode should not happen"); 
+                        break;
+
+                    default:
+                        ErrorHandler.Warning("Unhandled case : " + m_GameResult);
+                        break;
                 }
                 break;
 
             case EGameMode.Ranked:
                 ErrorHandler.Log("HandleProgression() : Ranked game", ELogTag.GameSystem);
 
-                // if preventive loss has been applied, apply double win
-                ProgressionCloudData.UpdateLeagueValue(win, nTimes: win & preventiveLossApplied ? 2 : 1);
-                
+                // if preventive loss has been applied, remove life loss
+                switch (m_GameResult)
+                {
+                    case EGameResult.Win:
+                        // if preventive loss has been applied, apply double win
+                        ProgressionCloudData.UpdateLeagueValue(true, nTimes: preventiveLossApplied ? 2 : 1);
+                        break;
+
+                    case EGameResult.Loss:
+                        // if preventive loss was NOT applied : apply loss
+                        if (!preventiveLossApplied && !Main.StopPreventiveLoss)
+                            ProgressionCloudData.UpdateLeagueValue(false, nTimes: 1);
+                        break;
+
+                    case EGameResult.Draw:
+                        // if preventive loss was applied : refund it
+                        if (preventiveLossApplied)
+                            ProgressionCloudData.UpdateLeagueValue(true, nTimes: 1);
+                        break;
+
+                    default:
+                        ErrorHandler.Warning("Unhandled case : " + m_GameResult);
+                        break;
+                }
                 break;
 
             // no progression on training game
@@ -426,14 +453,14 @@ public class EndGameUI : MObject
     /// Handle data display/save at the end of the game
     /// </summary>
     /// <param name="win"></param>
-    void HandleEndGameData(bool win)
+    void HandleEndGameData()
     {
         // send analytics event (that also saves in StatCloudData)
         switch(LobbyHandler.Instance.GameMode)
         {
             case EGameMode.Arena:
                 MAnalytics.SendEvent(new ArenaGameEndedEvent(
-                    win,
+                    m_GameResult == EGameResult.Win,
                     character:          StaticPlayerData.Character,
                     playerLevel:        StaticPlayerData.CharacterLevel,
                     runes:              StaticPlayerData.Runes,
@@ -448,7 +475,7 @@ public class EndGameUI : MObject
 
             case EGameMode.Ranked:
                 MAnalytics.SendEvent(new RankedGameEndedEvent(
-                    win, 
+                    m_GameResult == EGameResult.Win, 
                     character:      StaticPlayerData.Character, 
                     characterLevel: StaticPlayerData.CharacterLevel,
                     runes:          StaticPlayerData.Runes,
@@ -496,7 +523,7 @@ public class EndGameUI : MObject
         moveTitle.Initialize(duration: 0.5f, startPos: pos);
 
         // FIREWORKS particles (on win only)
-        if (m_Win)
+        if (m_GameResult == EGameResult.Win)
             m_Fireworks.SetActive(true);
 
         yield return new WaitForSeconds(0.5f);
@@ -530,6 +557,36 @@ public class EndGameUI : MObject
         fadeInButton.Initialize(duration: 0.5f, startOpacity: 0f);
 
         yield return new WaitUntil(() => fadeIn.IsOver);
+    }
+
+    #endregion
+
+
+    #region GUI Manipulators
+
+    void SetUpTitle()
+    {
+        switch (m_GameResult)
+        {
+            case EGameResult.Win:
+                m_TitleText.text = "Victory";
+                m_TitleText.color = Color.green;
+                break;
+
+            case EGameResult.Loss:
+                m_TitleText.text = "Defeat";
+                m_TitleText.color = Color.red;
+                break;
+
+            case EGameResult.Draw:
+                m_TitleText.text = "Draw";
+                m_TitleText.color = Color.grey;
+                break;
+
+            default:
+                ErrorHandler.Warning("Unhandled case : " + m_GameResult); 
+                break;
+        }
     }
 
     #endregion

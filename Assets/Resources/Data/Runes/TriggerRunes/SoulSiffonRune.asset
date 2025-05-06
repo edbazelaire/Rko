@@ -15,8 +15,8 @@ MonoBehaviour:
   Rarety: 2
   m_Description: 
   m_DescriptionVariables: []
+  m_SpellElements: 04000000
   Description: 
-  m_SpellElements: 
   m_MinorPower:
     Description: '[TriggerEffect.0]\nThis effect is triggered when getting below
       33% hp and stays active until the HP get backs to 50%.\nThis Effect can only
@@ -33,6 +33,7 @@ MonoBehaviour:
       DeactivationTreshold: 0.5
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: 1
@@ -53,6 +54,7 @@ MonoBehaviour:
       DeactivationTreshold: 0.5
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: 0
@@ -73,6 +75,7 @@ MonoBehaviour:
       DeactivationTreshold: 0.66
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: 0

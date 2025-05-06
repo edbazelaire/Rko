@@ -21,7 +21,7 @@ namespace Assets.Scripts.Menu.Common.Buttons.TemplateItemButtons
         {
             base.Initialize();
 
-            m_Currency  = currency;
+            m_Currency  = currency == ECurrency.TotalXp ? ECurrency.Xp : currency;
             m_Qty       = qty;
 
             // set icon and level

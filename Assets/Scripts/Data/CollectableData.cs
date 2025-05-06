@@ -4,19 +4,22 @@ using System;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Data
 {
     public class CollectableData : ScriptableObject
     {
         #region Members
-
-        public ERarety Rarety;
+        [SerializeField, FormerlySerializedAs("Rarety")] protected ERarety m_Rarety;
 
         // ===================================================================================================
         // Protected Serialize Data
         [SerializeField] protected string m_Description = "";
         [SerializeField] protected List<SDescriptionVariable> m_DescriptionVariables = new List<SDescriptionVariable>();
+
+        [SerializeField, Tooltip("List of Element types of this collectable")]
+        protected List<ESpellElement> m_SpellElements;
 
         // ===================================================================================================
         // Private Data
@@ -26,7 +29,9 @@ namespace Data
         // ===================================================================================================
         // Dependent Data
         public int Level => m_Level;
-
+        public List<ESpellElement>  SpellElements => m_SpellElements;
+        public virtual ERarety Rarety => m_Rarety;
+    
         public string Name
         {
             get
@@ -100,9 +105,25 @@ namespace Data
         #endregion
 
 
+        #region Debug
+
+        public string BaseDescription => m_Description;
+        public void SetBaseDescription(string description)
+        {
+            m_Description = description;
+        }
+        public List<SDescriptionVariable> DescriptionVariables => m_DescriptionVariables;
+        public void SetDescriptionVariables(List<SDescriptionVariable> descriptionVariables)
+        {
+            m_DescriptionVariables = descriptionVariables;
+        }
+
+        #endregion
+
+
         #region Infos
 
-        public virtual Dictionary<string, object> GetInfos()
+        public virtual Dictionary<string, object> GetInfo()
         {
             return new Dictionary<string, object>();
         }
@@ -114,7 +135,7 @@ namespace Data
         public virtual string GetDescription()
         {
             List<string> values = new List<string>();
-            var infos = GetInfos();
+            var infos = GetInfo();
 
             foreach (SDescriptionVariable descriptionVariable in m_DescriptionVariables)
             {

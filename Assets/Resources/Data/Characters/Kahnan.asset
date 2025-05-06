@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
   m_Name: Kahnan
   m_EditorClassIdentifier: 
-  Rarety: 1
+  Rarety: 0
   m_Description: "Kahnan, a fierce fire demon, burns with the fury of rebellion.
     When the new demon king was crowned, many\u2014including Kahnan\u2014questioned
     the legitimacy of his rule. The new monarch lacked the ancient Hitaro\u2014the
@@ -30,6 +30,7 @@ MonoBehaviour:
     obstacle in his path, be it demon or human, to see his mission fulfilled and
     the true king restored."
   m_DescriptionVariables: []
+  m_SpellElements: 01000000
   m_AutoAttack: Fireball
   m_SpecialAbility: IgnitionVeil
   m_Ultimate: PyroBlast
@@ -37,17 +38,23 @@ MonoBehaviour:
   BaseSpeed: 1
   BaseHealth: 800
   MaxEnergy: 100
+  BaseEnergy: 10
+  IsStructure: 0
   HealthScaleFactor: 0.1
   CharacterStatScaling:
   - StateEffectProperty: 8
     BaseValue: 0.15
     BonusValue: 0
     ScalingFactor: 0.05
+    StateEffectStackFactors: []
   - StateEffectProperty: 17
     BaseValue: 0.1
     BonusValue: 0
     ScalingFactor: 0.05
+    StateEffectStackFactors: []
   - StateEffectProperty: 4
     BaseValue: 500
     BonusValue: 0
     ScalingFactor: 0.1
+    StateEffectStackFactors: []
+  m_SpecialPowers: []

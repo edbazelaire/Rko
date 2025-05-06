@@ -64,7 +64,7 @@ namespace Assets.Scripts.Data.PowerUp
 
         public virtual PowerEffectData FromTriggerEffect(STriggerEffect triggerEffect, ERarety rarety)
         {
-            Rarety                  = rarety;
+            m_Rarety                = rarety;
             m_Target                = triggerEffect.Target;
             m_SpellActivationEvent  = triggerEffect.SpellActivationEvent;
             m_BonusStats            = new List<SCharacterStatScaling>();
@@ -172,9 +172,9 @@ namespace Assets.Scripts.Data.PowerUp
 
         #region Info & Description
 
-        public override Dictionary<string, object> GetInfos()
+        public override Dictionary<string, object> GetInfo()
         {
-            var infos = base.GetInfos();
+            var infos = base.GetInfo();
 
             if (m_BonusStats == null)
                 return infos;

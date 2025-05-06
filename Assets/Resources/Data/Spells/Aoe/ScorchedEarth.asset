@@ -13,18 +13,18 @@ MonoBehaviour:
   m_Name: ScorchedEarth
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: Explosion of size {0} dealing {1} damages and applying {2}. Burns
-    the ground applying a {3} and {4} damages each or {5} seconds
+  m_Description: Explosion of size {0} dealing {1} damage and applying {2}. Burns
+    the ground applying a {3} and {4} damage each or {5} seconds
   m_DescriptionVariables:
   - Name: Size
     WithIcon: 0
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   - Name: Combustion
     WithIcon: 1
   - Name: Burn
     WithIcon: 1
-  - Name: TickDamages
+  - Name: TickDamage
     WithIcon: 1
   - Name: Duration
     WithIcon: 1
@@ -94,7 +94,7 @@ MonoBehaviour:
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 25
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

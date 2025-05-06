@@ -15,10 +15,10 @@ MonoBehaviour:
   Rarety: 1
   m_Description: 
   m_DescriptionVariables: []
+  m_SpellElements: 03000000
   Description: 
-  m_SpellElements: 
   m_MinorPower:
-    Description: Gain {0} life steal on all damages over time
+    Description: Gain {0} life steal on all damage over time
     m_DescriptionVariables:
     - Name: BonusTickLifeSteal
       WithIcon: 1
@@ -31,7 +31,7 @@ MonoBehaviour:
       ScalingFactor: 0.05
       StateEffectStackFactors: []
   m_MajorPower:
-    Description: Gain {0} life steal on all damages over time
+    Description: Gain {0} life steal on all damage over time
     m_DescriptionVariables:
     - Name: BonusTickLifeSteal
       WithIcon: 1
@@ -44,7 +44,7 @@ MonoBehaviour:
       ScalingFactor: 0.05
       StateEffectStackFactors: []
   m_PrimalPower:
-    Description: Gain {0} life steal on all damages over time
+    Description: Gain {0} life steal on all damage over time
     m_DescriptionVariables:
     - Name: BonusTickLifeSteal
       WithIcon: 1

@@ -30,23 +30,6 @@ namespace Menu.MainMenu
                 m_SubButtons.gameObject.SetActive(false);
         }
 
-        //protected override void RegisterListeners()
-        //{
-        //    base.RegisterListeners();
-
-        //    InventoryCloudData.SpellDataChangedEvent        += OnCollectableDataChanged;
-        //}
-
-        //protected override void UnRegisterListeners()
-        //{
-        //   if (! m_IsInitialized)
-        //        return;
-
-        //    base.UnRegisterListeners();
-
-        //    InventoryCloudData.SpellDataChangedEvent    -= OnCollectableDataChanged;
-        //}
-
         #endregion
 
 
@@ -122,8 +105,7 @@ namespace Menu.MainMenu
 
             if (m_IsLinked)
             {
-                if (m_SubButtons != null)
-                    m_SubButtons.OnInfosButtonClicked();
+                Main.SetPopUp(EPopUpState.SpellInfoPopUp, (ESpell)Collectable, CollectableCloudData.Level);
                 return;
             }
 

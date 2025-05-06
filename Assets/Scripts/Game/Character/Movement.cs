@@ -1,5 +1,6 @@
 using Assets.Scripts.Data.DataStructures.SpellSubStructures;
 using Assets.Scripts.Game.Character.Netcode;
+using Data.DataStructures.SpellSubStructures;
 using Data.GameManagement;
 using Enums;
 using Game.Character.Netcode;
@@ -333,10 +334,6 @@ namespace Game.Character
         [ClientRpc]
         void SendToClientRPC(SStatePayload statePayload)
         {
-            // TODO ??????????????????????????????
-            //if (!IsOwner) return;
-            // TODO ??????????????????????????????
-
             m_LastServerState = statePayload;
         }
 
@@ -616,7 +613,9 @@ namespace Game.Character
                 return;
 
             m_MovementCancelled = cancel;
-            m_MoveX = 0;
+
+            if (cancel)
+                SetMovement(0);
         }
 
         public void ForceBlockMovement(bool block)

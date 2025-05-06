@@ -7,13 +7,14 @@ using System.ComponentModel;
 using System.Linq;
 using Tools;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Data.GameManagement
 {
     [Serializable]
     public struct SAccountLevelData
     {
-        /// <summary> quantity of golds required to level up </summary>
+        /// <summary> quantity of gold required to level up </summary>
         public int RequiredXp;
         /// <summary> Number of cards required to level up </summary>
         public SRewardsData Rewards;
@@ -28,14 +29,15 @@ namespace Data.GameManagement
     [Serializable]
     public struct SLevelData
     {
-        /// <summary> quantity of golds required to level up </summary>
-        public int RequiredGolds;
+        /// <summary> quantity of gold required to level up </summary>
+        [FormerlySerializedAs("RequiredGolds")] 
+        public int RequiredGold;
         /// <summary> Number of cards required to level up </summary>
         public int RequiredQty;
 
-        public SLevelData(int golds, int qty)
+        public SLevelData(int gold, int qty)
         {
-            RequiredGolds = golds;
+            RequiredGold = gold;
             RequiredQty = qty;
         }
     }
@@ -57,13 +59,13 @@ namespace Data.GameManagement
 
         [Description("Specific data for each rarety type of spells")]
         public List<SRaretyData>        RaretyData;
-        [Description("Specific data for each rarety type of spells")]
+        [Description("Required xp of each account levelup + associated rewards")]
         public List<SAccountLevelData>  AccountLevelData;
-        [Description("Quantity and Golds required for each Character level up")]
+        [Description("Quantity and Gold required for each Character level up")]
         public List<SLevelData>         CharacterLevelData;
-        [Description("Quantity and Golds required for each Spell level up")]
+        [Description("Quantity and Gold required for each Spell level up")]
         public List<SLevelData>         SpellLevelData;
-        [Description("Quantity and Golds required for each Rune level up")]
+        [Description("Quantity and Gold required for each Rune level up")]
         public List<SLevelData>         RuneLevelData;
 
         public static CollectablesManagementData s_Instance;
@@ -272,7 +274,7 @@ namespace Data.GameManagement
         }
 
         /// <summary>
-        /// Get the Level Up data of the provided value (required golds, quantity, ...)
+        /// Get the Level Up data of the provided value (required gold, quantity, ...)
         /// </summary>
         /// <param name="level"></param>
         /// <param name="rarety"></param>
@@ -291,7 +293,7 @@ namespace Data.GameManagement
             if (level >= GetMaxLevel(collectable))
                 return new SLevelData(0, 0);
 
-            // character has its own level up values (golds, qty, ...) and is not dependent on rarety
+            // character has its own level up values (gold, qty, ...) and is not dependent on rarety
             if (collectable.GetType() == typeof(ECharacter))
                 return GetCharacterLevelData(level);
 
@@ -350,7 +352,7 @@ namespace Data.GameManagement
                 levelIndex = 0;
             }
 
-            return new SLevelData(Instance.SpellLevelData[level - 1].RequiredGolds, Instance.SpellLevelData[levelIndex].RequiredQty);
+            return new SLevelData(Instance.SpellLevelData[level - 1].RequiredGold, Instance.SpellLevelData[levelIndex].RequiredQty);
         }
 
         /// <summary>
@@ -374,7 +376,34 @@ namespace Data.GameManagement
                 levelIndex = 0;
             }
 
-            return new SLevelData(Instance.RuneLevelData[level - 1].RequiredGolds, Instance.RuneLevelData[levelIndex].RequiredQty);
+            return new SLevelData(Instance.RuneLevelData[level - 1].RequiredGold, Instance.RuneLevelData[levelIndex].RequiredQty);
+        }
+
+        #endregion
+
+
+        #region Conversion
+
+        public static int ConvertCharacterToXp(ECharacter character)
+        {
+            switch (GetRaretyData(character).Rarety)
+            {
+                case ERarety.Common:
+                    return 100;
+
+                case ERarety.Rare:
+                    return 300;
+
+                case ERarety.Epic:
+                    return 3000;
+
+                case ERarety.Legendary:
+                    return 10000;
+
+                default:
+                    ErrorHandler.Warning("Unhanlded case : " + GetRaretyData(character).Rarety);
+                    return 0;
+            }
         }
 
         #endregion

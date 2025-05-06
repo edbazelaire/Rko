@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2413bf9bea7a81d44a0b645bca9d69f8, type: 3}
   m_Name: AxeThrow
   m_EditorClassIdentifier: 
-  Rarety: 0
-  m_Description: Throw an axe dealing {0} damages
+  m_Rarety: 0
+  m_Description: Throw an axe dealing {0} damage
   m_DescriptionVariables:
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   m_SpellElements: 
   Linked: 1
@@ -59,7 +59,27 @@ MonoBehaviour:
     Animation: 0
     SpellAnimation: 
     StateEffects: 
+  - Prefab: {fileID: 165672, guid: 716f54f8ecebd9541ad92537cc2123a3, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 1000
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 3
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 96ff9b72447802f4b9d850b7e0174e19, type: 3}
@@ -73,12 +93,20 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 110
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -100,8 +128,8 @@ MonoBehaviour:
   PersistanceAfterEnd: 0
   Animation: 2
   IsCancellable: 1
-  AnimationTimer: 0.75
-  m_Cooldown: 0.2
+  AnimationTimer: 0.6
+  m_Cooldown: 0
   Trajectory: 1
   m_TriggerGround: 1
   m_StopOnTargetPos: 0

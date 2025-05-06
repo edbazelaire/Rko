@@ -33,6 +33,7 @@ MonoBehaviour:
       Chests: 0100000001000000
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 1
     Cost: 100
     MaxCollection: 1
@@ -46,6 +47,7 @@ MonoBehaviour:
       Chests: 0100000001000000
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 2
     Cost: 0.99
     MaxCollection: 1
@@ -63,6 +65,7 @@ MonoBehaviour:
         CollectableName: Comets
         Qty: 20
       AchievementRewards: []
+      Boosts: []
     Currency: 1
     Cost: 100
     MaxCollection: 1
@@ -76,6 +79,7 @@ MonoBehaviour:
       Chests: 0700000008000000
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 2
     Cost: 7.99
     MaxCollection: 1
@@ -89,6 +93,7 @@ MonoBehaviour:
       Chests: 020000000200000003000000
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 2
     Cost: 19.99
     MaxCollection: 1
@@ -102,6 +107,7 @@ MonoBehaviour:
       Chests: 040000000500000006000000
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 2
     Cost: 24.99
     MaxCollection: 1
@@ -111,11 +117,36 @@ MonoBehaviour:
     Icon: {fileID: 0}
     Rewards:
       Currencies: []
+      Chests: 00000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+    Currency: 1
+    Cost: 25
+    MaxCollection: 0
+    Reduction: 0
+  - Name: 
+    Icon: {fileID: 0}
+    Rewards:
+      Currencies: []
+      Chests: 01000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+    Currency: 1
+    Cost: 80
+    MaxCollection: 0
+    Reduction: 0
+  - Name: 
+    Icon: {fileID: 0}
+    Rewards:
+      Currencies: []
       Chests: 02000000
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 1
-    Cost: 750
+    Cost: 500
     MaxCollection: 0
     Reduction: 0
   - Name: 
@@ -125,6 +156,7 @@ MonoBehaviour:
       Chests: 03000000
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 1
     Cost: 1800
     MaxCollection: 0
@@ -136,6 +168,7 @@ MonoBehaviour:
       Chests: 06000000
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 1
     Cost: 2200
     MaxCollection: 0
@@ -147,6 +180,7 @@ MonoBehaviour:
       Chests: 09000000
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 1
     Cost: 2200
     MaxCollection: 0
@@ -160,6 +194,7 @@ MonoBehaviour:
       Chests: 000000000100000002000000
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 1
     Cost: 1200
     MaxCollection: 0
@@ -173,6 +208,7 @@ MonoBehaviour:
       Chests: 010000000200000002000000
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 1
     Cost: 3500
     MaxCollection: 0
@@ -186,6 +222,7 @@ MonoBehaviour:
       Chests: 0200000003000000
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 1
     Cost: 5500
     MaxCollection: 0
@@ -200,6 +237,7 @@ MonoBehaviour:
       Chests: 
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 1
     Cost: 60
     MaxCollection: 0
@@ -213,6 +251,7 @@ MonoBehaviour:
       Chests: 
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 1
     Cost: 500
     MaxCollection: 0
@@ -226,6 +265,7 @@ MonoBehaviour:
       Chests: 
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 1
     Cost: 4500
     MaxCollection: 0
@@ -239,6 +279,7 @@ MonoBehaviour:
       Chests: 
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 1
     Cost: 10000
     MaxCollection: 0
@@ -253,6 +294,7 @@ MonoBehaviour:
       Chests: 
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 2
     Cost: 1.19
     MaxCollection: 0
@@ -266,6 +308,7 @@ MonoBehaviour:
       Chests: 
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 2
     Cost: 5.99
     MaxCollection: 0
@@ -279,6 +322,7 @@ MonoBehaviour:
       Chests: 
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 2
     Cost: 11.99
     MaxCollection: 0
@@ -292,6 +336,7 @@ MonoBehaviour:
       Chests: 
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 2
     Cost: 23.99
     MaxCollection: 0
@@ -305,6 +350,7 @@ MonoBehaviour:
       Chests: 
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 2
     Cost: 59.99
     MaxCollection: 0
@@ -318,6 +364,7 @@ MonoBehaviour:
       Chests: 
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 2
     Cost: 119.99
     MaxCollection: 0
@@ -332,6 +379,7 @@ MonoBehaviour:
       Chests: 
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 0
     Cost: 1500
     MaxCollection: 0
@@ -345,6 +393,7 @@ MonoBehaviour:
       Chests: 
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 0
     Cost: 50000
     MaxCollection: 0
@@ -358,6 +407,7 @@ MonoBehaviour:
       Chests: 
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 1
     Cost: 3500
     MaxCollection: 0
@@ -371,6 +421,7 @@ MonoBehaviour:
       Chests: 
       Collectables: []
       AchievementRewards: []
+      Boosts: []
     Currency: 1
     Cost: 5500
     MaxCollection: 0
@@ -386,9 +437,9 @@ MonoBehaviour:
       Currency: 0
   - Rarety: 2
     Price:
-      Price: 500
-      Currency: 1
+      Price: 75000
+      Currency: 0
   - Rarety: 3
     Price:
-      Price: 1000
-      Currency: 1
+      Price: 150000
+      Currency: 0

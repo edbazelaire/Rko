@@ -69,6 +69,18 @@ namespace Data
         #endregion
 
 
+        #region Debug
+
+        public List<SDescriptionVariable> DescriptionVariables => m_DescriptionVariables;
+
+        public void SetDescriptionVariables(List<SDescriptionVariable> descriptionVariables)
+        {
+            m_DescriptionVariables = descriptionVariables;
+        }
+
+        #endregion
+
+
         #region Info
 
         public static bool TrySplitPowerUpName(string baseName, out string runeName, out ERuneActivation runeActivation, bool throwError = true)
@@ -192,15 +204,12 @@ namespace Data
         [Description("Description informations of the Rune")]
         public string Description;
 
-        [Description("List of Element catagories of the spell")]
-        [SerializeField] protected List<ESpellElement> m_SpellElements;
-
         [SerializeField, Tooltip("Default power of the Rune")]
-        protected SRunePower m_MinorPower;
+        public SRunePower m_MinorPower;
         [SerializeField, Tooltip("Secondary power of the Rune")]
-        protected SRunePower m_MajorPower;
+        public SRunePower m_MajorPower;
         [SerializeField, Tooltip("Primal power of the Rune")]
-        protected SRunePower m_PrimalPower;
+        public SRunePower m_PrimalPower;
 
         /// <summary> current activation of the rune </summary>
         protected ERuneActivation m_RuneActivation = ERuneActivation.Primal;
@@ -209,7 +218,6 @@ namespace Data
         // DEPENDENT PROPERTIES
         protected override Type m_EnumType => typeof(ERune);
         public ERune Rune => Enum.TryParse(Name, out ERune rune) ? rune : ERune.None;
-        public List<ESpellElement> SpellElements => m_SpellElements;
 
 
         #region Rune Power Activation

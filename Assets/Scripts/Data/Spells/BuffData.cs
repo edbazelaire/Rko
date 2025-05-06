@@ -33,9 +33,9 @@ namespace Data
 
         #region Infos & Description
 
-        public override Dictionary<string, object> GetInfos()
+        public override Dictionary<string, object> GetInfo()
         {
-            var infoDict = base.GetInfos();
+            var infoDict = base.GetInfo();
             var stateEffect = GetStateEffect();
             var stateEffectInfos = stateEffect.GetInfos();
 

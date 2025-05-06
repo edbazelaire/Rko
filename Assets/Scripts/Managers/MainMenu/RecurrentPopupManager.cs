@@ -1,16 +1,11 @@
 ﻿using Assets.Scripts.Managers;
 using Enums;
-using Menu.PopUps;
-using MyBox;
 using Save;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 
 namespace Managers.MainMenu
@@ -104,7 +99,7 @@ namespace Managers.MainMenu
                 // check specifics for each popups
                 CheckSpecialCases(popupDisplay);
 
-                if (! popupDisplay.Enabled)
+                if (!popupDisplay.Enabled)
                     continue;
 
                 int currentTreshold = popupDisplay.CurrentTreshold;
@@ -141,11 +136,11 @@ namespace Managers.MainMenu
             switch (popUpDisplay.PopUp)
             {
                 case EPopUpState.PseudoPopUp:
-                    if (ProfileCloudData.HasDefaultPseudo)
-                        popUpDisplay.Enabled = false;
+                    popUpDisplay.Enabled = ProfileCloudData.HasDefaultPseudo;
                     break;
 
                 case EPopUpState.LoginPopUp:
+                    popUpDisplay.Enabled = ! AuthManager.Instance.IsLoggedIn;
                     break;
             }
         }

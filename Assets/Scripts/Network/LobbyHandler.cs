@@ -19,6 +19,8 @@ using Unity.Services.Lobbies.Models;
 using Unity.Services.Relay;
 using UnityEngine;
 using Unity.Services.Core;
+using Managers.Bots;
+using Game.AI.BehaviorTrees;
 
 namespace Network
 {
@@ -60,12 +62,12 @@ namespace Network
         const float LOBBY_ERROR_TIMER           = 15f;
 
         // Update & Heartbeat management
-        const string    KEY_GAME_MODE           = "GameMode";
-        const string    KEY_REGION              = "Region";
-        const string    KEY_SUB_REGION          = "SubRegion";
-        const string    KEY_RELAY_CODE          = "RelayCode";
-        const float     HEARTBEAT_TIMER         = 15f;
-        const float     UPDATE_LOBBY_TIMER      = 1.5f;
+        const string    KEY_GAME_MODE               = "GameMode";
+        const string    KEY_REGION                  = "Region";
+        const string    KEY_SUB_REGION              = "SubRegion";
+        const string    KEY_RELAY_CODE              = "RelayCode";
+        const float     HEARTBEAT_TIMER             = 15f;
+        const float     UPDATE_LOBBY_TIMER          = 1.5f;
 
         public Action<ulong, ECharacter> OnRelayJoined;
 
@@ -75,6 +77,7 @@ namespace Network
         private string      m_RelayCode;
         private bool        m_CancelRetry;
         private bool        m_IsTuto;
+        private bool        m_FillWithBots = false;
 
         private EGameMode m_GameMode            = EGameMode.Arena;
         private EArenaType m_ArenaType          = EArenaType.FrostArena;
@@ -96,6 +99,9 @@ namespace Network
         public ELobbyState      State               => m_State;
         public bool             IsActive            => m_State != ELobbyState.Inactive;
         public bool             IsTuto              { get => m_IsTuto; set => m_IsTuto = value; }
+
+        /// <summary> time waiting in ranked before filling with bots </summary>
+        public float WaitForPlayerDuration => Main.SkipWaitingRanked ? 0f : UnityEngine.Random.Range(1f, 5f * ((int)ProgressionCloudData.CurrentLeague + 1)); 
 
         #endregion
 
@@ -253,7 +259,7 @@ namespace Network
                         );
 
                         SendBotsData();
-
+                    
                         NextState();
                         return;
 
@@ -279,8 +285,18 @@ namespace Network
 
         IEnumerator WaitLobbyFullCoroutine()
         {
+            float timer = WaitForPlayerDuration;
+
+            m_FillWithBots = false;
             while (m_JoinedLobby.Players.Count != m_JoinedLobby.MaxPlayers)
             {
+                timer -= Time.deltaTime;
+                if (timer < 0)
+                {
+                    m_FillWithBots = true;
+                    break;
+                }
+
                 UpdateLobbyData();
                 yield return null;
             }
@@ -597,8 +613,8 @@ namespace Network
 
         void SendBotsData()
         {
-            // no AI in game mode (for now)
-            if (GameMode == EGameMode.Ranked)
+            // check if requires AI bot
+            if (GameMode == EGameMode.Ranked && !m_FillWithBots)
                 return;
 
             GameManager.Instance.AddPlayerDataServerRPC(
@@ -636,7 +652,7 @@ namespace Network
                             new int[] { 1, 1 },
                             new SProfileCurrentData(accountLevel: 1, gamerTag: ECharacter.Kahnan.ToString()).AsNetworkSerializable(),
                             isPlayer: false,
-                            botData: new SBotData(EArenaDifficulty.Normal, 1f, 1f)
+                            botData: new SBotData(EArenaDifficulty.Normal.ToString(), 1f, 1f)
                         );
                     }
 
@@ -651,34 +667,45 @@ namespace Network
                         new int[] { 9, 9, 9, 9 },
                         new SProfileCurrentData(accountLevel: 9, gamerTag: trainingCharacter.ToString()).AsNetworkSerializable(),
                         isPlayer: false,
-                        botData: new SBotData(EArenaDifficulty.Normal, PlayerPrefs.GetFloat(EPlayerPref.TrainingDecisionRefresh.ToString(), 0.05f), PlayerPrefs.GetFloat(EPlayerPref.TrainingRandomness.ToString(), 0f))
+                        botData: new SBotData(
+                            difficulty:         PlayerPrefs.GetString(EPlayerPref.TrainingDifficulty.ToString(), ELeague.Silver.ToString()), 
+                            decisionRefresh:    PlayerPrefs.GetFloat(EPlayerPref.TrainingDecisionRefresh.ToString(), 0.05f), 
+                            randomness:         PlayerPrefs.GetFloat(EPlayerPref.TrainingRandomness.ToString(), 0f),
+                            reactionTime:       (PlayerPrefs.GetFloat(EPlayerPref.TrainingReactionTime.ToString() + "Min", 0f), PlayerPrefs.GetFloat(EPlayerPref.TrainingReactionTime.ToString() + "Max", 0.5f)),
+                            movementTime:       (PlayerPrefs.GetFloat(EPlayerPref.TrainingMovementTime.ToString() + "Min", 0f), PlayerPrefs.GetFloat(EPlayerPref.TrainingMovementTime.ToString() + "Max", 1f)),
+                            movementRefresh:    (PlayerPrefs.GetFloat(EPlayerPref.TrainingMovementRefresh.ToString() + "Min", 0f), PlayerPrefs.GetFloat(EPlayerPref.TrainingMovementRefresh.ToString() + "Max", 0.5f)),
+                            extraVariables:     GetTrainingExtraVariables()
+                        )
                     );
 
                 // ================================================================================================
                 // RANKED MODE : random
                 case EGameMode.Ranked:
-                    ECharacter character = ECharacter.Alexander;
-                  
-                    return new SPlayerData(
-                        character.ToString(),
-                        1,
-                        character.ToString(),
-                        new ERune[] { ERune.None, ERune.None, ERune.None },
-                        new int[] { 1, 1, 1 },
-                        new ESpell[] { ESpell.Heal, ESpell.RockShower },
-                        new int[] { 1, 1 },
-                        new SProfileCurrentData(
-                            accountLevel: 1,
-                            gamerTag: character.ToString()
-                        ).AsNetworkSerializable(),
-                        isPlayer: false
-                    );
+                    return BotBuilder.GenerateBot(ProgressionCloudData.LeagueCloudData);
 
                 // ================================================================================================
                 default:
                     ErrorHandler.Error("Unhandled mode : " + GameMode);
                     return default;
             }
+        }
+
+        Dictionary<string, float> GetTrainingExtraVariables()
+        {
+            var dict = new Dictionary<string, float>();
+            if (!Enum.TryParse(PlayerPrefs.GetString(EPlayerPref.TrainingDifficulty.ToString()), out ELeague league))
+            {
+                ErrorHandler.Error("Unable to parse " + PlayerPrefs.GetString(EPlayerPref.TrainingDifficulty.ToString()) + " as League");
+                return dict;
+            }
+
+            List<string> variables = DefaultBotBT.GetExtraVariables(league);
+            foreach (string varName in variables)
+            {
+                dict[varName] = PlayerPrefs.GetFloat(varName, 0f);
+            }
+
+            return dict;
         }
 
         #endregion

@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: ArcticToundra
   m_EditorClassIdentifier: 
   Rarety: 0
-  m_Description: A violant storm dealing {0} damages each {1} seconds for {2} seconds
+  m_Description: A violant storm dealing {0} damage each {1} seconds for {2} seconds
     and applying {3}.<br>The size of the zone increases during its lifetime. When
-    reaching max size, the storm explodes dealing {4} damages and applying {5}
+    reaching max size, the storm explodes dealing {4} damage and applying {5}
   m_DescriptionVariables:
-  - Name: TickDamages
+  - Name: TickDamage
     WithIcon: 1
   - Name: DurationTick
     WithIcon: 0
@@ -25,7 +25,7 @@ MonoBehaviour:
     WithIcon: 1
   - Name: Frost
     WithIcon: 1
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   - Name: Frozen
     WithIcon: 1
@@ -53,7 +53,7 @@ MonoBehaviour:
   EnergyGain: 0
   EnergyCost: 100
   m_Damage: 0
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -83,7 +83,7 @@ MonoBehaviour:
   m_Cooldown: 0
   m_SpellSpawn: 1
   DurationTick: 0.5
-  m_TickDamages: 25
+  m_TickDamage: 25
   m_TickHeal: 0
   m_TickShield: 0
   m_ZoneForce:

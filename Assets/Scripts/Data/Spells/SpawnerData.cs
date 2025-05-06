@@ -91,10 +91,10 @@ namespace Data
 
         #region Target
 
-        public override void CalculateTarget(ref Vector3 target, ulong clientId)
+        public override void CalculateTarget(ref Vector3 target, ulong clientId, ulong? targetId)
         {
             target.y = 0;
-            base.CalculateTarget(ref target, clientId);
+            base.CalculateTarget(ref target, clientId, targetId);
         }
 
         #endregion
@@ -102,9 +102,9 @@ namespace Data
 
         #region Infos
 
-        public override Dictionary<string, object> GetInfos()
+        public override Dictionary<string, object> GetInfo()
         {
-            var infos = base.GetInfos();
+            var infos = base.GetInfo();
 
             if (IsUniqueSpawn)
             {

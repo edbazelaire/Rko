@@ -354,7 +354,7 @@ namespace Tools
                 // Replace token with the property value from ConvertDescriptionVariable
                 text = text.Replace(
                     token,
-                    propertyName == "Description" ? subSpellData.GetDescription().FirstCharacterToLower() : subSpellData.ConvertDescriptionVariable(new SDescriptionVariable(propertyName, true), subSpellData.GetInfos())
+                    propertyName == "Description" ? subSpellData.GetDescription().FirstCharacterToLower() : subSpellData.ConvertDescriptionVariable(new SDescriptionVariable(propertyName, true), subSpellData.GetInfo())
                 );
             }
 
@@ -364,13 +364,13 @@ namespace Tools
         public static string GetTriggerEffectDescription(STriggerEffect triggerEffect)
         {
             // description of the Rune is the description of the Trigger Effect
-            if (SpellLoader.SpellExists(triggerEffect.SpellDataName))
+            if (SpellLoader.IsSpell(triggerEffect.SpellDataName))
             {
                 return SpellLoader.GetSpellDescription(triggerEffect.SpellDataName, triggerEffect.Level);
             }
 
             // description of the Rune is the description of the Trigger Effect 
-            else if (SpellLoader.StateEffectExists(triggerEffect.SpellDataName))
+            else if (SpellLoader.IsStateEffect(triggerEffect.SpellDataName))
             {
                 return SpellLoader.GetStateEffectDescription(triggerEffect.SpellDataName, triggerEffect.Level);
             }

@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a54727096f1b9a14e931ac401f233989, type: 3}
   m_Name: Needlestorm
   m_EditorClassIdentifier: 
-  Rarety: 1
+  m_Rarety: 1
   m_Description: Shoots {0} frost needles on the enemy position, each dealing {1}
-    damages and applying {2}
+    damage and applying {2}
   m_DescriptionVariables:
   - Name: Projectiles
     WithIcon: 1
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   - Name: Frost
     WithIcon: 1
@@ -43,12 +43,13 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0.5}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   - Prefab: {fileID: 153912, guid: a625f15f05e0a114c924b974f4e4afec, type: 3}
     MaterialEffect: {fileID: 0}
     SoundFX: []
     GFXLifetime:
-      m_StartSpellPart: 500
+      m_StartSpellPart: 1000
       m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
@@ -61,8 +62,10 @@ MonoBehaviour:
     IsFollowing: 0
     Offset: {x: 0, y: 0}
     Animation: 0
+    SpellAnimation: 
     StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 3b0634fb8970b3646b290d3a85c0417c, type: 3}
@@ -70,12 +73,26 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 8300000, guid: 07532e25ab2bf0e4e9520610dfe2e0ce, type: 3}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 1
+  m_ClampTargetPos: 1
+  TargetOffset:
+    X: 0
+    Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
+  m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 3
   EnergyCost: 0
   m_Damage: 30
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -83,6 +100,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 0.5
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
@@ -95,6 +115,7 @@ MonoBehaviour:
   EnemyStateEffects:
   - StateEffect: 16
     Stacks: 1
+    BonusStacksPerLevel: 0
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
@@ -104,10 +125,13 @@ MonoBehaviour:
   AnimationTimer: 1
   m_Cooldown: 20
   Trajectory: 0
+  m_TriggerGround: 1
   m_StopOnTargetPos: 0
   m_Speed: 12
+  m_YSpawnPos: 0
   ProjectileData: {fileID: 0}
   MultiProjectileType: 2
+  m_RecalculatePosition: 1
   m_IsBlocking: 0
   m_NProjectiles: 12
   m_ProjectileZoneSize: 3

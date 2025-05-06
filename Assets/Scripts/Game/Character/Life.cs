@@ -1,6 +1,7 @@
 using Assets.Scripts.Game;
 using Data;
 using Enums;
+using Game.StateEffects.Interfaces;
 using System;
 using Tools;
 using Unity.Collections.LowLevel.Unsafe;
@@ -18,6 +19,8 @@ public class Life : NetworkBehaviour
     // EVENTS
     /// <summary> thrown when the character dies </summary>
     public Action                   DiedEvent;
+    public delegate void OnHealedDelegate(int finalHeal, ulong targetId, ulong casterId);
+    public static event OnHealedDelegate OnHealedEvent;
 
     // ===================================================================================
     // NETWORK VARIABLES
@@ -103,7 +106,7 @@ public class Life : NetworkBehaviour
         // check provided value
         if (damage < 0)
         {
-            ErrorHandler.Error($"Damages ({damage}) < 0");
+            ErrorHandler.Error($"Damage ({damage}) < 0");
             return 0;
         }
 
@@ -149,6 +152,21 @@ public class Life : NetworkBehaviour
             return 0;
         }
 
+        // Apply reductions
+        heal = m_Controller.StateHandler.ApplyHealReductions(heal);
+
+        // Interception (before apply)
+        foreach (var effect in m_Controller.StateHandler.StateEffects)
+        {
+            if (effect is IHealInterceptor interceptor)
+            {
+                interceptor.OnPreHeal(ref heal, casterId);
+            }
+        }
+
+        if (heal <= 0)
+            return 0;
+
         // check max heal
         if (m_Hp.Value + heal > m_MaxHp.Value)
             heal = m_MaxHp.Value - m_Hp.Value;
@@ -159,6 +177,7 @@ public class Life : NetworkBehaviour
 
         m_Hp.Value += heal;
         GameAnalyticsManager.Instance.OnSpellHit(casterId, m_Controller.PlayerId, source, heal, EHitType.Heal, spellCategory);
+        OnHealedEvent?.Invoke(heal, m_Controller.PlayerId, casterId);
 
         return heal;
     }
@@ -214,25 +233,6 @@ public class Life : NetworkBehaviour
             return;
 
         m_FinalShield.Value = m_Shield + m_Controller.StateHandler.RemainingShield + m_Controller.CounterHandler.RemainingShield;
-    }
-
-    #endregion
-
-
-    #region Debug
-
-    void DisplayLife(float timer = 2f)
-    {
-        if (debugTimer > 0f)
-        {
-            debugTimer -= Time.deltaTime;
-            return;
-        }
-
-        print("Client: " + OwnerClientId);
-        print("     + Life: " + m_Hp.Value);
-
-        debugTimer = timer;
     }
 
     #endregion

@@ -31,34 +31,36 @@ namespace Inventory
             + FIX_STAR_BONUS * (int)m_Rarety                            // fix value bonus from rarety
         );
 
+        // TODO : Set in SETTINGS or MANAGEMENT class  =========================================================
         /// <summary>
         /// Associate Reward with its price in "Power"
         /// </summary>
-        Dictionary<string, int> RewardsPrice = new Dictionary<string, int>()
+        public static readonly Dictionary<string, int> RewardsPrice = new Dictionary<string, int>()
         {
             // Currencies
-            { ECurrency.Golds.ToString(),                   1       },
-            { ECurrency.Xp.ToString(),                      5       },
-            { ECurrency.Gems.ToString(),                    50      },
+            { ECurrency.Gold.ToString(),                    1           },
+            { ECurrency.Xp.ToString(),                      10          },
+            { ECurrency.Gems.ToString(),                    50          },
 
             // Spells
-            { "Spell_" + ERarety.Common.ToString(),         50      },
-            { "Spell_" + ERarety.Rare.ToString(),           150     },
-            { "Spell_" + ERarety.Epic.ToString(),           1500    },
-            { "Spell_" + ERarety.Legendary.ToString(),      7500    },
+            { "Spell_" + ERarety.Common.ToString(),         50          },
+            { "Spell_" + ERarety.Rare.ToString(),           150         },
+            { "Spell_" + ERarety.Epic.ToString(),           1500        },
+            { "Spell_" + ERarety.Legendary.ToString(),      7500        },
 
             // Runes
-            { "Rune_" + ERarety.Common.ToString(),          150     },
-            { "Rune_" + ERarety.Rare.ToString(),            300     },
-            { "Rune_" + ERarety.Epic.ToString(),            3000    },
-            { "Rune_" + ERarety.Legendary.ToString(),       12000   },
+            { "Rune_" + ERarety.Common.ToString(),          150         },
+            { "Rune_" + ERarety.Rare.ToString(),            300         },
+            { "Rune_" + ERarety.Epic.ToString(),            3000        },
+            { "Rune_" + ERarety.Legendary.ToString(),       12000       },
 
             // Characters
-            { "Character_" + ERarety.Common.ToString(),     500     },
-            { "Character_" + ERarety.Rare.ToString(),       1500    },
-            { "Character_" + ERarety.Epic.ToString(),       15000   },
-            { "Character_" + ERarety.Legendary.ToString(),  50000   },
+            { "Character_" + ERarety.Common.ToString(),     1000        },
+            { "Character_" + ERarety.Rare.ToString(),       3000        },
+            { "Character_" + ERarety.Epic.ToString(),       30000       },
+            { "Character_" + ERarety.Legendary.ToString(),  100000      },
         };
+        // TODO ===============================================================================================
 
         #endregion
 
@@ -306,7 +308,7 @@ namespace Inventory
                 case ESubRewardType.Character:
                     return CreateCharacterReward(power, rarity);
                 default:
-                    return new SReward(typeof(ECurrency), ECurrency.Golds.ToString(), 0);
+                    return new SReward(typeof(ECurrency), ECurrency.Gold.ToString(), 0);
             }
         }
 
@@ -324,7 +326,7 @@ namespace Inventory
             };
 
             if (currencyName == null)
-                return new SReward(typeof(ECurrency), ECurrency.Golds.ToString(), 0);
+                return new SReward(typeof(ECurrency), ECurrency.Gold.ToString(), 0);
 
             int qty = Mathf.Max(1, power / RewardsPrice[currencyName]);
             return new SReward(typeof(ECurrency), currencyName, qty);
@@ -337,7 +339,7 @@ namespace Inventory
         {
             var spellData = SpellLoader.GetRandomSpell(new List<ERarety> { rarity });
             if (spellData == null)
-                return new SReward(typeof(ECurrency), ECurrency.Golds.ToString(), 0);
+                return new SReward(typeof(ECurrency), ECurrency.Gold.ToString(), 0);
 
             int qty = rarity == ERarety.Legendary ? 1 : Mathf.Max(1, power / RewardsPrice["Spell_" + rarity]);
             return new SReward(typeof(ESpell), spellData.Spell.ToString(), qty);
@@ -350,7 +352,7 @@ namespace Inventory
         {
             var runeData = SpellLoader.GetRandomRune(new List<ERarety> { rarity });
             if (runeData == null)
-                return new SReward(typeof(ECurrency), ECurrency.Golds.ToString(), 0);
+                return new SReward(typeof(ECurrency), ECurrency.Gold.ToString(), 0);
 
             int qty = rarity == ERarety.Legendary ? 1 : Mathf.Max(1, power / RewardsPrice["Rune_" + rarity]);
             return new SReward(typeof(ERune), runeData.Rune.ToString(), qty);
@@ -373,7 +375,7 @@ namespace Inventory
         /// </summary>
         private SReward CreateFallbackReward(int power)
         {
-            return new SReward(typeof(ECurrency), ECurrency.Golds.ToString(), Mathf.Max(1, power));
+            return new SReward(typeof(ECurrency), ECurrency.Gold.ToString(), Mathf.Max(1, power));
         }
 
 

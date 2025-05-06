@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Data.DataStructures;
+using Assets.Scripts.Game;
 using Assets.Scripts.Managers.Sound;
 using Data;
 using Enums;
@@ -44,10 +45,33 @@ namespace Game.Spells
             LevelScalingFactor  = levelScalingFactor;
             StackScalingFactor  = stackScalingFactor;
         }
+
+        public readonly float Get(Controller controller, int level, int stacks)
+        {
+            return Mathf.Pow(BaseValue, 1 + LevelScalingFactor * level) * stacks * StackScalingFactor;
+        }
     }
 
+    /// <summary>
+    /// Convert the value of a stat, to another
+    /// </summary>
+    [Serializable]
+    public struct SStatConversion
+    {
+        public EStateEffectProperty     ExpectedStat;
+        public SBonusStats              OriginalStatScaling;
+
+        public readonly bool HasStat(EStateEffectProperty stateEffectProperty) => ExpectedStat == stateEffectProperty;
+        public readonly float Get(Controller controller, int level, int stacks)
+        {
+            var baseValue = controller.StateHandler.GetFloat(OriginalStatScaling.StateEffectProperty, ignoreConversion: true);
+            return baseValue * OriginalStatScaling.Get(controller, level, stacks);
+        }
+    }
+
+
     [CreateAssetMenu(fileName = "StateEffect", menuName = "Game/StateEffects/Default")]
-    [System.Serializable]
+    [Serializable]
     public class StateEffect : ScriptableObject
     {
         #region Members
@@ -82,6 +106,9 @@ namespace Game.Spells
         [SerializeField] protected      int                         m_MaxStacks             = 1;
         [SerializeField] protected      int                         m_StackDecay            = -1;   // number of stacks decaying at the end of the duration (-1 = all stacks)
 
+        [Header("Stat Conversion")]
+        [SerializeField] protected      List<SStatConversion>       m_StatConversions       = new();
+
         [Header("General Boosts")]
         [SerializeField] protected      int                         m_Energy                = 0;
         [SerializeField] protected      List<SBonusStats>           m_BonusStats;
@@ -96,9 +123,9 @@ namespace Game.Spells
         [SerializeField] protected      int                         m_ResistanceFix         = 0;
         [SerializeField] protected      float                       m_ResistancePerc        = 0f;
 
-        [Header("Damages")]
-        [SerializeField] protected      int                         m_BonusDamages          = 0;
-        [SerializeField] protected      float                       m_BonusDamagesPerc      = 0f;
+        [Header("Damage")]
+        [SerializeField] protected      int                         m_BonusDamage          = 0;
+        [SerializeField] protected      float                       m_BonusDamagePerc      = 0f;
         [SerializeField] protected      float                       m_BonusLifeSteal        = 0f;
 
         [Header("Heal")]
@@ -106,7 +133,7 @@ namespace Game.Spells
         [SerializeField] protected      float                       m_BonusHealPerc         = 0f;
 
         [Header("Elementary")]
-        [SerializeField] protected      int                         m_BonusBurnDamages      = 0;
+        [SerializeField] protected      int                         m_BonusBurnDamage      = 0;
         [SerializeField] protected      float                       m_BonusSlowPerc         = 0f;
 
         [Header("Extra Effects")]
@@ -165,7 +192,7 @@ namespace Game.Spells
         public EStateEffect             ConsumeState        => m_ConsumeState;
         public EStateEffect             DefaultState        => m_DefaultState;
         public int                      Level               => m_Level;
-        public bool                     IsBuff              => SpellLoader.SpellExists(StateEffectName);
+        public bool                     IsBuff              => SpellLoader.IsSpell(StateEffectName);
 
         public string StateEffectName
         {
@@ -207,22 +234,33 @@ namespace Game.Spells
             if (stateEffectData.HasValue && stateEffectData.Value.OverridingProperties != null && stateEffectData.Value.OverridingProperties.Count > 0)
                 OverrideStateEffectData(stateEffectData.Value);
 
-            if (!CheckBeforeGraphicInit())
+            // allow children to pre-process before starting
+            ApplyPreProcessing();
+
+            // check if has condition to be enabled
+            if (! CheckBeforeGraphicInit())
             {
                 return false;
             }
 
+            // reset data before start
             RefreshStats();
 
+            // activate effects that applies when the spell is ready
             OnStart();
 
             // if spell is instantanious do not proceed after initalization in state handler
             if (m_IsInstantanious)
                 return false;
 
+            // is that type of effect currently "Holding" (= duration timer is frozen)
             m_IsHolding = m_Controller.StateHandler.IsHolding(StateEffectName);
 
+            // register spell listeners
             RegisterListeners();
+
+            // allow children to call post-processing methods
+            ApplyPostProcessing();
 
             return true;
         }
@@ -231,6 +269,11 @@ namespace Game.Spells
 
 
         #region At Init 
+
+        /// <summary>
+        /// Allow children to run code BEFORE enabling the spell
+        /// </summary>
+        protected virtual void ApplyPreProcessing() { }
 
         /// <summary>
         /// Method that allows children to make a verification before instantiating this
@@ -245,9 +288,12 @@ namespace Game.Spells
             return m_Stacks > 0;
         }
 
+        /// <summary>
+        /// Call all method that applies when the spell starts
+        /// </summary>
         protected virtual void OnStart()
         {
-            if (m_Energy != 0)
+            if (m_Energy != 0 && !m_Controller.CharacterData.IsStructure)
                 m_Caster.EnergyHandler.AddEnergy(GetInt(EStateEffectProperty.Energy) * m_Stacks);
 
             ActivateHoldingStateEffects(true);
@@ -269,9 +315,18 @@ namespace Game.Spells
                 End();
         }
 
+        /// <summary>
+        /// Allow children to run code AFTER enabling the spell
+        /// </summary>
+        protected virtual void ApplyPostProcessing() { }
+
+        /// <summary>
+        /// Allow wraper data to override the state effect's data
+        /// </summary>
         public void OverrideStateEffectData(SStateEffectData stateEffectData)
         {
-            name = stateEffectData.StateEffect.ToString();
+            if (stateEffectData.OverridingProperties == null)
+                return;
 
             foreach (SStateEffectProperty overridingProperty in stateEffectData.OverridingProperties)
             {
@@ -381,12 +436,10 @@ namespace Game.Spells
                 if (m_StackDecay < 0)
                 {
                     RemoveStacks(Math.Abs(m_StackDecay));
-                    m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnSpawn, StateEffectName, m_Caster.PlayerId, m_Stacks, m_Duration));
                 }
                 else
                 {
                     Refresh(m_StackDecay);
-                    m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnSpawn, StateEffectName, m_Caster.PlayerId, m_Stacks, m_Duration));
                 }
             }
         }
@@ -432,8 +485,13 @@ namespace Game.Spells
 
         protected virtual void RefreshStats()
         {
-            m_RemainingShield = GetInt(EStateEffectProperty.Shield); 
+            var currentShield = m_RemainingShield;
+            m_RemainingShield = m_Controller.StateHandler.ApplyBonusShield(GetInt(EStateEffectProperty.Shield), m_Controller); 
             m_Timer = m_Duration;
+
+            var shieldAdded = m_RemainingShield - currentShield;
+            if (shieldAdded > 0)
+                GameAnalyticsManager.Instance.OnSpellHit(m_Controller.PlayerId, m_Controller.PlayerId, StateEffectName, shieldAdded, EHitType.Shield, ESpellCategory.Direct);
         }
 
         public virtual int RemoveStacks(int nStacks)
@@ -448,7 +506,8 @@ namespace Game.Spells
             m_Stacks -= nStacks;
 
             // refresh UI on client side
-            m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnSpawn, StateEffectName, m_Caster.PlayerId, m_Stacks, m_Duration));
+            m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnActivation, StateEffectName, m_Caster.PlayerId, m_Stacks, m_Duration));
+
             return nStacks;
         }
 
@@ -651,6 +710,9 @@ namespace Game.Spells
             if (! m_BonusStats.IsNullOrEmpty() && m_BonusStats.Any(value => value.StateEffectProperty == property))
                 return true;
 
+            if (!m_StatConversions.IsNullOrEmpty() && m_StatConversions.Any(value => value.HasStat(property)))
+                return true;
+
             return TryGetPropertyInfo(property, out _, throwError: false);
         }
 
@@ -696,20 +758,46 @@ namespace Game.Spells
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        public virtual object GetProperty(EStateEffectProperty property)
+        public virtual object GetProperty(EStateEffectProperty property, bool ignoreConversion = false)
         {
-            if (TryGetBonusStat(property, out float value))
-                return value;
+            object value = null;
+            float fValue = 0f;
 
-            if (!TryGetPropertyInfo(property, out FieldInfo propertyInfo))
-                return null;
+            // check BONUS stats
+            if (TryGetBonusStat(property, out fValue))
+                value = fValue;
 
-            return propertyInfo.GetValue(this);
+            // [DEPRECATED] check PROPERTY info
+            else if (TryGetPropertyInfo(property, out FieldInfo propertyInfo))
+                value = propertyInfo.GetValue(this);
+
+            // add bonus STATS CONVERSIONS
+            if (!ignoreConversion && ! m_StatConversions.IsNullOrEmpty())
+            {
+                foreach (SStatConversion statConversion in m_StatConversions)
+                {
+                    if (statConversion.HasStat(property))
+                    {
+                        if (value == null)
+                            value = 0f;
+
+                        if (! float.TryParse(value.ToString(), out fValue))
+                        {
+                            ErrorHandler.Error("Unable to parse property " + property + "(" + value + ") into a float");
+                            break;
+                        }
+
+                        value = fValue + statConversion.Get(m_Controller, Level, Stacks);
+                    }
+                }
+            }
+
+            return value;
         }
 
-        protected virtual T GetProperty<T>(EStateEffectProperty property)
+        protected virtual T GetProperty<T>(EStateEffectProperty property, bool ignoreConversion = false)
         {
-            object value = GetProperty(property);
+            object value = GetProperty(property, ignoreConversion);
             if (value == null)
                 return default;
 
@@ -808,7 +896,7 @@ namespace Game.Spells
             return (int)Mathf.Round(boostedValue * stacksFactor);    
         }
 
-        public virtual float GetFloat(EStateEffectProperty property) 
+        public virtual float GetFloat(EStateEffectProperty property, bool ignoreConversion = false) 
         {
             if (!m_IsActivated)
                 return 0;
@@ -818,7 +906,7 @@ namespace Game.Spells
 
             SStateEffectScaling stateEffectScaling = m_StateEffectScalingStacks.FirstOrDefault(effect => effect.StateEffectProperty == property);
 
-            float baseValue = GetProperty<float>(property);
+            float baseValue = GetProperty<float>(property, ignoreConversion);
 
             if (m_Controller == null)
                 return baseValue;
@@ -827,7 +915,7 @@ namespace Game.Spells
             if (property == EStateEffectProperty.SpeedBonus && baseValue < 0 && m_Caster != null)
             {
                 // ADD : && baseValue < 0
-                baseValue *= Mathf.Max(0, m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusSlowPerc));
+                baseValue *= Mathf.Max(0, m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusSlowPerc, ignoreConversion: ignoreConversion));
             }
 
             float boostedValue = m_Controller.StateHandler.ApplyBonus(baseValue, property, null);
@@ -889,14 +977,14 @@ namespace Game.Spells
 
                 if (propertyInfo.FieldType == typeof(float))
                 { 
-                    float value = GetProperty<float>(property);
+                    float value = GetProperty<float>(property, ignoreConversion: true);
                     if (value != 0)
                         infosDict.Add(property.ToString(), value);
                 }
 
                 else if (propertyInfo.FieldType == typeof(int))
                 {
-                    int value = GetProperty<int>(property);
+                    int value = GetProperty<int>(property, ignoreConversion: true);
                     if (value == 0)
                         continue;
                    
@@ -950,7 +1038,7 @@ namespace Game.Spells
             List<string> values = new List<string>();
             foreach(EStateEffectProperty property in m_DescriptionVariables)
             {
-                var value = GetProperty(property);
+                var value = GetProperty(property, true);
                 if (value == null)
                 {
                     values.Add("UNDEFINED");

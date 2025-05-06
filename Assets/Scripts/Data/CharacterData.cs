@@ -110,16 +110,16 @@ namespace Data
             EStateEffectProperty.MaxStacks,
             EStateEffectProperty.Shield,
             EStateEffectProperty.ResistanceFix,
-            EStateEffectProperty.Damages,
+            EStateEffectProperty.Damage,
             EStateEffectProperty.TickShield,
-            EStateEffectProperty.BonusDamages,
-            EStateEffectProperty.BonusTickDamages,
+            EStateEffectProperty.BonusDamage,
+            EStateEffectProperty.BonusTickDamage,
             EStateEffectProperty.BonusTickHeal,
             EStateEffectProperty.BonusTickShield,
-            EStateEffectProperty.BonusBurnDamages,
+            EStateEffectProperty.BonusBurnDamage,
             EStateEffectProperty.Hp,
             EStateEffectProperty.Stacks,
-            EStateEffectProperty.EndDamages,
+            EStateEffectProperty.EndDamage,
             EStateEffectProperty.EndHeal, 
         };
 
@@ -288,9 +288,9 @@ namespace Data
 
         #region Infos
 
-        public override Dictionary<string, object> GetInfos()
+        public override Dictionary<string, object> GetInfo()
         {
-            var infosDict = base.GetInfos();
+            var infosDict = base.GetInfo();
 
             infosDict.Add("Health", MaxHealth);
             infosDict.Add("MovementSpeed", Speed);

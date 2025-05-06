@@ -1,3 +1,4 @@
+using Assets;
 using Assets.Scripts.Game;
 using Assets.Scripts.Managers.Sound;
 using Enums;
@@ -5,12 +6,14 @@ using Game;
 using Game.SpellGFXs;
 using Game.Spells;
 using Game.UI;
+using Game.UI.GameUI;
 using Managers;
 using Menu.Common.Buttons;
 using Network;
 using Save;
 using System.Collections.Generic;
 using Tools;
+using Tools.Debugs.BT;
 using UnityEngine;
 
 public class GameUIManager : MonoBehaviour
@@ -25,6 +28,9 @@ public class GameUIManager : MonoBehaviour
     private EndGameUI       m_EndGameUI;
     private ErrorGameUI     m_ErrorGameUI;
     private TutoGameUI      m_TutoGameUI;
+    private BTDebugger      m_BTDebugger;
+    private EmotsSectionUI  m_EmotsSectionUI;
+    private GameTimerUI     m_GameTimerUI;
 
     const string        c_PlayerUIContainerPrefix   = "PlayerUIContainer_";
     const string        c_SpellsContainer           = "SpellsContainer";
@@ -70,7 +76,10 @@ public class GameUIManager : MonoBehaviour
     public static ErrorGameUI ErrorGameUI                   => Instance.m_ErrorGameUI;
     public static EndGameUI EndGameUI                       => Instance.m_EndGameUI;
     public static TutoGameUI TutoGameUI                     => Instance.m_TutoGameUI;
-    public static HitDisplayUI DamageDisplayManager => HitDisplayUI.Instance;
+    public static BTDebugger BTDebugger                     => Instance.m_BTDebugger;
+    public static EmotsSectionUI EmotsSectionUI             => Instance.m_EmotsSectionUI;
+    public static GameTimerUI GameTimerUI                   => Instance.m_GameTimerUI;
+    public static HitDisplayUI DamageDisplayManager         => HitDisplayUI.Instance;
     public static List<SpellItemUI> SpellItems              => Instance.m_SpellItems;
     public static MovementButtonsContainer MovementButtonsContainer => Instance.m_MovementButtonsContainer;
     public static bool LeftMovementButtonPressed            => Instance.m_LeftMovementButtonPressed;
@@ -83,10 +92,13 @@ public class GameUIManager : MonoBehaviour
 
     void FindComponents()
     {
-        m_IntroGameUI   = Finder.FindComponent<IntroGameUI>(transform.parent.gameObject,    "IntroGameUI");
-        m_EndGameUI     = Finder.FindComponent<EndGameUI>(transform.parent.gameObject,      "EndGameUI");
-        m_ErrorGameUI   = Finder.FindComponent<ErrorGameUI>(transform.parent.gameObject,    "ErrorGameUI");
-        m_TutoGameUI    = Finder.FindComponent<TutoGameUI>(transform.parent.gameObject,     "TutoGameUI");
+        m_IntroGameUI       = Finder.FindComponent<IntroGameUI>(transform.parent.gameObject,    "IntroGameUI");
+        m_EndGameUI         = Finder.FindComponent<EndGameUI>(transform.parent.gameObject,      "EndGameUI");
+        m_ErrorGameUI       = Finder.FindComponent<ErrorGameUI>(transform.parent.gameObject,    "ErrorGameUI");
+        m_TutoGameUI        = Finder.FindComponent<TutoGameUI>(transform.parent.gameObject,     "TutoGameUI");
+        m_BTDebugger        = Finder.FindComponent<BTDebugger>(transform.parent.gameObject,     "BTDebugger");
+        m_EmotsSectionUI    = Finder.FindComponent<EmotsSectionUI>(gameObject,                  "EmotsSectionUI");
+        m_GameTimerUI       = Finder.FindComponent<GameTimerUI>(gameObject,                     "GameTimerUI");
 
         FindMovementButtons();
         FindPlayerUIContainers();
@@ -105,7 +117,14 @@ public class GameUIManager : MonoBehaviour
         m_EndGameUI.gameObject.SetActive(false);
         m_ErrorGameUI.gameObject.SetActive(false);
         m_TutoGameUI.gameObject.SetActive(false);
+        m_BTDebugger.gameObject.SetActive(false);
         m_PlayerUIs = new Dictionary<ulong, PlayerUI> { };
+
+        // display or not the Timer
+        if (LobbyHandler.Instance.GameMode != EGameMode.Ranked)
+            Destroy(m_GameTimerUI.gameObject);
+        else
+            m_GameTimerUI.Initialize();
 
         LoadArena();
 
@@ -327,11 +346,14 @@ public class GameUIManager : MonoBehaviour
 
     #region GameOver
 
-    public void SetUpGameOver(bool win)
+    public void SetUpGameOver(EGameResult gameResult)
     {
-        SoundFXManager.PlayOnce(win ? SoundFXManager.WinSoundFX : SoundFXManager.LossSoundFX);
+        if (m_BTDebugger != null)
+            Destroy(m_BTDebugger.gameObject);
 
-        m_EndGameUI.Activate(win, m_PreventiveLossApplied);
+        SoundFXManager.PlayOnce(gameResult == EGameResult.Win ? SoundFXManager.WinSoundFX : SoundFXManager.LossSoundFX);
+
+        m_EndGameUI.Activate(gameResult, m_PreventiveLossApplied);
 
         // destroy self
         DeleteGameUI();

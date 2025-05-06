@@ -106,9 +106,13 @@ namespace Menu.Common.Infos
             }
 
             float bonus = newValue.Value - value;
+            Color color = bonus > 0 ? Color.green : Color.red;
             m_BonusValue.gameObject.SetActive(true);
             m_BonusValue.text = (bonus > 0 ? "+" : "") + TextHandler.FormatPropertyValue(bonus, m_PropertyName);
-            m_BonusValue.color = bonus > 0 ? Color.green : Color.red;
+            m_BonusValue.color = color;
+
+            // -- change name color and add arrow symbol
+            m_Name.color = color;
         }
 
         #endregion

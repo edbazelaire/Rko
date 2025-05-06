@@ -94,7 +94,8 @@ namespace Game
         public bool IsGameStarted => m_State.Value > EGameState.Intro;
         /// <summary> game is over </summary>
         public static bool IsGameOver => s_Instance == null || Instance.m_State.Value >= EGameState.GameOver || ErrorHandler.IsExiting;
-
+        /// <summary> is game currently running ? </summary>
+        public static bool IsGameRunning => Instance.IsGameStarted && ! IsGameOver;
         #endregion
 
 
@@ -267,26 +268,26 @@ namespace Game
         {
             if (!IsServer)
                 return;
-
             int team = m_Controllers.Count;
 
-            GameObject playerPrefab;
+            GameObject playerPrefab = CharacterLoader.GetPrefab(playerData.Character.ToString(), playerData.IsPlayer, m_IsTuto);
             if (playerData.IsPlayer)
             {
                 // create player prefab and spawn it
-                playerPrefab = Instantiate(CharacterLoader.Instance.PlayerPrefab, ArenaManager.Instance.Spawns[team][0].position, Quaternion.identity, ArenaManager.Instance.transform);
+                playerPrefab = Instantiate(playerPrefab, ArenaManager.Instance.Spawns[team][0].position, Quaternion.identity, ArenaManager.Instance.transform);
                 playerPrefab.GetComponent<NetworkObject>().SpawnWithOwnership(clientId, true);
             }
             else
             {
                 // create an AI prefab and spawn it
-                playerPrefab = Instantiate(m_IsTuto ? CharacterLoader.Instance.PlayerTutoAIPrefab : CharacterLoader.Instance.PlayerAIPrefab, ArenaManager.Instance.transform);
-                playerPrefab.GetComponent<NetworkObject>().Spawn();
+                playerPrefab = Instantiate(playerPrefab, ArenaManager.Instance.transform);
+                playerPrefab.GetComponent<NetworkObject>().Spawn(true);
             }
            
             // add player to list of player controllers
             Controller controller = Finder.FindComponent<Controller>(playerPrefab);
 
+            // postprocess player data if needed
             UpdatePlayerData(ref playerData);
 
             // initialize player data
@@ -302,16 +303,16 @@ namespace Game
 
         /// <summary>
         /// Update player data depending on game mode.
-        /// [Arena]
+        /// [Ranked || Arena]
         ///     No changes
         /// 
-        /// [Ranked || Test]
+        /// [Training]
         ///     For test purpuses, all data (char and spells) are set to level 9
         /// </summary>
         /// <param name="playerData"></param>
         void UpdatePlayerData(ref SPlayerData playerData)
         {
-            if (LobbyHandler.Instance.GameMode == EGameMode.Arena)
+            if (LobbyHandler.Instance.GameMode != EGameMode.Training)
                 return;
 
             playerData.CharacterLevel = DEFAULT_PVP_LEVEL;
@@ -365,6 +366,8 @@ namespace Game
             // call clients to check if they are 
             while (m_ClientsInitialized.Count != LobbyHandler.Instance.MaxPlayers)
             {
+                if (CheckIsFilledWithBots())
+                    break;
                 CheckInitializedClientRPC();
                 yield return null;
             }
@@ -374,6 +377,21 @@ namespace Game
 
             // goto intro
             SetState(EGameState.Intro);
+        }
+
+        bool CheckIsFilledWithBots()
+        {
+            if (LobbyHandler.Instance.GameMode != EGameMode.Ranked)
+                return false;
+
+            int nBots = 1; // 1 because Host is server side so it count has one initialized on Server side
+            foreach (Controller controller in m_Controllers.Values)
+            {
+                if (! controller.IsPlayer)
+                    nBots++;
+            }
+
+            return nBots == LobbyHandler.Instance.MaxPlayers;
         }
 
         /// <summary>
@@ -552,7 +570,18 @@ namespace Game
             DisconnectionHandler.End();
 
             // setup the UI for end of the game
-            GameUIManager.Instance.SetUpGameOver(team == Instance.Owner.Team);
+            GameUIManager.Instance.SetUpGameOver(GetGameResult(team));
+        }
+
+        EGameResult GetGameResult(int team)
+        {
+            if (team < 0)
+                return EGameResult.Draw;
+
+            if (team == Instance.Owner.Team)
+                return EGameResult.Win;
+
+            return EGameResult.Loss;
         }
 
         void ShutDownControllers(int team)
@@ -767,9 +796,12 @@ namespace Game
             return GetPlayer(slefId);
         }
 
-        public List<Controller> GetAllEnemies(int team)
+        public List<Controller> GetAllEnemies(int team, bool spawnIncluded = true)
         {
-            return m_Controllers.Values.Where(controller => controller.Team != team).ToList();
+            if (spawnIncluded)
+                return m_Controllers.Values.Where(controller => controller.Team != team).ToList();
+
+            return m_Controllers.Values.Where(controller => controller.Team != team && ! controller.IsSpawn).ToList();
         }
 
         public List<Controller> GetAllAllies(int team)
@@ -958,6 +990,16 @@ namespace Game
                     break;
 
                 case EGameState.GameRunning:
+                    // initialize BT debugger if enemy is bot
+                    if (! GetFirstEnemy(Owner.Team).IsPlayer)
+                    {
+                        if (IsServer && ProfileCloudData.IsAdmin && PlayerPrefsHandler.GetDebug(EDebugOption.DebugBots))
+                        {
+                            GameUIManager.BTDebugger.Initialize(GetFirstEnemy(Owner.Team));
+                            GameUIManager.BTDebugger.gameObject.SetActive(true);
+                        }
+                    }
+
                     TimeErrorWrapper.Instance.Cancel(TIME_WRAPPER_ID);
                     break;
 
@@ -974,6 +1016,14 @@ namespace Game
                 return;
 
             CheckGameEnd();
+        }
+
+        public void OnTimerEnd()
+        {
+            if (!IsServer)
+                return;
+
+            GameOver(-1);
         }
 
         #endregion
@@ -1127,10 +1177,10 @@ namespace Game
         }
 
         [Command(KeyCode.J)]
-        public void IncreaseDamages()
+        public void IncreaseDamage()
         {
             Owner.StateHandler.CharacterData.AddBonusStats(new List<SCharacterStatScaling>() { 
-                new SCharacterStatScaling(EStateEffectProperty.BonusDamages, 100f, 0f, 0f) 
+                new SCharacterStatScaling(EStateEffectProperty.BonusDamage, 100f, 0f, 0f) 
             });
         }
 

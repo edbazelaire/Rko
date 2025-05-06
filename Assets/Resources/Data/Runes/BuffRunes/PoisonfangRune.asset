@@ -15,12 +15,12 @@ MonoBehaviour:
   Rarety: 1
   m_Description: 
   m_DescriptionVariables: []
+  m_SpellElements: 03000000
   Description: 
-  m_SpellElements: 
   m_MinorPower:
-    Description: Increase damages by {0} for each stacks of Poison on the target
+    Description: Increase damage by {0} for each stacks of Poison on the target
     m_DescriptionVariables:
-    - Name: BonusDamages
+    - Name: BonusDamage
       WithIcon: 1
     m_BonusLevel: 0
     m_TriggerEffects: []
@@ -35,9 +35,9 @@ MonoBehaviour:
         BaseValue: 1
         LevelFactor: 0.1
   m_MajorPower:
-    Description: Increase damages by {0} for each stacks of Poison on the target
+    Description: Increase damage by {0} for each stacks of Poison on the target
     m_DescriptionVariables:
-    - Name: BonusDamages
+    - Name: BonusDamage
       WithIcon: 1
     m_BonusLevel: 0
     m_TriggerEffects: []
@@ -52,9 +52,9 @@ MonoBehaviour:
         BaseValue: 2
         LevelFactor: 0.1
   m_PrimalPower:
-    Description: Increase damages by {0} for each stacks of Poison on the target
+    Description: Increase damage by {0} for each stacks of Poison on the target
     m_DescriptionVariables:
-    - Name: BonusDamages
+    - Name: BonusDamage
       WithIcon: 1
     m_BonusLevel: 0
     m_TriggerEffects:

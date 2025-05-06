@@ -76,7 +76,8 @@ namespace Assets.Scripts.UI
                     return (() => ErrorHandler.Toggle(), () => ErrorHandler.Reset());
 
                 case EDebugOption.DebugMode:
-                    return (() => { PlayerPrefsHandler.SetDebug(EDebugOption.DebugMode, !PlayerPrefsHandler.GetDebug(EDebugOption.DebugMode)); }, () => { PlayerPrefsHandler.SetDebug(EDebugOption.DebugMode, false); });
+                case EDebugOption.DebugBots:
+                    return (() => { PlayerPrefsHandler.SetDebug(option, !PlayerPrefsHandler.GetDebug(option)); }, () => { PlayerPrefsHandler.SetDebug(option, false); });
 
                 default:
                     ErrorHandler.Error("Unhandled case : " +  option);  

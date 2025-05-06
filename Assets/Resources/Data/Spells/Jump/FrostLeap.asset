@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: FrostLeap
   m_EditorClassIdentifier: 
   Rarety: 2
-  m_Description: Jumps on your opponent, dealing {0} damages on hitting and applying
+  m_Description: Jumps on your opponent, dealing {0} damage on hitting and applying
     a {1} effect
   m_DescriptionVariables:
-  - Name: Damages
+  - Name: Damage
     WithIcon: 1
   - Name: Frozen
     WithIcon: 1
@@ -33,6 +33,7 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 1
+  m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
@@ -43,6 +44,7 @@ MonoBehaviour:
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -50,6 +52,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 02000000
   m_Duration: 0
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1

@@ -15,7 +15,7 @@ MonoBehaviour:
   Rarety: 0
   m_Description: Each {0} seconds, {1} orbs fall from the sky. \n\nYou must catch
     them before the hit the GROUND, otherwise, the enemy gains 1 stack and heals
-    for [SubSpellData.Heal] hp\nEach stack grants extra damages, auto attack speed
+    for [SubSpellData.Heal] hp\nEach stack grants extra damage, auto attack speed
     and reduces all cooldowns.
   m_DescriptionVariables:
   - Name: DelayBetweenWaves
@@ -34,6 +34,7 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 6
+  m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
@@ -44,6 +45,7 @@ MonoBehaviour:
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 1
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -51,6 +53,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 6
     Value: 0.1
@@ -68,9 +73,28 @@ MonoBehaviour:
   m_Cooldown: 0
   SubSpellData: {fileID: 11400000, guid: a98791e548644094f963323cf947b452, type: 2}
   MultiProjectileType: 2
+  SubSpellSpawn:
+    m_SpellTargetX:
+      m_Dimension: 1
+      m_MultiSpellTarget: 0
+      m_ZoneSize: -1
+      m_NBreakPoints: 1
+      m_OffsetMinMax:
+        Min: 0
+        Max: 0
+    m_SpellTargetY:
+      m_Dimension: 2
+      m_MultiSpellTarget: 0
+      m_ZoneSize: -1
+      m_NBreakPoints: 1
+      m_OffsetMinMax:
+        Min: 0
+        Max: 0
   m_YMinMax:
     Min: 0
     Max: 0
+  m_RecalculateTarget: 0
+  m_RecalculatePosition: 1
   m_IsBlocking: 0
   m_NProjectiles: 2
   m_NBreakPoints: 0

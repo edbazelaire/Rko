@@ -40,9 +40,6 @@ namespace Game.Character
 
             m_Controller.StateHandler.StateEffectListEvent += OnStateEffectListChanged;
 
-            if (HasParameter("HasCounter", AnimatorControllerParameterType.Bool))
-                m_Controller.CounterHandler.HasCounter.OnValueChanged           += OnHasCounterValueChanged;
-
             if (HasParameter(EAnimation.Frozen.ToString(), AnimatorControllerParameterType.Trigger) || HasParameter(EAnimation.Stun.ToString(), AnimatorControllerParameterType.Trigger) || HasParameter(EAnimation.Silenced.ToString(), AnimatorControllerParameterType.Trigger) || HasParameter(EAnimation.Airborne.ToString(), AnimatorControllerParameterType.Trigger))
                 m_Controller.StateHandler.AnimationState.OnValueChanged += OnStateAnimationValueChanged;
 
@@ -223,11 +220,6 @@ namespace Game.Character
 
 
         #region Events Listeners
-
-        void OnMovementChanged(int _)
-        {
-            MoveAnimation(m_Controller.Movement.IsMoving);
-        }
 
         /// <summary>
         /// Change MovementSpeed parameter in the Animator when the speed value changes

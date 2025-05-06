@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
-using Unity.Networking.Transport.Error;
 using UnityEngine;
 
 namespace Game.Loaders
@@ -184,7 +183,7 @@ namespace Game.Loaders
         /// </summary>
         /// <param name="spellName"></param>
         /// <returns></returns>
-        public static bool SpellExists(string name)
+        public static bool IsSpell(string name)
         {
             return Enum.TryParse(name, out ESpell _) || m_ExtraSpellData.ContainsKey(name);
         }
@@ -194,7 +193,7 @@ namespace Game.Loaders
         /// </summary>
         /// <param name="spellName"></param>
         /// <returns></returns>
-        public static bool StateEffectExists(string name)
+        public static bool IsStateEffect(string name)
         {
             return Enum.TryParse(name, out EStateEffect _) || m_StateEffects.ContainsKey(name);
         }
@@ -293,7 +292,7 @@ namespace Game.Loaders
         public static Dictionary<string, object> GetSpellInfos(string spellName, int level = 1)
         {
             var spellData = GetSpellData(spellName, level);
-            var infos = spellData.GetInfos();
+            var infos = spellData.GetInfo();
             GameObject.Destroy(spellData);
             return infos;
         }
@@ -416,7 +415,7 @@ namespace Game.Loaders
                 // FILTER : State Effects
                 if (stateEffectFilters != null && stateEffectFilters.Count > 0)
                 {
-                    var spellInfos = spellData.GetInfos();
+                    var spellInfos = spellData.GetInfo();
 
                     // no effects on spell - continue
                     if (!spellInfos.ContainsKey("Effects"))
@@ -455,6 +454,34 @@ namespace Game.Loaders
             }
 
             return spells;
+        }
+
+        public static void FilterByElement<T>(ref List<T> collectables, List<ESpellElement> spellElementFilters) where T : CollectableData
+        {
+            // CHECK : Spell Element
+            if (spellElementFilters != null && spellElementFilters.Count > 0)
+            {
+                return;
+            }
+
+            var filteredCollectables = new List<T>();
+            foreach (T collectableData in collectables)
+            {
+                if (collectableData.SpellElements == null || collectableData.SpellElements.Count == 0)
+                {
+                    // CHECK : NEUTRAL type
+                    if (!spellElementFilters.Contains(ESpellElement.Neutral))
+                        continue;
+                }
+
+                // CHECK : has at least one of required elements
+                else if (collectableData.SpellElements.Where(element => spellElementFilters.Contains(element)).ToList().Count() == 0)
+                    continue;
+
+                filteredCollectables.Add(collectableData);
+            }
+
+            collectables = filteredCollectables;
         }
 
         /// <summary>
@@ -538,6 +565,7 @@ namespace Game.Loaders
         #region State Effects
 
         #endregion
+
 
         #region Runes
 

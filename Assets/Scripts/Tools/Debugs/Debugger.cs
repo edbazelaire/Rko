@@ -1,4 +1,6 @@
-﻿using Enums;
+﻿using Assets;
+using Data.GameManagement;
+using Enums;
 using Inventory;
 using Save;
 using System;
@@ -405,7 +407,7 @@ namespace Tools
             }
         }
 
-        [Command(KeyCode.V)]
+        [Command]
         public void ToggleCursor()
         {
             Cursor.visible = !Cursor.visible;
@@ -455,9 +457,17 @@ namespace Tools
         [Command]
         public void Babylon()
         {
-            InventoryManager.UpdateCurrency(ECurrency.Golds, 9999999, "DebugTool");
+            InventoryManager.UpdateCurrency(ECurrency.Gold, 9999999, "DebugTool");
             InventoryManager.UpdateCurrency(ECurrency.Gems, 9999999, "DebugTool");
             InventoryManager.UpdateCurrency(ECurrency.TotalXp, 9999999, "DebugTool");
+        }
+
+        [Command]
+        public void UnlockMarcus()
+        {
+            var reward = new SRewardsData();
+            reward.Add(ECharacter.Marcus, 1);
+            Main.DisplayRewards(reward, "DebugTool");
         }
 
         [Command]

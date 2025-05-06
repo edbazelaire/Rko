@@ -90,7 +90,7 @@ namespace Assets.Scripts.Game
 
         #region Members
 
-        private Dictionary<ulong, List<SSpellHitTypeData>> m_PlayersDataDamages = new();
+        private Dictionary<ulong, List<SSpellHitTypeData>> m_PlayersDataDamage = new();
 
         #endregion
 
@@ -99,12 +99,12 @@ namespace Assets.Scripts.Game
 
         public void InitializePlayerData(ulong playerId)
         {
-            m_PlayersDataDamages[playerId] = new List<SSpellHitTypeData>();
+            m_PlayersDataDamage[playerId] = new List<SSpellHitTypeData>();
         }
 
         public List<SSpellHitTypeData> GetPlayerData(ulong playerId)
         {
-            if (m_PlayersDataDamages.TryGetValue(playerId, out var data))
+            if (m_PlayersDataDamage.TryGetValue(playerId, out var data))
                 return data;
 
             ErrorHandler.Warning($"Player data for ID {playerId} not found.");
@@ -114,25 +114,25 @@ namespace Assets.Scripts.Game
         #endregion
 
 
-        #region Damages
+        #region Damage
 
         public void OnSpellHit(ulong casterId, ulong targetId, string spellName, int qty, EHitType hitType, ESpellCategory spellCategory)
         {
-            if (!m_PlayersDataDamages.ContainsKey(casterId))
+            if (!m_PlayersDataDamage.ContainsKey(casterId))
                 InitializePlayerData(casterId);
 
             // Find or create data for the spell
-            var spellDataIndex = m_PlayersDataDamages[casterId].FindIndex(spellData => spellData.SpellName == spellName);
+            var spellDataIndex = m_PlayersDataDamage[casterId].FindIndex(spellData => spellData.SpellName == spellName);
 
             if (spellDataIndex >= 0)
             {
-                m_PlayersDataDamages[casterId][spellDataIndex].AddHit(qty, hitType);
+                m_PlayersDataDamage[casterId][spellDataIndex].AddHit(qty, hitType);
             }
             else
             {
                 var newSpellData = new SSpellHitTypeData(spellName);
                 newSpellData.AddHit(qty, hitType);
-                m_PlayersDataDamages[casterId].Add(newSpellData);
+                m_PlayersDataDamage[casterId].Add(newSpellData);
             }
 
             // Send data to damage displayer & damage client analytics
@@ -148,7 +148,7 @@ namespace Assets.Scripts.Game
             ESpellCategory spellCategory = (ESpellCategory)spellCategoryByte;
 
             // Display to the DamageDisplayManager
-            if (PlayerPrefs.GetInt("DisplayDamages", 1) == 1)
+            if (PlayerPrefs.GetInt("DisplayDamage", 1) == 1)
             {
                 HitDisplayUI.Instance?.DisplayHit(targetClientId, amount, hitType, spellCategory);
             }
@@ -167,10 +167,10 @@ namespace Assets.Scripts.Game
 
         public void SendGameAnalytics()
         {
-            foreach (ulong playerId in m_PlayersDataDamages.Keys)
+            foreach (ulong playerId in m_PlayersDataDamage.Keys)
             {
                 // Send the data to the player
-                List<SSpellHitTypeData> playerData = m_PlayersDataDamages[playerId];
+                List<SSpellHitTypeData> playerData = m_PlayersDataDamage[playerId];
                 SendPlayerDataClientRPC(playerData.ToArray(), playerId);
             }
         }

@@ -27,7 +27,7 @@ namespace Inventory
 
         // =================================================================================================
         // ACCESSORS
-        public static       int                             Golds         => Convert.ToInt32(InventoryCloudData.Instance.Data[InventoryCloudData.KEY_GOLDS]);
+        public static       int                             Golds         => Convert.ToInt32(InventoryCloudData.Instance.Data[InventoryCloudData.KEY_GOLD]);
         public static       ChestData[]                     Chests        => (ChestData[])ChestsCloudData.Instance.Data[ChestsCloudData.KEY_CHESTS];
 
         #endregion
@@ -71,7 +71,7 @@ namespace Inventory
         /// </summary>
         /// <param name="cost"></param>
         /// <returns></returns>
-        public static bool CanBuy(int cost, ECurrency currency = ECurrency.Golds)
+        public static bool CanBuy(int cost, ECurrency currency = ECurrency.Gold)
         {
             return GetCurrency(currency) - cost >= 0;
         }
@@ -173,7 +173,7 @@ namespace Inventory
             SLevelData levelData = CollectablesManagementData.GetLevelData(collectable, data.Level);
 
             // UPGRADE : spend golds and cards to update the level
-            if (! Spend(levelData.RequiredGolds, ECurrency.Golds, "Upgrade" + collectable.GetType().ToString().Replace("Enums.E", "") + "." + collectable.ToString()))
+            if (! Spend(levelData.RequiredGold, ECurrency.Gold, "Upgrade" + collectable.GetType().ToString().Replace("Enums.E", "") + "." + collectable.ToString()))
                 return;
 
             data.AddQty(- levelData.RequiredQty);
@@ -199,7 +199,7 @@ namespace Inventory
             if (data.GetQty() < levelData.RequiredQty)
                 return false;
 
-            if (!CanBuy(levelData.RequiredGolds, ECurrency.Golds))
+            if (!CanBuy(levelData.RequiredGold, ECurrency.Gold))
                 return false;
 
             return true;

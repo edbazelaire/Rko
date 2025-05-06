@@ -37,6 +37,9 @@ public class MObject : MonoBehaviour
         m_Initialized = true;
     }
 
+    /// <summary>
+    /// Place in this method all the requested class components and game objects
+    /// </summary>
     protected virtual void FindComponents() { }
     protected virtual void SetUpUI() { }
     protected virtual void RegisterListeners() 

@@ -1,5 +1,4 @@
-﻿using Assets.Scripts.Game.Character.Netcode;
-using Data;
+﻿using Data;
 using Enums;
 using Game.Loaders;
 using Game.Spells;
@@ -10,7 +9,6 @@ using Unity.Collections;
 using Unity.Mathematics;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Game.Character
 {
@@ -154,7 +152,7 @@ namespace Game.Character
 
         void CallOnStateEventUI(ESpellEvent spellEvent, string stateEffectName, int stacks, float duration)
         {
-            if (spellEvent == ESpellEvent.OnSpawn)
+            if (spellEvent == ESpellEvent.OnSpawn || spellEvent == ESpellEvent.OnActivation)
                 StateEffectListEvent?.Invoke(EListEvent.Add, stateEffectName, stacks, duration);
             else if (spellEvent == ESpellEvent.OnEnd)
                 StateEffectListEvent?.Invoke(EListEvent.Remove, stateEffectName, stacks, duration);
@@ -212,32 +210,41 @@ namespace Game.Character
                 RemoveStateEffect(EStateEffect.Jump);
         }
 
-        public int ApplyResistance(int damages)
+        public int ApplyResistance(int damage)
         {
             // apply res fix first
-            damages = Math.Max(0, damages - GetInt(EStateEffectProperty.ResistanceFix));
+            damage = Math.Max(0, damage - GetInt(EStateEffectProperty.ResistanceFix));
 
             // apply percentage res
-            damages = (int)Mathf.Round(damages * Mathf.Max(2 - GetFloat(EStateEffectProperty.ResistancePerc), 0));
+            damage = (int)Mathf.Round(damage * Mathf.Max(2 - GetFloat(EStateEffectProperty.ResistancePerc), 0));
             
-            return damages;
+            return damage;
         }
 
-        public int ApplyBonusDamages(int damages, Controller targetController)
+        public int ApplyHealReductions(int heal)
         {
-            ErrorHandler.Log("Base Damages : " + damages, ELogTag.BonusStats);
+            // apply fix heal reduction
+            heal = Math.Max(0, heal + GetInt(EStateEffectProperty.HealReduction));
+
+            // apply percentage reduction
+            return (int)Mathf.Round(heal * Mathf.Max(2 - GetFloat(EStateEffectProperty.HealReductionPerc), 0));
+        }
+
+        public int ApplyBonusDamage(int damage, Controller targetController)
+        {
+            ErrorHandler.Log("Base Damage : " + damage, ELogTag.BonusStats);
 
             // apply fix bonus damages 
-            damages = Math.Max(0, damages + GetInt(EStateEffectProperty.BonusDamages, targetController));
+            damage = Math.Max(0, damage + GetInt(EStateEffectProperty.BonusDamage, targetController));
 
-            ErrorHandler.Log("Damages + Fix : " + damages, ELogTag.BonusStats);
+            ErrorHandler.Log("Damage + Fix : " + damage, ELogTag.BonusStats);
 
             // apply res fix first
-            damages = Math.Max(0, (int)Mathf.Round(damages * GetFloat(EStateEffectProperty.BonusDamagesPerc, targetController)));
+            damage = Math.Max(0, (int)Mathf.Round(damage * GetFloat(EStateEffectProperty.BonusDamagePerc, targetController)));
 
-            ErrorHandler.Log("Final : " + damages, ELogTag.BonusStats);
+            ErrorHandler.Log("Final : " + damage, ELogTag.BonusStats);
 
-            return damages;
+            return damage;
         }
 
         public int ApplyBonusHeal(int heal, Controller targetController)
@@ -249,23 +256,31 @@ namespace Game.Character
             return Math.Max(0, (int)Mathf.Round(heal * GetFloat(EStateEffectProperty.BonusHealPerc, targetController)));   
         }
 
+        public int ApplyBonusShield(int shield, Controller targetController)
+        {
+            return Math.Max(0, (int)Mathf.Round(shield * GetFloat(EStateEffectProperty.BonusShieldPerc, targetController)));
+        }
+
         public float ApplyBonus(float baseValue, EStateEffectProperty stateEffectProperty, Controller targetController)
         {
             switch (stateEffectProperty)
             {
-                case EStateEffectProperty.TickDamages:
-                    return (baseValue + GetInt(EStateEffectProperty.BonusTickDamages)) * GetFloat(EStateEffectProperty.BonusTickDamagesPerc);
+                case EStateEffectProperty.TickDamage:
+                    return (baseValue + GetInt(EStateEffectProperty.BonusTickDamage)) * GetFloat(EStateEffectProperty.BonusTickDamagePerc);
 
                 case EStateEffectProperty.TickHeal:
                     return (baseValue + GetInt(EStateEffectProperty.BonusTickHeal));
 
-                case EStateEffectProperty.Damages:
-                case EStateEffectProperty.EndDamages:
-                    return ApplyBonusDamages((int)Mathf.Round(baseValue), targetController);
+                case EStateEffectProperty.Damage:
+                case EStateEffectProperty.EndDamage:
+                    return ApplyBonusDamage((int)Mathf.Round(baseValue), targetController);
 
                 case EStateEffectProperty.Heal:
                 case EStateEffectProperty.EndHeal:
                     return ApplyBonusHeal((int)Mathf.Round(baseValue), targetController);
+
+                case EStateEffectProperty.Shield:
+                    return ApplyBonusShield((int)Mathf.Round(baseValue), targetController);
 
                 default:
                     return baseValue;
@@ -651,7 +666,7 @@ namespace Game.Character
 
         #region Public Data Accessors
 
-        public float GetFloat(EStateEffectProperty property, Controller targetController = null)
+        public float GetFloat(EStateEffectProperty property, Controller targetController = null, bool ignoreConversion = false)
         {
             // only server can calculate speed factor
             if (!IsServer)
@@ -669,7 +684,7 @@ namespace Game.Character
             {
                 if (! effect.HasEffectProperty(property))
                     continue;
-                value += effect.GetFloat(property);
+                value += effect.GetFloat(property, ignoreConversion);
             }
 
             ErrorHandler.Log("Final value (" + property + ") : " + value, ELogTag.BonusStats);

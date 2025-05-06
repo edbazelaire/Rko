@@ -31,7 +31,7 @@ namespace Assets.Scripts.Game
 
         #region Pooling
 
-        public static GameObject Pool(GameObject prefab, Transform parent)
+        public static GameObject Pool(GameObject prefab, Transform parent, bool activate = true)
         {
             if (prefab == null)
                 prefab = new GameObject("Default_GameObject");
@@ -49,7 +49,7 @@ namespace Assets.Scripts.Game
                 // Otherwise, retrieve an object from the pool
                 obj = Instance.m_GameObjectPool[key].Dequeue();
                 obj.transform.SetParent(parent);
-                obj.gameObject.SetActive(true);
+                obj.gameObject.SetActive(activate);
             }
 
             return obj;
@@ -57,8 +57,9 @@ namespace Assets.Scripts.Game
 
         public static GameObject Pool(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent)
         {
-            GameObject obj = Pool(prefab, parent);
+            GameObject obj = Pool(prefab, parent, activate: false);
             obj.transform.SetPositionAndRotation(position, rotation);
+            obj.SetActive(true);
 
             return obj;
         }

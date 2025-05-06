@@ -25,6 +25,13 @@ namespace Game.Character
         const float                         c_GlobalCooldown        = 0f;
 
         // ===================================================================================
+        // ACTIONS
+        public Action<string, ESpellEvent>          OnPreSpellEvent;
+        public Action<ESpell, ESpellSelectionState> SpellSelectionEvent;
+        public Action<ESpell, float>                OnCooldownEvent;
+        public Action<float>                        RelocationTargetChangedEvent;
+
+        // ===================================================================================
         // NETWORK VARIABLES       
         /// <summary> enum of the character's auto attack </summary>
         NetworkVariable<ESpell>             m_AutoAttack            = new NetworkVariable<ESpell>(ESpell.None);
@@ -49,6 +56,10 @@ namespace Game.Character
         // PRIVATE VARIABLES    
         /// <summary> owner's controller </summary>
         Controller                          m_Controller;
+        /// <summary> spell data of the currently selected spell </summary>
+        SpellData                           m_SelectedSpellData;
+        /// <summary> target position requested by the player (if spell is moving) </summary>
+        Vector3                             m_RelocationTargetPos;
         /// <summary> coroutine of casting a spell </summary>
         Coroutine                           m_CastCoroutine;
         /// <summary> overriding spell data (in case of replacement or someting) </summary>
@@ -81,12 +92,7 @@ namespace Game.Character
         public ESpell                       Ultimate                => m_Ultimate.Value;
         public Transform                    SpellSpawn              => m_SpellSpawn;
         public Vector3                      TargetPos               => m_TargetPos.Value;   
-
-        // ===================================================================================
-        // EVENTS
-        public Action<string, ESpellEvent> OnPreSpellEvent;
-        public Action<ESpell, ESpellSelectionState> SpellSelectionEvent;
-        public Action<ESpell, float> OnCooldownEvent;
+        public Vector3                      RelocationTargetPos     => m_RelocationTargetPos;
 
         #endregion
 
@@ -122,6 +128,7 @@ namespace Game.Character
             
             UpdateCooldowns();
             UpdateSpellsSelectionState();
+            UpdateTargetPosition();
         }
 
         #endregion
@@ -181,6 +188,7 @@ namespace Game.Character
             m_NextSelectedSpell = ESpell.None;
 
             RegisterListeners();
+            RegisterListenersClientRPC();
         }
 
         public void Activate(bool activate)
@@ -221,16 +229,6 @@ namespace Game.Character
                 return;
 
             TrySelectSpell(spell);
-        }
-
-        [ServerRpc] 
-        public void RequestStartCastServerRPC(ESpell spell)
-        {
-            if (!IsServer)
-                return;
-
-            // in case that was not set
-            TryStartCastSpell(spell);
         }
 
         #endregion
@@ -329,7 +327,8 @@ namespace Game.Character
             if (spell == ESpell.None)
                 return true;
 
-            bool success = TryStartCastSpell(spell);
+            var spellData = SpellLoader.GetSpellData(spell, m_SpellLevelsNet[GetSpellIndex(spell)]);
+            bool success = TryStartCastSpell(spellData);
 
             if (m_Controller.IsPlayer)
                 ErrorHandler.Log("TryStartCastSpell " + spell + " success : " + success, ELogTag.SpellHandler);
@@ -395,14 +394,6 @@ namespace Game.Character
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
                     ErrorHandler.Log(reason, ELogTag.SpellHandler);
 
-                return false;
-            }
-
-            if (!m_SpellsNet.Contains((int)spell))
-            {
-                reason = "Trying to select spell (" + spell + ") but spell does not exists";
-                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Error(reason);
                 return false;
             }
 
@@ -542,10 +533,8 @@ namespace Game.Character
             return false;
         }
 
-        public bool TryConsumeSpellRequirements(ESpell spell)
+        public bool TryConsumeSpellRequirements(SpellData spellData)
         {
-            SpellData spellData = GetSpellData(spell, m_SpellLevelsNet[GetSpellIndex(spell)]);
-            
             foreach (SpellRequirements spellRequirement in spellData.SpellRequirements)
             {
                 if (! spellRequirement.TryApplyRequirements(m_Controller, null))
@@ -555,20 +544,29 @@ namespace Game.Character
             return true;
         }
 
-        public bool TryStartCastSpell(ESpell spell)
+        public bool TryStartCastSpell(SpellData spellData)
         {
-            return TryStartCastSpell(spell, out string _);
+            return TryStartCastSpell(spellData, out string _);
         }
 
+        public bool TryStartCastSpell(ESpell spell, int level)
+        {
+            return TryStartCastSpell(SpellLoader.GetSpellData(spell, level), out string _);
+        }
+
+        public bool TryStartCastSpell(ESpell spell, int level, out string reason)
+        {
+            return TryStartCastSpell(SpellLoader.GetSpellData(spell, level), out reason);
+        }
 
         /// <summary>
         /// Cast the given spell
         /// </summary>
         /// <param name="spell"></param>
-        public bool TryStartCastSpell(ESpell spell, out string reason)
+        public bool TryStartCastSpell(SpellData spellData, out string reason)
         {
-            if ((m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI)) && spell != m_AutoAttack.Value)
-                ErrorHandler.Log("TryStartCastSpell : " + spell, ELogTag.SpellHandler);
+            if ((m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI)) && spellData.Spell != m_AutoAttack.Value)
+                ErrorHandler.Log("TryStartCastSpell : " + spellData.Spell, ELogTag.SpellHandler);
 
             if (!IsServer)
             {
@@ -576,13 +574,13 @@ namespace Game.Character
                 return false;
             }
 
-            if (! CanCast(spell, out reason))
+            if (! CanCast(spellData.Spell, out reason))
                 return false;
 
             // check if can consume spell requirements
-            if (! TryConsumeSpellRequirements(spell))
+            if (! TryConsumeSpellRequirements(spellData))
             {
-                reason = "Unable to consume spell requirements for " + spell;
+                reason = "Unable to consume spell requirements for " + spellData.Spell;
                 return false;
             }
 
@@ -591,10 +589,10 @@ namespace Game.Character
                 CancelCast();
 
             // set as selected spell
-            m_SelectedSpell = spell;
+            m_SelectedSpell = spellData.Spell;
 
             // cast spell
-            m_CastCoroutine = StartCoroutine(StartCast(spell));
+            m_CastCoroutine = StartCoroutine(StartCast(spellData));
 
             return true;
         }
@@ -604,17 +602,14 @@ namespace Game.Character
         /// </summary>
         /// <param name="spell"></param>
         /// <returns></returns>
-        IEnumerator StartCast(ESpell spell)
+        IEnumerator StartCast(SpellData spellData)
         {
             if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                ErrorHandler.Log("StartCastSpell : " + spell, ELogTag.SpellHandler);
+                ErrorHandler.Log("StartCastSpell : " + spellData.Spell, ELogTag.SpellHandler);
 
             // only owner can ask for cast
             if (!IsServer)
                 yield break;
-
-            // SETUP : get spell data and set animation to motion
-            SpellData spellData = GetSpellData(spell);
 
             if (spellData.LockTarget == ESpellEvent.OnStartCast)
                 LockTarget(spellData);
@@ -648,7 +643,7 @@ namespace Game.Character
                 m_AnimationTimer -= Time.deltaTime;
 
                 // if player is moving, cancel the spell
-                if ((spellData.IsCancellable && m_Controller.Movement.IsMoving) || HasStateBlockingCast() || ! CheckEnemyTargetable(spell))
+                if ((spellData.IsCancellable && m_Controller.Movement.IsMoving) || HasStateBlockingCast() || ! CheckEnemyTargetable(spellData.Spell))
                 {
                     // reset Animator
                     CancelCast();
@@ -659,10 +654,10 @@ namespace Game.Character
             }
 
             if (m_Controller.IsPlayer)
-                ErrorHandler.Log("     -- CAST DONE : " + spell, ELogTag.SpellHandler);
+                ErrorHandler.Log("     -- CAST DONE : " + spellData.Spell, ELogTag.SpellHandler);
 
             // ask server to cast the spell
-            Cast(spell);
+            Cast(spellData);
 
             // call that cast is over for the Controller (animation, movement blocked, ...)
             if (spellData.IsCompletedOnCast)
@@ -672,15 +667,14 @@ namespace Game.Character
         /// <summary>
         /// Ask the server to cast the selected spell
         /// </summary>
-        void Cast(ESpell spell)
+        void Cast(SpellData spellData)
         {
             if (!IsServer)
                 return;
 
             if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                ErrorHandler.Log("Cast : " + spell, ELogTag.SpellHandler);
+                ErrorHandler.Log("Cast : " + spellData.Spell, ELogTag.SpellHandler);
 
-            SpellData spellData = GetSpellData(spell, m_SpellLevelsNet[GetSpellIndex(spell)]);
             if (spellData.LockTarget == ESpellEvent.OnCast)
                 LockTarget(spellData);
 
@@ -695,7 +689,7 @@ namespace Game.Character
             m_GlobalCooldown.Value = c_GlobalCooldown;
 
             // setup cooldown
-            SetCooldown(spell, CalculateCooldown(spellData.Cooldown));
+            SetCooldown(spellData.Spell, CalculateCooldown(spellData.Cooldown));
         }
 
         /// <summary>
@@ -710,6 +704,7 @@ namespace Game.Character
             if (m_CastCoroutine != null)
                 StopCoroutine(m_CastCoroutine);
 
+            // reset properties linked to casting a spell
             ResetCastProperties();
 
             // call PreSpellEvent
@@ -737,6 +732,9 @@ namespace Game.Character
             m_IsCasting = false;
             m_IsCurrentSpellCancellable = true;
 
+            // reset requested target pos
+            m_RelocationTargetPos = default;
+
             // cancel cast animation
             m_Controller.AnimationHandler.CancelCastAnimationClientRpc();
 
@@ -757,6 +755,42 @@ namespace Game.Character
             var target = m_TargetPos.Value;
             spellData.CalculateTarget(ref target, m_Controller.PlayerId);
             m_TargetPos.Value = target;
+        }
+
+        [ServerRpc]
+        void SendTargetAdjustmentServerRpc(float x)
+        {
+            RelocationTargetChangedEvent?.Invoke(x);
+        }
+
+        /// <summary>
+        /// Update target position to the requested direction
+        /// </summary>
+        void UpdateTargetPosition()
+        {
+            // no need to update pos if not requtested pos is asked, or if pos already reached
+            if (m_RelocationTargetPos == default || m_TargetPos.Value.x == m_RelocationTargetPos.x)
+                return;
+
+            int teamFactor = m_Controller.Team == 0 ? 1 : -1;
+
+            // calculate expected position at that frame
+            var xPos = m_RelocationTargetPos.x;
+            var direction = m_TargetPos.Value.x > xPos ? -1 : 1;
+            var pos = m_TargetPos.Value + new Vector3(direction * m_SelectedSpellData.SpellRelocation.Speed * teamFactor * Time.deltaTime, 0f, 0f);
+
+            // clamp position to max/min allowed position
+            if (direction < 0 && pos.x < xPos)
+                pos.x = xPos;
+            else if (direction > 0 && pos.x > xPos)
+                pos.x = xPos;
+
+            // clamp position to target area
+            if (m_SelectedSpellData.ClampTargetPos)
+                m_SelectedSpellData.ClampTargetX(ref pos, m_Controller.PlayerId);
+
+            // set new position
+            m_TargetPos.Value = pos;
         }
 
         #endregion
@@ -819,11 +853,9 @@ namespace Game.Character
                 return 0f;
 
             int index = GetSpellIndex(spellType);
+            // not in list of spells : no cooldown
             if (index < 0)
-            {
-                ErrorHandler.Error("Trying to get spell " + spellType + " not in the list of spells for " + gameObject.name);
                 return 0f;
-            }
             
             return m_Cooldowns[index];
         }
@@ -946,9 +978,31 @@ namespace Game.Character
 
         }
 
+        [ClientRpc]
+        void RegisterListenersClientRPC()
+        {
+            if (!IsOwner)
+                return;
+
+            if (!m_Controller.IsPlayer)
+                return;
+
+            Debug.Log("Registering to TargettableArea");
+
+            // TODO : Change for ONE big zone for click events ? 
+            // register to the TargettableArea listener
+            ArenaManager.GetTargettableArea(m_Controller.Team, enemyArea: true).ClickedEvent += SendTargetAdjustmentServerRpc;
+            ArenaManager.GetTargettableArea(m_Controller.Team, enemyArea: false).ClickedEvent += SendTargetAdjustmentServerRpc;
+        }
+
         public void UnRegisterListeners()
         {
 
+        }
+
+        void OnRelocationTargetChanged(float x)
+        {
+            m_RelocationTargetPos = new Vector3(x, 0f, 0f);
         }
 
         [ClientRpc]
@@ -963,6 +1017,15 @@ namespace Game.Character
 
             // call just on server side
             OnPreSpellEvent?.Invoke(spellName, spellEvent);
+
+            // CHECK Relocation Spell
+            if (m_SelectedSpellData != null && m_SelectedSpellData.HasSpellRelocationEventAt(spellEvent))
+            {
+                if (m_SelectedSpellData.SpellRelocation.Lifetime.StartSpellPart == spellEvent)
+                    RelocationTargetChangedEvent += OnRelocationTargetChanged;
+                else
+                    RelocationTargetChangedEvent -= OnRelocationTargetChanged;
+            }
 
             ushort spellEventByte = (ushort)spellEvent;
 
@@ -986,7 +1049,6 @@ namespace Game.Character
                     CallSpellEventClientRPC(spellName, spellEventByte, new Vector2Short(targetPosition.Value));
                 else
                     CallSpellEventClientRPC(spellName, spellEventByte, new Vector2Short(targetPosition.Value), forcedDuration.Value);
-               
             }
 
             // NO POSITION REQUESTED
@@ -999,6 +1061,20 @@ namespace Game.Character
             }
         }
 
+        /// <summary>
+        /// Base method for called when "CallSpellEventClientRPC" is called
+        /// </summary>
+        /// <param name="spellName"></param>
+        /// <param name="spellEvent"></param>
+        public void OnSpellEvent(string spellName, ESpellEvent spellEvent)
+        {
+            if (!IsOwner)
+                return;
+
+            // call event
+            OnPreSpellEvent?.Invoke(spellName, spellEvent);
+        }
+
         [ClientRpc]
         public void CallSpellEventClientRPC(FixedString32Bytes spellName, ushort spellEvent)
         {
@@ -1007,7 +1083,7 @@ namespace Game.Character
             //Debug.Log("     + spellName : " + spellName);
 
             m_Controller.GFXHandler.SpawnSpellGFX(spellName.ToString(), (ESpellEvent)spellEvent);
-            OnPreSpellEvent?.Invoke(spellName.ToString(), (ESpellEvent)spellEvent);
+            OnSpellEvent(spellName.ToString(), (ESpellEvent)spellEvent);
         }
 
         [ClientRpc]
@@ -1019,7 +1095,7 @@ namespace Game.Character
             //Debug.Log("     + forcedDuration : " + forcedDuration);
 
             m_Controller.GFXHandler.SpawnSpellGFX(spellName.ToString(), (ESpellEvent)spellEvent, forcedDuration: forcedDuration);
-            OnPreSpellEvent?.Invoke(spellName.ToString(), (ESpellEvent)spellEvent);
+            OnSpellEvent(spellName.ToString(), (ESpellEvent)spellEvent);
         }
 
         [ClientRpc]
@@ -1031,7 +1107,7 @@ namespace Game.Character
             //Debug.Log("     + targetPos : " + targetPos);
 
             m_Controller.GFXHandler.SpawnSpellGFX(spellName.ToString(), (ESpellEvent)spellEvent, targetPos);
-            OnPreSpellEvent?.Invoke(spellName.ToString(), (ESpellEvent)spellEvent);
+            OnSpellEvent(spellName.ToString(), (ESpellEvent)spellEvent);
         }
 
         [ClientRpc]
@@ -1044,7 +1120,7 @@ namespace Game.Character
             //Debug.Log("     + forcedDuration : " + forcedDuration);
 
             m_Controller.GFXHandler.SpawnSpellGFX(spellName.ToString(), (ESpellEvent)spellEvent, targetPos, forcedDuration);
-            OnPreSpellEvent?.Invoke(spellName.ToString(), (ESpellEvent)spellEvent);
+            OnSpellEvent(spellName.ToString(), (ESpellEvent)spellEvent);
         }
         
         #endregion
@@ -1065,7 +1141,11 @@ namespace Game.Character
         ESpell m_SelectedSpell
         {
             get => (ESpell)m_SelectedSpellNet.Value;
-            set => m_SelectedSpellNet.Value = (int)value;
+            set 
+            {
+                m_SelectedSpellNet.Value = (int)value;
+                m_SelectedSpellData = value != ESpell.None ? SpellLoader.GetSpellData(value) : null;
+            }
         }
 
         public List<ESpell> Spells

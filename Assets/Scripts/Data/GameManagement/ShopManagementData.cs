@@ -52,6 +52,24 @@ namespace Data.GameManagement
     }
 
     [Serializable]
+    public struct SBoostReward
+    {
+        public EBoost       Boost;
+        public int          Duration;
+
+        public SBoostReward(EBoost boost, int duration)
+        {
+            this.Boost = boost;
+            this.Duration = duration;
+        }
+
+        public SReward AsReward()
+        {
+            return new SReward(typeof(EBoost), Boost.ToString(), Duration);
+        }
+    }
+
+    [Serializable]
     public struct SRewardsData
     {
         public List<SCurrencyReward>        Currencies;
@@ -59,6 +77,7 @@ namespace Data.GameManagement
         public List<SPowerOrb>              PowerOrbs;
         public List<SCollectableReward>     Collectables;
         public List<SAchievementReward>     AchievementRewards;
+        public List<SBoostReward>           Boosts;
 
         public readonly bool IsEmpty => Count == 0;
         public readonly int Count => Currencies.Count + Chests.Count + Collectables.Count + AchievementRewards.Count;
@@ -67,13 +86,15 @@ namespace Data.GameManagement
                             List<EChest> chests                         = null,
                             List<SPowerOrb> powerOrbs                   = null,
                             List<SCollectableReward> collectableRewards = null,
-                            List<SAchievementReward> achievementRewards = null)
+                            List<SAchievementReward> achievementRewards = null,
+                            List<SBoostReward> boosts                   = null)
         {
             Currencies          = currencyRewards       ?? new List<SCurrencyReward>();
             Chests              = chests                ?? new List<EChest>();
             PowerOrbs           = powerOrbs             ?? new List<SPowerOrb>();
             Collectables        = collectableRewards    ?? new List<SCollectableReward>();
             AchievementRewards  = achievementRewards    ?? new List<SAchievementReward>();
+            Boosts              = boosts                ?? new List<SBoostReward>();
         }
 
         public void SetDefaultData()
@@ -83,6 +104,7 @@ namespace Data.GameManagement
             PowerOrbs           ??= new List<SPowerOrb>();
             Collectables        ??= new List<SCollectableReward>();
             AchievementRewards  ??= new List<SAchievementReward>();
+            Boosts              ??= new List<SBoostReward>();
         }
 
         public void Add(Enum item, int qty)
@@ -112,6 +134,12 @@ namespace Data.GameManagement
                 ar.Set(item);
                 AchievementRewards.Add(ar);
             } 
+            
+            else if (item.GetType() == typeof(EBoost))
+            {
+                Boosts ??= new List<SBoostReward>();
+                Boosts.Add(new SBoostReward((EBoost)item, duration: qty));
+            }
 
             else
                 ErrorHandler.Error("Unhandled type of item " + item.GetType());
@@ -120,6 +148,7 @@ namespace Data.GameManagement
 
         public void Add(SPowerOrb powerOrb)
         {
+            PowerOrbs ??= new List<SPowerOrb>();
             PowerOrbs.Add(powerOrb);
         }
 
@@ -127,6 +156,12 @@ namespace Data.GameManagement
         {
             AchievementRewards ??= new List<SAchievementReward>();
             AchievementRewards.Add(achievementReward);
+        }
+
+        public void Add(List<SAchievementReward> achievementRewards)
+        {
+            AchievementRewards ??= new List<SAchievementReward>();
+            AchievementRewards.AddRange(achievementRewards);
         }
 
         public void Add(SRewardsData rewardsData)
@@ -160,6 +195,12 @@ namespace Data.GameManagement
                 AchievementRewards ??= new List<SAchievementReward>();
                 AchievementRewards.AddRange(rewardsData.AchievementRewards);
             }
+
+            if (rewardsData.Boosts != null)
+            {
+                Boosts ??= new List<SBoostReward>();
+                Boosts.AddRange(rewardsData.Boosts);
+            }
         }
 
         public List<SReward> Rewards
@@ -171,6 +212,7 @@ namespace Data.GameManagement
                 list.AddRange(AsRewardStruct(PowerOrbs));
                 list.AddRange(AsRewardStruct(Collectables));
                 list.AddRange(AsRewardStruct(AchievementRewards));
+                list.AddRange(AsRewardStruct(Boosts));
 
                 return list;
             }
@@ -240,6 +282,20 @@ namespace Data.GameManagement
             foreach (SAchievementReward data in achievementRewards)
             {
                 rewards.Add(new SReward(ProfileCloudData.GetTypeOf(data.AchievementReward), data.Value, 1));
+            }
+
+            return rewards;
+        }
+
+        public List<SReward> AsRewardStruct(List<SBoostReward> boosts)
+        {
+            if (boosts == null || boosts.Count == 0)
+                return new List<SReward>();
+
+            var rewards = new List<SReward>();
+            foreach (SBoostReward data in boosts)
+            {
+                rewards.Add(data.AsReward());
             }
 
             return rewards;
@@ -403,7 +459,7 @@ namespace Data.GameManagement
             }
 
             ErrorHandler.Error("No price data found for collectable " + collectable + " of rarety " + rarety);
-            return new SPriceData(0, ECurrency.Golds);
+            return new SPriceData(0, ECurrency.Gold);
         }
 
         #endregion

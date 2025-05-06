@@ -20,7 +20,6 @@ using Assets.Scripts.Managers;
 using Managers.Friends;
 using Unity.Services.Friends.Models;
 using UnityEngine.SceneManagement;
-using MyBox;
 
 
 
@@ -49,6 +48,8 @@ namespace Assets
         [SerializeField] EEnv m_Env = EEnv.beta;
         [SerializeField] bool m_ForceIsNewPlayer;
         [SerializeField] bool m_StopPreventiveLoss;
+        [SerializeField] bool m_SkipWaitingRanked;
+        [SerializeField] bool m_InfinitGiftCodes;
         [SerializeField] List<ELogTag> m_LogTags;
 
         // ==========================================================================================================
@@ -99,6 +100,30 @@ namespace Assets
 #if UNITY_EDITOR
                 // only works in EDITOR mode
                 return Instance.m_StopPreventiveLoss;
+#else
+                return false;
+#endif
+            }
+        }
+        public static bool InfinitGiftCodes
+        {
+            get
+            {
+#if UNITY_EDITOR
+                // only works in EDITOR mode
+                return Instance.m_InfinitGiftCodes;
+#else
+                return false;
+#endif
+            }
+        }
+        public static bool SkipWaitingRanked
+        {
+            get
+            {
+#if UNITY_EDITOR
+                // only works in EDITOR mode
+                return Instance.m_SkipWaitingRanked;
 #else
                 return false;
 #endif
@@ -280,6 +305,10 @@ namespace Assets
 
         string GetInitializationInfoText()
         {
+            // only if debug is activated
+            if (PlayerPrefs.GetInt(EDebugOption.DebugMode.ToString(), 0) != 1)
+                return "";
+
             string infoText = "[";
             foreach (bool isInit in InitializedElements)
             {
@@ -393,12 +422,6 @@ namespace Assets
         public static void DisplayRewards(SRewardsData rewardsData, string context, Action OnRewardCollected = null, string title = null)
         {
             Action callback = () => Main.SetPopUp(EPopUpState.RewardsScreen, rewardsData, context, OnRewardCollected, title);
-            //if (ScreenManager.HasScreen(EPopUpState.RewardsScreen))
-            //{
-            //    ScreenManager.StoreEvent(EPopUpState.MainMenuScreen, callback);
-            //    return;
-            //}
-
             callback?.Invoke();
         }
      
@@ -419,13 +442,23 @@ namespace Assets
         /// <param name="collectable"></param>
         /// <param name="qty"></param>
         /// <param name="OnPurchase"></param>
-        public static void ConfirmBuyCollectable(SPriceData priceData, Enum collectable, int qty, Action<bool> OnPurchase)
+        public static void ConfirmBuyCollectable(Enum collectable, int qty = 1, Action<bool> OnPurchase = default, string context = "")
         {
             if (! CollectablesManagementData.TryGetCollectableType(collectable, out var collectableType))
                 return;
 
-            SRewardsData rewardsData = new SRewardsData(collectableRewards: new List<SCollectableReward>() { new SCollectableReward(collectableType, collectable.ToString(), qty) }) ;
-            ConfirmBuyRewards(collectable.ToString(), priceData, rewardsData, OnPurchase);
+            SRewardsData rewardsData = new SRewardsData(collectableRewards: new List<SCollectableReward>() { new SCollectableReward(collectableType, collectable.ToString(), qty) });
+
+            if (OnPurchase == default)
+            {
+                OnPurchase = (bool isPurchased) => {
+                    if (!isPurchased)
+                        return;
+                    DisplayRewards(rewardsData, context);
+                };
+            }
+
+            ConfirmBuyRewards(collectable.ToString(), ShopManagementData.GetPrice(collectable), rewardsData, OnPurchase);
         }
 
         /// <summary>

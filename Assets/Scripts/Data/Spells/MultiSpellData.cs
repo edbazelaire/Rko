@@ -350,13 +350,13 @@ namespace Data
             return description;
         }
 
-        public override Dictionary<string, object> GetInfos()
+        public override Dictionary<string, object> GetInfo()
         {
             string[] keysToIgnore = new string[] { "Cooldown", "Cast" };
-            var infoDict = base.GetInfos();
+            var infoDict = base.GetInfo();
             if (SubSpellData != null)
             {
-                foreach (var item in SubSpellData.GetInfos())
+                foreach (var item in SubSpellData.GetInfo())
                 {
                     if (keysToIgnore.Contains(item.Key))
                         continue;

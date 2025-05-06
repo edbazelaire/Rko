@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Rarety: 0
   m_Description: Blocks the next attack. On blocking the attack, casts a Blizzard
-    on the enemy, dealing damages on an area for a period of time and applying {0}
+    on the enemy, dealing damage on an area for a period of time and applying {0}
   m_DescriptionVariables:
   - Name: Frost
     WithIcon: 1
@@ -60,7 +60,7 @@ MonoBehaviour:
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 0
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0

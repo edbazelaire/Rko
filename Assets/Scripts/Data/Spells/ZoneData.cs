@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Data.DataStructures.SpellSubStructures;
+using Data.DataStructures.SpellSubStructures;
 using Enums;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,8 +19,8 @@ namespace Data
         [Header("Zone Data")]
         [Tooltip("Tick over time duration of re-appliance of the spell")]
         public float                    DurationTick    = 0f;
-        [SerializeField, Tooltip("Damages delt at each ticks")]
-        protected int                   m_TickDamages   = 0;
+        [SerializeField, Tooltip("Damage delt at each ticks")]
+        protected int                   m_TickDamage   = 0;
         [SerializeField, Tooltip("Heals provided at each ticks")]
         protected int                   m_TickHeal      = 0;
         [SerializeField, Tooltip("Shield provided at each ticks")]
@@ -35,7 +36,7 @@ namespace Data
 
         // ==================================================================================================
         // PUBLIC ACCESSORS
-        public int TickDamages      => (int)Mathf.Round(m_TickDamages * GetSpellLevelFactor(ESpellProperty.TickDamages));
+        public int TickDamage       => (int)Mathf.Round(m_TickDamage * GetSpellLevelFactor(ESpellProperty.TickDamage));
         public int TickHeal         => (int)Mathf.Round(m_TickHeal * GetSpellLevelFactor(ESpellProperty.TickHeal));
         public int TickShield       => (int)Mathf.Round(m_TickShield * GetSpellLevelFactor(ESpellProperty.TickShield));
         public SForce ZoneForce     => m_ZoneForce;
@@ -57,12 +58,12 @@ namespace Data
 
         #region Infos & Description
 
-        public override Dictionary<string, object> GetInfos()
+        public override Dictionary<string, object> GetInfo()
         {
-            var infosDict = base.GetInfos();
+            var infosDict = base.GetInfo();
 
-            if (TickDamages > 0)
-                infosDict.Add("TickDamages", TickDamages);
+            if (TickDamage > 0)
+                infosDict.Add("TickDamage", TickDamage);
             if (TickHeal > 0)
                 infosDict.Add("TickHeal", TickHeal);
             if (TickShield > 0)
