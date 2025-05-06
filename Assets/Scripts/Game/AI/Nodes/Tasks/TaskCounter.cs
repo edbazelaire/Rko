@@ -54,7 +54,7 @@ public class TaskCounter : BaseTask
             {
                 ErrorHandler.Log("TaskCounter : SUCCESS", ELogTag.AITaskCounter);
                 m_State = NodeState.SUCCESS;
-                m_Controller.SpellHandler.TryStartCastSpell(spell);
+                m_Controller.SpellHandler.TryStartCastSpell(spell, m_Controller.CharacterLevel);
                 return m_State;
             }
         }

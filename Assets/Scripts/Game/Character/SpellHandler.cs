@@ -231,16 +231,6 @@ namespace Game.Character
             TrySelectSpell(spell);
         }
 
-        [ServerRpc] 
-        public void RequestStartCastServerRPC(ESpell spell)
-        {
-            if (!IsServer)
-                return;
-
-            // in case that was not set
-            TryStartCastSpell(spell);
-        }
-
         #endregion
 
 
@@ -337,7 +327,8 @@ namespace Game.Character
             if (spell == ESpell.None)
                 return true;
 
-            bool success = TryStartCastSpell(spell);
+            var spellData = SpellLoader.GetSpellData(spell, m_SpellLevelsNet[GetSpellIndex(spell)]);
+            bool success = TryStartCastSpell(spellData);
 
             if (m_Controller.IsPlayer)
                 ErrorHandler.Log("TryStartCastSpell " + spell + " success : " + success, ELogTag.SpellHandler);
@@ -403,14 +394,6 @@ namespace Game.Character
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
                     ErrorHandler.Log(reason, ELogTag.SpellHandler);
 
-                return false;
-            }
-
-            if (!m_SpellsNet.Contains((int)spell))
-            {
-                reason = "Trying to select spell (" + spell + ") but spell does not exists";
-                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Error(reason);
                 return false;
             }
 
@@ -550,10 +533,8 @@ namespace Game.Character
             return false;
         }
 
-        public bool TryConsumeSpellRequirements(ESpell spell)
+        public bool TryConsumeSpellRequirements(SpellData spellData)
         {
-            SpellData spellData = GetSpellData(spell, m_SpellLevelsNet[GetSpellIndex(spell)]);
-            
             foreach (SpellRequirements spellRequirement in spellData.SpellRequirements)
             {
                 if (! spellRequirement.TryApplyRequirements(m_Controller, null))
@@ -563,19 +544,29 @@ namespace Game.Character
             return true;
         }
 
-        public bool TryStartCastSpell(ESpell spell)
+        public bool TryStartCastSpell(SpellData spellData)
         {
-            return TryStartCastSpell(spell, out string _);
+            return TryStartCastSpell(spellData, out string _);
+        }
+
+        public bool TryStartCastSpell(ESpell spell, int level)
+        {
+            return TryStartCastSpell(SpellLoader.GetSpellData(spell, level), out string _);
+        }
+
+        public bool TryStartCastSpell(ESpell spell, int level, out string reason)
+        {
+            return TryStartCastSpell(SpellLoader.GetSpellData(spell, level), out reason);
         }
 
         /// <summary>
         /// Cast the given spell
         /// </summary>
         /// <param name="spell"></param>
-        public bool TryStartCastSpell(ESpell spell, out string reason)
+        public bool TryStartCastSpell(SpellData spellData, out string reason)
         {
-            if ((m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI)) && spell != m_AutoAttack.Value)
-                ErrorHandler.Log("TryStartCastSpell : " + spell, ELogTag.SpellHandler);
+            if ((m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI)) && spellData.Spell != m_AutoAttack.Value)
+                ErrorHandler.Log("TryStartCastSpell : " + spellData.Spell, ELogTag.SpellHandler);
 
             if (!IsServer)
             {
@@ -583,13 +574,13 @@ namespace Game.Character
                 return false;
             }
 
-            if (! CanCast(spell, out reason))
+            if (! CanCast(spellData.Spell, out reason))
                 return false;
 
             // check if can consume spell requirements
-            if (! TryConsumeSpellRequirements(spell))
+            if (! TryConsumeSpellRequirements(spellData))
             {
-                reason = "Unable to consume spell requirements for " + spell;
+                reason = "Unable to consume spell requirements for " + spellData.Spell;
                 return false;
             }
 
@@ -598,10 +589,10 @@ namespace Game.Character
                 CancelCast();
 
             // set as selected spell
-            m_SelectedSpell = spell;
+            m_SelectedSpell = spellData.Spell;
 
             // cast spell
-            m_CastCoroutine = StartCoroutine(StartCast(spell));
+            m_CastCoroutine = StartCoroutine(StartCast(spellData));
 
             return true;
         }
@@ -611,17 +602,14 @@ namespace Game.Character
         /// </summary>
         /// <param name="spell"></param>
         /// <returns></returns>
-        IEnumerator StartCast(ESpell spell)
+        IEnumerator StartCast(SpellData spellData)
         {
             if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                ErrorHandler.Log("StartCastSpell : " + spell, ELogTag.SpellHandler);
+                ErrorHandler.Log("StartCastSpell : " + spellData.Spell, ELogTag.SpellHandler);
 
             // only owner can ask for cast
             if (!IsServer)
                 yield break;
-
-            // SETUP : get spell data and set animation to motion
-            SpellData spellData = GetSpellData(spell);
 
             if (spellData.LockTarget == ESpellEvent.OnStartCast)
                 LockTarget(spellData);
@@ -655,7 +643,7 @@ namespace Game.Character
                 m_AnimationTimer -= Time.deltaTime;
 
                 // if player is moving, cancel the spell
-                if ((spellData.IsCancellable && m_Controller.Movement.IsMoving) || HasStateBlockingCast() || ! CheckEnemyTargetable(spell))
+                if ((spellData.IsCancellable && m_Controller.Movement.IsMoving) || HasStateBlockingCast() || ! CheckEnemyTargetable(spellData.Spell))
                 {
                     // reset Animator
                     CancelCast();
@@ -666,10 +654,10 @@ namespace Game.Character
             }
 
             if (m_Controller.IsPlayer)
-                ErrorHandler.Log("     -- CAST DONE : " + spell, ELogTag.SpellHandler);
+                ErrorHandler.Log("     -- CAST DONE : " + spellData.Spell, ELogTag.SpellHandler);
 
             // ask server to cast the spell
-            Cast(spell);
+            Cast(spellData);
 
             // call that cast is over for the Controller (animation, movement blocked, ...)
             if (spellData.IsCompletedOnCast)
@@ -679,15 +667,14 @@ namespace Game.Character
         /// <summary>
         /// Ask the server to cast the selected spell
         /// </summary>
-        void Cast(ESpell spell)
+        void Cast(SpellData spellData)
         {
             if (!IsServer)
                 return;
 
             if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                ErrorHandler.Log("Cast : " + spell, ELogTag.SpellHandler);
+                ErrorHandler.Log("Cast : " + spellData.Spell, ELogTag.SpellHandler);
 
-            SpellData spellData = GetSpellData(spell, m_SpellLevelsNet[GetSpellIndex(spell)]);
             if (spellData.LockTarget == ESpellEvent.OnCast)
                 LockTarget(spellData);
 
@@ -702,7 +689,7 @@ namespace Game.Character
             m_GlobalCooldown.Value = c_GlobalCooldown;
 
             // setup cooldown
-            SetCooldown(spell, CalculateCooldown(spellData.Cooldown));
+            SetCooldown(spellData.Spell, CalculateCooldown(spellData.Cooldown));
         }
 
         /// <summary>
@@ -866,11 +853,9 @@ namespace Game.Character
                 return 0f;
 
             int index = GetSpellIndex(spellType);
+            // not in list of spells : no cooldown
             if (index < 0)
-            {
-                ErrorHandler.Error("Trying to get spell " + spellType + " not in the list of spells for " + gameObject.name);
                 return 0f;
-            }
             
             return m_Cooldowns[index];
         }

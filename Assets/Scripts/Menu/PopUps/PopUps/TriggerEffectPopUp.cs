@@ -91,11 +91,11 @@ namespace Menu.PopUps
         {
             string description = "";
 
-            if (SpellLoader.SpellExists(m_TriggerEffect.SpellDataName))
+            if (SpellLoader.IsSpell(m_TriggerEffect.SpellDataName))
             {
                 description = SpellLoader.GetSpellDescription(m_TriggerEffect.SpellDataName, m_TriggerEffect.Level);
             } 
-            else if (SpellLoader.StateEffectExists(m_TriggerEffect.SpellDataName))
+            else if (SpellLoader.IsStateEffect(m_TriggerEffect.SpellDataName))
             {
                 description = SpellLoader.GetStateEffectDescription(m_TriggerEffect.SpellDataName, m_TriggerEffect.Level);
             }

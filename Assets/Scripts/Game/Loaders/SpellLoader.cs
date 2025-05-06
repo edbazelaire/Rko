@@ -183,7 +183,7 @@ namespace Game.Loaders
         /// </summary>
         /// <param name="spellName"></param>
         /// <returns></returns>
-        public static bool SpellExists(string name)
+        public static bool IsSpell(string name)
         {
             return Enum.TryParse(name, out ESpell _) || m_ExtraSpellData.ContainsKey(name);
         }
@@ -193,7 +193,7 @@ namespace Game.Loaders
         /// </summary>
         /// <param name="spellName"></param>
         /// <returns></returns>
-        public static bool StateEffectExists(string name)
+        public static bool IsStateEffect(string name)
         {
             return Enum.TryParse(name, out EStateEffect _) || m_StateEffects.ContainsKey(name);
         }

@@ -349,7 +349,7 @@ namespace Menu.PopUps
 
             // instantiate chest prefab
             m_ChestUI = m_CurrentChestRewardData.Instantiate(m_ChestContainer);
-            m_ChestUI.ActivateIdle(true, true);
+            m_ChestUI.ActivateIdle(true, withSound: true, isLocal: false);
 
             // wait until touch to display reward
             yield return new WaitUntil(() => m_Skip);

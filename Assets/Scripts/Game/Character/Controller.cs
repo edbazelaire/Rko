@@ -36,6 +36,7 @@ public class Controller : NetworkBehaviour
 
     // -- Server Variable
     RuneData[] m_RuneData;
+    CharacterData m_CharacterData;
 
     // -- local variables
     bool m_GameRunning = false;
@@ -61,6 +62,7 @@ public class Controller : NetworkBehaviour
     public SPlayerData      PlayerData          => m_PlayerData.Value;
     public string           PlayerName          => m_PlayerName.Value.ToString();
     public string           Character           => m_Character.Value.ToString();
+    public CharacterData    CharacterData       => m_CharacterData;
     public int              CharacterLevel      => m_CharacterLevel.Value;
     public RuneData[]       RuneData            => m_RuneData;
     public int              Team                => m_Team.Value;
@@ -280,6 +282,7 @@ public class Controller : NetworkBehaviour
 
         CharacterData characterData = CharacterLoader.GetCharacterData(playerData.Character.ToString(), playerData.CharacterLevel, destroy: true);
         characterData.AddBonusStats(GetBonusStats());
+        m_CharacterData = characterData;
 
         // initialize SpellHandler with character's spells
         m_SpellHandler.Initialize(characterData.AutoAttack, characterData.SpecialAbility, characterData.Ultimate, playerData.Spells.ToList(), playerData.SpellLevels.ToList());

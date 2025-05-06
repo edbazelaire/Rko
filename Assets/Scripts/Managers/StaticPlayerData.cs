@@ -18,17 +18,18 @@ namespace Managers
     [Serializable]
     public struct SBotData : INetworkSerializable
     {
-        public FixedString32Bytes       Difficulty;
-        public float                    DecisionRefresh;
-        public float                    Randomness;
-        public float                    MinReactionTime;
-        public float                    MaxReactionTime;
-        public float                    MinMovementTime;
-        public float                    MaxMovementTime;
-        public float                    MinMovementRefresh;
-        public float                    MaxMovementRefresh;
+        public FixedString32Bytes           Difficulty;
+        public float                        DecisionRefresh;
+        public float                        Randomness;
+        public float                        MinReactionTime;
+        public float                        MaxReactionTime;
+        public float                        MinMovementTime;
+        public float                        MaxMovementTime;
+        public float                        MinMovementRefresh;
+        public float                        MaxMovementRefresh;
+        public Dictionary<string, float>    ExtraVariables;
 
-        public SBotData(string difficulty, float decisionRefresh = 0f, float randomness = 0f, (float, float) reactionTime = default, (float, float) movementTime = default, (float, float) movementRefresh = default)
+        public SBotData(string difficulty, float decisionRefresh = 0f, float randomness = 0f, (float, float) reactionTime = default, (float, float) movementTime = default, (float, float) movementRefresh = default, Dictionary<string, float> extraVariables = default)
         {
             Difficulty          = difficulty;
             DecisionRefresh     = decisionRefresh;
@@ -39,6 +40,7 @@ namespace Managers
             MaxMovementTime     = movementTime.Item2;
             MinMovementRefresh  = movementRefresh.Item1;
             MaxMovementRefresh  = movementRefresh.Item2;
+            ExtraVariables      = extraVariables;
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
@@ -50,6 +52,48 @@ namespace Managers
             serializer.SerializeValue(ref MaxReactionTime);
             serializer.SerializeValue(ref MinMovementRefresh);
             serializer.SerializeValue(ref MaxMovementRefresh);
+
+            // Serialize Dictionary
+            int count = ExtraVariables?.Count ?? 0;
+            serializer.SerializeValue(ref count);
+
+            if (serializer.IsWriter)
+            {
+                ExtraVariables ??= new Dictionary<string, float>();
+
+                foreach (var kvp in ExtraVariables)
+                {
+                    FixedString64Bytes key = kvp.Key;
+                    float value = kvp.Value;
+                    serializer.SerializeValue(ref key);
+                    serializer.SerializeValue(ref value);
+                }
+            }
+            else
+            {
+                ExtraVariables = new Dictionary<string, float>(count);
+                for (int i = 0; i < count; i++)
+                {
+                    FixedString64Bytes key = default;
+                    float value = 0f;
+                    serializer.SerializeValue(ref key);
+                    serializer.SerializeValue(ref value);
+                    ExtraVariables[key.ToString()] = value;
+                }
+            }
+        }
+
+        public float GetExtraVar(string key)
+        {
+            if (ExtraVariables == null || ! ExtraVariables.ContainsKey(key))
+                return 0f;
+
+            return ExtraVariables[key];
+        }
+
+        public float GetExtraVar(Enum key)
+        {
+            return GetExtraVar(key.ToString());
         }
     }
 

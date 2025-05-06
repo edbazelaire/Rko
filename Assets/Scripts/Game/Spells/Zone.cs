@@ -238,8 +238,9 @@ namespace Game.Spells
             // call spell event that spell has touched something
             CallSpellEvent(ESpellEvent.OnHit, controller);
 
-            // energy gain
-            m_Controller.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
+            // energy gain (if not structure)
+            if (! controller.CharacterData.IsStructure)
+                m_Controller.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
 
             // add player to affected players
             if (m_SpellData.DurationTick > 0)

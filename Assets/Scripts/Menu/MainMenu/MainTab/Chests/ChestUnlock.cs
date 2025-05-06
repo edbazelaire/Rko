@@ -161,7 +161,7 @@ namespace Menu
                     m_Background.color = m_ReadyColor;
                     m_ChestTimer.text = TextLocalizer.LocalizeText("Ready");
                     // delay on frame because gameobject might no be init yet
-                    CoroutineManager.DelayMethod(() => { m_ChestUI.ActivateIdle(true); });
+                    CoroutineManager.DelayMethod(() => { m_ChestUI.ActivateIdle(true, isLocal: true); });
                     break;
             }
             m_PreviousState = m_State;
@@ -184,6 +184,8 @@ namespace Menu
         SPriceData GetUnlockPrice()
         {
             var remainingTime = m_State == EChestLockState.Unlocking ? UnlockedIn : ItemLoader.GetChestRewardData(m_ChestData.ChestType).UnlockTime;
+            if (TimeCloudData.HasBoost(EBoost.ChestSpeedBoost))
+                remainingTime /= 2;
             int price = Math.Max((int)Math.Round(remainingTime * ShopManagementData.FastUnlockChestPrice / 3600), 1);
             return new SPriceData(price, ECurrency.Gems);
         }

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using TMPro;
 using Tools;
 using UnityEngine;
-using UnityEngine.Video;
+
 
 namespace Menu.PopUps
 {
@@ -142,8 +142,8 @@ namespace Menu.PopUps
 
         void SetUpStateEffects()
         {
-            var spellData = m_Data.GetInfo();
-            List<SStateEffectData> effectsData = spellData.ContainsKey("Effects") ? spellData["Effects"] as List<SStateEffectData> : new List<SStateEffectData>();
+            var spellInfo = m_Data.GetInfo();
+            List<SStateEffectData> effectsData = spellInfo.ContainsKey("Effects") ? spellInfo["Effects"] as List<SStateEffectData> : new List<SStateEffectData>();
 
             if (effectsData.Count == 0)
             {

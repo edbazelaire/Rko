@@ -88,8 +88,8 @@ namespace Assets.Scripts.Managers
             if (CurrentVersion.CompareTo(new Version("0.2.5")) == -1)
                 test = UpdateVersion_0_2_5();
 
-            //if (CurrentVersion.CompareTo(new Version("0.3.0")) == -1)
-            //    test = UpdateVersion_0_3_0();
+            if (CurrentVersion.CompareTo(new Version("0.3.0")) == -1)
+                test = UpdateVersion_0_3_0();
 
             // if does not trigger any version until now, update to current version
             if (CurrentVersion.CompareTo(GameVersion) == -1)
@@ -469,9 +469,10 @@ namespace Assets.Scripts.Managers
 
         #region v0.3.0
 
-        static void UpdateVersion_0_3_0()
+        static bool UpdateVersion_0_3_0()
         {
             RenameGoldKey();
+            return true;
         }
 
         static async void RenameGoldKey()

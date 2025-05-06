@@ -53,14 +53,14 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
 
         #region Animation Activation
 
-        public override void ActivateIdle(bool withAura = false, bool withSound = false)
+        public override void ActivateIdle(bool withAura = false, bool withSound = false, bool isLocal = false)
         {
             m_Animator.Play(IDLE_ANIMATION);
             SoundFXManager.PlaySoundFXClip(m_BaseSoundFX, transform);
             ActivateAura(withAura);
         }
 
-        public override void ActivateAura(bool activate = true)
+        public override void ActivateAura(bool activate = true, bool isLocal = false)
         {
             m_AuraEffects.SetActive(activate);
         }

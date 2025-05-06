@@ -65,7 +65,7 @@ namespace Game.Character
             if (! CanCastAutoAttack)
                 return;
 
-            bool success = m_Controller.SpellHandler.TryStartCastSpell(m_Controller.SpellHandler.AutoAttack);
+            bool success = m_Controller.SpellHandler.TryStartCastSpell(m_Controller.SpellHandler.AutoAttack, m_Controller.CharacterLevel);
             if (! success)
                 return;
 

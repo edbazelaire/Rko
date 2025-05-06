@@ -39,6 +39,9 @@ namespace Game.Spells
 
         protected virtual void Update()
         {
+            if (GameManager.IsGameOver)
+                return;
+
             UpdatePosition();
         }
 

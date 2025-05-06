@@ -1,6 +1,5 @@
 using AI;
 using Enums;
-using Game.AI.Tasks.Variables;
 using System.Collections;
 using System.Collections.Generic;
 using Tools;

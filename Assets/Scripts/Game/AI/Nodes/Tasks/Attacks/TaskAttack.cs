@@ -96,7 +96,7 @@ public class TaskAttack : BaseTask
         ESpell spell = SelectSpell();
         if (spell != ESpell.None)
         {
-            m_Controller.SpellHandler.TryStartCastSpell(spell);
+            m_Controller.SpellHandler.TryStartCastSpell(spell, m_Controller.CharacterLevel, out string _);
                 
             ErrorHandler.Log("     + Casting Spell     : " + spell, ELogTag.AITaskAttack);
             ErrorHandler.Log("     + State             : SUCCESS",  ELogTag.AITaskAttack);

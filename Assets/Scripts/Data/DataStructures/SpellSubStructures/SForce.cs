@@ -5,7 +5,7 @@ using System;
 using Tools;
 using UnityEngine;
 
-namespace Assets.Scripts.Data.DataStructures.SpellSubStructures
+namespace Data.DataStructures.SpellSubStructures
 {
     [Serializable]
     public class SForce

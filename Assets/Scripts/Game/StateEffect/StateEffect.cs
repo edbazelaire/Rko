@@ -192,7 +192,7 @@ namespace Game.Spells
         public EStateEffect             ConsumeState        => m_ConsumeState;
         public EStateEffect             DefaultState        => m_DefaultState;
         public int                      Level               => m_Level;
-        public bool                     IsBuff              => SpellLoader.SpellExists(StateEffectName);
+        public bool                     IsBuff              => SpellLoader.IsSpell(StateEffectName);
 
         public string StateEffectName
         {
@@ -293,7 +293,7 @@ namespace Game.Spells
         /// </summary>
         protected virtual void OnStart()
         {
-            if (m_Energy != 0)
+            if (m_Energy != 0 && !m_Controller.CharacterData.IsStructure)
                 m_Caster.EnergyHandler.AddEnergy(GetInt(EStateEffectProperty.Energy) * m_Stacks);
 
             ActivateHoldingStateEffects(true);

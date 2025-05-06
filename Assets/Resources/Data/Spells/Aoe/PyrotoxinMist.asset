@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c134d41ca291c244b96cfda56a7e83fd, type: 3}
   m_Name: PyrotoxinMist
   m_EditorClassIdentifier: 
-  Rarety: 1
+  m_Rarety: 1
   m_Description: Zone applying {0} damage each {1} seconds for {2} seconds. Also
     applies a {3} and a {4} stack. The size of the zone grows by {5} during its lifetime
   m_DescriptionVariables:
@@ -39,7 +39,7 @@ MonoBehaviour:
       SoundDuration: 2
     GFXLifetime:
       m_StartSpellPart: 100
-      m_EndSpellPart: 300
+      m_EndSpellPart: 400
       StartAt: 0
       EndAt: 0
       Persistance: 0
@@ -54,6 +54,7 @@ MonoBehaviour:
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -67,6 +68,14 @@ MonoBehaviour:
     Y: 0
   LockTarget: 100
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 0
   EnergyGain: 5
@@ -78,7 +87,7 @@ MonoBehaviour:
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
-  m_Duration: 2
+  m_Duration: 4.5
   Delay: 0.8
   m_Force:
     m_Speed: 0
@@ -87,8 +96,6 @@ MonoBehaviour:
   - Property: 14
     Value: 0.1
   - Property: 3
-    Value: 0.05
-  - Property: 4
     Value: 0.05
   m_Size: 2
   TriggerPlayer: 1
@@ -106,7 +113,7 @@ MonoBehaviour:
   PersistanceAfterEnd: 0
   Animation: 6
   IsCancellable: 0
-  AnimationTimer: 0.25
+  AnimationTimer: 0.45
   m_Cooldown: 20
   m_SpellSpawn: 1
   DurationTick: 0.5

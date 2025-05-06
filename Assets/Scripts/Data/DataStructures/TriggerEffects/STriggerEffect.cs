@@ -158,14 +158,14 @@ namespace Data.DataStructures
                 m_TargetController.StartCoroutine(UpdateCooldownTimer());
             }
 
-            if (SpellLoader.SpellExists(SpellDataName))
+            if (SpellLoader.IsSpell(SpellDataName))
             {
                 SpellData spellData = SpellLoader.GetSpellData(SpellDataName, Level);
 
                 m_TargetController.StartCoroutine(spellData.CastDelay(m_TargetController.PlayerId, Vector3.zero, recalculateTarget: true));
             }
 
-            else if (SpellLoader.StateEffectExists(SpellDataName))
+            else if (SpellLoader.IsStateEffect(SpellDataName))
             {
                 m_TargetController.StateHandler.AddStateEffect(SpellLoader.GetStateEffect(SpellDataName, Level), m_Caster);
             }
@@ -224,7 +224,7 @@ namespace Data.DataStructures
                 m_TargetController.StopCoroutine(m_Coroutine);
             }
 
-            if (SpellLoader.StateEffectExists(SpellDataName))
+            if (SpellLoader.IsStateEffect(SpellDataName))
                 m_TargetController.StateHandler.RemoveStateEffect(SpellDataName);
         }
 
