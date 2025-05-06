@@ -16,10 +16,10 @@ public class SynchronizedSlider : MObject
     private Slider m_Slider;
     private TMP_InputField m_InputField;
 
-    protected EPlayerPref m_Option;
-    protected float m_MinValue;
-    protected float m_MaxValue;
-    float m_BaseValue;
+    protected string    m_Option;
+    protected float     m_MinValue;
+    protected float     m_MaxValue;
+    float               m_BaseValue;
 
     #endregion
 
@@ -35,10 +35,10 @@ public class SynchronizedSlider : MObject
         m_InputField = Finder.FindComponent<TMP_InputField>(gameObject);
     }
 
-    public void Initialize(string title, EPlayerPref option, float baseValue, float minValue, float maxValue)
+    public void Initialize(string title, string option, float baseValue, float minValue, float maxValue)
     {
         m_Option    = option;
-        m_BaseValue = PlayerPrefs.GetFloat(option.ToString(), baseValue);
+        m_BaseValue = PlayerPrefs.GetFloat(option, baseValue);
         m_MinValue  = minValue;
         m_MaxValue  = maxValue;
 
@@ -90,7 +90,7 @@ public class SynchronizedSlider : MObject
             m_InputField.text = value.ToString("F2");
         }
 
-        PlayerPrefs.SetFloat(m_Option.ToString(), value);
+        PlayerPrefs.SetFloat(m_Option, value);
         ValueChangedEvent?.Invoke(value);
     }
 
@@ -110,7 +110,7 @@ public class SynchronizedSlider : MObject
             m_InputField.text = m_Slider.value.ToString("F2");
         }
 
-        PlayerPrefs.SetFloat(m_Option.ToString(), value);
+        PlayerPrefs.SetFloat(m_Option, value);
     }
 
     #endregion

@@ -1,5 +1,6 @@
 ﻿using Assets;
 using Enums;
+using Game.AI.BehaviorTrees;
 using Game.Spells;
 using Menu.Common.Buttons;
 using Save;
@@ -24,6 +25,7 @@ namespace Menu.MainMenu.MainTab.GameSection.Training
         GameObject                  m_BuildContainer;
 
         GameObject                  m_OptionsContent;
+        GameObject                  m_ExtraVariablesContainer;
         TMP_Dropdown                m_DifficultyDropdown;
         SynchronizedSlider          m_DecisionRefreshSlider;
         SynchronizedSlider          m_RandomnessSlider;
@@ -49,6 +51,7 @@ namespace Menu.MainMenu.MainTab.GameSection.Training
             m_BuildContainer                = Finder.Find(gameObject, "BuildContainer");
 
             m_OptionsContent                = Finder.Find(gameObject, "OptionsContent");
+            m_ExtraVariablesContainer       = Finder.Find(m_OptionsContent, "ExtraVariablesContainer");
             m_DifficultyDropdown            = Finder.FindComponent<TMP_Dropdown>(gameObject, "DifficultyDropdown");
             m_DecisionRefreshSlider         = Finder.FindComponent<SynchronizedSlider>(gameObject, "DecisionRefreshSlider");
             m_RandomnessSlider              = Finder.FindComponent<SynchronizedSlider>(gameObject, "RandomnessSlider");
@@ -67,29 +70,10 @@ namespace Menu.MainMenu.MainTab.GameSection.Training
                 ErrorHandler.Error("Unable to parse Training league as league enum");
                 league = ELeague.Silver;
             }
-            UIHelper.SetUpDropdown(m_DifficultyDropdown, league, (ELeague value) => { PlayerPrefs.SetString(EPlayerPref.TrainingDifficulty.ToString(), value.ToString()); }); 
+            UIHelper.SetUpDropdown(m_DifficultyDropdown, league, (ELeague value) => { PlayerPrefs.SetString(EPlayerPref.TrainingDifficulty.ToString(), value.ToString()); SetUpExtraVariablesSliders(); });
 
             // init sliders
-            m_RandomnessSlider.Initialize("Randomness", EPlayerPref.TrainingRandomness, 0.5f, 0f, 1f);
-            m_DecisionRefreshSlider.Initialize("Decision Refresh", EPlayerPref.TrainingDecisionRefresh, 0.1f, 0.05f, 1f);
-            m_ReactionTimeSlider.Initialize("Reaction Time", EPlayerPref.TrainingReactionTime, 
-                baseMinValue: 0.05f, 
-                baseMaxValue: 0.2f, 
-                minValue: 0f, 
-                maxValue: 1f
-            );
-            m_MovementTimeSlider.Initialize("Movement Duration", EPlayerPref.TrainingMovementTime, 
-                baseMinValue: 0.5f, 
-                baseMaxValue: 2f, 
-                minValue: 0f, 
-                maxValue: 5f
-            );
-            m_MovementRefreshSlider.Initialize("Movement Refresh", EPlayerPref.TrainingMovementRefresh, 
-                baseMinValue: 0.05f, 
-                baseMaxValue: 0.5f, 
-                minValue: 0f, 
-                maxValue: 5f
-            );
+            SetUpOptions();
 
             // refresh preview of rune and character
             CoroutineManager.DelayMethod(RefreshCharacterPreview);
@@ -109,6 +93,49 @@ namespace Menu.MainMenu.MainTab.GameSection.Training
 
 
         #region GUI Manipulators
+
+        void SetUpOptions()
+        {
+            m_RandomnessSlider.Initialize("Randomness", EPlayerPref.TrainingRandomness.ToString(), 0.5f, 0f, 1f);
+            m_DecisionRefreshSlider.Initialize("Decision Refresh", EPlayerPref.TrainingDecisionRefresh.ToString(), 0.1f, 0.05f, 1f);
+            m_ReactionTimeSlider.Initialize("Reaction Time", EPlayerPref.TrainingReactionTime,
+                baseMinValue: 0.05f,
+                baseMaxValue: 0.2f,
+                minValue: 0f,
+                maxValue: 1f
+            );
+            m_MovementTimeSlider.Initialize("Movement Duration", EPlayerPref.TrainingMovementTime,
+                baseMinValue: 0.5f,
+                baseMaxValue: 2f,
+                minValue: 0f,
+                maxValue: 5f
+            );
+            m_MovementRefreshSlider.Initialize("Movement Refresh", EPlayerPref.TrainingMovementRefresh,
+                baseMinValue: 0.05f,
+                baseMaxValue: 0.5f,
+                minValue: 0f,
+                maxValue: 5f
+            );
+
+            SetUpExtraVariablesSliders();
+        }
+
+        void SetUpExtraVariablesSliders()
+        {
+            UIHelper.CleanContent(m_ExtraVariablesContainer);
+            if (!Enum.TryParse(PlayerPrefs.GetString(EPlayerPref.TrainingDifficulty.ToString()), out ELeague league))
+            {
+                ErrorHandler.Error("Unable to parse " + PlayerPrefs.GetString(EPlayerPref.TrainingDifficulty.ToString()) + " as League");
+                return;
+            }
+
+            var allExtraVars = DefaultBotBT.GetExtraVariables(league);
+            foreach (string extraVar in allExtraVars)
+            {
+                var slider = Instantiate(m_RandomnessSlider, m_ExtraVariablesContainer.transform);
+                slider.Initialize(TextHandler.SplitCamelCase(extraVar), extraVar, 0f, -10f, 10f);
+            }
+        }
 
         void SetUpBuild()
         {

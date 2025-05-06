@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Data.DataStructures.SpellSubStructures;
+using Data.DataStructures.SpellSubStructures;
 using Enums;
 using System.Collections.Generic;
 using System.ComponentModel;

@@ -104,10 +104,10 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
             }
         }
 
-        public virtual void ActivateIdle(bool withAura = false, bool withSound = false)
+        public virtual void ActivateIdle(bool withAura = false, bool withSound = false, bool isLocal = false)
         {
             m_Animator.Play(IDLE_ANIMATION);
-            ActivateAura(withAura);
+            ActivateAura(withAura, isLocal: isLocal);
 
             if (withSound && m_ChestData.IdleSoundFX != null)
                 m_AudioSource = SoundFXManager.PlaySoundFXClip(m_ChestData.IdleSoundFX);
@@ -121,10 +121,27 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
             StartCoroutine(PlayOpenAnimation());
         }
 
-        public virtual void ActivateAura(bool activate = true)
+        public virtual void ActivateAura(bool activate = true, bool isLocal = false)
         {
+            if (!m_AuraEffects)
+                return;
+
             m_AuraEffects.SetActive(activate);
+
+            if (!activate)
+                return;
+            
+            Vector3 chestScale = m_Preview.transform.lossyScale;
+
+            // Set simulation space on all ParticleSystems
+            foreach (var ps in m_AuraEffects.GetComponentsInChildren<ParticleSystem>(true))
+            {
+                var main = ps.main;
+                main.simulationSpace = isLocal ? ParticleSystemSimulationSpace.Local : ParticleSystemSimulationSpace.World;
+                ps.transform.localScale = new Vector3(ps.transform.localScale.x * chestScale.x, ps.transform.localScale.y * chestScale.y, ps.transform.localScale.z * chestScale.z);
+            }
         }
+
 
         public virtual void ActivateOpenParticles(bool activate = true)
         {

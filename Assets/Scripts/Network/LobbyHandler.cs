@@ -20,6 +20,7 @@ using Unity.Services.Relay;
 using UnityEngine;
 using Unity.Services.Core;
 using Managers.Bots;
+using Game.AI.BehaviorTrees;
 
 namespace Network
 {
@@ -672,7 +673,8 @@ namespace Network
                             randomness:         PlayerPrefs.GetFloat(EPlayerPref.TrainingRandomness.ToString(), 0f),
                             reactionTime:       (PlayerPrefs.GetFloat(EPlayerPref.TrainingReactionTime.ToString() + "Min", 0f), PlayerPrefs.GetFloat(EPlayerPref.TrainingReactionTime.ToString() + "Max", 0.5f)),
                             movementTime:       (PlayerPrefs.GetFloat(EPlayerPref.TrainingMovementTime.ToString() + "Min", 0f), PlayerPrefs.GetFloat(EPlayerPref.TrainingMovementTime.ToString() + "Max", 1f)),
-                            movementRefresh:    (PlayerPrefs.GetFloat(EPlayerPref.TrainingMovementRefresh.ToString() + "Min", 0f), PlayerPrefs.GetFloat(EPlayerPref.TrainingMovementRefresh.ToString() + "Max", 0.5f))
+                            movementRefresh:    (PlayerPrefs.GetFloat(EPlayerPref.TrainingMovementRefresh.ToString() + "Min", 0f), PlayerPrefs.GetFloat(EPlayerPref.TrainingMovementRefresh.ToString() + "Max", 0.5f)),
+                            extraVariables:     GetTrainingExtraVariables()
                         )
                     );
 
@@ -686,6 +688,24 @@ namespace Network
                     ErrorHandler.Error("Unhandled mode : " + GameMode);
                     return default;
             }
+        }
+
+        Dictionary<string, float> GetTrainingExtraVariables()
+        {
+            var dict = new Dictionary<string, float>();
+            if (!Enum.TryParse(PlayerPrefs.GetString(EPlayerPref.TrainingDifficulty.ToString()), out ELeague league))
+            {
+                ErrorHandler.Error("Unable to parse " + PlayerPrefs.GetString(EPlayerPref.TrainingDifficulty.ToString()) + " as League");
+                return dict;
+            }
+
+            List<string> variables = DefaultBotBT.GetExtraVariables(league);
+            foreach (string varName in variables)
+            {
+                dict[varName] = PlayerPrefs.GetFloat(varName, 0f);
+            }
+
+            return dict;
         }
 
         #endregion

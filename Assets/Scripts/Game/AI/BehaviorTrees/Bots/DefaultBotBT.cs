@@ -2,18 +2,28 @@
 using AI.Checkers;
 using Enums;
 using Game.AI.Tasks.Variables;
+using Managers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Tools;
 using UnityEngine;
 
 namespace Game.AI.BehaviorTrees
 {
+    public enum EDefaultTreeVariables
+    {
+        DodgeWeightBias,
+        AttackWeightBias,
+    }
+
     public class DefaultBotBT : DefaultBT
     {
         #region Members
 
         protected ELeague m_League;
+
+        protected SBotData m_BotData => m_Controller.BehaviorTree.BotData;
 
         #endregion
 
@@ -44,6 +54,20 @@ namespace Game.AI.BehaviorTrees
             }
         }
 
+        public static List<string> GetExtraVariables(ELeague league)
+        {
+            switch (league)
+            {
+                case ELeague.Iron:
+                case ELeague.Bronze:
+                case ELeague.Silver:
+                    return Enum.GetNames(typeof(EDefaultTreeVariables)).ToList();
+
+                default:
+                    return Enum.GetNames(typeof(EDefaultTreeVariables)).ToList();
+            }
+        }
+
         Node LoadBasicTree()
         {
             ErrorHandler.Log("Loading BASIC Tree for " + m_Controller.Character);
@@ -60,10 +84,10 @@ namespace Game.AI.BehaviorTrees
                         {
                             new TaskCounter(m_Controller),
                             new TaskJump(m_Controller),
-                        }, weight: () => { return 1 - m_Controller.BehaviorTree.BotData.Randomness; }),
+                        }, weight: () => { return 1 - m_BotData.Randomness; }),
 
                         // Ignore threat and attack
-                        AttackGroupNode(weight: () => { return m_Controller.BehaviorTree.BotData.Randomness; }),
+                        AttackGroupNode(weight: () => { return m_BotData.Randomness; }),
                     })
                 }),
 
@@ -79,7 +103,7 @@ namespace Game.AI.BehaviorTrees
                     new SelectorWeight(new List<Node>
                     {
                         // DODGE : "+0.5f" is weight bias towards Dodging
-                        new TaskDodge(m_Controller, checkZones: false, weight: () => { return 0.5f + 1f - ((CharacterBT)m_Controller.BehaviorTree).OffensiveMeter; }),
+                        new TaskDodge(m_Controller, checkZones: false, weight: () => { return m_BotData.GetExtraVar(EDefaultTreeVariables.DodgeWeightBias) + 1f - ((CharacterBT)m_Controller.BehaviorTree).OffensiveMeter; }),
                         
                         // IGNORE DODGE : attack instead
                         new TaskAttack(m_Controller, weight: () => { return ((CharacterBT)m_Controller.BehaviorTree).OffensiveMeter; }),
@@ -88,7 +112,7 @@ namespace Game.AI.BehaviorTrees
 
                 new SelectorWeight(new List<Node> {
                     // "+Xf" weight bias towards Attacking
-                    AttackGroupNode(weight: () => { return 3f + ((CharacterBT)m_Controller.BehaviorTree).OffensiveMeter; }),
+                    AttackGroupNode(weight: () => { return m_BotData.GetExtraVar(EDefaultTreeVariables.AttackWeightBias) + ((CharacterBT)m_Controller.BehaviorTree).OffensiveMeter; }),
 
                     // Move
                     new TaskMove(m_Controller, weight: () => { return 1 - ((CharacterBT)m_Controller.BehaviorTree).OffensiveMeter; }),

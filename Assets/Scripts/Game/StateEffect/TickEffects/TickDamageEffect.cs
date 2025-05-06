@@ -125,7 +125,8 @@ namespace Game.Spells
             m_Controller.Life.AddShield(GetInt(EStateEffectProperty.TickShield), m_Caster.PlayerId, StateEffectName, ESpellCategory.Tick);
 
             // add bonus tick energy
-            m_Caster.EnergyHandler.AddEnergy(GetInt(EStateEffectProperty.TickEnergy));
+            if (!m_Controller.CharacterData.IsStructure)
+                m_Caster.EnergyHandler.AddEnergy(GetInt(EStateEffectProperty.TickEnergy));
         }
 
         #endregion

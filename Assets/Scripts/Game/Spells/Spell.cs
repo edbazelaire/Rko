@@ -169,6 +169,11 @@ namespace Game.Spells
             CallSpellEvent(ESpellEvent.OnSpawn);
         }
 
+        public void CallEnd()
+        {
+            End();
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -463,8 +468,9 @@ namespace Game.Spells
             // add plyer id to list of hitted players
             m_HittedPlayerId.Add(controller.OwnerClientId);
 
-            // energy gain
-            m_Controller.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
+            // energy gain (if hitting not structure object)
+            if (! controller.CharacterData.IsStructure)
+                m_Controller.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
 
             // update hit count
             if (m_HittedPlayerId.Count <= m_SpellData.MaxHit && m_SpellData.MaxHit > 0)
@@ -677,7 +683,7 @@ namespace Game.Spells
                 if (spellEventEffect.SpellEvent != spellEvent)
                     continue;
 
-                if (SpellLoader.SpellExists(spellEventEffect.EffectName))
+                if (SpellLoader.IsSpell(spellEventEffect.EffectName))
                 {
                     m_SpellData.SubCastSpell(
                         subSpellData:           SpellLoader.GetSpellData(spellEventEffect.EffectName),
@@ -690,7 +696,7 @@ namespace Game.Spells
                     );
                 }
 
-                else if (SpellLoader.StateEffectExists(spellEventEffect.EffectName))
+                else if (SpellLoader.IsStateEffect(spellEventEffect.EffectName))
                 {
                     Controller finalTargetController = m_SpellData.GetTargetController(
                         casterId:       m_Controller.PlayerId,

@@ -28,29 +28,8 @@ MonoBehaviour:
     WithIcon: 1
   m_SpellElements: 0200000003000000
   Linked: 0
-  Graphics: {fileID: 4510707380993797748, guid: 2f8def97db0868f42a5bf121916615be, type: 3}
-  SpellEventActions:
-  - Prefab: {fileID: 4924508274929071776, guid: bb631e47d796e1a47889dcd4102220fc, type: 3}
-    MaterialEffect: {fileID: 0}
-    SoundFX:
-    - AudioClip: {fileID: 8300000, guid: 5519ffa556e20764d864887b83e27951, type: 3}
-      SoundDuration: 0
-    GFXLifetime:
-      m_StartSpellPart: 1000
-      m_EndSpellPart: 0
-      StartAt: 0
-      EndAt: 0
-      Persistance: 1.2
-    Size: 0.7
-    OrderInLayer: 0
-    SpawnTarget: 3
-    SpawnLocation: 0
-    BodyPart: 0
-    IsFollowing: 0
-    Offset: {x: 0, y: 0}
-    Animation: 0
-    SpellAnimation: 
-    StateEffects: 
+  Graphics: {fileID: 0}
+  SpellEventActions: []
   OnHit: []
   SpellEventEffects: []
   OnHitSpellSpawn: 1
@@ -76,9 +55,9 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
-  EnergyGain: 5
+  EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 45
+  m_Damage: 0
   m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
@@ -120,9 +99,9 @@ MonoBehaviour:
   Trajectory: 1
   m_TriggerGround: 1
   m_StopOnTargetPos: 0
-  m_Speed: 10
+  m_Speed: 0
   m_YSpawnPos: 0
-  ProjectileData: {fileID: 0}
+  ProjectileData: {fileID: 11400000, guid: 5911bd9eacc23eb48891064f2cc79d07, type: 2}
   MultiProjectileType: 1
   m_RecalculatePosition: 1
   m_IsBlocking: 1

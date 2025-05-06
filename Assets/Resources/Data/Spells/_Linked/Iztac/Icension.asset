@@ -13,8 +13,14 @@ MonoBehaviour:
   m_Name: Icension
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 
-  m_DescriptionVariables: []
+  m_Description: 'Splits the sky with a colossal strike, dealing {0} damage and applying
+    [IceBreak].\nIf it hits an enemy, <b>Iztac</b> gains {1} shield.\n\n<i>Redirectable
+    Cast: the spell can be redirected during casting</i>'
+  m_DescriptionVariables:
+  - Name: Damage
+    WithIcon: 1
+  - Name: Shield
+    WithIcon: 1
   m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 1950208342475878, guid: c21a71c1507e4784c9cb6ac2f9af6822, type: 3}

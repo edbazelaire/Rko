@@ -27,22 +27,8 @@ namespace Game.Arena
             m_RectTransform = GetComponent<RectTransform>();
         }
 
-        protected override void SetUpUI()
-        {
-            EnsureColliderMatchesRect();
-        }
-
-        private void EnsureColliderMatchesRect()
-        {
-            var collider = GetComponent<BoxCollider2D>();
-            if (collider != null)
-            {
-                collider.size = m_RectTransform.rect.size;
-                collider.offset = Vector2.zero;
-            }
-        }
-
         #endregion
+
 
         #region Input Handling
 

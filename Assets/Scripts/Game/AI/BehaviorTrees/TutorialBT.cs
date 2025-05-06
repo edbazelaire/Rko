@@ -103,7 +103,7 @@ public class TutorialBT : BehaviorTree
 
     public void Cast(ESpell spell)
     {
-        m_Controller.SpellHandler.TryStartCastSpell(spell);
+        m_Controller.SpellHandler.TryStartCastSpell(spell, 1, out string _);
     }
 
 

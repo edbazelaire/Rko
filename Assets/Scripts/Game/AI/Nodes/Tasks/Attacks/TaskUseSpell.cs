@@ -126,9 +126,6 @@ namespace Game.AI
             // wait for the Controller to start the cast
             if (m_CastState == ECastState.Casting)
             {
-                // make sure movement is set to 0
-                //m_Controller.Movement.SetMovement(0);
-                
                 // check is currently casting the spell
                 if (m_Controller.SpellHandler.IsCasting && m_Controller.SpellHandler.SelectedSpell == m_Spell)
                 {
@@ -150,7 +147,7 @@ namespace Game.AI
                 }
 
                 // try to cast the spell
-                if (m_Controller.SpellHandler.TryStartCastSpell(m_Spell, out string reason))
+                if (m_Controller.SpellHandler.TryStartCastSpell(m_Spell, m_Controller.CharacterLevel, out string reason))
                 {
                     // in case of instant success
                     if (m_State == NodeState.SUCCESS)

@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: Shardskin
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 
-  m_DescriptionVariables: []
+  m_Description: "Reinforces his icy scales, gaining {0} shield.\\nEach time he\u2019s
+    hit by a projectile, he retaliates with a blast that applies [Frost]"
+  m_DescriptionVariables:
+  - Name: Shield
+    WithIcon: 1
   m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 0}

@@ -48,7 +48,7 @@ public class TaskJump : BaseTask
             {
                 ErrorHandler.Log("TaskJump SUCCESS", ELogTag.AITaskJump);
                 m_State = NodeState.SUCCESS;
-                m_Controller.SpellHandler.TryStartCastSpell(spell);
+                m_Controller.SpellHandler.TryStartCastSpell(spell, m_Controller.CharacterLevel, out string _);
                 return m_State;
             }
         }

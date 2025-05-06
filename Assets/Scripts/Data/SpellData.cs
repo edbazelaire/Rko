@@ -950,10 +950,14 @@ namespace Data
                     ErrorHandler.Warning("SpellEventEffects.Count > 1 : this case is not handled in infos description");
 
                 var effect = SpellEventEffects[0].EffectName;
-                if (SpellLoader.SpellExists(effect))
+                if (SpellLoader.IsSpell(effect))
                 {
-                    SpellLoader.GetSpellData(effect).AddAsSubSpellInfos(ref infosDict);
+                    SpellLoader.GetSpellData(effect, m_Level).AddAsSubSpellInfos(ref infosDict);
                     return;
+                } else
+                {
+                    // TODO : Handle none spell effects in description ?
+                    ErrorHandler.Warning("Unhandled case : " + effect);
                 }
             }
         }
@@ -1072,17 +1076,23 @@ namespace Data
 
             for (int i = 0; i < m_SpellRequirements.Count; i++)
             {
-                m_SpellRequirements[i].SetLevel(level);
+                var effect = m_SpellRequirements[i];
+                effect.SetLevel(level);
+                m_SpellRequirements[i] = effect;
             }
 
             for (int i = 0; i < EnemyStateEffects.Count; i++)
             {
-                EnemyStateEffects[i].SetLevel(level);
+                var effect = EnemyStateEffects[i];
+                effect.SetLevel(level);
+                EnemyStateEffects[i] = effect;
             }
 
             for (int i = 0; i < AllyStateEffects.Count; i++)
             {
-                AllyStateEffects[i].SetLevel(level);
+                var effect = AllyStateEffects[i];
+                effect.SetLevel(level);
+                AllyStateEffects[i] = effect;
             }
         }
 

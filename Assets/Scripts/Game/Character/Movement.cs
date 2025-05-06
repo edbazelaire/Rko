@@ -1,5 +1,6 @@
 using Assets.Scripts.Data.DataStructures.SpellSubStructures;
 using Assets.Scripts.Game.Character.Netcode;
+using Data.DataStructures.SpellSubStructures;
 using Data.GameManagement;
 using Enums;
 using Game.Character.Netcode;

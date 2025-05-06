@@ -115,6 +115,10 @@ PrefabInstance:
       value: 51
       objectReference: {fileID: 0}
     - target: {fileID: 4994663423667650367, guid: 0a6a2b5511ee7144580620269a32eb56, type: 3}
+      propertyPath: moveWithTransform
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4994663423667650367, guid: 0a6a2b5511ee7144580620269a32eb56, type: 3}
       propertyPath: ShapeModule.m_Scale.x
       value: 2
       objectReference: {fileID: 0}
@@ -185,6 +189,10 @@ PrefabInstance:
     - target: {fileID: 7582611277444767761, guid: 0a6a2b5511ee7144580620269a32eb56, type: 3}
       propertyPath: m_Name
       value: FireBuff
+      objectReference: {fileID: 0}
+    - target: {fileID: 7611500566380623932, guid: 0a6a2b5511ee7144580620269a32eb56, type: 3}
+      propertyPath: moveWithTransform
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7611500566380623932, guid: 0a6a2b5511ee7144580620269a32eb56, type: 3}
       propertyPath: ShapeModule.m_Scale.x

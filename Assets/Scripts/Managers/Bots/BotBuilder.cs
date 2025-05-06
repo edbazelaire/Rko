@@ -1,6 +1,7 @@
 ﻿using Data;
 using Data.GameManagement;
 using Enums;
+using Game.AI.BehaviorTrees;
 using Game.Loaders;
 using Inventory;
 using MyBox;
@@ -74,14 +75,15 @@ namespace Managers.Bots
                     randomness:         CalculateRandomness(playerLeagueData.CurrentLeague), 
                     reactionTime:       CalculateReactionTime(playerLeagueData.CurrentLeague),
                     movementTime:       (0.1f, 1f),
-                    movementRefresh:    (0.1f, 0.5f)
+                    movementRefresh:    (0.1f, 0.5f),
+                    extraVariables:     GetExtraVariables(playerLeagueData.CurrentLeague)
                 )
             );
         }
 
         static float CalculateDecisionRefresh(ELeague league)
         {
-            return 0.1f;
+            return 0.35f;
         }
 
         static float CalculateRandomness(ELeague league)
@@ -120,6 +122,41 @@ namespace Managers.Bots
             }
 
             return (baseValue / 2,  baseValue * 2);
+        }
+
+        static Dictionary<string, float> GetExtraVariables(ELeague league)
+        {
+            switch (league)
+            {
+                case ELeague.Iron:
+                    return new Dictionary<string, float>()
+                    {
+                        { EDefaultTreeVariables.AttackWeightBias.ToString(), 5f },
+                        { EDefaultTreeVariables.DodgeWeightBias.ToString(), 0f },
+                    };
+
+                case ELeague.Bronze:
+                case ELeague.Silver:
+                    return new Dictionary<string, float>()
+                    {
+                        { EDefaultTreeVariables.AttackWeightBias.ToString(), Random.Range(3f, 5f)       },
+                        { EDefaultTreeVariables.DodgeWeightBias.ToString(), Random.Range(0.2f, 0.5f)    },
+                    };
+  
+                case ELeague.Gold:
+                    return new Dictionary<string, float>()
+                    {
+                        { EDefaultTreeVariables.AttackWeightBias.ToString(), 3f },
+                        { EDefaultTreeVariables.DodgeWeightBias.ToString(), 0.5f },
+                    };
+
+                default:
+                    return new Dictionary<string, float>()
+                    {
+                        { EDefaultTreeVariables.AttackWeightBias.ToString(), 3f },
+                        { EDefaultTreeVariables.DodgeWeightBias.ToString(), 0.2f },
+                    };
+            }
         }
 
         #endregion
