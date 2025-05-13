@@ -228,6 +228,21 @@ namespace Save
             return true;
         }
 
+        /// <summary>
+        /// Has any rewards for leagues waiting ?
+        /// </summary>
+        /// <returns></returns>
+        public static bool HasLeagueRewards()
+        {
+            foreach (var rewards in LeagueRewards.Values)
+            {
+                if (rewards.Count > 0)
+                    return true;
+            }
+
+            return false;
+        }
+
         public static bool HasRewardsForLeague(ELeague league)
         {
             return LeagueRewards.ContainsKey(league) && LeagueRewards[league].Count > 0;

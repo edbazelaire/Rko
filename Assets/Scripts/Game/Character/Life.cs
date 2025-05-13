@@ -19,8 +19,7 @@ public class Life : NetworkBehaviour
     // EVENTS
     /// <summary> thrown when the character dies </summary>
     public Action                   DiedEvent;
-    public delegate void OnHealedDelegate(int finalHeal, ulong targetId, ulong casterId);
-    public static event OnHealedDelegate OnHealedEvent;
+    public Action<int, ulong>       OnHealedEvent;
 
     // ===================================================================================
     // NETWORK VARIABLES
@@ -177,7 +176,7 @@ public class Life : NetworkBehaviour
 
         m_Hp.Value += heal;
         GameAnalyticsManager.Instance.OnSpellHit(casterId, m_Controller.PlayerId, source, heal, EHitType.Heal, spellCategory);
-        OnHealedEvent?.Invoke(heal, m_Controller.PlayerId, casterId);
+        OnHealedEvent?.Invoke(heal, casterId);
 
         return heal;
     }

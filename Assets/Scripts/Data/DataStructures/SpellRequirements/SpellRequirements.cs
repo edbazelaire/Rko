@@ -18,6 +18,8 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
 
         protected int m_Level;
 
+        public List<SStateEffectRequirement> StateEffectRequirements => m_StateEffectRequirements;
+
         public List<SRequirement> Requirements {
             get
             {

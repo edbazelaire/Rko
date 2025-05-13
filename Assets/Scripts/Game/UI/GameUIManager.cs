@@ -225,10 +225,10 @@ public class GameUIManager : MonoBehaviour
     /// </summary>
     /// <param name="owner"></param>
     /// <param name="spell"></param>
-    public void CreateSpellTemplate(ESpell spell, int level)
+    public void CreateSpellTemplate(ESpell spell, int level, int index)
     {
         SpellItemUI spellItem = Finder.FindComponent<SpellItemUI>(GameObject.Instantiate(SpellTemplate, m_SpellContainer.transform));
-        spellItem.Initialize(spell, level);
+        spellItem.Initialize(spell, level, index);
         m_SpellItems.Add(spellItem);
     }
 
@@ -237,10 +237,10 @@ public class GameUIManager : MonoBehaviour
     /// </summary>
     /// <param name="owner"></param>
     /// <param name="spell"></param>
-    public void CreateLinkedSpellTemplate(ESpell spell, int level)
+    public void CreateLinkedSpellTemplate(ESpell spell, int level, int index)
     {
         SpellItemUI spellItem = Finder.FindComponent<SpellItemUI>(GameObject.Instantiate(SpellTemplate, m_LinkedSpellsContainer.transform));
-        spellItem.Initialize(spell, level);
+        spellItem.Initialize(spell, level, index);
         m_SpellItems.Add(spellItem);
     }
 

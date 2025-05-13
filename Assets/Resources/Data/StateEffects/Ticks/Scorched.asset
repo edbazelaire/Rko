@@ -28,8 +28,9 @@ MonoBehaviour:
   m_Priority: 0
   m_Duration: 1.5
   m_IsInstantanious: 0
-  m_MaxStacks: 1
+  m_MaxStacks: 3
   m_StackDecay: -1
+  m_StatConversions: []
   m_Energy: 0
   m_BonusStats: []
   m_SpeedBonus: 0
@@ -51,8 +52,10 @@ MonoBehaviour:
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel:
   - StateEffectProperty: 13
-    ScalingFactor: 0.15
-  m_StateEffectScalingStacks: []
+    ScalingFactor: 0.12
+  m_StateEffectScalingStacks:
+  - StateEffectProperty: 13
+    ScalingFactor: 1
   m_IsTrueDamage: 0
   m_Damage: 0
   m_EndDamage: 0
@@ -60,7 +63,7 @@ MonoBehaviour:
   m_EndHeal: 0
   m_LifeSteal: 0
   m_Tick: 0.5
-  m_TickDamage: 25
+  m_TickDamage: 15
   m_TickHeal: 0
   m_TickShield: 0
   m_TickEnergy: 0

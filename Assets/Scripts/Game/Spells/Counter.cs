@@ -34,9 +34,9 @@ namespace Game.Spells
         /// </summary>
         /// <param name="target"></param>
         /// <param name="spellName"></param>
-        public override void Initialize(ulong clientId, Vector3 target, string spellName, int level, string parent)
+        public override void Initialize(ulong clientId, Vector3 target, SpellData spellData)
         {
-            base.Initialize(clientId, target, spellName, level, parent);
+            base.Initialize(clientId, target, spellData);
 
             if (!IsServer)
                 return;
@@ -291,7 +291,7 @@ namespace Game.Spells
 
             foreach(var effect in m_SpellData.DamageConversionEffects)
             {
-                effect.Apply(enemySpell, Controller);
+                effect.Apply(enemySpell, Controller, m_SpellData.Parent);
             }
         }
 

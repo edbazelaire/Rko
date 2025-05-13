@@ -10,6 +10,7 @@ using System.Linq;
 using Tools;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Data
 {
@@ -21,8 +22,10 @@ namespace Data
         int m_Level;
 
         [SerializeField] float          m_Ratio;
+        [SerializeField] float          m_RatioScalingLevel;
         [SerializeField] ESpellTarget   m_Target;
-        [SerializeField] string         m_StateEffect;
+        [SerializeField, FormerlySerializedAs("StateEffect"), Tooltip("Effect converting the damages : Spell, StateEffect, Property, ...")] 
+        string                          m_Effect;
 
         // min/max value to safeguard the conversion
         [SerializeField] float          m_MinValue;
@@ -30,7 +33,7 @@ namespace Data
 
         // =========================================================================================
         // Public Accessors
-        public readonly float Ratio     => m_Ratio * Mathf.Pow(0.9f, m_Level);
+        public readonly float Ratio     => m_Ratio * Mathf.Pow(1 + m_RatioScalingLevel, m_Level);
         public readonly float MinValue  => m_MinValue > 0 ? m_MinValue * Mathf.Pow(1.05f, m_Level) : 0;
         public readonly float MaxValue  => m_MaxValue > 0 ? m_MaxValue * Mathf.Pow(1.05f, m_Level) : 0;
 
@@ -39,20 +42,38 @@ namespace Data
 
         #region Apply Effect
 
-        public void Apply(Spell spell, Controller self)
+        public void Apply(Spell spell, Controller caster, string parent)
         {
-            Controller target = GetTarget(self);
+            Controller target = GetTarget(caster);
             if (target == null)
                 return;
 
-            ApplyStateEffect(target, self, spell);
+            if (string.IsNullOrEmpty(m_Effect))
+            {
+                ErrorHandler.Warning("Trying to convert damages, but no effect was provided");
+                return;
+            }
+
+            int stacks = ConvertStacks(spell);
+
+            if (Enum.TryParse(m_Effect, out EStateEffectProperty property))
+            {
+                ApplyProperty(target, caster, stacks, property, parent);
+            } else if (SpellLoader.IsSpell(m_Effect))
+            {
+                ErrorHandler.Warning("Unhandled case : " + m_Effect + " - Spell");
+            }
+            else if (SpellLoader.IsStateEffect(m_Effect))
+            {
+                ApplyStateEffect(target, caster, stacks);
+            } else
+            {
+                ErrorHandler.Warning("Unhandled case : " +  m_Effect + " - neither recognized as Property, Spell or StateEffect");
+            }
         }
 
-        public void ApplyStateEffect(Controller target, Controller caster, Spell spell)
+        public int ConvertStacks(Spell spell)
         {
-            if (string.IsNullOrEmpty(m_StateEffect))
-                return;
-            
             // Calculate Stacks
             int stacks = (int)Mathf.Floor(Ratio * spell.SpellData.Damage);
             if (m_MaxValue > 0f && stacks > Mathf.Round(m_MaxValue))
@@ -60,8 +81,29 @@ namespace Data
             if (m_MinValue > 0f && stacks < Mathf.Round(m_MinValue))
                 stacks = (int)Mathf.Round(m_MinValue);
 
+            return stacks;
+        }
+
+        public void ApplyProperty(Controller target, Controller caster, int stacks, EStateEffectProperty property, string parent)
+        {
+            switch (property)
+            {
+                case EStateEffectProperty.Heal:
+                    target.Life.Heal(stacks, caster.PlayerId, parent, ESpellCategory.Direct);
+                    break;
+                case EStateEffectProperty.Damage:
+                    target.Life.Heal(stacks, caster.PlayerId, parent, ESpellCategory.Direct);
+                    break;
+                default:
+                    target.CharacterData.AddBonusStat(property, stacks);
+                    break;
+            }
+        }
+
+        public void ApplyStateEffect(Controller target, Controller caster, int stacks)
+        {
             // Apply state Effect on Target
-            target.StateHandler.AddStateEffect(SpellLoader.GetStateEffect(m_StateEffect, m_Level), caster, new SStateEffectData(EStateEffect.None, stacks));
+            target.StateHandler.AddStateEffect(SpellLoader.GetStateEffect(m_Effect, m_Level), caster, new SStateEffectData(EStateEffect.None, stacks));
         }
 
         Controller GetTarget(Controller self) 
@@ -98,10 +140,32 @@ namespace Data
 
         public string GetDescription()
         {
-            if (string.IsNullOrEmpty(m_StateEffect))
+            if (string.IsNullOrEmpty(m_Effect))
                 return "";
-        
-            return "Each " + Mathf.Floor(1 / Ratio) + " damages blocked, apply a stack of " + TextHandler.FormatStateEffectIcon(m_StateEffect, true) + " on " + (m_Target == ESpellTarget.Self ? "your character" : "your enemy") + (MaxValue > 0 ? " (maxed at " + (int)Mathf.Round(MaxValue) + " stacks)" : "");
+            if (Enum.TryParse(m_Effect, out EStateEffectProperty property))
+            { 
+                switch (property)
+                {
+                    case EStateEffectProperty.Heal:
+                        return TextHandler.FormatStateEffectIcon(m_Effect, true) + " " + (m_Target == ESpellTarget.Self ? "your character" : "your enemy") + " for " + Mathf.Floor(Ratio * 100) + "% of damage blocked" + (MaxValue > 0 ? " (maxed at " + (int)Mathf.Round(MaxValue) + ")" : "");
+                    case EStateEffectProperty.Damage:
+                        return TextHandler.FormatStateEffectIcon(m_Effect, true) + " " + (m_Target == ESpellTarget.Self ? "your character" : "your enemy") + " for " + Mathf.Floor(Ratio) + "% of damage blocked" + (MaxValue > 0 ? " (maxed at " + (int)Mathf.Round(MaxValue) + ")" : "");
+                    default:
+                        return "Each " + Mathf.Floor(Ratio) + " damage blocked, grants " + TextHandler.FormatStateEffectIcon(m_Effect, true) + " to " + (m_Target == ESpellTarget.Self ? "your character" : "your enemy") + (MaxValue > 0 ? " (maxed at " + (int)Mathf.Round(MaxValue) + ")" : "");
+                }
+            } 
+            
+            if (SpellLoader.IsStateEffect(m_Effect))
+                return "Each " + Mathf.Floor(Ratio) + " damage blocked, apply a stack of " + TextHandler.FormatStateEffectIcon(m_Effect, true) + " on " + (m_Target == ESpellTarget.Self ? "your character" : "your enemy") + (MaxValue > 0 ? " (maxed at " + (int)Mathf.Round(MaxValue) + " stacks)" : "");
+            
+            if (SpellLoader.IsSpell(m_Effect))
+            {
+                ErrorHandler.Warning("Unhandled case - get description for spell : " + m_Effect);
+                return "";
+            }
+
+            ErrorHandler.Warning("Unhandled case - get description for effect : " + m_Effect + " - neither recognized as property, spell or effect");
+            return "";
         }
 
         #endregion

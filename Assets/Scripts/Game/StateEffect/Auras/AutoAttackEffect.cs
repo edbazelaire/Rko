@@ -10,8 +10,10 @@ namespace Game.Spells
     [CreateAssetMenu(fileName = "AutoAttackEffect", menuName = "Game/StateEffects/Aura/AutoAttackEffect")]
     public class AutoAttackEffect : SpellEffect
     {
+        #region Members
+
         [Header("Auto Attack")]
-        [SerializeField] protected SpellData                m_ReplacementData;
+        [SerializeField] protected SpellData m_ReplacementData;
 
         // ==============================================================================
         // DATA
@@ -20,6 +22,9 @@ namespace Game.Spells
         // ==============================================================================
         // PUBLIC MANIPULATORS
         public override EStateEffectType StateEffectType => EStateEffectType.AutoAttackBuff;
+
+        #endregion
+
 
         #region Init & End
 

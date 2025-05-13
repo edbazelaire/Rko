@@ -183,6 +183,7 @@ namespace Data
         public override ERarety Rarety => GetRarety();
         public virtual string Parent => m_Parent.IsNullOrEmpty() ? Name : m_Parent;
         public ESpell Spell => Id == null ? ESpell.None : (ESpell)Id;
+        public ulong? CurrentTargetId           => m_CurrentTargetId;
         public virtual List<SpellRequirements> SpellRequirements => m_SpellRequirements;
         public virtual ESpellType SpellType     => ESpellType.InstantSpell;
         public float BaseSize                   => m_Size;
@@ -277,7 +278,7 @@ namespace Data
 
             // initialize the spell
             var spell = Finder.FindComponent<Spell>(spellGO.gameObject);
-            spell.Initialize(clientId, target, Name, m_Level, m_Parent);
+            spell.Initialize(clientId, target, this);
 
             // backpropagate the spell intialization to the client (for the preview)
             spell.InitializeClientRpc(clientId, new Vector2Short(target), Name, (byte)m_Level);
@@ -856,6 +857,8 @@ namespace Data
                 infosDict.Add("Energy", EnergyGain);
             if (EnergyCost > 0)
                 infosDict.Add("EnergyCost", EnergyCost);
+            if (SpellRequirements.Count > 0)
+                infosDict.Add("SpellRequirements", SpellRequirements);
             if (Damage > 0)
                 infosDict.Add("Damage", Damage);
             if (ExecutionDamage > 0)
@@ -870,7 +873,9 @@ namespace Data
                 infosDict.Add("Size", m_Size);
             if (Cooldown > 0)
                 infosDict.Add("Cooldown",       Cooldown);
-            
+            if (SpellRelocation.Lifetime.StartSpellPart >= ESpellEvent.OnSpawn)
+                infosDict.Add("Movement", "Manual");
+
             infosDict.Add("CastDuration",   AnimationTimer);
 
             if (Delay > 0)
@@ -1031,7 +1036,10 @@ namespace Data
 
         public string GetTargetTypeInfo()
         {
-            switch(SpellTarget)
+            if (SpellRelocation.Lifetime.StartSpellPart != ESpellEvent.None && SpellRelocation.Lifetime.StartSpellPart < ESpellEvent.OnSpawn)
+                return "Redirectable";
+
+            switch (SpellTarget)
             {
                 case ESpellTarget.Fixed:
                 case ESpellTarget.Mirror:
@@ -1050,7 +1058,11 @@ namespace Data
 
         public new SpellData Clone(int level = 0, bool destroy = false)
         {
-            return (SpellData)base.Clone(level, destroy);
+            SpellData spellData = (SpellData)base.Clone(level, destroy);
+            spellData.SetCurrentTargetId(CurrentTargetId);
+            spellData.SetParent(Parent);
+
+            return spellData;
         }
 
         public void SetParent(string parent)

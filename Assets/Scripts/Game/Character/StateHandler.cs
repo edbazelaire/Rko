@@ -533,8 +533,6 @@ namespace Game.Character
                 {
                     RemoveStateEffectAtIndex(index, true);
                 }
-
-                Debug.LogWarning("Remove StateEffect " + stateEffect);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using Data.Spells;
+﻿using Data;
+using Data.Spells;
 using UnityEngine;
 
 namespace Game.Spells
@@ -16,9 +17,9 @@ namespace Game.Spells
 
         #region Init & End
 
-        public override void Initialize(ulong clientId, Vector3 target, string spellName, int level, string parent)
+        public override void Initialize(ulong clientId, Vector3 target, SpellData spellData)
         {
-            base.Initialize(clientId, target, spellName, level, parent);
+            base.Initialize(clientId, target, spellData);
 
             m_Timer = m_SpellData.Duration;
             m_OriginalPosition = m_Controller.transform.position;

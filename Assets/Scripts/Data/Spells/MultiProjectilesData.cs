@@ -11,6 +11,7 @@ using Data.GameManagement;
 using System;
 using UnityEngine.Serialization;
 using System.Linq;
+using Google.Apis.Sheets.v4.Data;
 
 namespace Data
 {
@@ -261,7 +262,8 @@ namespace Data
                     break;
             }
 
-            target.x = Mathf.Clamp(target.x, min, max);
+            if (m_ClampTargetPos)
+                target.x = Mathf.Clamp(target.x, min, max);
 
             return target;
         }

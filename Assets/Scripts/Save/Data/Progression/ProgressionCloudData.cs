@@ -33,9 +33,9 @@ namespace Save
         public string[] GetPowerUps() => PowerUps ?? (new string[4]);
         public readonly bool InProgress() => ArenaType != EArenaType.None;
         public readonly bool IsOver() => m_IsOver || Losses >= ArenaData.MAX_LOSSES || Level > AssetLoader.LoadArenaData(ArenaType, SArenaDifficulty).MaxLevel;
-        public readonly bool IsBoss()
+        public bool IsBoss()
         {
-            var arenaLevelData = ArenaLevelData();
+            SArenaLevelData? arenaLevelData = ArenaLevelData();
             if (arenaLevelData == null)
                 return false;
 
@@ -540,15 +540,15 @@ namespace Save
 
         public static void UpgradeLeagueLevel(bool save = true)
         {
+            // add rewards to notification data so they can be collected later
+            NotificationCloudData.AddLeagueLevelReward(CurrentLeague, CurrentLeagueLevel);
+
             // reached max level of the league : go to next league 
             if (CurrentLeagueLevel == Main.LeagueDataConfig.CurrentLeagueData.LevelData.Count - 1)
             {
                 UpgradeLeague(save);
                 return;
-            } 
-           
-            // add rewards to notification data so they can be collected later
-            NotificationCloudData.AddLeagueLevelReward(CurrentLeague, CurrentLeagueLevel);
+            }
 
             SLeagueCloudData leagueCloudData = LeagueCloudData;
             leagueCloudData.CurrentStage = 0;

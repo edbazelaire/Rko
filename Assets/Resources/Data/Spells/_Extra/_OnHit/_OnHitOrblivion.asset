@@ -9,35 +9,44 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be1429166f6c7054fa65815783a3681a, type: 3}
-  m_Name: _CorruptedFlameTick
+  m_Script: {fileID: 11500000, guid: 3187be67d58548144a9d4f83cb44e7d2, type: 3}
+  m_Name: _OnHitOrblivion
   m_EditorClassIdentifier: 
-  Rarety: 0
-  m_Description: 'At each [Burn] tick, [EnemyStateEffect.0]'
+  m_Rarety: 0
+  m_Description: 
   m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 0
-  Graphics: {fileID: 0}
+  Graphics: {fileID: 3903842169140113438, guid: d759636dff4cf244eb32202cf0f13e29, type: 3}
   SpellEventActions: []
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
-  SpellTarget: 4
+  SpellTarget: 0
   m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
-  EnergyGain: 0
+  MaxHit: 0
+  EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 0
+  m_Damage: 80
   m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
@@ -49,19 +58,21 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
-  m_SpellsScalingLevel: []
-  m_Size: 1
+  m_SpellsScalingLevel:
+  - Property: 2
+    Value: 0.1
+  m_Size: 2
   TriggerPlayer: 1
   EnemyStateEffects:
-  - StateEffect: 13
+  - StateEffect: 22
     Stacks: 1
     BonusStacksPerLevel: 0
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
-  PersistanceAfterEnd: 0
+  PersistanceAfterEnd: 2
   Animation: 0
-  IsCancellable: 0
+  IsCancellable: 1
   AnimationTimer: 0
   m_Cooldown: 0
-  IsAttachedToTarget: 0
+  m_SpellSpawn: 2

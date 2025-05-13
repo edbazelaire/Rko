@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e83ee2023ecc7e04480ae9c612ad7749, type: 3}
   m_Name: CorruptedFlame
   m_EditorClassIdentifier: 
-  Rarety: 1
+  m_Rarety: 1
   m_Description: 
   m_DescriptionVariables: []
   m_SpellElements: 00000000
@@ -58,7 +58,7 @@ MonoBehaviour:
       Cooldown: 0
     m_BonusStats: []
   m_PrimalPower:
-    Description: '[TriggerEffect.0]\n[TriggerEffect.1]'
+    Description: '[TriggerEffect.0]\nEach [Burn] tick applies a stack of [Cursed}'
     m_DescriptionVariables: []
     m_BonusLevel: 8
     m_TriggerEffects:
@@ -76,7 +76,7 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
-    - SpellDataName: _CorruptedFlameTick
+    - SpellDataName: Cursed
       Level: 0
       Target: 50
       SpellActivationEvent: 1

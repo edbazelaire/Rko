@@ -161,7 +161,7 @@ namespace Menu
                     m_Background.color = m_ReadyColor;
                     m_ChestTimer.text = TextLocalizer.LocalizeText("Ready");
                     // delay on frame because gameobject might no be init yet
-                    CoroutineManager.DelayMethod(() => { m_ChestUI.ActivateIdle(true, isLocal: true); });
+                    CoroutineManager.DelayMethod(() => { m_ChestUI.ActivateIdle(false, isLocal: true); });
                     break;
             }
             m_PreviousState = m_State;

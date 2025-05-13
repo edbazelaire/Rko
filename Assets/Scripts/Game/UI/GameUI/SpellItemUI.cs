@@ -16,9 +16,10 @@ namespace Game.UI
         /// <summary> name of the GameObject containing the cooldown counter </summary>
         const string    c_CooldownCtr   = "CooldownCtr";
 
+        /// <summary> Index of the spell in the list of spell data </summary>
+        int m_Index;
         /// <summary> Owner of this spell item (= current player) </summary>
         Controller      m_Owner;
-
         /// <summary> TextMeshPro of the cooldown counter </summary>
         TMP_Text        m_CooldownCtr;
 
@@ -67,11 +68,12 @@ namespace Game.UI
         /// Initialize the GameObject : graphics, button, members, listeners
         /// </summary>
         /// <param name="spell"></param>
-        public void Initialize(ESpell spell, int level)
+        public void Initialize(ESpell spell, int level, int index)
         {
             // init data
             m_CollectableCloudData = new SCollectableCloudData(spell, level);
             m_Owner = GameManager.Instance.Owner;
+            m_Index = index;
 
             SpellData spellData = SpellLoader.GetSpellData(m_Spell, level, destroy: true);
             m_BaseCooldown = spellData.Cooldown;
@@ -203,18 +205,18 @@ namespace Game.UI
             base.RegisterListeners();
 
             // listeners
-            m_Owner.SpellHandler.SelectedSpellNet.OnValueChanged    += OnSpellSelected;
-            m_Owner.SpellHandler.SpellSelectionEvent                += OnSpellSelectionStateChanged;
-            m_Owner.SpellHandler.OnCooldownEvent                    += OnCooldownChanged;
+            m_Owner.SpellHandler.SelectedSpellIndexNet.OnValueChanged   += OnSpellIndexSelected;
+            m_Owner.SpellHandler.SpellSelectionEvent                    += OnSpellSelectionStateChanged;
+            m_Owner.SpellHandler.OnCooldownEvent                        += OnCooldownChanged;
         }
 
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
 
-            m_Owner.SpellHandler.SelectedSpellNet.OnValueChanged    -= OnSpellSelected;
-            m_Owner.SpellHandler.SpellSelectionEvent                -= OnSpellSelectionStateChanged;
-            m_Owner.SpellHandler.OnCooldownEvent                    -= OnCooldownChanged;
+            m_Owner.SpellHandler.SelectedSpellIndexNet.OnValueChanged   -= OnSpellIndexSelected;
+            m_Owner.SpellHandler.SpellSelectionEvent                    -= OnSpellSelectionStateChanged;
+            m_Owner.SpellHandler.OnCooldownEvent                        -= OnCooldownChanged;
         }
 
         /// <summary>
@@ -235,9 +237,9 @@ namespace Game.UI
         /// </summary>
         /// <param name="oldValue"></param>
         /// <param name="newValue"></param>
-        void OnSpellSelected(int oldValue, int newValue)
+        void OnSpellIndexSelected(int oldValue, int newValue)
         {
-            SetSelected((ESpell)newValue == m_Spell);
+            SetSelected(newValue == m_Index);
         }
 
         /// <summary>
