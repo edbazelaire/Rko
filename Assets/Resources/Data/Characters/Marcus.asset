@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
   m_Name: Marcus
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: "Marcus Frozenblade, the firstborn son of a once-mighty house, carries
     the weight of a noble lineage now diminished. The Frozenblade family, once seated
     in power and respect, was cast aside after the fall of the old regime, slowly
@@ -26,7 +26,7 @@ MonoBehaviour:
   m_Ultimate: ArcticToundra
   Size: 1
   BaseSpeed: 1
-  BaseHealth: 700
+  BaseHealth: 800
   MaxEnergy: 100
   BaseEnergy: 10
   IsStructure: 0
@@ -38,7 +38,7 @@ MonoBehaviour:
     ScalingFactor: 0.1
     StateEffectStackFactors: []
   - StateEffectProperty: 4
-    BaseValue: 800
+    BaseValue: 1000
     BonusValue: 0
     ScalingFactor: 0.1
     StateEffectStackFactors: []

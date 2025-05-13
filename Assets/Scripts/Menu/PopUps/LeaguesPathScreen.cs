@@ -17,7 +17,6 @@ namespace Menu.PopUps
 
         LeagueDisplayUI m_TemplateLeagueDisplayUI;
 
-        Image                   m_Background;
         GameObject              m_ScrollContent;
         GameObject              m_Viewport;
 

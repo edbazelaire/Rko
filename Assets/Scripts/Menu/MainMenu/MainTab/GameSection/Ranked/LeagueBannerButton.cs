@@ -13,7 +13,7 @@ public class LeagueBannerButton : MObject
     ELeague                 m_League;
 
     Image                   m_Icon;
-    NotificationParticles     m_NotificationDisplay;
+    NotificationParticles   m_NotificationDisplay;
     Button                  m_Button;
 
     public Button Button => m_Button;
@@ -57,7 +57,7 @@ public class LeagueBannerButton : MObject
 
     void CheckNotificationActivation()
     {
-        if (NotificationCloudData.HasRewardsForLeague(m_League))
+        if (NotificationCloudData.HasLeagueRewards())
             m_NotificationDisplay.Activate();
         else
             m_NotificationDisplay.Deactivate();

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
   m_Name: Srug
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: When a soul's final cry is swallowed by the void, unheard by gods,
     men, or beasts, from the nothingness, it stirs.\nDrawn to the embers of forgotten
     sorrow, it rises. In the hollow silence where justice dies and hope withers,
@@ -27,19 +27,19 @@ MonoBehaviour:
   m_Ultimate: ShadowRealm
   Size: 1
   BaseSpeed: 1
-  BaseHealth: 1250
+  BaseHealth: 1500
   MaxEnergy: 100
   BaseEnergy: 10
   IsStructure: 0
   HealthScaleFactor: 0.1
   CharacterStatScaling:
   - StateEffectProperty: 7
-    BaseValue: 15
+    BaseValue: 10
     BonusValue: 0
-    ScalingFactor: 0.1
+    ScalingFactor: 0.12
     StateEffectStackFactors: []
   - StateEffectProperty: 4
-    BaseValue: 200
+    BaseValue: 300
     BonusValue: 0
     ScalingFactor: 0.1
     StateEffectStackFactors: []

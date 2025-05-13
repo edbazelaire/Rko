@@ -102,7 +102,7 @@ namespace Game.AI
             // CHECK : already casting
             if (m_CastState <= ECastState.TimerActivated)
             {
-                if (m_Controller.SpellHandler.IsCasting && m_Controller.SpellHandler.SelectedSpell == m_Spell)
+                if (m_Controller.SpellHandler.IsCasting && m_Controller.SpellHandler.SelectedSpell == m_Spell.ToString())
                     SetCastState(ECastState.Casting);
             }
 
@@ -127,7 +127,7 @@ namespace Game.AI
             if (m_CastState == ECastState.Casting)
             {
                 // check is currently casting the spell
-                if (m_Controller.SpellHandler.IsCasting && m_Controller.SpellHandler.SelectedSpell == m_Spell)
+                if (m_Controller.SpellHandler.IsCasting && m_Controller.SpellHandler.SelectedSpell == m_Spell.ToString())
                 {
                     m_State = NodeState.RUNNING;
                     ErrorHandler.Log("TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : currently casting", ELogTag.AITaskUseSpell);

@@ -1,4 +1,5 @@
 ﻿using Enums;
+using Game.Loaders;
 using TMPro;
 using Tools;
 using UnityEngine;
@@ -57,16 +58,30 @@ namespace Menu.Common.Infos
                     m_Icon.sprite   = AssetLoader.LoadUIElementIcon("Target");
                     m_Value.text    = TextLocalizer.LocalizeText(value as string);
                     m_BonusValue.gameObject.SetActive(false);
-                    return; 
+                    return;
 
                 case "CounterActivation":
                     m_Icon.sprite   = AssetLoader.LoadUIElementIcon("Counter");
                     m_Value.text    = TextLocalizer.LocalizeText(value as string);
                     m_BonusValue.gameObject.SetActive(false);
-                    return; 
+                    return;
+
+                case "Movement":
+                    m_Icon.sprite = AssetLoader.LoadUIElementIcon("Movement");
+                    m_Value.text    = TextLocalizer.LocalizeText(value as string);
+                    m_BonusValue.gameObject.SetActive(false);
+                    return;
             }
 
-            m_Icon.sprite = AssetLoader.LoadUIElementIcon(name);
+            if (SpellLoader.IsStateEffect(name))
+            {
+                m_Icon.sprite = AssetLoader.LoadStateEffectIcon(name);
+                m_Name.text += " Cost";
+            }
+            else
+            {
+                m_Icon.sprite = AssetLoader.LoadUIElementIcon(name);
+            }
 
             RefreshValue(value, newValue);
         }

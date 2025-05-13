@@ -99,6 +99,7 @@
         Subrog      = 5,
         NeedleJack  = 6,
         Iztac       = 7,
+        Bulgor      = 8,
     }
 
     public enum EBoss
@@ -196,12 +197,17 @@
         DirtBomb,
         ChemicalSlime,
         Quickfix,
-        Leaner,
+        Leaner, 
         Overdose,
         Cryock,
         Shardskin,
         Icension,
         Maelstrom,
+        Orblivion,
+        Hellnova,
+        Lavachunk,
+        VolcanicMeditation,
+        MoltenSmash,
 
         // ======================================================================
         // BOSSES ABILITIES
@@ -548,6 +554,17 @@
         Both,
     }
 
+    public enum ESpellSlot
+    {
+        AutoAttack      = 0,
+        SpecialAbility  = 1,
+        Ultimate        = 2,
+        Spell1          = 3,
+        Spell2          = 4, 
+        Spell3          = 5, 
+        Spell4          = 6,
+    }
+
     public enum EListEvent
     {
         Add,
@@ -646,6 +663,7 @@
         // Special Effects (characters)
         Junkheal        = 20001,
         HeavyHitter     = 20002,
+        MoltenSpirit    = 20003,
     }
 
     public enum EStateEffectType

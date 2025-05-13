@@ -62,7 +62,7 @@ public class Controller : NetworkBehaviour
     public SPlayerData      PlayerData          => m_PlayerData.Value;
     public string           PlayerName          => m_PlayerName.Value.ToString();
     public string           Character           => m_Character.Value.ToString();
-    public CharacterData    CharacterData       => m_CharacterData;
+    public CharacterData    CharacterData       => m_StateHandler.CharacterData;
     public int              CharacterLevel      => m_CharacterLevel.Value;
     public RuneData[]       RuneData            => m_RuneData;
     public int              Team                => m_Team.Value;
@@ -316,8 +316,8 @@ public class Controller : NetworkBehaviour
 
         // add linked spells
         var characterData = CharacterLoader.GetCharacterData(m_Character.Value.ToString(), destroy: true);
-        GameUIManager.Instance.CreateLinkedSpellTemplate(characterData.Ultimate, m_CharacterLevel.Value);
-        GameUIManager.Instance.CreateLinkedSpellTemplate(characterData.SpecialAbility, m_CharacterLevel.Value);
+        GameUIManager.Instance.CreateLinkedSpellTemplate(characterData.Ultimate, m_CharacterLevel.Value, 2);
+        GameUIManager.Instance.CreateLinkedSpellTemplate(characterData.SpecialAbility, m_CharacterLevel.Value, 1);
 
         // create a SpellItemUI for each spell of the character
         for (int i = 0; i < m_SpellHandler.Spells.Count; i++)
@@ -328,7 +328,7 @@ public class Controller : NetworkBehaviour
             if (spell == characterData.Ultimate || spell == characterData.AutoAttack || spell == characterData.SpecialAbility)
                 continue;
             
-            GameUIManager.Instance.CreateSpellTemplate(m_SpellHandler.Spells[i], m_SpellHandler.SpellLevels[i]);
+            GameUIManager.Instance.CreateSpellTemplate(m_SpellHandler.Spells[i], m_SpellHandler.SpellLevels[i], i + 3);
         }
     }
 

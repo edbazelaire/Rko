@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be1429166f6c7054fa65815783a3681a, type: 3}
   m_Name: _CorruptedFlame
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: 'Each time a [Burn] effect is consummed, [EnemyStateEffect.0]'
   m_DescriptionVariables: []
   m_SpellElements: 
@@ -20,19 +20,28 @@ MonoBehaviour:
   Graphics: {fileID: 0}
   SpellEventActions: []
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
-  SpellTarget: 4
+  SpellTarget: 50
   m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 0

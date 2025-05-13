@@ -194,6 +194,7 @@ namespace Save
             await CloudDatabase.DeleteAllAsync();
         }
 
+        [Obsolete]
         public virtual async void DeleteKey(string key)
         {
             await CloudSaveService.Instance.Data.Player.DeleteAsync(key);

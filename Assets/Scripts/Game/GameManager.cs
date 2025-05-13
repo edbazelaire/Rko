@@ -835,7 +835,7 @@ namespace Game
             // Finds all active Spell components in the scene
             List<Spell> spells = FindObjectsByType<Spell>(FindObjectsSortMode.InstanceID).ToList();
             spells = spells
-                .Where(s => s.SpellData.Name == spellName)
+                .Where(s => s.SpellData != null && s.SpellData.Name == spellName)
                 .ToList();
 
             if (spells.Count == 0)

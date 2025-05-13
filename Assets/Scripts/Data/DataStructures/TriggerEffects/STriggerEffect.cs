@@ -3,6 +3,7 @@ using Enums;
 using Game;
 using Game.Loaders;
 using Game.Spells;
+using NUnit.Framework.Internal;
 using System;
 using System.Collections;
 using System.Linq;
@@ -44,6 +45,7 @@ namespace Data.DataStructures
 
         // ==================================================================================
         // Data
+        string      m_Parent;
         Controller  m_Caster;
         Controller  m_TargetController;
         Coroutine   m_Coroutine;
@@ -161,8 +163,9 @@ namespace Data.DataStructures
             if (SpellLoader.IsSpell(SpellDataName))
             {
                 SpellData spellData = SpellLoader.GetSpellData(SpellDataName, Level);
-
-                m_TargetController.StartCoroutine(spellData.CastDelay(m_TargetController.PlayerId, Vector3.zero, recalculateTarget: true));
+                spellData.SetCurrentTargetId(m_TargetController.PlayerId);
+                spellData.SetParent(m_Parent);
+                m_Caster.StartCoroutine(spellData.CastDelay(m_Caster.PlayerId, Vector3.zero, recalculateTarget: true));
             }
 
             else if (SpellLoader.IsStateEffect(SpellDataName))
@@ -233,6 +236,11 @@ namespace Data.DataStructures
 
         #region Helpers
 
+        public void SetParent(string parent)
+        {
+            m_Parent = parent;
+        }
+
         IEnumerator UpdateCooldownTimer()
         {
             while (m_CooldownTimer > 0)
@@ -298,7 +306,7 @@ namespace Data.DataStructures
                 return;
             }
 
-            // CHECK : has the provided stateEffect as one of activation effect
+            // CHECK : does the provided stateEffect have one of activation effect
             if (! HasStateEffect(stateEffectName))
                 return;
 
