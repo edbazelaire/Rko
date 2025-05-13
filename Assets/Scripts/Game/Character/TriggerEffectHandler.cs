@@ -92,21 +92,22 @@ namespace Game.Character
             if (!IsServer)
                 return;
 
-            AddTriggerEffects(runePower.TriggerEffects);
+            AddTriggerEffects(runePower.TriggerEffects, runePower.Name);
         }
 
-        public void AddTriggerEffects(List<STriggerEffect> triggerEffects)
+        public void AddTriggerEffects(List<STriggerEffect> triggerEffects, string parent = "")
         {
             if (triggerEffects.Count == 0)
                 return;
 
-            // add provided list of trigger effects to total list of trigger effects
-            m_TriggerEffects.AddRange(triggerEffects);
-
             // check if has instant activation
             foreach (var triggerEffect in triggerEffects)
             {
-                CheckOnGameStartEffect(triggerEffect);
+                // -- setup parent (for tracability)
+                triggerEffect.SetParent(parent);
+
+                // -- add provided list of trigger effects to total list of trigger effects
+                m_TriggerEffects.Add(triggerEffect);                // -- check if should start when the game starts                CheckOnGameStartEffect(triggerEffect);
             }
         }
 
@@ -138,11 +139,6 @@ namespace Game.Character
             // Spell Activation
             if (effect.SpellActivationEvent == ESpellActivation.GameStart)
             {
-                // =================================================================================================
-                // TODO : remove 
-                if (effect.SpellDataName == "_SnowStorm")
-                    Debug.LogWarning("Activating " + effect.SpellDataName);
-                // =================================================================================================
                 effect.Activate(m_Controller);
             }
             else if (effect.SpellActivationEvent == ESpellActivation.Hp && effect.ActivationTreshold >= (float)m_Controller.Life.Hp.Value / m_Controller.Life.MaxHp.Value)

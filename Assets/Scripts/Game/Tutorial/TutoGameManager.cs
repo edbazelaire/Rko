@@ -549,7 +549,7 @@ namespace Game
 
         void UnlockSpell(ESpell spell)
         {
-            m_Controller.SpellHandler.SetCooldown(spell, 0);
+            m_Controller.SpellHandler.SetCooldown(spell.ToString(), 0);
             GameUIManager.Instance.GetSpellItemUI(spell).Activate(true);
         }
 

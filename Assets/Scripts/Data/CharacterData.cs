@@ -206,6 +206,11 @@ namespace Data
             }
         }
 
+        public void AddBonusStat(EStateEffectProperty property, float value)
+        {
+            AddBonusStats(new List<SCharacterStatScaling>() { new SCharacterStatScaling(property, 0f, value, 0f) });
+        }
+
         /// <summary>
         /// Add provided bonus base stats to the CharacterScaling values
         /// </summary>

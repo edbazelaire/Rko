@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
+  m_Name: Bulgor
+  m_EditorClassIdentifier: 
+  m_Rarety: 2
+  m_Description: "A warlord of brutal might and volcanic fury, commanding an army
+    by raw, undeniable power.\\nHis people are as crude and savage as the weapons
+    they forge, but under his reign, they have become an unstoppable war machine\u2014driven
+    by smoke, fire, and conquest.\\nDeeming the throne hollow, he vanished into the
+    furnace-depths of his iron fortress. Beneath the smoke-choked skies, his forges
+    burn, his warriors gather\u2014and the silence grows heavier with each passing
+    day. "
+  m_DescriptionVariables: []
+  m_SpellElements: 
+  m_AutoAttack: Lavachunk
+  m_SpecialAbility: VolcanicMeditation
+  m_Ultimate: MoltenSmash
+  Size: 1.4
+  BaseSpeed: 0.9
+  BaseHealth: 2100
+  MaxEnergy: 100
+  BaseEnergy: 10
+  IsStructure: 0
+  HealthScaleFactor: 0.1
+  CharacterStatScaling:
+  - StateEffectProperty: 5
+    BaseValue: 5
+    BonusValue: 0
+    ScalingFactor: 0.1
+    StateEffectStackFactors: []
+  m_SpecialPowers:
+  - Description: 
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: MoltenSpirit
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+    m_BonusStats: []

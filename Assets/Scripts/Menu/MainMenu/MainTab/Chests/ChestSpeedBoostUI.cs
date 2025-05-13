@@ -1,10 +1,8 @@
 ﻿using Enums;
 using Save;
 using System;
-using System.Collections;
 using TMPro;
 using Tools;
-using UnityEngine;
 
 namespace Menu
 {
@@ -62,9 +60,13 @@ namespace Menu
         public void Activate(bool activate = true)
         {
             gameObject.SetActive(activate);
+
+            if (!activate)
+                return;
+
             m_ResetAt = TimeCloudData.GetBoost(EBoost.ChestSpeedBoost).Value.ResetAt;
 
-            if (activate && !m_Initialized)
+            if (!m_Initialized)
                 Initialize();
         }
 

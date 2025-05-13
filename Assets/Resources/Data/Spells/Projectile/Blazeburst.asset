@@ -49,12 +49,31 @@ MonoBehaviour:
     MaterialEffect: {fileID: 0}
     SoundFX: []
     GFXLifetime:
-      m_StartSpellPart: 1000
+      m_StartSpellPart: 500
       m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
       Persistance: 1.5
     Size: 1
+    OrderInLayer: 0
+    SpawnTarget: 3
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
+  - Prefab: {fileID: 168108, guid: 8ea15392430306241aaf3e02c6ed6b3b, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 1000
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 1.5
+    Size: 0.5
     OrderInLayer: 0
     SpawnTarget: 3
     SpawnLocation: 0

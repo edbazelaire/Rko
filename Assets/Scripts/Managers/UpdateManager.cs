@@ -3,6 +3,7 @@ using Data;
 using Data.GameManagement;
 using Enums;
 using Game.Loaders;
+using Google.Apis.Sheets.v4.Data;
 using Inventory;
 using Managers.Friends;
 using Menu.Common.Buttons;
@@ -90,6 +91,9 @@ namespace Assets.Scripts.Managers
 
             if (CurrentVersion.CompareTo(new Version("0.3.0")) == -1)
                 test = UpdateVersion_0_3_0();
+
+            if (CurrentVersion.CompareTo(new Version("0.3.1")) == -1)
+                test = UpdateVersion_0_3_1();
 
             // if does not trigger any version until now, update to current version
             if (CurrentVersion.CompareTo(GameVersion) == -1)
@@ -487,6 +491,43 @@ namespace Assets.Scripts.Managers
             Debug.Log($"[UpdateManager] Successfully updated 'Golds' → '{ECurrency.Gold}' with value {oldValue}.");
         }
 
+
+        #endregion
+
+
+        #region v0.3.1
+
+        static bool UpdateVersion_0_3_1()
+        {
+            // check if the version should be updated
+            if (GameVersion.CompareTo(new Version("0.3.1")) == -1)
+                return true;
+
+            AddMissingRankedRewards();
+            SetVersion("0.3.1");
+            return true;
+        }
+
+        static void AddMissingRankedRewards()
+        {
+            SRewardsData rewards = new SRewardsData();
+            foreach (SLeagueData leagueData in Main.LeagueDataConfig.LeagueDataList)
+            {
+                if (leagueData.League >= ProgressionCloudData.CurrentLeague)
+                    break;
+                rewards.Add(leagueData.LevelData[^1].Rewards);
+            }
+
+            if (rewards.Count == 0)
+                return;
+
+            // send reward of missing xp to player
+            NotificationCloudData.AddMessage(new SMessage(
+                title: "Missing Ranked Rewards",
+                content: "In the last patch, there was an issue affecting some rewards in Ranked mode. The problem has now been resolved.\n\nHere are the rewards you should have received.",
+                rewardsData: rewards
+            ));
+        }
 
         #endregion
 

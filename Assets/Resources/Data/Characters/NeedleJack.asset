@@ -46,7 +46,7 @@ MonoBehaviour:
   m_Ultimate: Overdose
   Size: 1
   BaseSpeed: 1
-  BaseHealth: 2000
+  BaseHealth: 1800
   MaxEnergy: 100
   BaseEnergy: 10
   IsStructure: 0
@@ -54,6 +54,11 @@ MonoBehaviour:
   CharacterStatScaling:
   - StateEffectProperty: 8
     BaseValue: 0.03
+    BonusValue: 0
+    ScalingFactor: 0.15
+    StateEffectStackFactors: []
+  - StateEffectProperty: 4
+    BaseValue: 500
     BonusValue: 0
     ScalingFactor: 0.15
     StateEffectStackFactors: []

@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Managers.Sound;
+﻿using Assets.Scripts.Data.DataStructures.SpellRequirement;
+using Assets.Scripts.Managers.Sound;
 using Data;
 using Data.GameManagement;
 using Enums;
@@ -229,10 +230,39 @@ namespace Menu.PopUps
         /// <param name="newDataValue"></param>
         protected virtual void SetUpInfoRow(GameObject container, string key, object value, object newDataValue = null)
         {
+            if (key == "SpellRequirements")
+            {
+                if (newDataValue is not List<SpellRequirements> newSpellRequirements)
+                    newSpellRequirements = null;
+
+                if (value is List<SpellRequirements> spellRequirements)
+                    SetupSpellRequirementsInfoRows(spellRequirements, newSpellRequirements);
+                else
+                    ErrorHandler.Warning("SpellRequirements was provided for " + m_Collectable.ToString() + " but unable to parse the value as SpellRequirements");
+
+                return;
+            }
+
             // spawn a spellRowInfo from prefab and init with spell data
             SpellInfoRowUI spellRowInfo = Instantiate(m_InfoPrefab, container.transform).GetComponent<SpellInfoRowUI>();
             spellRowInfo.Initialize(key, value, newDataValue);
             m_InfoRows.Add(key, spellRowInfo);
+        }
+
+        void SetupSpellRequirementsInfoRows(List<SpellRequirements> allSpellRequirements, List<SpellRequirements> newAllSpellRequirements = null)
+        {
+            for (int i = 0; i < allSpellRequirements.Count; i++)
+            {
+                for (int j = 0; j < allSpellRequirements[i].StateEffectRequirements.Count; j++)
+                {
+                    SetUpInfoRow(
+                        m_InfosContent, 
+                        allSpellRequirements[i].StateEffectRequirements[j].StateEffect,
+                        allSpellRequirements[i].StateEffectRequirements[j].Stacks,
+                        newAllSpellRequirements?[i].StateEffectRequirements[j].Stacks
+                    );
+                }
+            }
         }
 
         /// <summary>

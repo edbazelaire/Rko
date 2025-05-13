@@ -298,7 +298,17 @@ namespace Data
 
         public List<STriggerEffect> GetTriggerEffects()
         {
-            return GetRunePower(m_RuneActivation).TriggerEffects;
+            var triggerEffects = GetRunePower(m_RuneActivation).TriggerEffects;
+
+            // set parent (for tracability)
+            for (int i = 0; i < triggerEffects.Count; i++)
+            {
+                var triggerEffect = triggerEffects[i];
+                triggerEffect.SetParent(Name);
+                triggerEffects[i] = triggerEffect;
+            }
+
+            return triggerEffects;
         }
 
         #endregion

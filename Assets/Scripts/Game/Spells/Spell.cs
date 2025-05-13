@@ -131,7 +131,7 @@ namespace Game.Spells
         /// </summary>
         /// <param name="target"></param>
         /// <param name="spellName"></param>
-        public virtual void Initialize(ulong clientId, Vector3 target, string spellName, int level, string parent)
+        public virtual void Initialize(ulong clientId, Vector3 target, SpellData spellData)
         {
             m_Controller            = GameManager.Instance.GetPlayer(clientId);
             m_Team                  = m_Controller.Team;
@@ -139,7 +139,7 @@ namespace Game.Spells
             m_RelocationTargetPos   = default;
 
             // setup spell data
-            SetSpellData(spellName, level, parent);
+            m_BaseSpellData = spellData.Clone();
 
             // add extra effects (damages bonus, on hit effects, ...) that the controller has at time of casting
             AddExtraEffects();
@@ -244,7 +244,8 @@ namespace Game.Spells
         {
             if (IsHost)
                 return;
-            Initialize(clientId, targetPos, spellName.ToString(), level, "");
+            var spellData = SpellLoader.GetSpellData(spellName.ToString(), level);
+            Initialize(clientId, targetPos, spellData);
         }
 
         #endregion
@@ -809,7 +810,7 @@ namespace Game.Spells
             if (! SpellData.IsAutoTarget)
                 return null;
 
-            return m_SpellData.GetTargetController(m_Controller.PlayerId, m_SpellData.SpellTarget);
+            return m_SpellData.GetTargetController(m_Controller.PlayerId, m_SpellData.SpellTarget, m_SpellData.CurrentTargetId);
         }
 
         #endregion

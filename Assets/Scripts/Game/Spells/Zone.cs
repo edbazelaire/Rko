@@ -42,12 +42,12 @@ namespace Game.Spells
         /// <param name="radius"></param>
         /// <param name="damage"></param>
         /// <param name="duration"></param>
-        public override void Initialize(ulong clientId, Vector3 target, string spellName, int level, string parent)
+        public override void Initialize(ulong clientId, Vector3 target, SpellData spellData)
         {
             m_PlayersAffected = new Dictionary<ulong, float>();
             m_CollisionCheckRefreshTimer = 0;
 
-            base.Initialize(clientId, target, spellName, level, parent);
+            base.Initialize(clientId, target, spellData);
 
             InitializeTriggerZone();
         }
