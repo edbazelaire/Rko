@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c134d41ca291c244b96cfda56a7e83fd, type: 3}
   m_Name: _MultiArcticEruption
   m_EditorClassIdentifier: 
-  Rarety: 0
-  m_Description: An eruption of frozen flames that applies {0} damage with [Frozen]
-    and [Combustion] on hitting
+  m_Rarety: 0
+  m_Description: creates an eruption of frozen flames that applies {0} damage with
+    [StateEffect.0] and [StateEffect.1] on hitting
   m_DescriptionVariables:
   - Name: Damage
     WithIcon: 1
@@ -61,6 +61,7 @@ MonoBehaviour:
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -74,11 +75,19 @@ MonoBehaviour:
     Y: 0
   LockTarget: 0
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 0
+  m_Damage: 200
   m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
@@ -92,21 +101,17 @@ MonoBehaviour:
     m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
-    Value: 0.1
-  - Property: 1
-    Value: 0.1
-  - Property: 3
-    Value: 0.05
+    Value: 0.12
   m_Size: 9
   TriggerPlayer: 1
   EnemyStateEffects:
-  - StateEffect: 22
-    Stacks: 1
-    BonusStacksPerLevel: 0
-    OverridingProperties: []
   - StateEffect: 2
     Stacks: 1
     BonusStacksPerLevel: 0
+    OverridingProperties: []
+  - StateEffect: 22
+    Stacks: 1
+    BonusStacksPerLevel: 0.1
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0

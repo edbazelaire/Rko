@@ -67,13 +67,26 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_MaxStacks: 1
   m_StackDecay: -1
+  m_StatConversions: []
   m_Energy: 0
-  m_BonusStats: []
+  m_BonusStats:
+  - StateEffectProperty: 8
+    BaseValue: 0.1
+    LevelScalingFactor: 0.05
+    StackScalingFactor: 0
+  - StateEffectProperty: 17
+    BaseValue: 0.1
+    LevelScalingFactor: 0.1
+    StackScalingFactor: 0
+  - StateEffectProperty: 20
+    BaseValue: 0.5
+    LevelScalingFactor: 0
+    StackScalingFactor: 0
   m_SpeedBonus: 0
-  m_CastSpeed: 0.1
+  m_CastSpeed: 0
   m_AttackSpeed: 0
   m_CooldownReduction: 0
-  m_CooldownReductionPerc: 0.5
+  m_CooldownReductionPerc: 0
   m_Shield: 0
   m_ResistanceFix: 0
   m_ResistancePerc: 0
@@ -89,10 +102,6 @@ MonoBehaviour:
   m_StateEffectScalingLevel:
   - StateEffectProperty: 1
     ScalingFactor: 0.05
-  - StateEffectProperty: 17
-    ScalingFactor: 0.1
-  - StateEffectProperty: 8
-    ScalingFactor: 0.1
   m_StateEffectScalingStacks: []
   m_SpellEffectType: 0
   m_AllowedSpellTypes: 

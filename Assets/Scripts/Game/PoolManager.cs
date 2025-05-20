@@ -55,11 +55,11 @@ namespace Assets.Scripts.Game
             return obj;
         }
 
-        public static GameObject Pool(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent)
+        public static GameObject Pool(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent, bool activate = true)
         {
             GameObject obj = Pool(prefab, parent, activate: false);
             obj.transform.SetPositionAndRotation(position, rotation);
-            obj.SetActive(true);
+            obj.SetActive(activate);
 
             return obj;
         }

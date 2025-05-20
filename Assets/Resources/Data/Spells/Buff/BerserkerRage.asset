@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b829d596b80e4f042aa5d80d985cf693, type: 3}
   m_Name: BerserkerRage
   m_EditorClassIdentifier: 
-  Rarety: 2
+  m_Rarety: 2
   m_Description: For {0} seconds increase your Damages by {1}, your Movement Speed
     by {2} and your Attack Speed by {3}. Also makes you heal for {4} of the damage
-    delt. This effectiveness of the boosts is multiply by the percentage of missing
+    delt. This effectiveness of the boosts is multiplied by the percentage of missing
     health
   m_DescriptionVariables:
   - Name: Duration
@@ -33,6 +33,7 @@ MonoBehaviour:
   Graphics: {fileID: 3907952559497218901, guid: c6e8443b2e3b7b6459f659de6ee2d6ce, type: 3}
   SpellEventActions: []
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -46,6 +47,14 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 0

@@ -464,9 +464,6 @@ namespace Game.Character
             if (!IsServer)
                 return 0;
 
-            if (stateEffect == "Invulnerable")
-                Debug.LogWarning("  ++ REMOVING STATE : Invulnerable");
-
             // remove effect type from list of active effects
             int index = GetIndexOf(stateEffect);
             if (index == -1)

@@ -17,6 +17,25 @@ MonoBehaviour:
   m_StateEffectType: 0
   m_IsDisplayed: 1
   m_VisualEffects:
+  - Prefab: {fileID: 0}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 400
+      m_EndSpellPart: 1000
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 4
+    SpellAnimation: 
+    StateEffects: 
   - Prefab: {fileID: 107290, guid: fbd5b0c2d6cd2cf47af2fbba6fb34810, type: 3}
     MaterialEffect: {fileID: 0}
     SoundFX: []
@@ -48,6 +67,7 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_MaxStacks: 1
   m_StackDecay: -1
+  m_StatConversions: []
   m_Energy: 0
   m_BonusStats: []
   m_SpeedBonus: 0

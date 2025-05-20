@@ -1,7 +1,5 @@
 ﻿using Data;
 using Enums;
-using Game.Loaders;
-using Game.Spells;
 using Menu.Common.Infos;
 using System;
 using System.Collections.Generic;
@@ -56,7 +54,6 @@ namespace Menu.PopUps
         #endregion
 
 
-
         #region UIManipulators
 
         void SetUpSpecialCases()
@@ -91,15 +88,16 @@ namespace Menu.PopUps
             SetUpInfos(newInfoContent, counterData.OnCounterProc, new List<string>() { "CastDuration", "Cooldown" });
         }
 
-        protected override void SetUpButtons()
+        protected override void RefreshButtons()
         {
             if (m_IsLinked)
             {
                 m_UpgradeButton.gameObject.SetActive(false);
+                m_BuyButton.gameObject.SetActive(false);
                 return;
             }
 
-            base.SetUpButtons();
+            base.RefreshButtons();
         }
 
         void SetUpCollectionFillbar()
@@ -121,7 +119,6 @@ namespace Menu.PopUps
             }
 
             base.SetUpRarety();
-                
         }
 
         void SetUpDescription()

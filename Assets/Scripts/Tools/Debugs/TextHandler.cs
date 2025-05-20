@@ -333,7 +333,6 @@ namespace Tools
 
         public static string ReplaceSubSpellData(string text, SpellData subSpellData)
         {
-            // Define a regex to find tokens in the format [SubSpellData.PROPERTY_NAME]
             string pattern = @"\[(SubSpellData\.[A-Za-z_][A-Za-z0-9_]*)\]";
             MatchCollection matches = Regex.Matches(text, pattern);
 
@@ -346,20 +345,37 @@ namespace Tools
 
             foreach (Match match in matches)
             {
-                string token = match.Value; // The full token, e.g., "[SubSpellData.PROPERTY_NAME]"
-
-                // Extract the property name from the token
+                string token = match.Value;
                 string propertyName = token.Split('.')[1].TrimEnd(']');
+                int tokenIndex = match.Index;
 
-                // Replace token with the property value from ConvertDescriptionVariable
-                text = text.Replace(
-                    token,
-                    propertyName == "Description" ? subSpellData.GetDescription().FirstCharacterToLower() : subSpellData.ConvertDescriptionVariable(new SDescriptionVariable(propertyName, true), subSpellData.GetInfo())
-                );
+                // Get preceding character ignoring spaces
+                char precedingChar = ' ';
+                for (int i = tokenIndex - 1; i >= 0; i--)
+                {
+                    char c = text[i];
+                    if (!char.IsWhiteSpace(c))
+                    {
+                        precedingChar = c;
+                        break;
+                    }
+                }
+
+                bool lowerFirstChar = precedingChar == '.' || precedingChar == '\n';
+
+                string replacement = propertyName == "Description"
+                    ? subSpellData.GetDescription()
+                    : subSpellData.ConvertDescriptionVariable(new SDescriptionVariable(propertyName, true), subSpellData.GetInfo());
+
+                if (lowerFirstChar)
+                    replacement = replacement.FirstCharacterToLower();
+
+                text = text.Replace(token, replacement);
             }
 
             return text;
         }
+
 
         public static string GetTriggerEffectDescription(STriggerEffect triggerEffect)
         {
@@ -453,17 +469,17 @@ namespace Tools
 
         public static string ReplaceSubStateEffects(string text, SpellData spellData)
         {
-            // Define a regex to find tokens in the format [SubSpellData.PROPERTY_NAME]
-            string pattern = @"\[((Enemy|Ally)StateEffect\.[0-9]+)\]";
+            // Define a regex to find tokens in the format [StateEffect.N_EFFECT]
+            string pattern = @"\[((Enemy|Ally)*StateEffect\.[0-9]+)\]";
             MatchCollection matches = Regex.Matches(text, pattern);
 
             foreach (Match match in matches)
             {
-                string token = match.Value; // The full token, e.g., "[SubSpellData.PROPERTY_NAME]"
+                string token = match.Value;
 
                 // Extract the index and target from name
                 int index = int.Parse(token.Split('.')[1].TrimEnd(']'));
-                List<SStateEffectData> stateEffects = token.Split("StateEffect.")[0].EndsWith("Ally") ? spellData.AllyStateEffects : spellData.EnemyStateEffects;
+                List<SStateEffectData> stateEffects = token.Split("StateEffect.")[0].Equals("Ally") ? spellData.AllyStateEffects : spellData.EnemyStateEffects;
 
                 if (index < 0)
                 {

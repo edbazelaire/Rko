@@ -139,7 +139,7 @@ namespace Game.Spells
             m_RelocationTargetPos   = default;
 
             // setup spell data
-            m_BaseSpellData = spellData.Clone();
+            m_BaseSpellData = spellData.Clone(level: spellData.Level);
 
             // add extra effects (damages bonus, on hit effects, ...) that the controller has at time of casting
             AddExtraEffects();
@@ -290,7 +290,7 @@ namespace Game.Spells
 
             if (m_SpellData.Graphics != null)
             {
-                m_Graphics = PoolManager.Pool(m_SpellData.Graphics, m_GraphicsContainer.transform);
+                m_Graphics = PoolManager.Pool(m_SpellData.Graphics, m_GraphicsContainer.transform, activate: false);
                 m_Graphics.transform.localScale = Vector3.one;
                 m_Graphics.SetActive(true);
                 SwapColliders(m_Graphics);

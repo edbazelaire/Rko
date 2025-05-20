@@ -245,6 +245,7 @@ namespace Data
 
             // cast the spell at the end of the delay
             bool recalculateOnCast = LockTarget == ESpellEvent.OnSpawn;
+
             Cast(clientId, target, position, rotation, recalculateTarget: recalculateOnCast, recalculatePosition: recalculatePosition);
         }
 
@@ -368,6 +369,20 @@ namespace Data
         }
 
         /// <summary>
+        /// Check if spell is currently relovation 
+        /// </summary>
+        /// <param name="spellEvent"></param>
+        /// <returns></returns>
+        public bool HasOnGoingSpellRelocationEventAt(ESpellEvent spellEvent)
+        {
+            if (SpellRelocation.Lifetime == null)
+                return false;
+
+            // check is in between start and end
+            return SpellRelocation.Lifetime.StartSpellPart <= spellEvent && spellEvent <= SpellRelocation.Lifetime.EndSpellPart;
+        }
+
+        /// <summary>
         /// Check if this spell has GFX event linked to this event
         /// </summary>
         /// <param name="spellEvent"></param>
@@ -403,19 +418,6 @@ namespace Data
             }
 
             return false;
-        }
-
-        #endregion
-
-
-        #region Ending
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-
-            foreach (var onHit in OnHit)
-                Destroy(onHit);
         }
 
         #endregion
@@ -657,7 +659,7 @@ namespace Data
         #endregion
 
 
-        #region Position & Rotation
+        #region Target | Position | Rotation
 
         public virtual void RecalculatePosition(ref Vector3 position, Vector3 target, ulong clientId) 
         {

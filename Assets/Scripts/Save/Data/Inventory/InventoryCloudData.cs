@@ -346,6 +346,11 @@ namespace Save
             return InfoCollectables[collectable.GetType()].Key;
         }
 
+        public bool IsUnlocked(Enum collectable)
+        {
+            return GetCollectable(collectable).Level > 0;
+        }
+
         #endregion
 
 
@@ -470,7 +475,6 @@ namespace Save
             switch (key)
             {
                 case KEY_CHARACTERS:
-                    m_Data[KEY_CHARACTERS] = new List<SCollectableCloudData>();
                     foreach (Enum collectable in Enum.GetValues(typeof(ECharacter)))
                     {
                         AddCollectableData(collectable, true);
@@ -478,7 +482,6 @@ namespace Save
                     break;
 
                 case KEY_SPELLS:
-                    m_Data[KEY_SPELLS] = new List<SCollectableCloudData>();
                     foreach (Enum collectable in Enum.GetValues(typeof(ESpell)))
                     {
                         AddCollectableData(collectable, true);
@@ -486,7 +489,6 @@ namespace Save
                     break;
 
                 case KEY_RUNES:
-                    m_Data[KEY_RUNES] = new List<SCollectableCloudData>();
                     foreach (Enum collectable in Enum.GetValues(typeof(ERune)))
                     {
                         AddCollectableData(collectable, true);
@@ -628,19 +630,21 @@ namespace Save
             if (CollectablesManagementData.IsBossSpell(collectable))
                 return false;
 
-            // already in data : skip
-            if (GetCollectableIndex(collectable) >= 0)
-                return false;
-
-            ErrorHandler.Warning("Unable to find " + collectable + " in cloud data : adding it manually");
-
             // if unlocked by default check start level, otherwise start level is 0
-            int startLevel = unlock ? CollectablesManagementData.GetStartLevel(collectable) : 0;
+            var startLevel = unlock ? CollectablesManagementData.GetStartLevel(collectable) : 0;
 
-            // add new empty spell data, set save to false as we save the batch at the end
-            SetCollectable(new SCollectableCloudData(collectable, startLevel, 0), false);
+            // already in data : skip
+            if (! IsUnlocked(collectable) && unlock)
+            {
+                ErrorHandler.Warning("Adding " + collectable + " in cloud data (unlock : " + unlock + ")");
+                
+                // add new empty spell data, set save to false as we save the batch at the end
+                SetCollectable(new SCollectableCloudData(collectable, startLevel, 0), false);
 
-            return true;
+                return true;
+            }
+
+            return false;
         }
 
         #endregion

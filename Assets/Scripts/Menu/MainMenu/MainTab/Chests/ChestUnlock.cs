@@ -154,14 +154,14 @@ namespace Menu
                 case EChestLockState.Unlocking:
                     m_Background.color = TimeCloudData.HasBoost(EBoost.ChestSpeedBoost) ? m_BoostedColor : m_UnlockingColor;
                     // delay on frame because gameobject might no be init yet
-                    CoroutineManager.DelayMethod(() => { m_ChestUI.ActivateIdle(false); });
+                    CoroutineManager.DelayMethod(() => { m_ChestUI.ActivateIdle(withAura: false); });
                     break;
 
                 case EChestLockState.Ready:
                     m_Background.color = m_ReadyColor;
                     m_ChestTimer.text = TextLocalizer.LocalizeText("Ready");
                     // delay on frame because gameobject might no be init yet
-                    CoroutineManager.DelayMethod(() => { m_ChestUI.ActivateIdle(false, isLocal: true); });
+                    CoroutineManager.DelayMethod(() => { m_ChestUI.ActivateIdle(withAura: false, isLocal: true); });
                     break;
             }
             m_PreviousState = m_State;
