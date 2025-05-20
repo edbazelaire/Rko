@@ -2,6 +2,7 @@
 using Enums;
 using Game.Spells;
 using System.Collections.Generic;
+using Tools;
 using UnityEngine;
 
 namespace Data
@@ -30,5 +31,22 @@ namespace Data
         public float        TrigerredTimer          => m_TrigerredTimer;
         public float        ActivateTimer           => m_ActivateTimer;
         public List<MinePrefabSpawn> MineSpawnGFX   => m_MineSpawnGFX;
+
+
+        #region Description
+
+        /// <summary>
+        /// Get the description of the spell
+        /// </summary>
+        /// <returns></returns>
+        public override string GetDescription()
+        {
+            var description = base.GetDescription();
+            description = TextHandler.ReplaceSubSpellData(description, ActivationData);
+
+            return description;
+        }
+
+        #endregion
     }
 }

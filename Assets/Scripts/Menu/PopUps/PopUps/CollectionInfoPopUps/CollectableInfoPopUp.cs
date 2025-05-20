@@ -6,14 +6,17 @@ using Enums;
 using Game.Loaders;
 using Inventory;
 using Menu.Common.Buttons;
+using Menu.Common.Displayers;
 using Menu.Common.Infos;
 using MyBox;
+using Save;
 using System;
 using System.Collections.Generic;
 using TMPro;
 using Tools;
 using Tools.Animations;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 
 namespace Menu.PopUps
@@ -41,6 +44,8 @@ namespace Menu.PopUps
         protected GameObject                            m_PreviewContainer;
         protected GameObject                            m_InfosSection;
         protected GameObject                            m_InfosContent;
+        protected Button                                m_BuyButton;
+        protected PriceDisplay                          m_PriceDisplay;
         protected Button                                m_UpgradeButton;
         protected TMP_Text                              m_CostText;
 
@@ -48,8 +53,11 @@ namespace Menu.PopUps
         // Dependent Members
         protected Enum m_Collectable                    => m_Data.Id;
         protected int m_Level                           => m_Data.Level;
+        protected virtual bool m_IsUnlocked             => InventoryCloudData.Instance.IsUnlocked(m_Collectable);
         protected virtual bool m_IsMaxedLevel           => InventoryManager.IsMaxLevel(m_Collectable);
         protected virtual bool m_CanUpgrade             => InventoryManager.CanUpgrade(m_Collectable);
+        protected virtual bool m_CanBuy                 => InventoryManager.CanBuy(m_Collectable);
+        protected virtual SPriceData m_BuyPriceData     => ShopManagementData.GetPrice(m_Collectable);
 
         #endregion
 
@@ -71,6 +79,10 @@ namespace Menu.PopUps
             m_PreviewContainer      = Finder.Find(m_WindowContent, "PreviewContainer");
             m_InfosSection          = Finder.Find(m_WindowContent, "Infos", throwError: false);
             m_InfosContent          = Finder.Find(m_InfosSection, "InfosContent", throwError: false);
+
+            m_BuyButton             = Finder.FindComponent<Button>(m_Buttons, "BuyButton", false);
+            if (m_BuyButton != null)
+                m_PriceDisplay      = Finder.FindComponent<PriceDisplay>(m_BuyButton.gameObject);
 
             m_UpgradeButton         = Finder.FindComponent<Button>(m_Buttons, "UpgradeSubButton", false);
             if (m_UpgradeButton != null)
@@ -95,7 +107,7 @@ namespace Menu.PopUps
             SetUpRarety();
             SetUpPreview();
             SetUpAllInfoRows();
-            SetUpButtons();
+            RefreshButtons();
         }
 
         public override void Exit()
@@ -265,20 +277,6 @@ namespace Menu.PopUps
             }
         }
 
-        /// <summary>
-        /// Set cost of the UpgradeButton + update UI to match the context
-        /// </summary>
-        protected virtual void SetUpButtons()
-        {
-            if (m_IsMaxedLevel || m_InfoOnly) 
-            { 
-                m_UpgradeButton.gameObject.SetActive(false);
-                return;
-            }
-
-            RefreshUpgradeButtonUI();
-        }
-
         #endregion
 
 
@@ -287,6 +285,15 @@ namespace Menu.PopUps
         protected virtual void RefreshUI()
         {
             RefreshInfoRows();
+            RefreshButtons();
+        }
+
+        /// <summary>
+        /// Set cost of the UpgradeButton + update UI to match the context
+        /// </summary>
+        protected virtual void RefreshButtons()
+        {
+            RefreshBuyButtonUI();
             RefreshUpgradeButtonUI();
         }
 
@@ -315,11 +322,36 @@ namespace Menu.PopUps
             }
         }
 
+        protected virtual void RefreshBuyButtonUI()
+        {
+            if (m_IsUnlocked)
+            {
+                m_BuyButton.gameObject.SetActive(false);
+                return;
+            }
+
+            m_BuyButton.gameObject.SetActive(true);
+            m_BuyButton.interactable = m_CanBuy;
+            m_PriceDisplay.Initialize(m_BuyPriceData);
+        }
+
         /// <summary>
         /// Refresh UI to display if the UpgradeButton can be use or not
         /// </summary>
         protected virtual void RefreshUpgradeButtonUI()
         {
+            if (! m_IsUnlocked)
+            {
+                m_UpgradeButton.gameObject.SetActive(false);
+                return;
+            }
+
+            if (m_IsMaxedLevel || m_InfoOnly)
+            {
+                m_UpgradeButton.gameObject.SetActive(false);
+                return;
+            }
+
             if (m_UpgradeButton == null)
                 return;
 
@@ -329,6 +361,7 @@ namespace Menu.PopUps
                 return;
             }
 
+            m_UpgradeButton.gameObject.SetActive(true);
             m_UpgradeButton.interactable = m_CanUpgrade;
             m_CostText.text = CollectablesManagementData.GetLevelData(m_Collectable, m_Level).RequiredGold.ToString();
         }
@@ -365,14 +398,16 @@ namespace Menu.PopUps
         {
             base.RegisterListeners();
 
-            InventoryManager.CollectableUpgradedEvent += OnLevelUp;
+            //InventoryManager.CollectableUpgradedEvent += OnLevelUp;
+            InventoryCloudData.CollectableDataChangedEvent += OnCollectableDataChanged;
         }
 
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
 
-            InventoryManager.CollectableUpgradedEvent -= OnLevelUp;
+            //InventoryManager.CollectableUpgradedEvent -= OnLevelUp;
+            InventoryCloudData.CollectableDataChangedEvent -= OnCollectableDataChanged;
         }
 
         protected override void OnUIButton(string bname)
@@ -383,6 +418,10 @@ namespace Menu.PopUps
                     OnUpgrade();
                     return;
 
+                case "BuyButton":
+                    OnBuy();
+                    return;
+
                 default:
                     base.OnUIButton(bname);
                     return;
@@ -391,11 +430,39 @@ namespace Menu.PopUps
 
         protected virtual void OnUpgrade()
         {
-            if (! m_CanUpgrade)
+            if (!m_CanUpgrade)
                 return;
 
             InventoryManager.Upgrade(m_Collectable);
 
+            SoundFXManager.PlayOnce(SoundFXManager.LevelUpSoundFX);
+
+            if (AnimationHandler.IsPlaying(UPGRADE_ANIMATION_ID))
+                return;
+
+            var pulse = m_CollectableItemUI.IconObject.AddComponent<Pulse>();
+            pulse.Initialize(UPGRADE_ANIMATION_ID, duration: 2f, minSize: 0.9f, maxSize: 1.1f, pulseDuration: 0.5f, pauseDuration: 0f);
+
+            var particles = m_CollectableItemUI.IconObject.AddComponent<ParticlesAnimation>();
+
+        }
+
+        /// <summary>
+        /// When the "Buy" button is clicked
+        /// </summary>
+        protected virtual void OnBuy()
+        {
+            if (! m_CanBuy)
+                return;
+
+            // unlock the item
+            InventoryCloudData.Instance.AddCollectableData(m_Collectable, true);
+
+            // pay the cost
+            var priceData = ShopManagementData.GetPrice(m_Collectable);
+            InventoryManager.Spend(priceData, "Buying");
+
+            // play animation
             SoundFXManager.PlayOnce(SoundFXManager.LevelUpSoundFX);
 
             if (AnimationHandler.IsPlaying(UPGRADE_ANIMATION_ID))
@@ -419,6 +486,18 @@ namespace Menu.PopUps
 
             // reload data
             SetupCollectable(collectable, level);
+
+            // refresh UI
+            RefreshUI();
+        }
+
+        protected virtual void OnCollectableDataChanged(SCollectableCloudData collectableCloudData)
+        {
+            if (!collectableCloudData.CollectableName.Equals(m_Collectable.ToString()))
+                return;
+
+            // reload data
+            SetupCollectable(collectableCloudData.GetCollectable(), collectableCloudData.Level);
 
             // refresh UI
             RefreshUI();

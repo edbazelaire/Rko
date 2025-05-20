@@ -62,6 +62,8 @@ namespace Game.Character
         SpellData                           m_SelectedSpellData;
         /// <summary> target position requested by the player (if spell is moving) </summary>
         Vector3                             m_RelocationTargetPos;
+        /// <summary> list of spell listening to the spell data relocation </summary>
+        List<SpellData>                     m_RelocationSpellData;
         /// <summary> coroutine of casting a spell </summary>
         Coroutine                           m_CastCoroutine;
         /// <summary> overriding spell data (in case of replacement or someting) </summary>
@@ -113,7 +115,8 @@ namespace Game.Character
         public override void OnNetworkSpawn()
         {
             m_Controller = Finder.FindComponent<Controller>(gameObject);
-            m_OverridingSpellData = new Dictionary<ESpell, SpellData>();
+            m_OverridingSpellData = new ();
+            m_RelocationSpellData = new ();
         }
 
         void Update()
@@ -678,6 +681,7 @@ namespace Game.Character
                 LockTarget(spellData);
 
             // get spawn position and cast the spell
+            Debug.Log(spellData.Name + " CastDelay() : " + m_TargetPos.Value);
             StartCoroutine(spellData.CastDelay(m_Controller.PlayerId, m_TargetPos.Value, m_SpellSpawn.position, m_SpellSpawn.rotation, recalculateTarget: false));
 
             // spend the energy of the spell
@@ -732,9 +736,6 @@ namespace Game.Character
             // stop casting
             m_IsCasting = false;
             m_IsCurrentSpellCancellable = true;
-
-            // reset requested target pos
-            m_RelocationTargetPos = default;
 
             // cancel cast animation
             m_Controller.AnimationHandler.CancelCastAnimationClientRpc();
@@ -1033,6 +1034,33 @@ namespace Game.Character
             m_RelocationTargetPos = new Vector3(x, 0f, 0f);
         }
 
+        void RegisterSpellRelocation(SpellData spellData)
+        {
+            if (m_RelocationSpellData.Count == 0)
+                RelocationTargetChangedEvent += OnRelocationTargetChanged;
+
+            m_RelocationSpellData.Add(spellData);
+        }
+
+        void CheckUnregisterSpellRelocation(ESpellEvent spellEvent)
+        {
+            if (m_RelocationSpellData.Count == 0)
+                return;
+
+            for (int i = m_RelocationSpellData.Count - 1; i >= 0; i--)
+            {
+                if (m_RelocationSpellData[i].HasSpellRelocationEventAt(spellEvent, checkStart: false, checkEnd: true))
+                    m_RelocationSpellData.RemoveAt(i);
+            }
+
+            if (m_RelocationSpellData.Count > 0)
+                return;
+
+            // Unregister and reset relocation pos
+            RelocationTargetChangedEvent -= OnRelocationTargetChanged;
+            m_RelocationTargetPos = default;
+        }
+
         [ClientRpc]
         void SpellActivationEventClientRPC(ESpell spell, ESpellSelectionState spellActivation)
         {
@@ -1047,13 +1075,11 @@ namespace Game.Character
             OnPreSpellEvent?.Invoke(spellName, spellEvent);
 
             // CHECK Relocation Spell
-            if (m_SelectedSpellData != null && m_SelectedSpellData.HasSpellRelocationEventAt(spellEvent))
-            {
-                if (m_SelectedSpellData.SpellRelocation.Lifetime.StartSpellPart == spellEvent)
-                    RelocationTargetChangedEvent += OnRelocationTargetChanged;
-                else
-                    RelocationTargetChangedEvent -= OnRelocationTargetChanged;
-            }
+            if (m_SelectedSpellData != null && m_SelectedSpellData.HasSpellRelocationEventAt(spellEvent, checkStart: true, checkEnd: false))
+                RegisterSpellRelocation(m_SelectedSpellData);
+
+            // -- check unregistering
+            CheckUnregisterSpellRelocation(spellEvent);
 
             ushort spellEventByte = (ushort)spellEvent;
 

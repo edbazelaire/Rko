@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c134d41ca291c244b96cfda56a7e83fd, type: 3}
   m_Name: _TormentedSoil
   m_EditorClassIdentifier: 
-  Rarety: 0
-  m_Description: 'The air is getting corrupted, applying [EnemyStateEffect.0]'
-  m_DescriptionVariables: []
+  m_Rarety: 0
+  m_Description: The air is getting corrupted, applying [EnemyStateEffect.0] each
+    {0} second
+  m_DescriptionVariables:
+  - Name: DurationTick
+    WithIcon: 0
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
@@ -39,6 +42,7 @@ MonoBehaviour:
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -52,6 +56,14 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 0
   EnergyGain: 0

@@ -450,8 +450,6 @@ namespace Game.Character
             if (force == null || force == default || force.Speed == 0)
                 return;
 
-            Debug.LogWarning("RemoveForce() : " + force.Speed);
-
             if (m_Forces.Contains(force))
                 m_Forces.Remove(force);
 

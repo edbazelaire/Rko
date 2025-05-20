@@ -173,7 +173,8 @@ namespace Game.Spells
             {
                 // cast the counter spell on the enemy
                 case ECounterType.Proc:
-                    m_SpellData.OnCounterProc.Cast(OwnerClientId, targetPosition, transform.position, recalculateTarget: true);
+                    if (m_SpellData.OnCounterProc != null)
+                        m_SpellData.OnCounterProc.Cast(OwnerClientId, targetPosition, transform.position, recalculateTarget: true);
                     break;
 
                 // block the spell : do nothing

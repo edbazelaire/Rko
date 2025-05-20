@@ -6,6 +6,7 @@ using Save;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Tools.Debugs;
 using Unity.Netcode;
 using UnityEngine;
@@ -267,6 +268,9 @@ namespace Tools
 
         public void Execute(string execution)
         {
+            if (CheckSpecialCommands(execution))
+                return;
+
             // check registered commands
             if (ExecuteCommand(execution))
                 return;
@@ -296,6 +300,19 @@ namespace Tools
                     return true;
                 }
             }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check if a special command was provided
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public bool CheckSpecialCommands(string command)
+        {
+            if (CheckCurrencyCommand(command))
+                return true;
 
             return false;
         }
@@ -470,28 +487,41 @@ namespace Tools
             Main.DisplayRewards(reward, "DebugTool");
         }
 
-        [Command]
-        public void Xp100()
+        /// <summary>
+        /// Check if a special command was provided
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public bool CheckCurrencyCommand(string command)
         {
-            InventoryManager.UpdateCurrency(ECurrency.TotalXp, 100, "DebugTool");
-        }
+            if (string.IsNullOrWhiteSpace(command))
+                return false;
 
-        [Command]
-        public void Xp1000()
-        {
-            InventoryManager.UpdateCurrency(ECurrency.Xp, 1000, "DebugTool");
-        }
+            // Normalize: remove spaces and make lowercase
+            string cleanCommand = Regex.Replace(command, @"\s+", "").ToLower();
 
-        [Command]
-        public void Xp10000()
-        {
-            InventoryManager.UpdateCurrency(ECurrency.Xp, 10000, "DebugTool");
-        }
+            // Match pattern: optional +/- at start, then number, then a known currency name
+            var match = Regex.Match(cleanCommand, @"^([+-]?)(\d+)([a-zA-Z]+)$");
 
-        [Command]
-        public void Xp100000()
-        {
-            InventoryManager.UpdateCurrency(ECurrency.Xp, 100000, "DebugTool");
+            if (!match.Success)
+                return false;
+
+            string signPart = match.Groups[1].Value;
+            string numberPart = match.Groups[2].Value;
+            string currencyPart = match.Groups[3].Value;
+
+            // Try to parse the currency
+            if (!Enum.TryParse(currencyPart, ignoreCase: true, out ECurrency currency))
+                return false;
+
+            int amount = int.Parse(numberPart);
+            if (signPart == "-")
+                amount *= -1;
+
+            // Add to inventory
+            InventoryManager.UpdateCurrency(currency, amount, "DebugTool");
+
+            return true;
         }
 
         #endregion

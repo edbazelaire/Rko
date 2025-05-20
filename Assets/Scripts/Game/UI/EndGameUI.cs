@@ -1,5 +1,6 @@
 ﻿using Analytics.Events;
 using Assets;
+using Assets.Scripts.Menu.MainMenu.MainTab.Chests;
 using Assets.Scripts.Tools;
 using Data.GameManagement;
 using Enums;
@@ -7,6 +8,7 @@ using Game;
 using Game.UI.EndGameUI;
 using Inventory;
 using Managers;
+using Menu.Common.Rewards;
 using Network;
 using Save;
 using System.Collections;
@@ -60,7 +62,7 @@ public class EndGameUI : MObject
     TMP_Text            m_GemsQty;
     GameObject          m_OrbPowerRewardDisplay;
     TMP_Text            m_OrbPowerRewardQty;
-    GameObject          m_PowerOrbUpgradeRewardIcon;
+    PowerOrbContainer   m_PowerOrbContainer;
     Image               m_ChestRewardIcon;
     Button              m_LeaveButton;
     Button              m_DetailsButton;
@@ -94,7 +96,7 @@ public class EndGameUI : MObject
         m_GemsQty                   = Finder.FindComponent<TMP_Text>(m_GemsRewardDisplay, "Qty");
         m_OrbPowerRewardDisplay     = Finder.Find(m_RewardsContent, "OrbPowerRewardDisplay");
         m_OrbPowerRewardQty         = Finder.FindComponent<TMP_Text>(m_OrbPowerRewardDisplay, "Qty");
-        m_PowerOrbUpgradeRewardIcon = Finder.Find(m_RewardsContent, "StarRewardIcon");
+        m_PowerOrbContainer         = Finder.FindComponent<PowerOrbContainer>(m_RewardsContent);
         m_ChestRewardIcon           = Finder.FindComponent<Image>(m_RewardsContent, "ChestRewardIcon");
     }
 
@@ -257,7 +259,6 @@ public class EndGameUI : MObject
         m_XpRewardDisplay.SetActive(false);
         m_GoldRewardDisplay.SetActive(false);
         m_OrbPowerRewardDisplay.SetActive(false);   
-        m_PowerOrbUpgradeRewardIcon.SetActive(false);
 
         m_RewardsSection.SetActive(true);
 
@@ -337,16 +338,18 @@ public class EndGameUI : MObject
         // Orb Power  
         if (LobbyHandler.Instance.GameMode == EGameMode.Arena && m_GameResult == EGameResult.Win)
         {
+            // setup quantity of power orb collected
             SPowerOrb currentPowerOrb = ProgressionCloudData.CurrentArena.GetPowerOrb();
             int orbPower = m_ArenaData.CalculateOrbPowerReward(m_CurrentLevel, m_CurrentStage);
             m_OrbPowerRewardDisplay.SetActive(true);
             m_OrbPowerRewardQty.text = string.Format(GOLD_FORMAT, orbPower);
 
+            // init image
+            m_PowerOrbContainer.Initialize(currentPowerOrb.Clone(), activateIdle: false);
+
             // check if a bonus star has been provided
             if (m_IsBossFight && currentPowerOrb.TryUpgradeRarety())
-            {
-                m_PowerOrbUpgradeRewardIcon.SetActive(true);
-            }
+                StartCoroutine(DisplayOrbUpgrade());
 
             // update to cloud
             ProgressionCloudData.AddCurrentArenaPowerOrbReward(orbPower, currentPowerOrb.Rarety);
@@ -355,6 +358,15 @@ public class EndGameUI : MObject
         StartCoroutine(RewardsAnimation());
 
         ErrorHandler.Log("HandleReward() : end", ELogTag.Rewards);
+    }
+
+    IEnumerator DisplayOrbUpgrade()
+    {
+        yield return new WaitForSeconds(1.5f);
+
+        m_PowerOrbContainer.PowerOrbData.UpgradeRarety();
+        m_PowerOrbContainer.RefreshUI();
+        m_PowerOrbContainer.PowerOrbUI.PlayUpgradeAnimation();
     }
 
     float CalculateCurrencyMultiplicator()
@@ -539,12 +551,6 @@ public class EndGameUI : MObject
         m_RewardsContent.SetActive(true);
         fadeIn = m_RewardsContent.AddComponent<Fade>();
         fadeIn.Initialize(duration: 0.5f, startScale: 0.5f);
-
-        // STAR ANIMATION
-        if (m_PowerOrbUpgradeRewardIcon.activeInHierarchy)
-        {
-            // TODO : Animation
-        }
 
         // FadeIn : Button
         m_LeaveButton.gameObject.SetActive(true);

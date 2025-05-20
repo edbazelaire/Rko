@@ -18,6 +18,7 @@ namespace Menu.Common.Rewards
         // ================================================================================
         // Data
         protected SPowerOrb m_PowerOrbData;
+        protected bool m_ActivateIdle = true;
 
         // ================================================================================
         // GameObjects & Components
@@ -36,9 +37,10 @@ namespace Menu.Common.Rewards
             base.FindComponents();
         }
 
-        public virtual void Initialize(SPowerOrb powerOrb)
+        public virtual void Initialize(SPowerOrb powerOrb, bool activateIdle = true)
         {
             m_PowerOrbData = powerOrb;
+            m_ActivateIdle = activateIdle;
 
             base.Initialize();
         }
@@ -60,6 +62,13 @@ namespace Menu.Common.Rewards
         {
             m_PowerOrbUI = UIHelper.SpawnItem(m_PowerOrbData.LoadTemplate().gameObject, gameObject).GetComponent<PowerOrbUI>();
             m_PowerOrbUI.Initialize();
+            m_PowerOrbUI.ActivateIdle(m_ActivateIdle, true, true);
+        }
+
+        public void ActivateIdle(bool activateIdle = true)
+        {
+            m_ActivateIdle = activateIdle;
+            m_PowerOrbUI.ActivateIdle(m_ActivateIdle, true, true);
         }
 
         #endregion

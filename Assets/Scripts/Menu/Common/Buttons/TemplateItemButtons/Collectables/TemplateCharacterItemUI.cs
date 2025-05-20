@@ -60,8 +60,7 @@ namespace Menu.Common.Buttons
         {
             base.OnClickLocked();
 
-            // display "Buy" popup
-            Main.ConfirmBuyCollectable(Collectable);
+            ScreenManager.SetPopUp(EPopUpState.CharacterInfoPopUp, Collectable, 0);
         }
 
         protected void OnSelectedCharacterChanged()

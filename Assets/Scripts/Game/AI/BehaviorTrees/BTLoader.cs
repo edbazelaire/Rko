@@ -16,12 +16,24 @@ namespace Game.AI.BehaviorTrees
             if (CharacterLoader.IsSpawn(characterName))
                 return new DefaultSpawnBT(controller);
 
-            if (Enum.TryParse(difficulty, out EArenaDifficulty arenaDifficulty))
+            // CREATURE
+            if (CharacterLoader.IsBoss(characterName))
+            {
+                if (!Enum.TryParse(difficulty, out EArenaDifficulty arenaDifficulty))
+                    arenaDifficulty = EArenaDifficulty.Normal;
                 return GetMobBehaviorTree(controller, characterName, arenaDifficulty);
+            }
 
-            if (Enum.TryParse(difficulty, out ELeague league))
+            // CHARACTER 
+            if (CharacterLoader.IsCharacter(characterName))
+            {
+                if (!Enum.TryParse(difficulty, out ELeague league))
+                    league = ELeague.Gold;
                 return GetBotBehaviorTree(controller, league);
+            }
 
+            // DEFAULT
+            ErrorHandler.Warning("Unable to find dedicated behavior tree for " + characterName);
             return new DefaultBT(controller, EArenaDifficulty.Normal);
         }
 

@@ -17,7 +17,7 @@ namespace Inventory
         #region Members
 
         public const int    MAX_STARS                   = 5;
-        public const float  BASE_STAR_UPGRADE_PERC      = 0.1f;
+        public const float BASE_STAR_UPGRADE_PERC       = 0.1f;
         public const int    FIX_STAR_BONUS              = 5000;
         public const float  PERC_STAR_BONUS             = 1f;
 
@@ -151,8 +151,18 @@ namespace Inventory
                 return false;
 
             // upgrade and return success
-            m_Rarety++;
+            UpgradeRarety();
             return true;
+        }
+
+        public void UpgradeRarety()
+        {
+            // check stars not already maxed
+            if (m_Rarety >= ERarety.Legendary)
+                return;
+
+            // upgrade 
+            m_Rarety++;
         }
 
         #endregion
@@ -378,6 +388,16 @@ namespace Inventory
             return new SReward(typeof(ECurrency), ECurrency.Gold.ToString(), Mathf.Max(1, power));
         }
 
+
+        #endregion
+
+
+        #region Clone
+
+        public SPowerOrb Clone()
+        {
+            return new SPowerOrb(m_Power, m_Rarety);
+        }
 
         #endregion
 
