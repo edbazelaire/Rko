@@ -840,7 +840,7 @@
         AITaskCounter       = 206,
         AITaskAutoAttack    = 207,
         AITaskUseSpell      = 208,
-        AIBtState          = 209,
+        AIBtState           = 209,
 
         // CloudData
         CloudData           = 300,

@@ -5,7 +5,6 @@ using Game;
 using Game.AI;
 using Game.Character;
 using Game.Spells;
-using Managers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -92,17 +91,19 @@ public class TaskMove : BaseTask
         // reset allowed movements
         m_AllowedMovements = new List<int> { -1, 1 };
 
+        // check if there is obstacle blocking a direction
         CheckObstacles();
 
+        // check if a zone spell is blocking the direction
         if (m_CheckZones)
             CheckZones();
 
+        // check if projectiles are in the way
         if (m_CheckProjectiles)
             CheckProjectiles();
 
         if (m_AllowedMovements.Count == 0)
             m_CurrentMoveX = 0;
-
         else if (! m_AllowedMovements.Contains(m_CurrentMoveX) || m_RefreshMovement)
         {
             // play coroutine on the side to call for movement refresh (= add randomness in movements)
@@ -361,7 +362,7 @@ public class TaskMove : BaseTask
     IEnumerator CheckRefreshMovement()
     {
         m_RefreshMovement = false;
-        if (m_Controller.BehaviorTree.BotData.MinMovementRefresh < 0 || m_Controller.BehaviorTree.BotData.MaxMovementRefresh < 0)
+        if (m_Controller.BehaviorTree.BotData.MinMovementRefresh <= 0 && m_Controller.BehaviorTree.BotData.MaxMovementRefresh <= 0)
             yield break;
 
         var timer = UnityEngine.Random.Range(m_Controller.BehaviorTree.BotData.MinMovementRefresh, m_Controller.BehaviorTree.BotData.MaxMovementRefresh);

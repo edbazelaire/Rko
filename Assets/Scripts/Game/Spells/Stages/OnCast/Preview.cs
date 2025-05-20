@@ -49,6 +49,7 @@ namespace Game.Spells
         {
             if (!m_UpdatePosition)
                 return;
+
             var direction = ArenaManager.GetAreaMovementDirection(m_Controller.Team, true);
 
             if (m_SpellData.SpellRelocation.Lifetime.StartSpellPart != ESpellEvent.None)

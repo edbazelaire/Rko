@@ -66,7 +66,20 @@ namespace Data
             return Stacks + (int)Math.Floor(m_Level * BonusStacksPerLevel);
         }
 
-        public string Description => TextHandler.ReplaceStateEffectTokens($"apply {GetStacks()} stacks of [{StateEffect}]");
+        public string Description
+        {
+            get
+            {
+                var stacks = GetStacks();
+                if (stacks <= 0)
+                    return "";
+
+                if (stacks == 1)
+                    return TextHandler.ReplaceStateEffectTokens($"[{StateEffect}]");
+
+                return TextHandler.ReplaceStateEffectTokens($"{stacks} stacks of [{StateEffect}]");
+            }
+        }
 
         public string EffectDescription => SpellLoader.GetStateEffect(StateEffect, m_Level).GetDescription();
     }

@@ -52,10 +52,7 @@ public class CheckInZone : BaseChecker
         {
             Spell spell = collider.gameObject.GetComponent<Spell>();
             if (spell == null) 
-            {
-                ErrorHandler.Error("Found collider on layer Spell but unable to find a Spell component");
                 continue;
-            }
 
             // ignore allies spells
             if (spell.Controller.Team == m_Controller.Team)

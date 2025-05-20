@@ -140,7 +140,9 @@ namespace Data.GameManagement
 
             for (int i = 0; i < m_ArenaLevelData[arenaLevel].StageData.Count; i++)
             {
-                arenaLevelData.StageData[i].SetBaseLevel(CurrentBaseCharacterLevel);
+                var stageData = arenaLevelData.StageData[i];
+                stageData.SetBaseLevel(CurrentBaseCharacterLevel);
+                arenaLevelData.StageData[i] = stageData;
             }
 
             return arenaLevelData;

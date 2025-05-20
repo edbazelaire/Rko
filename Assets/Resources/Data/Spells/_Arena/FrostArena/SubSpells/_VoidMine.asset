@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cb3325cd50f2224aa7b9c8e77d11e31, type: 3}
   m_Name: _VoidMine
   m_EditorClassIdentifier: 
-  Rarety: 0
-  m_Description: 
-  m_DescriptionVariables: []
+  m_Rarety: 0
+  m_Description: 'After {0} seconds, creates a Void Mine on the character.\nThe VoidMine
+    gets triggered in contact with a player and explodes dealing [SubSpellData.Description]'
+  m_DescriptionVariables:
+  - Name: Delay
+    WithIcon: 0
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
@@ -40,6 +43,7 @@ MonoBehaviour:
     StateEffects: 
   OnHit:
   - {fileID: 11400000, guid: 1958afabb4633514fa2b11aafb797f9a, type: 2}
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -53,6 +57,14 @@ MonoBehaviour:
     Y: 0
   LockTarget: 400
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 10

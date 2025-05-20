@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b829d596b80e4f042aa5d80d985cf693, type: 3}
   m_Name: EmperorOfFlames
   m_EditorClassIdentifier: 
-  Rarety: 3
+  m_Rarety: 3
   m_Description: Incarnates the Emperor of Flames for {0} seconds, increasing your
-    Damages by {1}, your Cast Speed by {2} and reducing the Cooldown of your spells
+    Damage by {1}, your Cast Speed by {2} and reducing the Cooldown of your spells
     by {3}.<br>Any time you hit an enemy with a spell or an AutoAttack, applies a
-    stack of {4} <br>Only one buff of type "Incarnation" can be active on your character.
+    stack of [Burn] <br>Only one buff of type "Incarnation" can be active on your
+    character.
   m_DescriptionVariables:
   - Name: Duration
     WithIcon: 1
@@ -25,8 +26,6 @@ MonoBehaviour:
   - Name: CastSpeed
     WithIcon: 1
   - Name: CooldownReductionPerc
-    WithIcon: 1
-  - Name: Burn
     WithIcon: 1
   m_SpellElements: 01000000
   Linked: 0
@@ -52,6 +51,7 @@ MonoBehaviour:
     SpellAnimation: 
     StateEffects: 15000000
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -65,6 +65,14 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 0

@@ -109,7 +109,7 @@ namespace Save
 
         public SProfileCurrentData(int accountLevel = 1, string gamerTag = default, string avatar = default, string border = default, string title = default, string[] badges = null)
         {
-            if (accountLevel == 0)
+            if (accountLevel <= 0)
                 accountLevel = 1;
 
             if (gamerTag == default)
@@ -973,7 +973,7 @@ namespace Save
                     break;
 
                 case KEY_CURRENT_PROFILE_DATA:
-                    var data = new SProfileCurrentData();
+                    var data = new SProfileCurrentData(accountLevel: 1);
                     data.Check();
                     Instance.m_Data[key] = data;
                     break;

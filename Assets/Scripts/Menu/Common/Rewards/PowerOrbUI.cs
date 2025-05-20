@@ -53,11 +53,17 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
 
         #region Animation Activation
 
-        public override void ActivateIdle(bool withAura = false, bool withSound = false, bool isLocal = false)
+        public override void ActivateIdle(bool activate = true, bool withAura = false, bool withSound = false, bool isLocal = false)
         {
-            m_Animator.Play(IDLE_ANIMATION);
-            SoundFXManager.PlaySoundFXClip(m_BaseSoundFX, transform);
-            ActivateAura(withAura);
+            m_Animator.enabled = activate;
+
+            if (activate)
+                m_Animator.Play(IDLE_ANIMATION);
+
+            ActivateAura(withAura, isLocal: isLocal);
+
+            if (withSound)
+                SoundFXManager.PlaySoundFXClip(m_BaseSoundFX, transform);
         }
 
         public override void ActivateAura(bool activate = true, bool isLocal = false)
@@ -86,6 +92,11 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
         public void PlayOnClickAnimation()
         {
             StartCoroutine(OnClickAnimation());
+        }
+
+        public void PlayUpgradeAnimation()
+        {
+            StartCoroutine(UpgradeSuccessAnimation());
         }
 
         public IEnumerator OnClickAnimation()
@@ -139,9 +150,6 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
             if (m_AudioSource != null)
                 Destroy(m_AudioSource);
 
-            // TODO : remove open animation ?
-            //yield return PlayAnimationOnce(OPEN_ANIMATION);
-
             ActivateOpenParticles(true);
 
             m_SpriteRenderer.enabled = false;
@@ -154,12 +162,6 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
         }
 
         #endregion
-
-
-
-        
-
-       
 
 
         #region Data

@@ -6,6 +6,7 @@ using Game.Loaders;
 using Menu.Common.Buttons.TemplateItemButtons;
 using Menu.MainMenu.MainTab;
 using Save;
+using System.Linq;
 using Tools;
 using UnityEngine;
 
@@ -119,11 +120,14 @@ namespace Menu.PopUps
 
             m_RunesContainer.SetActive(true);
 
-            // add UI for each PowerUp effects
+            // -- level of the spell
+            int level = m_ArenaLevelData.StageData.Last().Level;
+
+            // -- add UI for each PowerUp effects
             TemplateRunePowerUI templateRune = AssetLoader.LoadTemplateItem<TemplateRunePowerUI>();     // load template
             foreach (string powerName in m_ArenaLevelData.PowerUps)
             {
-                SRunePower runePower = SpellLoader.GetPowerUp(powerName);
+                SRunePower runePower = SpellLoader.GetPowerUp(powerName, level);
                 TemplateRunePowerUI runeItemUI = Instantiate(templateRune, m_RunesContainer.transform);
                 runeItemUI.Initialize(runePower);
             }

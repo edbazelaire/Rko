@@ -3,6 +3,7 @@ using Data.GameManagement;
 using Enums;
 using Save;
 using System;
+using System.Security.Policy;
 using Tools;
 
 namespace Inventory
@@ -66,6 +67,12 @@ namespace Inventory
             InventoryCloudData.Instance.SetData(currency.ToString(), total, save);
         }
 
+        public static bool CanBuy(Enum collectable)
+        {
+            SPriceData priceData = ShopManagementData.GetPrice(collectable);
+            return CanBuy(priceData.Price, priceData.Currency);
+        }
+
         /// <summary>
         /// Check if the cost of the item is inf to current amount of golds
         /// </summary>
@@ -74,6 +81,12 @@ namespace Inventory
         public static bool CanBuy(int cost, ECurrency currency = ECurrency.Gold)
         {
             return GetCurrency(currency) - cost >= 0;
+        }
+
+
+        public static bool Spend(SPriceData priceData, string context)
+        {
+            return Spend(priceData.Price, priceData.Currency, context);
         }
 
         /// <summary>

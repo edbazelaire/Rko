@@ -74,8 +74,8 @@ namespace Managers.Bots
                     decisionRefresh:    CalculateDecisionRefresh(playerLeagueData.CurrentLeague), 
                     randomness:         CalculateRandomness(playerLeagueData.CurrentLeague), 
                     reactionTime:       CalculateReactionTime(playerLeagueData.CurrentLeague),
-                    movementTime:       (0.1f, 1f),
-                    movementRefresh:    (0.1f, 0.5f),
+                    movementTime:       (0.5f, 1.2f),
+                    movementRefresh:    (0.4f, 1f),
                     extraVariables:     GetExtraVariables(playerLeagueData.CurrentLeague)
                 )
             );
@@ -139,15 +139,15 @@ namespace Managers.Bots
                 case ELeague.Silver:
                     return new Dictionary<string, float>()
                     {
-                        { EDefaultTreeVariables.AttackWeightBias.ToString(), Random.Range(3f, 5f)       },
+                        { EDefaultTreeVariables.AttackWeightBias.ToString(), 5f                         },
                         { EDefaultTreeVariables.DodgeWeightBias.ToString(), Random.Range(0.2f, 0.5f)    },
                     };
   
                 case ELeague.Gold:
                     return new Dictionary<string, float>()
                     {
-                        { EDefaultTreeVariables.AttackWeightBias.ToString(), 3f },
-                        { EDefaultTreeVariables.DodgeWeightBias.ToString(), 0.5f },
+                        { EDefaultTreeVariables.AttackWeightBias.ToString(), 5f },
+                        { EDefaultTreeVariables.DodgeWeightBias.ToString(), Random.Range(0.2f, 0.5f) },
                     };
 
                 default:

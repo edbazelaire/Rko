@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56b41aca370c9c94b9847be98bc4e21f, type: 3}
   m_Name: _VenomSpikes
   m_EditorClassIdentifier: 
-  Rarety: 0
-  m_Description: A venomous spike erupts from the ground, inflicting [SubSpellData.Damages]
+  m_Rarety: 0
+  m_Description: Venomous spikes are erupting from the ground, inflicting [SubSpellData.Damage]
     damage, 4 stacks of [Infected] and applying Airborne for 2 second.
   m_DescriptionVariables:
   - Name: Damage
@@ -23,6 +23,7 @@ MonoBehaviour:
   Graphics: {fileID: 0}
   SpellEventActions: []
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -36,6 +37,14 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
   EnergyGain: 0

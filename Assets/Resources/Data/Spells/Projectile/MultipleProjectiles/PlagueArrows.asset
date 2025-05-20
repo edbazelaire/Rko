@@ -13,14 +13,12 @@ MonoBehaviour:
   m_Name: PlagueArrows
   m_EditorClassIdentifier: 
   m_Rarety: 2
-  m_Description: '{0} Pleague Arrows rain on the enemy area each delayed by 0.5 seconds.
-    Each arrow deals {1} damage and applies {2}'
+  m_Description: '{0} Pleague Arrows rain on the enemy area each delayed by 0.5 seconds.\nEach
+    arrow deals {1} damage and applies [StateEffect.0]'
   m_DescriptionVariables:
   - Name: Projectiles
     WithIcon: 1
   - Name: Damage
-    WithIcon: 1
-  - Name: Infected
     WithIcon: 1
   m_SpellElements: 03000000
   Linked: 0

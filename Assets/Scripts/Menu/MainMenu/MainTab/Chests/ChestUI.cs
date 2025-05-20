@@ -104,9 +104,13 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
             }
         }
 
-        public virtual void ActivateIdle(bool withAura = false, bool withSound = false, bool isLocal = false)
+        public virtual void ActivateIdle(bool activate = true, bool withAura = false, bool withSound = false, bool isLocal = false)
         {
-            m_Animator.Play(IDLE_ANIMATION);
+            m_Animator.enabled = activate;
+
+            if (activate)
+                m_Animator.Play(IDLE_ANIMATION);
+
             ActivateAura(withAura, isLocal: isLocal);
 
             if (withSound && m_ChestData.IdleSoundFX != null)

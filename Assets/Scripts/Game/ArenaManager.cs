@@ -212,8 +212,8 @@ namespace Game
 
         public static bool IsInVoid(float x)
         {
-            return x > Instance.m_TargettableAreas[0].transform.position.x + Instance.TargettableAreaSize / 2 + 0.3f
-                && x < Instance.m_TargettableAreas[1].transform.position.x - Instance.TargettableAreaSize / 2 - 0.3f;
+            return x > Instance.m_TargettableAreas[0].transform.position.x + Instance.TargettableAreaSize / 2 + 0.1f
+                && x < Instance.m_TargettableAreas[1].transform.position.x - Instance.TargettableAreaSize / 2 - 0.1f;
         }
  
         /// <summary>
