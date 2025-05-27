@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c134d41ca291c244b96cfda56a7e83fd, type: 3}
   m_Name: Sanctuary
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: Zone of size {0} restauring {1} health each {2} seconds for {3}
     seconds
   m_DescriptionVariables:
@@ -29,6 +29,7 @@ MonoBehaviour:
   Graphics: {fileID: 8179447634951739534, guid: a98bb070248f37942b1ca92fd54510d9, type: 3}
   SpellEventActions: []
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 3ecced41c79ec3840824bd3813604df2, type: 3}
@@ -42,9 +43,18 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 0
-  EnergyGain: 5
+  m_NCharges: 1
+  EnergyGain: 3
   EnergyCost: 0
   m_Damage: 0
   m_ExecutionDamage: 0
@@ -61,8 +71,9 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 15
     Value: 0.1
-  - Property: 3
-    Value: 0.05
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
   m_Size: 6
   TriggerPlayer: 1
   EnemyStateEffects: []
@@ -72,7 +83,7 @@ MonoBehaviour:
   Animation: 9
   IsCancellable: 0
   AnimationTimer: 0.2
-  m_Cooldown: 25
+  m_Cooldown: 20
   m_SpellSpawn: 1
   DurationTick: 0.5
   m_TickDamage: 0

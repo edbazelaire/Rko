@@ -27,8 +27,6 @@ namespace Game.AI
         protected float         m_Delay;
         /// <summary> Number of times in a row this spell must be used to return SUCCESS </summary
         protected int           m_NTimes;
-        /// <summary> Max number of times this spell should be used before beeing deactivated </summary
-        protected int           m_MaxTimes;
         /// <summary> ESpellEvent to await to count increase m_NTimesCounter </summary
         protected ESpellEvent   m_SpellEventToAwait;
         /// <summary> reset cooldown before casting ? </summary>
@@ -59,14 +57,13 @@ namespace Game.AI
         /// <param name="spellEvent">       ESpellEvent to await to count increase m_NTimesCounter                  </param>
         /// <param name="resetCooldown">    reset cooldown before casting ?                                         </param>
         /// <param name="cantCastState">    state returned when the spell cant be casted                            </param>
-        public TaskUseSpell(Controller controller, ESpell spell, float delay = 0f, int nTimes = 1, int maxTimes = -1, ESpellEvent spellEvent = ESpellEvent.OnSpawn, bool resetCooldown = false, NodeState cantCastState = NodeState.FAILURE, Func<float> weight = null) : base(controller, weight) 
+        public TaskUseSpell(Controller controller, ESpell spell, float delay = 0f, int nTimes = 1, ESpellEvent spellEvent = ESpellEvent.OnSpawn, bool resetCooldown = false, NodeState cantCastState = NodeState.FAILURE, Func<float> weight = null) : base(controller, weight) 
         {
             m_CastState = ECastState.Inactive;
 
             m_Spell             = spell;
             m_Delay             = delay;
             m_NTimes            = nTimes;
-            m_MaxTimes          = maxTimes;
             m_SpellEventToAwait = spellEvent;
             m_ResetCooldown     = resetCooldown;
             m_CantCastState     = cantCastState;
@@ -174,7 +171,7 @@ namespace Game.AI
         public override void Reset()
         {
             base.Reset();
-            SetCastState(ECastState.Inactive);
+            //SetCastState(ECastState.Inactive);
         }
 
         #endregion
@@ -184,15 +181,19 @@ namespace Game.AI
 
         void SetCastState(ECastState castState)
         {
+            if (m_CastState == castState)
+                return;
+
             m_CastState = castState;
 
-            ErrorHandler.Log("      -- TaskUseSpell("+m_Spell.ToString()+") : m_CastState = " + m_CastState, ELogTag.AITaskUseSpell);
+            ErrorHandler.Log("      -- TaskUseSpell(" + m_Spell.ToString() + ") : m_CastState = " + m_CastState, ELogTag.AITaskUseSpell);
 
             switch (castState)
             {
                 case ECastState.Inactive:
-                    m_State = NodeState.FAILURE;
-                    m_NTimesCounter = 0;
+                    m_State = NodeState.FAILURE;                                // set default state as FAILURE
+                    m_NTimesCounter = 0;                                        // reset counter
+                    m_Controller.SpellHandler.OnPreSpellEvent -= CountAttacks;  // remove counter listener
                     break;
 
                 case ECastState.TimerActivated:
@@ -244,7 +245,6 @@ namespace Game.AI
                 return;
 
             m_NTimesCounter++;
-            m_MaxTimesCounter++;
             ErrorHandler.Log("      -- TaskUseSpell("+m_Spell.ToString()+") : m_NTimesCounter = " + m_NTimesCounter, ELogTag.AITaskUseSpell);
 
             // number of attacks reached 
@@ -252,6 +252,20 @@ namespace Game.AI
             {
                 SetCastState(ECastState.Success);
             }
+        }
+
+        #endregion
+
+
+        #region Info
+
+        public override string GetInfo()
+        {
+            string info = m_CastState.ToString();
+            if (m_CastState >= ECastState.Casting)
+                info += $" : {m_NTimesCounter}/{m_NTimes}";
+
+            return info;
         }
 
         #endregion

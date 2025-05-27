@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a54727096f1b9a14e931ac401f233989, type: 3}
   m_Name: ShadowShurikens
   m_EditorClassIdentifier: 
-  Rarety: 1
+  m_Rarety: 1
   m_Description: Shoots {0} Shadow Shurikens on the enemy in a straight line, each
     dealing {1} damage, applying {2} and 3 stacks of {3}. The shadow shurikens end
     when reaching the center of the enemy's area.
@@ -70,6 +70,7 @@ MonoBehaviour:
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 54af383899a0037459aded7ebbf3c3f0, type: 3}
@@ -83,8 +84,17 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_NCharges: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 45
@@ -102,8 +112,10 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
+    ScalingType: 0
   - Property: 3
-    Value: 0.05
+    Value: 0.5
+    ScalingType: 1
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects:

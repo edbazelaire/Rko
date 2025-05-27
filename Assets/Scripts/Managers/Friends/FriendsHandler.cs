@@ -73,17 +73,11 @@ namespace Managers.Friends
 
         public async void Initialize()
         {
-            Debug.Log("FriendsHandler.Initialize()");
-
             // Registering callbacks before Friends Initializing to ensure the receiving of all
             // `NotificationsConnectivityChanged` events.
             RegisterFriendsEventCallbacks();
 
             await FriendsService.Instance.InitializeAsync();
-
-            // TODO : REMOVE WHEN FRIENDSHIP IS NO LONGER AUTOMATIC
-            AcceptAllCurrentRequests();
-            // TODO : REMOVE WHEN FRIENDSHIP IS NO LONGER AUTOMATIC
 
             //UIInit();
 

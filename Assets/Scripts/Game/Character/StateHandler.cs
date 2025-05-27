@@ -247,6 +247,23 @@ namespace Game.Character
             return damage;
         }
 
+        public int ApplyBonusExecutionDamage(int damage, Controller targetController)
+        {
+            ErrorHandler.Log("Base Execution Damage : " + damage, ELogTag.BonusStats);
+
+            // apply fix bonus damages 
+            damage = Math.Max(0, damage + GetInt(EStateEffectProperty.BonusExecutionDamage, targetController) + GetInt(EStateEffectProperty.BonusDamage, targetController));
+
+            ErrorHandler.Log("Damage + Fix : " + damage, ELogTag.BonusStats);
+
+            // apply res fix first
+            damage = Math.Max(0, (int)Mathf.Round(damage * GetFloat(EStateEffectProperty.BonusExecutionDamagePerc, targetController) * GetFloat(EStateEffectProperty.BonusDamagePerc, targetController)));
+
+            ErrorHandler.Log("Final : " + damage, ELogTag.BonusStats);
+
+            return damage;
+        }
+
         public int ApplyBonusHeal(int heal, Controller targetController)
         {
             // apply percentage res
@@ -679,6 +696,7 @@ namespace Game.Character
             {
                 if (! effect.HasEffectProperty(property))
                     continue;
+
                 value += effect.GetFloat(property, ignoreConversion);
             }
 

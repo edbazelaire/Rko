@@ -67,7 +67,7 @@ namespace Game.Spells
             if (! REFRESH_EFFECTS.Contains(stateEffect))
                 return;
 
-            m_Stacks = 1;
+            SetStacks(1);
             Refresh();
         }
 

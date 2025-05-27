@@ -71,9 +71,10 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_NCharges: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 50
+  m_Damage: 40
   m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
@@ -88,10 +89,21 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
-  - Property: 1
-    Value: 0.1
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
   - Property: 3
-    Value: 0.05
+    Value: -0.25
+    ScalingType: 1
+    RoundingType: 0
+    ScalingTresholds: []
+  - Property: 20
+    Value: 0
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds:
+    - Level: 14
+      Value: 2
   m_Size: 0.5
   TriggerPlayer: 1
   EnemyStateEffects:

@@ -5,6 +5,7 @@ using Menu.Common.Buttons;
 using Save;
 using TMPro;
 using Tools;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Game.UI
@@ -22,6 +23,10 @@ namespace Game.UI
         Controller      m_Owner;
         /// <summary> TextMeshPro of the cooldown counter </summary>
         TMP_Text        m_CooldownCtr;
+        /// <summary> NCharges counter </summary>
+        GameObject      m_NCharges;
+        /// <summary> TextMeshPro of the number of charges </summary>
+        TMP_Text        m_NChargesCtr;
 
         // ============================================================================================================
         // LOCAL DATA
@@ -29,6 +34,8 @@ namespace Game.UI
         float m_BaseCooldown;
         /// <summary> client side cooldown that handles spell cooldown display (to avoid spamming server and delays) </summary>
         float m_CooldownTimer;
+        /// <summary> max number of charges for the spell </summary>
+        int m_MaxCharges;
 
         ESpell m_Spell => (ESpell)m_CollectableCloudData.GetCollectable();
         bool m_IsUltimateSpell => m_Owner.SpellHandler.Ultimate == m_Spell;
@@ -47,7 +54,6 @@ namespace Game.UI
             // game over : stop updating
             if (GameManager.IsGameOver)
                 return;
-
             
             UpdateCooldown();            
         }
@@ -62,6 +68,8 @@ namespace Game.UI
             base.FindComponents();
 
             m_CooldownCtr = Finder.FindComponent<TMP_Text>(m_LockState, c_CooldownCtr);
+            m_NCharges = Finder.Find(gameObject, "NCharges");
+            m_NChargesCtr = Finder.FindComponent<TMP_Text>(m_NCharges, "NChargesCtr");
         }
 
         /// <summary>
@@ -78,6 +86,7 @@ namespace Game.UI
             SpellData spellData = SpellLoader.GetSpellData(m_Spell, level, destroy: true);
             m_BaseCooldown = spellData.Cooldown;
             m_CooldownTimer = 0;
+            m_MaxCharges = spellData.Charges;
 
             // call base init 
             base.Initialize();
@@ -87,6 +96,9 @@ namespace Game.UI
 
             // set initial UI of Cooldowns
             SetupCooldown();
+
+            // set initial UI for NCharges
+            SetNCharges(m_MaxCharges);
 
             // set initial state
             SetState(spellData.EnergyCost <= 0 ? EButtonState.Normal : EButtonState.Locked);
@@ -134,6 +146,31 @@ namespace Game.UI
 
             if (m_IsUltimateSpell)
                 m_CooldownCtr.gameObject.SetActive(false);
+        }
+
+        void SetNCharges(int nCharges)
+        {
+            // no more charge : set UI for cooldown
+            if (nCharges <= 0)
+            {
+                m_NCharges.SetActive(false);
+                SetState(EButtonState.Locked);
+                return;
+            }
+
+            // set to normal state if at least one charge
+            SetState(EButtonState.Normal);
+
+            // only one max charge - no need for NCharges display
+            if (m_MaxCharges <= 1)
+            {
+                m_NCharges.SetActive(false);
+                return;
+            }
+
+            // display current number of charges
+            m_NCharges.SetActive(true);
+            m_NChargesCtr.text = nCharges.ToString();
         }
 
         /// When the cooldown changes, update the cooldown if needed
@@ -208,6 +245,7 @@ namespace Game.UI
             m_Owner.SpellHandler.SelectedSpellIndexNet.OnValueChanged   += OnSpellIndexSelected;
             m_Owner.SpellHandler.SpellSelectionEvent                    += OnSpellSelectionStateChanged;
             m_Owner.SpellHandler.OnCooldownEvent                        += OnCooldownChanged;
+            m_Owner.SpellHandler.NChargesNet.OnListChanged              += OnNChargesChanged;
         }
 
         protected override void UnRegisterListeners()
@@ -217,6 +255,7 @@ namespace Game.UI
             m_Owner.SpellHandler.SelectedSpellIndexNet.OnValueChanged   -= OnSpellIndexSelected;
             m_Owner.SpellHandler.SpellSelectionEvent                    -= OnSpellSelectionStateChanged;
             m_Owner.SpellHandler.OnCooldownEvent                        -= OnCooldownChanged;
+            m_Owner.SpellHandler.NChargesNet.OnListChanged              -= OnNChargesChanged;
         }
 
         /// <summary>
@@ -264,7 +303,6 @@ namespace Game.UI
                     break;
 
                 case ESpellSelectionState.Cooldown:
-                    m_CooldownTimer = m_Owner.SpellHandler.CalculateCooldown(m_BaseCooldown);
                     SetState(EButtonState.Locked);
                     break;
 
@@ -284,12 +322,20 @@ namespace Game.UI
             if (spell != m_Spell)
                 return;
 
-            // =====================================================================
-            // TODO : Remove
-            Debug.Log("OnCooldownChanged("+ spell + ") : " + newCooldown);
-            // =====================================================================
-
+            // update timer
             m_CooldownTimer = newCooldown;
+
+            // check if cooldown timer is set
+            if (m_State == EButtonState.Locked && !m_CooldownCtr.gameObject.activeInHierarchy)
+                m_CooldownCtr.gameObject.SetActive(true);
+        }
+
+        void OnNChargesChanged(NetworkListEvent<int> changeEvent)
+        {
+            if (changeEvent.Index != m_Index)
+                return;
+
+            SetNCharges(changeEvent.Value);
         }
 
         #endregion

@@ -139,8 +139,6 @@ namespace Assets
         {
             if (s_Instance != null)
             {
-                Debug.Log("================================================================");
-                Debug.Log("DESTROY CURRENT MAIN");
                 Destroy(s_Instance.gameObject);
             }
 
@@ -154,8 +152,6 @@ namespace Assets
 
         async Task Initialize()
         {
-            Debug.Log("Initialize");
-
             try
             {
                 ErrorHandler.IsActivated = true;
@@ -168,7 +164,6 @@ namespace Assets
                 RSDManager.Initialize();
 
                 // init settings
-                Debug.Log("InitializeSettings");
                 InitializeSettings();
 
                 // register to state changes 
@@ -242,8 +237,6 @@ namespace Assets
         /// <returns></returns>
         IEnumerator CheckInitialization()
         {
-            Debug.Log("CheckInitialization()");
-
             // set a timer of 30s to avoid inf loop
             if (TimeErrorWrapper.Instance != null)
                 TimeErrorWrapper.Instance.New("App Initialization", 20f, ReloadGame);      

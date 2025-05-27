@@ -18,8 +18,9 @@ public class Life : NetworkBehaviour
     // ===================================================================================
     // EVENTS
     /// <summary> thrown when the character dies </summary>
-    public Action                   DiedEvent;
-    public Action<int, ulong>       OnHealedEvent;
+    public Action                               DiedEvent;
+    public Action<int, ulong>                   OnHealedEvent;
+    public Action<int, ulong, ESpellCategory>   OnHittedEvent;
 
     // ===================================================================================
     // NETWORK VARIABLES
@@ -81,7 +82,6 @@ public class Life : NetworkBehaviour
     {
         if (!ignoreDeathEffects && m_Controller.TriggerEffectHandler.OnDeathEffect())
         {
-            Debug.Log("     + Trigerred - OnDeathEffect");
             return false;
         }
 
@@ -116,6 +116,9 @@ public class Life : NetworkBehaviour
         if (damage <= 0)
             return 0;
 
+        // -- call event that the player received damage
+        OnHittedEvent?.Invoke(damage, casterId, spellCategory);
+        // -- call analytics & damage display
         GameAnalyticsManager.Instance.OnSpellHit(casterId, m_Controller.PlayerId, source, damage, EHitType.Damage, spellCategory);
 
         // calculate damages after shield

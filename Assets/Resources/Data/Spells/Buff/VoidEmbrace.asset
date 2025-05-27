@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b829d596b80e4f042aa5d80d985cf693, type: 3}
   m_Name: VoidEmbrace
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: For the next {0} seconds, each time you hit an enemy with a spell
     or an Auto Attack, apply 2 stacks of {1}
   m_DescriptionVariables:
@@ -25,6 +25,7 @@ MonoBehaviour:
   Graphics: {fileID: 0}
   SpellEventActions: []
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 037688ea562d74144b0f62a682d368a6, type: 3}
@@ -38,8 +39,17 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_NCharges: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
@@ -55,12 +65,11 @@ MonoBehaviour:
     m_Speed: 0
     m_Duration: 0
   m_SpellsScalingLevel:
-  - Property: 2
-    Value: 0.1
-  - Property: 1
-    Value: 0.1
   - Property: 3
-    Value: 0.05
+    Value: -0.5
+    ScalingType: 1
+    RoundingType: 0
+    ScalingTresholds: []
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects: []

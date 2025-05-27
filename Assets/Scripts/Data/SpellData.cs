@@ -20,6 +20,7 @@ using Assets.Scripts.Data.DataStructures.SpellSubStructures;
 using Assets.Scripts.Game;
 using Game.NetworkStructures;
 using Data.DataStructures.SpellSubStructures;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace Data
 {
@@ -33,19 +34,6 @@ namespace Data
         {
             Name = name;
             WithIcon = withIcon;
-        }
-    }
-
-    [Serializable]
-    public struct SSpellPropertyScaling
-    {
-        public ESpellProperty Property;
-        public float Value;
-
-        public SSpellPropertyScaling(ESpellProperty prop, float value = 0f)
-        {
-            Property = prop;
-            Value = value;
         }
     }
 
@@ -110,11 +98,13 @@ namespace Data
         protected List<SpellRequirements> m_SpellRequirements = new List<SpellRequirements>();
 
         [Header("Stats")]
-        [Description("Maximum number of target that this spell can hit")]
+        [Tooltip("Maximum number of target that this spell can hit")]
         public int MaxHit = 1;
-        [Description("Energy gained when this spell hits his target")]
+        [SerializeField, Tooltip("Number of charges for the spell")]
+        protected int m_Charges = 1;
+        [Tooltip("Energy gained when this spell hits his target")]
         public int EnergyGain = 10;
-        [Description("Request amount on energy to be able to cast this spell")]
+        [Tooltip("Request amount on energy to be able to cast this spell")]
         public int EnergyCost = 0;
         [SerializeField, Tooltip("Damage of the spell")]
         public int m_Damage = 0;
@@ -174,9 +164,11 @@ namespace Data
         // ===========================================================================
         // Local private variables
         /// <summary> name of the parent spell (to retrieve the value in the damages count) </summary>
-        string m_Parent;
+        protected string m_Parent;
         /// <summary> id of the current target, that can be set to loc a specific target (e.g : OnHit effects) </summary>
-        ulong? m_CurrentTargetId = null;
+        protected ulong? m_CurrentTargetId = null;
+        /// <summary> list of overriding data </summary>
+        protected List<(ESpellProperty Property, float Value)> m_OverridingData;
 
         // ===========================================================================
         // Dependent Members
@@ -193,14 +185,16 @@ namespace Data
 
         // ===========================================================================
         // Level Dependent Members
-        public virtual float Cooldown           => Mathf.Max(Mathf.Round(100f * m_Cooldown / GetSpellLevelFactor(ESpellProperty.Cooldowns)) / 100f, 0f);
-        public virtual int Damage               => (int)Math.Round(m_Damage * GetSpellLevelFactor(ESpellProperty.Damage));
-        public virtual int ExecutionDamage      => (int)Math.Round(m_ExecutionDamage * GetSpellLevelFactor(ESpellProperty.ExecutionDamage));
+        public virtual int Charges              => (int)GetScaledValue(ESpellProperty.Charges, m_Charges);
+        //public virtual float Cooldown           => Mathf.Max(Mathf.Round(100f * m_Cooldown / GetScaledValue(ESpellProperty.Cooldowns)) / 100f, 0f);
+        public virtual float Cooldown           => GetScaledValue(ESpellProperty.Cooldowns, m_Cooldown);
+        public virtual int Damage               => (int)GetScaledValue(ESpellProperty.Damage, m_Damage);
+        public virtual int ExecutionDamage      => (int)GetScaledValue(ESpellProperty.ExecutionDamage, m_ExecutionDamage);
 
-        public virtual int Heal                 => (int)Math.Round(m_Heal * GetSpellLevelFactor(ESpellProperty.Heal));
-        public virtual int Shield               => (int)Math.Round(m_Shield * GetSpellLevelFactor(ESpellProperty.Shield));
-        public virtual float LifeSteal          => m_LifeSteal * GetSpellLevelFactor(ESpellProperty.LifeSteal);
-        public virtual float Duration           => m_Duration * GetSpellLevelFactor(ESpellProperty.Duration);
+        public virtual int Heal                 => (int)GetScaledValue(ESpellProperty.Heal, m_Heal);
+        public virtual int Shield               => (int)GetScaledValue(ESpellProperty.Shield, m_Shield);
+        public virtual float LifeSteal          => GetScaledValue(ESpellProperty.LifeSteal, m_LifeSteal);
+        public virtual float Duration           => GetScaledValue(ESpellProperty.Duration, m_Duration);
         public virtual SForce Force             => m_Force;
 
         /// <summary> is the "IsCasting" over once the spell has been casted (before delay) ? </summary>
@@ -855,8 +849,10 @@ namespace Data
             infosDict.Add("Type", GetTypeInfo());
             infosDict.Add("Target", GetTargetTypeInfo());
 
-            if (EnergyGain > 0)
-                infosDict.Add("Energy", EnergyGain);
+            if (Cooldown > 0)
+                infosDict.Add("Cooldown", Cooldown);
+            if (Charges > 1)
+                infosDict.Add("Charges", Charges);
             if (EnergyCost > 0)
                 infosDict.Add("EnergyCost", EnergyCost);
             if (SpellRequirements.Count > 0)
@@ -871,10 +867,10 @@ namespace Data
                 infosDict.Add("Shield", Shield);
             if (Duration > 0)
                 infosDict.Add("Duration", Duration);
+            if (EnergyGain > 0)
+                infosDict.Add("Energy", EnergyGain);
             if (m_Size > 0 && m_Size != 1)
                 infosDict.Add("Size", m_Size);
-            if (Cooldown > 0)
-                infosDict.Add("Cooldown",       Cooldown);
             if (SpellRelocation.Lifetime.StartSpellPart >= ESpellEvent.OnSpawn)
                 infosDict.Add("Movement", "Manual");
 
@@ -1060,9 +1056,15 @@ namespace Data
 
         public new SpellData Clone(int level = 0, bool destroy = false)
         {
-            SpellData spellData = (SpellData)base.Clone(level, destroy);
+            // clone this spell
+            SpellData spellData = (SpellData)base.Clone(level == 0 ? m_Level : level, destroy);
+
+            // -- copy current target id
             spellData.SetCurrentTargetId(CurrentTargetId);
+            // -- copy parent
             spellData.SetParent(Parent);
+            // -- copy overriding data
+            spellData.m_OverridingData = m_OverridingData;
 
             return spellData;
         }
@@ -1110,12 +1112,65 @@ namespace Data
             }
         }
 
-        protected float GetSpellLevelFactor(ESpellProperty property)
+        #endregion
+
+
+        #region Scaling & Override
+
+        protected float GetScaledValue(ESpellProperty property, float value)
         {
-            var data = m_SpellsScalingLevel.FirstOrDefault(spell => spell.Property == property);
-            return (float)Math.Pow( 1 + data.Value, m_Level - 1);
+            // check if there is a value overriding this
+            if (TryGetOverridingData(property, out float overridingValue))
+            {
+                return overridingValue;
+            }
+
+            if (!m_SpellsScalingLevel.Any(spell => spell.Property == property))
+                return value;
+
+            return m_SpellsScalingLevel.FirstOrDefault(spell => spell.Property == property).Get(value, m_Level);
         }
 
+        public virtual void AddOverridingData(List<SOverridingData> overridingData, int level)
+        {
+            foreach (var data in overridingData)
+            {
+                AddOverridingData(data, level);
+            }
+        }
+
+        public virtual void AddOverridingData(SOverridingData overridingData, int level)
+        {
+            if (m_OverridingData == null)
+                m_OverridingData = new();
+
+            if (CheckSpecialOverridingData(overridingData))
+                return;
+
+            m_OverridingData.Add((overridingData.Property, overridingData.Get(GetFloat(overridingData.Property), level)));
+        }
+
+        public virtual bool CheckSpecialOverridingData(SOverridingData overridingData) 
+        { 
+            return false; 
+        }
+
+        protected bool TryGetOverridingData(ESpellProperty property, out float overridingValue)
+        {
+            overridingValue = 0f;
+
+            if (m_OverridingData.IsNullOrEmpty())
+                return false;
+
+            // check if there is a value overriding this
+            if (m_OverridingData.Any(overridingData => overridingData.Property == property))
+            {
+                overridingValue = m_OverridingData.FirstOrDefault(overridingData => overridingData.Property == property).Value;
+                return true;
+            }
+
+            return false;
+        }
         #endregion
 
 

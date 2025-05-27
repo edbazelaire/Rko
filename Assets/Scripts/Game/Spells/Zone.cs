@@ -285,7 +285,7 @@ namespace Game.Spells
             }
 
             // apply state effects specifics to enemies
-            ApplyEnemyStateEffects(controller);
+            ApplyStateEffects(controller, m_SpellData.EnemyStateEffects);
 
             return true;
         }
@@ -317,7 +317,8 @@ namespace Game.Spells
             if (m_Controller.ClientAnalytics != null)
                 m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Heal, heal);
 
-            ApplyAllyStateEffects(controller);
+            // apply ally state effects
+            ApplyStateEffects(controller, m_SpellData.AllyStateEffects);
 
             return true;
         }

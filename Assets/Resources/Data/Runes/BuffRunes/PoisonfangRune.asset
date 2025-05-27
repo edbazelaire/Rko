@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a402882a257d18548a281b17574b3711, type: 3}
   m_Name: PoisonfangRune
   m_EditorClassIdentifier: 
-  Rarety: 1
+  m_Rarety: 1
   m_Description: 
   m_DescriptionVariables: []
   m_SpellElements: 03000000
@@ -80,5 +80,5 @@ MonoBehaviour:
       StateEffectStackFactors:
       - Target: 2
         StateEffect: 9
-        BaseValue: 5
+        BaseValue: 4
         LevelFactor: 0.1

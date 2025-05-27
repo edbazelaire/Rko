@@ -36,9 +36,9 @@ namespace Data
 
         // ==================================================================================================
         // PUBLIC ACCESSORS
-        public int TickDamage       => (int)Mathf.Round(m_TickDamage * GetSpellLevelFactor(ESpellProperty.TickDamage));
-        public int TickHeal         => (int)Mathf.Round(m_TickHeal * GetSpellLevelFactor(ESpellProperty.TickHeal));
-        public int TickShield       => (int)Mathf.Round(m_TickShield * GetSpellLevelFactor(ESpellProperty.TickShield));
+        public int TickDamage       => (int)GetScaledValue(ESpellProperty.TickDamage, m_TickDamage);
+        public int TickHeal         => (int)GetScaledValue(ESpellProperty.TickHeal, m_TickHeal);
+        public int TickShield       => (int)GetScaledValue(ESpellProperty.TickShield, m_TickShield);
         public SForce ZoneForce     => m_ZoneForce;
 
         #endregion

@@ -219,29 +219,38 @@ namespace Game.Loaders
 
             // returns default prefab for spell type
             return m_SpellsPrefabs[spellType.ToString()];
-        } 
+        }
+
+
+        public static bool TryGetSpellData(string spellName, out SpellData spellData, int level = 1, bool destroy = false, bool throwError = true)
+        {
+            spellData = GetSpellData(spellName, level, destroy, throwError);
+            return spellData != null;
+        }
 
         /// <summary>
         /// Get the spell data of the given spell
         /// </summary>
         /// <param name="spell"></param>
         /// <returns></returns>
-        public static SpellData GetSpellData(ESpell spell, int level = 1, bool destroy = false)
+        public static SpellData GetSpellData(ESpell spell, int level = 1, bool destroy = false, bool throwError = true)
         {
             if (IsBossSpell(spell))
             {
                 if (!m_ExtraSpellData.ContainsKey(spell.ToString()))
                 {
-                    ErrorHandler.Error($"ExtraSpellData : Spell {spell} not found");
+                    if (throwError)
+                        ErrorHandler.Error($"ExtraSpellData : Spell {spell} not found");
                     return null;
                 }
 
                 return m_ExtraSpellData[spell.ToString()].Clone(level, destroy);
             }
 
-            if (!m_Spells.ContainsKey(spell))
+            if (! m_Spells.ContainsKey(spell))
             {
-                ErrorHandler.Error($"Spells : Spell {spell} not found");
+                if (throwError) 
+                    ErrorHandler.Error($"Spells : Spell {spell} not found");
                 return null;
             }
 
@@ -253,11 +262,11 @@ namespace Game.Loaders
         /// </summary>
         /// <param name="spell"></param>
         /// <returns></returns>
-        public static SpellData GetSpellData(string spellName, int level = 1, bool destroy = false)
+        public static SpellData GetSpellData(string spellName, int level = 1, bool destroy = false, bool throwError = true)
         {
             if (Enum.TryParse(spellName, out ESpell spell))
             {
-                return GetSpellData(spell, level, destroy);
+                return GetSpellData(spell, level, destroy, throwError);
             }
 
             if (m_ExtraSpellData.ContainsKey(spellName))
@@ -265,7 +274,9 @@ namespace Game.Loaders
                 return m_ExtraSpellData[spellName].Clone(level, destroy);
             }
             
-            ErrorHandler.Error($"SpellLoader : Spell {spellName} not found");
+            if (throwError)
+                ErrorHandler.Error($"SpellLoader : Spell {spellName} not found");
+
             return null;
         }
 
@@ -588,7 +599,7 @@ namespace Game.Loaders
                 return default;
             }
 
-            var data = (RuneData)m_RunesData[rune].Clone(level);
+            var data = m_RunesData[rune].Clone(level);
             if (destroy)
                 CoroutineManager.DelayMethod(() => GameObject.Destroy(data));
 

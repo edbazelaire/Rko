@@ -7,6 +7,8 @@ using UnityEngine;
 using Data.GameManagement;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 using MyBox;
+using System;
+using Data.DataStructures.SpellSubStructures;
 
 namespace Data
 {
@@ -34,7 +36,7 @@ namespace Data
         public float Speed                  => Settings.SpellSpeedFactor * m_Speed;
         public bool TriggerGround           => m_TriggerGround;
         public bool StopOnTargetPos         => m_StopOnTargetPos;
-        public bool IsTrajectoryFromAbove   => Trajectory == ESpellTrajectory.Hight || Trajectory == ESpellTrajectory.Diagonal;
+        public bool IsTrajectoryFromAbove   => Trajectory == ESpellTrajectory.High || Trajectory == ESpellTrajectory.Diagonal;
 
         #endregion
 
@@ -46,7 +48,7 @@ namespace Data
             switch (Trajectory)
             {
                 case ESpellTrajectory.Curve:
-                case ESpellTrajectory.Hight:
+                case ESpellTrajectory.High:
                 case ESpellTrajectory.Diagonal:
                 case ESpellTrajectory.DiagonalMiddle:
                     target.y = 0;
@@ -75,7 +77,7 @@ namespace Data
                     position.y = Settings.SPELL_DIAGONAL_POS_Y;
                     break;
 
-                case ESpellTrajectory.Hight:
+                case ESpellTrajectory.High:
                 case ESpellTrajectory.DiagonalMiddle:
                     position.y = Settings.SPELL_HIGHT_POS_Y;
                     break;
@@ -100,7 +102,7 @@ namespace Data
                     position.x = 0;
                     break;
 
-                case ESpellTrajectory.Hight:
+                case ESpellTrajectory.High:
                     position.x = target.x;
                     break;
 
@@ -140,12 +142,35 @@ namespace Data
                 case ESpellTrajectory.Curve:
                     return new Vector3(0, 0, 0);
 
-                case ESpellTrajectory.Hight:
+                case ESpellTrajectory.High:
                     return new Vector3(rotationFactor * controller.SpellHandler.SpellSpawn.transform.position.x, 1f, 0); ;
 
                 default:
                     ErrorHandler.Error($"Trajectory {Trajectory} not implemented");
                     return new Vector3(0, 0, 0);
+            }
+        }
+
+        #endregion
+
+
+        #region Overriding
+
+        public override bool CheckSpecialOverridingData(SOverridingData overridingData)
+        {
+            switch (overridingData.Property)
+            {
+                case ESpellProperty.Trajectory:
+                    if (! Enum.TryParse(overridingData.Value, out ESpellTrajectory trajectory))
+                    {
+                        ErrorHandler.Error($"Spell ({Name}) - unable to parse {overridingData.Value} into a ESpellTrajectory");
+                        return false;
+                    }
+                    Trajectory = trajectory;
+                    return true;
+
+                default:
+                    return base.CheckSpecialOverridingData(overridingData);
             }
         }
 

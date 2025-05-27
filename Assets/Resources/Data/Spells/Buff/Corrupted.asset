@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b829d596b80e4f042aa5d80d985cf693, type: 3}
   m_Name: Corrupted
   m_EditorClassIdentifier: 
-  Rarety: 3
+  m_Rarety: 3
   m_Description: Consume all {0} stacks on your enemy to corrupt your character for
     {1} seconds. The effect of the incarnation is multiplied for each stacks consummed.<br>Replaces
     your auto attack by an explosive projectile, dealing 80 damage in a zone of size
@@ -68,6 +68,7 @@ MonoBehaviour:
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 0
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -81,8 +82,17 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_NCharges: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 0
@@ -100,10 +110,14 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
-  - Property: 1
-    Value: 0.1
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
   - Property: 3
-    Value: 0.05
+    Value: -0.05
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects: []

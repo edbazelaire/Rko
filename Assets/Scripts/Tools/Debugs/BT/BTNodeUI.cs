@@ -1,5 +1,6 @@
 ﻿using AI;
 using Menu.Common.Dots;
+using MyBox;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,6 +21,7 @@ namespace Tools.Debugs.BT
         Image       m_Selection;
         Image       m_Background;
         TMP_Text    m_Weight;
+        TMP_Text    m_Info;
         bool        m_HasWeight = false;
 
         #endregion
@@ -35,6 +37,7 @@ namespace Tools.Debugs.BT
             m_Selection     = Finder.FindComponent<Image>(gameObject,       "Selection");
             m_Background    = Finder.FindComponent<Image>(gameObject,       "Background");
             m_Weight        = Finder.FindComponent<TMP_Text>(gameObject,    "Weight");
+            m_Info          = Finder.FindComponent<TMP_Text>(gameObject, "Info");
 
             m_HasWeight = m_Node.WeightMethod != null;
         }
@@ -54,6 +57,14 @@ namespace Tools.Debugs.BT
 
             if (! m_HasWeight)
                 m_Weight.gameObject.SetActive(false);
+
+            string info = m_Node.GetInfo();
+            if (info.IsNullOrEmpty())
+                m_Info.gameObject.SetActive(false);
+            else
+            {
+                m_Info.gameObject.SetActive(true);
+            }
         }
 
         #endregion
@@ -68,6 +79,7 @@ namespace Tools.Debugs.BT
 
             RefreshActiveState();
             RefreshIsEvaluated();
+            RefreshInfo();
 
             if (m_HasWeight)
                 RefreshWeight();
@@ -104,6 +116,15 @@ namespace Tools.Debugs.BT
         void RefreshWeight()
         {
             m_Weight.text = m_Node.Weight.ToString("F2");
+        }
+
+        void RefreshInfo()
+        {
+            string info = m_Node.GetInfo();
+            if (info.IsNullOrEmpty())
+                return;
+
+            m_Info.text = info;
         }
 
         #endregion
