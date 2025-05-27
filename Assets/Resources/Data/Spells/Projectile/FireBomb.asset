@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2413bf9bea7a81d44a0b645bca9d69f8, type: 3}
   m_Name: FireBomb
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: Throw a fireball that deals {0} damage and applies {1} in an area
     of {2}
   m_DescriptionVariables:
@@ -47,21 +47,31 @@ MonoBehaviour:
     StateEffects: 
   OnHit:
   - {fileID: 11400000, guid: 56417b5bba9def04eae71ca21e594175, type: 2}
+  SpellEventEffects: []
   OnHitSpellSpawn: 2
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: acded229ef27b08438e9aec48559a382, type: 3}
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
-  SpellTarget: 102
+  SpellTarget: 6
   m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_NCharges: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 50
@@ -79,8 +89,14 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
   - Property: 3
-    Value: 0.05
+    Value: -0.25
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
   m_Size: 2
   TriggerPlayer: 1
   EnemyStateEffects: []
@@ -90,7 +106,7 @@ MonoBehaviour:
   Animation: 2
   IsCancellable: 0
   AnimationTimer: 0.5
-  m_Cooldown: 10
+  m_Cooldown: 12
   Trajectory: 1
   m_TriggerGround: 1
   m_StopOnTargetPos: 0

@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3187be67d58548144a9d4f83cb44e7d2, type: 3}
   m_Name: ShadowStrike
   m_EditorClassIdentifier: 
-  Rarety: 0
-  m_Description: A shadow spike erupts from the ground, inflicting {0} damage and
-    applying Airborne for 1 second.
+  m_Rarety: 0
+  m_Description: A shadow spike erupts from the ground, inflicting {0} damage (+
+    {1} execution) and applying Airborne for 1 second.
   m_DescriptionVariables:
   - Name: Damage
+    WithIcon: 1
+  - Name: ExecutionDamage
     WithIcon: 1
   m_SpellElements: 
   Linked: 1
@@ -42,6 +44,7 @@ MonoBehaviour:
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: e52c0f5da24a5104e8237cb86fd7dc91, type: 3}
@@ -55,8 +58,17 @@ MonoBehaviour:
     Y: 0
   LockTarget: 100
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 0
+  m_NCharges: 1
   EnergyGain: 15
   EnergyCost: 0
   m_Damage: 120
@@ -74,10 +86,28 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
-  - Property: 1
-    Value: 0.1
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
+  - Property: 19
+    Value: 0.12
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
   - Property: 3
-    Value: 0.05
+    Value: -0.5
+    ScalingType: 1
+    RoundingType: 0
+    ScalingTresholds: []
+  - Property: 20
+    Value: 0
+    ScalingType: 1
+    RoundingType: 0
+    ScalingTresholds:
+    - Level: 9
+      Value: 2
+    - Level: 14
+      Value: 3
   m_Size: 2
   TriggerPlayer: 1
   EnemyStateEffects:
@@ -93,5 +123,5 @@ MonoBehaviour:
   Animation: 6
   IsCancellable: 0
   AnimationTimer: 0.2
-  m_Cooldown: 30
+  m_Cooldown: 25
   m_SpellSpawn: 1

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33c7b0d6efb178c4db1658488d1ecfdd, type: 3}
   m_Name: FrostLeap
   m_EditorClassIdentifier: 
-  Rarety: 2
+  m_Rarety: 2
   m_Description: Jumps on your opponent, dealing {0} damage on hitting and applying
     a {1} effect
   m_DescriptionVariables:
@@ -26,6 +26,7 @@ MonoBehaviour:
   SpellEventActions: []
   OnHit:
   - {fileID: 11400000, guid: 4b3aea1b89915604d904f5e80374aec6, type: 2}
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 0d76716516b75774eaff0bf422c35113, type: 3}
@@ -39,9 +40,18 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
-  EnergyGain: 10
+  m_NCharges: 1
+  EnergyGain: 5
   EnergyCost: 0
   m_Damage: 0
   m_ExecutionDamage: 0
@@ -57,9 +67,15 @@ MonoBehaviour:
     m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
-    Value: 0.1
+    Value: 0.12
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
   - Property: 3
-    Value: 0.05
+    Value: -1
+    ScalingType: 1
+    RoundingType: 2
+    ScalingTresholds: []
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects: []
@@ -69,7 +85,7 @@ MonoBehaviour:
   Animation: 5
   IsCancellable: 1
   AnimationTimer: 0
-  m_Cooldown: 40
+  m_Cooldown: 34
   Trajectory: 1
   m_TriggerGround: 0
   m_StopOnTargetPos: 1

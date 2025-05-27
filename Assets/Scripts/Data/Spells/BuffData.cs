@@ -16,7 +16,7 @@ namespace Data
 
         public override ESpellType SpellType => ESpellType.Buff;
 
-        public override float Duration => (float)Math.Round(m_Duration * GetSpellLevelFactor(ESpellProperty.Duration));
+        public override float Duration => (float)GetScaledValue(ESpellProperty.Duration, m_Duration);
 
         #endregion
 

@@ -24,6 +24,7 @@ namespace Game.Spells
         // ========================================================================================================
         // Constants
         const string c_GraphicsContainer = "GraphicsContainer";
+        List<string> AFTER_EFFECTS => new(){ EStateEffect.Frozen.ToString() };
 
         // ========================================================================================================
         // Actions
@@ -292,6 +293,7 @@ namespace Game.Spells
             {
                 m_Graphics = PoolManager.Pool(m_SpellData.Graphics, m_GraphicsContainer.transform, activate: false);
                 m_Graphics.transform.localScale = Vector3.one;
+                m_Graphics.transform.localPosition = Vector3.zero;
                 m_Graphics.SetActive(true);
                 SwapColliders(m_Graphics);
 
@@ -504,6 +506,12 @@ namespace Game.Spells
 
         void HitEnemy(Controller targetController)
         {
+            // split state effects application into effects that are applied before / after damages
+            (List<SStateEffectData> beforeEffects, List<SStateEffectData> afterEffects) = SplitStateEffectsPriority(m_SpellData.EnemyStateEffects);
+
+            // apply state effects specifics to enemies that are applied BEFORE damages
+            ApplyStateEffects(targetController, beforeEffects);
+
             // apply spell base damage on target
             if (m_SpellData.Damage > 0)
                 ApplyDamageOnTarget(GetBoostedDamage(targetController), targetController);
@@ -512,8 +520,8 @@ namespace Game.Spells
             if (m_SpellData.ExecutionDamage > 0)
                 ApplyDamageOnTarget(GetBoostedExecutionDamage(targetController), targetController);
 
-            // apply state effects specifics to enemies
-            ApplyEnemyStateEffects(targetController);
+            // apply state effects specifics to enemies that are applied AFTER damages
+            ApplyStateEffects(targetController, afterEffects);
         }
 
         void ApplyDamageOnTarget(int damage, Controller targetController)
@@ -534,32 +542,39 @@ namespace Game.Spells
         /// <summary>
         /// Check if ability hit an ally
         /// </summary>
-        /// <param name="controller"> controller of hit target </param>
+        /// <param name="targetController"> controller of hit target </param>
         /// <returns></returns>
-        protected virtual bool CheckHitAlly(Controller controller)
+        protected virtual bool CheckHitAlly(Controller targetController)
         {
-            if (controller.Team != m_Controller.Team)
+            if (targetController.Team != m_Controller.Team)
                 return false;
 
             bool test = false;
+
+            if (m_SpellData.AllyStateEffects.Count > 0)
+                test = true;
+
+            // split state effects application into effects that are applied before / after damages
+            (List<SStateEffectData> beforeEffects, List<SStateEffectData> afterEffects) = SplitStateEffectsPriority(m_SpellData.AllyStateEffects);
+
+            // apply state effects that are applied BEFORE damages
+            ApplyStateEffects(targetController, beforeEffects);
+
             if (m_SpellData.Heal > 0)
             {
-                controller.Life.Heal(m_SpellData.Heal, m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
+                targetController.Life.Heal(m_SpellData.Heal, m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
                 test = true;
             }
 
             if (m_SpellData.Shield > 0)
             {
-                controller.Life.AddShield(m_SpellData.Shield, m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
+                targetController.Life.AddShield(m_SpellData.Shield, m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
                 test = true;
             }
 
-            if (m_SpellData.AllyStateEffects.Count > 0)
-            {
-                ApplyAllyStateEffects(controller);
-                test = true;
-            }
-            
+            // apply state effects that are applied AFTER damages
+            ApplyStateEffects(targetController, afterEffects);
+
             return test;
         }
 
@@ -583,7 +598,7 @@ namespace Game.Spells
             if (m_SpellData.ExecutionDamage <= 0)
                 return 0;
 
-            var boostedDamage = m_Controller.StateHandler.ApplyBonusDamage(m_SpellData.ExecutionDamage, target);
+            var boostedDamage = m_Controller.StateHandler.ApplyBonusExecutionDamage(m_SpellData.ExecutionDamage, target);
             var finalDamage = (int)Math.Round(boostedDamage * (1 - target.Life.PercHp));
 
             ErrorHandler.Log("Execution Damage : " + m_SpellData.ExecutionDamage, ELogTag.Spells);
@@ -642,21 +657,23 @@ namespace Game.Spells
         }
 
         /// <summary>
-        /// Apply on hit effects targetting enemies
+        /// Split list of state effects between effects that needs to be applied BEFORE damages and those that are applied AFTER
         /// </summary>
-        /// <param name="targetController"></param>
-        protected virtual void ApplyEnemyStateEffects(Controller targetController)
+        /// <param name="stateEffects"></param>
+        protected virtual (List<SStateEffectData>, List<SStateEffectData>) SplitStateEffectsPriority(List<SStateEffectData> stateEffects)
         {
-            ApplyStateEffects(targetController, m_SpellData.EnemyStateEffects);
-        }
+            List<SStateEffectData> beforeEffects = new List<SStateEffectData>();
+            List<SStateEffectData> afterEffects = new List<SStateEffectData>();
 
-        /// <summary>
-        /// Apply on hit effects targetting allies
-        /// </summary>
-        /// <param name="targetController"></param>
-        protected virtual void ApplyAllyStateEffects(Controller targetController)
-        {
-            ApplyStateEffects(targetController, m_SpellData.AllyStateEffects);
+            foreach (var effect in stateEffects)
+            {
+                if (AFTER_EFFECTS.Contains(effect.StateEffect.ToString()))
+                    afterEffects.Add(effect);
+                else
+                    beforeEffects.Add(effect);
+            }
+
+            return (beforeEffects, afterEffects);
         }
 
         #endregion

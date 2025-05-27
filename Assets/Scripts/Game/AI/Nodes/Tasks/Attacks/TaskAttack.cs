@@ -146,12 +146,6 @@ public class TaskAttack : BaseTask
         // check : Damage
         CheckDamageSpells(ref spell);
 
-        // ===========================================================
-        // TODO : Keep ? Remove ?
-        // check : AutoAttack
-        //CheckAutoAttack(ref spell);
-        // ===========================================================
-
         return spell;
     }
 
@@ -261,7 +255,7 @@ public class TaskAttack : BaseTask
                 if (target.StateHandler.HasState(state))
                 {
                     hasState = true;
-                    if (!m_SpellHandler.CanCast(item.Key))
+                    if (m_SpellHandler.CanCast(item.Key))
                         possibleSpells.Add(item.Key);
                     break;
                 }
@@ -319,16 +313,6 @@ public class TaskAttack : BaseTask
         CheckSpells(ref spell, m_SpellCategories[ESpellTypeCategory.Damage]);
     }
 
-    void CheckAutoAttack(ref ESpell spell)
-    {
-        // skip if a spell was already selected
-        if (spell != ESpell.None)
-            return;
-
-        ErrorHandler.Log("CheckAutoAttack()", ELogTag.AITaskAttack);
-        CheckSpells(ref spell, m_SpellCategories[ESpellTypeCategory.AutoAttack]);
-    }
-
     #endregion
 
 
@@ -357,31 +341,41 @@ public class TaskAttack : BaseTask
             if (m_ConsumSpells.Keys.Contains(spell))
                 continue;
 
-            SpellData spellData = SpellLoader.GetSpellData(spell, m_SpellHandler.SpellLevels[i]);
+            SpellData spellData = SpellLoader.GetSpellData(spell, m_SpellHandler.SpellLevelsNet[i]);
 
             // check if is not allowed types
             if (excludedTypes.Contains(spellData.SpellType))
                 continue;
 
             // TODO : BETTER
-            var spellInfos = spellData.GetInfo();
-            // try get value
-            if (! spellInfos.ContainsKey(property.ToString()) || ! float.TryParse(spellInfos[property.ToString()].ToString(), out float value))
+            float value = 0f;
+            Dictionary<string, object> spellInfos = new();
+            if (spellData is MultiSpellData multiSpellData)
+            {
+                // get value of the sub-spell
+                SpellData finalSpellData = multiSpellData.GetSubSpellData(m_Controller);
+                spellInfos = finalSpellData.GetInfo();
+            } else
+            {
+                spellInfos = spellData.GetInfo();
+            }
+
+            // check has property expected and that property has a value
+            if (!spellInfos.ContainsKey(property.ToString()) || !float.TryParse(spellInfos[property.ToString()].ToString(), out value))
                 continue;
-            // TODO : BETTER
 
             // filter by damages
             if (value > 0)
-            {
-                int j = 0;
-                for (j = 0; j < spells.Count; j++)
                 {
-                    if (spells[j].Value < value)
-                        break;
-                }
+                    int j = 0;
+                    for (j = 0; j < spells.Count; j++)
+                    {
+                        if (spells[j].Value < value)
+                            break;
+                    }
 
-                spells.Insert(j, (spell, value));
-            }
+                    spells.Insert(j, (spell, value));
+                }
         }
 
         return spells.Select(t => t.Spell).ToList();

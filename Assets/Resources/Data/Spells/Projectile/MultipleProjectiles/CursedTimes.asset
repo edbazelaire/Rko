@@ -114,6 +114,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_NCharges: 1
   EnergyGain: 3
   EnergyCost: 0
   m_Damage: 50
@@ -131,12 +132,27 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
-  - Property: 3
-    Value: 0.05
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
   - Property: 6
-    Value: 0.035
+    Value: 0
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds:
+    - Level: 6
+      Value: 4
+    - Level: 12
+      Value: 5
   - Property: 7
-    Value: 0.025
+    Value: 0
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds:
+    - Level: 9
+      Value: 5
+    - Level: 14
+      Value: 6
   m_Size: 0.6
   TriggerPlayer: 1
   EnemyStateEffects:
@@ -167,7 +183,7 @@ MonoBehaviour:
   m_NProjectiles: 3
   m_ProjectileZoneSize: -1
   m_DelayBetweenLaunches: 0.35
-  m_NWaves: 5
+  m_NWaves: 4
   m_DelayBetweenWaves: 1
   OnCastWaveSoundFX: {fileID: 0}
   OnCastProjectileSoundFX: {fileID: 0}

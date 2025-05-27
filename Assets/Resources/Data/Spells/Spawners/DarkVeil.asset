@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8d2bcd733533b8499b0cb4a21b59b82, type: 3}
   m_Name: DarkVeil
   m_EditorClassIdentifier: 
-  Rarety: 1
+  m_Rarety: 1
   m_Description: Creates a wall of shadow slowing the enemies that passes throught
     it. Applies 5 stacks of [Cursed] and [Frost].\nThe wall last for {0} seconds
     or until destruction
@@ -21,11 +21,12 @@ MonoBehaviour:
     WithIcon: 1
   - Name: Hp
     WithIcon: 1
-  m_SpellElements: 
+  m_SpellElements: 0200000004000000
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions: []
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -39,11 +40,21 @@ MonoBehaviour:
     Y: 0
   LockTarget: 100
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_NCharges: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -57,8 +68,14 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 4
     Value: 0.05
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
   - Property: 3
-    Value: 0.05
+    Value: -1
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects: []

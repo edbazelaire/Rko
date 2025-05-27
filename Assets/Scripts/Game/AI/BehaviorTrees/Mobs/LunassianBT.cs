@@ -19,6 +19,7 @@ namespace Game.AI.BehaviorTrees
         // -- P2
 
     }
+
     public class LunassianBT: DefaultBT
     {
         public LunassianBT(Controller controller, EArenaDifficulty arenaDifficulty) : base(controller, arenaDifficulty) { }
@@ -47,11 +48,11 @@ namespace Game.AI.BehaviorTrees
                 // ULTI : as soon as available
                 new TaskUseSpell(controller, controller.SpellHandler.Ultimate),
 
-                // use Special Ability in 10f seconds
+                // use Special Ability in 10 seconds
                 new TaskUseSpell(controller, controller.SpellHandler.SpecialAbility, delay: 10f),
 
                 // Auto Attack
-                new TaskUseSpell(controller, controller.SpellHandler.AutoAttack, delay: 3f, nTimes: 10),
+                new TaskUseSpell(controller, controller.SpellHandler.AutoAttack, delay: 1.5f, nTimes: 6),
 
                 // MOVE
                 new TaskMove(controller, checkZones: false, checkProjectiles: false),         
@@ -65,10 +66,14 @@ namespace Game.AI.BehaviorTrees
         {
             return new Selector(new List<Node>
             {
-                new TaskUseSpell(controller, ESpell.FerociousBite, delay: 10),
+                // ULTI : as soon as available
+                new TaskUseSpell(controller, controller.SpellHandler.Ultimate),
+                
+                // use Special Ability in 5 seconds
+                new TaskUseSpell(controller, controller.SpellHandler.SpecialAbility, delay: 5f),
 
                 // Attack 5 times every 3 seconds
-                new TaskUseSpell(controller, controller.SpellHandler.AutoAttack, delay: 3f, nTimes: 5),
+                new TaskUseSpell(controller, controller.SpellHandler.AutoAttack, delay: 1f, nTimes: 5),
 
                 // MOVE
                 new TaskMove(controller, checkZones: false, checkProjectiles: false),         
@@ -88,11 +93,14 @@ namespace Game.AI.BehaviorTrees
                 // use Special Ability in 5f seconds
                 new TaskUseSpell(controller, controller.SpellHandler.SpecialAbility, delay: 5f),
 
+                // use Consummable Attacks in priority as soon as available
+                new TaskAttack(controller, allowedSpellCategories: new() { ESpellTypeCategory.ConsumeStateEffect }),
+
                 // Check one of Extra Spells
                 new Sequence(new List<Node> {
-                    new CheckTimer(controller, "TaskAttack", 10f),
+                    new CheckTimer(controller, "TaskAttack", 1f),
                     new TaskAttack(controller),
-                    new ResetTimer(controller, "TaskAttack", 5f)
+                    new ResetTimer(controller, "TaskAttack", 0.5f)
                 }),
 
                 // Check if character is currently in a ZoneSpell
@@ -102,7 +110,11 @@ namespace Game.AI.BehaviorTrees
                 }),
 
                 // Attack 4 times 
-                new TaskUseSpell(controller, controller.SpellHandler.AutoAttack, delay: 3f, nTimes: 4),
+                new Sequence(new List<Node> {
+                    new CheckTimer(controller, "TaskAutoAttack", 0.5f),
+                    new TaskUseSpell(controller, controller.SpellHandler.AutoAttack, nTimes: 4, spellEvent: ESpellEvent.OnCast),
+                    new ResetTimer(controller, "TaskAutoAttack", 2.5f)
+                }),
 
                 // MOVE
                 new TaskMove(controller, checkZones: true, checkProjectiles: false),         

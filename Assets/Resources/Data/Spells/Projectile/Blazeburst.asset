@@ -13,16 +13,14 @@ MonoBehaviour:
   m_Name: Blazeburst
   m_EditorClassIdentifier: 
   m_Rarety: 3
-  m_Description: Charging energy for {0} seconds to launch a powerfull missile in
-    a straight line, dealing {1} damage and applying a {2} for 2 seconds
+  m_Description: 'Charging energy for {0} seconds to launch a powerfull missile in
+    a straight line, dealing {1} damage and applying a stack of [Scorched]'
   m_DescriptionVariables:
   - Name: CastDuration
     WithIcon: 0
   - Name: Damage
     WithIcon: 1
-  - Name: Stun
-    WithIcon: 1
-  m_SpellElements: 
+  m_SpellElements: 01000000
   Linked: 0
   Graphics: {fileID: 8073250784623665408, guid: bf45f65dd6f8fdd418ab488945ccd61b, type: 3}
   SpellEventActions:
@@ -108,9 +106,10 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: -1
-  EnergyGain: 10
+  m_NCharges: 2
+  EnergyGain: 15
   EnergyCost: 0
-  m_Damage: 130
+  m_Damage: 120
   m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
@@ -124,9 +123,17 @@ MonoBehaviour:
     m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
-    Value: 0.15
-  - Property: 3
-    Value: 0.05
+    Value: 0.12
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
+  - Property: 20
+    Value: 0
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds:
+    - Level: 14
+      Value: 3
   m_Size: 2
   TriggerPlayer: 1
   EnemyStateEffects:

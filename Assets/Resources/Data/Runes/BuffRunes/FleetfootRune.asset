@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2f0b58ae9491f61429ad93245e719b38, type: 3}
-  m_Name: Fleetfoot
+  m_Name: FleetfootRune
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: 
   m_DescriptionVariables: []
-  Description: 
   m_SpellElements: 
+  Description: 
   m_MinorPower:
     Description: Increase your speed by {0}
     m_DescriptionVariables:
@@ -26,9 +26,9 @@ MonoBehaviour:
     m_TriggerEffects: []
     m_BonusStats:
     - StateEffectProperty: 3
-      BaseValue: 0
-      BonusValue: 0.15
-      ScalingFactor: 0
+      BaseValue: 0.05
+      BonusValue: 0
+      ScalingFactor: 0.05
       StateEffectStackFactors: []
   m_MajorPower:
     Description: Increase your speed by {0}
@@ -39,9 +39,9 @@ MonoBehaviour:
     m_TriggerEffects: []
     m_BonusStats:
     - StateEffectProperty: 3
-      BaseValue: 0
-      BonusValue: 0.3
-      ScalingFactor: 0
+      BaseValue: 0.15
+      BonusValue: 0
+      ScalingFactor: 0.05
       StateEffectStackFactors: []
   m_PrimalPower:
     Description: Increase your speed by {0}
@@ -52,8 +52,8 @@ MonoBehaviour:
     m_TriggerEffects: []
     m_BonusStats:
     - StateEffectProperty: 3
-      BaseValue: 0
-      BonusValue: 0.5
-      ScalingFactor: 0
+      BaseValue: 0.3
+      BonusValue: 0
+      ScalingFactor: 0.05
       StateEffectStackFactors: []
   m_BonusStats: []

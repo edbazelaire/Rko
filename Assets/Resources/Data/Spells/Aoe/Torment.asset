@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3187be67d58548144a9d4f83cb44e7d2, type: 3}
   m_Name: Torment
   m_EditorClassIdentifier: 
-  Rarety: 1
+  m_Rarety: 1
   m_Description: Consume up to 10 {0} stacks to inflict increasing damage and applying
     {1} on the target
   m_DescriptionVariables:
@@ -67,6 +67,7 @@ MonoBehaviour:
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -80,8 +81,17 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 0
+  m_NCharges: 1
   EnergyGain: 15
   EnergyCost: 0
   m_Damage: 100
@@ -99,10 +109,14 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
-  - Property: 1
-    Value: 0.1
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
   - Property: 3
-    Value: 0.05
+    Value: -0.5
+    ScalingType: 1
+    RoundingType: 0
+    ScalingTresholds: []
   m_Size: 6
   TriggerPlayer: 1
   EnemyStateEffects:

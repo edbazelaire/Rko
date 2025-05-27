@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a402882a257d18548a281b17574b3711, type: 3}
   m_Name: ParasiteRune
   m_EditorClassIdentifier: 
-  Rarety: 1
+  m_Rarety: 1
   m_Description: 
   m_DescriptionVariables: []
   m_SpellElements: 03000000
@@ -25,7 +25,7 @@ MonoBehaviour:
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
-    - StateEffectProperty: 117
+    - StateEffectProperty: 119
       BaseValue: 0.05
       BonusValue: 0
       ScalingFactor: 0.05
@@ -38,7 +38,7 @@ MonoBehaviour:
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
-    - StateEffectProperty: 117
+    - StateEffectProperty: 119
       BaseValue: 0.1
       BonusValue: 0
       ScalingFactor: 0.05
@@ -51,8 +51,8 @@ MonoBehaviour:
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
-    - StateEffectProperty: 117
-      BaseValue: 0.2
+    - StateEffectProperty: 119
+      BaseValue: 0.25
       BonusValue: 0
       ScalingFactor: 0.05
       StateEffectStackFactors: []

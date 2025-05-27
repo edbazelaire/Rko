@@ -10,26 +10,35 @@ using Data.GameManagement;
 using System;
 using System.Linq;
 using Assets.Scripts.Data.DataStructures.SpellSubStructures;
+using Game.Loaders;
+using Data.DataStructures.SpellSubStructures;
+using MyBox;
 
 namespace Data
 {
+
+
     [CreateAssetMenu(fileName = "MultiSpellData", menuName = "Game/Spells/MultiSpellData")]
     public class MultiSpellData : SpellData
     {
         #region Members
 
-        public override ESpellType SpellType => ESpellType.MultiSpellData;
+        public override ESpellType SpellType => ESpellType.MultiSpell;
 
-        [Header("Projectile")]
-        [Description("Type of path that the spell is taking")]
-        public SpellData SubSpellData;
+        [Header("Sub Spell")]
+        [SerializeField, Tooltip("Type of path that the spell is taking")]
+        protected SpellData SubSpellData;
+        [SerializeField, Tooltip("Use the character auto attack as SubSpellData")]
+        public bool m_UseAutoAttack;
+        [SerializeField, Tooltip("Use the character auto attack as SubSpellData")]
+        protected List<SOverridingData> m_OverridingSubData;
 
         [Header("Multiple Spell Data")]
-        [Description("Type of multiple projectile launch")]
+        [Tooltip("Type of multiple projectile launch")]
         public EMultiProjectileType MultiProjectileType;
-        [Description("Position of the subspells")]
+        [Tooltip("Position of the subspells")]
         public SMultiSpellSpawn SubSpellSpawn;
-        [SerializeField, Description("Min/Max height of spell spawn")]
+        [SerializeField, Tooltip("Min/Max height of spell spawn")]
         protected SMinMax m_YMinMax;
         [SerializeField, Tooltip("Should the subspell recalculate its target on spawn ?")]
         protected bool m_RecalculateTarget = false;
@@ -58,10 +67,10 @@ namespace Data
 
         // ============================================================================================
         // Public Accessors
-        public int NProjectiles                 => (int)Math.Floor(m_NProjectiles * GetSpellLevelFactor(ESpellProperty.NProjectiles));
-        public int NWaves                       => (int)Math.Floor(m_NWaves * GetSpellLevelFactor(ESpellProperty.NWaves));
-        public float DelayBetweenLaunches       => m_DelayBetweenLaunches * GetSpellLevelFactor(ESpellProperty.DelayBetweenLaunches);
-        public float DelayBetweenWaves          => m_DelayBetweenWaves * GetSpellLevelFactor(ESpellProperty.DelayBetweenWaves);
+        public int NProjectiles                 => (int)GetScaledValue(ESpellProperty.NProjectiles, m_NProjectiles);
+        public int NWaves                       => (int)GetScaledValue(ESpellProperty.NWaves, m_NWaves);
+        public float DelayBetweenLaunches       => GetScaledValue(ESpellProperty.DelayBetweenLaunches, m_DelayBetweenLaunches);
+        public float DelayBetweenWaves          => GetScaledValue(ESpellProperty.DelayBetweenWaves, m_DelayBetweenWaves);
         public float ProjectileZoneSize         => m_ProjectileZoneSize * Settings.SpellSizeFactor;
         /// <summary> is the "IsCasting" over once the spell has been casted (before delay) ? </summary> ///
         public override bool IsCompletedOnCast  => ! m_IsBlocking;
@@ -69,6 +78,7 @@ namespace Data
         // ============================================================================================
         // Private Members
         bool m_IsCancelled;
+        SpellData m_FinalSubSpellData;
 
         #endregion
 
@@ -77,15 +87,12 @@ namespace Data
 
         public override void Cast(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default, bool recalculateTarget = true, bool recalculatePosition = true, bool recalculateRotation = true)
         {
-            // if specific projectile data are provided : use theme
-            if (SubSpellData == null)
-            {
-                ErrorHandler.Error("No SubSpellData provided for MultiSpell : " + Name);
-                return;
-            }
+            // init sub spell data
+            m_FinalSubSpellData = GetSubSpellData(GameManager.Instance.GetPlayer(clientId));
 
-            // set parent as this for sub-spell
-            SubSpellData.SetParent(Parent);
+            // error - exit
+            if (m_FinalSubSpellData == null)
+                return;
 
             // recalculate target depending on spell type
             if (recalculateTarget)
@@ -220,13 +227,14 @@ namespace Data
             if (OnCastProjectileSoundFX != null)
                 GameManager.Instance.PlayCastProjectileSoundClientRPC(Name);
 
+
             // cast sup spell with delay
-            controller.StartCoroutine(SubSpellData.CastDelay(
+            controller.StartCoroutine(m_FinalSubSpellData.CastDelay(
                 clientId:               controller.PlayerId,
                 target:                 target,
                 position:               position,
                 rotation:               rotation,
-                delay:                  SubSpellData.Delay,
+                delay:                  m_FinalSubSpellData.Delay,
                 recalculateTarget:      m_RecalculateTarget,
                 recalculatePosition:    m_RecalculatePosition
             ));
@@ -308,19 +316,35 @@ namespace Data
 
         #region Overriders 
 
-        /// <summary>
-        /// Overrides projectile data of multiple projectile with provided projectile data
-        /// </summary>
-        /// <param name="overridingData"></param>
-        public void OverrideProjectile(ProjectileData overridingData)
+        public SpellData GetSubSpellData(Controller controller)
         {
-            ErrorHandler.Log("Overriding data of " + Name + " with " + overridingData.Name, ELogTag.Spells);
+            if (SubSpellData == null && !m_UseAutoAttack)
+            {
+                ErrorHandler.Error("Bad setting for spell : " + Name + " - no SubSpellData provided and UseAutoAttack is set to FALSE");
+                return null;
+            }
 
-            SubSpellData                = overridingData;
-            Animation                   = overridingData.Animation;
-            IsCancellable               = overridingData.IsCancellable;
-            AnimationTimer              = overridingData.AnimationTimer;
-            m_Cooldown                  = overridingData.Cooldown;
+            SpellData finalSpellData = SubSpellData;
+            if (m_UseAutoAttack)
+            {
+                finalSpellData = controller.SpellHandler.GetSpellData(controller.SpellHandler.AutoAttack, m_Level);
+
+                // handle case where auto attack is a multispell data
+                if (finalSpellData is MultiSpellData multiSpellData && multiSpellData.SubSpellData != null)
+                {
+                    finalSpellData = multiSpellData.SubSpellData;
+                } else if (finalSpellData is MultiProjectilesData multiProjectilesData && multiProjectilesData.ProjectileData != null)
+                {
+                    finalSpellData = multiProjectilesData.ProjectileData;
+                }
+            }
+
+            finalSpellData.SetParent(Parent);
+
+            // apply overriding data if any
+            finalSpellData.AddOverridingData(m_OverridingSubData, m_Level);
+
+            return finalSpellData;
         }
 
         #endregion
@@ -346,7 +370,8 @@ namespace Data
         public override string GetDescription()
         {
             string description = base.GetDescription();
-            description = TextHandler.ReplaceSubSpellData(description, SubSpellData);
+            if (SubSpellData != null)
+                description = TextHandler.ReplaceSubSpellData(description, SubSpellData);
             return description;
         }
 
@@ -354,7 +379,11 @@ namespace Data
         {
             string[] keysToIgnore = new string[] { "Cooldown", "Cast" };
             var infoDict = base.GetInfo();
-            if (SubSpellData != null)
+            if (m_UseAutoAttack)
+            {
+                infoDict["Type"] = "Projectile";
+            }
+            else if (SubSpellData != null)
             {
                 foreach (var item in SubSpellData.GetInfo())
                 {
@@ -363,7 +392,7 @@ namespace Data
 
                     infoDict[item.Key] = item.Value;    
                 }
-            }
+            } 
 
             infoDict["Projectiles"] = NProjectiles;
 

@@ -43,7 +43,7 @@ namespace Game.Spells
                     SetTarget(target);
                     break;
 
-                case ESpellTrajectory.Hight:
+                case ESpellTrajectory.High:
                 case ESpellTrajectory.Diagonal:
                 case ESpellTrajectory.DiagonalMiddle:
                     break;
@@ -206,9 +206,9 @@ namespace Game.Spells
 
             switch (m_SpellData.Trajectory)
             {
-                case ESpellTrajectory.Count:
+                case ESpellTrajectory.None:
                 case ESpellTrajectory.Straight:
-                case ESpellTrajectory.Hight:
+                case ESpellTrajectory.High:
                     offset = 0f;
                     break;
 

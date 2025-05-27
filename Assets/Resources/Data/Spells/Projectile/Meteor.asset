@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2413bf9bea7a81d44a0b645bca9d69f8, type: 3}
   m_Name: Meteor
   m_EditorClassIdentifier: 
-  Rarety: 2
+  m_Rarety: 2
   m_Description: A huge meteor falling from the sky dealing {0} damage and applying
     {1} in an area of {2}
   m_DescriptionVariables:
@@ -85,6 +85,7 @@ MonoBehaviour:
     StateEffects: 
   OnHit:
   - {fileID: 11400000, guid: e25d3d0af6674a548ada02e4bebf16d7, type: 2}
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: acded229ef27b08438e9aec48559a382, type: 3}
@@ -98,11 +99,20 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_NCharges: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 50
+  m_Damage: 80
   m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
@@ -116,9 +126,15 @@ MonoBehaviour:
     m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
-    Value: 0.1
+    Value: 0.11
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
   - Property: 3
-    Value: 0.05
+    Value: -1
+    ScalingType: 1
+    RoundingType: 2
+    ScalingTresholds: []
   m_Size: 3
   TriggerPlayer: 1
   EnemyStateEffects: []
@@ -128,7 +144,7 @@ MonoBehaviour:
   Animation: 6
   IsCancellable: 0
   AnimationTimer: 0.8
-  m_Cooldown: 45
+  m_Cooldown: 32
   Trajectory: 4
   m_TriggerGround: 1
   m_StopOnTargetPos: 0

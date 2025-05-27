@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2413bf9bea7a81d44a0b645bca9d69f8, type: 3}
   m_Name: PoisonDart
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: Shoot a projectile in a straight line, applying {0} damage and [EnemyStateEffect.0]
     on hitted enemy
   m_DescriptionVariables:
@@ -44,6 +44,7 @@ MonoBehaviour:
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -57,12 +58,21 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_NCharges: 1
   EnergyGain: 5
   EnergyCost: 0
   m_Damage: 20
-  m_ExecutionDamage: 0
+  m_ExecutionDamage: 30
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -76,24 +86,35 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
-  - Property: 1
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
+  - Property: 19
     Value: 0.1
-  - Property: 3
-    Value: 0.05
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
+  - Property: 20
+    Value: 0
+    ScalingType: 1
+    RoundingType: 0
+    ScalingTresholds:
+    - Level: 9
+      Value: 2
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects:
   - StateEffect: 9
     Stacks: 1
-    BonusStacksPerLevel: 0.25
+    BonusStacksPerLevel: 0.2
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 1
   IsCancellable: 0
-  AnimationTimer: 0.3
-  m_Cooldown: 45
+  AnimationTimer: 0.6
+  m_Cooldown: 20
   Trajectory: 2
   m_TriggerGround: 1
   m_StopOnTargetPos: 0

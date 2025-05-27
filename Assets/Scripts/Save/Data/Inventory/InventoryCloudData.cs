@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Data;
 using Data.GameManagement;
 using Enums;
 using Game.Loaders;
@@ -603,9 +604,19 @@ namespace Save
 
             foreach (Enum collectable in Enum.GetValues(collectableType))
             {
-                if (collectable is ESpell spell && SpellLoader.IsBossSpell(spell))
+                if (collectable is ESpell spell)
                 {
-                    continue;
+                    // exclude "None"
+                    if (spell == ESpell.None)
+                        continue;
+
+                    // check exists
+                    if (!SpellLoader.TryGetSpellData(spell.ToString(), out SpellData spellData, throwError: true))
+                        continue;
+
+                    // check is boss spell
+                    if (SpellLoader.IsBossSpell(spell))
+                        continue;
                 }
 
                 bool addedData = AddCollectableData(collectable, GetInfos(collectable).DefaultData.Contains(collectable));
@@ -634,7 +645,7 @@ namespace Save
             var startLevel = unlock ? CollectablesManagementData.GetStartLevel(collectable) : 0;
 
             // already in data : skip
-            if (! IsUnlocked(collectable) && unlock)
+            if (GetCollectableIndex(collectable) < 0 || (! IsUnlocked(collectable) && unlock))
             {
                 ErrorHandler.Warning("Adding " + collectable + " in cloud data (unlock : " + unlock + ")");
                 

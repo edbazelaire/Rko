@@ -62,13 +62,13 @@ namespace Menu.Common.Rewards
         {
             m_PowerOrbUI = UIHelper.SpawnItem(m_PowerOrbData.LoadTemplate().gameObject, gameObject).GetComponent<PowerOrbUI>();
             m_PowerOrbUI.Initialize();
-            m_PowerOrbUI.ActivateIdle(m_ActivateIdle, true, true);
+            m_PowerOrbUI.ActivateIdle(m_ActivateIdle, withAura: true, withSound: false);
         }
 
         public void ActivateIdle(bool activateIdle = true)
         {
             m_ActivateIdle = activateIdle;
-            m_PowerOrbUI.ActivateIdle(m_ActivateIdle, true, true);
+            m_PowerOrbUI.ActivateIdle(m_ActivateIdle, withAura: true, withSound: false);
         }
 
         #endregion

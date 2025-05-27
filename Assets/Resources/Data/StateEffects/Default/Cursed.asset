@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bec91e441d966e438d35c0133adae84, type: 3}
   m_Name: Cursed
   m_EditorClassIdentifier: 
-  m_Description: Reduces damages of the target by {0} for each "Cursed" stacks
+  m_Description: Marks the enemy with a curse. The curse can be consumed to cast
+    spells or apply special effects.
   m_DescriptionVariables: 07000000
   m_StateEffectType: 0
   m_IsDisplayed: 1
@@ -29,6 +30,7 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_MaxStacks: 100
   m_StackDecay: -1
+  m_StatConversions: []
   m_Energy: 0
   m_BonusStats: []
   m_SpeedBonus: 0
@@ -48,7 +50,5 @@ MonoBehaviour:
   m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
-  m_StateEffectScalingLevel:
-  - StateEffectProperty: 7
-    ScalingFactor: 0.1
+  m_StateEffectScalingLevel: []
   m_StateEffectScalingStacks: []

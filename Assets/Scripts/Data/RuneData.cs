@@ -337,6 +337,11 @@ namespace Data
 
         #region Level
 
+        public new RuneData Clone(int level = 0, bool destroy = false)
+        {
+            return (RuneData)base.Clone(level, destroy);
+        }
+
         public override void SetLevel(int level)
         {
             base.SetLevel(level);
@@ -344,11 +349,6 @@ namespace Data
             m_MinorPower.SetLevel(level);
             m_MajorPower.SetLevel(level);
             m_PrimalPower.SetLevel(level);
-        }
-
-        public new RuneData Clone(int level = 0, bool destroy = false)
-        {
-            return (RuneData)base.Clone(level, destroy);
         }
 
         #endregion

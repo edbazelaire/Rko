@@ -63,9 +63,9 @@ MonoBehaviour:
   m_SubStateEffects: []
   m_HoldingStateEffects: []
   m_Priority: 0
-  m_Duration: 2.5
+  m_Duration: 3
   m_IsInstantanious: 0
-  m_MaxStacks: 10
+  m_MaxStacks: 25
   m_StackDecay: -1
   m_StatConversions: []
   m_Energy: 0
@@ -78,8 +78,8 @@ MonoBehaviour:
     BaseValue: 0.01
     LevelScalingFactor: 0.05
     StackScalingFactor: 1
-  - StateEffectProperty: 7
-    BaseValue: 2
+  - StateEffectProperty: 22
+    BaseValue: 5
     LevelScalingFactor: 0.1
     StackScalingFactor: 1
   m_SpeedBonus: 0
@@ -99,7 +99,5 @@ MonoBehaviour:
   m_BonusSlowPerc: 0
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
-  m_StateEffectScalingLevel:
-  - StateEffectProperty: 1
-    ScalingFactor: 0.05
+  m_StateEffectScalingLevel: []
   m_StateEffectScalingStacks: []

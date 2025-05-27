@@ -49,11 +49,6 @@ namespace Game.Character
                 UpdateMovementSpeed();
             }
 
-            //if (HasParameter(EAnimation.Counter.ToString(), AnimatorControllerParameterType.Trigger))
-            //{
-            //    m_Controller.CounterHandler.HasCounter.OnValueChanged += OnHasCounterValueChanged;
-            //}
-
             m_Initialized = true;
         }
 

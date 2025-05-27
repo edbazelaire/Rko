@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Tools;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Managers.Bots
 {
@@ -29,37 +30,39 @@ namespace Managers.Bots
         {
             // Step 2: Generate bot "playtime" and resources
             float botPlaytimeHours = GenerateBotPlaytime(playerLeagueData.CurrentLeague);
-            int botXp, botGold;
-            AllocateBotResources(botPlaytimeHours, out botXp, out botGold);
+            AllocateBotResources(botPlaytimeHours, out int botXp);
 
-            // Step 3: Select character based on gold
-            List<ECharacter> availableCharacters = GetAvailableCharacters(botGold);
+            // Step 3: Select a random character
+            List<ECharacter> availableCharacters = GetAvailableCharacters();
             ECharacter character = SelectCharacter(availableCharacters);
 
-            // Step 4: Open chests/power orbs to get pool of spells and runes
-            GenerateSpellsAndRunes(botPlaytimeHours, out List<SpellData> availableSpells, out List<RuneData> availableRunes);
-
-            // Step 5: Determine build style (mono or bi-element)
+            // Step 4: Determine build style (mono or bi-element)
             List<ESpellElement> buildElements = SelectBuildElements(CharacterLoader.GetCharacterData(character).SpellElements);
 
-            // Step 6: Filter and select spells and runes based on selected elements
-            (ESpell[] spells, int[] spellLevels) = SelectSpellsForBuild(availableSpells, buildElements);
-            (ERune[] runes, int[] runeLevels) = SelectRunesForBuild(availableRunes, buildElements);
-
-            // Step 7: Determine character level based on XP
+            // Step 5: Determine character level based on XP
             int accountLevel = CalculateAccountLevel(botXp);
+            
+            // Step 6: Filter and select spells and runes based on selected elements
+            ESpell[] spells = SelectSpellsForBuild(buildElements);
+            ERune[] runes = SelectRunesForBuild(buildElements);
+            int[] spellLevels = Enumerable.Range(0, 4)
+                .Select(_ => Mathf.Clamp(Random.Range(accountLevel - 1, accountLevel + 4), 0, 14))
+                .ToArray();
+            int[] runeLevels = Enumerable.Range(0, 4)
+                .Select(_ => Mathf.Clamp(Random.Range(accountLevel - 1, accountLevel + 4), 0, 14))
+                .ToArray();
 
             // init Achievement Rewards based on league, hours played and account level
             AchievementGenerator.Generate(playerLeagueData.CurrentLeague, botPlaytimeHours, accountLevel);
             var playerName = PseudoGenerator.GeneratePseudo();
             return new SPlayerData(
-                playerName: playerName,
+                playerName:     playerName,
                 characterLevel: accountLevel,
-                character: character.ToString(),
-                runes: runes,
-                runeLevels: runeLevels,
-                spells: spells,
-                spellLevels: spellLevels,
+                character:      character.ToString(),
+                runes:          runes,
+                runeLevels:     runeLevels,
+                spells:         spells,
+                spellLevels:    spellLevels,
                 profileData: new SProfileCurrentData(
                     accountLevel:   accountLevel,
                     gamerTag:       playerName,
@@ -74,8 +77,8 @@ namespace Managers.Bots
                     decisionRefresh:    CalculateDecisionRefresh(playerLeagueData.CurrentLeague), 
                     randomness:         CalculateRandomness(playerLeagueData.CurrentLeague), 
                     reactionTime:       CalculateReactionTime(playerLeagueData.CurrentLeague),
-                    movementTime:       (0.5f, 1.2f),
-                    movementRefresh:    (0.4f, 1f),
+                    movementTime:       CalculateMovementTime(playerLeagueData.CurrentLeague),
+                    movementRefresh:    (0.6f, 1.5f),
                     extraVariables:     GetExtraVariables(playerLeagueData.CurrentLeague)
                 )
             );
@@ -88,7 +91,20 @@ namespace Managers.Bots
 
         static float CalculateRandomness(ELeague league)
         {
-            return Random.Range(0f, 0.5f);
+            switch (league)
+            {
+                case ELeague.Iron:
+                    return 0.5f;
+
+                case ELeague.Bronze:
+                    return Random.Range(0.2f, 0.5f);
+
+                case ELeague.Silver:
+                    return Random.Range(0.1f, 0.3f);
+
+                default:
+                    return 0f;
+            }
         }
 
         static (float, float) CalculateReactionTime(ELeague league)
@@ -108,20 +124,30 @@ namespace Managers.Bots
                     baseValue = Random.Range(0.15f, 0.25f);
                     break;
 
-                case ELeague.Gold:
-                    baseValue = Random.Range(0.15f, 0.2f);
-                    break;
-
-                case ELeague.Platinum:
-                    baseValue = Random.Range(0.1f, 0.15f);
-                    break;
-
                 default:
-                    baseValue = 0.1f;
+                    baseValue = 0f;
                     break;
             }
 
             return (baseValue / 2,  baseValue * 2);
+        }
+
+        static (float, float) CalculateMovementTime(ELeague league)
+        {
+            switch (league)
+            {
+                case ELeague.Iron:
+                    return (0.5f, 1f);
+
+                case ELeague.Bronze:
+                    return (0.2f, 0.8f);
+
+                case ELeague.Silver:
+                    return (0.1f, 0.5f);
+
+                default:
+                    return (0f, 0f);
+            }
         }
 
         static Dictionary<string, float> GetExtraVariables(ELeague league)
@@ -142,19 +168,12 @@ namespace Managers.Bots
                         { EDefaultTreeVariables.AttackWeightBias.ToString(), 5f                         },
                         { EDefaultTreeVariables.DodgeWeightBias.ToString(), Random.Range(0.2f, 0.5f)    },
                     };
-  
-                case ELeague.Gold:
-                    return new Dictionary<string, float>()
-                    {
-                        { EDefaultTreeVariables.AttackWeightBias.ToString(), 5f },
-                        { EDefaultTreeVariables.DodgeWeightBias.ToString(), Random.Range(0.2f, 0.5f) },
-                    };
 
                 default:
                     return new Dictionary<string, float>()
                     {
-                        { EDefaultTreeVariables.AttackWeightBias.ToString(), 3f },
-                        { EDefaultTreeVariables.DodgeWeightBias.ToString(), 0.2f },
+                        { EDefaultTreeVariables.AttackWeightBias.ToString(), 5f },
+                        { EDefaultTreeVariables.DodgeWeightBias.ToString(), 0f },
                     };
             }
         }
@@ -176,18 +195,17 @@ namespace Managers.Bots
             {
                 case ELeague.Iron:      return Random.Range(1f, 3f);
                 case ELeague.Bronze:    return Random.Range(1f, 15f);
-                case ELeague.Silver:    return Random.Range(5f, 40f);
-                case ELeague.Gold:      return Random.Range(15f, 100f);
-                case ELeague.Platinum:  return Random.Range(25f, 200f);
-                default: return 500f;
+                case ELeague.Silver:    return Random.Range(15, 50f);
+                case ELeague.Gold:      return Random.Range(35f, 150f);
+                case ELeague.Platinum:  return Random.Range(25f, 250f);
+                default: return Random.Range(500f, 5000f);
             }
         }
 
-        static void AllocateBotResources(float hours, out int xp, out int gold)
+        static void AllocateBotResources(float hours, out int xp)
         {
             // TODO: Replace with real calculation based on statistics
-            xp = Mathf.RoundToInt(hours * Random.Range(80, 120));
-            gold = Mathf.RoundToInt(hours * Random.Range(50, 100));
+            xp = Mathf.RoundToInt(hours * Random.Range(120, 200));
         }
 
         #endregion
@@ -195,13 +213,11 @@ namespace Managers.Bots
 
         #region Step 3: Character Selection
 
-        static List<ECharacter> GetAvailableCharacters(int golds)
+        static List<ECharacter> GetAvailableCharacters()
         {
             List<ECharacter> characters = new List<ECharacter>() { ECharacter.Alexander };
             foreach (ECharacter character in System.Enum.GetValues(typeof(ECharacter))) 
             {
-                // TODO : with Randomness
-
                 if (characters.Contains(character) || character == ECharacter.None)
                     continue;
                 
@@ -215,176 +231,6 @@ namespace Managers.Bots
         {
             // TODO: Improve with weighted logic
             return availableCharacters[Random.Range(0, availableCharacters.Count)];
-        }
-
-        #endregion
-
-
-        #region Step 4: Generate Spells and Runes
-
-        static void GenerateSpellsAndRunes(float hours, out List<SpellData> spells, out List<RuneData> runes)
-        {
-            Dictionary<ESpell, int> spellsQty   = new();
-            Dictionary<ERune, int> runesQty     = new();
-
-            spells = new List<SpellData>();
-            runes = new List<RuneData>();
-
-            // generate a list of random chests that bot would have unlock in "X" hours
-            List<EChest> chests = GenerateRandomChests(hours);
-
-            // open each chests to collect pool of available spells and runes
-            foreach (EChest chest in chests) 
-            {
-                List<SReward> chestRewards = ItemLoader.GetChestRewardData(chest).GenerateRewards();
-                foreach (SReward reward in chestRewards)
-                {
-                    if (reward.RewardType == typeof(ESpell))
-                    {
-                        if (!System.Enum.TryParse(reward.RewardName, out ESpell spell))
-                        {
-                            ErrorHandler.Error("Unable to parse " + reward.RewardName + " as Spell");
-                            continue;
-                        }
-
-                        if (! spellsQty.ContainsKey(spell))
-                            spellsQty.Add(spell, reward.Qty);
-                        else
-                            spellsQty[spell] += reward.Qty;
-                    }
-
-                    else if (reward.RewardType == typeof(ERune))
-                    {
-                        if (!System.Enum.TryParse(reward.RewardName, out ERune rune))
-                        {
-                            ErrorHandler.Error("Unable to parse " + reward.RewardName + " as Rune");
-                            continue;
-                        }
-
-                        if (! runesQty.ContainsKey(rune))
-                            runesQty.Add(rune, reward.Qty);
-                        else
-                            runesQty[rune] += reward.Qty;
-                    }
-                }
-            }
-
-            // level up all runes and spells
-            spells = UpgradeCollectables<SpellData>(spellsQty.ToDictionary(k => (System.Enum)k.Key, v => v.Value));
-            runes = UpgradeCollectables<RuneData>(runesQty.ToDictionary(k => (System.Enum)k.Key, v => v.Value));
-        }
-
-        static List<T> UpgradeCollectables<T>(Dictionary<System.Enum, int> collectablesQty) where T : CollectableData
-        {
-            var returnedData = new List<T>();
-
-            foreach (var collectable in collectablesQty)
-            {
-                CollectableData data = null;
-
-                // Load correct data type based on T
-                if (typeof(T) == typeof(SpellData) && collectable.Key is ESpell spell)
-                {
-                    data = SpellLoader.GetSpellData(spell);
-                }
-                else if (typeof(T) == typeof(RuneData) && collectable.Key is ERune rune)
-                {
-                    data = SpellLoader.GetRuneData(rune);
-                }
-                else
-                {
-                    Debug.LogError($"Invalid type or enum provided for upgrading: {collectable.Key}");
-                    continue; // skip invalid entries
-                }
-
-                ERarety rarety = data.Rarety;
-                int currentLevel = CollectablesManagementData.GetStartLevel(collectable.Key);
-                int qty = collectable.Value;
-
-                // Perform upgrade logic
-                while (true)
-                {
-                    SLevelData levelData = CollectablesManagementData.GetSpellLevelData(currentLevel, rarety);
-                    if (qty < levelData.RequiredQty)
-                        break;
-
-                    currentLevel++;
-                    qty -= levelData.RequiredQty;
-                }
-
-                data.SetLevel(currentLevel);
-
-                // Safely cast the data back to T
-                returnedData.Add(data as T);
-            }
-
-            return returnedData;
-        }
-
-        static List<EChest> GenerateRandomChests(float hours)
-        {
-            // init list of chests that will be returned
-            var chests = new List<EChest>();
-
-            // quantity of power collected by a player in X hours
-            var power = hours * Random.Range(1000f, 5000f);
-
-            // amount power that a gem is worth
-            var gemPower = SPowerOrb.RewardsPrice[ECurrency.Gems.ToString()];
-
-            // shuffle chest types
-            var chestsWeights = new Dictionary<EChest, int>()
-            {
-                { EChest.Common,    1   },
-                { EChest.Rare,      3   },
-                { EChest.Epic,      20  },
-                { EChest.Legendary, 100 },
-            };
-
-            while (true) 
-            {
-                // select a weight-biased chest
-                EChest chestType = GetRandomChest(chestsWeights);
-
-                // get value (in power) of the expected chest
-                var chestsValue = gemPower * ShopManagementData.BundleShopData.First(t => t.Rewards.Count == 1 && t.Rewards.Chests.Count == 1 && t.Rewards.Chests[0] == chestType).Cost;
-                
-                // if not enough power - remove the chest from available chests and select another one
-                if (power < chestsValue)
-                {
-                    chestsWeights.Remove(chestType);
-
-                    // not enough power for any chest - exit 
-                    if (!chestsWeights.Any()) 
-                        break;
-
-                    continue;
-                }
-
-                // consume remaining power
-                power -= chestsValue;
-
-                // add chest to list of chests
-                chests.Add(chestType);
-            }
-
-            return chests;
-        }
-
-        static EChest GetRandomChest(Dictionary<EChest, int> chestsWeights)
-        {
-            int totalWeight = chestsWeights.Values.Sum();
-            int randomWeight = Random.Range(0, totalWeight);
-
-            foreach (var chest in chestsWeights)
-            {
-                if (randomWeight < chest.Value)
-                    return chest.Key;
-
-                randomWeight -= chest.Value;
-            }
-
-            return chestsWeights.Keys.First(); // Fallback, should never be reached
         }
 
         #endregion
@@ -409,63 +255,18 @@ namespace Managers.Bots
 
         #region Step 6: Select Spells and Runes
 
-        static (ESpell[], int[]) SelectSpellsForBuild(List<SpellData> availableSpells, List<ESpellElement> elements)
+        static ESpell[] SelectSpellsForBuild(List<ESpellElement> elements)
         {
-            var filteredSpells = availableSpells;
-            SpellLoader.FilterByElement(ref filteredSpells, spellElementFilters: elements);
-
-            // add random spells if not enough
-            while (filteredSpells.Count < 4) 
-            {
-                var randomSpell = availableSpells.GetRandom();
-                if (filteredSpells.Contains(randomSpell))
-                    continue;
-
-                filteredSpells.Add(randomSpell);
-            }
-
-            // select 4 random spells
-            if (filteredSpells.Count > 4)
-            {
-                filteredSpells.Shuffle();
-                filteredSpells = filteredSpells.GetRange(0, 4);
-            }
-
-            return (filteredSpells.Select(spell => spell.Spell).ToArray(), filteredSpells.Select(spell => spell.Level).ToArray());
+            var filteredSpells = SpellLoader.FilterSpells(spellElementFilters: elements);
+            filteredSpells.Shuffle();
+            return filteredSpells.GetRange(0, 4).Select(spell => spell.Spell).ToArray();
         }
 
-        static (ERune[], int[]) SelectRunesForBuild(List<RuneData> availableRunes, List<ESpellElement> elements)
+        static ERune[] SelectRunesForBuild(List<ESpellElement> elements)
         {
-            var filteredRunes = availableRunes;
-            SpellLoader.FilterByElement(ref filteredRunes, spellElementFilters: elements);
-
-            // add random runes if not enough
-            while (filteredRunes.Count < 3 && availableRunes.Count != filteredRunes.Count)
-            {
-                var randomRune = availableRunes.GetRandom();
-                if (filteredRunes.Contains(randomRune))
-                    continue;
-
-                filteredRunes.Add(randomRune);
-            }
-
-            // select 3 random runes
-            if (filteredRunes.Count > 3)
-            {
-                filteredRunes.Shuffle();
-                filteredRunes = filteredRunes.GetRange(0, System.Math.Min(filteredRunes.Count, 3));
-            }
-
-            // fill missing with None rune
-            var runes = filteredRunes.Select(rune => rune.Rune).ToList();
-            var levels = filteredRunes.Select(spell => spell.Level).ToList();
-            while (runes.Count() < 3)
-            {
-                runes.Add(ERune.None);
-                levels.Add(1);
-            }
-
-            return (runes.ToArray(), levels.ToArray());
+            var filteredRunes = SpellLoader.FilterRunes(elementsFilter: elements);
+            filteredRunes.Shuffle();
+            return filteredRunes.GetRange(0, System.Math.Min(filteredRunes.Count, 3)).Select(data => data.Rune).ToArray();
         }
 
         #endregion

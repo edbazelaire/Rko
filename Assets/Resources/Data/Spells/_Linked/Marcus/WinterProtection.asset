@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0eac928962cb2b8498d5234d56207800, type: 3}
   m_Name: WinterProtection
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: Blocks the next attack. On blocking the attack, casts a Blizzard
     on the enemy, dealing damage on an area for a period of time and applying {0}
   m_DescriptionVariables:
@@ -42,6 +42,7 @@ MonoBehaviour:
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -55,8 +56,17 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_NCharges: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 0
@@ -72,10 +82,11 @@ MonoBehaviour:
     m_Speed: 0
     m_Duration: 0
   m_SpellsScalingLevel:
-  - Property: 2
-    Value: 0.1
   - Property: 3
-    Value: 0.05
+    Value: -0.05
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects: []
@@ -91,6 +102,7 @@ MonoBehaviour:
   m_DamageTypeActivation: 01000000
   m_SpawnOffset: {x: 0, y: 0}
   m_IsFollowing: 1
+  m_CounterAnimation: 4
   m_SpawnLocation: 1
   IsDestroyingSpell: 1
   IsBlockingMovement: 1
