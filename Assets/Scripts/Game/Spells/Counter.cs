@@ -48,7 +48,7 @@ namespace Game.Spells
                 m_SpellData.OnCounterProc.SetParent(m_SpellData.Parent);
 
             // apply self state effects
-            ApplyAllyStateEffects(m_Controller);
+            ApplyStateEffects(m_Controller, m_SpellData.AllyStateEffects);
 
             // TODO : BETTER - if spell is not impacting player by blocking movement or cast, and is not Trigger by player, do not add to list of Counters
             if (! m_SpellData.IsLinkedCounter)

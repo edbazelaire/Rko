@@ -60,16 +60,21 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_MaxStacks: 1
   m_StackDecay: -1
+  m_StatConversions: []
   m_Energy: 0
   m_BonusStats:
   - StateEffectProperty: 3
     BaseValue: 0.25
     LevelScalingFactor: 0.05
-    StackScalingFactor: 0
+    StackScalingFactor: 1
   - StateEffectProperty: 7
     BaseValue: 50
     LevelScalingFactor: 0.1
-    StackScalingFactor: 0
+    StackScalingFactor: 1
+  - StateEffectProperty: 105
+    BaseValue: 1
+    LevelScalingFactor: 0
+    StackScalingFactor: 1
   m_SpeedBonus: 0
   m_CastSpeed: 0
   m_AttackSpeed: 0

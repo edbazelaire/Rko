@@ -5,13 +5,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Tools;
 using UnityEngine;
-using Assets;
 using Unity.VisualScripting;
 using Data.GameManagement;
 using System;
-using UnityEngine.Serialization;
 using System.Linq;
-using Google.Apis.Sheets.v4.Data;
 
 namespace Data
 {
@@ -52,10 +49,10 @@ namespace Data
 
         // ============================================================================================
         // Public Accessors
-        public int NProjectiles => (int)Math.Floor(m_NProjectiles * GetSpellLevelFactor(ESpellProperty.NProjectiles));
-        public int NWaves => (int)Math.Floor(m_NWaves * GetSpellLevelFactor(ESpellProperty.NWaves));
-        public float DelayBetweenLaunches => m_DelayBetweenLaunches * GetSpellLevelFactor(ESpellProperty.DelayBetweenLaunches);
-        public float DelayBetweenWaves => m_DelayBetweenWaves * GetSpellLevelFactor(ESpellProperty.DelayBetweenWaves);
+        public int NProjectiles             => (int)GetScaledValue(ESpellProperty.NProjectiles, m_NProjectiles);
+        public int NWaves                   => (int)GetScaledValue(ESpellProperty.NWaves, m_NWaves);
+        public float DelayBetweenLaunches   => GetScaledValue(ESpellProperty.DelayBetweenLaunches, m_DelayBetweenLaunches);
+        public float DelayBetweenWaves      => GetScaledValue(ESpellProperty.DelayBetweenWaves, m_DelayBetweenWaves);
 
         // ============================================================================================
         // Private Members
@@ -203,7 +200,7 @@ namespace Data
                     recalculatePosition: m_RecalculatePosition
                 ));
 
-            // otherwise use config of the file
+            // otherwise use config of this spell
             else
                 base.Cast(clientId, target, position, rotation, false, true);
         }
@@ -287,7 +284,7 @@ namespace Data
             AnimationTimer              = overridingData.AnimationTimer;
             m_Cooldown                  = overridingData.Cooldown;
 
-            if (Trajectory == ESpellTrajectory.Count)
+            if (Trajectory == ESpellTrajectory.None)
                 Trajectory = overridingData.Trajectory;
         }
 

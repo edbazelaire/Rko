@@ -26,6 +26,7 @@ MonoBehaviour:
         CollectableName: BerserkerRune
         Qty: 1
       AchievementRewards: []
+      Boosts: []
     TriggerEffects:
     - SpellDataName: _FrostBites
       Level: 0
@@ -76,7 +77,7 @@ MonoBehaviour:
     StageData:
     - m_Boss: 1001
       m_BonusLevel: 0
-      m_Spells: 0a00000004000000170000001d000000
+      m_Spells: 0a00000004000000000000001d0000004c000000
       m_TriggerEffects: []
       m_BonusStats:
       - StateEffectProperty: 4
@@ -86,7 +87,7 @@ MonoBehaviour:
         StateEffectStackFactors: []
     - m_Boss: 1001
       m_BonusLevel: 1
-      m_Spells: 0a00000004000000170000001d000000
+      m_Spells: 0a00000004000000000000001d0000004c000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 0
@@ -121,6 +122,7 @@ MonoBehaviour:
         CollectableName: ParasiteRune
         Qty: 5
       AchievementRewards: []
+      Boosts: []
     TriggerEffects:
     - SpellDataName: _PlagueArrows
       Level: 0
@@ -172,17 +174,17 @@ MonoBehaviour:
     StageData:
     - m_Boss: 1002
       m_BonusLevel: 1
-      m_Spells: 1a0000002f0000001700000027000000
+      m_Spells: 1a00000030000000170000004a00000028000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1002
       m_BonusLevel: 2
-      m_Spells: 1a0000002f0000001700000027000000
+      m_Spells: 1a00000030000000170000004a00000028000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1
       m_BonusLevel: 0
-      m_Spells: 7827000079270000
+      m_Spells: 782700007927000049000000
       m_TriggerEffects: []
       m_BonusStats: []
   - RewardsData:
@@ -197,6 +199,7 @@ MonoBehaviour:
         CollectableName: SoulFreeze
         Qty: 1
       AchievementRewards: []
+      Boosts: []
     TriggerEffects:
     - SpellDataName: _VoidMines
       Level: 5
@@ -235,12 +238,12 @@ MonoBehaviour:
     StageData:
     - m_Boss: 1003
       m_BonusLevel: 0
-      m_Spells: 24000000310000001d00000030000000
+      m_Spells: 2b00000024000000310000001d0000002f000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1003
       m_BonusLevel: 1
-      m_Spells: 24000000310000001d00000030000000
+      m_Spells: 2b00000024000000310000001d0000002f000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 2
@@ -260,6 +263,7 @@ MonoBehaviour:
         CollectableName: ThermalShockRune
         Qty: 1
       AchievementRewards: []
+      Boosts: []
     TriggerEffects:
     - SpellDataName: _FallingOrbs
       Level: 0
@@ -297,12 +301,12 @@ MonoBehaviour:
     StageData:
     - m_Boss: 1004
       m_BonusLevel: 0
-      m_Spells: 1c0000002700000011000000
+      m_Spells: 1c0000002800000011000000200000004c000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1004
       m_BonusLevel: 1
-      m_Spells: 1c0000002700000011000000
+      m_Spells: 1c0000002800000011000000200000004c000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 3
@@ -339,6 +343,7 @@ MonoBehaviour:
         Border: 202
         Badge: 0
         League: 0
+      Boosts: []
     TriggerEffects:
     - SpellDataName: _SnowStorm
       Level: 0
@@ -386,12 +391,12 @@ MonoBehaviour:
     StageData:
     - m_Boss: 1005
       m_BonusLevel: 0
-      m_Spells: 1d0000001e0000001700000015000000
+      m_Spells: 1d0000001e000000170000001f000000150000004c000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1005
       m_BonusLevel: 1
-      m_Spells: 1d0000001e0000001700000015000000
+      m_Spells: 1d0000001e000000170000001f000000150000004c000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 4

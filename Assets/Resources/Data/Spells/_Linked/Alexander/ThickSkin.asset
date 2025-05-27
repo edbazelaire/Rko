@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b829d596b80e4f042aa5d80d985cf693, type: 3}
   m_Name: ThickSkin
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: Grants a Shield of {0} and increase resistance by {1} for {2} seconds
   m_DescriptionVariables:
   - Name: Shield
@@ -69,6 +69,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_NCharges: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 0
@@ -83,13 +84,7 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
-  m_SpellsScalingLevel:
-  - Property: 2
-    Value: 0.1
-  - Property: 1
-    Value: 0.1
-  - Property: 3
-    Value: 0.05
+  m_SpellsScalingLevel: []
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects: []
@@ -99,4 +94,4 @@ MonoBehaviour:
   Animation: 9
   IsCancellable: 0
   AnimationTimer: 0.5
-  m_Cooldown: 25
+  m_Cooldown: 20

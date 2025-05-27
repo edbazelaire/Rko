@@ -43,6 +43,7 @@ namespace Assets.Scripts.Game
             {
                 // If the pool is empty, create a new object
                 obj = Instantiate(prefab, parent);
+                obj.gameObject.SetActive(activate);
             }
             else
             {

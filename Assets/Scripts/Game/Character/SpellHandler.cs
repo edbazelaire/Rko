@@ -43,7 +43,9 @@ namespace Game.Character
         NetworkVariable<ESpell>             m_Ultimate              = new NetworkVariable<ESpell>(ESpell.None);
         /// <summary> list of spells that links spellID to spellValue <summary>
         NetworkList<int>                    m_SpellsNet;
-        /// <summary> list of spells that links spellID to spellValue <summary>
+        /// <summary> list of number of charges left for each spells <summary>
+        NetworkList<int>                    m_NChargesNet;
+        /// <summary> list of spell levels (usefull for UI purpuses) <summary>
         NetworkList<int>                    m_SpellLevelsNet;
         /// <summary> global cooldown when a spell is cast </summary>
         NetworkVariable<float>              m_GlobalCooldown        = new NetworkVariable<float>(0);
@@ -70,6 +72,8 @@ namespace Game.Character
         Dictionary<ESpell, SpellData>       m_OverridingSpellData;
         /// <summary> is the player currently casting a spell ? </summary>
         bool                                m_IsCasting;
+        /// <summary> list of all spell data linked to spellID <summary>
+        List<SpellData>                     m_SpellsData;
         /// <summary> list of cooldowns that links spellID to its cooldown <summary>
         List<float>                         m_Cooldowns;
         /// <summary> association of spells and current selection state </summary>
@@ -87,6 +91,9 @@ namespace Game.Character
         // ===================================================================================
         // PUBLIC ACCESSORS
         public NetworkVariable<int>         SelectedSpellIndexNet   => m_SelectedSpellIndexNet;
+        public NetworkList<int>             NChargesNet             => m_NChargesNet;
+        public NetworkList<int>             SpellLevelsNet          => m_SpellLevelsNet;
+        public List<SpellData>              SpellsData              => m_SpellsData;
         public bool                         IsCasting               => m_IsCasting;
         public bool                         IsCastingUncancellable  => m_IsCasting && ! m_IsCurrentSpellCancellable;
         public float                        AnimationTimer          => m_AnimationTimer;
@@ -105,11 +112,14 @@ namespace Game.Character
 
         private void Awake()
         {
-            m_SpellsNet         = new NetworkList<int>(default);
-            m_SpellLevelsNet    = new NetworkList<int>(default);
-            
-            m_Cooldowns            = new List<float>();
-            m_SpellSelectionStates = new();
+            m_SpellsNet             = new NetworkList<int>(default);
+            m_NChargesNet           = new NetworkList<int>(default);
+            m_SpellLevelsNet        = new NetworkList<int>(default);
+
+            m_SpellsData            = new List<SpellData>();
+            m_Cooldowns             = new List<float>();
+            m_Cooldowns             = new List<float>();
+            m_SpellSelectionStates  = new();
         }
 
         public override void OnNetworkSpawn()
@@ -179,9 +189,11 @@ namespace Game.Character
                 if (extraSpells[i] == ESpell.None)
                     continue;
 
-                m_SpellsNet.Add((int)extraSpells[i]);
+                m_SpellsNet     .Add((int)extraSpells[i]);
+                m_SpellsData    .Add(SpellLoader.GetSpellData(extraSpells[i], spellLevels[i]));
+                m_NChargesNet   .Add(m_SpellsData[i].Charges);
                 m_SpellLevelsNet.Add(spellLevels[i]);
-                m_Cooldowns.Add(0);
+                m_Cooldowns     .Add(0);
                 m_SpellSelectionStates[extraSpells[i]] = ESpellSelectionState.None;
             }
 
@@ -257,16 +269,15 @@ namespace Game.Character
                 return true;
             }
 
-            SpellData spellData = GetSpellData(spell, m_SpellLevelsNet[GetSpellIndex(spell)]);
-            return CanSelect(spellData, out reason);
+            return CanSelect(m_SpellsData[GetSpellIndex(spell)], out reason);
         }
 
         public bool CanSelect(SpellData spellData, out string reason)
         {
             // COOLDOWN : check that spell has no current cooldown
-            if (GetCooldown(spellData.Name) > 0f)
+            if (GetCharges(spellData.Name) == 0)
             {
-                reason = "Spell selection (" + spellData.Name + ") BLOCKED : In cooldown";
+                reason = "Spell selection (" + spellData.Name + ") BLOCKED : No charges left";
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
                     ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
@@ -333,14 +344,14 @@ namespace Game.Character
             }
 
             // on spell selection, reset NextSelectedSpell to default auto attack
-            m_SelectedSpellIndexNet.Value = GetSpellIndex(spell);
+            int spellIndex = GetSpellIndex(spell);
+            m_SelectedSpellIndexNet.Value = spellIndex;
             m_NextSelectedSpell = ESpell.None;
 
             if (spell == ESpell.None)
                 return true;
 
-            var spellData = SpellLoader.GetSpellData(spell, m_SpellLevelsNet[GetSpellIndex(spell)]);
-            bool success = TryStartCastSpell(spellData);
+            bool success = TryStartCastSpell(m_SpellsData[spellIndex]);
 
             if (m_Controller.IsPlayer)
                 ErrorHandler.Log("TryStartCastSpell " + spell + " success : " + success, ELogTag.SpellHandler);
@@ -358,9 +369,13 @@ namespace Game.Character
         void RefreshSpellSelectionState(ESpell spell)
         {
             ESpellSelectionState spellSelectionState = ESpellSelectionState.None;
-            if (GetCooldown(spell) > 0)
-                spellSelectionState = ESpellSelectionState.Cooldown;
-            else if ( ! CanSelect(spell))
+
+            // no charges : handled by the SpellItemUI directly
+            if (GetCharges(spell.ToString()) == 0)
+                return;
+
+            // Un-selectable : change selection state to Inactive
+            if (!CanSelect(spell))
                 spellSelectionState = ESpellSelectionState.Inactive;
 
             SetSpellSelection(spell, spellSelectionState);
@@ -606,6 +621,9 @@ namespace Game.Character
         /// <returns></returns>
         IEnumerator StartCast(SpellData spellData)
         {
+            // duplicate spell data for safety
+            spellData = spellData.Clone();
+
             if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
                 ErrorHandler.Log("StartCastSpell : " + spellData.Name, ELogTag.SpellHandler);
 
@@ -681,7 +699,6 @@ namespace Game.Character
                 LockTarget(spellData);
 
             // get spawn position and cast the spell
-            Debug.Log(spellData.Name + " CastDelay() : " + m_TargetPos.Value);
             StartCoroutine(spellData.CastDelay(m_Controller.PlayerId, m_TargetPos.Value, m_SpellSpawn.position, m_SpellSpawn.rotation, recalculateTarget: false));
 
             // spend the energy of the spell
@@ -694,7 +711,7 @@ namespace Game.Character
             // setup cooldown
             int index = GetSpellIndex(spellData.Name);
             if (index >= 0)
-                SetCooldown(spellData.Name, CalculateCooldown(spellData.Cooldown));
+                ConsumeCharge(spellData.Name);
         }
 
         /// <summary>
@@ -810,7 +827,23 @@ namespace Game.Character
 
             for (int i = 0; i < m_Cooldowns.Count; i++)
             {
+                // at max charges - skip
+                if (m_NChargesNet[i] == m_SpellsData[i].Charges)
+                    continue;
+
                 m_Cooldowns[i] -= Time.deltaTime;
+
+                // cooldown not over - skip
+                if (m_Cooldowns[i] > 0f)
+                    continue;
+
+                // clean cooldown and recharge the spell
+                m_Cooldowns[i] = 0f;
+                AddCharge(m_SpellsNet[i].ToString(), 1);
+
+                // if not at full charges : start another cooldown
+                if (m_NChargesNet[i] < m_SpellsData[i].Charges)
+                    StartCooldown(i);
             }
         }
 
@@ -825,7 +858,62 @@ namespace Game.Character
         #endregion
 
 
-        #region Cooldown Management
+        #region Cooldown & Charges Management
+
+        public void ConsumeCharge(string spellName, int nCharges = 1)
+        {
+            AddCharge(spellName, -nCharges);
+
+            if (GetCooldown(spellName) <= 0)
+                StartCooldown(GetSpellIndex(spellName));
+
+            // if number of charges is 0 - send cooldown value to the Player so he can display it
+            int spellIndex = GetSpellIndex(spellName);
+            if (m_NChargesNet[spellIndex] == 0)
+                SendCooldownEventClientRPC(m_SpellsData[spellIndex].Spell, m_Cooldowns[spellIndex]);
+        }
+
+        public int GetCharges(string spellName)
+        {
+            return m_NChargesNet[GetSpellIndex(spellName)];
+        }
+
+        public void AddCharge(string spellName, int nCharges)
+        {
+            int spellIndex = GetSpellIndex(spellName);
+            if (spellIndex < 0)
+            {
+                ErrorHandler.Error("Unable to find spell " + spellName + " in list of spells");
+                return;
+            }
+
+            // calculate final number of charges
+            int finalCharges = m_NChargesNet[spellIndex] + nCharges;
+
+            // CHECK : number of charges is between 0 and MAX
+            int maxCharges = m_SpellsData[spellIndex].Charges;
+            if (finalCharges < 0)
+            {
+                ErrorHandler.Warning("Number of charges for spell " + spellName + "(" + finalCharges + ") is < 0" );
+                finalCharges = 0;
+            } else if (finalCharges > maxCharges)
+            {
+                ErrorHandler.Warning("Number of charges for spell " + spellName + "(" + finalCharges + ") is below > max number of charges (" + maxCharges + ")");
+                finalCharges = maxCharges;
+            }
+
+            // set number of charges
+            m_NChargesNet[GetSpellIndex(spellName)] = finalCharges;
+        }
+
+        /// <summary>
+        /// Start cooldown for spell at index
+        /// </summary>
+        /// <param name="spellIndex"></param>
+        public void StartCooldown(int spellIndex)
+        {
+            SetCooldown(m_SpellsData[spellIndex].Name, CalculateCooldown(m_SpellsData[spellIndex].Cooldown));
+        }
 
         /// <summary>
         /// 
@@ -1016,8 +1104,6 @@ namespace Game.Character
             if (!m_Controller.IsPlayer)
                 return;
 
-            Debug.Log("Registering to TargettableArea");
-
             // TODO : Change for ONE big zone for click events ? 
             // register to the TargettableArea listener
             ArenaManager.GetTargettableArea(m_Controller.Team, enemyArea: true).ClickedEvent += SendTargetAdjustmentServerRpc;
@@ -1065,6 +1151,12 @@ namespace Game.Character
         void SpellActivationEventClientRPC(ESpell spell, ESpellSelectionState spellActivation)
         {
             SpellSelectionEvent?.Invoke(spell, spellActivation);
+        }
+
+        [ClientRpc]
+        void SendCooldownEventClientRPC(ESpell spell, float cooldown)
+        {
+            OnCooldownEvent?.Invoke(spell, cooldown);
         }
 
         public void CallSpellEvent(string spellName, ESpellEvent spellEvent, Vector2? targetPosition = null, float? forcedDuration = null, Vector2? forcedPosition = null)
@@ -1120,9 +1212,10 @@ namespace Game.Character
         /// </summary>
         /// <param name="spellName"></param>
         /// <param name="spellEvent"></param>
-        public void OnSpellEvent(string spellName, ESpellEvent spellEvent)
+        public void OnClientSpellEvent(string spellName, ESpellEvent spellEvent)
         {
-            if (!IsOwner)
+            // only owner can see that, and host do not need to since the event gets called on SERVER side already
+            if (!IsOwner || IsHost)
                 return;
 
             // call event
@@ -1137,7 +1230,7 @@ namespace Game.Character
             //Debug.Log("     + spellName : " + spellName);
 
             m_Controller.GFXHandler.SpawnSpellGFX(spellName.ToString(), (ESpellEvent)spellEvent);
-            OnSpellEvent(spellName.ToString(), (ESpellEvent)spellEvent);
+            OnClientSpellEvent(spellName.ToString(), (ESpellEvent)spellEvent);
         }
 
         [ClientRpc]
@@ -1149,7 +1242,7 @@ namespace Game.Character
             //Debug.Log("     + forcedDuration : " + forcedDuration);
 
             m_Controller.GFXHandler.SpawnSpellGFX(spellName.ToString(), (ESpellEvent)spellEvent, forcedDuration: forcedDuration);
-            OnSpellEvent(spellName.ToString(), (ESpellEvent)spellEvent);
+            OnClientSpellEvent(spellName.ToString(), (ESpellEvent)spellEvent);
         }
 
         [ClientRpc]
@@ -1161,7 +1254,7 @@ namespace Game.Character
             //Debug.Log("     + targetPos : " + targetPos);
 
             m_Controller.GFXHandler.SpawnSpellGFX(spellName.ToString(), (ESpellEvent)spellEvent, targetPos);
-            OnSpellEvent(spellName.ToString(), (ESpellEvent)spellEvent);
+            OnClientSpellEvent(spellName.ToString(), (ESpellEvent)spellEvent);
         }
 
         [ClientRpc]
@@ -1174,7 +1267,7 @@ namespace Game.Character
             //Debug.Log("     + forcedDuration : " + forcedDuration);
 
             m_Controller.GFXHandler.SpawnSpellGFX(spellName.ToString(), (ESpellEvent)spellEvent, targetPos, forcedDuration);
-            OnSpellEvent(spellName.ToString(), (ESpellEvent)spellEvent);
+            OnClientSpellEvent(spellName.ToString(), (ESpellEvent)spellEvent);
         }
         
         #endregion
@@ -1182,11 +1275,11 @@ namespace Game.Character
 
         #region Getter / Setter / Dependent Properties
 
-        protected SpellData GetSpellData(ESpell spell, int level = 1)
+        public SpellData GetSpellData(ESpell spell, int level)
         {
             if (m_OverridingSpellData.ContainsKey(spell))
             {
-                return m_OverridingSpellData[spell];
+                return m_OverridingSpellData[spell].Clone(level);
             }
 
             return SpellLoader.GetSpellData(spell, level);
@@ -1210,18 +1303,6 @@ namespace Game.Character
                 }
                 
                 return spells;
-            }
-        }
-
-        public List<int> SpellLevels
-        {
-            get
-            {
-                List<int> levels = new List<int> ();
-                foreach (int level in m_SpellLevelsNet)
-                    levels.Add(level);
-                
-                return levels;
             }
         }
 

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3187be67d58548144a9d4f83cb44e7d2, type: 3}
   m_Name: _FrozenSpikesAoe
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: 
   m_DescriptionVariables: []
   m_SpellElements: 
@@ -20,6 +20,7 @@ MonoBehaviour:
   Graphics: {fileID: 0}
   SpellEventActions: []
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -33,11 +34,20 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
-  EnergyGain: 10
+  MaxHit: -1
+  m_Charges: 1
+  EnergyGain: 25
   EnergyCost: 0
-  m_Damage: 100
+  m_Damage: 250
   m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
@@ -52,11 +62,10 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.15
-  - Property: 1
-    Value: 0.1
-  - Property: 3
-    Value: 0.05
-  m_Size: 6
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
+  m_Size: 14
   TriggerPlayer: 1
   EnemyStateEffects:
   - StateEffect: 16

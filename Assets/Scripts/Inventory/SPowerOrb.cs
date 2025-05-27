@@ -17,7 +17,7 @@ namespace Inventory
         #region Members
 
         public const int    MAX_STARS                   = 5;
-        public const float BASE_STAR_UPGRADE_PERC       = 0.1f;
+        public const float  BASE_STAR_UPGRADE_PERC      = 0.1f;
         public const int    FIX_STAR_BONUS              = 5000;
         public const float  PERC_STAR_BONUS             = 1f;
 

@@ -48,7 +48,7 @@ namespace Game.Spells
 
         public readonly float Get(Controller controller, int level, int stacks)
         {
-            return Mathf.Pow(BaseValue, 1 + LevelScalingFactor * level) * stacks * StackScalingFactor;
+            return Mathf.Pow(BaseValue, 1 + LevelScalingFactor * level) * (StackScalingFactor == 0 ? 1 : stacks * StackScalingFactor);
         }
     }
 
@@ -449,7 +449,7 @@ namespace Game.Spells
         /// </summary>
         /// <param name="stacks"></param>
         /// <param name="level"></param>
-        public virtual void Refresh(int stacks = 0, int level = 1)
+        public virtual void Refresh(int stacks = 0, int level = 0)
         {
             StateEffectEvent?.Invoke(StateEffectName, EStateEffectEvent.OnRefreshed, m_Controller.PlayerId, m_Caster.PlayerId);
 
@@ -470,17 +470,25 @@ namespace Game.Spells
             }
 
             // re-adjust level
-            level = (int)Math.Round((float)(m_Level * m_Stacks + level * stacks) / (m_Stacks + stacks));
-            SetLevel(level);
+            if (m_Stacks > 0 && level > 0)
+            {
+                level = (int)Math.Round((float)(m_Level * m_Stacks + level * stacks) / (m_Stacks + stacks));
+                SetLevel(level);
+            }
 
             // check if should add energy
             if (m_Energy != 0)
                 m_Caster.EnergyHandler.AddEnergy(GetInt(EStateEffectProperty.Energy) * stacks);
 
-            m_Stacks = Math.Min(m_MaxStacks, m_Stacks + stacks);
+            SetStacks(m_Stacks + stacks);
             RefreshStats();
 
             m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnSpawn, StateEffectName, m_Caster.PlayerId, m_Stacks, m_Duration));
+        }
+
+        protected virtual void SetStacks(int stacks)
+        {
+            m_Stacks = Math.Clamp(stacks, 0, m_MaxStacks);
         }
 
         protected virtual void RefreshStats()
@@ -503,7 +511,7 @@ namespace Game.Spells
                 return nStacks;
             }
 
-            m_Stacks -= nStacks;
+            SetStacks(m_Stacks - nStacks);
 
             // refresh UI on client side
             m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnActivation, StateEffectName, m_Caster.PlayerId, m_Stacks, m_Duration));
@@ -860,7 +868,7 @@ namespace Game.Spells
 
             // calculate scaling factors (levels and stacks)
             float levelFactor = (float)Math.Pow(1 + bonusStats.LevelScalingFactor, Math.Max(Level - 1, 0));
-            float stacksFactor = bonusStats.StackScalingFactor * Stacks;
+            float stacksFactor = bonusStats.StackScalingFactor == 0 ? 1 : bonusStats.StackScalingFactor * Stacks;
 
             value = bonusStats.BaseValue * levelFactor;
             if (m_Controller == null)

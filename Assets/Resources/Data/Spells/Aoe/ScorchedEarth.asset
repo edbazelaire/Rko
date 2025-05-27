@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3187be67d58548144a9d4f83cb44e7d2, type: 3}
   m_Name: ScorchedEarth
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: Explosion of size {0} dealing {1} damage and applying {2}. Burns
     the ground applying a {3} and {4} damage each or {5} seconds
   m_DescriptionVariables:
@@ -76,6 +76,7 @@ MonoBehaviour:
     StateEffects: 
   OnHit:
   - {fileID: 11400000, guid: e39cfbee781b4b54f974648e3652d53f, type: 2}
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 6d046cc3e0048f84487988854b0a3d72, type: 3}
@@ -89,8 +90,17 @@ MonoBehaviour:
     Y: 0
   LockTarget: 100
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_NCharges: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 25
@@ -108,8 +118,9 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
-  - Property: 3
-    Value: 0.05
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
   m_Size: 5
   TriggerPlayer: 1
   EnemyStateEffects:
@@ -123,5 +134,5 @@ MonoBehaviour:
   Animation: 6
   IsCancellable: 0
   AnimationTimer: 0.4
-  m_Cooldown: 20
+  m_Cooldown: 14
   m_SpellSpawn: 1

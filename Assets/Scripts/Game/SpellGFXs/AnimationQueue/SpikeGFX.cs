@@ -29,8 +29,10 @@ namespace Game.SpellGFXs
             // Set Data
             m_Spike = Finder.Find(gameObject, "Spike");
 
-            if (m_Spike != null)
-                m_InitialPosition = m_Spike.transform.localPosition; // Store initial local position
+            // save initial position and make sure that the Y starts at 0f
+            m_InitialPosition = m_Spike.transform.localPosition; // Store initial local position
+            m_InitialPosition.y = 0f;
+            m_Spike.transform.localPosition = m_InitialPosition;
         }
 
         protected override void RegisterAnimations()
@@ -40,6 +42,7 @@ namespace Game.SpellGFXs
         }
 
         #endregion
+
 
         #region Animations
 
@@ -67,9 +70,6 @@ namespace Game.SpellGFXs
 
                 yield return null;
             }
-
-            // Ensure it reaches the final position
-            m_Spike.transform.localPosition = m_InitialPosition + new Vector3(0, m_MaxHeight, 0);
 
             // Proceed to the next animation
             StartCoroutine(NextAnimation());

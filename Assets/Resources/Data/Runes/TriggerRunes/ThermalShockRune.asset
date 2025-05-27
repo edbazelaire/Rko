@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e83ee2023ecc7e04480ae9c612ad7749, type: 3}
   m_Name: ThermalShockRune
   m_EditorClassIdentifier: 
-  Rarety: 2
+  m_Rarety: 2
   m_Description: 
   m_DescriptionVariables: []
   m_SpellElements: 0200000001000000
@@ -84,7 +84,7 @@ MonoBehaviour:
       ActivationTreshold: 0
       SpellDeactivationEvent: 0
       DeactivationTreshold: 0
-      StateEffectEvent: 3
+      StateEffectEvent: 1
       StateEffectName: IceBreak
       NStateEffectActivationThreshold: 0
       Delay: 0

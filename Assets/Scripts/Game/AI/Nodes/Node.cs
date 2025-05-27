@@ -147,8 +147,19 @@ namespace AI
             }
             return false;
         }
+
+        #endregion
+
+
+        #region Debug
+
+        public virtual string GetInfo()
+        {
+            return null;
+        }
+
+        #endregion
     }
 
-    #endregion
 
 }

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b829d596b80e4f042aa5d80d985cf693, type: 3}
   m_Name: Overdose
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: Consume up to 10 stacks of [Poison] and [Infected] on the enemies.
     Heal every allies in a zone of size {0}.\nIncrease NeedleJack's damages by {1}
     and his speed by {2} for each stacks. A stack is removed each {3} seconds
@@ -31,6 +31,7 @@ MonoBehaviour:
   SpellEventActions: []
   OnHit:
   - {fileID: 11400000, guid: 99bf2980edd70d2419658f3dd2b5fe08, type: 2}
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -44,8 +45,17 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_NCharges: 1
   EnergyGain: 0
   EnergyCost: 100
   m_Damage: 0
@@ -61,12 +71,11 @@ MonoBehaviour:
     m_Speed: 0
     m_Duration: 0
   m_SpellsScalingLevel:
-  - Property: 2
-    Value: 0.1
   - Property: 1
-    Value: 0.1
-  - Property: 3
-    Value: 0.05
+    Value: 0.12
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects: []

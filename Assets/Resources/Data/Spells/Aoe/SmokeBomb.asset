@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c134d41ca291c244b96cfda56a7e83fd, type: 3}
   m_Name: SmokeBomb
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: 'Creates a smoke area of size {0} for {1} seconds making your character
     {2} while in it, and therefore untargettable. '
   m_DescriptionVariables:
@@ -27,6 +27,7 @@ MonoBehaviour:
   Graphics: {fileID: 2272309172655654138, guid: 9bbca7883ff69dd478393f98613e62ca, type: 3}
   SpellEventActions: []
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: c6d45d69015ca934fbd95932874c5b59, type: 3}
@@ -40,8 +41,17 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 0
+  m_NCharges: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
@@ -58,7 +68,15 @@ MonoBehaviour:
     m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 3
-    Value: 0.05
+    Value: -1
+    ScalingType: 1
+    RoundingType: 0
+    ScalingTresholds: []
+  - Property: 4
+    Value: 0.2
+    ScalingType: 1
+    RoundingType: 0
+    ScalingTresholds: []
   m_Size: 8
   TriggerPlayer: 1
   EnemyStateEffects: []
@@ -68,7 +86,7 @@ MonoBehaviour:
   Animation: 0
   IsCancellable: 0
   AnimationTimer: 0
-  m_Cooldown: 20
+  m_Cooldown: 35
   m_SpellSpawn: 1
   DurationTick: 0
   m_TickDamage: 0

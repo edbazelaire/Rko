@@ -11,8 +11,8 @@ namespace Game.Spells
         {
             base.ApplyPreProcessing();
 
-            int maxStacks = 10;
-            int consumedStacks = 0;
+            int consumedStacks = 0;                 // currently consumed stacks
+            int maxStacks = m_MaxStacks - Stacks;   // maximum number of stacks to add
 
             // Create modifiable pool of enemy controllers
             var potentialTargets = new List<Controller>(GameManager.Instance.GetAllEnemies(m_Controller.Team, spawnIncluded: true));
@@ -37,23 +37,23 @@ namespace Game.Spells
                 // Determine how many stacks to consume this round (1 to 3, capped by remaining maxStacks)
                 int toConsume = Mathf.Min(Random.Range(1, 4), maxStacks - consumedStacks);
 
+                // If room left and target has infected
+                if (toConsume > 0 && hasInfected)
+                {
+                    int infectedRemoved = stateHandler.RemoveStateEffect(EStateEffect.Infected.ToString(), consume: true, maxStacks: toConsume);
+                    consumedStacks += 3 * infectedRemoved;
+                    toConsume -= infectedRemoved;
+                }
+
                 // Try to consume from Poison first
                 if (hasPoison)
                 {
                     int poisonRemoved = stateHandler.RemoveStateEffect(EStateEffect.Poison.ToString(), consume: true, maxStacks: toConsume);
                     consumedStacks += poisonRemoved;
-                    toConsume -= poisonRemoved;
-                }
-
-                // If room left and target has infected
-                if (toConsume > 0 && hasInfected)
-                {
-                    int infectedRemoved = stateHandler.RemoveStateEffect(EStateEffect.Infected.ToString(), consume: true, maxStacks: toConsume);
-                    consumedStacks += infectedRemoved;
                 }
             }
 
-            m_Stacks = consumedStacks;
+            Refresh(consumedStacks, m_Level);
         }
     }
 }
