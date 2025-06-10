@@ -50,7 +50,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
-  m_NCharges: 1
+  m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
@@ -67,13 +67,13 @@ MonoBehaviour:
     m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 4
-    Value: 0.05
-    ScalingType: 0
+    Value: 0.25
+    ScalingType: 1
     RoundingType: 2
     ScalingTresholds: []
   - Property: 3
-    Value: -1
-    ScalingType: 0
+    Value: -0.5
+    ScalingType: 1
     RoundingType: 2
     ScalingTresholds: []
   m_Size: 1

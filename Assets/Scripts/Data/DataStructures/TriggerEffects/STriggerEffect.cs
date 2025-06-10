@@ -1,11 +1,14 @@
 ﻿using Assets.Scripts.Data.DataStructures;
+using Data.DataStructures.SpellSubStructures;
 using Enums;
 using Game;
 using Game.Loaders;
 using Game.Spells;
+using Google.Apis.Sheets.v4.Data;
 using NUnit.Framework.Internal;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Tools;
 using Unity.Netcode;
@@ -20,18 +23,25 @@ namespace Data.DataStructures
         public void Activate(Controller controller) { }
     }
 
+
     [Serializable]
     public struct STriggerEffect : INetworkSerializable, ITriggerEffect
     {
         #region Members
 
         public  string                  SpellDataName;
+
+        // TODO : ===============================================================================
+        // TODO : Handle difference between Spell & StateEffect with SOverridingData<T> 
+        public List<SStateEffectProperty> OverridingData;
+        // TODO : ===============================================================================
+
         public  int                     Level;
         public  ESpellTarget            Target;
         
-        public  ESpellActivation        SpellActivationEvent;
+        public  ETriggerType            SpellActivationEvent;
         public  float                   ActivationTreshold;
-        public  ESpellActivation        SpellDeactivationEvent;
+        public  ETriggerType            SpellDeactivationEvent;
         public  float                   DeactivationTreshold;
 
         public  EStateEffectEvent       StateEffectEvent;
@@ -170,7 +180,8 @@ namespace Data.DataStructures
 
             else if (SpellLoader.IsStateEffect(SpellDataName))
             {
-                m_TargetController.StateHandler.AddStateEffect(SpellLoader.GetStateEffect(SpellDataName, Level), m_Caster);
+                StateEffect stateEffect = SpellLoader.GetStateEffect(SpellDataName, Level, overridingData: OverridingData, parent: m_Parent);
+                m_TargetController.StateHandler.AddStateEffect(stateEffect, m_Caster);
             }
 
             else if (SpellLoader.PowerUpExists(SpellDataName))
@@ -290,8 +301,12 @@ namespace Data.DataStructures
 
         #region Listeners
 
-        void OnStateEffectEvent(string stateEffectName, EStateEffectEvent stateEffectEvent, ulong targetId, ulong casterId)
+        void OnStateEffectEvent(string stateEffectName, EStateEffectEvent stateEffectEvent, int stacks, ulong targetId, ulong casterId, string parent)
         {
+            // SAFETY : check is server
+            if (!GameManager.Instance.IsServer)
+                return;
+
             // SAFETY : has a caster provided
             if (m_Caster == null)
             {

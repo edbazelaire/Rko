@@ -70,14 +70,28 @@ namespace Data
         {
             get
             {
+                // get type of scaling of this value
+               EScalingDirection scaling = EScalingDirection.None;
+                if (BonusStacksPerLevel > 0)
+                    scaling = EScalingDirection.Up;
+                else if (BonusStacksPerLevel < 0)
+                    scaling = EScalingDirection.Down;
+
                 var stacks = GetStacks();
-                if (stacks <= 0)
+                if (stacks <= 0 && scaling != EScalingDirection.Up)
                     return "";
 
                 if (stacks == 1)
-                    return TextHandler.ReplaceStateEffectTokens($"[{StateEffect}]");
+                {
+                    if (scaling == EScalingDirection.Up)
+                        return TextHandler.ReplaceStateEffectTokens($"{TextHandler.FormatScaling(stacks.ToString(), scaling)} stack of [{StateEffect}]");
+                    else
+                        return TextHandler.ReplaceStateEffectTokens($"[{StateEffect}]");
+                }
+                
 
-                return TextHandler.ReplaceStateEffectTokens($"{stacks} stacks of [{StateEffect}]");
+                // return formated value
+                return TextHandler.ReplaceStateEffectTokens($"{TextHandler.FormatScaling(stacks.ToString(), scaling)} stacks of [{StateEffect}]");
             }
         }
 

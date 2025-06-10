@@ -146,20 +146,33 @@ namespace Data
         }
 
         /// <summary>
+        /// Check if provided property is scaling or not
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool IsScalingProperty(string property, out EScalingDirection scaling)
+        {
+            scaling = EScalingDirection.None;
+            return false;
+        }
+
+        /// <summary>
         /// Convert a description variable into a string implemented into the description
         /// </summary>
         /// <returns></returns>
-        public virtual string ConvertDescriptionVariable(SDescriptionVariable descriptionVariable, Dictionary<string, object> infos = default, bool throwError = true)
+        public virtual string ConvertDescriptionVariable(SDescriptionVariable descriptionVariable, Dictionary<string, object> infos, bool throwError = true)
         {
+            // PROPERTY of the CollectableData
             if (infos.ContainsKey(descriptionVariable.Name))
             {
                 string value = infos[descriptionVariable.Name].ToString();
                 if (float.TryParse(value, out float floatValue))
                     value = TextHandler.FormatPropertyValue(floatValue, descriptionVariable.Name);
 
-                return TextHandler.FormatPropertyIcon(descriptionVariable.Name, value, descriptionVariable.WithIcon, false);
+                IsScalingProperty(descriptionVariable.Name, out EScalingDirection scaling);
+                return TextHandler.FormatPropertyIcon(descriptionVariable.Name, value, descriptionVariable.WithIcon, withPropertyName: false, scaling: scaling);
             }
 
+            // STATE EFFECT (Curse, Frozen, ...) : replace by the name + the icon of the state effect
             if (Enum.TryParse(descriptionVariable.Name, out EStateEffect _))
             {
                 return TextHandler.FormatStateEffectIcon(descriptionVariable.Name, descriptionVariable.WithIcon);

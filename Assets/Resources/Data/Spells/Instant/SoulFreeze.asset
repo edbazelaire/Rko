@@ -68,7 +68,7 @@ MonoBehaviour:
       m_Stacks: 30
       m_NStacksReductionPerLevel: 0.5
   MaxHit: 1
-  m_NCharges: 1
+  m_Charges: 1
   EnergyGain: 5
   EnergyCost: 0
   m_Damage: 0
@@ -87,7 +87,7 @@ MonoBehaviour:
   - Property: 3
     Value: -0.5
     ScalingType: 1
-    RoundingType: 2
+    RoundingType: 0
     ScalingTresholds: []
   m_Size: 1
   TriggerPlayer: 1

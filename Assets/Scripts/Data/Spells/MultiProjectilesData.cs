@@ -121,7 +121,7 @@ namespace Data
                 var delay = DelayBetweenWaves;
                 while (delay > 0)
                 {
-                    if ((m_IsCancelled || controller.SpellHandler.HasStateBlockingCast()) && m_IsBlocking)
+                    if ((m_IsCancelled || ! controller.StateHandler.CanCast) && m_IsBlocking)
                     {
                         m_IsCancelled = true;
                         break;
@@ -171,7 +171,7 @@ namespace Data
 
                 while (delay > 0)
                 {
-                    if ((m_IsCancelled || controller.SpellHandler.HasStateBlockingCast()) && m_IsBlocking)
+                    if ((m_IsCancelled || ! controller.StateHandler.CanCast) && m_IsBlocking)
                     {
                         m_IsCancelled = true;
                         yield break;
@@ -305,6 +305,15 @@ namespace Data
 
 
         #region Info Display
+
+        public override string GetDescription()
+        {
+            string description = base.GetDescription();
+            if (ProjectileData != null)
+                description = TextHandler.ReplaceSubSpellData(description, ProjectileData);
+
+            return description;
+        }
 
         public override Dictionary<string, object> GetInfo()
         {

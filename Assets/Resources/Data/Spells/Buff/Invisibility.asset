@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: Invisibility
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: Makes your character {0} for 3 seconds
+  m_Description: Makes your character {0} for 3 seconds and grants 20% movement speed
   m_DescriptionVariables:
   - Name: Invisible
+    WithIcon: 1
+  - Name: Duration
     WithIcon: 1
   m_SpellElements: 
   Linked: 0
@@ -67,7 +69,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
-  m_NCharges: 1
+  m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0

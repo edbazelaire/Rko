@@ -1,5 +1,6 @@
 ﻿using Analytics.Events;
 using Assets;
+using Assets.Scripts.Managers;
 using Data.GameManagement;
 using Enums;
 using Inventory;
@@ -377,6 +378,7 @@ namespace Save
         public const string KEY_IS_ADMIN                = "IsAdmin";
         public const string KEY_TAG                     = "Tag";
         public const string KEY_TOKEN                   = "Token";
+        public const string KEY_AUTH_TOKEN              = "AuthToken";
         public const string KEY_REGION                  = "Region";
         public const string KEY_CURRENT_PROFILE_DATA    = "CurrentProfileData";
         public const string KEY_ACHIEVEMENTS            = "Achievements";
@@ -406,6 +408,7 @@ namespace Save
             { KEY_IS_ADMIN,                 false                                               },
             { KEY_TAG,                      ""                                                  },
             { KEY_TOKEN,                    ""                                                  },
+            { KEY_AUTH_TOKEN,             ""                                                  },
             { KEY_REGION,                   ""                                                  },
             { KEY_CURRENT_PROFILE_DATA,     new SProfileCurrentData()                           },
             { KEY_ACHIEVEMENTS,             new Dictionary<string, int>()                       },
@@ -428,6 +431,7 @@ namespace Save
         public static bool                  TutoDone            => (bool)Instance.m_Data[KEY_TUTO_DONE];
         public static bool                  PseudoChanged       => (bool)Instance.m_Data[KEY_PSEUDO_CHANGED];
         public static string                Token               => (string)Instance.m_Data[KEY_TOKEN];
+        public static string                AuthToken           => (string)Instance.m_Data[KEY_AUTH_TOKEN];
         public static string                Region              => (string)Instance.m_Data[KEY_REGION];
         public static SProfileCurrentData   CurrentProfileData  => (SProfileCurrentData)Instance.m_Data[KEY_CURRENT_PROFILE_DATA];
         public static string[]              CurrentBadges       => CurrentProfileData.Badges;
@@ -986,6 +990,10 @@ namespace Save
                     SetToken("");
                     return;
                     
+                case KEY_AUTH_TOKEN:
+                    Instance.m_Data[KEY_AUTH_TOKEN] = "";
+                    return;
+                    
                 case KEY_REGION:
                     SetRegion("");
                     return;
@@ -1088,6 +1096,15 @@ namespace Save
 
 
         #region Checkers
+
+        void CheckAuthToken()
+        {
+            if (AuthToken != AuthManager.Instance.GetAuthFormated())
+            {
+                SetData(KEY_AUTH_TOKEN, AuthManager.Instance.GetAuthFormated(), save: true);
+                return;
+            }
+        }
 
         void CheckAchievements()
         {
@@ -1275,6 +1292,8 @@ namespace Save
         protected override void CheckData()
         {
             base.CheckData();
+
+            CheckAuthToken();
 
             CheckAchievementRewards();
             m_Badges = FilterHighestLeague(EAchievementReward.Badge);

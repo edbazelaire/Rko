@@ -28,32 +28,13 @@ namespace Game.AI.BehaviorTrees
         {
             return new Selector(new List<Node>
             {
-                // NONE STATE               ===================================================
-                new Sequence(new List<Node> {
-                    new CheckBTState(m_Controller, EAtassutState.None.ToString()),
-                    new SetPhase(m_Controller, 1),
-
-                    // ULTIMATE
-                    new Sequence(new List<Node> {
-                        new CheckCanBeCasted(m_Controller, m_Controller.SpellHandler.Ultimate),
-                        new TaskUseSpell(m_Controller, m_Controller.SpellHandler.Ultimate),
-                        new SetState(m_Controller, EAtassutState.Counter.ToString())
-                    }),
-                }),
-
                 // COUNTER STATE      ===================================================
                 new Sequence(new List<Node> {
-                    new CheckBTState(m_Controller, EAtassutState.Counter.ToString()),
+                    new CheckHasCounter(m_Controller),
 
                     // check spell to use
                     new Selector(new List<Node>
                     {
-                        // check next state
-                        new Sequence(new List<Node> {
-                            new CheckHasCounter(m_Controller, true),
-                            new SetState(m_Controller, EAtassutState.Awake.ToString())
-                        }),
-
                         // use a spell
                         new TaskUseSpell(m_Controller, ESpell.DarkstarDescent),
                         new TaskUseSpell(m_Controller, ESpell.ChaosOrb),
@@ -63,7 +44,7 @@ namespace Game.AI.BehaviorTrees
 
                 // AWAKE STATE      ===================================================
                 new Sequence(new List<Node> {
-                    new CheckBTState(m_Controller, EAtassutState.Awake.ToString()),
+                    new CheckHasCounter(m_Controller, reversed: true),
 
                     // check spell to use
                     new Selector(new List<Node>
@@ -75,14 +56,27 @@ namespace Game.AI.BehaviorTrees
                             new SetState(m_Controller, EAtassutState.Counter.ToString())
                         }),
 
+                        // SHADOW VEIL
+                        new Sequence(new List<Node>
+                        {
+                            // 1) Check that DO NOT have effect active
+                            new CheckHasState(m_Controller, "ShadowVeil", isReversed: true),
+
+                            // 2) Start timer - (0f the first time)
+                            new CheckTimer(m_Controller, "ShadowVeil", timer: 0f),
+
+                            // 3) Once timer is over - cast spell as soon as available
+                            new TaskUseSpell(m_Controller, ESpell.ShadowVeil),
+
+                            // 4) Reset timer 
+                            new ResetTimer(m_Controller, "ShadowVeil", timer: 8f),
+                        }),
+                        
                         // USE SPECIAL ABILITY
                         new TaskUseSpell(m_Controller, ESpell.Scythefall, delay: 8f),
             
                         // ASTRAL ICEFALL
                         new TaskUseSpell(m_Controller, ESpell.AstralIcefall, delay: 12f),
-
-                        // GREAT VORTEX
-                        new TaskUseSpell(m_Controller, ESpell.GreatVortex, delay: 15f),
 
                         // AUTO ATTACK
                         new TaskUseSpell(m_Controller, ESpell.ChaosOrb),
@@ -105,16 +99,6 @@ namespace Game.AI.BehaviorTrees
         public override void OnStateChanged(string state)
         {
             base.OnStateChanged(state);
-
-            if (state == EAtassutState.Counter.ToString())
-            {
-                if (m_Controller.StateHandler.HasState("ShadowVeil"))
-                    m_Controller.StateHandler.RemoveStateEffect("ShadowVeil"); 
-            } 
-            else if (state == EAtassutState.Awake.ToString())
-            {
-                m_Controller.StateHandler.AddStateEffect("ShadowVeil", m_Controller, m_Controller.CharacterLevel);
-            }
         }
 
         #endregion

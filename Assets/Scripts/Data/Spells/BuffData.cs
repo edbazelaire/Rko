@@ -25,7 +25,7 @@ namespace Data
 
         public StateEffect GetStateEffect()
         {
-            return SpellLoader.GetStateEffect(Name, Level);
+            return SpellLoader.GetStateEffect(Name, Level, parent: m_Parent);
         }
 
         #endregion
@@ -58,6 +58,19 @@ namespace Data
                 return GetStateEffect().GetDescription();
 
             return base.GetDescription();
+        }
+
+        public override bool IsScalingProperty(string propertyName, out EScalingDirection scaling)
+        {
+            // CHECK : base spell properties
+            if (base.IsScalingProperty(propertyName, out scaling))
+                return true;
+
+            // CHECK : state effect properties
+            if (GetStateEffect().IsScalingProperty(propertyName, out scaling)) 
+                return true;
+
+            return false;
         }
 
         #endregion

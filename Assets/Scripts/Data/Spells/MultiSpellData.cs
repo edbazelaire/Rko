@@ -146,7 +146,7 @@ namespace Data
                 var delay = DelayBetweenWaves;
                 while (delay > 0)
                 {
-                    if (IsCancellable && controller.SpellHandler.HasStateBlockingCast() && m_IsBlocking)
+                    if (IsCancellable && ! controller.StateHandler.CanCast && m_IsBlocking)
                     {
                         m_IsCancelled = true;
                         break;
@@ -209,7 +209,7 @@ namespace Data
 
                 while (delay > 0)
                 {
-                    if (IsCancellable && controller.SpellHandler.HasStateBlockingCast() && m_IsBlocking)
+                    if (IsCancellable && ! controller.StateHandler.CanCast && m_IsBlocking)
                     {
                         m_IsCancelled = true;
                         yield break;
@@ -315,6 +315,12 @@ namespace Data
 
 
         #region Overriders 
+
+        public void SetSubSpellData(SpellData spellData)
+        {
+            SubSpellData        = spellData;
+            m_FinalSubSpellData = spellData;
+        }
 
         public SpellData GetSubSpellData(Controller controller)
         {

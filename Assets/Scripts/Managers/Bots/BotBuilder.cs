@@ -3,14 +3,10 @@ using Data.GameManagement;
 using Enums;
 using Game.AI.BehaviorTrees;
 using Game.Loaders;
-using Inventory;
-using MyBox;
 using Save;
 using System.Collections.Generic;
 using System.Linq;
-using Tools;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Managers.Bots
 {

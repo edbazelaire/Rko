@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e83ee2023ecc7e04480ae9c612ad7749, type: 3}
   m_Name: SoulSiffonRune
   m_EditorClassIdentifier: 
-  Rarety: 2
+  m_Rarety: 2
   m_Description: 
   m_DescriptionVariables: []
   m_SpellElements: 04000000
@@ -25,6 +25,7 @@ MonoBehaviour:
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: SoulSiffon
+      OverridingData: []
       Level: 0
       Target: 6
       SpellActivationEvent: 3
@@ -41,11 +42,12 @@ MonoBehaviour:
     m_BonusStats: []
   m_MajorPower:
     Description: '[TriggerEffect.0]\nThis effect is triggered when getting below
-      33% hp and stays active until the HP get backs to 50%.'
+      33% hp and stays active until the HP get back to 50%.'
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: SoulSiffon
+      OverridingData: []
       Level: 0
       Target: 6
       SpellActivationEvent: 3
@@ -62,11 +64,12 @@ MonoBehaviour:
     m_BonusStats: []
   m_PrimalPower:
     Description: '[TriggerEffect.0]\nThis effect is triggered when getting below
-      33% hp and stays active until the HP get backs to 66%.'
+      33% hp and stays active until the HP get back to 66%.'
     m_DescriptionVariables: []
     m_BonusLevel: 3
     m_TriggerEffects:
     - SpellDataName: SoulSiffon
+      OverridingData: []
       Level: 3
       Target: 6
       SpellActivationEvent: 3

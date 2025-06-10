@@ -95,7 +95,7 @@ namespace Data
                     target.Life.Heal(stacks, caster.PlayerId, parent, ESpellCategory.Direct);
                     break;
                 default:
-                    target.CharacterData.AddBonusStat(property, stacks);
+                    target.CharacterData.AddBonusStat(property, stacks, default);
                     break;
             }
         }

@@ -1,6 +1,6 @@
-﻿using System;
-using Unity.VisualScripting;
-using UnityEditor;
+﻿using Enums;
+using System;
+using Tools;
 using UnityEngine;
 
 namespace Assets.Scripts.Data.DataStructures.SpellRequirement
@@ -14,13 +14,9 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
         [SerializeField] protected int      m_Stacks;
         [SerializeField] protected float    m_NStacksReductionPerLevel;
 
-        public string StateEffect   => m_StateEffect;
-        public int Stacks           => Math.Max(0, m_Stacks - (int)Math.Floor(m_Level * m_NStacksReductionPerLevel));
-
-        public override string GetDescription()
-        {
-            return "Consumes " + Stacks + " stacks of [" + m_StateEffect + "]";
-        }
+        public string StateEffect                   => m_StateEffect;
+        public int Stacks                           => Math.Max(0, m_Stacks - (int)Math.Floor(m_Level * m_NStacksReductionPerLevel));
+        public EScalingDirection ScalingDirection   => m_NStacksReductionPerLevel < 0 ? EScalingDirection.Up : (m_NStacksReductionPerLevel > 0 ? EScalingDirection.Down : EScalingDirection.None);
 
         #endregion
 
@@ -48,8 +44,18 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
             if (!base.TryApplyRequirements(targetController))
                 return false;
 
-            targetController.StateHandler.RemoveStateEffect(m_StateEffect, true, m_Stacks);
+            targetController.StateHandler.RemoveStateEffect(m_StateEffect, consume: true, maxStacks: m_Stacks);
             return true;
+        }
+
+        #endregion
+
+
+        #region Info & Description
+
+        public override string GetDescription()
+        {
+            return "Consumes " + TextHandler.FormatScaling(Stacks.ToString(), ScalingDirection) + " stacks of [" + m_StateEffect + "]";
         }
 
         #endregion

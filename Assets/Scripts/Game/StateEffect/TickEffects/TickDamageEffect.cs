@@ -2,11 +2,9 @@
 using Data;
 using Enums;
 using Game.Character;
-using System;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 namespace Game.Spells
 {
@@ -25,7 +23,7 @@ namespace Game.Spells
 
         private float m_TickTimer;
 
-        protected float FinalTickLifeSteal => m_LifeSteal + Mathf.Max(0f, m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusTickLifeSteal, m_Controller) - 1);
+        protected float FinalTickLifeSteal => GetFloat(EStateEffectProperty.LifeSteal, specialCondition: StateEffectName) + Mathf.Max(0f, m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusTickLifeSteal, m_Controller, specialCondition: StateEffectName) - 1);
 
         #endregion
 
@@ -92,8 +90,7 @@ namespace Game.Spells
                 return;
 
             // ask state handler to fire the "OnHit" event to clients GFX
-            StateEffectEvent?.Invoke(StateEffectName, EStateEffectEvent.OnTick, m_Controller.PlayerId, m_Caster.PlayerId);
-            m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnHit, StateEffectName, m_Caster.PlayerId));
+            CallStateEffectEvent(EStateEffectEvent.OnTick, m_Stacks, m_Controller.PlayerId, m_Caster.PlayerId);
 
             // CHECK : DAMAGES
             int damages = GetInt(EStateEffectProperty.TickDamage);

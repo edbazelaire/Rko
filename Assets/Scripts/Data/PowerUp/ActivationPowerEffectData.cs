@@ -27,7 +27,7 @@ namespace Assets.Scripts.Data.PowerUp
         [SerializeField] 
         protected float                 m_ActivationTreshold;
         [SerializeField] 
-        protected ESpellActivation      m_SpellDeactivationEvent;
+        protected ETriggerType      m_SpellDeactivationEvent;
         [SerializeField] 
         protected float                 m_DeactivationTreshold;
         [SerializeField]
@@ -47,9 +47,9 @@ namespace Assets.Scripts.Data.PowerUp
 
         public SpellData            SpellData   => m_SpellData;
 
-        public ESpellActivation     SpellActivationEvent    => m_SpellActivationEvent;
+        public ETriggerType     SpellActivationEvent    => m_SpellActivationEvent;
         public float                ActivationTreshold      => m_ActivationTreshold;
-        public ESpellActivation     SpellDeactivationEvent  => m_SpellActivationEvent;
+        public ETriggerType     SpellDeactivationEvent  => m_SpellActivationEvent;
         public float                DeactivationTreshold    => m_DeactivationTreshold;
         public float                Duration                => m_Duration;
         public float                Delay                   => m_Delay;
@@ -111,11 +111,11 @@ namespace Assets.Scripts.Data.PowerUp
 
             switch (m_SpellActivationEvent)
             {
-                case ESpellActivation.Hp:
+                case ETriggerType.Hp:
                     m_Controller.Life.Hp.OnValueChanged += OnHpChanged;
                     break;
 
-                case ESpellActivation.Shield:
+                case ETriggerType.Shield:
                     m_Controller.Life.FinalShield.OnValueChanged += OnShieldChanged;
                     break;
 
@@ -181,7 +181,7 @@ namespace Assets.Scripts.Data.PowerUp
 
             if (m_StateEffectData != null)
             {
-                controller.StateHandler.AddStateEffect(m_StateEffectData.Clone(Level), m_Controller);
+                controller.StateHandler.AddStateEffect(m_StateEffectData.Clone(Level, parent: Name, origin: Name), m_Controller);
             }
         }
 
@@ -257,7 +257,7 @@ namespace Assets.Scripts.Data.PowerUp
 
         #region Listeners
 
-        void OnStateEffectEvent(string stateEffectName, EStateEffectEvent stateEffectEvent, ulong targetId, ulong casterId)
+        void OnStateEffectEvent(string stateEffectName, EStateEffectEvent stateEffectEvent, int stacks, ulong targetId, ulong casterId, string parent)
         {
             if (m_Controller == null)
             {
@@ -279,12 +279,12 @@ namespace Assets.Scripts.Data.PowerUp
 
         protected virtual void OnHpChanged(int oldValue, int newValue)
         {
-            if (SpellActivationEvent == ESpellActivation.Hp && ActivationTreshold >= (float)newValue / m_Controller.Life.MaxHp.Value)
+            if (SpellActivationEvent == ETriggerType.Hp && ActivationTreshold >= (float)newValue / m_Controller.Life.MaxHp.Value)
             {
                 Activate();
             }
 
-            else if (SpellDeactivationEvent == ESpellActivation.Hp && DeactivationTreshold >= (float)newValue / m_Controller.Life.MaxHp.Value)
+            else if (SpellDeactivationEvent == ETriggerType.Hp && DeactivationTreshold >= (float)newValue / m_Controller.Life.MaxHp.Value)
             {
                 Deactivate();
             }
@@ -292,12 +292,12 @@ namespace Assets.Scripts.Data.PowerUp
 
         protected virtual void OnShieldChanged(int oldValue, int newValue)
         {
-            if (SpellActivationEvent == ESpellActivation.Shield && ((ActivationTreshold == 1 && newValue > 0) || (ActivationTreshold == 0 && newValue <= 0)))
+            if (SpellActivationEvent == ETriggerType.Shield && ((ActivationTreshold == 1 && newValue > 0) || (ActivationTreshold == 0 && newValue <= 0)))
             {
                 Activate();
             }
 
-            else if (SpellDeactivationEvent == ESpellActivation.Shield && ((DeactivationTreshold == 1 && newValue > 0) || (DeactivationTreshold == 0 && newValue <= 0)))
+            else if (SpellDeactivationEvent == ETriggerType.Shield && ((DeactivationTreshold == 1 && newValue > 0) || (DeactivationTreshold == 0 && newValue <= 0)))
             {
                 Deactivate();
             }

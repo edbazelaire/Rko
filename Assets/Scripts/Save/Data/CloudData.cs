@@ -108,7 +108,8 @@ namespace Save
             catch (Exception ex)
             {
                 ErrorHandler.Error("Unable to Convert " + key + " with value " + item.Value.GetAsString());
-                ErrorHandler.Error(ex.Message);
+                if (ex != null)
+                    ErrorHandler.Error(ex.Message);
 
                 OnLoadingError(key, item);
                 return false;

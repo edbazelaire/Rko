@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a54727096f1b9a14e931ac401f233989, type: 3}
   m_Name: AstralIcefall
   m_EditorClassIdentifier: 
-  Rarety: 1
+  m_Rarety: 1
   m_Description: '{0} comets falling from the sky each dealing {1} damage and applying
     3 stacks of {2} and 1 stack of {3}'
   m_DescriptionVariables:
@@ -46,21 +46,31 @@ MonoBehaviour:
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
-  SpellTarget: 6
+  SpellTarget: 9
   m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
@@ -78,10 +88,23 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
-  - Property: 3
-    Value: 0.05
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
   - Property: 6
-    Value: 0.03
+    Value: 1
+    ScalingType: 1
+    RoundingType: 1
+    ScalingTresholds: []
+  - Property: 7
+    Value: 0
+    ScalingType: 1
+    RoundingType: 1
+    ScalingTresholds:
+    - Level: 13
+      Value: 2
+    - Level: 17
+      Value: 3
   m_Size: 0
   TriggerPlayer: 1
   EnemyStateEffects: []
@@ -91,7 +114,7 @@ MonoBehaviour:
   Animation: 6
   IsCancellable: 0
   AnimationTimer: 1.2
-  m_Cooldown: 40
+  m_Cooldown: 30
   Trajectory: 4
   m_TriggerGround: 1
   m_StopOnTargetPos: 0
@@ -100,11 +123,11 @@ MonoBehaviour:
   ProjectileData: {fileID: 11400000, guid: 1c3b0097e22d6a84983ae4423845d137, type: 2}
   MultiProjectileType: 2
   m_RecalculatePosition: 0
-  m_IsBlocking: 1
-  m_NProjectiles: 8
+  m_IsBlocking: 0
+  m_NProjectiles: 1
   m_ProjectileZoneSize: -1
   m_DelayBetweenLaunches: 1
   m_NWaves: 1
-  m_DelayBetweenWaves: 0
+  m_DelayBetweenWaves: 5
   OnCastWaveSoundFX: {fileID: 0}
   OnCastProjectileSoundFX: {fileID: 0}

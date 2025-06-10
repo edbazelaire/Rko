@@ -95,12 +95,12 @@ namespace Assets.Scripts.Managers
             if (CurrentVersion.CompareTo(new Version("0.3.1")) == -1)
                 test = UpdateVersion_0_3_1();
 
+            if (CurrentVersion.CompareTo(new Version("0.3.3")) == -1)
+                test = UpdateVersion_0_3_3();
+
             // if does not trigger any version until now, update to current version
             if (CurrentVersion.CompareTo(GameVersion) == -1)
                 SetVersion(Application.version);
-
-            // on updates - check if there were changes in achievements that needs to be provided to the player
-            CheckAchievements();
 
             return test;
         }
@@ -118,9 +118,24 @@ namespace Assets.Scripts.Managers
                 return false;
             }
 
+            if (GameVersion.CompareTo(new Version(version)) < 0)
+            {
+                ErrorHandler.Error($"Trying to set new version {version} wich is > game version {GameVersion}");
+                return false;
+            }
+
+            if (GameVersion.CompareTo(new Version(version)) == 0)
+                ApplyNewVersionChecks();
+
             Debug.Log($"Version Updated from {CurrentVersion} to {version}");
             PlayerPrefs.SetString("LastVersion", version);
             return true;
+        }
+
+        static void ApplyNewVersionChecks()
+        {
+            // on updates - check if there were changes in achievements that needs to be provided to the player
+            CheckAchievements();
         }
 
         /// <summary>
@@ -529,6 +544,22 @@ namespace Assets.Scripts.Managers
             ));
         }
 
+        #endregion
+
+
+        #region v0.3.3
+
+        static bool UpdateVersion_0_3_3()
+        {
+            // check if the version should be updated
+            if (GameVersion.CompareTo(new Version("0.3.1")) == -1)
+                return true;
+
+            
+            return true;
+        }
+
+        
         #endregion
 
 

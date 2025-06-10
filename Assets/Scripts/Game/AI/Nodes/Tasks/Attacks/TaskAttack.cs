@@ -83,7 +83,7 @@ public class TaskAttack : BaseTask
         }
 
         // check that no state is blocking the cast
-        if (m_Controller.SpellHandler.HasStateBlockingCast())
+        if (! m_Controller.StateHandler.CanCast)
         {
             ErrorHandler.Log("     + HasStateBlockingCast  : true",     ELogTag.AITaskAttack);
             ErrorHandler.Log("     + State                 : FAILURE",  ELogTag.AITaskAttack);

@@ -51,7 +51,6 @@ namespace Menu.PopUps
         {
             base.OnPrefabLoaded();
 
-            SetUpDescription();
             m_RuneInfoTabManager.Initialize(m_RuneActivation);
         }
 
@@ -60,19 +59,13 @@ namespace Menu.PopUps
 
         #region UIManipulators
 
-        protected override void RefreshUI()
-        {
-            base.RefreshUI();
-            SetUpDescription();
-        }
-
         protected override void SetupCollectable(Enum enumValue, int level)
         {
             base.SetupCollectable(enumValue, level);
             m_RuneData.SetActivation(m_RuneActivation);
         }
 
-        void SetUpDescription()
+        protected override void SetUpDescription()
         {
             m_MinorRuneDescription.text = m_RuneData.GetDescription(ERuneActivation.Minor);
             m_MajorRuneDescription.text = m_RuneData.GetDescription(ERuneActivation.Major);

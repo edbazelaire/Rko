@@ -14,16 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 1
   m_Description: Shoots {0} Shadow Shurikens on the enemy in a straight line, each
-    dealing {1} damage, applying {2} and 3 stacks of {3}. The shadow shurikens end
-    when reaching the center of the enemy's area.
+    dealing {1} damage, applying [EnemyStateEffect.0] and [EnemyStateEffect.1].\n\nThe
+    shadow shurikens end when reaching the center of the enemy's area.
   m_DescriptionVariables:
   - Name: Projectiles
     WithIcon: 1
   - Name: Damage
-    WithIcon: 1
-  - Name: Poison
-    WithIcon: 1
-  - Name: Cursed
     WithIcon: 1
   m_SpellElements: 0300000004000000
   Linked: 0
@@ -94,7 +90,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
-  m_NCharges: 1
+  m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 45
@@ -113,15 +109,14 @@ MonoBehaviour:
   - Property: 2
     Value: 0.1
     ScalingType: 0
-  - Property: 3
-    Value: 0.5
-    ScalingType: 1
+    RoundingType: 2
+    ScalingTresholds: []
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects:
   - StateEffect: 13
     Stacks: 3
-    BonusStacksPerLevel: 0
+    BonusStacksPerLevel: 0.25
     OverridingProperties: []
   - StateEffect: 9
     Stacks: 1

@@ -2,12 +2,10 @@
 using Data;
 using Data.DataStructures;
 using Enums;
-using NUnit.Framework.Internal;
 using System;
 using System.Collections.Generic;
 using Tools;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Game.Character
@@ -137,15 +135,15 @@ namespace Game.Character
         {
             // =================================================================================================
             // Spell Activation
-            if (effect.SpellActivationEvent == ESpellActivation.GameStart)
+            if (effect.SpellActivationEvent == ETriggerType.GameStart)
             {
                 effect.Activate(m_Controller);
             }
-            else if (effect.SpellActivationEvent == ESpellActivation.Hp && effect.ActivationTreshold >= (float)m_Controller.Life.Hp.Value / m_Controller.Life.MaxHp.Value)
+            else if (effect.SpellActivationEvent == ETriggerType.Hp && effect.ActivationTreshold >= (float)m_Controller.Life.Hp.Value / m_Controller.Life.MaxHp.Value)
             {
                 effect.Activate(m_Controller);
             }
-            else if (effect.SpellActivationEvent == ESpellActivation.Shield && effect.ActivationTreshold == 1 && m_Controller.Life.FinalShield.Value > 0)
+            else if (effect.SpellActivationEvent == ETriggerType.Shield && effect.ActivationTreshold == 1 && m_Controller.Life.FinalShield.Value > 0)
             {
                 effect.Activate(m_Controller);
             }
@@ -162,7 +160,7 @@ namespace Game.Character
                 var effect = m_TriggerEffects[i];
 
                 // CHECK : is triggered by death
-                if (effect.SpellActivationEvent != ESpellActivation.Death)
+                if (effect.SpellActivationEvent != ETriggerType.Death)
                     continue;
 
                 // CHECK : can be activated
@@ -213,7 +211,7 @@ namespace Game.Character
                 var effect = m_TriggerEffects[i];
                 if (
                     ! effect.IsActivated
-                    && effect.SpellActivationEvent == ESpellActivation.Hp 
+                    && effect.SpellActivationEvent == ETriggerType.Hp 
                     && effect.ActivationTreshold >= (float)newValue / m_Controller.Life.MaxHp.Value
                 )
                 {
@@ -223,7 +221,7 @@ namespace Game.Character
 
                 if (
                     effect.IsActivated 
-                    && effect.SpellDeactivationEvent == ESpellActivation.Hp 
+                    && effect.SpellDeactivationEvent == ETriggerType.Hp 
                     && effect.DeactivationTreshold <= (float)newValue / m_Controller.Life.MaxHp.Value
                 )
                 {
@@ -243,7 +241,7 @@ namespace Game.Character
                 // CHECK : Activation
                 if (! effect.IsActivated)
                 {
-                    if (effect.SpellActivationEvent == ESpellActivation.Shield && newValue <= effect.ActivationTreshold)
+                    if (effect.SpellActivationEvent == ETriggerType.Shield && newValue <= effect.ActivationTreshold)
                     {
                         effect.Activate(m_Controller);
                         m_TriggerEffects[i] = effect;
@@ -253,7 +251,7 @@ namespace Game.Character
                 // CHECK : Deactivation
                 else
                 {
-                    if (effect.SpellDeactivationEvent == ESpellActivation.Shield && newValue >= effect.DeactivationTreshold)
+                    if (effect.SpellDeactivationEvent == ETriggerType.Shield && newValue >= effect.DeactivationTreshold)
                     {
                         effect.Deactivate();
                         m_TriggerEffects[i] = effect;

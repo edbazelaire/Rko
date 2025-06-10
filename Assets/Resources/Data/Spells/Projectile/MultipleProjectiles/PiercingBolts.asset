@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 2
   m_Description: "Using your character\u2019s AutoAttack as a projectile, fire {0}
-    shots in a straight line. Each shot is dealing 50% of projectile initial damage."
+    shots in a straight line. Each shot is dealing 50% of projectile initial damage.\\n\\nThis
+    effect gains <b><color=#00FF00>+1</color> Charge</b> at level 9 and at level
+    14"
   m_DescriptionVariables:
   - Name: NProjectiles
     WithIcon: 1
@@ -120,11 +122,11 @@ MonoBehaviour:
         Max: 0
     m_SpellTargetY:
       m_Dimension: 2
-      m_MultiSpellTarget: 1
-      m_ZoneSize: 0.3
+      m_MultiSpellTarget: 0
+      m_ZoneSize: 0
       m_NBreakPoints: 0
       m_OffsetMinMax:
-        Min: 0.2
+        Min: 0
         Max: 0
   m_YMinMax:
     Min: 0

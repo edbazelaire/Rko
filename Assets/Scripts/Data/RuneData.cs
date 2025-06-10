@@ -1,5 +1,7 @@
 ﻿using Assets.Scripts.Data.PowerUp;
 using Data.DataStructures;
+using Data.DataStructures.CharacterSubStructures;
+using Data.DataStructures.StateEffectSubStructures;
 using Enums;
 using Game.Loaders;
 using System;
@@ -122,9 +124,9 @@ namespace Data
             return true;
         }
 
-        bool TryGetProperty(EStateEffectProperty property, out float value, bool throwError = false)
+        bool TryGetCharacterStat(EStateEffectProperty property, out SCharacterStatScaling characterStat, bool throwError = false)
         {
-            value = 0f;
+            characterStat = default;
             if (m_BonusStats == null)
                 return false;
 
@@ -132,7 +134,7 @@ namespace Data
             {
                 if (stat.StateEffectProperty == property)
                 {
-                    value = stat.GetDefaultValue(m_Level);
+                    characterStat = stat;
                     return true;
                 }
             }
@@ -143,6 +145,16 @@ namespace Data
             return false;
         }
 
+        bool TryGetProperty(EStateEffectProperty property, out float value, bool throwError = false)
+        {
+            value = 0f;
+            if (! TryGetCharacterStat(property, out SCharacterStatScaling characterStat, throwError: false))
+                return false;
+
+            value = characterStat.GetDefaultValue(m_Level);
+            return true;
+        }
+
         /// <summary>
         /// Get Description info of the StateEffect
         /// </summary>
@@ -151,7 +163,6 @@ namespace Data
         {
             List<string> values = new List<string>();
 
-            float value;
             foreach (SDescriptionVariable descriptionVariable in m_DescriptionVariables)
             {
                 // State Effect    --------------------------------------------------------------
@@ -169,14 +180,22 @@ namespace Data
                 // Property         --------------------------------------------------------------
                 else if (Enum.TryParse(descriptionVariable.Name, out EStateEffectProperty property))
                 {
-                    if (!TryGetProperty(property, out value))
+                    if (!TryGetCharacterStat(property, out SCharacterStatScaling characterStat))
                     {
                         ErrorHandler.Error("Unable to find property " + property + " in RUNE " + this);
                         values.Add("<b>UNDEFINED</b>");
                         continue;
                     }
-                    
-                    values.Add($"<b>{TextHandler.FormatPropertyValue(value, descriptionVariable.Name)}</b>");
+
+                    // check scaling
+                    EScalingDirection scaling = EScalingDirection.None;
+                    if (characterStat.ScalingFactor > 0)
+                        scaling = EScalingDirection.Up;
+                    else if (characterStat.ScalingFactor < 0)
+                        scaling = EScalingDirection.Down;
+
+                    // add value to list of values
+                    values.Add($"<b>{TextHandler.FormatScaling(TextHandler.FormatPropertyValue(characterStat.GetDefaultValue(Level), descriptionVariable.Name), scaling)}</b>");
                 }
 
                 // UNDEFINED        --------------------------------------------------------------
@@ -192,7 +211,8 @@ namespace Data
             if (description == "" && m_TriggerEffects.Count > 0)
                 description = "[TriggerEffect.0]";
 
-            return TextHandler.ReplaceStateEffectTokens(TextHandler.ReplaceTriggerEffectTokens(description, m_TriggerEffects));
+            description = TextHandler.ReplaceStateEffectTokens(TextHandler.ReplaceTriggerEffectTokens(description, m_TriggerEffects));
+            return TextHandler.ReplaceCharacterStat(description, m_BonusStats, m_Level);
         }
 
         #endregion

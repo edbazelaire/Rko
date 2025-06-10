@@ -13,18 +13,15 @@ MonoBehaviour:
   m_Name: PyrotoxinMist
   m_EditorClassIdentifier: 
   m_Rarety: 1
-  m_Description: Zone applying {0} damage each {1} seconds for {2} seconds. Also
-    applies a {3} and a {4} stack. The size of the zone grows by {5} during its lifetime
+  m_Description: A poison gas applying {0} damage each {1} seconds for {2} seconds.\nAlso
+    applies [EnemyStateEffect.0] and [EnemyStateEffect.1].\n\nThe size of the zone
+    grows by {3} during its lifetime
   m_DescriptionVariables:
   - Name: TickDamage
     WithIcon: 1
   - Name: DurationTick
     WithIcon: 0
   - Name: Duration
-    WithIcon: 1
-  - Name: Burn
-    WithIcon: 1
-  - Name: Poison
     WithIcon: 1
   - Name: GrowSizeFactor
     WithIcon: 0
@@ -78,7 +75,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 0
-  m_NCharges: 1
+  m_Charges: 1
   EnergyGain: 5
   EnergyCost: 0
   m_Damage: 15

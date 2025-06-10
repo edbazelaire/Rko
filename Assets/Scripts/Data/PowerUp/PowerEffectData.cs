@@ -6,6 +6,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using Data.DataStructures;
+using Data.DataStructures.CharacterSubStructures;
 
 namespace Assets.Scripts.Data.PowerUp
 {
@@ -17,7 +18,7 @@ namespace Assets.Scripts.Data.PowerUp
         [SerializeField] 
         protected ESpellTarget                  m_Target;
         [SerializeField] 
-        protected ESpellActivation              m_SpellActivationEvent;
+        protected ETriggerType                  m_SpellActivationEvent;
         [SerializeField]
         protected List<SCharacterStatScaling>   m_BonusStats;
         [SerializeField]
@@ -196,7 +197,7 @@ namespace Assets.Scripts.Data.PowerUp
         {
             switch (m_SpellActivationEvent)
             {
-                case ESpellActivation.GameStart:
+                case ETriggerType.GameStart:
                     if (GameManager.Instance.IsGameStarted)
                         Activate();
                     else
