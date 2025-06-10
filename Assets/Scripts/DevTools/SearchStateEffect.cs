@@ -14,19 +14,20 @@ public class SpellDataSearcher: EditorWindow
         List<Object> matchingSpells = new List<Object>();
 
         List<string> fields = new() {
-            //"m_IsTrueDamage",
+            "m_IsTrueDamage",
             //"m_CooldownReduction",
-            //"m_CooldownReductionPerc",
+            "m_CooldownReductionPerc",
             //"m_Shield",
             //"m_ResistanceFix",
-            //"m_ResistancePerc",
+            "m_ResistancePerc",
             //"m_BonusDamage",
-            //"m_BonusDamagePerc",
-            //"m_BonusLifeSteal",
-            //"m_BonusHeal",
-            //"m_BonusHealPerc",
-            //"m_BonusBurnDamage",
-            //"m_BonusSlowPerc",
+            "m_BonusDamagePerc",
+            "m_BonusLifeSteal",
+            "m_BonusHeal",
+            "m_BonusHealPerc",
+            "m_BonusBurnDamage",
+            "m_BonusSlowPerc",
+            "m_LifeSteal",
         };
 
         foreach (string fieldName in fields)
