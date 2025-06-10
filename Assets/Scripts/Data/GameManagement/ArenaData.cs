@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Data.DataStructures.Common;
 using Assets.Scripts.Data.GameManagement;
 using Data.DataStructures;
+using Data.DataStructures.CharacterSubStructures;
 using Enums;
 using Managers;
 using Save;

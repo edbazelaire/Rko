@@ -90,12 +90,12 @@ namespace Game.Character
             m_DefaultMaterial = m_SpriteRenderers[0].material;
 
             m_Controller.SpellHandler.OnPreSpellEvent               += OnPreSpellEvent;
-            m_Controller.StateHandler.StateEffectListEvent          += OnStateEffectListChanged;
+            m_Controller.StateHandler.StateEffectEvent              += OnStateEffectEventChanged;
         }
 
         public override void OnDestroy()
         {
-            m_Controller.StateHandler.StateEffectListEvent          -= OnStateEffectListChanged;
+            m_Controller.StateHandler.StateEffectEvent              -= OnStateEffectEventChanged;
         }
 
         #endregion
@@ -545,24 +545,25 @@ namespace Game.Character
         /// </summary>
         /// <param name="oldValue"></param>
         /// <param name="newValue"></param>
-        void OnStateEffectListChanged(EListEvent listEvent, string stateEffect, int stacks, float duration)
+        void OnStateEffectEventChanged(EStateEffectEvent stateEffectEvent, string stateEffect, int stacks, int maxStacks, float duration)
         {
             // ---------------------------------------------------------------------------------------
             // SPECIAL EFFECTS
             if (stateEffect == EStateEffect.Invisible.ToString())
             {
-                float opacity = 1f;
-
-                if (listEvent == EListEvent.Add)
-                    opacity = IsOwner ? 0.5f : 0f;
-
-                SetColor(new Color(1f, 1f, 1f, opacity));
+                if (stateEffectEvent == EStateEffectEvent.OnApplied)
+                    SetColor(new Color(1f, 1f, 1f, IsOwner ? 0.5f : 0f));
+                else if (stateEffectEvent == EStateEffectEvent.OnEnd)
+                    SetColor(new Color(1f, 1f, 1f, 1f));
                 return;
             }
             
             if (stateEffect == EStateEffect.Vanish.ToString())
             {
-                HideCharacter(listEvent == EListEvent.Add);
+                if (stateEffectEvent == EStateEffectEvent.OnApplied)
+                    HideCharacter(true);
+                else if (stateEffectEvent == EStateEffectEvent.OnEnd)
+                    HideCharacter(false);
                 return;
             }
         }

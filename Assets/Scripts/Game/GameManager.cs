@@ -3,6 +3,7 @@ using Assets.Scripts.Game;
 using Assets.Scripts.Managers.Sound;
 using Assets.Scripts.Tools;
 using Data;
+using Data.DataStructures.CharacterSubStructures;
 using Enums;
 using Externals;
 using Game.GameManagers.Components;
@@ -1111,13 +1112,13 @@ namespace Game
         [Command(KeyCode.M)]
         public void HitSelf()
         {
-            Owner.Life.Hit(500, 999, "God", Enums.ESpellCategory.Direct, true);
+            Owner.Life.Hit(500, 999, "Debug", Enums.ESpellCategory.Direct, true);
         }
 
         [Command(KeyCode.L)]
         public void Hit()
         {
-            GetFirstEnemy(Owner.Team).Life.Hit(1000, 0, "God", Enums.ESpellCategory.Direct, true);
+            GetFirstEnemy(Owner.Team).Life.Hit(1000, 0, "Debug", Enums.ESpellCategory.Direct, true);
         }
 
         /// <summary>
@@ -1157,7 +1158,7 @@ namespace Game
             if (controller.StateHandler.HasState(EStateEffect.Invulnerable))
                 controller.StateHandler.RemoveStateEffect(EStateEffect.Invulnerable);
             else
-                controller.StateHandler.AddStateEffect(EStateEffect.Invulnerable.ToString(), Owner);
+                controller.StateHandler.AddStateEffect(EStateEffect.Invulnerable.ToString(), Owner, 1, "Debug");
         }
 
         [Command(KeyCode.U)]
@@ -1167,7 +1168,7 @@ namespace Game
             if (controller.StateHandler.HasState(EStateEffect.Invulnerable))
                 controller.StateHandler.RemoveStateEffect(EStateEffect.Invulnerable);
             else
-                controller.StateHandler.AddStateEffect(EStateEffect.Invulnerable.ToString(), Owner);
+                controller.StateHandler.AddStateEffect(EStateEffect.Invulnerable.ToString(), Owner, 1, "Debug");
         }
 
         [Command(KeyCode.K)]

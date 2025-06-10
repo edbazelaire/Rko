@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: FireBomb
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: Throw a fireball that deals {0} damage and applies {1} in an area
-    of {2}
+  m_Description: Throw a fire bomb that explodes in contact of an enemy or the ground,
+    dealing {0} damage and applies {1} in an area of {2}
   m_DescriptionVariables:
   - Name: Damage
     WithIcon: 1
@@ -71,7 +71,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
-  m_NCharges: 1
+  m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 50
@@ -94,9 +94,18 @@ MonoBehaviour:
     ScalingTresholds: []
   - Property: 3
     Value: -0.25
-    ScalingType: 0
-    RoundingType: 2
+    ScalingType: 1
+    RoundingType: 0
     ScalingTresholds: []
+  - Property: 20
+    Value: 0
+    ScalingType: 1
+    RoundingType: 2
+    ScalingTresholds:
+    - Level: 9
+      Value: 2
+    - Level: 14
+      Value: 3
   m_Size: 2
   TriggerPlayer: 1
   EnemyStateEffects: []

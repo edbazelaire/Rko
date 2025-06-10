@@ -56,7 +56,7 @@ namespace Game.Spells.SpecialEffects
             if (nStacks == 0)
                 return;
 
-            m_Spell.Controller.StateHandler.AddStateEffect(new SStateEffectData(EStateEffect.DarkRetribution, nStacks), m_Spell.Controller, m_Level);
+            m_Spell.Controller.StateHandler.AddStateEffect(new SStateEffectData(EStateEffect.DarkRetribution, nStacks), m_Spell.Controller, m_Level, ESpell.Scythefall.ToString());
         }
 
         bool CheckCollision(Collider2D collider, out Mine spell) 

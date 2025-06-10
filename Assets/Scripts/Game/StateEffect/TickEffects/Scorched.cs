@@ -24,7 +24,7 @@ namespace Game.Spells
             }
 
             // re-apply burn effect anyway
-            m_Controller.StateHandler.AddStateEffect(EStateEffect.Burn, m_Caster);
+            m_Controller.StateHandler.AddStateEffect(EStateEffect.Burn.ToString(), m_Caster, m_Level, m_Origin);
 
             return test;
         }

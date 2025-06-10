@@ -34,20 +34,24 @@ namespace Menu.Common.Infos
             m_BonusValue        = Finder.FindComponent<TMP_Text>(gameObject, "BonusValue");
         }
 
-
-        public void Initialize(string name, object value, object newValue = null)
+        public void Initialize(string name, object value, object newValue = null, EScalingDirection scalingDirection = EScalingDirection.None)
         {
+            // find components before instantiation
             FindComponents();
 
-            // set name of the row
-            m_Name.text = TextLocalizer.SplitCamelCase(TextLocalizer.LocalizeText(name));
             // by default, deactivate bonus value
             m_BonusValue.gameObject.SetActive(false);
-            // is the value a percentage value ?
-            m_PropertyName = name;
+
+            // setup name of the property
+            if (!TextHandler.IsSpecialPropertyName(name, out string propertyName, out string specialCondition))
+                propertyName = name;
+            m_PropertyName = propertyName;
+
+            // setup name and color of the info row title
+            SetUpName(name, scalingDirection);
 
             // handles special cases
-            switch (name)
+            switch (propertyName)
             {
                 case "Type":
                     m_Icon.sprite   = AssetLoader.LoadUIElementIcon(value.ToString());
@@ -67,20 +71,20 @@ namespace Menu.Common.Infos
                     return;
 
                 case "Movement":
-                    m_Icon.sprite = AssetLoader.LoadUIElementIcon("Movement");
+                    m_Icon.sprite   = AssetLoader.LoadUIElementIcon("Movement");
                     m_Value.text    = TextLocalizer.LocalizeText(value as string);
                     m_BonusValue.gameObject.SetActive(false);
                     return;
             }
 
-            if (SpellLoader.IsStateEffect(name))
+            if (SpellLoader.IsStateEffect(propertyName))
             {
-                m_Icon.sprite = AssetLoader.LoadStateEffectIcon(name);
+                m_Icon.sprite = AssetLoader.LoadStateEffectIcon(propertyName);
                 m_Name.text += " Cost";
             }
             else
             {
-                m_Icon.sprite = AssetLoader.LoadUIElementIcon(name);
+                m_Icon.sprite = AssetLoader.LoadUIElementIcon(propertyName);
             }
 
             RefreshValue(value, newValue);
@@ -90,6 +94,31 @@ namespace Menu.Common.Infos
 
 
         #region GUI Manipulators
+
+        public void SetUpName(string name, EScalingDirection scalingDirection)
+        {
+            // set name of the row
+            m_Name.text = TextLocalizer.SplitCamelCase(TextLocalizer.LocalizeText(name));
+
+            // Update name color based on scaling
+            switch (scalingDirection)
+            {
+                case EScalingDirection.None:
+                    break;
+
+                case EScalingDirection.Up:
+                    m_Name.color = Color.green;
+                    break;
+
+                case EScalingDirection.Down:
+                    m_Name.color = Color.red;
+                    break;
+
+                default:
+                    ErrorHandler.Warning("Unhandled case : " + scalingDirection);
+                    break;
+            }
+        }
 
         public void RefreshValue(object value, object newValue = null)
         {
@@ -125,9 +154,6 @@ namespace Menu.Common.Infos
             m_BonusValue.gameObject.SetActive(true);
             m_BonusValue.text = (bonus > 0 ? "+" : "") + TextHandler.FormatPropertyValue(bonus, m_PropertyName);
             m_BonusValue.color = color;
-
-            // -- change name color and add arrow symbol
-            m_Name.color = color;
         }
 
         #endregion

@@ -1,106 +1,15 @@
-﻿using Assets.Scripts.Data.DataStructures.SpellSubStructures;
+﻿using Data.DataStructures.CharacterSubStructures;
 using Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
 using Unity.Collections;
-using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 namespace Data
 {
-    [Serializable]
-    public struct SCharacterStatScaling : INetworkSerializable
-    {
-        public EStateEffectProperty             StateEffectProperty;
-        public float                            BaseValue;
-        public float                            BonusValue;
-        public float                            ScalingFactor;
-        public List<SStateEffectStackFactor>    StateEffectStackFactors;
-
-        public SCharacterStatScaling(EStateEffectProperty stateEffectProperty, float baseValue, float bonusValue, float scalingFactor = 0.1f, List<SStateEffectStackFactor> stateEffectStackFactors = default)
-        {
-            StateEffectProperty = stateEffectProperty;
-            BaseValue = baseValue;
-            BonusValue = bonusValue;
-            ScalingFactor = scalingFactor;
-            StateEffectStackFactors = stateEffectStackFactors != default ? stateEffectStackFactors : new List<SStateEffectStackFactor>() ;
-        }
-
-        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-        {
-            serializer.SerializeValue(ref StateEffectProperty);
-            serializer.SerializeValue(ref BaseValue);
-            serializer.SerializeValue(ref BonusValue);
-            serializer.SerializeValue(ref ScalingFactor);
-
-            // -- PowerUps
-            var length = StateEffectStackFactors != null ? StateEffectStackFactors.Count : 0;
-            serializer.SerializeValue(ref length);
-            if (serializer.IsReader)
-            {
-                StateEffectStackFactors = new List<SStateEffectStackFactor>();
-            }
-            for (int i = 0; i < length; i++)
-            {
-                StateEffectStackFactors[i].NetworkSerialize(serializer);
-            }
-        }
-
-        /// <summary>
-        /// Return a SCharacterStatScaling but the final value is set as fixed bonus value
-        /// </summary>
-        /// <param name="level"></param>
-        /// <returns></returns>
-        public SCharacterStatScaling AsBonus(int level)
-        {
-            // set BonusValue as the total value for the level
-            BonusValue = GetValue(level);
-
-            // reset scaling values
-            BaseValue = 0f;
-            ScalingFactor = 0f;
-            
-            return this;
-        }
-
-        public float GetValue(int level, Controller controller = null, Controller targetController = null)
-        {
-            return BonusValue
-                + BaseValue * Mathf.Pow(1 + ScalingFactor, level - 1)
-                + GetStateEffectStackBonus(level, controller, targetController);
-        }
-
-        public float GetDefaultValue(int level)
-        {
-            float value = BonusValue + BaseValue * Mathf.Pow(1 + ScalingFactor, level - 1);
-
-            foreach (var stateEffectStackFactor in StateEffectStackFactors)
-            {
-                value += stateEffectStackFactor.GetBonusValue(level, nStacks: 1);
-            }
-
-            return value;
-        }
-
-        float GetStateEffectStackBonus(int level, Controller controller, Controller targetController)
-        {
-            if (controller == null || StateEffectStackFactors == null)
-                return 0.0f;
-
-            float value = 0.0f;
-            foreach (var stateEffectStackFactor in StateEffectStackFactors)
-            {
-                value += stateEffectStackFactor.GetBonusValue(level, controller, targetController);
-            }
-
-            return value;
-        }
-    }
-
     [CreateAssetMenu(fileName = "Character", menuName = "Game/Character")]
     public class CharacterData : CollectableData
     {
@@ -111,7 +20,8 @@ namespace Data
             EStateEffectProperty.Shield,
             EStateEffectProperty.ResistanceFix,
             EStateEffectProperty.Damage,
-            EStateEffectProperty.TickShield,
+            EStateEffectProperty.Heal,
+            EStateEffectProperty.HealReduction,
             EStateEffectProperty.BonusDamage,
             EStateEffectProperty.BonusTickDamage,
             EStateEffectProperty.BonusTickHeal,
@@ -120,7 +30,10 @@ namespace Data
             EStateEffectProperty.Hp,
             EStateEffectProperty.Stacks,
             EStateEffectProperty.EndDamage,
-            EStateEffectProperty.EndHeal, 
+            EStateEffectProperty.EndHeal,
+            EStateEffectProperty.TickDamage,
+            EStateEffectProperty.TickHeal,
+            EStateEffectProperty.TickShield,
         };
 
         // ===============================================================================================================
@@ -153,8 +66,8 @@ namespace Data
         public ESpell AutoAttack            => ParseSpell(m_AutoAttack);
         public ESpell SpecialAbility        => ParseSpell( m_SpecialAbility);
         public ESpell Ultimate              => ParseSpell(m_Ultimate);
-        public int MaxHealth                => (int)Math.Round(BaseHealth * Math.Pow(1 + HealthScaleFactor, m_Level - 1)) + (int)GetValue(EStateEffectProperty.Hp);
-        public float Speed                  => BaseSpeed + GetValue(EStateEffectProperty.SpeedBonus);
+        public int MaxHealth                => (int)Math.Round(BaseHealth * Math.Pow(1 + HealthScaleFactor, m_Level - 1)) + (int)GetValue(EStateEffectProperty.Hp, "");
+        public float Speed                  => BaseSpeed + GetValue(EStateEffectProperty.SpeedBonus, "");
         public List<SRunePower> SpecialPowers => m_SpecialPowers;
 
         #endregion
@@ -206,9 +119,9 @@ namespace Data
             }
         }
 
-        public void AddBonusStat(EStateEffectProperty property, float value)
+        public void AddBonusStat(EStateEffectProperty property, float value, List<string> specialConditions)
         {
-            AddBonusStats(new List<SCharacterStatScaling>() { new SCharacterStatScaling(property, 0f, value, 0f) });
+            AddBonusStats(new List<SCharacterStatScaling>() { new SCharacterStatScaling(property, 0f, value, 0f, specialConditions) });
         }
 
         /// <summary>
@@ -219,7 +132,7 @@ namespace Data
         {
             foreach (var characterStatScaling in bonusStats)
             {
-                int index = CharacterStatScaling.FindIndex(value => value.StateEffectProperty.Equals(characterStatScaling.StateEffectProperty));
+                int index = CharacterStatScaling.FindIndex(value => value.StateEffectProperty.Equals(characterStatScaling.StateEffectProperty) && value.SpecialConditions == characterStatScaling.SpecialConditions);
                 if (index < 0)
                 {
                     CharacterStatScaling.Add(characterStatScaling.AsBonus(m_Level));
@@ -238,29 +151,27 @@ namespace Data
 
         #region Scaling & Stats Accessors
 
-        public float GetValue(EStateEffectProperty property, Controller caster = null, Controller targetController = null)
+        public float GetValue(EStateEffectProperty property, string specialCondition, Controller caster = null, Controller targetController = null)
         {
-            var characterStatScalingData = GetCharacterScalingData(property);
-            if (! characterStatScalingData.HasValue)
-                return 0.0f;
-
-            return characterStatScalingData.Value.GetValue(Level, caster, targetController);
-        }
-
-        public int GetInt(EStateEffectProperty property, Controller caster = null, Controller targetController = null)
-        {
-            return (int)Math.Round(GetValue(property, caster, targetController));
-        }
-
-        SCharacterStatScaling? GetCharacterScalingData(EStateEffectProperty property)
-        {
-            foreach (SCharacterStatScaling data in CharacterStatScaling)
+            float value = 0f;
+            var characterStatScalingData = GetCharacterScalingData(property, specialCondition);
+            foreach (SCharacterStatScaling characterStatScaling in characterStatScalingData)
             {
-                if (data.StateEffectProperty == property)
-                    return data;
+                value += characterStatScaling.GetValue(m_Level, caster, targetController);
             }
 
-            return null;
+            return value;
+      
+        }
+
+        public int GetInt(EStateEffectProperty property, string specialCondition, Controller caster = null, Controller targetController = null)
+        {
+            return (int)Math.Round(GetValue(property, specialCondition, caster, targetController));
+        }
+
+        List<SCharacterStatScaling> GetCharacterScalingData(EStateEffectProperty property, string specialCondition)
+        {
+            return CharacterStatScaling.Where(t => t.StateEffectProperty == property && t.HasSpecialCondition(specialCondition)).ToList();
         }
 
         #endregion
@@ -279,12 +190,16 @@ namespace Data
         public static bool CheckIsPercentageValue(string property)
         {
             return property.EndsWith("Perc")
+                // STATE EFFECT properties
                 || property == EStateEffectProperty.BonusLifeSteal.ToString()
                 || property == EStateEffectProperty.BonusTickLifeSteal.ToString()
                 || property == EStateEffectProperty.AttackSpeed.ToString()
                 || property == EStateEffectProperty.CastSpeed.ToString()
                 || property == EStateEffectProperty.LifeSteal.ToString()
                 || property == EStateEffectProperty.SpeedBonus.ToString()
+
+                // SPELL properties
+                || property == ESpellProperty.GrowSizeFactor.ToString()
                 ;
         }
 
@@ -306,7 +221,18 @@ namespace Data
                 if (data.StateEffectProperty == EStateEffectProperty.SpeedBonus)
                     continue;
 
-                infosDict.Add(data.StateEffectProperty.ToString(), INT_PROPERTIES.Contains(data.StateEffectProperty) ? GetInt(data.StateEffectProperty) : GetValue(data.StateEffectProperty));
+                // Normal stat
+                if (data.SpecialConditions.Count == 0)
+                    infosDict.Add(data.StateEffectProperty.ToString(), INT_PROPERTIES.Contains(data.StateEffectProperty) ? Math.Round(data.GetValue(m_Level)) : data.GetValue(m_Level));
+                
+                // Special Conditions : add separately
+                else
+                {
+                    foreach (var specialCondition in data.SpecialConditions)
+                    {
+                        infosDict.Add(TextHandler.FormatSpecialPropertyName(data.StateEffectProperty.ToString(), specialCondition), INT_PROPERTIES.Contains(data.StateEffectProperty) ? Math.Round(data.GetValue(m_Level)) : data.GetValue(m_Level));
+                    }
+                }
             }
 
             return infosDict;

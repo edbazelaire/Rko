@@ -115,13 +115,13 @@ namespace Data.GameManagement
         {
             // load data of the item
             if (collectable.GetType() == typeof(ECharacter))
-                return CharacterLoader.GetCharacterData((ECharacter)collectable, level, destroy);
+                return CharacterLoader.GetCharacterData((ECharacter)collectable, level, destroy: destroy);
 
             if (collectable.GetType() == typeof(ESpell))
-                return SpellLoader.GetSpellData((ESpell)collectable, level, destroy);
+                return SpellLoader.GetSpellData((ESpell)collectable, level, destroy: destroy);
 
             if (collectable.GetType() == typeof(ERune))
-                return SpellLoader.GetRuneData((ERune)collectable, level, destroy);
+                return SpellLoader.GetRuneData((ERune)collectable, level, destroy: destroy);
 
             ErrorHandler.Error("Unable to find CollectionData for data " + collectable + " of type " + collectable.GetType());
             return null;

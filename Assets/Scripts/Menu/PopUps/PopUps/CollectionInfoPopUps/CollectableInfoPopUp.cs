@@ -16,7 +16,6 @@ using TMPro;
 using Tools;
 using Tools.Animations;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 
 namespace Menu.PopUps
@@ -107,6 +106,7 @@ namespace Menu.PopUps
             SetUpRarety();
             SetUpPreview();
             SetUpAllInfoRows();
+            SetUpDescription();
             RefreshButtons();
         }
 
@@ -230,7 +230,8 @@ namespace Menu.PopUps
                 if (!ignoredProperties.IsNullOrEmpty() && ignoredProperties.Contains(item.Key))
                     continue;
 
-                SetUpInfoRow(container, item.Key, item.Value, newDataInfos != null ? newDataInfos[item.Key] : null);
+                m_Data.IsScalingProperty(item.Key, out EScalingDirection scaling);
+                SetUpInfoRow(container, item.Key, item.Value, newDataInfos != null ? newDataInfos[item.Key] : null, scaling);
             }
         }
 
@@ -240,7 +241,7 @@ namespace Menu.PopUps
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="newDataValue"></param>
-        protected virtual void SetUpInfoRow(GameObject container, string key, object value, object newDataValue = null)
+        protected virtual void SetUpInfoRow(GameObject container, string key, object value, object newDataValue = null, EScalingDirection scaling = EScalingDirection.None)
         {
             if (key == "SpellRequirements")
             {
@@ -257,7 +258,7 @@ namespace Menu.PopUps
 
             // spawn a spellRowInfo from prefab and init with spell data
             SpellInfoRowUI spellRowInfo = Instantiate(m_InfoPrefab, container.transform).GetComponent<SpellInfoRowUI>();
-            spellRowInfo.Initialize(key, value, newDataValue);
+            spellRowInfo.Initialize(key, value, newDataValue, scaling);
             m_InfoRows.Add(key, spellRowInfo);
         }
 
@@ -271,7 +272,8 @@ namespace Menu.PopUps
                         m_InfosContent, 
                         allSpellRequirements[i].StateEffectRequirements[j].StateEffect,
                         allSpellRequirements[i].StateEffectRequirements[j].Stacks,
-                        newAllSpellRequirements?[i].StateEffectRequirements[j].Stacks
+                        newAllSpellRequirements?[i].StateEffectRequirements[j].Stacks,
+                        allSpellRequirements[i].StateEffectRequirements[j].ScalingDirection
                     );
                 }
             }
@@ -284,9 +286,12 @@ namespace Menu.PopUps
 
         protected virtual void RefreshUI()
         {
-            RefreshInfoRows();
+            SetUpAllInfoRows();
+            SetUpDescription();
             RefreshButtons();
         }
+
+        protected virtual void SetUpDescription() { }
 
         /// <summary>
         /// Set cost of the UpgradeButton + update UI to match the context

@@ -12,19 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbfdd18c4b99a3041825863522b560d1, type: 3}
   m_Name: CurseRune
   m_EditorClassIdentifier: 
-  Rarety: 1
+  m_Rarety: 1
   m_Description: 
   m_DescriptionVariables: []
-  Description: 
   m_SpellElements: 04000000
+  Description: 
   m_MinorPower:
-    Description: Add a stack of [Cursed] (level {0}) on every auto attack
-    m_DescriptionVariables:
-    - Name: Level
-      WithIcon: 0
+    Description: 
+    m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: _CurseRuneMinor
+      OverridingData: []
       Level: 0
       Target: 4
       SpellActivationEvent: 1
@@ -47,6 +46,7 @@ MonoBehaviour:
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: _CurseRuneMajor
+      OverridingData: []
       Level: 0
       Target: 4
       SpellActivationEvent: 1
@@ -67,6 +67,7 @@ MonoBehaviour:
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: _CurseRunePrimal
+      OverridingData: []
       Level: 0
       Target: 4
       SpellActivationEvent: 1

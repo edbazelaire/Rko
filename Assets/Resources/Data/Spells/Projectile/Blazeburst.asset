@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Blazeburst
   m_EditorClassIdentifier: 
   m_Rarety: 3
-  m_Description: 'Charging energy for {0} seconds to launch a powerfull missile in
-    a straight line, dealing {1} damage and applying a stack of [Scorched]'
+  m_Description: 'Charging an orb of energy.\nAfter {0} seconds, launch a powerfull
+    missile in a straight line, dealing {1} damage and applying [EnemyStateEffect.0]'
   m_DescriptionVariables:
-  - Name: CastDuration
+  - Name: Delay
     WithIcon: 0
   - Name: Damage
     WithIcon: 1
@@ -106,7 +106,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: -1
-  m_NCharges: 2
+  m_Charges: 1
   EnergyGain: 15
   EnergyCost: 0
   m_Damage: 120

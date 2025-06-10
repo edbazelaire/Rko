@@ -23,30 +23,17 @@ MonoBehaviour:
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 0
   m_DefaultState: 0
-  m_SubStateEffects: []
-  m_HoldingStateEffects: []
+  m_IsInstantanious: 0
+  m_IsConsumedOnEnd: 0
+  m_IsTrueDamage: 1
   m_Priority: 0
   m_Duration: 4
-  m_IsInstantanious: 0
   m_MaxStacks: 10
   m_StackDecay: -1
-  m_Energy: 0
   m_BonusStats: []
-  m_SpeedBonus: 0
-  m_CastSpeed: 0
-  m_AttackSpeed: 0
-  m_CooldownReduction: 0
-  m_CooldownReductionPerc: 0
-  m_Shield: 0
-  m_ResistanceFix: 0
-  m_ResistancePerc: 0
-  m_BonusDamage: 0
-  m_BonusDamagePerc: 0
-  m_BonusLifeSteal: 0
-  m_BonusHeal: 0
-  m_BonusHealPerc: 0
-  m_BonusBurnDamage: 0
-  m_BonusSlowPerc: 0
+  m_StatConversions: []
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel:
@@ -55,12 +42,10 @@ MonoBehaviour:
   m_StateEffectScalingStacks:
   - StateEffectProperty: 13
     ScalingFactor: 1
-  m_IsTrueDamage: 0
   m_Damage: 0
   m_EndDamage: 0
   m_Heal: 0
   m_EndHeal: 0
-  m_LifeSteal: 0
   m_Tick: 1
   m_TickDamage: 3
   m_TickHeal: 0

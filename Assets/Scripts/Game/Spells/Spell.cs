@@ -590,7 +590,7 @@ namespace Game.Spells
                 damages *= targetController.StateHandler.GetStacks(m_SpellData.StateEffectStackFactor);
             }
 
-            return m_Controller.StateHandler.ApplyBonusDamage(damages, targetController);
+            return m_Controller.StateHandler.ApplyBonusDamage(damages, targetController, specialCondition: m_SpellData.Name);
         }
 
         public virtual int GetBoostedExecutionDamage(Controller target)
@@ -598,7 +598,7 @@ namespace Game.Spells
             if (m_SpellData.ExecutionDamage <= 0)
                 return 0;
 
-            var boostedDamage = m_Controller.StateHandler.ApplyBonusExecutionDamage(m_SpellData.ExecutionDamage, target);
+            var boostedDamage = m_Controller.StateHandler.ApplyBonusExecutionDamage(m_SpellData.ExecutionDamage, target, specialCondition: m_SpellData.Name);
             var finalDamage = (int)Math.Round(boostedDamage * (1 - target.Life.PercHp));
 
             ErrorHandler.Log("Execution Damage : " + m_SpellData.ExecutionDamage, ELogTag.Spells);
@@ -608,12 +608,13 @@ namespace Game.Spells
             return finalDamage;
         }
 
+        /// <summary>
+        /// Apply additional effects to the spell
+        /// </summary>
         protected virtual void AddExtraEffects()
         {
-            bool IsAutoAttack = m_SpellData.Name == m_Controller.SpellHandler.AutoAttack.ToString();
-
             // if spell is AutoAttack & controller has a "AutoAttackRune" : add effects of the rune to the spell
-            m_Controller.StateHandler.AddExtraEffects(ref m_BaseSpellData, IsAutoAttack);
+            m_Controller.StateHandler.AddExtraEffects(ref m_BaseSpellData, m_Controller.SpellHandler.IsAutoAttack(m_SpellData));
         }
 
         /// <summary>
@@ -652,7 +653,7 @@ namespace Game.Spells
 
             foreach (var effect in stateEffects)
             {
-                targetController.StateHandler.AddStateEffect(effect, m_Controller, m_SpellData.Level);
+                targetController.StateHandler.AddStateEffect(effect, m_Controller, m_SpellData.Level, origin: m_SpellData.Parent);
             }
         }
 
@@ -728,7 +729,7 @@ namespace Game.Spells
                         return;
                     }
 
-                    finalTargetController.StateHandler.AddStateEffect(SpellLoader.GetStateEffect(spellEventEffect.EffectName, m_SpellData.Level), m_Controller);
+                    finalTargetController.StateHandler.AddStateEffect(SpellLoader.GetStateEffect(spellEventEffect.EffectName, m_SpellData.Level, parent: m_SpellData.Parent), m_Controller);
                 }
 
                 else

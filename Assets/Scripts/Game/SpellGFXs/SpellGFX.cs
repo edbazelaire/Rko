@@ -92,9 +92,6 @@ namespace Game.SpellGFXs
 
             if (m_Spell != null)
                 m_Spell.OnSpellEvent += OnSpellEvent;
-
-            if (m_StateEffectName != null)
-                m_Controller.StateHandler.StateEffectEvent += OnStateEffectEvent;
         }
 
         protected override void UnRegisterListeners()
@@ -106,9 +103,6 @@ namespace Game.SpellGFXs
 
             if (m_Spell != null)
                 m_Spell.OnSpellEvent -= OnSpellEvent;
-
-            if (m_StateEffectName != null)
-                m_Controller.StateHandler.StateEffectEvent -= OnStateEffectEvent;
 
             Spell.OnSpellSpawn -= OnSpellSpawn;
         }
@@ -158,13 +152,6 @@ namespace Game.SpellGFXs
             CheckEnd(spellEvent);
         }
 
-        void OnStateEffectEvent(ESpellEvent spellEvent, string stateEffectName)
-        {
-            if (m_StateEffectName != stateEffectName)
-                return;
-
-            CheckEnd(spellEvent);
-        }
 
         #endregion
     }

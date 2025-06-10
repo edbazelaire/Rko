@@ -7,6 +7,7 @@ using TMPro;
 using Tools;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Game.UI
 {
@@ -36,6 +37,8 @@ namespace Game.UI
         float m_CooldownTimer;
         /// <summary> max number of charges for the spell </summary>
         int m_MaxCharges;
+        /// <summary> current number of charges for the spell </summary>
+        int m_CurrentCharges;
 
         ESpell m_Spell => (ESpell)m_CollectableCloudData.GetCollectable();
         bool m_IsUltimateSpell => m_Owner.SpellHandler.Ultimate == m_Spell;
@@ -86,6 +89,7 @@ namespace Game.UI
             SpellData spellData = SpellLoader.GetSpellData(m_Spell, level, destroy: true);
             m_BaseCooldown = spellData.Cooldown;
             m_CooldownTimer = 0;
+            m_CurrentCharges = spellData.Charges;
             m_MaxCharges = spellData.Charges;
 
             // call base init 
@@ -97,8 +101,11 @@ namespace Game.UI
             // set initial UI of Cooldowns
             SetupCooldown();
 
-            // set initial UI for NCharges
-            SetNCharges(m_MaxCharges);
+            // only one max charge - no need for NCharges display
+            if (m_MaxCharges <= 1)
+                m_NCharges.SetActive(false);
+            else
+                SetNCharges(m_MaxCharges);
 
             // set initial state
             SetState(spellData.EnergyCost <= 0 ? EButtonState.Normal : EButtonState.Locked);
@@ -132,6 +139,14 @@ namespace Game.UI
             SetState(EButtonState.Locked);
         }
 
+        protected override void RefreshUI()
+        {
+            base.RefreshUI();
+
+            // refresh UI with current number of charges
+            SetNCharges(m_CurrentCharges);
+        }
+
         #endregion
 
 
@@ -150,19 +165,13 @@ namespace Game.UI
 
         void SetNCharges(int nCharges)
         {
+            m_CurrentCharges = nCharges;
+
+            if (m_MaxCharges <= 1)
+                return;
+
             // no more charge : set UI for cooldown
             if (nCharges <= 0)
-            {
-                m_NCharges.SetActive(false);
-                SetState(EButtonState.Locked);
-                return;
-            }
-
-            // set to normal state if at least one charge
-            SetState(EButtonState.Normal);
-
-            // only one max charge - no need for NCharges display
-            if (m_MaxCharges <= 1)
             {
                 m_NCharges.SetActive(false);
                 return;
@@ -246,6 +255,7 @@ namespace Game.UI
             m_Owner.SpellHandler.SpellSelectionEvent                    += OnSpellSelectionStateChanged;
             m_Owner.SpellHandler.OnCooldownEvent                        += OnCooldownChanged;
             m_Owner.SpellHandler.NChargesNet.OnListChanged              += OnNChargesChanged;
+            m_Owner.SpellHandler.SpellOverrideEvent                     += OnSpellOverride;
         }
 
         protected override void UnRegisterListeners()
@@ -336,6 +346,31 @@ namespace Game.UI
                 return;
 
             SetNCharges(changeEvent.Value);
+        }
+
+        void OnSpellOverride(string spellName, ESpellProperty spellProperty, int value)
+        {
+            if (Spell.ToString() != spellName)
+                return;
+
+            switch (spellProperty)
+            {
+                case ESpellProperty.Charges:
+                    if (value <= 0)
+                    {
+                        ErrorHandler.Warning($"Trying to override {spellProperty} of {m_Spell} with {value}. Value must be > 0");
+                        return;
+                    }
+
+                    m_MaxCharges = value;
+                    break;
+
+                default:
+                    ErrorHandler.Warning("Unhandled override case : " + spellProperty + " with value " + value);
+                    break;
+            }
+
+            RefreshUI();
         }
 
         #endregion

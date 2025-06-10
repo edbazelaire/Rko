@@ -1,12 +1,13 @@
 ﻿using Assets;
 using Assets.Scripts.Data.DataStructures.SpellRequirement;
 using Data;
+using Data.DataStructures.SpellSubStructures;
 using Data.GameManagement;
 using Enums;
 using Game.Loaders;
 using Game.NetworkStructures;
 using Game.Spells;
-using Google.Apis.Sheets.v4.Data;
+using MyBox;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -32,6 +33,7 @@ namespace Game.Character
         public Action<ESpell, ESpellSelectionState> SpellSelectionEvent;
         public Action<ESpell, float>                OnCooldownEvent;
         public Action<float>                        RelocationTargetChangedEvent;
+        public Action<string, ESpellProperty, int>  SpellOverrideEvent;
 
         // ===================================================================================
         // NETWORK VARIABLES       
@@ -69,7 +71,7 @@ namespace Game.Character
         /// <summary> coroutine of casting a spell </summary>
         Coroutine                           m_CastCoroutine;
         /// <summary> overriding spell data (in case of replacement or someting) </summary>
-        Dictionary<ESpell, SpellData>       m_OverridingSpellData;
+        Dictionary<ESpell, List<SpellData>> m_OverridingSpellData;
         /// <summary> is the player currently casting a spell ? </summary>
         bool                                m_IsCasting;
         /// <summary> list of all spell data linked to spellID <summary>
@@ -87,6 +89,9 @@ namespace Game.Character
 
         /// <summary> base spawn position of the spell </summary>
         Transform m_SpellSpawn => m_Controller.GFXHandler.GetBodyPart(EBodyPart.SpellSpawn).transform;
+        string m_SelectedSpell => m_SelectedSpellData != null ? m_SelectedSpellData.Name : ESpell.None.ToString();
+        public float CurrentCastSpeedFactor => GetCastSpeed(m_SelectedSpell.ToString());
+
 
         // ===================================================================================
         // PUBLIC ACCESSORS
@@ -372,10 +377,10 @@ namespace Game.Character
 
             // no charges : handled by the SpellItemUI directly
             if (GetCharges(spell.ToString()) == 0)
-                return;
+                spellSelectionState = ESpellSelectionState.Cooldown;
 
             // Un-selectable : change selection state to Inactive
-            if (!CanSelect(spell))
+            else if (!CanSelect(spell))
                 spellSelectionState = ESpellSelectionState.Inactive;
 
             SetSpellSelection(spell, spellSelectionState);
@@ -444,7 +449,7 @@ namespace Game.Character
             }
 
             // check state effect blocking the cast
-            if (HasStateBlockingCast())
+            if (!m_Controller.StateHandler.CanCast)
             {
                 reason = "Spell cast (" + spellData.Name + ") BLOCKED : HasStateBlockingCast()";
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
@@ -490,20 +495,6 @@ namespace Game.Character
 
             reason = "";
             return true;
-        }
-
-        /// <summary>
-        /// Does the player have any states bloking the cast ?
-        /// </summary>
-        /// <returns></returns>
-        public bool HasStateBlockingCast()
-        {
-            return m_Controller.StateHandler.IsStunned                                  // is stunned
-                || m_Controller.StateHandler.IsAirborned                                // is airborned
-                || m_Controller.StateHandler.IsSilenced                                 // is silenced
-                || m_Controller.StateHandler.HasState(EStateEffect.Frozen)              // is frozen 
-                || m_Controller.StateHandler.HasState(EStateEffect.Jump)                // is jumping
-                || m_Controller.CounterHandler.IsBlockingCast.Value;                    // is using a counter
         }
 
         public bool CheckUniqueSpell(SpellData spellData)
@@ -663,7 +654,7 @@ namespace Game.Character
                 m_AnimationTimer -= Time.deltaTime;
 
                 // if player is moving, cancel the spell
-                if ((spellData.IsCancellable && m_Controller.Movement.IsMoving) || HasStateBlockingCast() || ! CheckEnemyTargetable(spellData))
+                if ((spellData.IsCancellable && m_Controller.Movement.IsMoving) || ! m_Controller.StateHandler.CanCast || ! CheckEnemyTargetable(spellData))
                 {
                     // reset Animator
                     CancelCast();
@@ -891,7 +882,7 @@ namespace Game.Character
             int finalCharges = m_NChargesNet[spellIndex] + nCharges;
 
             // CHECK : number of charges is between 0 and MAX
-            int maxCharges = m_SpellsData[spellIndex].Charges;
+            int maxCharges = m_SpellsData[spellIndex].GetInt(ESpellProperty.Charges);
             if (finalCharges < 0)
             {
                 ErrorHandler.Warning("Number of charges for spell " + spellName + "(" + finalCharges + ") is < 0" );
@@ -1011,23 +1002,31 @@ namespace Game.Character
 
         #region Public Manipulators
 
-        public void ReplaceAutoAttack(SpellData spellData)
-        {
-            ReplaceSpell(m_AutoAttack.Value, spellData);
-        } 
-
         public void ReplaceSpell(ESpell spell, SpellData spellData)
         {
-            if (!IsServer)
-                return;
+            Debug.Log("ReplaceSpell : " + spell + " - with " + spellData.Name);
 
-            m_OverridingSpellData[spell] = spellData;
+            if (! m_OverridingSpellData.ContainsKey(spell) || m_OverridingSpellData[spell].IsNullOrEmpty())
+                m_OverridingSpellData[spell] = new();
+
+            m_OverridingSpellData[spell].Add(spellData);
         }
 
         public void RemoveOverridingSpell(ESpell originalSpell, string replacementSpell)
         {
-            if (m_OverridingSpellData.ContainsKey(originalSpell) && m_OverridingSpellData[originalSpell].Name == replacementSpell)
-                m_OverridingSpellData.Remove(originalSpell);
+            Debug.Log("RemoveOverridingSpell : " + originalSpell + " - with " + replacementSpell);
+
+            // no overriding data for that spell
+            if (! m_OverridingSpellData.ContainsKey(originalSpell) || m_OverridingSpellData[originalSpell].IsNullOrEmpty())
+                return;
+
+            // check exists
+            int index = m_OverridingSpellData[originalSpell].FindIndex(spellData => spellData.Name == replacementSpell);
+            if (index < 0)
+                return;
+
+            // remove from list
+            m_OverridingSpellData[originalSpell].RemoveAt(index);
         }
 
         /// <summary>
@@ -1062,24 +1061,28 @@ namespace Game.Character
             if (spellName == ESpawn.None.ToString())
                 return -1;
 
+            // init
             ESpell spell;
 
             // if is overriding, get the index of the spell it is overriding
-            var kvp = m_OverridingSpellData.Where(spellData => spellData.Value.Name == spellName).ToList();
-            if (kvp.Count() > 0)
-                spell = kvp[0].Key;
-            else if (Enum.TryParse(spellName, out spell))
+            spell = m_OverridingSpellData.FirstOrDefault(kvp => kvp.Value.Any(spellData => spellData.Name == spellName)).Key;
+  
+            // not overriding - try and parse it
+            if (spell == ESpell.None)
             {
-                if (!Spells.Contains(spell))
+                if (Enum.TryParse(spellName, out spell))
                 {
-                    ErrorHandler.Warning($"SpellHandler : spell {spell} was not found in list of spells");
+                    if (!Spells.Contains(spell))
+                    {
+                        ErrorHandler.Warning($"SpellHandler : spell {spell} was not found in list of spells");
+                        return -1;
+                    }
+                }
+                else
+                {
+                    ErrorHandler.Warning($"SpellHandler : unable to parse {spellName} into spell");
                     return -1;
                 }
-            }
-            else
-            {
-                ErrorHandler.Warning($"SpellHandler : unable to parse {spellName} into spell");
-                return -1;
             }
 
             return Spells.IndexOf(spell);
@@ -1207,6 +1210,12 @@ namespace Game.Character
             }
         }
 
+        [ClientRpc]
+        public void CallSpellOverrideClientRPC(FixedString32Bytes spellName, ESpellProperty spellProperty, byte value)
+        {
+            SpellOverrideEvent?.Invoke(spellName.ToString(), spellProperty, value);
+        }
+
         /// <summary>
         /// Base method for called when "CallSpellEventClientRPC" is called
         /// </summary>
@@ -1275,18 +1284,70 @@ namespace Game.Character
 
         #region Getter / Setter / Dependent Properties
 
+        public bool IsAutoAttack(SpellData spellData)
+        {
+            // default case : is the default auto attack
+            if (spellData.Name == AutoAttack.ToString())
+                return true;
+
+            // check if is override
+            SpellData currentAutoAttackData = GetSpellData(AutoAttack, spellData.Level);
+            if (currentAutoAttackData.Name == spellData.Name)
+                return true;
+
+            // check if current data is multi type
+            if (currentAutoAttackData is MultiProjectilesData mpd)
+                return mpd.ProjectileData != null && mpd.ProjectileData.Name == spellData.Name;
+
+            return false;
+        }
+
         public SpellData GetSpellData(ESpell spell, int level)
         {
-            if (m_OverridingSpellData.ContainsKey(spell))
+            if (m_OverridingSpellData.ContainsKey(spell) && ! m_OverridingSpellData[spell].IsNullOrEmpty())
             {
-                return m_OverridingSpellData[spell].Clone(level);
+                return m_OverridingSpellData[spell].Last().Clone(level);
             }
 
             return SpellLoader.GetSpellData(spell, level);
         }
 
-        string m_SelectedSpell => m_SelectedSpellData != null ? m_SelectedSpellData.Name : ESpell.None.ToString();
-           
+        public SpellData GetSpellDataAtIndex(int index, bool clone = true)
+        {
+            SpellData spellData = m_SpellsData[index];
+
+            if (m_OverridingSpellData.ContainsKey(spellData.Spell) && !m_OverridingSpellData[spellData.Spell].IsNullOrEmpty())
+            {
+                spellData = m_OverridingSpellData[spellData.Spell].Last();
+            }
+
+            if (clone) 
+                return spellData.Clone();
+
+            return spellData;
+        }
+
+        public void OverrideSpellDataAtIndex(int index, List<SOverridingData> overridingData, int level)
+        {
+            var spellData = GetSpellDataAtIndex(index, clone: false);
+            spellData.AddOverridingData(overridingData, level);
+
+            // Handle changes that require event to Client
+            foreach (SOverridingData ovData in overridingData)
+            {
+                switch (ovData.Property)
+                {
+                    case ESpellProperty.Charges:
+                        NChargesNet[index] = spellData.Charges;
+                        CallSpellOverrideClientRPC(spellData.Name, ovData.Property, (byte)spellData.Charges);
+                        break;
+
+                    default: 
+                        break;
+                }
+            }
+        }
+
         public List<ESpell> Spells
         {
             get
@@ -1306,9 +1367,6 @@ namespace Game.Character
             }
         }
 
-        public bool IsAutoAttack => m_SelectedSpell == AutoAttack.ToString();
-
-        public float CurrentCastSpeedFactor => GetCastSpeed(m_SelectedSpell.ToString());
 
         #endregion
     }

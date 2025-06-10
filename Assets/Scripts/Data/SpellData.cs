@@ -20,7 +20,6 @@ using Assets.Scripts.Data.DataStructures.SpellSubStructures;
 using Assets.Scripts.Game;
 using Game.NetworkStructures;
 using Data.DataStructures.SpellSubStructures;
-using static UnityEngine.Rendering.DebugUI;
 
 namespace Data
 {
@@ -50,6 +49,10 @@ namespace Data
     public class SpellData : CollectableData
     {
         #region Members
+
+        // ===========================================================================
+        // Actions
+        public Action<Spell> OnSpellSpawn;
 
         // ===========================================================================
         // Serialized Data
@@ -187,7 +190,7 @@ namespace Data
         // Level Dependent Members
         public virtual int Charges              => (int)GetScaledValue(ESpellProperty.Charges, m_Charges);
         //public virtual float Cooldown           => Mathf.Max(Mathf.Round(100f * m_Cooldown / GetScaledValue(ESpellProperty.Cooldowns)) / 100f, 0f);
-        public virtual float Cooldown           => GetScaledValue(ESpellProperty.Cooldowns, m_Cooldown);
+        public virtual float Cooldown           => GetScaledValue(ESpellProperty.Cooldown, m_Cooldown);
         public virtual int Damage               => (int)GetScaledValue(ESpellProperty.Damage, m_Damage);
         public virtual int ExecutionDamage      => (int)GetScaledValue(ESpellProperty.ExecutionDamage, m_ExecutionDamage);
 
@@ -279,6 +282,7 @@ namespace Data
             spell.InitializeClientRpc(clientId, new Vector2Short(target), Name, (byte)m_Level);
 
             // call event that spell spawned
+            OnSpellSpawn?.Invoke(spell);
             CallSpellEvent(GameManager.Instance.GetPlayer(clientId), ESpellEvent.OnSpawn, target);
         }
 
@@ -524,7 +528,7 @@ namespace Data
 
                 default:
                     if (throwError)
-                        ErrorHandler.Warning("No controller found for target of type " + SpellTarget);
+                        ErrorHandler.Warning("No controller found for target of type " + spellTarget);
                     return null;
             }
         }
@@ -851,7 +855,7 @@ namespace Data
 
             if (Cooldown > 0)
                 infosDict.Add("Cooldown", Cooldown);
-            if (Charges > 1)
+            if (Charges > 1 || IsScalingProperty(ESpellProperty.Charges.ToString(), out EScalingDirection _))
                 infosDict.Add("Charges", Charges);
             if (EnergyCost > 0)
                 infosDict.Add("EnergyCost", EnergyCost);
@@ -898,6 +902,9 @@ namespace Data
         public override string GetDescription()
         {
             var description = base.GetDescription();
+
+            if (OnHit.Count() > 0)
+                description = TextHandler.ReplaceSubSpellData(description, OnHit[0]);
             description = TextHandler.ReplaceSubStateEffects(description, this);
             description = TextHandler.ReplaceSpellRequirements(description, this);
 
@@ -910,7 +917,7 @@ namespace Data
         /// <returns></returns>
         public override string ConvertDescriptionVariable(SDescriptionVariable descriptionVariable, Dictionary<string, object> infos = default, bool throwError = true)
         {
-            string stringValue = base.ConvertDescriptionVariable(descriptionVariable, infos, false);
+            string stringValue = base.ConvertDescriptionVariable(descriptionVariable, infos, throwError: false);
             if (stringValue != TextHandler.UNDEFINED)
                 return stringValue;   
 
@@ -1049,6 +1056,58 @@ namespace Data
             }
         }
 
+        public override bool IsScalingProperty(string propertyName, out EScalingDirection scaling)
+        {
+            if (base.IsScalingProperty(propertyName, out scaling)) 
+                return true;
+
+            // not a defined SpellProperty = not scaling value
+            ESpellProperty property;
+            if (propertyName == "Projectiles")
+                property = ESpellProperty.NProjectiles;
+            else if (propertyName == "CastDuration")
+                property = ESpellProperty.AnimationTimer;
+            else if (!Enum.TryParse(propertyName, out property))
+                return false;
+
+            // check sub spells to see if property is scaling there
+            foreach (SpellData onHitSpellData in OnHit)
+            {
+                if (onHitSpellData.IsScalingProperty(propertyName, out scaling))
+                    return true;
+            }
+
+            // check propery is in scaling properties
+            int index = m_SpellsScalingLevel.FirstIndex(scaling => scaling.Property == property);
+            if (index < 0)
+                return false;
+
+            // get type of scaling for this property
+            SSpellPropertyScaling scalingProperty = m_SpellsScalingLevel[index];
+            if (scalingProperty.Value > 0)
+            {
+                scaling = EScalingDirection.Up;
+                return true;
+            }
+
+            if (scalingProperty.Value < 0)
+            {
+                scaling = EScalingDirection.Down;
+                return true;
+            }
+
+            // -- getting the scaling direction of a threshold value can be challenging : lets assume that all thresholds are "UP"
+            if (scalingProperty.ScalingTresholds.Count > 0)
+            {
+                scaling = EScalingDirection.Up;
+                return true;
+            }
+
+            // CHECK : Unhandled case
+            ErrorHandler.Warning($"Unhandled case in spell {Name} : property {property} is in m_SpellsScalingLevel but unable to interpret the type of scaling");
+            return false;
+        }
+
         #endregion
 
 
@@ -1087,7 +1146,9 @@ namespace Data
 
             for (int i = 0; i < OnHit.Count; i++)
             {
-                OnHit[i] = OnHit[i].Clone(level);
+                var effect = OnHit[i];
+                effect.SetLevel(level);
+                OnHit[i] = effect;
             }
 
             for (int i = 0; i < m_SpellRequirements.Count; i++)
@@ -1131,7 +1192,7 @@ namespace Data
             return m_SpellsScalingLevel.FirstOrDefault(spell => spell.Property == property).Get(value, m_Level);
         }
 
-        public virtual void AddOverridingData(List<SOverridingData> overridingData, int level)
+        public virtual void AddOverridingData(List<SOverridingData> overridingData, int level = 0)
         {
             foreach (var data in overridingData)
             {

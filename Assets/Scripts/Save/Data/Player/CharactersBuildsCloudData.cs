@@ -1,5 +1,6 @@
 ﻿using Assets;
 using Enums;
+using Game.Loaders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -395,15 +396,16 @@ namespace Save
             }
 
             // Check each character
+            bool save = false;
             foreach (ECharacter character in Enum.GetValues(typeof(ECharacter)))
             {
                 if (character == ECharacter.None)
                     continue;
 
-                CheckCharacterBuild(character, ref buildsDictionary);
+                CheckCharacterBuild(character, ref buildsDictionary, ref save);
             }
 
-            m_Data[KEY_BUILDS] = buildsDictionary;
+            SetData(KEY_BUILDS, buildsDictionary, save: save);
         }
 
         /// <summary>
@@ -419,7 +421,7 @@ namespace Save
         /// </summary>
         /// <param name="character"></param>
         /// <param name="buildsDictionary"></param>
-        void CheckCharacterBuild(ECharacter character, ref Dictionary<ECharacter, SCharacterBuildData> buildsDictionary)
+        void CheckCharacterBuild(ECharacter character, ref Dictionary<ECharacter, SCharacterBuildData> buildsDictionary, ref bool save)
         {
             // ======================================================================================
             // CHARACTER
@@ -427,6 +429,7 @@ namespace Save
             {
                 ErrorHandler.Warning("Character " + character + " is missing from the builds dictionary - adding it with only default builds");
                 buildsDictionary[character] = new SCharacterBuildData(index: 0, builds: new ESpell[N_BUILDS][] { DEFAULT_BUILD, DEFAULT_BUILD, DEFAULT_BUILD });
+                save = true;
             }
 
             // Check number of builds for each character
@@ -434,6 +437,7 @@ namespace Save
             {
                 ErrorHandler.Warning("Character " + character + " does not have exactly " + N_BUILDS + " builds provided => reseting to default");
                 buildsDictionary[character] = new SCharacterBuildData(index: 0, builds: new ESpell[N_BUILDS][] { DEFAULT_BUILD, DEFAULT_BUILD, DEFAULT_BUILD });
+                save = true;
             }
 
             // check number of runes
@@ -443,6 +447,7 @@ namespace Save
                 SCharacterBuildData characterData = buildsDictionary[character];
                 DEFAULT_RUNES.CopyTo(characterData.Runes, 0);
                 buildsDictionary[character] = characterData;
+                save = true;
             }
 
             // ======================================================================================
@@ -451,16 +456,23 @@ namespace Save
             {
                 buildsDictionary[character].Builds[buildIndex] = CheckCharacterBuildSpells(buildsDictionary[character].Builds[buildIndex], out string reason);
                 if (reason != "")
+                {
                     ErrorHandler.Error("Build " + buildIndex + " of Character " + character + " : " + reason);
+                    save = true;
+                }
 
                 buildsDictionary[character].Runes[buildIndex] = CheckCharacterBuildRunes(buildsDictionary[character].Runes[buildIndex], out reason);
                 if (reason != "")
+                {
                     ErrorHandler.Error("Build " + buildIndex + " of Character " + character + " : " + reason);
+                    save = true;
+                }
             }
         }
 
         ESpell[] CheckCharacterBuildSpells(ESpell[] spells, out string reason)
         {
+            bool resetBuild = false;
             reason = "";
           
             // Check number of spells in each build
@@ -476,21 +488,49 @@ namespace Save
             {
                 // do not raise error for duplicated None values
                 if (spells[i] == ESpell.None)
-                    continue;
+                {
+                    reason = "None spell found in buil - reseting this build";
+                    resetBuild = true;
+                    break;
+                }
 
                 // CHECK : spell exists
                 if (!Enum.IsDefined(typeof(ESpell), spells[i]))
                 {
-                    spells[i] = ESpell.None;
+                    reason = $"undefined spell {spells[i]} in data - reseting this build";
+                    resetBuild = true;
+                    break;
+                }
+
+                // CHECK : SpellData exists
+                var spellData = SpellLoader.GetSpellData(spells[i]);
+                if (spellData == null)
+                {
+                    reason = $"unable to find spell {spells[i]} in data - reseting this build";
+                    resetBuild = true;
+                    break;
+                }
+
+                // CHECK : Not a Linked spell
+                if (spellData.Linked)
+                {
+                    reason = $"found linked spell {spells[i]} in data - reseting this build";
+                    resetBuild = true;
+                    break;
                 }
 
                 // CHECK : is unique
                 if (!uniqueSpells.Add(spells[i]))
                 {
-                    reason = "duplicated spell (" + spells[i] + ") - removing from build";
-                    spells[i] = ESpell.None;
+                    reason = "duplicated spell (" + spells[i] + ") - reseting this build";
+                    resetBuild = true;
+                    break;
                 }
             }
+
+            // reset of the build called
+            if (resetBuild)
+                spells = DEFAULT_BUILD;
 
             return spells;
         }
@@ -518,6 +558,15 @@ namespace Save
                 if (! Enum.IsDefined(typeof(ERune), runes[i]))
                 {
                     runes[i] = ERune.None;
+                }
+
+                // CHECK : rune data exists
+                var runeData = SpellLoader.GetRuneData(runes[i]);
+                if (runeData == null)
+                {
+                    reason = $"unable to find data for rune {runes[i]} - removing from build";
+                    runes[i] = ERune.None;
+                    break;
                 }
 
                 // CHECK : is unique

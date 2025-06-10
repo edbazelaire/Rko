@@ -54,7 +54,7 @@ namespace Game.Spells.SpecialEffects
             if (nStacks == 0)
                 return;
 
-            m_Controller.StateHandler.AddStateEffect(new SStateEffectData(EStateEffect.AzurePowerOrb, nStacks), m_Controller, m_Level);
+            m_Controller.StateHandler.AddStateEffect(new SStateEffectData(EStateEffect.AzurePowerOrb, nStacks), m_Controller, m_Level, ESpell.Soaring.ToString());
         }
 
         #endregion

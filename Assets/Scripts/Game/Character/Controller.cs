@@ -1,6 +1,7 @@
 using AI;
 using Data;
 using Data.DataStructures;
+using Data.DataStructures.CharacterSubStructures;
 using Enums;
 using Game;
 using Game.Character;
@@ -294,7 +295,7 @@ public class Controller : NetworkBehaviour
         m_StateHandler.Initialize(characterData);
 
         // init health and energy
-        m_Life.Initialize(characterData.MaxHealth, characterData.GetInt(EStateEffectProperty.Shield));
+        m_Life.Initialize(characterData.MaxHealth, characterData.GetInt(EStateEffectProperty.Shield, ""));
         m_EnergyHandler.Initialize(characterData.BaseEnergy, characterData.MaxEnergy);
         m_TriggerEffectHandler.Initialize(GetTriggerEffects(characterData));
 

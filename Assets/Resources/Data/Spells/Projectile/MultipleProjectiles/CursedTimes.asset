@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: CursedTimes
   m_EditorClassIdentifier: 
   m_Rarety: 1
-  m_Description: For {0} waves, {1} cursed arrows are falling at random position
-    on the enemy, each dealing {2} damage, applying {3} and 4 stacks of {4}
+  m_Description: 'For {0} waves, {1} cursed shards are falling at random position
+    on the enemy, each dealing {2} damage, applying [EnemyStateEffect.0] and [EnemyStateEffect.1]'
   m_DescriptionVariables:
   - Name: Waves
     WithIcon: 1
@@ -114,7 +114,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
-  m_NCharges: 1
+  m_Charges: 1
   EnergyGain: 3
   EnergyCost: 0
   m_Damage: 50

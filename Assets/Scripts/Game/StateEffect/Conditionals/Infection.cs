@@ -21,7 +21,7 @@ namespace Game.Spells
         {
             base.OnStart();
 
-            m_Controller.StateHandler.AddStateEffect(new SStateEffectData(EStateEffect.Infected, m_Stacks), m_Caster, m_Level);
+            m_Controller.StateHandler.AddStateEffect(new SStateEffectData(EStateEffect.Infected, m_Stacks), m_Caster, m_Level, m_Origin);
         }
     }
 }

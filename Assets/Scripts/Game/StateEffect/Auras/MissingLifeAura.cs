@@ -22,21 +22,27 @@ namespace Game.Spells
 
         #region Data Accessors
 
-        public override int GetInt(EStateEffectProperty property)
+        public override int GetInt(EStateEffectProperty property, int? stacks = null, string specialCondition = "")
         {
-            if (m_Controller == null)
-                return (int)Mathf.Round(ApplyMissingLifeFactor(base.GetInt(property), 0, 1));
+            if (! HasEffectProperty(property))
+                return 0;
 
-            return (int)Mathf.Round(GetFloat(property));
+            if (m_Controller == null)
+                return (int)Mathf.Round(ApplyMissingLifeFactor(base.GetInt(property, stacks), 0, 1));
+
+            return (int)Mathf.Round(GetFloat(property, specialCondition: specialCondition));
         }
 
-        public override float GetFloat(EStateEffectProperty property, bool ignoreConversion = false)
+        public override float GetFloat(EStateEffectProperty property, bool ignoreConversion = false, int? stacks = null, string specialCondition = "")
         {
+            if (! HasEffectProperty(property))
+                return 0f;
+
             if (m_Controller == null)
-                return ApplyMissingLifeFactor(base.GetFloat(property, ignoreConversion), 0, 1);
+                return ApplyMissingLifeFactor(base.GetFloat(property, ignoreConversion, stacks, specialCondition: specialCondition), 0, 1);
 
             var controller = GetTarget(m_Caster, null);
-            return ApplyMissingLifeFactor(base.GetFloat(property, ignoreConversion), controller.Life.Hp.Value, controller.Life.MaxHp.Value);
+            return ApplyMissingLifeFactor(base.GetFloat(property, ignoreConversion, stacks, specialCondition: specialCondition), controller.Life.Hp.Value, controller.Life.MaxHp.Value);
         }
 
         #endregion

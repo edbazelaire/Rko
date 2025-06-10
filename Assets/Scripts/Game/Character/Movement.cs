@@ -11,6 +11,7 @@ using Tools;
 using Unity.Netcode;
 using UnityEngine;
 using Utilities;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace Game.Character
 {
@@ -78,7 +79,16 @@ namespace Game.Character
         public bool IsMoving    => m_MoveX != 0;
         public int MoveX        => m_MoveX;
 
-        protected float GetVelocity(int direction) => direction * Speed + m_Force.Value;
+        protected float GetVelocity(int direction)
+        //=> direction * Speed + m_Force.Value;
+        {
+            if (float.IsNaN(direction * Speed + m_Force.Value))
+            {
+                ErrorHandler.Error("Velocity of " + gameObject.name + " is Nan");
+                return 0;
+            }
+            return direction * Speed + m_Force.Value;
+        }
 
         #endregion
 
@@ -502,12 +512,14 @@ namespace Game.Character
             if (!IsServer)
                 return;
 
+            // check changes
             bool canMove = CanMove;
-            if (m_CanMoveClient != canMove)
-            {
-                m_CanMoveClient = canMove;
-                SetCanMoveClientRPC(canMove);
-            }
+            if (m_CanMoveClient == canMove)
+                return;
+
+            // send changes to client
+            m_CanMoveClient = canMove;
+            SetCanMoveClientRPC(canMove);
         }
 
         #endregion
@@ -671,33 +683,9 @@ namespace Game.Character
         {
             get
             {
-                if (m_Controller.StateHandler.IsStunned)
+                if (! m_Controller.StateHandler.CanMove)
                 {
-                    ErrorHandler.Log("CanMove - FALSE : IsStunned", ELogTag.Movement);
-                    return false;
-                }
-
-                if (m_Controller.StateHandler.IsAirborned)
-                {
-                    ErrorHandler.Log("CanMove - FALSE : IsAirborned", ELogTag.Movement);
-                    return false;
-                }
-
-                if (m_Controller.StateHandler.HasState(EStateEffect.Jump))
-                {
-                    ErrorHandler.Log("CanMove - FALSE : is Jumping", ELogTag.Movement);
-                    return false;
-                }
-
-                if (m_Controller.StateHandler.HasState(EStateEffect.Frozen))
-                {
-                    ErrorHandler.Log("CanMove - FALSE : is Frozen", ELogTag.Movement);
-                    return false;
-                }
-
-                if (m_Controller.StateHandler.HasState(EStateEffect.SpecialAnimation))
-                {
-                    ErrorHandler.Log("CanMove - FALSE : has SpecialAnimation", ELogTag.Movement);
+                    ErrorHandler.Log("CanMove - FALSE : has state preventing movement", ELogTag.Movement);
                     return false;
                 }
 

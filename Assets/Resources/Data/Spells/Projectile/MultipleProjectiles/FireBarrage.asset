@@ -13,14 +13,12 @@ MonoBehaviour:
   m_Name: FireBarrage
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: Shoots {0} fireballs at once spreading on the enemy's area, each
-    dealing {1} damage and applying {2}
+  m_Description: 'Shoots {0} fireballs at once spreading on the enemy''s area, each
+    dealing {1} damage and applying [EnemyStateEffect.0]'
   m_DescriptionVariables:
   - Name: Projectiles
     WithIcon: 1
   - Name: Damage
-    WithIcon: 1
-  - Name: Burn
     WithIcon: 1
   m_SpellElements: 01000000
   Linked: 0
@@ -91,7 +89,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
-  m_NCharges: 1
+  m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 90
@@ -115,17 +113,15 @@ MonoBehaviour:
   - Property: 3
     Value: -0.25
     ScalingType: 1
-    RoundingType: 2
+    RoundingType: 0
     ScalingTresholds: []
   - Property: 20
     Value: 0
     ScalingType: 1
     RoundingType: 2
     ScalingTresholds:
-    - Level: 9
-      Value: 2
     - Level: 14
-      Value: 3
+      Value: 2
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects:

@@ -49,22 +49,24 @@ namespace Game.Spells
         {
             base.RegisterListeners();
 
-            m_Controller.StateHandler.StateEffectListEvent += OnStateEffectListEvent;
+            m_Controller.StateHandler.StateEffectEvent += OnStateEffectEvent;
         }
 
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
 
-            m_Controller.StateHandler.StateEffectListEvent -= OnStateEffectListEvent;
+            m_Controller.StateHandler.StateEffectEvent -= OnStateEffectEvent;
         }
 
-        void OnStateEffectListEvent(EListEvent listEvent, string stateEffect, int stacks, float duration)
+        void OnStateEffectEvent(EStateEffectEvent stateEffectEvent, string stateEffectName, int nStacks, int maxStacks, float duration)
         {
-            if (listEvent != EListEvent.Add)
+            if (stateEffectEvent != EStateEffectEvent.OnApplied 
+                && stateEffectEvent != EStateEffectEvent.OnRefreshed
+                && stateEffectEvent != EStateEffectEvent.OnActivated)
                 return;
 
-            if (! REFRESH_EFFECTS.Contains(stateEffect))
+            if (! REFRESH_EFFECTS.Contains(stateEffectName))
                 return;
 
             SetStacks(1);

@@ -13,13 +13,8 @@ MonoBehaviour:
   m_Name: VoidEmbrace
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: For the next {0} seconds, each time you hit an enemy with a spell
-    or an Auto Attack, apply 2 stacks of {1}
-  m_DescriptionVariables:
-  - Name: Duration
-    WithIcon: 1
-  - Name: Cursed
-    WithIcon: 1
+  m_Description: 
+  m_DescriptionVariables: []
   m_SpellElements: 04000000
   Linked: 0
   Graphics: {fileID: 0}
@@ -49,7 +44,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
-  m_NCharges: 1
+  m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0

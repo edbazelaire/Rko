@@ -1,8 +1,11 @@
 ﻿using Data;
+using Data.DataStructures.SpellSubStructures;
 using Enums;
 using Game.Loaders;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Tools;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Game.Spells
@@ -30,7 +33,7 @@ namespace Game.Spells
 
         public override bool Initialize(Controller controller, Controller caster, SStateEffectData? stateEffectData = null)
         {
-            if (!base.Initialize(controller, caster, stateEffectData))
+            if (! base.Initialize(controller, caster, stateEffectData))
                 return false;
 
             if (m_ReplacementData == null)
@@ -41,14 +44,22 @@ namespace Game.Spells
 
             if (m_ReplacementData.SpellType == ESpellType.MultiProjectiles)
             {
-                var autoAttackData = SpellLoader.GetSpellData(m_Controller.SpellHandler.AutoAttack, level: m_Controller.CharacterLevel);
+                var autoAttackData = m_Controller.SpellHandler.GetSpellData(m_Controller.SpellHandler.AutoAttack, m_Level);
                 if (autoAttackData.SpellType != ESpellType.Projectile)
                 {
                     ErrorHandler.Error("Unhandled case : trying to set multiprojectile AutoAttack BUFF on a non projectile auto attack");
                     return false;
                 }
 
+                m_ReplacementData.AnimationTimer = autoAttackData.AnimationTimer;
                 (m_ReplacementData as MultiProjectilesData).OverrideProjectile(autoAttackData as ProjectileData);
+            }
+
+            else if (m_ReplacementData.SpellType == ESpellType.MultiSpell)
+            {
+                var autoAttackData = m_Controller.SpellHandler.GetSpellData(m_Controller.SpellHandler.AutoAttack, m_Level);
+                m_ReplacementData.AnimationTimer = autoAttackData.AnimationTimer;
+                (m_ReplacementData as MultiSpellData).SetSubSpellData(autoAttackData as ProjectileData);
             }
 
             m_ReplacedSpell = m_Controller.SpellHandler.AutoAttack;
@@ -68,7 +79,44 @@ namespace Game.Spells
         #endregion
 
 
+        #region Level & Scaling
+
+        public override StateEffect Clone(int level = 0, string parent = "", string origin = "")
+        {
+            // clone this spell
+            AutoAttackEffect data = (AutoAttackEffect)base.Clone(level == 0 ? m_Level : level, parent, origin);
+
+            if (m_ReplacementData != null)
+                data.SetReplacementData(m_ReplacementData.Clone(level));
+
+            return data;
+        }
+
+        protected override void SetLevel(int level)
+        {
+            base.SetLevel(level);
+
+            if (m_ReplacementData != null)
+                m_ReplacementData.SetLevel(level);
+        }
+
+        public void SetReplacementData(SpellData spellData)
+        {
+            m_ReplacementData = spellData;
+        }
+
+        #endregion
+
+
         #region Infos & Description
+
+        public override string GetDescription()
+        {
+            if (m_Description == "")
+                return m_ReplacementData.GetDescription();
+
+            return base.GetDescription();
+        }
 
         public override Dictionary<string, object> GetInfos()
         {

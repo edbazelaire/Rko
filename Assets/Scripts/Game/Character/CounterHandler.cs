@@ -13,7 +13,10 @@ namespace Game.Character
     {
         #region Members
 
+        // TODO : Never used ???
         private NetworkVariable<bool> m_HasCounter              = new(false);
+        // TODO : Never used ???
+
         private NetworkVariable<bool> m_IsBlockingMovement      = new(false);
         private NetworkVariable<bool> m_IsBlockingCast          = new(false);
 
@@ -22,7 +25,7 @@ namespace Game.Character
 
         public NetworkVariable<bool> IsBlockingMovement => m_IsBlockingMovement;
         public NetworkVariable<bool> IsBlockingCast => m_IsBlockingCast;
-        public NetworkVariable<bool> HasCounter => m_HasCounter;
+        public bool HasCounter => m_Counters.Count > 0;
 
         public int RemainingShield
         {
