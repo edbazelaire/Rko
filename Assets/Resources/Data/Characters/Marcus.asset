@@ -33,13 +33,16 @@ MonoBehaviour:
   HealthScaleFactor: 0.1
   CharacterStatScaling:
   - StateEffectProperty: 7
-    BaseValue: 10
+    BaseValue: 20
     BonusValue: 0
     ScalingFactor: 0.1
+    SpecialConditions:
+    - IceBreak
     StateEffectStackFactors: []
   - StateEffectProperty: 4
     BaseValue: 1000
     BonusValue: 0
     ScalingFactor: 0.1
+    SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers: []

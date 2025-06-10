@@ -18,7 +18,7 @@ namespace AI
 
         public override NodeState Evaluate()
         {
-            SetNodeState(m_Controller.CounterHandler.HasCounter.Value ? NodeState.SUCCESS : NodeState.FAILURE);
+            SetNodeState(m_Controller.CounterHandler.HasCounter ? NodeState.SUCCESS : NodeState.FAILURE);
             return m_State;
         }
 

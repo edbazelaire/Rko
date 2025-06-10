@@ -13,14 +13,12 @@ MonoBehaviour:
   m_Name: Needlestorm
   m_EditorClassIdentifier: 
   m_Rarety: 1
-  m_Description: Shoots {0} frost needles on the enemy position, each dealing {1}
-    damage and applying {2}
+  m_Description: 'Shoots {0} frost needles on the enemy position, each dealing {1}
+    damage and applying [EnemyStateEffect.0]'
   m_DescriptionVariables:
   - Name: Projectiles
     WithIcon: 1
   - Name: Damage
-    WithIcon: 1
-  - Name: Frost
     WithIcon: 1
   m_SpellElements: 02000000
   Linked: 0
@@ -89,7 +87,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
-  m_NCharges: 1
+  m_Charges: 1
   EnergyGain: 3
   EnergyCost: 0
   m_Damage: 30

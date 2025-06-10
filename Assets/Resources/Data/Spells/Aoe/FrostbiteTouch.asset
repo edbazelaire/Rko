@@ -13,13 +13,9 @@ MonoBehaviour:
   m_Name: FrostbiteTouch
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: AoE of size {0} applying {1} effect and {2} damage on hitting a
-    target
+  m_Description: Triggers a burst of icy energy, freezing everything within range.\nApplies
+    [EnemyStateEffect.0] and deals {0} damage to all targets caught in the blast.
   m_DescriptionVariables:
-  - Name: Size
-    WithIcon: 0
-  - Name: Frozen
-    WithIcon: 1
   - Name: Damage
     WithIcon: 1
   m_SpellElements: 02000000
@@ -70,7 +66,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
-  m_NCharges: 1
+  m_Charges: 1
   EnergyGain: 15
   EnergyCost: 0
   m_Damage: 90

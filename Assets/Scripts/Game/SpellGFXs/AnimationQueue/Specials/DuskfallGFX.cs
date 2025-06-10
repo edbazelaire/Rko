@@ -68,6 +68,14 @@ namespace Game.SpellGFXs
 
         protected override void Update()
         {
+            // update position
+            var pos = transform.position;
+            pos.x = m_Controller.SpellHandler.TargetPos.x;
+            transform.position = pos;
+
+            // update character position
+            m_Controller.GFXHandler.CharacterPreview.transform.position = transform.position;
+
             base.Update();
         }
 
@@ -76,8 +84,6 @@ namespace Game.SpellGFXs
             m_Controller.AnimationHandler.PlayAnimation(EAnimation.Jump, m_Duration);
 
             m_Charge.SetActive(true);
-
-            m_Controller.GFXHandler.CharacterPreview.transform.position = transform.position;
 
             yield return new WaitForSeconds(m_Duration * 0.9f);
 
@@ -89,10 +95,10 @@ namespace Game.SpellGFXs
 
         IEnumerator Strike()
         {
-            var baseHight = transform.position.y;
-            var position = transform.position;
-            var baseDuration = m_Duration * 0.1f;
-            var duration = baseDuration;
+            var baseHight       = transform.position.y;
+            var position        = transform.position;
+            var baseDuration    = m_Duration * 0.1f;
+            var duration        = baseDuration;
 
             while (duration > 0)
             {

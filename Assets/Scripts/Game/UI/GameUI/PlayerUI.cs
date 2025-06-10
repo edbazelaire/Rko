@@ -1,5 +1,6 @@
 ﻿using Enums;
 using Game.Loaders;
+using Game.StateEffects.Quests;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,8 @@ namespace Game.UI
             EStateEffect.Uncontrollable.ToString(), 
             EStateEffect.UnTargettable.ToString(), 
             EStateEffect.Jump.ToString(),
+            EStateEffect.BlockCast.ToString(),
+            EStateEffect.BlockMovement.ToString(),
             EStateEffect.SpecialAnimation.ToString(),
             EStateEffect.Vanish.ToString(),
         };
@@ -87,9 +90,9 @@ namespace Game.UI
             m_StateDisplayer = Finder.Find(gameObject, c_StateDisplayer);
             m_StateEffectsUI = new Dictionary<string, StateEffectUI>();
             UIHelper.CleanContent(m_StateDisplayer);
-            controller.StateHandler.StateEffectListEvent                += OnStateEvent;
+            controller.StateHandler.StateEffectEvent                    += OnStateEffectEvent;
+            controller.StateHandler.QuestThresholdEvent                 += OnQuestTreshold;
             controller.StateHandler.HoldingStateEffects.OnListChanged   += OnHoldingStateEffectsChanged;
-            controller.TriggerEffectHandler.QuestValueChanged           += OnQuestValueChanged;
         }
 
         private void OnDestroy()
@@ -102,8 +105,10 @@ namespace Game.UI
             m_Controller.Life.FinalShield.OnValueChanged                -= m_ShieldBar.OnValueChanged;
             m_Controller.EnergyHandler.MaxEnergy.OnValueChanged         -= m_EnergyBar.OnMaxValueChanged;
             m_Controller.EnergyHandler.Energy.OnValueChanged            -= m_EnergyBar.OnValueChanged;
-            m_Controller.StateHandler.StateEffectListEvent              -= OnStateEvent;
-            m_Controller.TriggerEffectHandler.QuestValueChanged         -= OnQuestValueChanged;
+            m_Controller.StateHandler.StateEffectEvent                  -= OnStateEffectEvent;
+            m_Controller.StateHandler.QuestThresholdEvent               -= OnQuestTreshold;
+            m_Controller.StateHandler.HoldingStateEffects.OnListChanged += OnHoldingStateEffectsChanged;
+
         }
 
         #endregion
@@ -111,7 +116,7 @@ namespace Game.UI
 
         #region State Displayer
 
-        void OnStateEvent(EListEvent listEvent, string state, int stack, float duration)
+        void OnStateEffectEvent(EStateEffectEvent stateEffectEvent, string state, int stacks, int maxStacks, float duration)
         {
             // check that is not one of the state that are not displayed
             if (IGNORED_STATE_EFFECTS.Contains(state) || state.StartsWith("_"))
@@ -121,81 +126,80 @@ namespace Game.UI
             if (stateEffectData == null || stateEffectData.IsInstantanious || ! stateEffectData.IsDisplayed) 
                 return;
 
-            switch (listEvent)
+            switch (stateEffectEvent)
             {
-                case EListEvent.Add:
-                    AddState(state, stack, duration);
+                case EStateEffectEvent.OnApplied:
+                case EStateEffectEvent.OnActivated:
+                    AddState(state, stacks, maxStacks, duration);
                     break;
 
-                case EListEvent.Remove:
+                case EStateEffectEvent.OnRefreshed:
+                    UpdateStacks(state, stacks, maxStacks, duration);
+                    break;
+
+                case EStateEffectEvent.OnRemoved:
+                case EStateEffectEvent.OnConsumed:
+                    UpdateStacks(state, -stacks, maxStacks, duration);
+                    break;
+
+                case EStateEffectEvent.OnDeactivated:
                     RemoveState(state);
                     break;
 
+                case EStateEffectEvent.OnEnd:
+                    RemoveState(state);
+                    break;
+
+                case EStateEffectEvent.OnTick:
+                    break;
+
                 default:
-                    Debug.Log("Unhandled case");
+                    Debug.Log("Unhandled case : " + stateEffectEvent);
                     break;
             }
         }
 
-        void AddState(string state, int stack, float duration)
+        void AddState(string stateEffect, int stacks, int maxStacks, float duration)
         {
             // if already in existing state, refresh it
-            if (m_StateEffectsUI.ContainsKey(state))
+            if (m_StateEffectsUI.ContainsKey(stateEffect))
             {
                 // initialize the state (or refresh it)
-                m_StateEffectsUI[state].Refresh(duration, stack);
+                m_StateEffectsUI[stateEffect].Refresh(duration, stacks, maxStacks);
                 return;
             }
 
             GameObject stateEffectUI = Instantiate(m_TemplateStateEffect, m_StateDisplayer.transform);
-            m_StateEffectsUI.Add(state, stateEffectUI.GetComponent<StateEffectUI>());
+            m_StateEffectsUI.Add(stateEffect, stateEffectUI.GetComponent<StateEffectUI>());
 
             // initialize the state (or refresh it)
-            m_StateEffectsUI[state].Initialize(state, stack, duration);
+            m_StateEffectsUI[stateEffect].Initialize(stateEffect, stacks, maxStacks, duration);
         }
 
-        void RemoveState(string state)
+        void UpdateStacks(string stateEffect, int stacks, int maxStacks, float duration)
+        {
+            if (! m_StateEffectsUI.ContainsKey(stateEffect))
+            {
+                ErrorHandler.Warning($"UpdateStacks ({stacks}) of {stateEffect} but this state effect UI was not found");
+                AddState(stateEffect, stacks, maxStacks, duration);
+                return;
+            }
+
+            m_StateEffectsUI[stateEffect].AddStacks(stacks, maxStacks, duration);
+        }
+
+        void RemoveState(string stateEffect)
         {
             // if not in existing state, create it and add it to the list
-            if (!m_StateEffectsUI.ContainsKey(state))
+            if (!m_StateEffectsUI.ContainsKey(stateEffect))
             {
-                ErrorHandler.Error($"Unable to find removed state {state} in list");
+                ErrorHandler.Error($"Unable to find removed state {stateEffect} in list");
                 return;
             }
 
             // destroy state and remove from list
-            Destroy(m_StateEffectsUI[state].gameObject);
-            m_StateEffectsUI.Remove(state);
-        }
-
-        #endregion
-
-
-        #region Quest Display
-
-        void OnQuestValueChanged(string effectName, int counter)
-        {
-            string effectId = TextHandler.TrimQuestEffectName(effectName, isActivated: true);
-            effectName = TextHandler.TrimQuestEffectName(effectName, isActivated: counter == 0);
-
-            // if already in existing state, refresh it
-            if (m_StateEffectsUI.ContainsKey(effectId))
-            {
-                // initialize the state (or refresh it)
-                m_StateEffectsUI[effectId].Refresh(-1, counter);
-
-                if (counter == 0)
-                    m_StateEffectsUI[effectId].ReloadIcon(effectName);
-
-                return;
-            }
-
-            // instantiate new StateEffectUI
-            GameObject stateEffectUI = Instantiate(m_TemplateStateEffect, m_StateDisplayer.transform);
-            m_StateEffectsUI.Add(effectId, stateEffectUI.GetComponent<StateEffectUI>());
-
-            // initialize the state (or refresh it)
-            m_StateEffectsUI[effectId].Initialize(effectName, counter, -1);
+            Destroy(m_StateEffectsUI[stateEffect].gameObject);
+            m_StateEffectsUI.Remove(stateEffect);
         }
 
         #endregion
@@ -214,6 +218,28 @@ namespace Game.UI
             {
                 m_StateEffectsUI[stateEffect].SetIsHolding(m_Controller.StateHandler.IsHolding(stateEffect));
             }
+        }
+
+        void OnQuestTreshold(string stateEffectName, int index)
+        {
+            if (! m_StateEffectsUI.ContainsKey(stateEffectName))
+            {
+                ErrorHandler.Warning($"Unable to find {stateEffectName} in list of effects");
+                return;
+            }
+
+            var stateEffect = SpellLoader.GetStateEffect(stateEffectName);
+            if (stateEffect is not QuestEffect questEffect)
+            {
+                ErrorHandler.Warning($"Call OnQuestTreshold() on state effect {stateEffectName} but it is not recognized as QuestEffect");
+                return;
+            }
+
+            var replacementIcon = questEffect.QuestThresholds[index].ReplacementIcon;
+            if (replacementIcon == null)
+                return;
+            
+            m_StateEffectsUI[stateEffectName].ReloadIcon(replacementIcon);
         }
 
         #endregion

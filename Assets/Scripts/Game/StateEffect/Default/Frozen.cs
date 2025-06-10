@@ -10,6 +10,9 @@ namespace Game.Spells
         {
             base.Update();
 
+            if (! m_IsActivated || ! m_IsStarted)
+                return;
+
             if (m_RemainingShield <= 0)
                 m_Controller.StateHandler.RemoveStateEffect(StateEffectName);
         }
@@ -24,7 +27,7 @@ namespace Game.Spells
             if (! m_Controller.StateHandler.HasState(EStateEffect.Frost))
             {
                 // add frost state
-                m_Controller.StateHandler.AddStateEffect(EStateEffect.Frost, m_Caster);
+                m_Controller.StateHandler.AddStateEffect(EStateEffect.Frost.ToString(), m_Caster, m_Level, m_Origin);
                 return false;
             }
 

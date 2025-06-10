@@ -47,7 +47,6 @@ namespace Menu.PopUps
 
             SetUpStateEffects();
             SetUpCollectionFillbar();
-            SetUpDescription();
             m_ClipTabContent.SetUpVideo(m_SpellData.Spell);
         }
 
@@ -121,7 +120,7 @@ namespace Menu.PopUps
             base.SetUpRarety();
         }
 
-        void SetUpDescription()
+        protected override void SetUpDescription()
         {
             m_DescriptionText.text = m_SpellData.GetDescription();
         }
@@ -129,12 +128,12 @@ namespace Menu.PopUps
         /// <summary>
         /// Display infos of the spell
         /// </summary>
-        protected override void SetUpInfoRow(GameObject container, string key, object value, object newDataValue = null)
+        protected override void SetUpInfoRow(GameObject container, string key, object value, object newDataValue = null, EScalingDirection scalingDirection = EScalingDirection.None)
         {
             if (key == "Effects")
                 return;
             
-            base.SetUpInfoRow(container, key, value, newDataValue);
+            base.SetUpInfoRow(container, key, value, newDataValue, scalingDirection);
         }
 
         void SetUpStateEffects()

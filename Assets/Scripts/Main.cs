@@ -20,7 +20,7 @@ using Assets.Scripts.Managers;
 using Managers.Friends;
 using Unity.Services.Friends.Models;
 using UnityEngine.SceneManagement;
-
+using MyBox;
 
 
 #if UNITY_EDITOR
@@ -45,12 +45,13 @@ namespace Assets
         [SerializeField] bool m_ActivateSaveOnClose;
 
         [Header("Debug Section")]
-        [SerializeField] EEnv m_Env = EEnv.beta;
-        [SerializeField] bool m_ForceIsNewPlayer;
-        [SerializeField] bool m_StopPreventiveLoss;
-        [SerializeField] bool m_SkipWaitingRanked;
-        [SerializeField] bool m_InfinitGiftCodes;
-        [SerializeField] List<ELogTag> m_LogTags;
+        [SerializeField] EEnv               m_Env = EEnv.beta;
+        [SerializeField] string             m_AuthId = "";
+        [SerializeField] bool               m_ForceIsNewPlayer;
+        [SerializeField] bool               m_StopPreventiveLoss;
+        [SerializeField] bool               m_SkipWaitingRanked;
+        [SerializeField] bool               m_InfinitGiftCodes;
+        [SerializeField] List<ELogTag>      m_LogTags;
 
         // ==========================================================================================================
         // EVENTS
@@ -180,14 +181,21 @@ namespace Assets
                 options.SetEnvironmentName(m_Env == EEnv.beta ? "beta" : "dev");
 #else
                 options.SetEnvironmentName("dev");
+                m_AuthId = "";
 #endif
                 await UnityServices.InitializeAsync(options);
+
+                // has special authentication token provided - sign out
+                if (! m_AuthId.IsNullOrEmpty() && AuthenticationService.Instance.IsSignedIn)
+                {
+                    AuthenticationService.Instance.SignOut();
+                }
 
                 // listen to Auth Service and try to signe in anonymously
                 if (! AuthenticationService.Instance.IsSignedIn)
                 {
                     AuthenticationService.Instance.SignedIn += OnSignedIn;
-                    AuthManager.Instance.SignIn();
+                    AuthManager.Instance.SignIn(m_AuthId);
                 }
                 else
                 {

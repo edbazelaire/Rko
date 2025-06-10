@@ -36,14 +36,9 @@ namespace Game.Spells
         private void OnHealedEvent(int heal, ulong casterId)
         {
             int previousStacks = m_Stacks;
-            m_Stacks = Math.Min(m_Stacks + (int)Mathf.Round(heal * m_HealConversionFactor), m_MaxStacks);
-
-            // changes stacks : call event
-            if (previousStacks != m_Stacks)
-                m_Controller.StateHandler.CallSpellEventClientRPC(new SpellEventData(ESpellEvent.OnSpawn, StateEffectName, m_Caster.PlayerId, m_Stacks, m_Duration));
+            Refresh(stacks: Math.Min(m_Stacks + (int)Mathf.Round(heal * m_HealConversionFactor), m_MaxStacks), level: m_Level);
         }
 
         #endregion
-
     }
 }

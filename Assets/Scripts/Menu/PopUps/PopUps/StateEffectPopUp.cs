@@ -1,4 +1,5 @@
 ﻿using Data;
+using Enums;
 using Game.Loaders;
 using Game.Spells;
 using Menu.Common.Infos;
@@ -33,7 +34,7 @@ namespace Menu.PopUps
         public void Initialize(SStateEffectData stateEffectData, int level)
         {
             m_StateEffect = SpellLoader.GetStateEffect(stateEffectData.StateEffect.ToString(), level);
-            m_StateEffect.OverrideStateEffectData(stateEffectData);
+            m_StateEffect.OverrideStateEffectData(stateEffectData.OverridingProperties);
 
             base.Initialize();
         }
@@ -84,7 +85,8 @@ namespace Menu.PopUps
             foreach (var item in infos)
             {
                 var infoRow = Instantiate(templateInfoRow, m_PropertiesContainer.transform).GetComponent<SpellInfoRowUI>();
-                infoRow.Initialize(item.Key, item.Value, nextLevelInfos[item.Key]);
+                m_StateEffect.IsScalingProperty(item.Key, out EScalingDirection scaling);
+                infoRow.Initialize(item.Key, item.Value, nextLevelInfos[item.Key], scaling);
             }
         }
 

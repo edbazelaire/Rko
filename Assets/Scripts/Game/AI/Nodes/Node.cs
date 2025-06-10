@@ -63,6 +63,7 @@ namespace AI
         public virtual void Reset()
         {
             m_State = NodeState.FAILURE;
+
             foreach (var child in m_Children)
                 child.Reset();
         }
@@ -70,6 +71,11 @@ namespace AI
         #region State Management
 
         public virtual void SetNodeState(NodeState nodeState)
+        {
+            ForceNodeState(nodeState);
+        }
+
+        protected virtual void ForceNodeState(NodeState nodeState)
         {
             if (m_State == nodeState)
                 return;

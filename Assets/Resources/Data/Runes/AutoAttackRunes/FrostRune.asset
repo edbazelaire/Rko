@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a402882a257d18548a281b17574b3711, type: 3}
   m_Name: FrostRune
   m_EditorClassIdentifier: 
-  Rarety: 2
+  m_Rarety: 2
   m_Description: 
   m_DescriptionVariables: []
-  Description: 
   m_SpellElements: 02000000
+  Description: 
   m_MinorPower:
     Description: All slows are {0} more efficients
     m_DescriptionVariables:
@@ -29,6 +29,7 @@ MonoBehaviour:
       BaseValue: 0.2
       BonusValue: 0
       ScalingFactor: 0.05
+      SpecialConditions: []
       StateEffectStackFactors: []
   m_MajorPower:
     Description: 'Apply [Frost] (level {0}) on every auto attack.\n\n[TriggerEffect.0]'
@@ -38,6 +39,7 @@ MonoBehaviour:
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: _FrostRuneMajor
+      OverridingData: []
       Level: 0
       Target: 4
       SpellActivationEvent: 1
@@ -53,11 +55,12 @@ MonoBehaviour:
       Cooldown: 0
     m_BonusStats: []
   m_PrimalPower:
-    Description: 
+    Description: IceBreak effect is dealing +[BonusDamage.IceBreak] damage
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: _FrostRunePrimal
+      OverridingData: []
       Level: 0
       Target: 50
       SpellActivationEvent: 1
@@ -71,4 +74,11 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
-    m_BonusStats: []
+    m_BonusStats:
+    - StateEffectProperty: 7
+      BaseValue: 50
+      BonusValue: 0
+      ScalingFactor: 0.1
+      SpecialConditions:
+      - IceBreak
+      StateEffectStackFactors: []

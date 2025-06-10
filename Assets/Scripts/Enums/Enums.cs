@@ -135,11 +135,10 @@
 
     public enum ESpell
     {
-        None = -1,
+        None = 0,
 
-        RockShower          = 0,
         Blazeburst          = 1,
-        //Fireball            = 2,
+        RockShower          = 2,
         FireBomb            = 3,
         Heal                = 4,
         //IgnitionVeil        = 5,
@@ -179,7 +178,7 @@
         //WinterProtection    = 39,
         ExtraHands          = 40,
         PoisonedBlade       = 41,
-        Corrupted           = 42,
+        //Corrupted           = 42,
         VoidEmbrace         = 43,
         PlagueArrows        = 44,
         EmperorOfFlames     = 45,
@@ -271,8 +270,8 @@
         // -- Atassut
         ChaosOrb            = 10201,
         Scythefall          = 10202,
-        Nightveil           = 10203,
-        GreatVortex         = 10204,
+        Umbracryx           = 10203,
+        ShadowVeil          = 10204,
         AstralIcefall       = 10205,
         DarkstarDescent     = 10206,
         // -- Sikunik
@@ -404,6 +403,18 @@
         RottingFlame            = 23,
         FleetfootRune           = 24,
         HammeredRune            = 25,
+        CorruptionRune          = 26,
+        IceLanceMastery         = 27,
+    }
+
+    public enum EEffectType
+    {
+        None,
+
+        Spell,
+        StateEffect,
+        Rune,
+        PowerUp
     }
 
     public enum EOrderBy
@@ -462,7 +473,7 @@
         Draw
     }
 
-    public enum ESpellActivation
+    public enum ETriggerType
     {
         None = 0, 
 
@@ -497,9 +508,12 @@
         None            = 0,    
 
         OnApplied       = 1,        // procs when a state effect is applied
-        OnRefreshed     = 2,        // procs when a state effect is refreshed
-        OnConsumed      = 3,        // procs when a state effect is consumed 
-        OnRemoved       = 4,        // procs when a state effect is removed without beeing consumed
+        OnRefreshed     = 2,        // procs when a state effect STACK is refreshed
+        OnConsumed      = 3,        // procs when a state effect STACK is consumed 
+        OnRemoved       = 4,        // procs when a state effect STACK is removed without beeing consumed
+        OnActivated     = 5,        // procs when a state effect is activated
+        OnDeactivated   = 6,        // procs when a state effect is deactivated
+        OnEnd           = 7,        // procs when a state effect is ending
 
         OnTick          = 100,      // procs at each tick of the state effect
     }
@@ -661,57 +675,62 @@
 
     public enum EStateEffect
     {
-        // default effect
-        None,
-
-        // default effect
-        Stun,
-        Frozen,
-        Invulnerable,
-        Invisible,
+        // default effects
+        None                = 0,
+        Stun                = 1,
+        Frozen              = 2,
+        Invulnerable        = 3,
+        Invisible           = 4,
 
         // knockback effects
-        Knockback,
+        Knockback           = 5,
 
         // slow effects
-        Frost,
-        Slow,
+        Frost               = 6,
+        Slow                = 7,
 
         // tick effects
-        Burn,
-        Poison,
+        Burn                = 8,
+        Poison              = 9,
 
-        Uncontrollable,
-        Jump,
-        IronSkin,
-        Cursed,
-        Silence,
-        Scorched,
-        IceBreak,
-        Infected,
-        Malediction,
-        VoidPact,
-        UnTargettable,
-        SpecialAnimation,
-        Combustion,
-        Airborne,
-        Infection,
-        Vanish,
-        Cleanse,
-        SoulHarvest,
+        Uncontrollable      = 10,
+        Jump                = 11,
+        IronSkin            = 12,
+        Cursed              = 13,
+        Silence             = 14,
+        Scorched            = 15,
+        IceBreak            = 16,
+        Infected            = 17,
+        Malediction         = 18,
+        VoidPact            = 19,               // CHANGE THAT NAME !!! EFFECT REPLACING AUTO ATTACK IN "CORRUPTED"
+        UnTargettable       = 20,
+        // todo             = 21
+        Combustion          = 22,
+        Airborne            = 23,
+        Infection           = 24,
+        Vanish              = 25,
+        Cleanse             = 26,
+        SoulHarvest         = 27,
 
         // ======================================================================
         // Special Effects (boss)
-        DarkRetribution = 10001,
-        DragonicRest    = 10002,
-        AzurePowerOrb   = 10003,
-        Howling         = 10004,
+        DarkRetribution     = 10001,
+        DragonicRest        = 10002,
+        AzurePowerOrb       = 10003,
+        Howling             = 10004,
 
         // ======================================================================
         // Special Effects (characters)
-        Junkheal        = 20001,
-        HeavyHitter     = 20002,
-        MoltenSpirit    = 20003,
+        Junkheal            = 20001,
+        HeavyHitter         = 20002,
+        MoltenSpirit        = 20003,
+
+        // ======================================================================
+        // Special Effects (animation)
+        SpecialAnimation    = 100001,
+        BlockMovement       = 100002, 
+        BlockCast           = 100003,
+
     }
 
     public enum EStateEffectType
@@ -720,6 +739,13 @@
         Incarnation,
         AutoAttackBuff,
         SpellBuff,
+    }
+
+    public enum EScalingDirection
+    {
+        None = 0,
+        Up, 
+        Down,
     }
 
     public enum EScalingType
@@ -743,7 +769,7 @@
 
         Heal,
         Damage,
-        Cooldowns,
+        Cooldown,
         Duration,
         LifeSteal,
         NProjectiles,
@@ -762,12 +788,14 @@
         ExecutionDamage,
         Charges,
         Trajectory,
+        AnimationTimer,
     }
 
     public enum EStateEffectProperty
     {
         None = 0,
 
+        Level                   = 24,   
         Duration                = 1,
         MaxStacks               = 2,
         SpeedBonus              = 3,
@@ -782,6 +810,7 @@
         BonusLifeSteal          = 9,
         MissingLifeFactor       = 10,
         Damage                  = 11,
+        ExecutionDamage         = 25,   // -------------
 
         Tick                    = 12,
         TickDamage              = 13,
@@ -798,24 +827,25 @@
         BonusTickDamagePerc     = 101,
         BonusTickHeal           = 102,
         BonusTickShield         = 103,
-        BonusTickLifeSteal      = 119,
+        BonusTickLifeSteal      = 119,  
 
-        Heal                = 104,
-        LifeSteal           = 105,
-        BonusHeal           = 106,
-        BonusHealPerc       = 107,
-        HealReduction       = 117,
-        HealReductionPerc   = 118,
+        Heal                    = 104,
+        LifeSteal               = 105,
+        BonusHeal               = 106,
+        BonusHealPerc           = 107,
+        HealReduction           = 117,
+        HealReductionPerc       = 118,
 
-        EndDamage           = 108,
-        EndHeal             = 109,
-        Stacks              = 110,
-        Hp                  = 111,
-        BonusBurnDamage     = 112,
-        BonusSlowPerc       = 113,
-        Priority            = 114,
-        TickEnergy          = 115,
-        Energy              = 116,
+        EndDamage               = 108,
+        EndHeal                 = 109,
+        Stacks                  = 110,
+        Hp                      = 111,
+        BonusBurnDamage         = 112,
+        BonusSlowPerc           = 113,
+        Priority                = 114,
+        TickEnergy              = 115,
+        Energy                  = 116,
+        MaxThresholdIndex       = 120,      // -------------
     }
 
     public enum EAnimation

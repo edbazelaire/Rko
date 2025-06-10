@@ -12,7 +12,7 @@ namespace Data
 
         public void ApplyOnHit(ref Controller controller, Controller caster)
         {
-            controller.StateHandler.AddStateEffect(StateEffect, caster, m_Level);
+            controller.StateHandler.AddStateEffect(StateEffect.ToString(), caster, m_Level, Rune.ToString());
         }
     }
 }

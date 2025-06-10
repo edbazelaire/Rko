@@ -18,10 +18,9 @@ namespace Game.Character
 
         // ==============================================================================================
         // EVENTS
-        // used to signal when a state is added / removed
-        public event Action<EListEvent, string, int, float> StateEffectListEvent;
         // used to signal client GFX about spell events
-        public event Action<ESpellEvent, string> StateEffectEvent;
+        public event Action<EStateEffectEvent, string, int, int, float> StateEffectEvent;
+        public event Action<string, int>                                QuestThresholdEvent;
 
         // ==============================================================================================
         // PRIVATE ACCESSORS
@@ -43,8 +42,9 @@ namespace Game.Character
         public NetworkList<FixedString64Bytes> HoldingStateEffects => m_HoldingStateEffects;
         public bool IsStunned => 
             ! IsUncontrollable
-            && (HasState(EStateEffect.Stun.ToString()) 
-            || HasState(EStateEffect.Scorched.ToString())
+            && (
+                HasState(EStateEffect.Stun.ToString()) 
+                || HasState(EStateEffect.Scorched.ToString())
             );
 
         public bool IsAirborned => 
@@ -55,6 +55,23 @@ namespace Game.Character
         public bool IsSilenced =>
             HasState(EStateEffect.Silence.ToString()) 
             || HasState(EStateEffect.Malediction.ToString());
+
+        public bool CanCast =>
+            ! IsSilenced 
+            && ! IsStunned 
+            && ! IsAirborned 
+            && ! HasState(EStateEffect.Frozen)
+            && ! HasState(EStateEffect.Jump)
+            && ! HasState(EStateEffect.BlockCast);
+
+        public bool CanMove =>
+            ! IsSilenced 
+            && ! IsStunned 
+            && ! IsAirborned 
+            && ! HasState(EStateEffect.Frozen)
+            && ! HasState(EStateEffect.Jump)
+            && ! HasState(EStateEffect.BlockMovement)
+            && ! HasState(EStateEffect.SpecialAnimation);
         
         public bool IsInvulnerable => 
             HasState(EStateEffect.Invulnerable.ToString())
@@ -138,44 +155,40 @@ namespace Game.Character
         #endregion
 
 
-        #region Client RPC
+        #region GFX Events
 
         [ClientRpc]
-        public void CallSpellEventClientRPC(SpellEventData spellData)
+        public void CallStateEffectEventClientRPC(StateEventData stateEventData)
         {
-            // Call UI event
-            CallOnStateEventUI(spellData.SpellEvent, spellData.StateEffectName.ToString(), spellData.Stacks, spellData.Duration);
-
             // Call SpellGFX event
-            CallOnStateEffectEvent(spellData.SpellEvent, spellData.StateEffectName.ToString(), spellData.CasterId);
+            CallOnStateEffectEventUI(stateEventData.StateEffectEvent, stateEventData.StateEffectName.ToString(), stateEventData.Stacks, stateEventData.MaxStacks, stateEventData.Duration, stateEventData.CasterId);
         }
 
-        void CallOnStateEventUI(ESpellEvent spellEvent, string stateEffectName, int stacks, float duration)
+        void CallOnStateEffectEventUI(EStateEffectEvent stateEffectEvent, string stateEffectName, int stacks, int maxStacks, float duration, ulong casterId)
         {
-            if (spellEvent == ESpellEvent.OnSpawn || spellEvent == ESpellEvent.OnActivation)
-                StateEffectListEvent?.Invoke(EListEvent.Add, stateEffectName, stacks, duration);
-            else if (spellEvent == ESpellEvent.OnEnd)
-                StateEffectListEvent?.Invoke(EListEvent.Remove, stateEffectName, stacks, duration);
-        }
+            ErrorHandler.Log(stateEffectName + " " + stateEffectEvent, ELogTag.StateEffectGFX);
 
-        void CallOnStateEffectEvent(ESpellEvent spellEvent, string stateEffectName, ulong casterId)
-        {
-            ErrorHandler.Log(stateEffectName + " " + spellEvent, ELogTag.StateEffectGFX);
-
-            StateEffectEvent?.Invoke(spellEvent, stateEffectName);
+            // event already called on SERVER side
+            StateEffectEvent?.Invoke(stateEffectEvent, stateEffectName, stacks, maxStacks, duration);
 
             StateEffect stateEffect = SpellLoader.GetStateEffect(stateEffectName);
-
-            if (stateEffect.VisualEffects == null)
+            if (stateEffect.GfxEffects is null)
                 return;
 
-            foreach (var spawnPrefab in stateEffect.VisualEffects)
+            foreach (var spawnPrefab in stateEffect.GfxEffects)
             {
-                if (spawnPrefab.GFXLifetime.StartSpellPart != spellEvent)
+                if (spawnPrefab.GFXLifetime.StartSpellPart != stateEffectEvent)
                     continue;
 
                 spawnPrefab.Spawn(GameManager.Instance.GetPlayer(casterId), null, null, stateEffectName, m_Controller, transform.position);
             }
+        }
+
+        [ClientRpc]
+        public void CallQuestThresholdEventClientRPC(string stateEffectName, int index)
+        {
+            // Call SpellGFX event
+            QuestThresholdEvent?.Invoke(stateEffectName, index);
         }
 
         #endregion
@@ -183,17 +196,17 @@ namespace Game.Character
 
         #region Public Accessors
 
-        public bool HasState(string stateEffectName)
+        public bool HasState(string stateEffectName, bool checkActivated = true)
         {
             if (GameManager.IsGameOver)
                 return false;
             
-            return m_StateEffects.FindIndex(stateEffect => stateEffect.StateEffectName == stateEffectName) != -1;
+            return m_StateEffects.FindIndex(stateEffect => stateEffect.StateEffectName == stateEffectName && (!checkActivated || stateEffect.IsActivated)) != -1;
         }
 
-        public bool HasState(EStateEffect state)
+        public bool HasState(EStateEffect state, bool checkActivated = true)
         {
-            return HasState(state.ToString());
+            return HasState(state.ToString(), checkActivated);
         }
 
         public void SetStateJump(bool on)
@@ -205,7 +218,7 @@ namespace Game.Character
             m_Controller.Collider.enabled = !on;
 
             if (on)
-                AddStateEffect(new SStateEffectData(EStateEffect.Jump, overridingProperties: new List<SStateEffectProperty> { new SStateEffectProperty(EStateEffectProperty.Duration, -1f) }), m_Controller);
+                AddStateEffect(new SStateEffectData(EStateEffect.Jump, overridingProperties: new List<SStateEffectProperty> { new SStateEffectProperty(EStateEffectProperty.Duration, -1f) }), m_Controller, 1, "");
             else
                 RemoveStateEffect(EStateEffect.Jump);
         }
@@ -230,55 +243,55 @@ namespace Game.Character
             return (int)Mathf.Round(heal * Mathf.Max(2 - GetFloat(EStateEffectProperty.HealReductionPerc), 0));
         }
 
-        public int ApplyBonusDamage(int damage, Controller targetController)
+        public int ApplyBonusDamage(int damage, Controller targetController, string specialCondition = "")
         {
             ErrorHandler.Log("Base Damage : " + damage, ELogTag.BonusStats);
 
             // apply fix bonus damages 
-            damage = Math.Max(0, damage + GetInt(EStateEffectProperty.BonusDamage, targetController));
+            damage = Math.Max(0, damage + GetInt(EStateEffectProperty.BonusDamage, targetController, specialCondition));
 
             ErrorHandler.Log("Damage + Fix : " + damage, ELogTag.BonusStats);
 
             // apply res fix first
-            damage = Math.Max(0, (int)Mathf.Round(damage * GetFloat(EStateEffectProperty.BonusDamagePerc, targetController)));
+            damage = Math.Max(0, (int)Mathf.Round(damage * GetFloat(EStateEffectProperty.BonusDamagePerc, targetController, specialCondition: specialCondition)));
 
             ErrorHandler.Log("Final : " + damage, ELogTag.BonusStats);
 
             return damage;
         }
 
-        public int ApplyBonusExecutionDamage(int damage, Controller targetController)
+        public int ApplyBonusExecutionDamage(int damage, Controller targetController, string specialCondition = "")
         {
             ErrorHandler.Log("Base Execution Damage : " + damage, ELogTag.BonusStats);
 
             // apply fix bonus damages 
-            damage = Math.Max(0, damage + GetInt(EStateEffectProperty.BonusExecutionDamage, targetController) + GetInt(EStateEffectProperty.BonusDamage, targetController));
+            damage = Math.Max(0, damage + GetInt(EStateEffectProperty.BonusExecutionDamage, targetController) + GetInt(EStateEffectProperty.BonusDamage, targetController, specialCondition));
 
             ErrorHandler.Log("Damage + Fix : " + damage, ELogTag.BonusStats);
 
             // apply res fix first
-            damage = Math.Max(0, (int)Mathf.Round(damage * GetFloat(EStateEffectProperty.BonusExecutionDamagePerc, targetController) * GetFloat(EStateEffectProperty.BonusDamagePerc, targetController)));
+            damage = Math.Max(0, (int)Mathf.Round(damage * GetFloat(EStateEffectProperty.BonusExecutionDamagePerc, targetController, specialCondition: specialCondition) * GetFloat(EStateEffectProperty.BonusDamagePerc, targetController)));
 
             ErrorHandler.Log("Final : " + damage, ELogTag.BonusStats);
 
             return damage;
         }
 
-        public int ApplyBonusHeal(int heal, Controller targetController)
+        public int ApplyBonusHeal(int heal, Controller targetController, string specialCondition = "")
         {
             // apply percentage res
             heal = Math.Max(0, heal + GetInt(EStateEffectProperty.BonusHeal));
 
             // apply res fix first
-            return Math.Max(0, (int)Mathf.Round(heal * GetFloat(EStateEffectProperty.BonusHealPerc, targetController)));   
+            return Math.Max(0, (int)Mathf.Round(heal * GetFloat(EStateEffectProperty.BonusHealPerc, targetController, specialCondition: specialCondition)));   
         }
 
-        public int ApplyBonusShield(int shield, Controller targetController)
+        public int ApplyBonusShield(int shield, Controller targetController, string specialCondition = "")
         {
-            return Math.Max(0, (int)Mathf.Round(shield * GetFloat(EStateEffectProperty.BonusShieldPerc, targetController)));
+            return Math.Max(0, (int)Mathf.Round(shield * GetFloat(EStateEffectProperty.BonusShieldPerc, targetController, specialCondition: specialCondition)));
         }
 
-        public float ApplyBonus(float baseValue, EStateEffectProperty stateEffectProperty, Controller targetController)
+        public float ApplyBonus(float baseValue, EStateEffectProperty stateEffectProperty, Controller targetController, string specialCondition = "")
         {
             switch (stateEffectProperty)
             {
@@ -290,24 +303,24 @@ namespace Game.Character
 
                 case EStateEffectProperty.Damage:
                 case EStateEffectProperty.EndDamage:
-                    return ApplyBonusDamage((int)Mathf.Round(baseValue), targetController);
+                    return ApplyBonusDamage((int)Mathf.Round(baseValue), targetController, specialCondition);
 
                 case EStateEffectProperty.Heal:
                 case EStateEffectProperty.EndHeal:
-                    return ApplyBonusHeal((int)Mathf.Round(baseValue), targetController);
+                    return ApplyBonusHeal((int)Mathf.Round(baseValue), targetController, specialCondition);
 
                 case EStateEffectProperty.Shield:
-                    return ApplyBonusShield((int)Mathf.Round(baseValue), targetController);
+                    return ApplyBonusShield((int)Mathf.Round(baseValue), targetController, specialCondition);
 
                 default:
                     return baseValue;
             }
         }
 
-        public int ApplyBonusInt(int baseValue, EStateEffectProperty stateEffectProperty, Controller targetController = null)
+        public int ApplyBonusInt(int baseValue, EStateEffectProperty stateEffectProperty, Controller targetController = null, string specialCondition = "")
         {
             // apply percentage res
-            return Math.Max(0, (int)Mathf.Round(ApplyBonus(baseValue, stateEffectProperty, targetController)));
+            return Math.Max(0, (int)Mathf.Round(ApplyBonus(baseValue, stateEffectProperty, targetController, specialCondition)));
         }
 
         public void AddExtraEffects(ref SpellData spellData, bool isAutoAttack)
@@ -317,12 +330,7 @@ namespace Game.Character
                 if (stateEffect is not SpellEffect spellEffect)
                     continue;
 
-                if (! spellEffect.IsAllowed(spellData.SpellType, isAutoAttack))
-                    continue;
-
-                spellData.OnHit.AddRange(spellEffect.OnHits);
-                spellData.AllyStateEffects.AddRange(spellEffect.AllyStateEffects);
-                spellData.EnemyStateEffects.AddRange(spellEffect.EnemyStateEffects);
+                spellEffect.Apply(ref spellData, isAutoAttack);
             }
         }
 
@@ -332,7 +340,7 @@ namespace Game.Character
         #region Private Manipulators
 
         /// <summary>
-        /// Calculate the total speed bonus provided by all OnHitEffects
+        /// Calculate the total bonus provided by all current state effects
         /// </summary>
         void RecalculateBonus()
         {
@@ -380,13 +388,13 @@ namespace Game.Character
         /// Add a state effect to the character
         /// </summary>
         /// <param name="stateEffect"></param>
-        public void AddStateEffect(string stateEffectName, Controller caster, int level = 1)
+        public void AddStateEffect(string stateEffectName, Controller caster, int level, string origin)
         {
             if (! IsServer)
                 return;
 
             // create and add state effect  
-            StateEffect stateEffect = SpellLoader.GetStateEffect(stateEffectName, level);
+            StateEffect stateEffect = SpellLoader.GetStateEffect(stateEffectName, level, parent: origin);
             AddStateEffect(stateEffect, caster);
         }
 
@@ -394,13 +402,13 @@ namespace Game.Character
         /// Add a state effect to the character
         /// </summary>
         /// <param name="stateEffect"></param>
-        public void AddStateEffect(SStateEffectData stateEffectData, Controller caster, int level = 1)
+        public void AddStateEffect(SStateEffectData stateEffectData, Controller caster, int level, string origin)
         {
             if (! IsServer)
                 return;
 
             // create and add state effect  
-            StateEffect stateEffect = SpellLoader.GetStateEffect(stateEffectData.StateEffect, level);
+            StateEffect stateEffect = SpellLoader.GetStateEffect(stateEffectData.StateEffect.ToString(), level, parent: origin);
             AddStateEffect(stateEffect, caster, stateEffectData);
         }
 
@@ -458,7 +466,7 @@ namespace Game.Character
         /// </summary>
         /// <param name="type"></param>
         /// <param name="duration"></param>
-        public void AddStateEffect(EStateEffect type, Controller caster, int? stacks = default, float? duration = default)
+        public void AddStateEffect(EStateEffect type, Controller caster, string origin, int? stacks = default, float? duration = default)
         {
             if (!IsServer)
                 return;
@@ -469,14 +477,14 @@ namespace Game.Character
                 type, 
                 stacks:                 stacks      ??      1,
                 overridingProperties:   overridingProperties
-            ), caster);
+            ), caster, 1, origin);
         }
 
         /// <summary>
         /// Remove a state effect from the character
         /// </summary>
         /// <param name="stateEffect"></param>
-        public int RemoveStateEffect(string stateEffect, bool consume = false, int maxStacks = 0)
+        public int RemoveStateEffect(string stateEffect, bool consume = false, int maxStacks = -1)
         {
             if (!IsServer)
                 return 0;
@@ -489,47 +497,58 @@ namespace Game.Character
                 return 0;
             }
 
-            // check if remove effect if not enought stacks 
-            if (maxStacks <= 0 || m_StateEffects[index].Stacks < maxStacks)
-                return RemoveStateEffectAtIndex(index, consume);     // return number of consumed stacks
+            // return number of consumed (or removed) stacks
+            return m_StateEffects[index].RemoveStacks(maxStacks, consume);
+        }
 
-            // just retrieve stacks otherwise
-            maxStacks = m_StateEffects[index].RemoveStacks(maxStacks);
+        /// <summary>
+        /// Called by the Effect himself to be removed from the list
+        /// </summary>
+        /// <param name="stateEffect"></param>
+        public void RemoveFromList(string stateEffect)
+        {
+            // remove effect type from list of active effects
+            int index = GetIndexOf(stateEffect);
+            if (index == -1)
+            {
+                ErrorHandler.Error($"Unable to find state {stateEffect} in list");
+                return;
+            } 
+            
+            // remove effect from list on Server side
+            m_StateEffects.RemoveAt(index);
 
-            // return number of consumed stacks
-            return maxStacks;
+            // recalculate bonuses givent by state effects
+            RecalculateBonus();
+
+            // update animation now that state has changed
+            m_AnimationState.Value = GetAnimationState();
         }
 
         /// <summary>
         /// Remove a state effect from the character
         /// </summary>
         /// <param name="state"></param>
-        public int RemoveStateEffect(EStateEffect state, bool consume = false, int maxStacks = 0)
+        public int RemoveStateEffect(EStateEffect state, bool consume = false, int maxStacks = -1)
         {
             return RemoveStateEffect(state.ToString(), consume, maxStacks);
         }
 
         public int RemoveStateEffectAtIndex(int index, bool consume = false)
         {
-            // check state before removing value
+            // check animation state before removing value
             var pastState = GetAnimationState();
 
-            // keep track of the number of stacks this spell had
-            int nStacks = m_StateEffects[index].Stacks;
-
             // apply consume effect if requested
-            if (consume)
-            {
-                m_StateEffects[index].OnConsumed();
-            }
+            int nStacks = m_StateEffects[index].ForceEnd(consume);
 
             // remove effect from list on Server side
-            Destroy(m_StateEffects[index]);
             m_StateEffects.RemoveAt(index);
 
             // recalculate bonuses givent by state effects
             RecalculateBonus();
 
+            // update animation now that state has changed
             var currentState = GetAnimationState();
             if (currentState != pastState)
                 m_AnimationState.Value = currentState;
@@ -560,17 +579,19 @@ namespace Game.Character
             return GetStacks(state.ToString());
         }
 
-        public int GetStacks(string state)
+        public int GetStacks(string state, bool checkActivated = true)
         {
-            if (! HasState(state))
+            if (! HasState(state, checkActivated))
                 return 0;
 
             foreach (var stateEffect in m_StateEffects)
             {
+                // skip if not activated (and is requested as such)
+                if (checkActivated && ! stateEffect.IsActivated)
+                    continue;
+
                 if (stateEffect.StateEffectName == state)
-                {
                     return stateEffect.Stacks;
-                }
             }
 
             return 0;
@@ -670,6 +691,8 @@ namespace Game.Character
                 || stateEffect.StateEffectName == EStateEffect.UnTargettable.ToString()
                 || stateEffect.StateEffectName == EStateEffect.Invulnerable.ToString()
                 || stateEffect.StateEffectName == EStateEffect.Vanish.ToString()
+                || stateEffect.StateEffectName == EStateEffect.BlockMovement.ToString()
+                || stateEffect.StateEffectName == EStateEffect.BlockCast.ToString()
                 || stateEffect.StateEffectName == EStateEffect.SpecialAnimation.ToString();
         }
 
@@ -678,7 +701,7 @@ namespace Game.Character
 
         #region Public Data Accessors
 
-        public float GetFloat(EStateEffectProperty property, Controller targetController = null, bool ignoreConversion = false)
+        public float GetFloat(EStateEffectProperty property, Controller targetController = null, bool ignoreConversion = false, string specialCondition = "")
         {
             // only server can calculate speed factor
             if (!IsServer)
@@ -688,16 +711,16 @@ namespace Game.Character
             if (property == EStateEffectProperty.SpeedBonus)
                 value = 0f;
             else
-                value = 1f + m_CharacterData.GetValue(property, m_Controller, targetController);
+                value = 1f + m_CharacterData.GetValue(property, specialCondition, m_Controller, targetController);
 
             ErrorHandler.Log("Base value (" + property + ") : " + value, ELogTag.BonusStats);
 
             foreach (var effect in m_StateEffects)
             {
-                if (! effect.HasEffectProperty(property))
+                if (! effect.IsActivated || ! effect.HasEffectProperty(property))
                     continue;
 
-                value += effect.GetFloat(property, ignoreConversion);
+                value += effect.GetFloat(property, ignoreConversion, specialCondition: specialCondition);
             }
 
             ErrorHandler.Log("Final value (" + property + ") : " + value, ELogTag.BonusStats);
@@ -705,23 +728,23 @@ namespace Game.Character
             return value;
         }
 
-        public int GetInt(EStateEffectProperty property, Controller targetController = null)
+        public int GetInt(EStateEffectProperty property, Controller targetController = null, string specialCondition = "")
         {
             // only server can calculate speed factor
             if (!IsServer)
                 return 0;
 
             // get BASE VALUE from Character
-            int value = m_CharacterData.GetInt(property, m_Controller, targetController);
+            int value = m_CharacterData.GetInt(property, specialCondition, m_Controller, targetController);
 
             ErrorHandler.Log("Base value (" + property + ") : " + value, ELogTag.BonusStats);
 
             // add EXTRA VALUE from StateEffects
             foreach (var effect in m_StateEffects)
             {
-                if (!effect.HasEffectProperty(property))
+                if (!effect.IsActivated || !effect.HasEffectProperty(property))
                     continue;
-                value += effect.GetInt(property);
+                value += effect.GetInt(property, specialCondition: specialCondition);
             }
 
             ErrorHandler.Log("Final value (" + property + ") : " + value, ELogTag.BonusStats);
@@ -734,30 +757,33 @@ namespace Game.Character
     }
 
     [Serializable]
-    public struct SpellEventData : INetworkSerializable
+    public struct StateEventData : INetworkSerializable
     {
-        public ESpellEvent          SpellEvent;
+        public EStateEffectEvent    StateEffectEvent;
         public FixedString64Bytes   StateEffectName;
         public ulong                CasterId;
         public byte                 Stacks;
+        public byte                 MaxStacks;
         public half                 Duration;
 
         // Constructor with optional parameters
-        public SpellEventData(ESpellEvent spellEvent, string stateEffectName, ulong casterId, int stacks = 1, float duration = -1f)
+        public StateEventData(EStateEffectEvent stateEffectEvent, string stateEffectName, ulong casterId, int stacks = 1, int maxStacks = 1, float duration = -1f)
         {
-            SpellEvent      = spellEvent;
-            StateEffectName = stateEffectName;
-            CasterId        = casterId;
-            Stacks          = (byte)stacks;
-            Duration        = (half)duration;
+            StateEffectEvent    = stateEffectEvent;
+            StateEffectName     = stateEffectName;
+            CasterId            = casterId;
+            Stacks              = (byte)stacks;
+            MaxStacks           = (byte)maxStacks;
+            Duration            = (half)duration;
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
-            serializer.SerializeValue(ref SpellEvent);
+            serializer.SerializeValue(ref StateEffectEvent);
             serializer.SerializeValue(ref StateEffectName);
             serializer.SerializeValue(ref CasterId);
             serializer.SerializeValue(ref Stacks);
+            serializer.SerializeValue(ref MaxStacks);
 
             float tempDuration = (float)Duration;
             serializer.SerializeValue(ref tempDuration);

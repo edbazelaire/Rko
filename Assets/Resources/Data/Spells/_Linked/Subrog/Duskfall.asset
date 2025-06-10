@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8996fc3cfc2471040bc2b7a9af414605, type: 3}
   m_Name: Duskfall
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: Vanish into the void and ascend into the night. After {0} seconds,
     descend with lethal precision, striking your target for {1} damage. Deals an
     additional {2} execution damage, punishing the weak and unprepared.
@@ -31,7 +31,7 @@ MonoBehaviour:
     MaterialEffect: {fileID: 0}
     SoundFX: []
     GFXLifetime:
-      m_StartSpellPart: 300
+      m_StartSpellPart: 100
       m_EndSpellPart: 400
       StartAt: 0
       EndAt: 0
@@ -45,9 +45,10 @@ MonoBehaviour:
     Offset: {x: 0, y: 3}
     Animation: 0
     SpellAnimation: 
-    StateEffects: 15000000
+    StateEffects: a1860100
   OnHit:
   - {fileID: 11400000, guid: 0272b0449c8ca4241adce0c565a97a29, type: 2}
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 523c5935359efba4fa5ba29c742b19d6, type: 3}
@@ -59,10 +60,19 @@ MonoBehaviour:
   TargetOffset:
     X: 0
     Y: 0
-  LockTarget: 300
+  LockTarget: 100
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 100
+      m_EndSpellPart: 300
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 3
   m_SpellRequirements: []
   MaxHit: 1
+  m_Charges: 1
   EnergyGain: 0
   EnergyCost: 100
   m_Damage: 0
@@ -73,15 +83,21 @@ MonoBehaviour:
   Distance: -1
   OverrideOnHitProperties: 
   m_Duration: 0
-  Delay: 0.4
+  Delay: 0
   m_Force:
     m_Speed: 0
     m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
   - Property: 19
     Value: 0.1
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects: []
@@ -90,6 +106,6 @@ MonoBehaviour:
   PersistanceAfterEnd: 0.2
   Animation: 0
   IsCancellable: 0
-  AnimationTimer: 0
+  AnimationTimer: 1
   m_Cooldown: 0
   m_Display: 0

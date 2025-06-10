@@ -4,6 +4,7 @@ using Game.Spells;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
+using Tools.Helpers;
 
 namespace AI
 {
@@ -36,10 +37,10 @@ namespace AI
 
         public override NodeState Evaluate()
         {
-            var controllerToCheck = m_SpellTarget == ESpellTarget.Self ? m_Controller : GameManager.Instance.GetFirstEnemy(m_Controller.Team);
+            var controllerToCheck = TargetHelper.GetTargetController(m_Controller.PlayerId, m_SpellTarget);
             foreach (var stateEffect in m_StateEffects)
             {
-                if (controllerToCheck.StateHandler.GetStacks(stateEffect) >= m_NStacks)
+                if (controllerToCheck.StateHandler.GetStacks(stateEffect, checkActivated: true) >= m_NStacks)
                 {
                     SetNodeState(NodeState.SUCCESS);
                     ErrorHandler.Log("CheckHasState(" + m_StateEffects[0] + ")" + (m_IsReversed ? " REVERSERD" : "") + " : " + m_State, ELogTag.AIFinalDecision);

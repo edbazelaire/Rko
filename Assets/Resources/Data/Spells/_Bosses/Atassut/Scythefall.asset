@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3187be67d58548144a9d4f83cb44e7d2, type: 3}
   m_Name: Scythefall
   m_EditorClassIdentifier: 
-  Rarety: 2
+  m_Rarety: 2
   m_Description: 
   m_DescriptionVariables: []
   m_SpellElements: 0200000004000000
@@ -97,6 +97,7 @@ MonoBehaviour:
     StateEffects: 
   OnHit:
   - {fileID: 11400000, guid: 571795489b731da46821152f08c2f4f0, type: 2}
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -110,11 +111,21 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 80
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -128,10 +139,9 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
-  - Property: 1
-    Value: 0.1
-  - Property: 3
-    Value: 0.05
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
   m_Size: 4
   TriggerPlayer: 1
   EnemyStateEffects:
@@ -149,5 +159,5 @@ MonoBehaviour:
   Animation: 0
   IsCancellable: 0
   AnimationTimer: 2
-  m_Cooldown: 15
+  m_Cooldown: 12
   m_SpellSpawn: 1

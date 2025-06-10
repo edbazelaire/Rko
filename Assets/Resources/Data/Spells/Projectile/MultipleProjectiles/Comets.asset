@@ -13,16 +13,9 @@ MonoBehaviour:
   m_Name: Comets
   m_EditorClassIdentifier: 
   m_Rarety: 1
-  m_Description: '{0} comets falling from the sky each dealing {1} damage and applying
-    3 stacks of {2} and 1 stack of {3}'
+  m_Description: '{0} comets falling from the sky.\nEach projectile [SubSpellData.Description]'
   m_DescriptionVariables:
   - Name: Projectiles
-    WithIcon: 1
-  - Name: Damage
-    WithIcon: 1
-  - Name: Cursed
-    WithIcon: 1
-  - Name: Burn
     WithIcon: 1
   m_SpellElements: 0100000004000000
   Linked: 0
@@ -93,7 +86,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
-  m_NCharges: 1
+  m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0

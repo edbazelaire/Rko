@@ -1,4 +1,5 @@
-﻿using Enums;
+﻿using Data.DataStructures.CharacterSubStructures;
+using Enums;
 using Save;
 using System.Collections.Generic;
 using Tools;

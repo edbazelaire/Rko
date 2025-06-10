@@ -12,18 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fa8a57d0a9cfc440895df3503c97316, type: 3}
   m_Name: BerserkerRune
   m_EditorClassIdentifier: 
-  m_Description: Increase your Damages by {0}, your Movement Speed by {1} and your
+  m_Description: Increase your Damage by {0}, your Movement Speed by {1} and your
     Attack Speed by {2}. Also, heal for {3} of the damages delt.\n\nThe effectiveness
-    of the boosts is multiplied by the percentage of missing health
+    of the boosts is multiplied by the percentage of missing health (0% effectiveness
+    at full health)
   m_DescriptionVariables: 07000000030000001000000009000000
   m_StateEffectType: 0
   m_IsDisplayed: 1
-  m_VisualEffects:
+  m_VisualEffects: []
+  m_GfxEffects:
   - Prefab: {fileID: 8992406793559661190, guid: 0a4d304b385159340bf3a0d4e7535924, type: 3}
     MaterialEffect: {fileID: 0}
     SoundFX: []
     GFXLifetime:
-      m_StartSpellPart: 400
+      m_StartSpellPart: 1
       m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
@@ -42,8 +44,8 @@ MonoBehaviour:
     MaterialEffect: {fileID: 0}
     SoundFX: []
     GFXLifetime:
-      m_StartSpellPart: 400
-      m_EndSpellPart: 1000
+      m_StartSpellPart: 1
+      m_EndSpellPart: 7
       StartAt: 0
       EndAt: 0
       Persistance: 0
@@ -62,15 +64,17 @@ MonoBehaviour:
   m_PermanantSoundFX: {fileID: 0}
   m_ConsumeState: 0
   m_DefaultState: 0
-  m_SubStateEffects: []
-  m_HoldingStateEffects: []
-  m_Priority: 0
-  m_Duration: -1
   m_IsInstantanious: 0
+  m_IsConsumedOnEnd: 0
+  m_IsTrueDamage: 0
+  m_Priority: 0
+  m_Delay: 0
+  m_Duration: -1
   m_MaxStacks: 1
   m_StackDecay: -1
-  m_StatConversions: []
-  m_Energy: 0
+  m_StartsActivated: 1
+  m_StateEffectTriggers: []
+  m_StateEffectActivations: []
   m_BonusStats:
   - StateEffectProperty: 3
     BaseValue: 0.3
@@ -88,21 +92,9 @@ MonoBehaviour:
     BaseValue: 0.1
     LevelScalingFactor: 0.05
     StackScalingFactor: 1
-  m_SpeedBonus: 0
-  m_CastSpeed: 0
-  m_AttackSpeed: 0
-  m_CooldownReduction: 0
-  m_CooldownReductionPerc: 0
-  m_Shield: 0
-  m_ResistanceFix: 0
-  m_ResistancePerc: 0
-  m_BonusDamage: 0
-  m_BonusDamagePerc: 0
-  m_BonusLifeSteal: 0
-  m_BonusHeal: 0
-  m_BonusHealPerc: 0
-  m_BonusBurnDamage: 0
-  m_BonusSlowPerc: 0
+  m_StatConversions: []
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel: []

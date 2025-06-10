@@ -38,7 +38,7 @@ namespace Game.Character
             m_Controller = GetComponent<Controller>();
             m_Animator = animator;
 
-            m_Controller.StateHandler.StateEffectListEvent += OnStateEffectListChanged;
+            m_Controller.StateHandler.StateEffectEvent += OnStateEffectListChanged;
 
             if (HasParameter(EAnimation.Frozen.ToString(), AnimatorControllerParameterType.Trigger) || HasParameter(EAnimation.Stun.ToString(), AnimatorControllerParameterType.Trigger) || HasParameter(EAnimation.Silenced.ToString(), AnimatorControllerParameterType.Trigger) || HasParameter(EAnimation.Airborne.ToString(), AnimatorControllerParameterType.Trigger))
                 m_Controller.StateHandler.AnimationState.OnValueChanged += OnStateAnimationValueChanged;
@@ -113,7 +113,7 @@ namespace Game.Character
 
         public void PlayAnimation(EAnimation animation, float duration = -1f)
         {
-            if (animation == EAnimation.None || duration == 0f)
+            if (animation == EAnimation.None || animation == EAnimation.Self || duration == 0f)
                 return;
 
             ErrorHandler.Log(animation + " animation with a duration of " + duration, ELogTag.Animation);
@@ -266,23 +266,23 @@ namespace Game.Character
         /// </summary>
         /// <param name="oldValue"></param>
         /// <param name="newValue"></param>
-        void OnStateEffectListChanged(EListEvent listEvent, string stateEffect, int stacks, float duration)
+        void OnStateEffectListChanged(EStateEffectEvent stateEffectEvent, string stateEffect, int stacks, int maxStacks, float duration)
         {
             ErrorHandler.Log(stateEffect + " " + stateEffect, ELogTag.Animation);
 
-            if (listEvent == EListEvent.Add)
+            if (stateEffectEvent == EStateEffectEvent.OnApplied)
                 OnAddStateEffect(stateEffect);
-            else
+            else if (stateEffectEvent == EStateEffectEvent.OnEnd)
                 OnRemoveStateEffect(stateEffect);
 
             if (stateEffect == EStateEffect.Jump.ToString())
             {
-                if (listEvent == EListEvent.Add)
+                if (stateEffectEvent == EStateEffectEvent.OnApplied)
                 {
                     m_Controller.Collider.enabled = false;
                     m_Animator.SetTrigger(EAnimation.Jump.ToString());
                 }
-                else
+                else if (stateEffectEvent == EStateEffectEvent.OnEnd)
                 {
                     m_Controller.Collider.enabled = true;
                     m_Animator.SetTrigger(EAnimation.CancelCast.ToString());

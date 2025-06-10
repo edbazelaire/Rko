@@ -1,12 +1,17 @@
 ﻿using Data;
 using Data.DataStructures;
+using Data.DataStructures.CharacterSubStructures;
+using Data.DataStructures.StateEffectSubStructures;
 using Enums;
 using Game.Loaders;
+using Game.Spells;
+using Game.UI;
 using MyBox;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using Unity.VisualScripting;
@@ -26,6 +31,8 @@ namespace Tools
         public static List<string> IGNORED_ICONS => new()
         {
             EStateEffectProperty.Tick.ToString(),
+            EStateEffectProperty.Level.ToString(),
+
             ESpellProperty.Size.ToString(),
             ESpellProperty.Delay.ToString(),
             ESpellProperty.DelayBetweenLaunches.ToString(),
@@ -35,6 +42,7 @@ namespace Tools
             ESpellProperty.GrowSizeFactor.ToString(),
         };
 
+ 
         #region Cleaning 
 
         public static string Clean(string text)
@@ -158,8 +166,38 @@ namespace Tools
             // Use regular expression to split UpperCamelCase string with spaces
             string output = Regex.Replace(input, "(\\B[A-Z])", " $1");
 
+            // Replace dots by spaces (in case of special condition attached)
+            output = output.Replace(".", " ");
+
             // Convert first character to uppercase
             return char.ToUpper(output[0]) + output.Substring(1);
+        }
+
+        public static string FormatSpecialPropertyName(string propertyName, string specialCondition)
+        {
+            if (specialCondition.IsNullOrEmpty())
+                return propertyName;
+
+            return $"{propertyName}.{specialCondition}";
+        }
+
+        public static bool IsSpecialPropertyName(string baseName, out string propertyName, out string specialCondition)
+        {
+            propertyName = baseName;
+            specialCondition = "";
+            if (! baseName.Contains("."))
+                return false;
+
+            var split = baseName.Split(".");
+            if (split.Count() > 2)
+            {
+                ErrorHandler.Warning("Multiple . found in property name : " + baseName);
+                return false;
+            }
+
+            propertyName = split[0];
+            specialCondition = split[1];
+            return true;
         }
 
         public static string FormatPropertyValue(float value, string propertyName)
@@ -272,17 +310,46 @@ namespace Tools
             return formatedString;
         }
 
-        public static string FormatPropertyIcon(string propertyName, object propertyValue, bool withIcon = true, bool withPropertyName = true)
+        public static string FormatPropertyIcon(string propertyName, object propertyValue, bool withIcon = true, bool withPropertyName = true, EScalingDirection scaling = EScalingDirection.None)
         {
-            string formatedString = $"<b>{propertyValue}</b>";
+            string formatedString;
+            if (float.TryParse(propertyValue.ToString(), out float fValue))
+                formatedString = $"<b>{FormatPropertyValue(fValue, propertyName)}</b>";
+            else
+                formatedString = $"<b>{propertyValue}</b>";
 
+            // apply color if value is scaling
+            formatedString = FormatScaling(formatedString, scaling);
+
+            // add name of the property if requested
             if (withPropertyName)
                 formatedString += $" <i>{propertyName}</i>";
 
+            // add icon of the property if requested
             if (withIcon)
                 formatedString += FormatIcon(propertyName);
 
+            // return formated string
             return formatedString;
+        }
+
+        public static string FormatScaling(string value, EScalingDirection scaling)
+        {
+            switch (scaling)
+            {
+                case EScalingDirection.None:
+                    return $"<color={Color.yellow.ToHex()}>{value}</color>";
+
+                case EScalingDirection.Up:
+                    return $"<color={Color.green.ToHex()}>{value}</color>";
+
+                case EScalingDirection.Down:
+                    return $"<color={Color.red.ToHex()}>{value}</color>";
+
+                default:
+                    ErrorHandler.Warning("Unahandled case : " + scaling);
+                    return value;
+            }
         }
 
         public static string FormatIcon(string propName)
@@ -301,15 +368,77 @@ namespace Tools
             if (isOverwritten)
                 text = "<s>" + text + "</s>";
 
-            return text;
-
-            
+            return text;         
         }
 
         #endregion
 
 
         #region Replace Token
+
+        public static string ReplaceStateEffectProperties(string text, StateEffect stateEffect)
+        {
+            // Matches patterns like [Property] or [Property.SpecialCondition]
+            string pattern = @"\[(\w+)(?:\.(\w+))?\]";
+
+            return Regex.Replace(text, pattern, match =>
+            {
+                string propertyStr = match.Groups[1].Value;
+                string specialCondition = match.Groups[2].Success ? match.Groups[2].Value : null;
+
+                if (!Enum.TryParse(propertyStr, out EStateEffectProperty property))
+                {
+                    Debug.LogWarning($"Invalid property: {propertyStr}");
+                    return match.Value; // leave the original text unchanged
+                }
+
+                object value = stateEffect.GetProperty(property, specialCondition: specialCondition);
+
+                // is float : format into clean string
+                if (float.TryParse(value.ToString(), out float fValue))
+                    value = FormatPropertyValue(fValue, property.ToString());
+
+                if (stateEffect.IsScalingProperty(property, out EScalingDirection scaling))
+                    value = FormatScaling(value.ToString(), scaling);
+
+                return value?.ToString() ?? string.Empty;
+            });
+        }
+
+        public static string ReplaceCharacterStat(string text, List<SCharacterStatScaling> characterStats, int level)
+        {
+            // Matches patterns like [Property] or [Property.SpecialCondition]
+            string pattern = @"\[(\w+)(?:\.(\w+))?\]";
+
+            return Regex.Replace(text, pattern, match =>
+            {
+                string propertyStr = match.Groups[1].Value;
+                string specialCondition = match.Groups[2].Success ? match.Groups[2].Value : null;
+
+                if (!Enum.TryParse(propertyStr, out EStateEffectProperty property))
+                {
+                    ErrorHandler.Warning($"Invalid property: {propertyStr}");
+                    return match.Value; // leave the original text unchanged
+                }
+
+                // filter bonus stats
+                characterStats = characterStats.Where(t => t.StateEffectProperty == property && t.HasSpecialCondition(specialCondition)).ToList();
+                if (characterStats.Count() == 0)
+                {
+                    ErrorHandler.Warning($"Invalid property: {propertyStr}");
+                    return "";
+                }
+
+                object value = characterStats[0].GetValue(level);
+
+                // is float : format into clean string
+                if (float.TryParse(value.ToString(), out float fValue))
+                    value = FormatPropertyValue(fValue, property.ToString());
+
+                value = FormatScaling(value.ToString(), characterStats[0].ScalingDirection);
+                return value?.ToString() ?? string.Empty;
+            });
+        }
 
         public static string ReplaceStateEffectTokens(string text)
         {
@@ -376,7 +505,6 @@ namespace Tools
             return text;
         }
 
-
         public static string GetTriggerEffectDescription(STriggerEffect triggerEffect)
         {
             // description of the Rune is the description of the Trigger Effect
@@ -388,7 +516,7 @@ namespace Tools
             // description of the Rune is the description of the Trigger Effect 
             else if (SpellLoader.IsStateEffect(triggerEffect.SpellDataName))
             {
-                return SpellLoader.GetStateEffectDescription(triggerEffect.SpellDataName, triggerEffect.Level);
+                return SpellLoader.GetStateEffectDescription(triggerEffect.SpellDataName, triggerEffect.Level, overridingData: triggerEffect.OverridingData);
             }
 
             ErrorHandler.Error("Unable to find description for trigger effect " + triggerEffect.SpellDataName);

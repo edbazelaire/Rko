@@ -157,9 +157,6 @@ namespace Game.SpellGFXs
             if (m_PrefabSpawn.Animation != EAnimation.None)
                 m_Controller.AnimationHandler.CancelCastAnimation(m_PrefabSpawn.Animation);
 
-            // remove the state effects of the animation
-            RemoveStateEffects();
-
             // remove listeners
             UnRegisterListeners();
 
@@ -176,6 +173,9 @@ namespace Game.SpellGFXs
 
             // remove material applied
             RemoveMaterial();
+
+            // remove the state effects of the animation
+            RemoveStateEffects();
 
             // remove listeners
             UnRegisterListeners();
@@ -491,10 +491,10 @@ namespace Game.SpellGFXs
 
         #region StateEffects
 
-            protected void AddStateEffects()
+        protected void AddStateEffects()
         {
             foreach (var effect in m_PrefabSpawn.StateEffects)
-                m_Controller.StateHandler.AddStateEffect(effect, m_Controller, duration: -1);
+                m_Controller.StateHandler.AddStateEffect(effect, m_Controller, origin: "ANIMATION EFFECT", duration: -1);
         }
 
         protected void RemoveStateEffects()

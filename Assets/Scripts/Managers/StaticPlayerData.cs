@@ -1,5 +1,6 @@
 ﻿using Data;
 using Data.DataStructures;
+using Data.DataStructures.CharacterSubStructures;
 using Enums;
 using Save;
 using System;

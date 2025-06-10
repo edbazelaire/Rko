@@ -41,12 +41,10 @@ namespace Menu.PopUps
         protected override void OnPrefabLoaded()
         {
             base.OnPrefabLoaded();
-            SetUpDescription();
             SetUpSpecialEffects();
         }
 
         #endregion
-
 
 
         #region UIManipulators
@@ -72,7 +70,7 @@ namespace Menu.PopUps
             m_StateEffectsInfoRow.Initialize(stateEffects, m_Level);
         }
 
-        void SetUpDescription()
+        protected override void SetUpDescription()
         {
             m_DescriptionText.text = m_CharacterData.GetDescription();
         }

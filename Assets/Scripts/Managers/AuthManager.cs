@@ -14,6 +14,7 @@ using Tools;
 using Unity.Services.Authentication;
 using Unity.Services.Authentication.PlayerAccounts;
 using Unity.Services.Core;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 
 namespace Assets.Scripts.Managers
@@ -25,6 +26,7 @@ namespace Assets.Scripts.Managers
         // ===================================================================================
         const string KEY_AUTH_SERVICE = "AuthService";
         const string KEY_AUTH_TOKEN = "AuthToken";
+        public (string token, EAuthServices authService) DEFAULT_AUTH => ("", EAuthServices.Anonymous);
 
         // ===================================================================================
         // Events
@@ -83,8 +85,14 @@ namespace Assets.Scripts.Managers
 
         #region Common
 
-        public async void SignIn()
+        public async void SignIn(string authId)
         {
+#if UNITY_EDITOR
+            if (authId != "")
+            {
+                
+            }
+#endif
             await SignInAnonymously(false);
         }
 
@@ -377,6 +385,34 @@ namespace Assets.Scripts.Managers
             Debug.Log("SetAuth - " + authService + " | " + token);
             PlayerPrefs.SetString(KEY_AUTH_TOKEN, token);
             PlayerPrefs.SetString(KEY_AUTH_SERVICE, authService.ToString());
+        }
+
+        public string GetAuthFormated()
+        {
+            return FormatAuth(Token, AuthService);
+        }
+
+        public string FormatAuth(string token, EAuthServices authService)
+        {
+            return authService + " | " + token;
+        }
+
+        public (string token, EAuthServices authService) UnFormatAuth(string authId)
+        {
+            var split = authId.Split(" | ");
+            if (split.Length != 2)
+            {
+                ErrorHandler.Error("Unable to UnFormat auth : " + authId);
+                return DEFAULT_AUTH;
+            }
+
+            if (! Enum.TryParse(split[0], out EAuthServices authService))
+            {
+                ErrorHandler.Error("Unknown auth service : " + split[0]);
+                return DEFAULT_AUTH;
+            }
+
+            return (split[1], authService);
         }
 
         /// <summary>

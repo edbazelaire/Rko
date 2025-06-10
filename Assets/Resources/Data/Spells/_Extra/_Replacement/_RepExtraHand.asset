@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a54727096f1b9a14e931ac401f233989, type: 3}
+  m_Script: {fileID: 11500000, guid: 56b41aca370c9c94b9847be98bc4e21f, type: 3}
   m_Name: _RepExtraHand
   m_EditorClassIdentifier: 
   m_Rarety: 0
@@ -44,7 +44,8 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
-  EnergyGain: 10
+  m_Charges: 1
+  EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
   m_ExecutionDamage: 0
@@ -58,13 +59,7 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
-  m_SpellsScalingLevel:
-  - Property: 2
-    Value: 0.1
-  - Property: 1
-    Value: 0.1
-  - Property: 3
-    Value: 0.05
+  m_SpellsScalingLevel: []
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects: []
@@ -73,18 +68,37 @@ MonoBehaviour:
   PersistanceAfterEnd: 0
   Animation: 2
   IsCancellable: 1
-  AnimationTimer: 0.75
+  AnimationTimer: 0.5
   m_Cooldown: 0
-  Trajectory: 1
-  m_TriggerGround: 1
-  m_StopOnTargetPos: 0
-  m_Speed: 0
-  m_YSpawnPos: 0
-  ProjectileData: {fileID: 0}
+  SubSpellData: {fileID: 0}
+  m_UseAutoAttack: 0
+  m_OverridingSubData: []
   MultiProjectileType: 1
+  SubSpellSpawn:
+    m_SpellTargetX:
+      m_Dimension: 1
+      m_MultiSpellTarget: 0
+      m_ZoneSize: -1
+      m_NBreakPoints: 1
+      m_OffsetMinMax:
+        Min: 0
+        Max: 0
+    m_SpellTargetY:
+      m_Dimension: 2
+      m_MultiSpellTarget: 0
+      m_ZoneSize: -1
+      m_NBreakPoints: 1
+      m_OffsetMinMax:
+        Min: 0
+        Max: 0
+  m_YMinMax:
+    Min: 0
+    Max: 0
+  m_RecalculateTarget: 0
   m_RecalculatePosition: 1
   m_IsBlocking: 0
   m_NProjectiles: 3
+  m_NBreakPoints: 1
   m_ProjectileZoneSize: 12
   m_DelayBetweenLaunches: 0
   m_NWaves: 1

@@ -6,19 +6,34 @@ namespace Game.Spells
     [CreateAssetMenu(fileName = "ShadowVeil", menuName = "Game/StateEffects/SpecialEffects/ShadowVeil")]
     public class ShadowVeil : StateEffect
     {
-        protected override void OnStart()
+        protected override void RegisterListeners()
         {
-            base.OnStart();
+            base.RegisterListeners();
 
-            m_Controller.StateHandler.StateEffectListEvent += OnStateChanged;
+            StateEffect.StateEffectEvent += OnStateEffectEvent;
         }
 
-        void OnStateChanged(EListEvent listEvent, string name, int nStacks, float value)
+        protected override void UnRegisterListeners()
         {
-            if (m_IsActivated && (m_Controller.StateHandler.IsStunned || m_Controller.StateHandler.IsAirborned))
-                Deactivate();
-            else if (!m_IsActivated && !(m_Controller.StateHandler.IsStunned || m_Controller.StateHandler.IsAirborned))
-                Activate();
+            base.UnRegisterListeners();
+
+            StateEffect.StateEffectEvent -= OnStateEffectEvent;
+        }
+
+        void OnStateEffectEvent(string stateEffectName, EStateEffectEvent stateEffectEvent, int nStacks, ulong targetId, ulong casterId, string origin)
+        {
+            if (targetId != m_Controller.PlayerId)
+                return;
+
+            if (!m_IsActivated)
+                return;
+
+            if (
+                m_Controller.StateHandler.IsStunned
+                || m_Controller.StateHandler.IsAirborned
+                || m_Controller.StateHandler.HasState(EStateEffect.Frozen)
+            )
+                End();
         }
     }
 }

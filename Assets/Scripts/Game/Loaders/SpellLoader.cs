@@ -1,8 +1,11 @@
 ﻿using Data;
+using Data.DataStructures.SpellSubStructures;
 using Data.GameManagement;
 using Enums;
 using Game.Spells;
+using Google.Apis.Sheets.v4.Data;
 using Inventory;
+using MyBox;
 using Save;
 using System;
 using System.Collections.Generic;
@@ -173,6 +176,36 @@ namespace Game.Loaders
 
         #region Static Manipulators
 
+        public static bool Exists(string name, out EEffectType effectType)
+        {
+            if (IsSpell(name))
+            {
+                effectType = EEffectType.Spell;
+                return true;
+            }
+
+            if (IsStateEffect(name))
+            {
+                effectType = EEffectType.StateEffect;
+                return true;
+            }
+
+            if (IsRune(name))
+            {
+                effectType = EEffectType.Rune;
+                return true;
+            }
+
+            if (PowerUpExists(name))
+            {
+                effectType = EEffectType.PowerUp;
+                return true;
+            }
+
+            effectType = EEffectType.None;
+            return false;
+        }
+
         public static bool IsBossSpell(ESpell spell)
         {
             return (int)spell >= BOSS_SPELL_THRESHOLD;
@@ -189,13 +222,23 @@ namespace Game.Loaders
         }
 
         /// <summary>
-        /// Check if spell exists
+        /// Check if state effect exists
         /// </summary>
         /// <param name="spellName"></param>
         /// <returns></returns>
         public static bool IsStateEffect(string name)
         {
             return Enum.TryParse(name, out EStateEffect _) || m_StateEffects.ContainsKey(name);
+        }
+
+        /// <summary>
+        /// Check if rune exists
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static bool IsRune(string name)
+        {
+            return Enum.TryParse(name, out ERune _) || m_RunesData.ContainsKey(name);
         }
 
         /// <summary>
@@ -222,9 +265,9 @@ namespace Game.Loaders
         }
 
 
-        public static bool TryGetSpellData(string spellName, out SpellData spellData, int level = 1, bool destroy = false, bool throwError = true)
+        public static bool TryGetSpellData(string spellName, out SpellData spellData, int level = 1, List<SOverridingData> overridingData = null, bool destroy = false, bool throwError = true)
         {
-            spellData = GetSpellData(spellName, level, destroy, throwError);
+            spellData = GetSpellData(spellName, level, overridingData, destroy, throwError);
             return spellData != null;
         }
 
@@ -233,8 +276,10 @@ namespace Game.Loaders
         /// </summary>
         /// <param name="spell"></param>
         /// <returns></returns>
-        public static SpellData GetSpellData(ESpell spell, int level = 1, bool destroy = false, bool throwError = true)
+        public static SpellData GetSpellData(ESpell spell, int level = 1, List<SOverridingData> overridingData = default, bool destroy = false, bool throwError = true)
         {
+            SpellData spellData;
+
             if (IsBossSpell(spell))
             {
                 if (!m_ExtraSpellData.ContainsKey(spell.ToString()))
@@ -244,17 +289,25 @@ namespace Game.Loaders
                     return null;
                 }
 
-                return m_ExtraSpellData[spell.ToString()].Clone(level, destroy);
+                spellData = m_ExtraSpellData[spell.ToString()].Clone(level, destroy);
             }
 
-            if (! m_Spells.ContainsKey(spell))
+            else if (m_Spells.ContainsKey(spell))
             {
-                if (throwError) 
+                spellData = m_Spells[spell].Clone(level, destroy);
+            }
+
+            else
+            {
+                if (throwError)
                     ErrorHandler.Error($"Spells : Spell {spell} not found");
                 return null;
             }
 
-            return m_Spells[spell].Clone(level, destroy);
+            if (! overridingData.IsNullOrEmpty())
+                spellData.AddOverridingData(overridingData, level);
+
+            return spellData;
         }
 
         /// <summary>
@@ -262,16 +315,21 @@ namespace Game.Loaders
         /// </summary>
         /// <param name="spell"></param>
         /// <returns></returns>
-        public static SpellData GetSpellData(string spellName, int level = 1, bool destroy = false, bool throwError = true)
+        public static SpellData GetSpellData(string spellName, int level = 1, List<SOverridingData> overridingData = default, bool destroy = false, bool throwError = true)
         {
             if (Enum.TryParse(spellName, out ESpell spell))
             {
-                return GetSpellData(spell, level, destroy, throwError);
+                return GetSpellData(spell, level, overridingData, destroy, throwError);
             }
 
             if (m_ExtraSpellData.ContainsKey(spellName))
             {
-                return m_ExtraSpellData[spellName].Clone(level, destroy);
+                SpellData spellData = m_ExtraSpellData[spellName].Clone(level, destroy);
+
+                if (!overridingData.IsNullOrEmpty())
+                    spellData.AddOverridingData(overridingData, level);
+
+                return spellData;
             }
             
             if (throwError)
@@ -280,18 +338,30 @@ namespace Game.Loaders
             return null;
         }
 
+        public static string GetDescription(string effect, int level)
+        {
+            if (IsSpell(effect))
+                return GetSpellDescription(effect, level);
+
+            if (IsStateEffect(effect))
+                return GetStateEffectDescription(effect, level);
+
+            if (IsRune(effect))
+                return GetRuneData(effect, level, destroy: true).GetDescription();
+
+            ErrorHandler.Warning("Unable to find description for effect : " + effect);
+            return "";
+        }
+
         /// <summary>
         /// Get only spell's description and destroy the Instance after 
         /// </summary>
         /// <param name="spellName"></param>
         /// <param name="level"></param>
         /// <returns></returns>
-        public static string GetSpellDescription(string spellName, int level = 1)
+        public static string GetSpellDescription(string spellName, int level = 1, List<SOverridingData> overridingData = default)
         {
-            var spellData = GetSpellData(spellName, level);
-            string description = spellData.GetDescription();
-            GameObject.Destroy(spellData);
-            return description;
+            return GetSpellData(spellName, level, overridingData: overridingData, destroy: true).GetDescription();
         }
 
         /// <summary>
@@ -528,19 +598,29 @@ namespace Game.Loaders
         /// </summary>
         /// <param name="stateEffectName"></param>
         /// <returns></returns>
-        public static StateEffect GetStateEffect(string stateEffectName, int level = 1)
+        public static StateEffect GetStateEffect(string stateEffectName, int level = 1, List<SStateEffectProperty> overridingData = null, string parent = "")
         {
             StateEffect stateEffect;
             if (! m_StateEffects.ContainsKey(stateEffectName))
             {
-                stateEffect = ScriptableObject.CreateInstance<StateEffect>(); 
+                stateEffect = ScriptableObject.CreateInstance<StateEffect>();
             } 
             else
             {
                 stateEffect = m_StateEffects[stateEffectName].Clone(level);
             }
 
+            // change name
             stateEffect.name = stateEffectName;
+
+            // apply overriding data if any
+            if (!overridingData.IsNullOrEmpty())
+                stateEffect.OverrideStateEffectData(overridingData);
+
+            // has origin - add it
+            if (! parent.IsNullOrEmpty())
+                stateEffect.SetOrigin(parent);
+
             return stateEffect;
         }
 
@@ -550,9 +630,9 @@ namespace Game.Loaders
         /// <param name="stateEffectName"></param>
         /// <param name="level"></param>
         /// <returns></returns>
-        public static string GetStateEffectDescription(string stateEffectName, int level = 1)
+        public static string GetStateEffectDescription(string stateEffectName, int level = 1, List<SStateEffectProperty> overridingData = null)
         {
-            StateEffect stateEffect = GetStateEffect(stateEffectName, level);
+            StateEffect stateEffect = GetStateEffect(stateEffectName, level, overridingData);
             string description = stateEffect.GetDescription();
             GameObject.Destroy(stateEffect);
             return description;
