@@ -433,4 +433,27 @@ public class GameUIManager : MonoBehaviour
     }
 
     #endregion
+
+
+    #region Debug
+
+    /// <summary>
+    /// Debug tool to hide 
+    /// </summary>
+    /// <param name="spell"></param>
+    /// <param name="level"></param>
+    /// <param name="index"></param>
+    public void ToogleInterface()
+    {
+        m_MovementButtonsContainer.gameObject.SetActive(!m_MovementButtonsContainer.gameObject.activeSelf);
+        m_SpellContainer.gameObject.SetActive(!m_SpellContainer.gameObject.activeSelf);
+        m_LinkedSpellsContainer.gameObject.SetActive(!m_LinkedSpellsContainer.gameObject.activeSelf);
+
+        foreach (var playerUIContainer in m_PlayerUIContainers)
+        {
+            playerUIContainer.SetActive(!playerUIContainer.activeSelf);
+        }
+    }
+
+    #endregion
 }

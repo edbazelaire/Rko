@@ -95,8 +95,8 @@ namespace Assets.Scripts.Managers
             if (CurrentVersion.CompareTo(new Version("0.3.1")) == -1)
                 test = UpdateVersion_0_3_1();
 
-            if (CurrentVersion.CompareTo(new Version("0.3.3")) == -1)
-                test = UpdateVersion_0_3_3();
+            if (CurrentVersion.CompareTo(new Version("0.3.4")) == -1)
+                test = UpdateVersion_0_3_4();
 
             // if does not trigger any version until now, update to current version
             if (CurrentVersion.CompareTo(GameVersion) == -1)
@@ -547,15 +547,22 @@ namespace Assets.Scripts.Managers
         #endregion
 
 
-        #region v0.3.3
+        #region v0.3.4
 
-        static bool UpdateVersion_0_3_3()
+        static bool UpdateVersion_0_3_4()
         {
             // check if the version should be updated
-            if (GameVersion.CompareTo(new Version("0.3.1")) == -1)
+            if (GameVersion.CompareTo(new Version("0.3.4")) == -1)
                 return true;
 
-            
+            NotificationCloudData.AddMessage(new SMessage(
+                title: "New Rune : Corruption Rune",
+                content: "Corruption is no longer a spell and has been converted into a Rune",
+                rewardsData: new SRewardsData(
+                    collectableRewards: new List<SCollectableReward> { new SCollectableReward(ECollectableType.Rune, ERune.CorruptionRune.ToString(), 1) }
+                )
+             ));
+
             return true;
         }
 

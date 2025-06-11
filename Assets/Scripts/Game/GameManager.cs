@@ -1186,13 +1186,9 @@ namespace Game
         }
 
         [Command(KeyCode.Y)]
-        public void KillSpawn()
+        public void ToogleInterface()
         {
-            var controller = GetFirstSpawn(Owner.Team, false);
-            if (controller == null)
-                return;
-
-            controller.Life.Kill();
+            GameUIManager.Instance.ToogleInterface();
         }
 
         [Command(KeyCode.Space)]
