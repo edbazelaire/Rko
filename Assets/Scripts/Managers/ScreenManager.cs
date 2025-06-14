@@ -17,6 +17,7 @@ using Menu.MainMenu;
 using Unity.VisualScripting;
 using MyBox;
 using System.Collections;
+using Save.Data.Progression.Structs;
 
 namespace Assets.Scripts.Managers
 {

@@ -211,6 +211,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db78505b71711274384937641dc0c6a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_IsBlockingQuickClose: 0
 --- !u!114 &5423537108185412775 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6315441539733861392, guid: 5b8c98d96bf653f4bb74712c8ec3f494, type: 3}
@@ -367,6 +368,10 @@ PrefabInstance:
     - target: {fileID: 3116227184788928839, guid: fb811359e5d22fc45ace6dc7c32ba79f, type: 3}
       propertyPath: m_Name
       value: PowerUpItem
+      objectReference: {fileID: 0}
+    - target: {fileID: 5474574140516068990, guid: fb811359e5d22fc45ace6dc7c32ba79f, type: 3}
+      propertyPath: m_fontSize
+      value: 55.2
       objectReference: {fileID: 0}
     - target: {fileID: 6136194290176084284, guid: fb811359e5d22fc45ace6dc7c32ba79f, type: 3}
       propertyPath: m_fontSize

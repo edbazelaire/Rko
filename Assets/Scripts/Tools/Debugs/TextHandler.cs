@@ -310,7 +310,15 @@ namespace Tools
             return formatedString;
         }
 
-        public static string FormatPropertyIcon(string propertyName, object propertyValue, bool withIcon = true, bool withPropertyName = true, EScalingDirection scaling = EScalingDirection.None)
+        public static string FormatPropertyName(string propertyName)
+        {
+            if (propertyName.EndsWith("Perc"))
+                propertyName = propertyName.Substring(0, propertyName.Length - 4);
+
+            return SplitCamelCase(propertyName);
+        }
+
+        public static string FormatPropertyIcon(string propertyName, object propertyValue, bool? withIcon = null, bool withPropertyName = true, EScalingDirection scaling = EScalingDirection.None)
         {
             string formatedString;
             if (float.TryParse(propertyValue.ToString(), out float fValue))
@@ -321,12 +329,16 @@ namespace Tools
             // apply color if value is scaling
             formatedString = FormatScaling(formatedString, scaling);
 
+            // if is "Tick" property, name and icon are the same as regular value
+            if (propertyName.StartsWith("Tick") && propertyName != "Tick")
+                propertyName = propertyName[4..];
+
             // add name of the property if requested
             if (withPropertyName)
                 formatedString += $" <i>{propertyName}</i>";
 
             // add icon of the property if requested
-            if (withIcon)
+            if (withIcon ?? ! IGNORED_ICONS.Contains(propertyName))
                 formatedString += FormatIcon(propertyName);
 
             // return formated string
@@ -632,6 +644,22 @@ namespace Tools
             }
 
             return text;
+        }
+
+        public static string ReplaceSubStateEffect(string text, StateEffect stateEffect)
+        {
+            // Define a regex to find tokens in the format [StateEffect.N_EFFECT]
+            string pattern = @"\[((Enemy|Ally)*StateEffect)\]";
+            MatchCollection matches = Regex.Matches(text, pattern);
+
+            if (matches.Count == 0)
+                return text;
+
+            // Replace token with the property value from ConvertDescriptionVariable
+            return text.Replace(
+                matches[0].Value,
+                stateEffect.GetDescription()
+            );
         }
 
         #endregion

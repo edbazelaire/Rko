@@ -251,7 +251,9 @@ namespace Network
                         
                         // ADD ARENA POWER UPS
                         if (GameMode == EGameMode.Arena)
+                        {
                             playerData.SetPowerUps(ProgressionCloudData.CurrentArena.GetActivePowerUps());
+                        }
 
                         GameManager.Instance.AddPlayerDataServerRPC(
                             NetworkManager.Singleton.LocalClientId,

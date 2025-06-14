@@ -49,16 +49,29 @@ namespace Data.DataStructures.StateEffectSubStructures
             return BaseValue * Mathf.Pow(1 + LevelScalingFactor, level - 1) * (StackScalingFactor == 0 ? 1 : stacks * StackScalingFactor);
         }
 
-        public bool HasSpecialCondition(string specialCondition)
+        public bool HasSpecialCondition(string specialCondition, bool mustContains = false)
         {
             // UNIQUE - can only apply IF has the special condition allowed
             if (IsUnique(specialCondition, out string formatedString))
-                return SpecialConditions.Contains(formatedString);
+                return HasSpecialCondition(formatedString, mustContains);
 
+            // No special condition, depends if the value must be contained or not
             if (SpecialConditions.IsNullOrEmpty())
+                return !mustContains;
+
+            // check if special case of "specialCondition" ("ultimate", "auto attack", ...)
+            if (CheckConditionSpecialCases(specialCondition))
+            {
                 return true;
+            }
 
             return SpecialConditions.Contains(specialCondition);
+        }
+
+        public bool CheckConditionSpecialCases(string specialCondition)
+        {
+            // TODO : handle special cases
+            return false;
         }
 
         /// <summary>

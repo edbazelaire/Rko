@@ -118,6 +118,9 @@ namespace Game.UI
 
         void OnStateEffectEvent(EStateEffectEvent stateEffectEvent, string state, int stacks, int maxStacks, float duration)
         {
+            if (!isActiveAndEnabled)
+                return;
+
             // check that is not one of the state that are not displayed
             if (IGNORED_STATE_EFFECTS.Contains(state) || state.StartsWith("_"))
                 return;
@@ -209,11 +212,17 @@ namespace Game.UI
 
         void OnShieldChanged(int _, int newValue)
         {
+            if (!isActiveAndEnabled)
+                return;
+
             m_ShieldBar.OnValueChanged(0, newValue);
         }
 
         void OnHoldingStateEffectsChanged(NetworkListEvent<FixedString64Bytes> changeEvent)
         {
+            if (!isActiveAndEnabled)
+                return;
+
             foreach (string stateEffect in m_StateEffectsUI.Keys)
             {
                 m_StateEffectsUI[stateEffect].SetIsHolding(m_Controller.StateHandler.IsHolding(stateEffect));
@@ -222,6 +231,9 @@ namespace Game.UI
 
         void OnQuestTreshold(string stateEffectName, int index)
         {
+            if (!isActiveAndEnabled)
+                return;
+
             if (! m_StateEffectsUI.ContainsKey(stateEffectName))
             {
                 ErrorHandler.Warning($"Unable to find {stateEffectName} in list of effects");

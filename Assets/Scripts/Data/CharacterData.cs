@@ -23,6 +23,7 @@ namespace Data
             EStateEffectProperty.Heal,
             EStateEffectProperty.HealReduction,
             EStateEffectProperty.BonusDamage,
+            EStateEffectProperty.BonusExecutionDamage,
             EStateEffectProperty.BonusTickDamage,
             EStateEffectProperty.BonusTickHeal,
             EStateEffectProperty.BonusTickShield,
@@ -34,6 +35,7 @@ namespace Data
             EStateEffectProperty.TickDamage,
             EStateEffectProperty.TickHeal,
             EStateEffectProperty.TickShield,
+            EStateEffectProperty.TickEnergy,
         };
 
         // ===============================================================================================================

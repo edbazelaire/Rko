@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Data.PowerUp;
+﻿using Assets.Scripts.Data.PowerUps;
 using Data.DataStructures;
 using Data.DataStructures.CharacterSubStructures;
 using Data.DataStructures.StateEffectSubStructures;

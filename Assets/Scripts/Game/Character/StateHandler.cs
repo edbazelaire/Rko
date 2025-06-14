@@ -65,8 +65,7 @@ namespace Game.Character
             && ! HasState(EStateEffect.BlockCast);
 
         public bool CanMove =>
-            ! IsSilenced 
-            && ! IsStunned 
+            ! IsStunned 
             && ! IsAirborned 
             && ! HasState(EStateEffect.Frozen)
             && ! HasState(EStateEffect.Jump)

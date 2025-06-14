@@ -12,18 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e83ee2023ecc7e04480ae9c612ad7749, type: 3}
   m_Name: ShardcurseRune
   m_EditorClassIdentifier: 
-  Rarety: 1
+  m_Rarety: 1
   m_Description: 
   m_DescriptionVariables: []
-  Description: 
   m_SpellElements: 0200000004000000
+  Description: 
   m_MinorPower:
     Description: On proccing [IceBreak] [TriggerEffect.0]. This effect can only happen
       once every 9 seconds
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
-    - SpellDataName: _ShardcurseMinor
+    - SpellDataName: _Shardcurse
+      OverridingData: []
       Level: 0
       Target: 6
       SpellActivationEvent: 0
@@ -42,9 +43,10 @@ MonoBehaviour:
     Description: On proccing [IceBreak]  [TriggerEffect.0]. This effect can only
       happen once every 4 seconds
     m_DescriptionVariables: []
-    m_BonusLevel: 0
+    m_BonusLevel: 6
     m_TriggerEffects:
-    - SpellDataName: _ShardcurseMajor
+    - SpellDataName: _Shardcurse
+      OverridingData: []
       Level: 0
       Target: 6
       SpellActivationEvent: 0
@@ -62,9 +64,10 @@ MonoBehaviour:
   m_PrimalPower:
     Description: 'On proccing [IceBreak]  [TriggerEffect.0]'
     m_DescriptionVariables: []
-    m_BonusLevel: 0
+    m_BonusLevel: 17
     m_TriggerEffects:
-    - SpellDataName: _ShardcursePrimal
+    - SpellDataName: _Shardcurse
+      OverridingData: []
       Level: 0
       Target: 0
       SpellActivationEvent: 0
