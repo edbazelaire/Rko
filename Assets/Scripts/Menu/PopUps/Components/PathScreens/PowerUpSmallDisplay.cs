@@ -1,5 +1,5 @@
 ﻿using Assets;
-using Assets.Scripts.Data.PowerUp;
+using Assets.Scripts.Data.PowerUps;
 using Data;
 using Enums;
 using Save;

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea8328bdbe40b584daa6549887933f55, type: 3}
   m_Name: SoulSiffon
   m_EditorClassIdentifier: 
-  m_Description: Every {0} seconds, consume 3 [Cursed] stacks to drain {1} hp from
+  m_Description: Every {0} seconds, consume 8 [Cursed] stacks to drain {1} hp from
     the target
   m_DescriptionVariables: 0c0000000d000000
   m_StateEffectType: 0
@@ -66,6 +66,7 @@ MonoBehaviour:
   m_IsConsumedOnEnd: 0
   m_IsTrueDamage: 0
   m_Priority: 0
+  m_Delay: 0
   m_Duration: 0
   m_MaxStacks: 1
   m_StackDecay: -1
@@ -77,21 +78,25 @@ MonoBehaviour:
     BaseValue: 1
     LevelScalingFactor: 0
     StackScalingFactor: 0
+    SpecialConditions: []
+  - StateEffectProperty: 13
+    BaseValue: 80
+    LevelScalingFactor: 0.12
+    StackScalingFactor: 1
+    SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects: []
   m_HoldingStateEffects: []
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
-  m_StateEffectScalingLevel:
-  - StateEffectProperty: 13
-    ScalingFactor: 0.12
+  m_StateEffectScalingLevel: []
   m_StateEffectScalingStacks: []
   m_Damage: 0
   m_EndDamage: 0
   m_Heal: 0
   m_EndHeal: 0
   m_Tick: 3
-  m_TickDamage: 60
+  m_TickDamage: 0
   m_TickHeal: 0
   m_TickShield: 0
   m_TickEnergy: 0
@@ -99,5 +104,5 @@ MonoBehaviour:
   - m_StateEffectRequirements:
     - m_SpellTarget: 50
       m_StateEffect: Cursed
-      m_Stacks: 3
+      m_Stacks: 8
       m_NStacksReductionPerLevel: 0

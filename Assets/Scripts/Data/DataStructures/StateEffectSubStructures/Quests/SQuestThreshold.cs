@@ -1,7 +1,5 @@
 ﻿using Enums;
 using Game.Loaders;
-using Game.Spells;
-using Game.StateEffects.Quests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,17 +41,19 @@ namespace Data.DataStructures.StateEffectSubStructures
 
             if (BonusStats.Count() > 0)
             {
-                description += "\nFor each new stacks, apply :";
+                // TODO (better) : check if stat scales with stacks or not
+                if (BonusStats[0].StackScalingFactor > 0)
+                    description += "\nFor each new stacks, apply :";
+
                 foreach (var effect in BonusStats)
                 {
                     string effectValue = TextHandler.FormatPropertyIcon(
                         effect.StateEffectProperty.ToString(),
                         effect.Get(m_Level, 1),
-                        withIcon: ! TextHandler.IGNORED_ICONS.Contains(effect.StateEffectProperty.ToString()),
                         withPropertyName: false,
                         scaling: effect.ScalingDirection
                     );
-                    description += $"\n     • {effect.StateEffectProperty} : {effectValue}";
+                    description += $"\n     • {TextHandler.FormatPropertyName(effect.StateEffectProperty.ToString())} : {effectValue}";
                 }
             }
 

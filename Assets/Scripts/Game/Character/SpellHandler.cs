@@ -134,23 +134,6 @@ namespace Game.Character
             m_RelocationSpellData = new ();
         }
 
-        void Update()
-        {
-            // only server can update cooldowns
-            if (!IsServer)
-                return;
-
-            if (! GameManager.Instance.IsGameStarted)
-                return;
-
-            if (GameManager.IsGameOver)
-                return;
-            
-            UpdateCooldowns();
-            UpdateSpellsSelectionState();
-            UpdateTargetPosition();
-        }
-
         #endregion
 
 
@@ -194,9 +177,11 @@ namespace Game.Character
                 if (extraSpells[i] == ESpell.None)
                     continue;
 
+                var spellData = SpellLoader.GetSpellData(extraSpells[i], spellLevels[i]);
+
                 m_SpellsNet     .Add((int)extraSpells[i]);
-                m_SpellsData    .Add(SpellLoader.GetSpellData(extraSpells[i], spellLevels[i]));
-                m_NChargesNet   .Add(m_SpellsData[i].Charges);
+                m_SpellsData    .Add(spellData);
+                m_NChargesNet   .Add(spellData.Charges);
                 m_SpellLevelsNet.Add(spellLevels[i]);
                 m_Cooldowns     .Add(0);
                 m_SpellSelectionStates[extraSpells[i]] = ESpellSelectionState.None;
@@ -233,6 +218,45 @@ namespace Game.Character
             base.OnDestroy();
 
             UnRegisterListeners();
+        }
+
+        #endregion
+
+
+        #region Update
+
+        void Update()
+        {
+            if (IsOwner && m_Controller.IsPlayer)
+                CheckKeyDown();
+
+            // only server can update cooldowns
+            if (!IsServer)
+                return;
+
+            if (!GameManager.Instance.IsGameStarted)
+                return;
+
+            if (GameManager.IsGameOver)
+                return;
+
+            UpdateCooldowns();
+            UpdateSpellsSelectionState();
+            UpdateTargetPosition();
+        }
+
+        void CheckKeyDown()
+        {
+            for (int index = 0; index <= (int)ESpellSlot.Spell4; index ++)
+            {
+                if (Input.GetKeyDown(PlayerSettings.GetKeyAtIndex(index)))
+                {
+                    if (IsServer)
+                        TrySelectSpell(Spells[index]);
+                    else
+                        AskSpellSelectionServerRPC(Spells[index]);
+                }
+            }
         }
 
         #endregion

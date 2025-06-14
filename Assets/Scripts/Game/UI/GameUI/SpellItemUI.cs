@@ -1,6 +1,8 @@
 ﻿using Data;
+using Data.GameManagement;
 using Enums;
 using Game.Loaders;
+using Game.Spells;
 using Menu.Common.Buttons;
 using Save;
 using TMPro;
@@ -31,6 +33,8 @@ namespace Game.UI
 
         // ============================================================================================================
         // LOCAL DATA
+        /// <summary> key linked to that spell </summary>
+        KeyCode m_KeyCode = KeyCode.None;
         /// <summary> base cooldown of the spell </summary>
         float m_BaseCooldown;
         /// <summary> client side cooldown that handles spell cooldown display (to avoid spamming server and delays) </summary>
@@ -46,7 +50,7 @@ namespace Game.UI
         #endregion
 
 
-        #region Inherited Manipulators
+        #region Update
 
         private void Update()
         {
@@ -57,7 +61,10 @@ namespace Game.UI
             // game over : stop updating
             if (GameManager.IsGameOver)
                 return;
-            
+
+            //if (Input.GetKeyDown(m_KeyCode))
+            //    OnClick();
+
             UpdateCooldown();            
         }
 
@@ -85,6 +92,7 @@ namespace Game.UI
             m_CollectableCloudData = new SCollectableCloudData(spell, level);
             m_Owner = GameManager.Instance.Owner;
             m_Index = index;
+            SetKey(PlayerSettings.GetKeyAtIndex(index));
 
             SpellData spellData = SpellLoader.GetSpellData(m_Spell, level, destroy: true);
             m_BaseCooldown = spellData.Cooldown;
@@ -145,6 +153,11 @@ namespace Game.UI
 
             // refresh UI with current number of charges
             SetNCharges(m_CurrentCharges);
+        }
+
+        public void SetKey(KeyCode keyCode)
+        {
+            m_KeyCode = keyCode;
         }
 
         #endregion

@@ -171,10 +171,6 @@ namespace Game.Spells
                 return false;
             }
 
-            // TODO : REMOVE    ============================================================================
-            Debug.Log($"Initialize() {StateEffectName} with origin {m_Origin}");
-            // TODO : REMOVE    ============================================================================
-
             m_Controller    = controller;
             m_Caster        = caster;
             m_IsStarted     = false;                // on init - reset is started 
@@ -555,7 +551,7 @@ namespace Game.Spells
 
         protected virtual void ApplyCooldownReduction()
         {
-            if (! TryGetBonusStatValue(EStateEffectProperty.CooldownReduction, out float cooldownReduction))
+            if (! TryGetBonusStatValue(EStateEffectProperty.CooldownReduction, out float cooldownReduction, stacks: Stacks))
                 return;
 
             m_Controller.SpellHandler.ReduceCooldowns(cooldownReduction);
@@ -846,7 +842,7 @@ namespace Game.Spells
             object value;
 
             // check BONUS stats
-            if (TryGetBonusStatValue(property, out float fValue, specialCondition: specialCondition))
+            if (TryGetBonusStatValue(property, out float fValue, Stacks, specialCondition: specialCondition))
                 value = fValue;
 
             // [DEPRECATED] check PROPERTY info
@@ -959,7 +955,7 @@ namespace Game.Spells
             return true;
         }
 
-        public virtual bool TryGetBonusStatValue(EStateEffectProperty property, out float value, int? stacks = null, string specialCondition = "")
+        public virtual bool TryGetBonusStatValue(EStateEffectProperty property, out float value, int stacks, string specialCondition = "")
         {
             value = 0f;
 
@@ -967,13 +963,13 @@ namespace Game.Spells
             if (! TryGetBonusStat(property, out SBonusStats bonusStats, specialCondition))
                 return false;
 
-            value = bonusStats.Get(m_Level, Stacks, specialCondition);
+            value = bonusStats.Get(m_Level, stacks, specialCondition);
             return true;
         }
 
         public virtual int GetInt(EStateEffectProperty property, int? stacks = null, string specialCondition = "") 
         {
-            if (TryGetBonusStatValue(property, out float value, stacks, specialCondition))
+            if (TryGetBonusStatValue(property, out float value, stacks ?? Stacks, specialCondition))
                 return (int)Mathf.Round(value);
 
             if (!HasEffectProperty(property))
@@ -1001,7 +997,7 @@ namespace Game.Spells
 
         public virtual float GetFloat(EStateEffectProperty property, bool ignoreConversion = false, int? stacks = null, string specialCondition = "") 
         {
-            if (TryGetBonusStatValue(property, out float value, stacks, specialCondition))
+            if (TryGetBonusStatValue(property, out float value, stacks ?? Stacks, specialCondition))
                 return value;
 
             if (!HasEffectProperty(property))
@@ -1097,13 +1093,14 @@ namespace Game.Spells
             if (stacks == 0)
                 return;
 
-            // check if should add energy
+            // ================================================================================================
+            // ENERGY                   - check if should add energy
             int value = GetInt(EStateEffectProperty.Energy, stacks);
             if (value != 0)
                 m_Caster.EnergyHandler.AddEnergy(value);
 
             // ================================================================================================
-            // DAMAGE                   -  heck if should damage the target
+            // DAMAGE                   -  check if should damage the target
             value = GetInt(EStateEffectProperty.Damage, stacks);
             if (value != 0)
             {
@@ -1328,29 +1325,11 @@ namespace Game.Spells
                     continue;
                 }
 
-                string stringValue;
-                if (value is float floatValue)
-                {
-                    stringValue = TextHandler.FormatPropertyValue(floatValue, property.ToString());
-                }
-                else if (value is double doubleValue)
-                {
-                    stringValue = doubleValue.ToString("F2");
-                }
-                else
-                {
-                    stringValue = value.ToString();
-                }
-
                 // check if effect is scaling
                 IsScalingProperty(property, out EScalingDirection scaling);
-                stringValue = TextHandler.FormatScaling(stringValue, scaling);
-
-                // add icon of sub state effects
-                stringValue += TextHandler.FormatStateEffectIcon(property.ToString(), withIcon: true, withPropertyName: false);
 
                 // add to the list of replacing data
-                values.Add(stringValue);
+                values.Add(TextHandler.FormatPropertyIcon(property.ToString(), value, withPropertyName: false, scaling: scaling));
             }
 
             var description = TextHandler.ReplaceStateEffectTokens(string.Format(m_Description, values.ToArray()));

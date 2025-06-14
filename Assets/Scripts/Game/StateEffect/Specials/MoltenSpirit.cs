@@ -35,8 +35,7 @@ namespace Game.Spells
 
         private void OnHealedEvent(int heal, ulong casterId)
         {
-            int previousStacks = m_Stacks;
-            Refresh(stacks: Math.Min(m_Stacks + (int)Mathf.Round(heal * m_HealConversionFactor), m_MaxStacks), level: m_Level);
+            Refresh(stacks: Math.Min((int)Mathf.Round(heal * m_HealConversionFactor), m_MaxStacks), level: m_Level);
         }
 
         #endregion

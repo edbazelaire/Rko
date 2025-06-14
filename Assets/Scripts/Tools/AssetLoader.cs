@@ -6,6 +6,7 @@ using Game.UI.EndGameUI;
 using Menu.Common.Buttons;
 using Menu.Common.Rewards;
 using Save;
+using Save.Data.Progression.Structs;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Video;

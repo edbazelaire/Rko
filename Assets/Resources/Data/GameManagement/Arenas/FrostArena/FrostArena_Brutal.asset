@@ -80,22 +80,23 @@ MonoBehaviour:
     StageData:
     - m_Boss: 1001
       m_BonusLevel: 0
-      m_Spells: 0a00000004000000000000001d0000004c000000
+      m_Spells: 0a000000020000001d0000004c000000
       m_TriggerEffects: []
       m_BonusStats:
       - StateEffectProperty: 4
         BaseValue: 1000
         BonusValue: 0
         ScalingFactor: 0
+        SpecialConditions: []
         StateEffectStackFactors: []
     - m_Boss: 1001
       m_BonusLevel: 1
-      m_Spells: 0a00000004000000000000001d0000004c000000
+      m_Spells: 0a000000040000001e0000001d0000004c000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 0
       m_BonusLevel: 0
-      m_Spells: 142700003300000015270000
+      m_Spells: 142700003400000015270000
       m_TriggerEffects: []
       m_BonusStats: []
   - RewardsData:
@@ -232,7 +233,7 @@ MonoBehaviour:
     StageData:
     - m_Boss: 1003
       m_BonusLevel: 0
-      m_Spells: 2b00000024000000310000001d000000f0030000
+      m_Spells: 2b00000024000000310000001d000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1003
@@ -391,12 +392,12 @@ MonoBehaviour:
     StageData:
     - m_Boss: 1005
       m_BonusLevel: 0
-      m_Spells: 1d0000001e000000170000001f000000150000004c000000
+      m_Spells: 1d0000001e0000001f000000150000004c000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1005
       m_BonusLevel: 1
-      m_Spells: 1d0000001e000000170000001f000000150000004c000000
+      m_Spells: 1d0000001e0000001f000000490000004c00000004000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 4

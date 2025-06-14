@@ -26,8 +26,10 @@ MonoBehaviour:
         CollectableName: AncientAegisRune
         Qty: 1
       AchievementRewards: []
+      Boosts: []
     TriggerEffects:
     - SpellDataName: _NeedlesStorm
+      OverridingData: []
       Level: 0
       Target: 0
       SpellActivationEvent: 3
@@ -47,12 +49,12 @@ MonoBehaviour:
     StageData:
     - m_Boss: 1001
       m_BonusLevel: 0
-      m_Spells: 0a00000004000000
+      m_Spells: 02000000040000001e000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1001
       m_BonusLevel: 1
-      m_Spells: 0a00000004000000
+      m_Spells: 020000001d0000001e0000000a000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 0
@@ -60,6 +62,7 @@ MonoBehaviour:
       m_Spells: 14270000
       m_TriggerEffects:
       - SpellDataName: Melting
+        OverridingData: []
         Level: 0
         Target: 0
         SpellActivationEvent: 4
@@ -86,8 +89,10 @@ MonoBehaviour:
         CollectableName: ToxicWaterRune
         Qty: 1
       AchievementRewards: []
+      Boosts: []
     TriggerEffects:
     - SpellDataName: _GasLeak
+      OverridingData: []
       Level: 5
       Target: 0
       SpellActivationEvent: 1
@@ -102,6 +107,7 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _PlagueArrows
+      OverridingData: []
       Level: 0
       Target: 0
       SpellActivationEvent: 3
@@ -122,12 +128,12 @@ MonoBehaviour:
     StageData:
     - m_Boss: 1002
       m_BonusLevel: 0
-      m_Spells: 1a0000001700000027000000
+      m_Spells: 1a000000170000001d000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1002
       m_BonusLevel: 1
-      m_Spells: 1a0000001700000027000000
+      m_Spells: 1a000000170000001d00000030000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1
@@ -150,8 +156,10 @@ MonoBehaviour:
         Border: 0
         Badge: 0
         League: 0
+      Boosts: []
     TriggerEffects:
     - SpellDataName: _VoidMines
+      OverridingData: []
       Level: 5
       Target: 0
       SpellActivationEvent: 1
@@ -171,17 +179,17 @@ MonoBehaviour:
     StageData:
     - m_Boss: 1003
       m_BonusLevel: 0
-      m_Spells: 170000002a000000
+      m_Spells: 170000001d000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1003
       m_BonusLevel: 1
-      m_Spells: 170000002a000000
+      m_Spells: 170000001e00000024000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1003
       m_BonusLevel: 2
-      m_Spells: 170000002a0000001d000000
+      m_Spells: 17000000240000001d0000004a000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 2

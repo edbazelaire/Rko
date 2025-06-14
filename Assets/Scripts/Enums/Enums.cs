@@ -87,6 +87,13 @@
         //Hell,
     }
 
+    public enum EArenaMod
+    {
+        None = 0,
+
+
+    }
+
     public enum ECharacter
     {
         None = -1,
@@ -141,7 +148,7 @@
         RockShower          = 2,
         FireBomb            = 3,
         Heal                = 4,
-        //IgnitionVeil        = 5,
+        SoulReaper          = 5,
         Invisibility        = 6,
         //AxeThrow            = 7,
         //Erasement           = 8,
@@ -710,7 +717,7 @@
         Infection           = 24,
         Vanish              = 25,
         Cleanse             = 26,
-        SoulHarvest         = 27,
+        RestlessBlade       = 27,
 
         // ======================================================================
         // Special Effects (boss)

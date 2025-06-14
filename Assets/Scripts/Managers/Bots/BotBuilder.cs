@@ -4,6 +4,7 @@ using Enums;
 using Game.AI.BehaviorTrees;
 using Game.Loaders;
 using Save;
+using Save.Data.Progression.Structs;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;

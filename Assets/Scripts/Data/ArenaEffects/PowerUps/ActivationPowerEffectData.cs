@@ -1,18 +1,15 @@
 ﻿using Data;
 using Enums;
 using Game.Spells;
-using Game;
 using System.Linq;
 using Tools;
 using UnityEngine;
 using System.ComponentModel;
 using System.Collections;
 using System;
-using Assets.Scripts.Data.DataStructures;
-using Unity.Services.Relay;
 using Data.DataStructures;
 
-namespace Assets.Scripts.Data.PowerUp
+namespace Assets.Scripts.Data.PowerUps
 {
     [CreateAssetMenu(fileName = "ActivationPowerEffect", menuName = "Game/Effects/PowerUp/Activation")]
     public class ActivationPowerEffectData : PowerEffectData

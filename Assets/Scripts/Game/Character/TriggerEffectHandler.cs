@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Data.PowerUp;
+﻿using Assets.Scripts.Data.PowerUps;
 using Data;
 using Data.DataStructures;
 using Enums;
