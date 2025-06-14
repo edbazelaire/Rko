@@ -5,6 +5,7 @@ using Data.DataStructures.CharacterSubStructures;
 using Enums;
 using Managers;
 using Save;
+using Save.Data.Progression.Structs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -81,16 +82,18 @@ namespace Data.GameManagement
 
         // ===============================================================================================
         // DATA
-        [Header("AI stats")]
-        [SerializeField] int m_BotPerfLevelCeiling                  = 10;
-        [SerializeField] (float Min, float Max) m_DecisionRefresh   = (0.05f, 0.05f);
-        [SerializeField] (float Min, float Max) m_Randomness        = (0f, 1f);
-
         [Header("Arena Data")]
+        [SerializeField] int m_NLifes = 1;
         [SerializeField] List<SArenaLevelData> m_ArenaLevelData;
 
+        // ===============================================================================================
+        // Local data
         protected int m_ArenaDifficultyLevel;
+        (float Min, float Max) m_DecisionRefresh = (0.05f, 0.05f);
+        (float Min, float Max) m_Randomness = (0f, 1f);
 
+        // ===============================================================================================
+        // Public data
         public int CurrentLevel                 => ProgressionCloudData.CurrentArena.Level;
         public int CurrentStage                 => ProgressionCloudData.CurrentArena.Stage;
         public int CurrentBaseCharacterLevel    => 1 + (int)ArenaDifficulty * 2 + m_ArenaDifficultyLevel;
@@ -323,12 +326,12 @@ namespace Data.GameManagement
 
         float GetDecisionRefresh(int characterLevel)
         {
-            return m_DecisionRefresh.Min + Mathf.Max(0, (1 - characterLevel / m_BotPerfLevelCeiling) * (m_DecisionRefresh.Max - m_DecisionRefresh.Min));
+            return m_DecisionRefresh.Min + Mathf.Max(0, (1 - characterLevel / 10) * (m_DecisionRefresh.Max - m_DecisionRefresh.Min));
         }
 
         float GetRandomness(int characterLevel)
         {
-            return m_Randomness.Min + Mathf.Max(0, (1 - characterLevel / m_BotPerfLevelCeiling) * (m_Randomness.Max - m_Randomness.Min));
+            return m_Randomness.Min + Mathf.Max(0, (1 - characterLevel / 10) * (m_Randomness.Max - m_Randomness.Min));
         }
 
         /// <summary>

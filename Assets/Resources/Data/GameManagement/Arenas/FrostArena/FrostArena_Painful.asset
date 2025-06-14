@@ -26,8 +26,10 @@ MonoBehaviour:
         CollectableName: BerserkerRune
         Qty: 1
       AchievementRewards: []
+      Boosts: []
     TriggerEffects:
     - SpellDataName: _FrostBites
+      OverridingData: []
       Level: 0
       Target: 0
       SpellActivationEvent: 1
@@ -42,6 +44,7 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _NeedlesStorm
+      OverridingData: []
       Level: 0
       Target: 0
       SpellActivationEvent: 3
@@ -62,19 +65,20 @@ MonoBehaviour:
     StageData:
     - m_Boss: 1001
       m_BonusLevel: 0
-      m_Spells: 0a00000004000000170000001d000000
+      m_Spells: 040000004b0000001e0000001d000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1001
       m_BonusLevel: 1
-      m_Spells: 0a00000004000000170000001d000000
+      m_Spells: 0a0000004c000000170000001d000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 0
       m_BonusLevel: 0
-      m_Spells: 1427000033000000
+      m_Spells: 1527000014270000
       m_TriggerEffects:
       - SpellDataName: Melting
+        OverridingData: []
         Level: 0
         Target: 0
         SpellActivationEvent: 4
@@ -99,8 +103,10 @@ MonoBehaviour:
         CollectableName: ToxicWaterRune
         Qty: 2
       AchievementRewards: []
+      Boosts: []
     TriggerEffects:
     - SpellDataName: _GasLeak
+      OverridingData: []
       Level: 0
       Target: 0
       SpellActivationEvent: 1
@@ -115,6 +121,7 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _PlagueArrows
+      OverridingData: []
       Level: 0
       Target: 0
       SpellActivationEvent: 1
@@ -129,6 +136,7 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _VenomSpikes
+      OverridingData: []
       Level: 0
       Target: 0
       SpellActivationEvent: 3
@@ -149,12 +157,12 @@ MonoBehaviour:
     StageData:
     - m_Boss: 1002
       m_BonusLevel: 0
-      m_Spells: 1a0000002f000000
+      m_Spells: 1a0000001d0000003000000028000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1002
       m_BonusLevel: 1
-      m_Spells: 1a0000002f000000
+      m_Spells: 1a000000300000001d0000002800000049000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1
@@ -174,8 +182,10 @@ MonoBehaviour:
         CollectableName: SoulFreeze
         Qty: 1
       AchievementRewards: []
+      Boosts: []
     TriggerEffects:
     - SpellDataName: _VoidMines
+      OverridingData: []
       Level: 5
       Target: 0
       SpellActivationEvent: 1
@@ -197,17 +207,17 @@ MonoBehaviour:
     StageData:
     - m_Boss: 1003
       m_BonusLevel: 0
-      m_Spells: 1e0000002a00000030000000
+      m_Spells: 1e0000001d00000031000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1003
       m_BonusLevel: 1
-      m_Spells: 1e0000002a00000030000000
+      m_Spells: 1e0000001d0000003100000024000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 2
       m_BonusLevel: 0
-      m_Spells: 2e00000031000000de270000
+      m_Spells: dc270000dd270000
       m_TriggerEffects: []
       m_BonusStats: []
   - RewardsData:
@@ -228,8 +238,10 @@ MonoBehaviour:
         Border: 0
         Badge: 0
         League: 0
+      Boosts: []
     TriggerEffects:
     - SpellDataName: _FallingOrbs
+      OverridingData: []
       Level: 0
       Target: 0
       SpellActivationEvent: 1
@@ -244,6 +256,7 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
     - SpellDataName: _ArcticEruption
+      OverridingData: []
       Level: 0
       Target: 0
       SpellActivationEvent: 1
@@ -264,17 +277,12 @@ MonoBehaviour:
     StageData:
     - m_Boss: 1004
       m_BonusLevel: 0
-      m_Spells: 1c00000011000000
+      m_Spells: 1c000000110000004c000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1004
       m_BonusLevel: 1
-      m_Spells: 1c00000011000000
-      m_TriggerEffects: []
-      m_BonusStats: []
-    - m_Boss: 1004
-      m_BonusLevel: 2
-      m_Spells: 1c0000001100000027000000
+      m_Spells: 1c000000110000000300000021000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 3
@@ -282,6 +290,7 @@ MonoBehaviour:
       m_Spells: 4028000041280000
       m_TriggerEffects:
       - SpellDataName: _BlueMeteorsRain
+        OverridingData: []
         Level: 0
         Target: 0
         SpellActivationEvent: 1

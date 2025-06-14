@@ -127,5 +127,16 @@ namespace Game.Spells
         }
 
         #endregion
+
+
+        #region Description & Info
+
+        public override string GetDescription()
+        {
+            Debug.Log("GetDescription()");
+            return base.GetDescription();
+        }
+
+        #endregion
     }
 }

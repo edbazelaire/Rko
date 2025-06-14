@@ -5,6 +5,7 @@ using DevTools;
 using Enums;
 using Menu.Common.Displayers;
 using Save;
+using Save.Data.Progression.Structs;
 using System;
 using System.Collections.Generic;
 using Tools;

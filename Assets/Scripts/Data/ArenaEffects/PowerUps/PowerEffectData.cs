@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using Data.DataStructures;
 using Data.DataStructures.CharacterSubStructures;
 
-namespace Assets.Scripts.Data.PowerUp
+namespace Assets.Scripts.Data.PowerUps
 {
     [CreateAssetMenu(fileName = "PowerEffect", menuName = "Game/PowerUp/Default")]
     public class PowerEffectData : CollectableData

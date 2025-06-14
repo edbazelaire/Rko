@@ -57,7 +57,7 @@ namespace Data
             if (m_Description == "")
                 return GetStateEffect().GetDescription();
 
-            return base.GetDescription();
+            return TextHandler.ReplaceSubStateEffect(base.GetDescription(), GetStateEffect());
         }
 
         public override bool IsScalingProperty(string propertyName, out EScalingDirection scaling)

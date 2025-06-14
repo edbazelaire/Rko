@@ -381,11 +381,11 @@ namespace Game.Character
 
             int moveX = 0;
 
-            if (Input.GetKey(KeyCode.Q) || GameUIManager.LeftMovementButtonPressed)
+            if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.A) || GameUIManager.LeftMovementButtonPressed)
             {
                 moveX = -1;
             }
-            else if (Input.GetKey(KeyCode.D) || GameUIManager.RightMovementButtonPressed)
+            else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.E) || GameUIManager.RightMovementButtonPressed)
             {
                 moveX = 1;
             }

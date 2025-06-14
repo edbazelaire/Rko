@@ -1,4 +1,5 @@
 ﻿using Data;
+using Data.GameManagement;
 using Enums;
 using Game.Loaders;
 using Inventory;
@@ -67,8 +68,12 @@ namespace Menu.MainMenu
 
             m_SpellItems = new Dictionary<ESpell, TemplateSpellItemUI>();
             var allSpellsData = SpellLoader.OrderSpells(SpellLoader.SpellsData, EOrderBy.Rarety);
+            int index = -1;
             foreach (SpellData spellData in allSpellsData)
             {
+                // increment index
+                index++;
+
                 // skip if spell is linked to a character
                 if (spellData.Linked)
                     continue;

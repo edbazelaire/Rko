@@ -13,16 +13,11 @@ MonoBehaviour:
   m_Name: ShadowRealm
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: AoE of size {0} dealing {1} damage, applying 3 seconds of {2} and
-    25 stacks of {3}.<br>Your character is invulnerable during the cast.
+  m_Description: 'Become a swirling hurricane of tormented souls, drifting freely
+    across the enemy field.\nUpon ending, the storm detonates in a burst of spectral
+    wrath, dealing {0} damage and [EnemyStateEffect.0]'
   m_DescriptionVariables:
-  - Name: Size
-    WithIcon: 0
   - Name: Damage
-    WithIcon: 1
-  - Name: Silence
-    WithIcon: 1
-  - Name: Cursed
     WithIcon: 1
   m_SpellElements: 
   Linked: 1
@@ -95,10 +90,10 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 0
-  m_NCharges: 1
+  m_Charges: 1
   EnergyGain: 0
   EnergyCost: 100
-  m_Damage: 150
+  m_Damage: 80
   m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
@@ -119,15 +114,9 @@ MonoBehaviour:
   m_Size: 5
   TriggerPlayer: 1
   EnemyStateEffects:
-  - StateEffect: 14
-    Stacks: 1
-    BonusStacksPerLevel: 0
-    OverridingProperties:
-    - StateEffectProperty: 1
-      Value: 3
-  - StateEffect: 13
-    Stacks: 15
-    BonusStacksPerLevel: 0.34
+  - StateEffect: 18
+    Stacks: 10
+    BonusStacksPerLevel: 1
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0

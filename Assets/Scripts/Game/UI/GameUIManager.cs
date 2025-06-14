@@ -445,13 +445,19 @@ public class GameUIManager : MonoBehaviour
     /// <param name="index"></param>
     public void ToogleInterface()
     {
-        m_MovementButtonsContainer.gameObject.SetActive(!m_MovementButtonsContainer.gameObject.activeSelf);
-        m_SpellContainer.gameObject.SetActive(!m_SpellContainer.gameObject.activeSelf);
-        m_LinkedSpellsContainer.gameObject.SetActive(!m_LinkedSpellsContainer.gameObject.activeSelf);
+        bool isActive = m_MovementButtonsContainer.gameObject.activeSelf;
+
+        m_MovementButtonsContainer.gameObject.SetActive(!isActive);
+        m_SpellContainer.gameObject.SetActive(!isActive);
+        m_LinkedSpellsContainer.gameObject.SetActive(!isActive);
+        m_EmotsSectionUI.gameObject.SetActive(!isActive);
+
+        if (m_BTDebugger != null)
+            m_BTDebugger.gameObject.SetActive(!isActive);
 
         foreach (var playerUIContainer in m_PlayerUIContainers)
         {
-            playerUIContainer.SetActive(!playerUIContainer.activeSelf);
+            playerUIContainer.SetActive(!isActive);
         }
     }
 

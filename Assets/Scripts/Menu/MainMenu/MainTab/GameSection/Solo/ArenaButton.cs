@@ -2,6 +2,7 @@ using Assets;
 using Enums;
 using Menu.Common.Notifications;
 using Save;
+using Save.Data.Progression.Structs;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;

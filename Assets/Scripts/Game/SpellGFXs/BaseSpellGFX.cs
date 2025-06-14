@@ -154,7 +154,7 @@ namespace Game.SpellGFXs
             m_EndStarted = true;
 
             // stop the animation
-            if (m_PrefabSpawn.Animation != EAnimation.None)
+            if (m_PrefabSpawn != null && m_PrefabSpawn.Animation != EAnimation.None)
                 m_Controller.AnimationHandler.CancelCastAnimation(m_PrefabSpawn.Animation);
 
             // remove listeners

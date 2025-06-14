@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cb3325cd50f2224aa7b9c8e77d11e31, type: 3}
   m_Name: _FrozenSpikes
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: The wall is rigged with lethal spikes that activate when the player
     ventures too close, applying [IceBreak], and forcefully pushing the player away.
   m_DescriptionVariables: []
@@ -21,6 +21,7 @@ MonoBehaviour:
   Graphics: {fileID: 2272309172655654138, guid: 0f2006ded6a1dc84ea2182c0b4566eb1, type: 3}
   SpellEventActions: []
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -34,8 +35,17 @@ MonoBehaviour:
     Y: 0.15
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 0
@@ -53,10 +63,19 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
   - Property: 1
     Value: 0.1
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
   - Property: 3
     Value: 0.05
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
   m_Size: 6
   TriggerPlayer: 1
   EnemyStateEffects: []

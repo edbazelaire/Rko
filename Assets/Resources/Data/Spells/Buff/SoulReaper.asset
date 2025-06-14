@@ -9,34 +9,54 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be1429166f6c7054fa65815783a3681a, type: 3}
-  m_Name: _ShardcurseMinor
+  m_Script: {fileID: 11500000, guid: b829d596b80e4f042aa5d80d985cf693, type: 3}
+  m_Name: SoulReaper
   m_EditorClassIdentifier: 
-  Rarety: 0
-  m_Description: '[EnemyStateEffect.0]'
-  m_DescriptionVariables: []
+  m_Rarety: 2
+  m_Description: 'Consume {0} energy and [SpellRequirement.0] to gain a <b>Soul Reaper</b>
+    stack.\n\n[StateEffect]'
+  m_DescriptionVariables:
+  - Name: EnergyCost
+    WithIcon: 1
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions: []
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
-  SpellTarget: 6
+  SpellTarget: 4
+  m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
-  m_SpellRequirements: []
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
+  m_SpellRequirements:
+  - m_StateEffectRequirements:
+    - m_SpellTarget: 0
+      m_StateEffect: Cursed
+      m_Stacks: 25
+      m_NStacksReductionPerLevel: 0.25
   MaxHit: 1
-  EnergyGain: 10
-  EnergyCost: 0
+  m_Charges: 1
+  EnergyGain: 0
+  EnergyCost: 25
   m_Damage: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -44,25 +64,17 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 0
   Delay: 0
-  m_SpellsScalingLevel:
-  - Property: 2
-    Value: 0.1
-  - Property: 1
-    Value: 0.1
-  - Property: 3
-    Value: 0.05
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
+  m_SpellsScalingLevel: []
   m_Size: 1
   TriggerPlayer: 1
-  EnemyStateEffects:
-  - StateEffect: 13
-    Stacks: 2
-    BonusStacksPerLevel: 0.22
-    OverridingProperties: []
+  EnemyStateEffects: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
-  Animation: 0
+  Animation: 9
   IsCancellable: 0
-  AnimationTimer: 0
-  m_Cooldown: 0
-  IsAttachedToTarget: 0
+  AnimationTimer: 0.5
+  m_Cooldown: 3

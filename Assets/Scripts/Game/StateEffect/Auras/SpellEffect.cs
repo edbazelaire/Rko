@@ -51,7 +51,7 @@ namespace Game.Spells
             spellData.AllyStateEffects.AddRange(AllyStateEffects);
             spellData.EnemyStateEffects.AddRange(EnemyStateEffects);
 
-            // apply overrides
+            // apply overrides 
             if (! m_SpellOverridingData.IsNullOrEmpty())
             {
                 List<SOverridingData> overridingData = m_SpellOverridingData.Where(temp => !PRE_APPLIED_EFFECTS.Contains(temp.Property)).ToList();

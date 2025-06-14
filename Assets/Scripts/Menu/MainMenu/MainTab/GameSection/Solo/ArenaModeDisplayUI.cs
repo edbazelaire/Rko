@@ -15,6 +15,7 @@ using Unity.VisualScripting;
 using Tools.Animations;
 using System.Collections;
 using Assets.Scripts.Managers;
+using Save.Data.Progression.Structs;
 
 namespace Menu.MainMenu.MainTab
 {
