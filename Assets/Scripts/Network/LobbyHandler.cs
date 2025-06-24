@@ -244,15 +244,16 @@ namespace Network
                         // TUTO : overwrite data
                         if (IsTuto)
                         {
-                            playerData.Character = CharacterBuildsCloudData.DEFAULT_CHARACTER.ToString();
-                            playerData.Spells = CharacterBuildsCloudData.DEFAULT_BUILD;
-                            playerData.Runes = new ERune[3];
+                            playerData.BuildData.Character = CharacterBuildsCloudData.DEFAULT_CHARACTER.ToString();
+                            playerData.BuildData.Spells = CharacterBuildsCloudData.DEFAULT_BUILD;
+                            playerData.BuildData.Runes = new ERune[3];
                         }
                         
                         // ADD ARENA POWER UPS
                         if (GameMode == EGameMode.Arena)
                         {
                             playerData.SetPowerUps(ProgressionCloudData.CurrentArena.GetActivePowerUps());
+                            playerData.SetBuild(ProgressionCloudData.CurrentArena.BuildData);
                         }
 
                         GameManager.Instance.AddPlayerDataServerRPC(

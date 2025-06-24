@@ -1,5 +1,6 @@
 ﻿using Enums;
 using Game.Loaders;
+using MyBox;
 using Save;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.ComponentModel;
 using System.Linq;
 using Tools;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 using UnityEngine.Serialization;
 
 namespace Data.GameManagement
@@ -125,6 +127,50 @@ namespace Data.GameManagement
 
             ErrorHandler.Error("Unable to find CollectionData for data " + collectable + " of type " + collectable.GetType());
             return null;
+        }
+
+        public static CollectableData GetRandomData(ECollectableType collectableType, List<Enum> notAllowed, int level, bool destroy = false)
+        {
+            CollectableData collectableData;
+
+            // load data of the item
+            switch(collectableType)
+            {
+                case ECollectableType.Character:
+                    var values = Enum.GetValues(typeof(ECharacter)).Cast<ECharacter>().ToList();
+                    return GetData(values.Where(value => !notAllowed.Cast<ECharacter>().ToList().Contains(value)).GetRandom(), level, destroy);
+                
+                case ECollectableType.Spell:
+                    collectableData = SpellLoader.GetRandomSpell(notAllowedSpellsFilter: notAllowed.Cast<ESpell>().ToList());
+                    break;
+
+                case ECollectableType.Rune:
+                    collectableData = SpellLoader.GetRandomRune(notAllowedFilter: notAllowed.Cast<ERune>().ToList());
+                    break;
+
+                default:
+                    ErrorHandler.Error("Unhandled case " + collectableType);
+                    return null;
+            }
+
+            collectableData.SetLevel(level);
+            return collectableData;
+        }
+
+        public static T GetRandomCollectable<T>(List<T> notAllowed) where T : Enum
+        {
+            var available = Enum.GetValues(typeof(T))
+                                .Cast<T>()
+                                .Where(value => !notAllowed.Contains(value))
+                                .ToList();
+
+            if (available.Count == 0)
+            {
+                ErrorHandler.Error("No available collectables to choose from.");
+                return default;
+            }
+
+            return available[new System.Random().Next(available.Count)];
         }
 
         #endregion

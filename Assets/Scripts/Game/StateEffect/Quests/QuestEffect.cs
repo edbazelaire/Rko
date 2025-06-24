@@ -144,6 +144,7 @@ namespace Game.StateEffects.Quests
                     ErrorHandler.Log("     + ActivateEffect Spell : " + activableEffect.Effect, ELogTag.StateEffects);
 
                     SpellData spellData = SpellLoader.GetSpellData(activableEffect.Effect, activableEffect.Level);
+                    spellData.SetParent(m_Parent);
                     if (activableEffect.Target != ESpellTarget.None)
                         spellData.SpellTarget = activableEffect.Target;
 
@@ -163,6 +164,7 @@ namespace Game.StateEffects.Quests
                         return;
 
                     StateEffect stateEffect = SpellLoader.GetStateEffect(activableEffect.Effect, activableEffect.Level, parent: m_Parent);
+                    stateEffect.SetParent(m_Parent);
                     targetController.StateHandler.AddStateEffect(stateEffect, m_Caster);
 
                     // add to list of state effects - to allow deactivation if necessary

@@ -14,7 +14,6 @@ using Tools;
 using Unity.Services.Authentication;
 using Unity.Services.Authentication.PlayerAccounts;
 using Unity.Services.Core;
-using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 
 namespace Assets.Scripts.Managers
@@ -88,10 +87,32 @@ namespace Assets.Scripts.Managers
         public async void SignIn(string authId)
         {
 #if UNITY_EDITOR
-            if (authId != "")
-            {
-                
-            }
+            //if (authId != "")
+            //{
+            //    var split = authId.Split(" | ");
+            //    if (split.Length != 2)
+            //    {
+            //        ErrorHandler.Error("Unhandled format authId : " + authId);
+            //    }
+            //    else
+            //    {
+            //        if (!Enum.TryParse(split[0], out EAuthServices authService))
+            //            ErrorHandler.Error("Unhandled format authId : " + authId);
+            //        else
+            //        {
+            //            switch (AuthService)
+            //            {
+            //                case EAuthServices.UnityPlayerAccount:
+            //                    await SignInWithUnityAsync(split[1]);
+            //                    return;
+
+            //                default:
+            //                    ErrorHandler.Error("Unhanlded case : " + authService);
+            //                    break;
+            //            }
+            //        }
+            //    }
+            //}
 #endif
             await SignInAnonymously(false);
         }

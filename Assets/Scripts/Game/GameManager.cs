@@ -230,7 +230,7 @@ namespace Game
             if (!IsServer)
                 return;
 
-            ErrorHandler.Log("AddPlayerDataServerRPC + clientId " + clientId + " with character " + playerData.Character.ToString(), ELogTag.GameSystem);
+            ErrorHandler.Log("AddPlayerDataServerRPC + clientId " + clientId + " with character " + playerData.BuildData.Character.ToString(), ELogTag.GameSystem);
             m_PlayersData.Add(clientId, playerData);
 
             m_ProgressGameStart.Value += 1f / ((float)LobbyHandler.Instance.MaxPlayers * N_LOADING_STEPS);
@@ -271,7 +271,7 @@ namespace Game
                 return;
             int team = m_Controllers.Count;
 
-            GameObject playerPrefab = CharacterLoader.GetPrefab(playerData.Character.ToString(), playerData.IsPlayer, m_IsTuto);
+            GameObject playerPrefab = CharacterLoader.GetPrefab(playerData.BuildData.Character.ToString(), playerData.IsPlayer, m_IsTuto);
             if (playerData.IsPlayer)
             {
                 // create player prefab and spawn it
@@ -316,10 +316,10 @@ namespace Game
             if (LobbyHandler.Instance.GameMode != EGameMode.Training)
                 return;
 
-            playerData.CharacterLevel = DEFAULT_PVP_LEVEL;
-            for (int i = 0; i < playerData.SpellLevels.Length; i++)
+            playerData.BuildData.CharacterLevel = DEFAULT_PVP_LEVEL;
+            for (int i = 0; i < playerData.BuildData.SpellLevels.Length; i++)
             {
-                playerData.SpellLevels[i] = DEFAULT_PVP_LEVEL;
+                playerData.BuildData.SpellLevels[i] = DEFAULT_PVP_LEVEL;
             }
         }
 

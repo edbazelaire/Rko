@@ -5,6 +5,7 @@ using Inventory;
 using Menu.Common.Buttons.TemplateItemButtons.Collectables;
 using Save;
 using System;
+using System.Collections.Generic;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,14 +27,17 @@ namespace Menu.Common.Buttons
         public Action ThisButtonClickedEvent;
 
         // GameObjects & Components
-        protected CollectablesSubButtons m_SubButtons = null;
-        protected CollectionFillBar m_CollectionFillBar = null;
-        protected SCollectableCloudData m_CollectableCloudData;
+        protected CollectablesSubButtons    m_CSubButtons           = null;
+        protected SubButtons                m_SubButtons            = null;
+        protected CollectionFillBar         m_CollectionFillBar     = null;
+        protected SCollectableCloudData     m_CollectableCloudData;
+
+        protected int m_Level;
 
         protected Enum m_Collectable                        => m_CollectableCloudData.GetCollectable();
-        protected int m_Level                               => m_CollectableCloudData.Level;
         public SCollectableCloudData CollectableCloudData   => m_CollectableCloudData;
         public CollectionFillBar CollectionFillBar          => m_CollectionFillBar;
+        public CollectablesSubButtons CSubButtons => m_CSubButtons;
 
         public Enum Collectable => m_Collectable;
 
@@ -46,15 +50,27 @@ namespace Menu.Common.Buttons
         {
             base.FindComponents();
 
-            m_Border            = Finder.FindComponent<Image>(gameObject, "IconContainer");
-            m_SubButtons        = Finder.FindComponent<CollectablesSubButtons>(gameObject,  throwError: false);
-            m_CollectionFillBar = Finder.FindComponent<CollectionFillBar>(gameObject,       throwError: false);
+            m_Border                = Finder.FindComponent<Image>(gameObject, "IconContainer");
+            m_CSubButtons           = Finder.FindComponent<CollectablesSubButtons>(gameObject,  throwError: false);
+            m_CollectionFillBar     = Finder.FindComponent<CollectionFillBar>(gameObject,       throwError: false);
         }
 
         public virtual void Initialize(Enum collectable, bool asIconOnly = false)
         {
+            m_AsIconOnly = asIconOnly;
+
             base.Initialize();
 
+            SetUpCollectable(collectable, asIconOnly);
+        }
+
+        public virtual void Initialize(Enum collectable, int level, bool asIconOnly = false)
+        {
+            m_AsIconOnly = asIconOnly;
+
+            base.Initialize();
+
+            m_Level = level;
             SetUpCollectable(collectable, asIconOnly);
         }
 
@@ -70,11 +86,11 @@ namespace Menu.Common.Buttons
             SetColor(CollectablesManagementData.GetRaretyData(m_Collectable).Color);
             SetUpCollectionFillBar(!asIconOnly);
 
-            if (m_SubButtons != null)
+            if (m_CSubButtons != null)
             {
                 if (!asIconOnly)
-                    m_SubButtons.Initialize(this);
-                m_SubButtons.gameObject.SetActive(false);
+                    m_CSubButtons.Initialize(this);
+                m_CSubButtons.gameObject.SetActive(false);
             }
         }
 
@@ -88,7 +104,7 @@ namespace Menu.Common.Buttons
         /// </summary>
         protected virtual void RefreshUI()
         {
-            m_BottomText.text = string.Format(LEVEL_FORMAT, m_CollectableCloudData.Level);
+            m_BottomText.text = string.Format(LEVEL_FORMAT, m_Level);
 
             // check context of state and apply it
             UpdateState();
@@ -98,6 +114,8 @@ namespace Menu.Common.Buttons
         {
             // load cloud data of the collectable
             m_CollectableCloudData = InventoryCloudData.Instance.GetCollectable(collectable);
+            if (m_Level == 0)
+                m_Level = m_CollectableCloudData.Level;
 
             // setup ui elements (icon, collection fillbar, ...)
             SetUpUI(asIconOnly);
@@ -138,7 +156,7 @@ namespace Menu.Common.Buttons
             else
             {
                 SetIcon(AssetLoader.LoadIcon(m_Collectable));
-                SetBottomOverlay(string.Format(LEVEL_FORMAT, m_CollectableCloudData.Level));
+                SetBottomOverlay(string.Format(LEVEL_FORMAT, m_Level));
                 m_Icon.color = Color.white;
             }
         }
@@ -159,7 +177,7 @@ namespace Menu.Common.Buttons
                 return;
             }
 
-            if (m_CollectableCloudData.Level == 0)
+            if (m_Level == 0)
             {
                 SetState(EButtonState.Locked);
                 return;
@@ -184,13 +202,40 @@ namespace Menu.Common.Buttons
         /// <summary>
         /// Switch display between SubButtons and CollectionFillBar
         /// </summary>
-        protected virtual void ToggleSubButtons()
+        public virtual void ToggleSubButtons()
         {
-            if (m_SubButtons == null)
+            if (m_SubButtons != null)
+            {
+                m_SubButtons.Toggle();
                 return;
-            
-            m_SubButtons.Toggle();
+            }
+
+            if (m_CSubButtons != null)
+                m_CSubButtons.Toggle();
         }
+
+        public void AddSubButtons(List<SubButton> subButtons)
+        {
+            if (m_CSubButtons != null)
+            {
+                Destroy(m_CSubButtons.gameObject);
+            }
+
+            if (m_SubButtons == null)
+            {
+                m_SubButtons = Instantiate(AssetLoader.Load<SubButtons>(AssetLoader.c_MainUISubButtonsPath), transform);
+                m_SubButtons.Initialize();
+            }
+
+            m_SubButtons.SetButtons(subButtons);
+            m_SubButtons.name = "NEW_SUB_BUTTONS";
+            m_SubButtons.Hide();
+
+            // Toggle subbuttons on main click
+            m_Button.interactable = true;
+            m_Button.onClick.AddListener(ToggleSubButtons);
+        }
+
 
         #endregion
 
@@ -201,6 +246,9 @@ namespace Menu.Common.Buttons
         {
             base.RegisterListeners();
 
+            if (m_AsIconOnly)
+                return;
+
             InventoryCloudData.CollectableDataChangedEvent  += OnCollectableDataChanged;
             InventoryManager.CollectableUpgradedEvent       += OnCollectableUpgraded;
         }
@@ -208,6 +256,9 @@ namespace Menu.Common.Buttons
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
+
+            if (m_AsIconOnly)
+                return;
 
             InventoryCloudData.CollectableDataChangedEvent  -= OnCollectableDataChanged;
             InventoryManager.CollectableUpgradedEvent       -= OnCollectableUpgraded;

@@ -12,9 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bf96ab3cd590dd4eb64ef847e4c7983, type: 3}
   m_Name: PlayedGames
   m_EditorClassIdentifier: 
-  Description: Number of game played
-  Analytics: 0
-  AnalyticsFilters: []
+  m_Description: Play at least [TresholdValue] games
   AchievementSubData:
   - MaxValue: 5
     Rewards:
@@ -228,3 +226,5 @@ MonoBehaviour:
         Badge: 1
         League: 6
       Boosts: []
+  Analytics: 0
+  AnalyticsFilters: []

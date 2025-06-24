@@ -1,15 +1,18 @@
 ﻿using Assets;
 using Enums;
+using Save.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tools;
+using Unity.Collections;
 using Unity.Services.CloudSave;
 using Unity.Services.CloudSave.Internal;
 using Unity.Services.CloudSave.Models;
 using Unity.Services.CloudSave.Models.Data.Player;
 using SaveOptions = Unity.Services.CloudSave.Models.Data.Player.SaveOptions;
+
 
 namespace Save
 {
@@ -60,15 +63,12 @@ namespace Save
             {
                 // if value exists in the cloud get it, other wise keep default
                 bool success = await LoadValueAsync(key);
-
-                // if unable to load a key from cloud data, reset and save the value
-                if (!success)
-                    Reset(key, save: true);
             }
         }
 
         protected async virtual Task<bool> LoadValueAsync(string key)
         {
+            bool test;
             Dictionary<string, Item> cloudData = new();
 
             // LOADING DATA (with multiple retries)
@@ -96,24 +96,33 @@ namespace Save
             // CONVERT value in expected type
             try
             {
-                var value = Convert(item);
-                if (value == null)
-                    return false;
-
-                // set givent value (block saving)
-                SetData(key, value, false);
-                OnCloudDataKeyLoaded(key);
-                return true;
+                object value;
+                if (MigrationHandler.TryGetValue(item, out value))
+                {
+                    SetData(key, value, false);
+                    test = true;
+                } else
+                {
+                    value = Convert(item);
+                    if (value != null)
+                    {
+                        SetData(key, value, false);
+                        test = true;
+                    }
+                    else
+                    {
+                        test = false;
+                    }
+                }
             } 
-            catch (Exception ex)
+            catch (Exception)
             {
                 ErrorHandler.Error("Unable to Convert " + key + " with value " + item.Value.GetAsString());
-                if (ex != null)
-                    ErrorHandler.Error(ex.Message);
-
-                OnLoadingError(key, item);
-                return false;
+                test = OnLoadingError(key, item);
             }
+
+            OnCloudDataKeyLoaded(key);
+            return test;
         }
 
         public async Task<T> TryGet<T>(string key)
@@ -206,9 +215,10 @@ namespace Save
 
         #region Loading / Saving Error Management
 
-        protected virtual void OnLoadingError(string key, Item item)
+        protected virtual bool OnLoadingError(string key, Item item)
         {
-
+            Reset(key);
+            return true;
         }
 
         private async Task ResolveConflictAsync(string key, Dictionary<string, object> newPlayerData)
@@ -322,6 +332,9 @@ namespace Save
             if (m_Data[item.Key].GetType() == typeof(List<bool>))
                 return item.Value.GetAs<List<string>>();
 
+            if (m_Data[item.Key].GetType() == typeof(FixedString64Bytes))
+                return item.Value.GetAs<FixedString64Bytes>();
+
             switch (expectedType)
             {
                 case "String":
@@ -356,7 +369,7 @@ namespace Save
                     return item.Value.GetAs<EBadge[]>();
 
                 default:
-                    ErrorHandler.Error("Unhandled type : " + expectedType);
+                    ErrorHandler.Error("Unhandled type : " + expectedType + " for item " + item.Key + " with value : " + item.Value);
                     return null;
             }
 

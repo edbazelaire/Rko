@@ -8,6 +8,7 @@ using MyBox;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tools;
@@ -18,6 +19,8 @@ using Unity.Services.CloudSave;
 using Unity.Services.CloudSave.Models;
 using Unity.Services.CloudSave.Models.Data.Player;
 using Unity.VisualScripting;
+using UnityEngine.SocialPlatforms;
+using UnityEngine.SocialPlatforms.Impl;
 
 namespace Save
 {
@@ -357,6 +360,21 @@ namespace Save
         }
     }
 
+    [Serializable]
+    public struct SAchievementInfo
+    {
+        public string Id;
+        public float Count;
+        public int Index;
+
+        public SAchievementInfo(string id, float count = 0f, int index = 0)
+        {
+            Id = id;
+            Count = count;
+            Index = index;
+        }
+    }
+
     public class ProfileCloudData : CloudData
     {
         #region Members
@@ -391,6 +409,7 @@ namespace Save
         public static Action                                AccountLevelUpEvent;
         public static Action<EAchievementReward, string>    AchievementRewardCollectedEvent;
         public static Action<string>                        AchievementCompletedEvent;
+        public static Action<string>                        AchievementChangedEvent;
         public static Action                                PseudoChangedEvent;
         public static Action<EAchievementReward>            CurrentDataChanged;
         public static Action<int>                           CurrentBadgeChangedEvent;
@@ -408,10 +427,10 @@ namespace Save
             { KEY_IS_ADMIN,                 false                                               },
             { KEY_TAG,                      ""                                                  },
             { KEY_TOKEN,                    ""                                                  },
-            { KEY_AUTH_TOKEN,             ""                                                  },
+            { KEY_AUTH_TOKEN,               ""                                                  },
             { KEY_REGION,                   ""                                                  },
             { KEY_CURRENT_PROFILE_DATA,     new SProfileCurrentData()                           },
-            { KEY_ACHIEVEMENTS,             new Dictionary<string, int>()                       },
+            { KEY_ACHIEVEMENTS,             new List<SAchievementInfo>()                        },
             { KEY_ACHIEVEMENT_REWARDS,      new Dictionary<EAchievementReward, List<string>>()  },
             { KEY_GIFT_CODES,               new List<string>()                                  },
         };
@@ -436,8 +455,8 @@ namespace Save
         public static SProfileCurrentData   CurrentProfileData  => (SProfileCurrentData)Instance.m_Data[KEY_CURRENT_PROFILE_DATA];
         public static string[]              CurrentBadges       => CurrentProfileData.Badges;
 
-        public static int                   AccountLevel    => CurrentProfileData.AccountLevel;
-        public static Dictionary<string, int>   Achievements    => (Instance.m_Data[KEY_ACHIEVEMENTS] as Dictionary<string, int>);
+        public static int                   AccountLevel        => CurrentProfileData.AccountLevel;
+        public static List<SAchievementInfo> Achievements       => (Instance.m_Data[KEY_ACHIEVEMENTS] as List<SAchievementInfo>);
         public static Dictionary<EAchievementReward, List<string>> AchievementRewards => (Instance.m_Data[KEY_ACHIEVEMENT_REWARDS] as Dictionary<EAchievementReward, List<string>>);
         public static Dictionary<EBadge, ELeague> Badges        => Instance.m_Badges;
         public static List<string>          GiftCodes           => Instance.m_Data[KEY_GIFT_CODES] as List<string>;
@@ -467,7 +486,7 @@ namespace Save
             if (m_Data[item.Key].GetType() == typeof(Dictionary<EAchievementReward, string>))
                 return item.Value.GetAs<Dictionary<EAchievementReward, string>>();
 
-            if (m_Data[item.Key].GetType() == typeof(Dictionary<string, int>))
+            if (m_Data[item.Key].GetType() == typeof(SAchievementInfo))
                 return item.Value.GetAs<Dictionary<string, int>>();
 
             return base.Convert(item);
@@ -657,27 +676,57 @@ namespace Save
 
         #region Achievements
 
-        public static int GetAchievementIndex(string achievement)
+        public static SAchievementInfo GetAchievementInfo(string achievementId)
         {
-            if (Achievements.ContainsKey(achievement))
-                return Achievements[achievement];
+            int index = Achievements.FindIndex((SAchievementInfo achievementInfo) => achievementInfo.Id == achievementId );
+            if (index >= 0)
+                return Achievements[index];
+
+            return new SAchievementInfo(achievementId);
+        }
+
+        public static int GetAchievementThresholdIndex(string achievementId)
+        {
+            int index = Achievements.FindIndex(achievementInfo => achievementInfo.Id == achievementId);
+            if (index >= 0)
+                return Achievements[index].Index;
 
             return 0;
         }
 
-        public static void CompleteAchievement(string achievement)
+        public static void SetAchievementInfo(SAchievementInfo achievementInfo, bool save = true)
         {
-            ErrorHandler.Log("CompleteAchievement : " + achievement, ELogTag.Achievements);
+            int index = Achievements.FindIndex(data => data.Id == achievementInfo.Id);
+            if (index >= 0)
+            {
+                Achievements[index] = achievementInfo;
+            } else
+            {
+                Achievements.Add(achievementInfo);
+            }
 
-            if (Achievements.ContainsKey(achievement))
-                Achievements[achievement]++;
-            else
-                Achievements[achievement] = 1;
+            if (save)
+                Instance.SaveValue(KEY_ACHIEVEMENTS);
+        }
 
-            ErrorHandler.Log("      + Saving", ELogTag.Achievements);
-            Instance.SaveValue(KEY_ACHIEVEMENTS);
+        public static void UpdateAchievementCount(string achievementId, float count)
+        {
+            var achInfo = GetAchievementInfo(achievementId);
+            achInfo.Count = count;
+            SetAchievementInfo(achInfo, true);
 
-            AchievementCompletedEvent?.Invoke(achievement);
+            AchievementChangedEvent?.Invoke(achievementId);
+        }
+
+        public static void CompleteAchievement(string achievementId)
+        {
+            ErrorHandler.Log("CompleteAchievement : " + achievementId, ELogTag.Achievements);
+            var achievementInfo = GetAchievementInfo(achievementId);
+            achievementInfo.Index++;
+
+            SetAchievementInfo(achievementInfo, true);
+
+            AchievementCompletedEvent?.Invoke(achievementId);
         }
 
         #endregion
@@ -974,6 +1023,7 @@ namespace Save
                 // List of un-resetable data
                 case KEY_PSEUDO_CHANGED:
                 case KEY_TUTO_DONE:
+                case KEY_IS_ADMIN:
                     break;
 
                 case KEY_CURRENT_PROFILE_DATA:
@@ -1016,10 +1066,6 @@ namespace Save
 
                 case KEY_GIFT_CODES:
                     Instance.m_Data[key] = new List<string>();
-                    break;
-
-                case KEY_IS_ADMIN:
-                    Instance.m_Data[key] = false;
                     break;
 
                 default:
@@ -1096,6 +1142,11 @@ namespace Save
 
 
         #region Checkers
+
+        void CheckIsAdmin()
+        {
+            SaveValue(KEY_IS_ADMIN);
+        }
 
         void CheckAuthToken()
         {
@@ -1293,6 +1344,7 @@ namespace Save
         {
             base.CheckData();
 
+            CheckIsAdmin();
             CheckAuthToken();
 
             CheckAchievementRewards();

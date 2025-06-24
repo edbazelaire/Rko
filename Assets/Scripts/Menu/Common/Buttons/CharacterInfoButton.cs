@@ -16,6 +16,9 @@ namespace Menu.Common.Buttons
         Button m_Button;
         Image m_Image;
 
+        bool m_AllowsUpgrade;
+        bool m_IsUpgradable = false;
+
         public Button Button => m_Button;
 
         #endregion
@@ -31,10 +34,11 @@ namespace Menu.Common.Buttons
             m_Image         = Finder.FindComponent<Image>(gameObject);
         }
 
-        public void Initialize(ECharacter character)
+        public void Initialize(ECharacter character, bool allowsUpgrade = true)
         {
             base.Initialize();
 
+            m_AllowsUpgrade = allowsUpgrade;
             RefreshUI(character);
         }
 
@@ -50,7 +54,7 @@ namespace Menu.Common.Buttons
 
         public void RefreshUI(ECharacter character)
         {
-            if (InventoryCloudData.Instance.GetCollectable(character).IsUpgradable())
+            if (m_AllowsUpgrade && InventoryCloudData.Instance.GetCollectable(character).IsUpgradable())
                 SetAsUpgradable();
             else
                 SetAsInfo();
@@ -58,12 +62,20 @@ namespace Menu.Common.Buttons
 
         void SetAsInfo()
         {
+            if (! m_IsUpgradable)
+                return;
+
+            m_IsUpgradable = false;
             m_Image.sprite = AssetLoader.Load<Sprite>("CharacterInfoButton", AssetLoader.c_ButtonsPath);
             NotificationParticles.Remove(gameObject);
         }
 
         void SetAsUpgradable()
         {
+            if (m_IsUpgradable)
+                return;
+
+            m_IsUpgradable = true;
             m_Image.sprite = AssetLoader.Load<Sprite>("CharacterInfoButtonUpgradable", AssetLoader.c_ButtonsPath);
             NotificationParticles.Add(
                 gameObject: gameObject, 

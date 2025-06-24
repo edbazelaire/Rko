@@ -235,7 +235,7 @@ namespace Tools
 
         #region Spawning
 
-        public static void SpawnCharacter(string character, GameObject parent, string layerName = "")
+        public static void SpawnCharacter(string character, GameObject parent, string layerName = "", Vector2 padding = default)
         {
             // clean container before spawning
             CleanContent(parent);
@@ -252,7 +252,8 @@ namespace Tools
             // remove offset
             var characterContainer = Finder.Find(characterPreview, "CharacterContainer");
             var basePos = characterContainer.transform.localPosition;
-            basePos.x = 0f;
+            basePos.x = padding.x;
+            basePos.y += padding.y;
             characterContainer.transform.localPosition = basePos;
 
             // adjust ordering of the character preview to be above canvas

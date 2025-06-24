@@ -7,7 +7,6 @@ using Save;
 using TMPro;
 using Tools;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 
 

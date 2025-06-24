@@ -12,12 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bf96ab3cd590dd4eb64ef847e4c7983, type: 3}
   m_Name: SoloGamePlayed
   m_EditorClassIdentifier: 
-  Description: Number of solo game played
-  Analytics: 0
-  AnalyticsFilters:
-  - AnalyticParam: 1
-    Value: Arena
-    Comparator: 3
+  m_Description: Play [TresholdValue] games in the Arena
   AchievementSubData:
   - MaxValue: 5
     Rewards:
@@ -223,3 +218,8 @@ MonoBehaviour:
         Badge: 201
         League: 7
       Boosts: []
+  Analytics: 0
+  AnalyticsFilters:
+  - AnalyticParam: 1
+    Value: Arena
+    Comparator: 3

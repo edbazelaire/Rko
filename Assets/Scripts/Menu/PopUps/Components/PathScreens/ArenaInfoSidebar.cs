@@ -157,10 +157,14 @@ namespace Menu.PopUps
         {
             UIHelper.CleanContent(m_LossesContainer);
 
-            for (int i = 0; i < ArenaData.MAX_LOSSES; i++)
+            int nLifes = ProgressionCloudData.CalculateArenaMaxLifes();
+            if (nLifes == 1)
+                return;
+
+            for (int i = 0; i < nLifes; i++)
             {
                 m_LossKnob = Instantiate(m_LossKnob, m_LossesContainer.transform);
-                if (ProgressionCloudData.CurrentArena.Losses >= ArenaData.MAX_LOSSES - i)
+                if (ProgressionCloudData.CurrentArena.Losses >= nLifes - i)
                 {
                     Finder.FindComponent<Image>(m_LossKnob).color = new Color(0.3f, 0.3f, 0.3f);
                 }

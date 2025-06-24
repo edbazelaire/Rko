@@ -18,11 +18,13 @@ namespace Menu.Common.Buttons
         // ========================================================================================
         // GameObeject & Component
         Image m_ReplacementImage;
+        Image m_RuneActivationIcon;
 
         // ========================================================================================
         // Button Data
         protected ERune m_Rune => (ERune)m_Collectable;
         protected int m_Index = -1;
+        protected ERuneActivation m_RuneActivation;
 
         public ERune Rune => m_Rune;
 
@@ -36,11 +38,30 @@ namespace Menu.Common.Buttons
             base.FindComponents();
 
             m_ReplacementImage = Finder.FindComponent<Image>(gameObject, "ReplacementImage", false);
+            m_RuneActivationIcon = Finder.FindComponent<Image>(gameObject, "RuneActivationIcon", false);
+        }
+
+        protected override void SetUpUI()
+        {
+            base.SetUpUI();
+
+            m_RuneActivationIcon.gameObject.SetActive(false);
         }
 
         public void SetIndex(int index)
         {
             m_Index = index;
+        }
+
+        public void SetRuneActivation(ERuneActivation activation)
+        {
+            m_RuneActivation = activation;
+            m_RuneActivationIcon.gameObject.SetActive(activation != ERuneActivation.None);
+
+            if (m_RuneActivation == ERuneActivation.None)
+                return;
+
+            m_RuneActivationIcon.sprite = AssetLoader.Load<Sprite>(activation.ToString()+"Rune", AssetLoader.c_UISpritesPath); 
         }
 
         #endregion
@@ -65,7 +86,7 @@ namespace Menu.Common.Buttons
             base.Initialize(rune);
         }
 
-        protected override void ToggleSubButtons()
+        public override void ToggleSubButtons()
         {
             // dont Toggle empty rune
             if (m_Rune == ERune.None)

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using Tools;
+using Managers;
 
 
 namespace Save.Data.Progression.Structs
@@ -18,15 +19,20 @@ namespace Save.Data.Progression.Structs
         public EArenaType ArenaType;
         public SArenaDifficulty SArenaDifficulty;
 
-        public int      Level;
-        public int      Stage;
-        public int      Losses;
-        public float    Erosion;
-        public string[] PowerUps;
-        public int      CurrentEnemyLifes;
-        public int      RewardPower;
-        public ERarety  RewardRarety;
-        private bool    m_IsOver;
+        public int              Level;
+        public int              Stage;
+        public SBuildData       BuildData;
+        public int              MaxLifes;
+        public int              Losses;
+        public float            Erosion;
+        public string[]         PowerUps;
+        public List<EArenaMod>  ArenaMods;
+        public int              CurrentEnemyLifes;
+        public int              RewardPower;
+        public ERarety          RewardRarety;
+        public int              RefreshTokens;
+
+        private bool            m_IsOver;
 
         public readonly EArenaDifficulty GetArenaDifficulty()   => SArenaDifficulty.Difficulty;
         public string[] GetPowerUps()                           => PowerUps ?? (new string[4]);
@@ -84,7 +90,7 @@ namespace Save.Data.Progression.Structs
 
         #region Constructor
 
-        public SCurrentArenaCloudData(EArenaType arenaType, SArenaDifficulty sArenaDifficulty = default, int level = 0, int stage = 0, int losses = 0, float erosion = 0f, string[] powerUps = default, int currentEnemyLifes = 1, int rewardPower = 0, ERarety rewardRarety = 0, bool isOver = false)
+        public SCurrentArenaCloudData(EArenaType arenaType, SArenaDifficulty arenaDifficulty = default, int level = 0, int stage = 0, SBuildData buildData = default, List<EArenaMod> arenaMods = null, int maxLifes = 3, int losses = 0, float erosion = 0f, string[] powerUps = default, int currentEnemyLifes = 1, int rewardPower = 0, ERarety rewardRarety = 0, int refreshTokens = 0, bool isOver = false)
         {
             if (losses < 0)
             {
@@ -93,15 +99,19 @@ namespace Save.Data.Progression.Structs
             }
 
             ArenaType           = arenaType;
-            SArenaDifficulty    = sArenaDifficulty;
+            SArenaDifficulty    = arenaDifficulty;
             Level               = level;
             Stage               = stage;
+            BuildData           = buildData;
+            MaxLifes            = maxLifes;
             Losses              = losses;
             Erosion             = erosion;
             PowerUps            = powerUps;
+            ArenaMods           = arenaMods;
             CurrentEnemyLifes   = currentEnemyLifes;
             RewardPower         = rewardPower;
             RewardRarety        = rewardRarety;
+            RefreshTokens       = refreshTokens;
             m_IsOver            = isOver;
         }
 
@@ -112,10 +122,52 @@ namespace Save.Data.Progression.Structs
 
         public SPowerOrb GetPowerOrb()
         {
-            return new SPowerOrb(RewardPower, RewardRarety);
+            if (InProgress())
+                return new SPowerOrb(RewardPower, RewardRarety);
+
+            return new SPowerOrb(0, GetStartPowerOrbRarety());
+        }
+
+        public ERarety GetStartPowerOrbRarety()
+        {
+            return HasMod(EArenaMod.Random) && RewardRarety < ERarety.Legendary ? RewardRarety + 1 : RewardRarety;
+        }
+
+        public float GetBonusPowerOrb()
+        {
+            float bonus = 1f;
+            foreach (var mod in GetArenaMods())
+            {
+                bonus += AssetLoader.LoadArenaMod(mod).BonusPower;
+            }
+
+            return bonus;
         }
 
         #endregion
+
+
+        #region Mods
+
+        public List<EArenaMod> GetArenaMods() 
+        {
+            if (InProgress())
+                return ArenaMods ?? new() { };
+
+            EArenaType arenaType = PlayerPrefsHandler.GetArenaType();
+            return PlayerPrefsHandler.GetArenaMods(arenaType, PlayerPrefsHandler.GetArenaDifficulty(arenaType));
+        }
+
+        public bool HasMod(EArenaMod arenaMod)
+        {
+            var arenaMods = GetArenaMods();
+            return arenaMods != null && arenaMods.Contains(arenaMod);
+        }
+
+        #endregion
+
+
+        #region Data
 
         public readonly ArenaData LoadArenaData()
         {
@@ -125,6 +177,35 @@ namespace Save.Data.Progression.Structs
         public void SetIsOver(bool isOver)
         {
             m_IsOver = isOver;
+        }
+
+        public void SetBuildData(SBuildData buildData)
+        {
+            BuildData = buildData;
+        }
+
+        public void SetBuildValue(Enum collectable, int level, int index)
+        {
+            if (collectable is ESpell spell)
+            {
+                BuildData.Spells[index] = spell;
+                if (level > 0)
+                    BuildData.SpellLevels[index] = level;
+            }
+            
+            else if (collectable is ERune rune)
+            {
+                BuildData.Runes[index] = rune;
+                if (level > 0)
+                    BuildData.RuneLevels[index] = level;
+            }
+            
+            else if (collectable is ECharacter character)
+            {
+                BuildData.Character = character.ToString();
+                if (level > 0)
+                    BuildData.CharacterLevel = level;
+            }
         }
 
         public List<string> GetActivePowerUps()
@@ -143,6 +224,9 @@ namespace Save.Data.Progression.Structs
             return powerUpList.ToList();
         }
 
+        #endregion
+
+
         #region Checkers
 
         /// <summary>
@@ -154,6 +238,7 @@ namespace Save.Data.Progression.Structs
 
             test = test && CheckArenaData();
             test = test && CheckPowerUps();
+            test &= BuildData.Check();
 
             return test;
         }
@@ -195,6 +280,15 @@ namespace Save.Data.Progression.Structs
                 return false;
             }
 
+            return true;
+        }
+
+        /// <summary>
+        /// Check if mods are correct
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckMods()
+        {
             return true;
         }
 

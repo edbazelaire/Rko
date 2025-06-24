@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Data.GameManagement;
 using Assets.Scripts.Managers;
 using Data.GameManagement;
 using DevTools;
@@ -102,7 +103,7 @@ namespace Menu.PopUps
 
         void SetupOrbRewardDisplayer()
         {
-            m_OrbRewardDisplayer.Initialize(ProgressionCloudData.CurrentArena.GetPowerOrb(), m_ArenaData.CalculateMaxOrbPower());
+            m_OrbRewardDisplayer.Initialize(ProgressionCloudData.CurrentArena.GetPowerOrb(), m_ArenaData.CalculateMaxOrbPower(), ProgressionCloudData.CurrentArena.GetBonusPowerOrb() + ArenaManagementData.BonusArenaDifficultyLevel * m_ArenaData.ArenaDifficultyLevel);
         }
 
         void SetupArenaInfoSidebar()

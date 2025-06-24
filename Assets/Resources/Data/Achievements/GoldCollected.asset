@@ -12,12 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bf96ab3cd590dd4eb64ef847e4c7983, type: 3}
   m_Name: GoldCollected
   m_EditorClassIdentifier: 
-  Description: 
-  Analytics: 1
-  AnalyticsFilters:
-  - AnalyticParam: 101
-    Value: Gold
-    Comparator: 3
+  m_Description: Collect [TresholdValue] golds
   AchievementSubData:
   - MaxValue: 5000
     Rewards:
@@ -222,3 +217,8 @@ MonoBehaviour:
         Badge: 501
         League: 7
       Boosts: []
+  Analytics: 1
+  AnalyticsFilters:
+  - AnalyticParam: 101
+    Value: Gold
+    Comparator: 3
