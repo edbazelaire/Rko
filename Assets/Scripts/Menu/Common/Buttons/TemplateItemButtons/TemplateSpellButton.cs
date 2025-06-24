@@ -42,7 +42,7 @@ namespace Menu.Common.Buttons
         protected virtual void SetUpSpellIconUI()
         {
             m_Icon.sprite = AssetLoader.LoadIcon(Spell);
-            SetBottomOverlay(string.Format(LEVEL_FORMAT, m_CollectableCloudData.Level));
+            SetBottomOverlay(string.Format(LEVEL_FORMAT, m_Level));
             SetColor(SpellLoader.GetRaretyData(Spell).Color);
         }
 

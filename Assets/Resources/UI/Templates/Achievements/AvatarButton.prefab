@@ -175,7 +175,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: c43c8eeead6c68940bf61ddd2d1a2d40, type: 3}
+  m_Sprite: {fileID: -1121222709255408725, guid: fae5ca98b5aab39478ec6a32ad43b3a3, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -284,9 +284,13 @@ PrefabInstance:
     m_TransformParent: {fileID: 2416433924783639568}
     m_Modifications:
     - target: {fileID: 3341321881605785600, guid: 41b75070336fc9246a7af5207116ca83, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3341321881605785600, guid: 41b75070336fc9246a7af5207116ca83, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 38402207071a14b4f90a0fc3bca9d87a, type: 3}
+      objectReference: {fileID: 21300000, guid: 809bd003454fe394ca3e49f2a6d86976, type: 3}
     - target: {fileID: 7432916860441147165, guid: 41b75070336fc9246a7af5207116ca83, type: 3}
       propertyPath: m_Name
       value: AvatarBorder

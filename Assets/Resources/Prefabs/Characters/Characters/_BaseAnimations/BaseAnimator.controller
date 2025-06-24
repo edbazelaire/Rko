@@ -305,7 +305,6 @@ AnimatorStateMachine:
   - {fileID: 4167006030055624425}
   - {fileID: 2774521195192317650}
   - {fileID: -270418495582729665}
-  - {fileID: -4360322929730401441}
   - {fileID: -2720043762864266082}
   - {fileID: 362005325779241460}
   - {fileID: -835447925329054964}
@@ -451,28 +450,6 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1101 &-4360322929730401441
-AnimatorStateTransition:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_Conditions: []
-  m_DstStateMachine: {fileID: 0}
-  m_DstState: {fileID: 6816312509848920824}
-  m_Solo: 0
-  m_Mute: 0
-  m_IsExit: 0
-  serializedVersion: 3
-  m_TransitionDuration: 0.1
-  m_TransitionOffset: 0
-  m_ExitTime: 0.75
-  m_HasExitTime: 0
-  m_HasFixedDuration: 0
-  m_InterruptionSource: 0
-  m_OrderedInterruption: 1
-  m_CanTransitionToSelf: 1
 --- !u!1101 &-4299918275945086431
 AnimatorStateTransition:
   m_ObjectHideFlags: 1

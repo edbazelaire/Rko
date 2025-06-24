@@ -71,6 +71,14 @@ namespace Menu.PopUps
             base.Initialize();
         }
 
+        public void Initialize(CollectableData collectableData, bool infoOnly = true)
+        {
+            m_Data = collectableData;
+            m_InfoOnly = infoOnly;
+
+            base.Initialize();
+        }
+
         protected override void FindComponents()
         {
             base.FindComponents();
@@ -189,7 +197,7 @@ namespace Menu.PopUps
         {
             UIHelper.CleanContent(m_PreviewContainer);
             m_CollectableItemUI = Instantiate(m_TemplateItemUI, m_PreviewContainer.transform).GetComponent<TemplateCollectableItemUI>();
-            m_CollectableItemUI.Initialize(m_Collectable);
+            m_CollectableItemUI.Initialize(m_Collectable, m_Level, asIconOnly: m_InfoOnly);
 
             // deactivate button
             m_CollectableItemUI.Button.interactable = false;
@@ -329,7 +337,7 @@ namespace Menu.PopUps
 
         protected virtual void RefreshBuyButtonUI()
         {
-            if (m_IsUnlocked)
+            if (m_IsUnlocked || m_InfoOnly)
             {
                 m_BuyButton.gameObject.SetActive(false);
                 return;
@@ -345,6 +353,9 @@ namespace Menu.PopUps
         /// </summary>
         protected virtual void RefreshUpgradeButtonUI()
         {
+            if (m_UpgradeButton == null)
+                return;
+
             if (! m_IsUnlocked)
             {
                 m_UpgradeButton.gameObject.SetActive(false);
@@ -356,9 +367,6 @@ namespace Menu.PopUps
                 m_UpgradeButton.gameObject.SetActive(false);
                 return;
             }
-
-            if (m_UpgradeButton == null)
-                return;
 
             if (m_IsMaxedLevel)
             {
@@ -374,34 +382,14 @@ namespace Menu.PopUps
         #endregion
 
 
-        #region Tools
-
-        CollectableData LoadCollectionData(Enum enumValue, int level, bool destroy = false)
-        {
-            // load data of the item
-            if (enumValue.GetType() == typeof(ECharacter))
-                return CharacterLoader.GetCharacterData((ECharacter)enumValue, level, destroy: destroy);
-            
-            else if (enumValue.GetType() == typeof(ESpell))
-                return SpellLoader.GetSpellData((ESpell)enumValue, level, destroy: destroy);
-            
-            else if (enumValue.GetType() == typeof(ERune))
-                return SpellLoader.GetRuneData((ERune)enumValue, level, destroy: destroy);
-
-            ErrorHandler.Error("Unknown CollectionDataType for enum : " + enumValue);
-
-            Exit();
-            return null;
-        }
-
-        #endregion
-
-
         #region Listeners
 
         protected override void RegisterListeners()
         {
             base.RegisterListeners();
+
+            if (m_InfoOnly)
+                return;
 
             //InventoryManager.CollectableUpgradedEvent += OnLevelUp;
             InventoryCloudData.CollectableDataChangedEvent += OnCollectableDataChanged;
@@ -410,6 +398,9 @@ namespace Menu.PopUps
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
+
+            if (m_InfoOnly)
+                return;
 
             //InventoryManager.CollectableUpgradedEvent -= OnLevelUp;
             InventoryCloudData.CollectableDataChangedEvent -= OnCollectableDataChanged;

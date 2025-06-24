@@ -145,7 +145,7 @@ namespace Menu.PopUps
 
         protected override void RefreshState()
         {
-            if (ProgressionCloudData.IsArenaRewardCollected(m_ArenaType, m_ArenaData.SArenaDifficulty, m_ArenaLevel))
+            if (ProgressionCloudData.IsArenaRewardCollected(m_ArenaType, m_ArenaData.ArenaDifficulty, m_ArenaLevel))
                 SetState(EStageRewardState.Collected);
             else
                 SetState(EStageRewardState.Unlocked);

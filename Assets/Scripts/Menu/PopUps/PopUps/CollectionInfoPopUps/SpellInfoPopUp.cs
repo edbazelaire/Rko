@@ -43,6 +43,8 @@ namespace Menu.PopUps
         {
             base.OnPrefabLoaded();
 
+            m_BuyButton.gameObject.SetActive(false);
+
             SetUpSpecialCases();
 
             SetUpStateEffects();
@@ -89,13 +91,6 @@ namespace Menu.PopUps
 
         protected override void RefreshButtons()
         {
-            if (m_IsLinked)
-            {
-                m_UpgradeButton.gameObject.SetActive(false);
-                m_BuyButton.gameObject.SetActive(false);
-                return;
-            }
-
             base.RefreshButtons();
         }
 

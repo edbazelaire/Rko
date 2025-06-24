@@ -47,13 +47,13 @@ namespace Game.UI
             m_ProfileDisplayUI.Initialize(playerData.ProfileData);
 
             // init character and spell level
-            UIHelper.SpawnCharacter(playerData.Character.ToString(), m_CharacterContainer, "Overlay");
-            m_Level.text = "Level " + playerData.CharacterLevel;
+            UIHelper.SpawnCharacter(playerData.BuildData.Character.ToString(), m_CharacterContainer, "Overlay");
+            m_Level.text = "Level " + playerData.BuildData.CharacterLevel;
 
             // init runes
-            m_RunePrimal.Initialize(playerData.Runes.Length > 0 ? playerData.Runes[0] : ERune.None, true);
-            m_RuneMajor.Initialize(playerData.Runes.Length > 1 ? playerData.Runes[1] : ERune.None, true);
-            m_RuneMinor.Initialize(playerData.Runes.Length > 2 ? playerData.Runes[2] : ERune.None, true);
+            m_RunePrimal.Initialize(playerData.BuildData.Runes.Length > 0 ? playerData.BuildData.Runes[0] : ERune.None, true);
+            m_RuneMajor.Initialize(playerData.BuildData.Runes.Length > 1 ? playerData.BuildData.Runes[1] : ERune.None, true);
+            m_RuneMinor.Initialize(playerData.BuildData.Runes.Length > 2 ? playerData.BuildData.Runes[2] : ERune.None, true);
         }
 
         #endregion

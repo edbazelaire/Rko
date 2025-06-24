@@ -92,7 +92,7 @@ namespace Menu.MainMenu
                     m_SpellItems.Add(spellData.Spell, spellUI);
 
                 // hide if spell is in current build
-                if (CharacterBuildsCloudData.CurrentBuild.Contains(spellData.Spell))
+                if (CharacterBuildsCloudData.CurrentSpells.Contains(spellData.Spell))
                     spellUI.gameObject.SetActive(false);
             }
         }
@@ -135,7 +135,7 @@ namespace Menu.MainMenu
                 bool activate = true;
 
                 // CHECK : is in current build
-                if (CharacterBuildsCloudData.CurrentBuild.Contains(item.Key))
+                if (CharacterBuildsCloudData.CurrentSpells.Contains(item.Key))
                     activate = false;
 
                 // CHECK : is allowed by filters

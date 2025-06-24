@@ -1,7 +1,9 @@
 ﻿using Assets.Scripts.Managers.Sound;
+using System;
 using TMPro;
 using Tools;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Menu.Common.Buttons
@@ -206,7 +208,7 @@ namespace Menu.Common.Buttons
             rect.sizeDelta = new Vector2(x, y);
         }
 
-        protected virtual void SetSelected(bool selected)
+        public virtual void SetSelected(bool selected)
         {
             if (m_OnSelected == null)
                 return;
@@ -269,6 +271,15 @@ namespace Menu.Common.Buttons
         {
             m_Button.interactable = ! activate;
             m_AsIconOnly = activate;
+        }
+
+        public virtual void OverrideOnClickListener(UnityAction onClick)
+        {
+            if (!m_Button.interactable)
+                m_Button.interactable = true;
+
+            m_Button.onClick.RemoveAllListeners();
+            m_Button.onClick.AddListener(onClick);
         }
 
         #endregion

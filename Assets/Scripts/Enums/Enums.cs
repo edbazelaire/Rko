@@ -13,6 +13,8 @@
         LobbyScreen,
         ArenaPathScreen,
         LeaguesPathScreen,
+        ArenaBuildScreen,
+        ArenaBuildConstructorScreen,
 
         // -- info PopUps
         CollectableInfoPopUp,
@@ -27,6 +29,7 @@
         BossInfoScreen,
 
         // -- message PopUps
+        QuickMessagePopUp,
         MessagePopUp,
         ConfirmPopUp,
         PseudoPopUp,
@@ -91,7 +94,8 @@
     {
         None = 0,
 
-
+        Random      = 1,
+        NoDeath     = 2,
     }
 
     public enum ECharacter
@@ -1182,11 +1186,13 @@
          *              ARENAS              *
          ************************************/
         // Frost Arena ======================================================
-        Winter_Soldier = 1001,
+        Winter_Soldier          = 1001,
         The_Iceborned           = 1002,
         Arctic_Vanquisher       = 1003,
         Glacial_Conqueror       = 1004,
         Eternal_Winter_King     = 1005,
+        // --
+        TheDicey                = 1015,
 
         // Fire Arena ======================================================
         Pyro_Master             = 1104,
@@ -1196,7 +1202,9 @@
     {
         None = 0,
 
-        Blessed         = 1,
+        // ======================================================================================
+        // Commons
+        Blessed = 1,
         FireDemon       = 2,
         Meteor          = 3,
         Coin            = 4,
@@ -1205,17 +1213,26 @@
         ChibiSakura     = 7,
         Tao             = 8,
         ChibiTao        = 9,
-        Snowman         = 10,
-        FrostMaster     = 11,
         Assassin        = 12,
 
+        // ======================================================================================
+        // Chibis
         BlueFlameChibi  = 101,
         CosmicChibi     = 102,
         DemonicChibi    = 103,
         FireChibi       = 104,
-        ChibiFrostDemon = 105,
         FirstWinChibi   = 106,
+        ChibiMarcus     = 107,
 
+        // ======================================================================================
+        // Frost Arena
+        Snowman         = 10,
+        FrostMaster     = 11,
+        ChibiFrostDemon = 105,
+        QuiProQuo       = 501, 
+        IceGolem        = 502, 
+
+        // ======================================================================================
         Alexander       = 1000,
         YoungAlexander  = 1001,
         Marcus          = 1010,
@@ -1256,6 +1273,7 @@
         // Arena
         Fire = 201,
         Frost = 202,
+        IceTouch = 203
     }
 
     public enum EBadge
@@ -1283,9 +1301,16 @@
         XpCollector     = 503,
 
         // Legendary
-        DemonLord   = 1001,
-        Gladiator   = 1002,
-        Rank1       = 1003,
+        DemonLord       = 1001,
+        Gladiator       = 1002,
+        Rank1           = 1003,
+
+        // Arena Frost
+        SeedOfChance    = 10000,
+        UncertainShot   = 10001,
+        MasterOfChaos   = 10002,        
+        RandomEntity    = 10003,        // TODO (icon not made)  ----------------------------------
+        Undying         = 10004,       
     }
 
     public enum EAchievementReward

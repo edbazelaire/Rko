@@ -63,6 +63,7 @@ public class EndGameUI : MObject
     GameObject          m_OrbPowerRewardDisplay;
     TMP_Text            m_OrbPowerRewardQty;
     PowerOrbContainer   m_PowerOrbContainer;
+    GameObject          m_RefreshTokenDisplay;
     Image               m_ChestRewardIcon;
     Button              m_LeaveButton;
     Button              m_DetailsButton;
@@ -97,6 +98,7 @@ public class EndGameUI : MObject
         m_OrbPowerRewardDisplay     = Finder.Find(m_RewardsContent, "OrbPowerRewardDisplay");
         m_OrbPowerRewardQty         = Finder.FindComponent<TMP_Text>(m_OrbPowerRewardDisplay, "Qty");
         m_PowerOrbContainer         = Finder.FindComponent<PowerOrbContainer>(m_RewardsContent);
+        m_RefreshTokenDisplay       = Finder.Find(m_RewardsContent, "RefreshTokenDisplay");
         m_ChestRewardIcon           = Finder.FindComponent<Image>(m_RewardsContent, "ChestRewardIcon");
     }
 
@@ -133,7 +135,7 @@ public class EndGameUI : MObject
             default:
                 m_ArenaData = null;
                 m_CurrentLevel = 0;
-                m_CurrentStage =0;
+                m_CurrentStage = 0;
                 break;
         }
     }
@@ -259,20 +261,29 @@ public class EndGameUI : MObject
         m_XpRewardDisplay.SetActive(false);
         m_GoldRewardDisplay.SetActive(false);
         m_OrbPowerRewardDisplay.SetActive(false);   
+        m_RefreshTokenDisplay.SetActive(false);   
 
         m_RewardsSection.SetActive(true);
 
         SRewardCalculator rewardCalculator = m_GameResult == EGameResult.Win ? Rewarder.WinGameReward : Rewarder.LossGameReward;
         rewardCalculator.SetCurrencyMultiplicator(CalculateCurrencyMultiplicator());
 
-        // no rewards for training mode
+        // specific reward for tutorial
         if (LobbyHandler.Instance.IsTuto)
         {
             rewardCalculator = new SRewardCalculator(0, 0, 0, 0, new List<SChestDropPercentage>() {
                 new SChestDropPercentage(new Dictionary<EChest, float>() { { EChest.Common, 1f } })
             });
         }
+
+        // no rewards for training mode
         else if (LobbyHandler.Instance.GameMode == EGameMode.Training)
+        {
+            rewardCalculator = new SRewardCalculator(0, 0, 0, 0, new List<SChestDropPercentage>());
+        }
+
+        // no rewards for not boss fights in Arena
+        else if (LobbyHandler.Instance.GameMode == EGameMode.Arena && ! m_IsBossFight)
         {
             rewardCalculator = new SRewardCalculator(0, 0, 0, 0, new List<SChestDropPercentage>());
         }
@@ -353,6 +364,20 @@ public class EndGameUI : MObject
 
             // update to cloud
             ProgressionCloudData.AddCurrentArenaPowerOrbReward(orbPower, currentPowerOrb.Rarety);
+        }
+
+        // ----------------------------------------------------------------------------
+        // Refresh Token
+        if (LobbyHandler.Instance.GameMode == EGameMode.Arena && m_GameResult == EGameResult.Win)
+        {
+            if (ProgressionCloudData.CurrentArena.HasMod(EArenaMod.Random))
+            {
+                // display refresh
+                m_RefreshTokenDisplay.SetActive(true);
+
+                // update to cloud
+                ProgressionCloudData.AddCurrentArenaRefreshToken(1);
+            }
         }
 
         StartCoroutine(RewardsAnimation());

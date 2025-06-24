@@ -108,6 +108,8 @@ namespace Data.DataStructures
             if (m_IsActivated)
                 return;
 
+            Debug.Log("Activate Effect : " + SpellDataName);
+
             if (! IsActivable())
                 return;
 

@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47479451774634f41bf6a5cb0514ad38, type: 3}
+  m_Name: AleaJactaEst
+  m_EditorClassIdentifier: 
+  m_Description: 
+  AchievementSubData:
+  - MaxValue: 5
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 2
+        Title: 0
+        Avatar: 501
+        Border: 0
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 10
+    Rewards:
+      Currencies: []
+      Chests: 00000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 20
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 4
+        Title: 1015
+        Avatar: 13
+        Border: 0
+        Badge: 10000
+        League: 3
+      Boosts: []
+  - MaxValue: 35
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables:
+      - CollectableType: 2
+        CollectableName: Maelstrom
+        Qty: 1
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 50
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 1
+        Title: 0
+        Avatar: 0
+        Border: 203
+        Badge: 10002
+        League: 0
+      Boosts: []
+  m_ArenaType: 1
+  ArenaMods: 01000000

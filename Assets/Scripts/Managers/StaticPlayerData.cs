@@ -1,14 +1,24 @@
 ﻿using Data;
 using Data.DataStructures;
 using Data.DataStructures.CharacterSubStructures;
+using Data.DataStructures.StateEffectSubStructures;
 using Enums;
+using Game.Loaders;
+using Game.Spells;
+using NUnit.Framework.Internal;
 using Save;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using Tools;
 using Unity.Collections;
 using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
+using UnityEngine.UIElements;
+using static Unity.Collections.Unicode;
 using static UnityEngine.UI.ScrollRect;
 
 namespace Managers
@@ -98,66 +108,53 @@ namespace Managers
         }
     }
 
-    /// <summary>
-    /// Structural data that can be provided to create a new character 
-    /// </summary>
-    [Serializable]
-    public struct SPlayerData : INetworkSerializable
+    [Serializable] 
+    public struct SBuildData : INetworkSerializable
     {
-        public FixedString64Bytes           PlayerName;
-        public int                          CharacterLevel;
-        public FixedString64Bytes           Character;
-        public ERune[]                      Runes;
-        public int[]                        RuneLevels;
-        public ESpell[]                     Spells;
-        public int[]                        SpellLevels;
-        public SProfileDataNetwork          ProfileData;
-        public bool                         IsPlayer;
-        public STriggerEffect[]             TriggerEffects; 
-        public FixedString128Bytes[]        PowerUps; 
-        public SCharacterStatScaling[]      BonusStats; 
-        public SBotData                     BotData; 
+        public int                  CharacterLevel;
+        public string               Character;
+        public ERune[]              Runes;
+        public int[]                RuneLevels;
+        public ESpell[]             Spells;
+        public int[]                SpellLevels;
 
-        public SPlayerData(FixedString64Bytes playerName, int characterLevel, FixedString64Bytes character, ERune[] runes = default, int[] runeLevels = default, ESpell[] spells = default, int[] spellLevels = default, SProfileDataNetwork profileData = default, bool isPlayer = false, STriggerEffect[] triggerEffects = default, FixedString128Bytes[] powerUps = default, SCharacterStatScaling[] bonusStats = default, SBotData botData = default)
+        public SBuildData(int characterLevel, string character, ERune[] runes = default, int[] runeLevels = default, ESpell[] spells = default, int[] spellLevels = default)
         {
-            PlayerName      = playerName;
-            CharacterLevel  = characterLevel;
-            Character       = character;
-            Runes           = runes             != default ? runes          : new ERune[0];
-            RuneLevels      = runeLevels        != default ? runeLevels     : new int[0];
-            Spells          = spells            != default ? spells         : new ESpell[0];
-            SpellLevels     = spellLevels       != default ? spellLevels    : new int[0];
-            ProfileData     = profileData;
-            IsPlayer        = isPlayer;
-            TriggerEffects  = triggerEffects    != default ? triggerEffects : new STriggerEffect[0];
-            PowerUps        = powerUps          != default ? powerUps       : new FixedString128Bytes[0];
-            BonusStats      = bonusStats        != default ? bonusStats     : new SCharacterStatScaling[0];
-            BotData         = botData;
+            CharacterLevel      = characterLevel;
+            Character           = character;
+            Runes               = runes != default ? runes : new ERune[0];
+            RuneLevels          = runeLevels != default ? runeLevels : new int[0];
+            Spells              = spells != default ? spells : new ESpell[0];
+            SpellLevels         = spellLevels != default ? spellLevels : new int[0];
         }
 
-        public void SetPowerUps(List<string> powerUps)
+        public List<Enum> Get(ECollectableType collectableType)
         {
-            PowerUps = new FixedString128Bytes[powerUps.Count];
-
-            // Iterate through the List<string> and convert each element to FixedString32Bytes
-            for (int i = 0; i < powerUps.Count; i++)
+            switch(collectableType)
             {
-                // Convert each string to FixedString128Bytes
-                PowerUps[i] = new FixedString128Bytes(powerUps[i]);  // Automatically truncates if string is longer than 32 bytes
+                case ECollectableType.Spell:
+                    return Spells.Cast<Enum>().ToList();
+
+                case ECollectableType.Rune:
+                    return Runes.Cast<Enum>().ToList();
+
+                default:
+                    return new List<Enum>(); 
             }
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             // direct serialization
-            serializer.SerializeValue(ref PlayerName);
             serializer.SerializeValue(ref CharacterLevel);
-            serializer.SerializeValue(ref Character);
-            serializer.SerializeValue(ref IsPlayer);
 
-            // Sub - serialization
-            ProfileData.NetworkSerialize(serializer);
-            BotData.NetworkSerialize(serializer);
+            // Use FixedString for network transfer, convert from string
+            FixedString64Bytes fixedChar = new FixedString64Bytes(Character ?? "");
+            serializer.SerializeValue(ref fixedChar);
+            if (serializer.IsReader)
+            {
+                Character = fixedChar.ToString();
+            }
 
             // ARRAYS - serialization
             // -- Spells
@@ -207,9 +204,94 @@ namespace Managers
             {
                 serializer.SerializeValue(ref RuneLevels[i]);
             }
+        }
+
+        public bool Check(bool throwError = true)
+        {
+            bool test = true;
+
+            if (Character == null || CharacterLoader.GetCharacterData(Character.ToString(), 1, destroy: true) == null)
+            {
+                if (throwError)
+                    ErrorHandler.Error($"Unable to find character : " + Character);
+                test = false;
+            }    
+
+            if (Spells == null || Spells.Count() != 4)
+            {
+                if (throwError)
+                    ErrorHandler.Error($"Bad number of Spells ({(Spells == null ? 0 : Spells.Count())}) : expected {4}");
+                test = false;
+            } 
+
+            if (Runes == null || Runes.Count() != 3)
+            {
+                if (throwError)
+                    ErrorHandler.Error($"Bad number of Runes ({(Runes == null ? 0 : Runes.Count())}) : expected {3}");
+                test = false;
+            }
+
+            return test;
+        }
+    }
+
+    /// <summary>
+    /// Structural data that can be provided to create a new character 
+    /// </summary>
+    [Serializable]
+    public struct SPlayerData : INetworkSerializable
+    {
+        public FixedString64Bytes           PlayerName;
+        public SBuildData                   BuildData;
+        public SProfileDataNetwork          ProfileData;
+        public bool                         IsPlayer;
+        public STriggerEffect[]             TriggerEffects; 
+        public FixedString128Bytes[]        PowerUps; 
+        public SCharacterStatScaling[]      BonusStats; 
+        public SBotData                     BotData; 
+
+        public SPlayerData(FixedString64Bytes playerName, int characterLevel, string character, ERune[] runes = default, int[] runeLevels = default, ESpell[] spells = default, int[] spellLevels = default, SProfileDataNetwork profileData = default, bool isPlayer = false, STriggerEffect[] triggerEffects = default, FixedString128Bytes[] powerUps = default, SCharacterStatScaling[] bonusStats = default, SBotData botData = default)
+        {
+            PlayerName      = playerName;
+            BuildData       = new SBuildData(characterLevel, character, runes, runeLevels, spells, spellLevels);
+            ProfileData     = profileData;
+            IsPlayer        = isPlayer;
+            TriggerEffects  = triggerEffects    != default ? triggerEffects : new STriggerEffect[0];
+            PowerUps        = powerUps          != default ? powerUps       : new FixedString128Bytes[0];
+            BonusStats      = bonusStats        != default ? bonusStats     : new SCharacterStatScaling[0];
+            BotData         = botData;
+        }
+
+        public void SetBuild(SBuildData buildData)
+        {
+            BuildData = buildData;
+        }
+
+        public void SetPowerUps(List<string> powerUps)
+        {
+            PowerUps = new FixedString128Bytes[powerUps.Count];
+
+            // Iterate through the List<string> and convert each element to FixedString32Bytes
+            for (int i = 0; i < powerUps.Count; i++)
+            {
+                // Convert each string to FixedString128Bytes
+                PowerUps[i] = new FixedString128Bytes(powerUps[i]);  // Automatically truncates if string is longer than 32 bytes
+            }
+        }
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            // direct serialization
+            serializer.SerializeValue(ref PlayerName);
+            serializer.SerializeValue(ref IsPlayer);
+
+            // Sub - serialization
+            BuildData.NetworkSerialize(serializer);
+            ProfileData.NetworkSerialize(serializer);
+            BotData.NetworkSerialize(serializer);
 
             // -- TriggerEffects
-            length = TriggerEffects != null ? TriggerEffects.Length : 0;
+            var length = TriggerEffects != null ? TriggerEffects.Length : 0;
             serializer.SerializeValue(ref length);
             if (serializer.IsReader)
             {
@@ -220,7 +302,7 @@ namespace Managers
                 TriggerEffects[i].NetworkSerialize(serializer);
             }
 
-            // -- PowerUps
+            // -- Power Ups
             length = PowerUps != null ? PowerUps.Length : 0;
             serializer.SerializeValue(ref length);
             if (serializer.IsReader)
@@ -264,7 +346,7 @@ namespace Managers
         public static int           CharacterLevel  => InventoryCloudData.Instance.GetCollectable(Character).Level;
         public static ECharacter    Character       => CharacterBuildsCloudData.SelectedCharacter;
         public static ERune[]       Runes           => CharacterBuildsCloudData.CurrentRunes;
-        public static ESpell[]      Spells          => CharacterBuildsCloudData.CurrentBuild;
+        public static ESpell[]      Spells          => CharacterBuildsCloudData.CurrentSpells;
         public static int[] RuneLevels
         {
             get

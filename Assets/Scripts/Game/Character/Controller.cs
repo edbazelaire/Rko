@@ -8,6 +8,7 @@ using Game.Character;
 using Game.Loaders;
 using Game.UI;
 using Managers;
+using MyBox;
 using Save;
 using System;
 using System.Collections.Generic;
@@ -256,37 +257,37 @@ public class Controller : NetworkBehaviour
 
         m_PlayerData.Value      = playerData;
         m_PlayerName.Value      = playerData.PlayerName;
-        m_Character.Value       = playerData.Character.ToString();
-        m_CharacterLevel.Value  = playerData.CharacterLevel;
+        m_Character.Value       = playerData.BuildData.Character.ToString();
+        m_CharacterLevel.Value  = playerData.BuildData.CharacterLevel;
 
         // set all RuneData depending on activation type
-        m_RuneData = new RuneData[playerData.Runes.Length];
+        m_RuneData = new RuneData[playerData.BuildData.Runes.Length];
         for (int i = 0; i < m_RuneData.Length; i++)
         {
             // safety check
-            if (i >= playerData.Runes.Length)
+            if (i >= playerData.BuildData.Runes.Length)
             {
-                ErrorHandler.Error("Bad index (" + i + ") for provided Runes of length : " + playerData.Runes.Length);
+                ErrorHandler.Error("Bad index (" + i + ") for provided Runes of length : " + playerData.BuildData.Runes.Length);
                 break;
             }
 
             // safety check
             int runeLevel = 1;
-            if (i >= playerData.RuneLevels.Length)
-                ErrorHandler.Error("Bad index (" + i + ") for provided RuneLevels of length : " + playerData.RuneLevels.Length);
+            if (i >= playerData.BuildData.RuneLevels.Length)
+                ErrorHandler.Error("Bad index (" + i + ") for provided RuneLevels of length : " + playerData.BuildData.RuneLevels.Length);
             else
-                runeLevel = playerData.RuneLevels[i];
+                runeLevel = playerData.BuildData.RuneLevels[i];
 
-            m_RuneData[i] = SpellLoader.GetRuneData(playerData.Runes[i], runeLevel);
+            m_RuneData[i] = SpellLoader.GetRuneData(playerData.BuildData.Runes[i], runeLevel);
             m_RuneData[i].SetActivation(CharacterBuildsCloudData.GetRuneActivationFromIndex(i));
         }
 
-        CharacterData characterData = CharacterLoader.GetCharacterData(playerData.Character.ToString(), playerData.CharacterLevel, destroy: true);
+        CharacterData characterData = CharacterLoader.GetCharacterData(playerData.BuildData.Character.ToString(), playerData.BuildData.CharacterLevel, destroy: true);
         characterData.AddBonusStats(GetBonusStats());
         m_CharacterData = characterData;
 
         // initialize SpellHandler with character's spells
-        m_SpellHandler.Initialize(characterData.AutoAttack, characterData.SpecialAbility, characterData.Ultimate, playerData.Spells.ToList(), playerData.SpellLevels.ToList());
+        m_SpellHandler.Initialize(characterData.AutoAttack, characterData.SpecialAbility, characterData.Ultimate, playerData.BuildData.Spells.ToList(), playerData.BuildData.SpellLevels.ToList());
 
         // initialize MovementSpeed with character's speed
         m_Movement.Initialize(characterData.Speed);
@@ -369,7 +370,11 @@ public class Controller : NetworkBehaviour
 
     List<SCharacterStatScaling> GetBonusStats()
     {
-        var bonusStats = m_PlayerData.Value.BonusStats.ToList();
+        List < SCharacterStatScaling > bonusStats;
+        if (m_PlayerData.Value.BonusStats == null)
+            bonusStats = new List<SCharacterStatScaling>();
+        else
+            bonusStats = m_PlayerData.Value.BonusStats.ToList();
 
         if (m_RuneData == null)
         {
@@ -384,20 +389,23 @@ public class Controller : NetworkBehaviour
         }
 
         // POWER UPS
-        foreach (var powerUp in m_PlayerData.Value.PowerUps)
+        if (! m_PlayerData.Value.PowerUps.IsNullOrEmpty())
         {
-            SRunePower data = SpellLoader.GetPowerUp(powerUp.ToString(), m_CharacterLevel.Value);
-            if (data.BonusStats != null)
-                bonusStats.AddRange(data.BonusStats);
+            foreach (var powerUp in m_PlayerData.Value.PowerUps)
+            {
+                SRunePower data = SpellLoader.GetPowerUp(powerUp.ToString(), m_CharacterLevel.Value);
+                if (data.BonusStats != null)
+                    bonusStats.AddRange(data.BonusStats);
+            }
         }
-
+        
         return bonusStats;
     }
 
     List<STriggerEffect> GetTriggerEffects(CharacterData characterData)
     {
         // get base raw list of trigger effects
-        var list = m_PlayerData.Value.TriggerEffects.ToList();
+        List<STriggerEffect> list = ! m_PlayerData.Value.TriggerEffects.IsNullOrEmpty() ? m_PlayerData.Value.TriggerEffects.ToList() : new();
 
         // CHARACTER : base trigger effects
         foreach (SRunePower data in characterData.SpecialPowers)
@@ -418,10 +426,13 @@ public class Controller : NetworkBehaviour
         }
 
         // set level of trigger effects = to character level and add it to list of trigger effects
-        foreach (var powerUp in m_PlayerData.Value.PowerUps)
+        if (!m_PlayerData.Value.PowerUps.IsNullOrEmpty())
         {
-            SRunePower data = SpellLoader.GetPowerUp(powerUp.ToString(), m_CharacterLevel.Value);
-            list.AddRange(data.TriggerEffects);
+            foreach (var powerUp in m_PlayerData.Value.PowerUps)
+            {
+                SRunePower data = SpellLoader.GetPowerUp(powerUp.ToString(), m_CharacterLevel.Value);
+                list.AddRange(data.TriggerEffects);
+            }
         }
 
         return list;

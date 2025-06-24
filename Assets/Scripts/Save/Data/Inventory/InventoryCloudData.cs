@@ -508,16 +508,6 @@ namespace Save
         #endregion
 
 
-        #region Error Handler
-
-        protected override void OnLoadingError(string key, Item item)
-        {
-            base.OnLoadingError(key, item);
-        }
-
-        #endregion
-
-
         #region Checkers
 
         void CheckCurrencies()

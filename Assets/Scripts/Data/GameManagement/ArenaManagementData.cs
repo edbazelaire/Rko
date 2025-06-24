@@ -47,7 +47,8 @@ namespace Assets.Scripts.Data.GameManagement
         static ArenaManagementData s_Instance;
 
         [Header("Arena Management")]
-        [SerializeField] private int m_NDifficultyLevels = 2;
+        [SerializeField] private int m_NDifficultyLevels    = 5;
+        [SerializeField] private int m_MaxLevels            = 4;
         [SerializeField] private List<SPowerUpDropRate> m_PowerUpDropRates;
 
         [Header("Orb Power Reward")]
@@ -64,6 +65,7 @@ namespace Assets.Scripts.Data.GameManagement
         // Public Accessors
         public static List<SPowerUpDropRate> PowerUpDropRates   => Instance.m_PowerUpDropRates;
         public static int NDifficultyLevels                     => Instance.m_NDifficultyLevels;
+        public static int MaxLevels                             => Instance.m_MaxLevels;
         public static SScalingStat MobPowerDrop                 => Instance.m_MobPowerDrop;
         public static SScalingStat BossPowerDrop                => Instance.m_BossPowerDrop;
         public static float BonusArenaDifficulty                => Instance.m_BonusArenaDifficulty;

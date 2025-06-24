@@ -1,5 +1,10 @@
-﻿using Enums;
+﻿using Data.ArenaEffects.ArenaMods;
+using Enums;
+using Save;
+using Save.Data.Progression.Structs;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Tools
@@ -10,6 +15,9 @@ namespace Tools
         Region,
         GameMode,
         ArenaType,
+        ArenaDifficulty,
+        ArenaMods,
+        ArenaExtraDifficulty,        
         CurrentGameId,
 
         WarningMessageAccepted,
@@ -149,7 +157,7 @@ namespace Tools
 
         public static EArenaType GetArenaType()
         {
-            if (!Enum.TryParse(PlayerPrefs.GetString(EPlayerPref.ArenaType.ToString()), out EArenaType arenaType) || arenaType == EArenaType.None)
+            if (! Enum.TryParse(PlayerPrefs.GetString(EPlayerPref.ArenaType.ToString()), out EArenaType arenaType) || arenaType == EArenaType.None)
             {
                 ErrorHandler.Error("Unable to parse solo arena : " + PlayerPrefs.GetString(EPlayerPref.ArenaType.ToString()));
                 arenaType = DEFAULT_ARENA_TYPE;
@@ -234,6 +242,70 @@ namespace Tools
                 GetString<ERune>(EPlayerPref.TrainingRune, 1),
                 GetString<ERune>(EPlayerPref.TrainingRune, 2),
             };
+        }
+
+        #endregion
+
+
+        #region Arena Mods & Difficulty
+
+        public static string GetArenaModsKey(EArenaType arenaType, EArenaDifficulty arenaDifficulty)
+        {
+            return $"{arenaType}.{arenaDifficulty}.{EPlayerPref.ArenaMods}";
+        }
+
+        public static string GetArenaExtraDifficultyKey(EArenaType arenaType, EArenaDifficulty arenaDifficulty)
+        {
+            return $"{arenaType}.{arenaDifficulty}.{EPlayerPref.ArenaExtraDifficulty}";
+        }
+
+        public static EArenaDifficulty GetArenaDifficulty(EArenaType arenaType)
+        {
+            var defaultValue = ProgressionCloudData.GetUnlockedArenaDifficulty(arenaType);
+
+            string data = PlayerPrefs.GetString($"{arenaType}.{EPlayerPref.ArenaDifficulty}", defaultValue.ToString());
+            if (Enum.TryParse(data, out EArenaDifficulty arenaDifficulty))
+                return arenaDifficulty;
+
+            // Error - Reset value
+            ErrorHandler.Error("Unable to parse arena difficulty (" + data + ") into an EArenaDifficulty for Arena : " + arenaType);
+            SetArenaDifficulty(arenaType, defaultValue);
+
+            return defaultValue;
+        }
+
+        public static void SetArenaDifficulty(EArenaType arenaType, EArenaDifficulty arenaDifficulty)
+        {
+            PlayerPrefs.SetString($"{arenaType}.{EPlayerPref.ArenaDifficulty}", arenaDifficulty.ToString());
+        }
+
+        public static List<EArenaMod> GetArenaMods(EArenaType arenaType, EArenaDifficulty arenaDifficulty)
+        {
+            string data = PlayerPrefs.GetString(GetArenaModsKey(arenaType, arenaDifficulty), "");
+            if (string.IsNullOrEmpty(data))
+                return new List<EArenaMod>();
+
+            return data.Split(',')
+                       .Select(s => Enum.TryParse<EArenaMod>(s, out var mod) ? mod : (EArenaMod?)null)
+                       .Where(mod => mod.HasValue)
+                       .Select(mod => mod.Value)
+                       .ToList();
+        }
+
+        public static void SetArenaMods(EArenaType arenaType, EArenaDifficulty arenaDifficulty, List<EArenaMod> arenaMods)
+        {
+            string data = string.Join(",", arenaMods.Select(mod => mod.ToString()));
+            PlayerPrefs.SetString(GetArenaModsKey(arenaType, arenaDifficulty), data);
+        }
+
+        public static int GetArenaExtraDifficulty(EArenaType arenaType, EArenaDifficulty arenaDifficulty)
+        {
+            return PlayerPrefs.GetInt(GetArenaExtraDifficultyKey(arenaType, arenaDifficulty), 0);
+        }
+
+        public static void SetArenaExtraDifficulty(EArenaType arenaType, EArenaDifficulty arenaDifficulty, int extraDifficulty)
+        {
+            PlayerPrefs.SetInt(GetArenaExtraDifficultyKey(arenaType, arenaDifficulty), extraDifficulty);
         }
 
         #endregion

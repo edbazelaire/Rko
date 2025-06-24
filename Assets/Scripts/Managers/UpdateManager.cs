@@ -95,8 +95,8 @@ namespace Assets.Scripts.Managers
             if (CurrentVersion.CompareTo(new Version("0.3.1")) == -1)
                 test = UpdateVersion_0_3_1();
 
-            if (CurrentVersion.CompareTo(new Version("0.3.3")) == -1)
-                test = UpdateVersion_0_3_3();
+            if (CurrentVersion.CompareTo(new Version("0.3.6")) == -1)
+                test = UpdateVersion_0_3_6();
 
             // if does not trigger any version until now, update to current version
             if (CurrentVersion.CompareTo(GameVersion) == -1)
@@ -148,7 +148,7 @@ namespace Assets.Scripts.Managers
 
             foreach (AchievementData achievementData in AchievementLoader.Achievements)
             {
-                int currentIndex = ProfileCloudData.GetAchievementIndex(achievementData.Name);
+                int currentIndex = ProfileCloudData.GetAchievementThresholdIndex(achievementData.Name);
 
                 // check all achievements so far to see if any reward is missing
                 for (int i = 0; i < currentIndex; i++)
@@ -501,7 +501,7 @@ namespace Assets.Scripts.Managers
                 return;
 
             InventoryCloudData.Instance.SetCurrency(ECurrency.Gold, oldValue);
-            InventoryCloudData.Instance.DeleteKey("Golds");
+            //InventoryCloudData.Instance.DeleteKey("Golds");
 
             Debug.Log($"[UpdateManager] Successfully updated 'Golds' → '{ECurrency.Gold}' with value {oldValue}.");
         }
@@ -519,8 +519,7 @@ namespace Assets.Scripts.Managers
                 return true;
 
             AddMissingRankedRewards();
-            SetVersion("0.3.1");
-            return true;
+            return SetVersion("0.3.1");
         }
 
         static void AddMissingRankedRewards()
@@ -547,16 +546,17 @@ namespace Assets.Scripts.Managers
         #endregion
 
 
-        #region v0.3.3
+        #region v0.3.6
 
-        static bool UpdateVersion_0_3_3()
+        static bool UpdateVersion_0_3_6()
         {
             // check if the version should be updated
-            if (GameVersion.CompareTo(new Version("0.3.1")) == -1)
+            if (GameVersion.CompareTo(new Version("0.3.6")) == -1)
                 return true;
 
-            
-            return true;
+            // update collected data to match current unlocked arena
+            ProgressionCloudData.SetArenaUnlockedReward(EArenaType.FrostArena, ProgressionCloudData.GetUnlockedArenaDifficulty(EArenaType.FrostArena), 0);
+            return SetVersion("0.3.6");
         }
 
         

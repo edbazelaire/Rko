@@ -2,6 +2,7 @@
 using Data;
 using Data.DataStructures;
 using Enums;
+using MyBox;
 using System;
 using System.Collections.Generic;
 using Tools;
@@ -97,6 +98,9 @@ namespace Game.Character
         {
             if (triggerEffects.Count == 0)
                 return;
+
+            if (m_TriggerEffects.IsNullOrEmpty())
+                m_TriggerEffects = new List<STriggerEffect>();
 
             // check if has instant activation
             foreach (var triggerEffect in triggerEffects)

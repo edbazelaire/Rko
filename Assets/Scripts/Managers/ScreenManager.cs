@@ -18,6 +18,7 @@ using Unity.VisualScripting;
 using MyBox;
 using System.Collections;
 using Save.Data.Progression.Structs;
+using static UnityEngine.Rendering.GPUSort;
 
 namespace Assets.Scripts.Managers
 {
@@ -79,12 +80,16 @@ namespace Assets.Scripts.Managers
             switch (popUpState)
             {
                 // MESSAGE POP UPS -------------------------------------------------------
+                case EPopUpState.QuickMessagePopUp:
+                    obj.GetComponent<QuickMessagePopUp>().Initialize(message: (string)args[0], duration: args.Count() > 1 ? (float)args[1] : 3f);
+                    break;
+
                 case EPopUpState.MessagePopUp:
                     obj.GetComponent<MessagePopUp>().Initialize(message: (string)args[0], title: args.Count() > 1 ? (string)args[1] : "", onValidate: args.Count() > 2 ? (Action)args[2] : null, onCancel: args.Count() > 3 ? (Action)args[3] : null);
                     break;
 
                 case EPopUpState.ConfirmPopUp:
-                    obj.GetComponent<ConfirmPopUp>().Initialize(message: (string)args[0], title: args.Count() > 1 ? (string)args[1] : "", onValidate: args.Count() > 2 ? (Action)args[2] : null, onCancel: args.Count() > 3 ? (Action)args[3] : null);
+                    obj.GetComponent<ConfirmPopUp>().Initialize(message: args.Count() > 0 ? (string)args[0] : null, title: args.Count() > 1 ? (string)args[1] : "", onValidate: args.Count() > 2 ? (Action)args[2] : null, onCancel: args.Count() > 3 ? (Action)args[3] : null);
                     break;
 
                 case EPopUpState.ConfirmBuyPopUp:
@@ -167,6 +172,43 @@ namespace Assets.Scripts.Managers
                 default:
                     obj.GetComponent<OverlayScreen>().Initialize();
                     break;
+            }
+        }
+
+        #endregion
+
+
+        #region Popup Message
+
+        public static void QuickMessage(string message, float duration = 3f)
+        {
+            SetPopUp(EPopUpState.QuickMessagePopUp, message, duration);
+        }
+
+        #endregion
+
+
+        #region Info Popups
+
+        public static void CollectableInfoPopUp(CollectableData collectableData, ERuneActivation runeActivation = ERuneActivation.None, bool infoOnly = true)
+        {
+            CollectableInfoPopUp popup;
+            if (collectableData is SpellData spellData)
+            {
+                popup = Main.Instantiate(AssetLoader.Load<SpellInfoPopUp>("SpellInfoPopUp", AssetLoader.c_PopUpsPath));
+                popup.Initialize(spellData, infoOnly);
+            }
+
+            else if (collectableData is RuneData runeData)
+            {
+                var runePopup = Main.Instantiate(AssetLoader.Load<RuneInfoPopUp>("RuneInfoPopUp", AssetLoader.c_PopUpsPath));
+                runePopup.Initialize(runeData, runeActivation, infoOnly);
+            }
+
+            else
+            {
+                popup = Main.Instantiate(AssetLoader.Load<CharacterInfoPopUp>("CharacterInfoPopUp", AssetLoader.c_PopUpsPath));
+                popup.Initialize(collectableData, infoOnly);
             }
         }
 
