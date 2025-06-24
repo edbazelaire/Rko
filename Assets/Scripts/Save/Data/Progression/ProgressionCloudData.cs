@@ -3,6 +3,8 @@ using Assets.Scripts.Data.GameManagement;
 using Data.GameManagement;
 using Enums;
 using Inventory;
+using Managers;
+using MyBox;
 using Save.Data.Progression.Structs;
 using System;
 using System.Collections.Generic;
@@ -30,9 +32,10 @@ namespace Save
 
         // ===============================================================================================
         // ACTIONS
-        public static Action LeagueDataChangedEvent;
-        public static Action CurrentArenaDataChangedEvent;
-        public static Action UnlockingArenaDifficultyEvent;
+        public static Action        LeagueDataChangedEvent;
+        public static Action        CurrentArenaDataChangedEvent;
+        public static Action        UnlockingArenaDifficultyEvent;
+        public static Action<bool>  CurrentArenaEndedEvent;
 
         // ===============================================================================================
         // DATA
@@ -40,8 +43,8 @@ namespace Save
         protected override Dictionary<string, object> m_Data { get; set; } = new Dictionary<string, object>() {
             { KEY_LEAGUE,                   new SLeagueCloudData(ELeague.Iron)                  },
             { KEY_CURRENT_ARENA,            new SCurrentArenaCloudData(EArenaType.None)         },
-            { KEY_UNLOCKED_ARENAS,          new Dictionary<EArenaType, SArenaDifficulty>()      },
-            { KEY_UNLOCKED_ARENA_REWARDS,   new Dictionary<EArenaType, SUnlockedArenaReward>()  },
+            { KEY_UNLOCKED_ARENAS,          new Dictionary<EArenaType, EArenaDifficulty>()      },
+            { KEY_UNLOCKED_ARENA_REWARDS,   new Dictionary<EArenaType, SArenaPosition>()        },
         };
 
         // ===============================================================================================
@@ -53,9 +56,9 @@ namespace Save
         public static SCurrentArenaCloudData                        CurrentArena            => (SCurrentArenaCloudData)Instance.m_Data[KEY_CURRENT_ARENA];
         public static SPowerOrb                                     CurrentArenaReward      => CurrentArena.GetPowerOrb();
         public static bool                                          HasArenaInProgress      => CurrentArena.InProgress();
-        public static Dictionary<EArenaType, SArenaDifficulty>      UnlockedArenas          => Instance.m_Data[KEY_UNLOCKED_ARENAS] as Dictionary<EArenaType, SArenaDifficulty>;
-        public static Dictionary<EArenaType, SUnlockedArenaReward>  UnlockedArenaRewards    => Instance.m_Data[KEY_UNLOCKED_ARENA_REWARDS] as Dictionary<EArenaType, SUnlockedArenaReward>;
-        public static SArenaDifficulty                              MaxArenaDifficulty      => new SArenaDifficulty(((EArenaDifficulty[])Enum.GetValues(typeof(EArenaDifficulty))).Last(), ArenaManagementData.NDifficultyLevels - 1);
+        public static Dictionary<EArenaType, EArenaDifficulty>      UnlockedArenas          => Instance.m_Data[KEY_UNLOCKED_ARENAS] as Dictionary<EArenaType, EArenaDifficulty>;
+        public static Dictionary<EArenaType, SArenaPosition>        UnlockedArenaRewards    => Instance.m_Data[KEY_UNLOCKED_ARENA_REWARDS] as Dictionary<EArenaType, SArenaPosition>;
+        public static EArenaDifficulty                              MaxArenaDifficulty      => ((EArenaDifficulty[])Enum.GetValues(typeof(EArenaDifficulty))).Last();
 
         #endregion
 
@@ -72,14 +75,14 @@ namespace Save
             {
                 var itemType = m_Data[item.Key].GetType();
 
-                if (itemType == typeof(Dictionary<EArenaType, SArenaDifficulty>))
+                if (itemType == typeof(Dictionary<EArenaType, EArenaDifficulty>))
                 {
-                    return item.Value.GetAs<Dictionary<EArenaType, SArenaDifficulty>>();
+                    return item.Value.GetAs<Dictionary<EArenaType, EArenaDifficulty>>();
                 }
 
-                if (itemType == typeof(Dictionary<EArenaType, SUnlockedArenaReward>))
+                if (itemType == typeof(Dictionary<EArenaType, SArenaPosition>))
                 {
-                    return item.Value.GetAs<Dictionary<EArenaType, SUnlockedArenaReward>>();
+                    return item.Value.GetAs<Dictionary<EArenaType, SArenaPosition>>();
                 }
 
                 if (itemType == typeof(SCurrentArenaCloudData))
@@ -96,6 +99,7 @@ namespace Save
             {
                 ErrorHandler.Error("Unable to convert item " + item.Key);
                 ErrorHandler.Error(ex.Message);
+                Reset(item.Key);
                 return m_Data[item.Key];
             }
 
@@ -246,12 +250,12 @@ namespace Save
 
         #region Arena Data
 
-        public static SArenaDifficulty GetUnlockedArenaDifficulty(EArenaType arenaType)
+        public static EArenaDifficulty GetUnlockedArenaDifficulty(EArenaType arenaType)
         {
             if (! UnlockedArenas.ContainsKey(arenaType))
             {
                 ErrorHandler.Warning("Unable to find arena (" + arenaType + ") in Unlocked Arenas Cloud Data - adding it manually");
-                UnlockedArenas[arenaType] = new SArenaDifficulty(0, 1);
+                UnlockedArenas[arenaType] = EArenaDifficulty.Easy;
 
                 Instance.SaveValue(KEY_UNLOCKED_ARENAS);
             }
@@ -259,12 +263,12 @@ namespace Save
             return UnlockedArenas[arenaType];
         }
 
-        public static SUnlockedArenaReward GetUnlockedArenaReward(EArenaType arenaType)
+        public static SArenaPosition GetUnlockedArenaReward(EArenaType arenaType)
         {
             if (! UnlockedArenaRewards.ContainsKey(arenaType))
             {
                 ErrorHandler.Warning("Unable to find arena (" + arenaType + ") in UnlockedArenaRewards Cloud Data - adding it manually");
-                UnlockedArenaRewards[arenaType] = new SUnlockedArenaReward(new SArenaDifficulty(0, 0), -1);
+                UnlockedArenaRewards[arenaType] = new SArenaPosition();
                 Instance.SaveValue(KEY_UNLOCKED_ARENA_REWARDS);
             }
 
@@ -298,6 +302,50 @@ namespace Save
         public static void AddCurrentArenaPowerUp(string powerUpName, bool save = true)
         {
             SetCurrentArenaPowerUp(powerUpName, CurrentArena.Level - 1 , save);
+        }
+
+        public static void SetCurrentArenaBuild(SBuildData buildData, bool save = true)
+        {
+            var currentArena = CurrentArena;
+            currentArena.SetBuildData(buildData);
+
+            Instance.m_Data[KEY_CURRENT_ARENA] = currentArena;
+
+            // fire event that current arena data have been changed
+            CurrentArenaDataChangedEvent?.Invoke();
+
+            if (save)
+                Instance.SaveValue(KEY_CURRENT_ARENA);
+        }
+
+        public static void SetCurrentArenaBuildValue(Enum value, int level, int index, bool save = true)
+        {
+            var currentArena = CurrentArena;
+            currentArena.SetBuildValue(value, level, index);
+
+            Instance.m_Data[KEY_CURRENT_ARENA] = currentArena;
+
+            // fire event that current arena data have been changed
+            CurrentArenaDataChangedEvent?.Invoke();
+
+            if (save)
+                Instance.SaveValue(KEY_CURRENT_ARENA);
+        }
+
+
+
+        public static void SetCurrentArenaMods(List<EArenaMod> arenaMods, bool save = true)
+        {
+            var currentArena = CurrentArena;
+            currentArena.ArenaMods = arenaMods;
+
+            Instance.m_Data[KEY_CURRENT_ARENA] = currentArena;
+
+            // fire event that current arena data have been changed
+            CurrentArenaDataChangedEvent?.Invoke();
+
+            if (save)
+                Instance.SaveValue(KEY_CURRENT_ARENA);
         }
 
         public static void SetCurrentArenaPowerUp(string powerUpName, int index, bool save = true)
@@ -338,7 +386,10 @@ namespace Save
         {
             if (CurrentArena.IsMaxArenaLevel())
             {
-                if (CurrentArena.SArenaDifficulty == UnlockedArenas[CurrentArena.ArenaType])
+                // call event that the current arena is over
+                CurrentArenaEndedEvent?.Invoke(true);
+
+                if (CurrentArena.GetArenaDifficulty() == UnlockedArenas[CurrentArena.ArenaType])
                     UnlockNextArenaDifficulty(CurrentArena.ArenaType, save: true);
             } 
 
@@ -352,23 +403,14 @@ namespace Save
         /// <param name="save"></param>
         public static void UnlockNextArenaDifficulty(EArenaType arenaType, bool save = true)
         {
-            var arenaDifficulty = UnlockedArenas[arenaType];
+            // unlock next difficulty
+            UnlockedArenas[arenaType]++;
 
-            if (arenaDifficulty >= MaxArenaDifficulty)
-                return;
-
-            if (arenaDifficulty.Level < ArenaManagementData.NDifficultyLevels - 1)
-            {
-                arenaDifficulty.Level += 1;
-            }
-            else
-            {
-                arenaDifficulty.Difficulty += 1;
-                arenaDifficulty.Level = 0;
-            }
-
-            UnlockedArenas[arenaType] = arenaDifficulty;
+            // notify the player
             NotificationCloudData.AddUnlockedArena(arenaType);
+
+            // set unlocked arena as currently selected difficulty
+            PlayerPrefsHandler.SetArenaDifficulty(arenaType, UnlockedArenas[arenaType]);
 
             if (save)
                 Instance.SaveValue(KEY_UNLOCKED_ARENAS);
@@ -381,14 +423,10 @@ namespace Save
         /// <param name="arenaDifficulty"></param>
         /// <param name="arenaLevel"></param>
         /// <returns></returns>
-        public static bool IsArenaRewardCollected(EArenaType arenaType, SArenaDifficulty arenaDifficulty, int arenaLevel)
+        public static bool IsArenaRewardCollected(EArenaType arenaType, EArenaDifficulty arenaDifficulty, int arenaLevel)
         {
-            // check that current difficulty is above unlocked difficulty
-            if (arenaDifficulty < GetUnlockedArenaReward(arenaType).ArenaDifficulty)
-                return true;
-
             // check that current level is above unlocked level (if same difficulty)
-            if (arenaDifficulty == GetUnlockedArenaReward(arenaType).ArenaDifficulty && arenaLevel <= GetUnlockedArenaReward(arenaType).ArenaLevel)
+            if (new SArenaPosition(arenaDifficulty, arenaLevel) <= GetUnlockedArenaReward(arenaType))
                 return true;
 
             return false;
@@ -406,15 +444,16 @@ namespace Save
                 return;
 
             // check if was already collected
-            if (IsArenaRewardCollected(CurrentArena.ArenaType, CurrentArena.SArenaDifficulty, CurrentArena.Level - 1))
+            if (IsArenaRewardCollected(CurrentArena.ArenaType, CurrentArena.GetArenaDifficulty(), CurrentArena.Level - 1))
                 return;
 
             // update unlocked values with current values
-            unlockedArenaReward.ArenaDifficulty = CurrentArena.SArenaDifficulty;
-            unlockedArenaReward.ArenaLevel = CurrentArena.Level - 1;
+            SetArenaUnlockedReward(CurrentArena.ArenaType, CurrentArena.GetArenaDifficulty(), CurrentArena.Level, save);
+        }
 
-            // save
-            UnlockedArenaRewards[CurrentArena.ArenaType] = unlockedArenaReward;
+        public static void SetArenaUnlockedReward(EArenaType arenaType, EArenaDifficulty arenaDifficulty, int level, bool save = true)
+        {
+            UnlockedArenaRewards[arenaType] = new SArenaPosition(arenaDifficulty, level);
             if (save)
                 Instance.SaveValue(KEY_UNLOCKED_ARENA_REWARDS);
         }
@@ -424,9 +463,17 @@ namespace Save
         /// </summary>
         /// <param name="arenaType"></param>
         /// <param name="arenaDifficulty"></param>
-        public static void CreateNewCurrentArena(EArenaType arenaType, SArenaDifficulty arenaDifficulty)
+        public static void CreateNewCurrentArena(EArenaType arenaType, SArenaDifficulty arenaDifficulty, List<EArenaMod> arenaMods, SBuildData buildData)
         {
-            Instance.SetData(KEY_CURRENT_ARENA, new SCurrentArenaCloudData(arenaType, arenaDifficulty));
+            Instance.SetData(KEY_CURRENT_ARENA, new SCurrentArenaCloudData(
+                arenaType,
+                arenaDifficulty: arenaDifficulty,
+                arenaMods:      arenaMods,
+                buildData:      buildData,
+                maxLifes:       CalculateArenaMaxLifes(arenaMods),
+                rewardRarety:   CalculateArenaRarety(arenaMods)
+            ));
+
             CurrentArenaDataChangedEvent?.Invoke();
         }
 
@@ -485,6 +532,36 @@ namespace Save
             CurrentArenaDataChangedEvent?.Invoke();
         }
 
+        public static void AddCurrentArenaRefreshToken(int nTokens, bool save = true)
+        {
+            var currentArena = CurrentArena;
+            currentArena.RefreshTokens += nTokens;
+            if (currentArena.RefreshTokens < 0)
+            {
+                ErrorHandler.Warning("Trying to set currentArena.RefreshTokens with value < 0 : " + currentArena.RefreshTokens);
+                currentArena.RefreshTokens = 0;
+            }
+
+            Instance.SetData(KEY_CURRENT_ARENA, currentArena, save);
+        }
+
+        #endregion
+
+
+        #region Current Arena Mods
+
+        public static ERarety CalculateArenaRarety(List<EArenaMod> arenaMods)
+        {
+            return arenaMods.Contains(EArenaMod.Random) ? ERarety.Rare : ERarety.Common;
+        }
+
+        public static int CalculateArenaMaxLifes(List<EArenaMod> arenaMods = null)
+        {
+            if (arenaMods == null)
+                return CurrentArena.HasMod(EArenaMod.NoDeath) ? 1 : 3;
+            return arenaMods.Contains(EArenaMod.NoDeath) ? 1 : 3;
+        }
+
         #endregion
 
 
@@ -501,19 +578,22 @@ namespace Save
                     break;
                 
                 case KEY_UNLOCKED_ARENAS:
-                    var unlockedArenaData = new Dictionary<EArenaType, SArenaDifficulty>();
+                    var unlockedArenaData = new Dictionary<EArenaType, EArenaDifficulty>();
                     foreach (EArenaType arenaType in Enum.GetValues(typeof(EArenaType))) 
                     {
-                        unlockedArenaData.Add(arenaType, new SArenaDifficulty());
+                        unlockedArenaData.Add(arenaType, EArenaDifficulty.Easy);
                     }
+
+                    // when reset unlocked arenas, reset current arena data
+                    ResetCurrentArena();
                     Instance.SetData(key, unlockedArenaData);
                     break;
 
                 case KEY_UNLOCKED_ARENA_REWARDS:
-                    var data = new Dictionary<EArenaType, SUnlockedArenaReward>();
+                    var data = new Dictionary<EArenaType, SArenaPosition>();
                     foreach (EArenaType arenaType in Enum.GetValues(typeof(EArenaType)))
                     {
-                        data.Add(arenaType, new SUnlockedArenaReward());
+                        data.Add(arenaType, new SArenaPosition(EArenaDifficulty.Easy, 0));
                     }
                     Instance.SetData(key, data);
                     break;
@@ -532,6 +612,14 @@ namespace Save
 
         #region Checkers
 
+        protected override void CheckData() 
+        {
+            CheckLeague();
+            CheckUnlockedArenaData();
+            CheckUnlockedArenaRewardsData();
+            CheckCurrentArenaData();
+        }
+
         void CheckLeague()
         {
             if (CurrentLeague == ELeague.None)
@@ -540,7 +628,7 @@ namespace Save
 
         void CheckCurrentArenaData()
         {
-            if (CurrentArena.SArenaDifficulty > MaxArenaDifficulty)
+            if (CurrentArena.GetArenaDifficulty() > MaxArenaDifficulty)
             {
                 ErrorHandler.Error("Bad CurrentArena data : SArenaDifficulty > MaxArenaDifficulty - Reseting");
                 Reset(KEY_CURRENT_ARENA);
@@ -549,6 +637,23 @@ namespace Save
 
             bool save = false;
             var currentArena = CurrentArena;
+
+            if (CurrentArena.ArenaType == EArenaType.None)
+                return;
+
+            if (! UnlockedArenas.ContainsKey(CurrentArena.ArenaType))
+            {
+                ErrorHandler.Error($"CurrentArena ("+ CurrentArena.ArenaType + ") is not unlocked - reseting data");
+                ResetCurrentArena();
+                return;
+            }
+
+            if (CurrentArena.SArenaDifficulty.Difficulty > UnlockedArenas[CurrentArena.ArenaType])
+            {
+                ErrorHandler.Error($"CurrentArena data has difficulty ({CurrentArena.SArenaDifficulty.Difficulty}) > unlocked difficulty : ({CurrentArena.SArenaDifficulty.Difficulty}) - reseting data");
+                ResetCurrentArena();
+                return;
+            }
 
             if (CurrentArena.SArenaDifficulty.Level < 0)
             {
@@ -567,6 +672,15 @@ namespace Save
             if (! currentArena.CheckPowerUps())
                 save = true;
 
+            if (! currentArena.CheckMods())
+                save = true;
+
+            if (! currentArena.BuildData.Check())
+            {
+                ResetCurrentArena();
+                return;
+            }
+
             if (save)
                 Instance.SetData(KEY_CURRENT_ARENA, currentArena);
         }
@@ -575,6 +689,12 @@ namespace Save
         {
             bool save = false;
 
+            if (UnlockedArenas.IsNullOrEmpty())
+            {
+                Reset(KEY_UNLOCKED_ARENAS);
+                return;
+            }
+
             if (UnlockedArenas.ContainsKey(EArenaType.None))
             {
                 ErrorHandler.Warning($"EArenaType.None was found in UnlockedArenas - Removed");
@@ -582,12 +702,6 @@ namespace Save
                 save = true;
             }
 
-            if (UnlockedArenas.Count == 0)
-            {
-                Reset(KEY_UNLOCKED_ARENAS);
-                return;
-            }
-            
             foreach (EArenaType arenaType in Enum.GetValues(typeof(EArenaType)))
             {
                 if (arenaType == EArenaType.None)
@@ -596,28 +710,14 @@ namespace Save
                 if (! UnlockedArenas.ContainsKey(arenaType))
                 {
                     ErrorHandler.Error($"Missing arena in arena {arenaType} data : instantiating new one with default values");
-                    UnlockedArenas[arenaType] = new SArenaDifficulty(EArenaDifficulty.Easy, level: 1);
+                    UnlockedArenas[arenaType] = EArenaDifficulty.Easy;
                     save = true;
                 }
-                if (UnlockedArenas[arenaType].Level < 0)
+                
+                if (UnlockedArenas[arenaType] > MaxArenaDifficulty)
                 {
-                    ErrorHandler.Error($"UnlockedArenas {arenaType} data : has level ({UnlockedArenas[arenaType].Level}) < 0");
-                    UnlockedArenas[arenaType] = new SArenaDifficulty(EArenaDifficulty.Easy, level: 0);
-                    save = true;
-                }
-
-                if (UnlockedArenas[arenaType].Level >= ArenaManagementData.NDifficultyLevels)
-                {
-                    ErrorHandler.Error($"UnlockedArenas {arenaType} data : has level ({UnlockedArenas[arenaType].Level}) >= " + ArenaManagementData.NDifficultyLevels);
-                    UnlockedArenas[arenaType] = new SArenaDifficulty(UnlockedArenas[arenaType].Difficulty, ArenaManagementData.NDifficultyLevels - 1);
-                    save = true;
-                }
-
-                EArenaDifficulty maxArenaDifficulty = Enum.GetValues(typeof(EArenaDifficulty)).Cast<EArenaDifficulty>().Last();
-                if (UnlockedArenas[arenaType].Difficulty > maxArenaDifficulty)
-                {
-                    ErrorHandler.Error($"UnlockedArenas {arenaType} data : has difficulty ({UnlockedArenas[arenaType].Difficulty}) > " + maxArenaDifficulty);
-                    UnlockedArenas[arenaType] = new SArenaDifficulty(maxArenaDifficulty, ArenaManagementData.NDifficultyLevels - 1);
+                    ErrorHandler.Error($"UnlockedArenas {arenaType} data : has difficulty ({UnlockedArenas[arenaType]}) > MaxArenaDifficulty " + MaxArenaDifficulty);
+                    UnlockedArenas[arenaType] = MaxArenaDifficulty;
                     save = true;
                 }
             }
@@ -639,7 +739,7 @@ namespace Save
 
             if (UnlockedArenaRewards.Count == 0)
             {
-                Reset(KEY_UNLOCKED_ARENAS);
+                Reset(KEY_UNLOCKED_ARENA_REWARDS);
                 return;
             }
 
@@ -651,29 +751,14 @@ namespace Save
                 if (!UnlockedArenaRewards.ContainsKey(arenaType))
                 {
                     ErrorHandler.Error($"Missing arena in arena {arenaType} data : instantiating new one with default values");
-                    UnlockedArenaRewards[arenaType] = new SUnlockedArenaReward(new SArenaDifficulty((EArenaDifficulty)0, level: 0), -1);
+                    UnlockedArenaRewards[arenaType] = new SArenaPosition();
                     save = true;
                 }
 
-                if (UnlockedArenaRewards[arenaType].ArenaDifficulty.Level < 0)
+                if (UnlockedArenaRewards[arenaType].ArenaDifficulty > MaxArenaDifficulty)
                 {
-                    ErrorHandler.Error($"UnlockedArenas {arenaType} data : has level ({UnlockedArenas[arenaType].Level}) < 0");
-                    UnlockedArenaRewards[arenaType] = new SUnlockedArenaReward(new SArenaDifficulty((EArenaDifficulty)0, level: 0), -1);
-                    save = true;
-                }
-
-                if (UnlockedArenaRewards[arenaType].ArenaDifficulty.Level >= ArenaManagementData.NDifficultyLevels)
-                {
-                    ErrorHandler.Error($"UnlockedArenas {arenaType} data : has level ({UnlockedArenaRewards[arenaType].ArenaDifficulty.Level}) >= " + ArenaManagementData.NDifficultyLevels);
-                    UnlockedArenaRewards[arenaType] = new SUnlockedArenaReward(new SArenaDifficulty(UnlockedArenaRewards[arenaType].ArenaDifficulty.Difficulty, level: ArenaManagementData.NDifficultyLevels - 1), -1);
-                    save = true;
-                }
-
-                EArenaDifficulty maxArenaDifficulty = Enum.GetValues(typeof(EArenaDifficulty)).Cast<EArenaDifficulty>().Last();
-                if (UnlockedArenaRewards[arenaType].ArenaDifficulty.Difficulty > maxArenaDifficulty)
-                {
-                    ErrorHandler.Error($"UnlockedArenas {arenaType} data : has difficulty ({UnlockedArenaRewards[arenaType].ArenaDifficulty.Difficulty}) > " + maxArenaDifficulty);
-                    UnlockedArenaRewards[arenaType] = new SUnlockedArenaReward(new SArenaDifficulty(maxArenaDifficulty, level: ArenaManagementData.NDifficultyLevels - 1), -1);
+                    ErrorHandler.Error($"UnlockedArenas {arenaType} data : has difficulty ({UnlockedArenaRewards[arenaType]}) > " + MaxArenaDifficulty);
+                    UnlockedArenaRewards[arenaType] = new SArenaPosition(MaxArenaDifficulty, ArenaManagementData.MaxLevels);
                     save = true;
                 }
             }
@@ -696,25 +781,6 @@ namespace Save
                 ErrorHandler.Error("Missing data " + key + " in cloud data : reseting with default values");
                 Reset(key);
                 return;
-            }
-
-            switch (key)
-            {
-                case KEY_LEAGUE:
-                    CheckLeague();
-                    break;
-
-                case KEY_CURRENT_ARENA:
-                    CheckCurrentArenaData();
-                    break;
-
-                case KEY_UNLOCKED_ARENAS:
-                    CheckUnlockedArenaData();
-                    break;
-
-                case KEY_UNLOCKED_ARENA_REWARDS:
-                    CheckUnlockedArenaRewardsData();
-                    break;
             }
         }
 

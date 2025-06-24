@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using Tools;
+using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 
 namespace Menu.Common.Filters
@@ -12,6 +12,10 @@ namespace Menu.Common.Filters
     public class SpellFilterDropdown : MObject
     {
         #region Members
+
+        // =============================================================================================
+        // Actions
+        public Action<string> OnDropdownValueChanged;
 
         // =============================================================================================
         // Constants
@@ -22,6 +26,9 @@ namespace Menu.Common.Filters
         // Data
         [SerializeField] protected FilterIcon m_IconTemplate;
         protected Type m_EnumType;
+        protected string m_DefaultValue;
+        bool m_EnableClearValue;
+        bool m_EnableNoneValue;
 
         // =============================================================================================
         // GameObjects & Components
@@ -49,9 +56,13 @@ namespace Menu.Common.Filters
             m_ValuesContainer   = Finder.Find(gameObject, "ValuesContainer");
         }
 
-        public virtual void Initialize(Type enumType)
+        public virtual void Initialize(Type enumType, string defaultValue, bool withClearValue = true, bool allowNone = true)
         {
-            m_EnumType = enumType;
+            m_EnumType          = enumType;
+            m_DefaultValue      = defaultValue;
+            m_EnableClearValue  = withClearValue;
+            m_EnableNoneValue   = allowNone;
+
             base.Initialize();
         }
 
@@ -63,10 +74,20 @@ namespace Menu.Common.Filters
             m_Text.gameObject.SetActive(true);
             m_ValuesContainer.SetActive(false);
 
-            List<string> values = new List<string>() { CLEAR_VALUE };
+            // init list of values (with CLEAR VALUE first if requested)
+            List<string> values = new List<string>() {  };
+            if (m_EnableClearValue)
+                values.Add(CLEAR_VALUE);
+
+            // add values of enum in dropdown
             values.AddRange(Enum.GetNames(EnumType).ToList());
 
-            UIHelper.SetUpDropdown(m_Dropdown, values, CLEAR_VALUE, OnValueChanged);
+            // remove "None" if requested
+            if (!m_EnableNoneValue && values.Contains("None"))
+                values.Remove("None");
+
+            // set dropdown with values
+            UIHelper.SetUpDropdown(m_Dropdown, values, m_DefaultValue, OnValueChanged);
         }
 
         #endregion
@@ -140,18 +161,21 @@ namespace Menu.Common.Filters
             if (newValue == CLEAR_VALUE)
             {
                 ClearContent();
-                return;
-            }
-
-            UIHelper.CleanContent(m_ValuesContainer);
-
-            if (m_Dropdown.value != 0)
+            } 
+            else
             {
-                m_Text.gameObject.SetActive(false);
-                m_ValuesContainer.SetActive(true);
+                UIHelper.CleanContent(m_ValuesContainer);
+
+                if (m_Dropdown.value != 0)
+                {
+                    m_Text.gameObject.SetActive(false);
+                    m_ValuesContainer.SetActive(true);
+                }
+
+                AddFilterIcon(newValue);
             }
 
-            AddFilterIcon(newValue);
+            OnDropdownValueChanged?.Invoke(newValue);
         }
 
          #endregion

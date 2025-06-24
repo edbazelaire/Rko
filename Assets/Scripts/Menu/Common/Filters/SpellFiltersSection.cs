@@ -54,8 +54,8 @@ namespace Menu.Common.Filters
         {
             base.SetUpUI();
 
-            m_ElementsDropdown.Initialize(typeof(ESpellElement));
-            m_RaretyDropdown.Initialize(typeof(ERarety));
+            m_ElementsDropdown.Initialize(typeof(ESpellElement), defaultValue: SpellFilterDropdown.CLEAR_VALUE);
+            m_RaretyDropdown.Initialize(typeof(ERarety), defaultValue: SpellFilterDropdown.CLEAR_VALUE);
         }
 
         #endregion

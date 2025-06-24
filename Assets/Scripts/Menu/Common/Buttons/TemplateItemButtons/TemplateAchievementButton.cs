@@ -1,4 +1,5 @@
-﻿using Data;
+﻿using Assets.Scripts.Managers;
+using Data;
 using Enums;
 using Menu.Common.Displayers;
 using Save;
@@ -64,7 +65,7 @@ namespace Menu.Common.Buttons
         protected override void SetUpUI()
         {
             m_Title.text = TextLocalizer.SplitCamelCase(m_Achievement.name);
-            m_FillBar.Initialize(m_Achievement.Count, m_Achievement.RequestedValue);
+            m_FillBar.Initialize(m_Achievement.GetCount(), m_Achievement.RequestedValue);
             RefreshReward();
             RefreshIsMaxed();
         }
@@ -78,7 +79,7 @@ namespace Menu.Common.Buttons
         {
             RefreshReward();
             RefreshIsMaxed();
-            m_FillBar.UpdateCollection(m_Achievement.Count, m_Achievement.RequestedValue);
+            m_FillBar.UpdateCollection(m_Achievement.GetCount(), m_Achievement.RequestedValue);
         }
 
         void RefreshReward()
@@ -103,7 +104,7 @@ namespace Menu.Common.Buttons
         void RefreshIsMaxed()
         {
             // check if is a new completion (to update notifications)
-            bool isMaxed = m_Achievement.Count >= m_Achievement.RequestedValue;
+            bool isMaxed = m_Achievement.GetCount() >= m_Achievement.RequestedValue;
             if (isMaxed != m_IsMaxed)
             {
                 AchievementUpdateEvent?.Invoke(isMaxed);
@@ -123,6 +124,7 @@ namespace Menu.Common.Buttons
 
             m_Button.onClick.AddListener(OnClicked);
             StatCloudData.AnalyticsDataChanged += OnAnalyticsDataChanged;
+            ProfileCloudData.AchievementChangedEvent += OnAchievementChanged;
         }
 
 
@@ -135,6 +137,7 @@ namespace Menu.Common.Buttons
 
             m_Button.onClick.RemoveAllListeners();
             StatCloudData.AnalyticsDataChanged -= OnAnalyticsDataChanged;
+            ProfileCloudData.AchievementChangedEvent += OnAchievementChanged;
         }
 
         /// <summary>
@@ -145,7 +148,7 @@ namespace Menu.Common.Buttons
         {
             if (! m_Achievement.IsUnlockable)
             {
-                Debug.LogWarning("Achivement not unlockable");
+                ScreenManager.QuickMessage(m_Achievement.GetDescription(), duration: 5f);
                 return;
             }
 
@@ -160,7 +163,15 @@ namespace Menu.Common.Buttons
         /// <param name="analytics"></param>
         void OnAnalyticsDataChanged(EAnalytics analytics)
         {
-            if (m_Achievement.Analytics != analytics)
+            if (m_Achievement is not AnalyticsAchievementData analyticsAchievementData || analyticsAchievementData.Analytics != analytics)
+                return;
+
+            RefreshUI();
+        }
+
+        void OnAchievementChanged(string achievementId)
+        {
+            if (m_Achievement.ID != achievementId)
                 return;
 
             RefreshUI();

@@ -119,7 +119,7 @@ namespace Menu.MainMenu
             get
             {
                 // CHECK : index error 
-                if (m_Index < 0 || m_Index >= CharacterBuildsCloudData.CurrentBuild.Length)
+                if (m_Index < 0 || m_Index >= CharacterBuildsCloudData.CurrentSpells.Length)
                 {
                     ErrorHandler.Error("Bad index : " + m_Index);
                     return null;
@@ -129,7 +129,7 @@ namespace Menu.MainMenu
                 if (m_Empty)
                     return null;
 
-                var spellData = CharacterBuildsCloudData.CurrentBuild[m_Index];
+                var spellData = CharacterBuildsCloudData.CurrentSpells[m_Index];
                 if (spellData == ESpell.None)
                 {
                     m_Empty = true;

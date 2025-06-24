@@ -12,12 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bf96ab3cd590dd4eb64ef847e4c7983, type: 3}
   m_Name: Heals
   m_EditorClassIdentifier: 
-  Description: Damages delt to enemies
-  Analytics: 6
-  AnalyticsFilters:
-  - AnalyticParam: 51
-    Value: Heal
-    Comparator: 3
+  m_Description: Heal a total of [TresholdValue] hp during your games
   AchievementSubData:
   - MaxValue: 5000
     Rewards:
@@ -178,3 +173,8 @@ MonoBehaviour:
         Badge: 4
         League: 7
       Boosts: []
+  Analytics: 6
+  AnalyticsFilters:
+  - AnalyticParam: 51
+    Value: Heal
+    Comparator: 3

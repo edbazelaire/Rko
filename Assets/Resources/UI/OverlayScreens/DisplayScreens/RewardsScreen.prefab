@@ -1097,6 +1097,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efa6d7d161579ad4f994877aaa78bc61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_IsBlockingQuickClose: 0
 --- !u!223 &2317418756477573228
 Canvas:
   m_ObjectHideFlags: 0
@@ -1178,7 +1179,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2439457239475878054, guid: c0f93325818f0fd41b9be5ab565ceb54, type: 3}
       propertyPath: m_fontSize
-      value: 51.8
+      value: 55.75
       objectReference: {fileID: 0}
     - target: {fileID: 2658723423129874997, guid: c0f93325818f0fd41b9be5ab565ceb54, type: 3}
       propertyPath: m_Name
@@ -1302,7 +1303,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7950574289599313039, guid: c0f93325818f0fd41b9be5ab565ceb54, type: 3}
       propertyPath: m_fontSize
-      value: 31.65
+      value: 34.6
       objectReference: {fileID: 0}
     - target: {fileID: 8695083764463239108, guid: c0f93325818f0fd41b9be5ab565ceb54, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -1506,11 +1507,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3002956971185280612, guid: 5de6426e58693c84c95d47a1c8e848d1, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3002956971185280612, guid: 5de6426e58693c84c95d47a1c8e848d1, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3002956971185280612, guid: 5de6426e58693c84c95d47a1c8e848d1, type: 3}
       propertyPath: m_SizeDelta.x
@@ -1526,7 +1527,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3002956971185280612, guid: 5de6426e58693c84c95d47a1c8e848d1, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -307.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3549209740090949318, guid: 5de6426e58693c84c95d47a1c8e848d1, type: 3}
       propertyPath: m_AnchorMax.y

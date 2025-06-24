@@ -7,7 +7,6 @@ using Save;
 using System;
 using System.Linq;
 using Tools;
-using UnityEngine;
 
 namespace Menu.MainMenu
 {
@@ -25,8 +24,8 @@ namespace Menu.MainMenu
             base.FindComponents();
 
             // -- hide sub buttons by default
-            if (m_SubButtons != null)
-                m_SubButtons.gameObject.SetActive(false);
+            if (m_CSubButtons != null)
+                m_CSubButtons.gameObject.SetActive(false);
         }
 
         #endregion
@@ -80,7 +79,7 @@ namespace Menu.MainMenu
 
                 case (EButtonState.Updatable):
                 case (EButtonState.Normal):
-                    SetBottomOverlay(string.Format(LEVEL_FORMAT, m_CollectableCloudData.Level));
+                    SetBottomOverlay(string.Format(LEVEL_FORMAT, m_Level));
                     break;
 
                 default:
@@ -104,12 +103,12 @@ namespace Menu.MainMenu
 
             if (m_IsLinked)
             {
-                Main.SetPopUp(EPopUpState.SpellInfoPopUp, (ESpell)Collectable, CollectableCloudData.Level);
+                Main.SetPopUp(EPopUpState.SpellInfoPopUp, (ESpell)Collectable, m_Level);
                 return;
             }
 
             // behavior when the USE button was clicked and this is one of the current build spells
-            if (CurrentBuildDisplayUI.CurrentSelectedItem != null && CharacterBuildsCloudData.CurrentBuild.Contains(Spell))
+            if (CurrentBuildDisplayUI.CurrentSelectedItem != null && CharacterBuildsCloudData.CurrentSpells.Contains(Spell))
             {
                 CurrentBuildDisplayUI.ReplaceSpell(Spell);
                 return;

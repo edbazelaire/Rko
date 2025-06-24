@@ -47,10 +47,17 @@ namespace Menu.PopUps
             base.Initialize(enumValue, level, infoOnly);
         }
 
+        public void Initialize(RuneData data, ERuneActivation runeActivation, bool infoOnly = true)
+        {
+            m_RuneActivation = runeActivation;
+            base.Initialize(data, infoOnly);
+        }
+
         protected override void OnPrefabLoaded()
         {
             base.OnPrefabLoaded();
 
+            m_RuneData.SetActivation(m_RuneActivation);
             m_RuneInfoTabManager.Initialize(m_RuneActivation);
         }
 
@@ -58,12 +65,6 @@ namespace Menu.PopUps
 
 
         #region UIManipulators
-
-        protected override void SetupCollectable(Enum enumValue, int level)
-        {
-            base.SetupCollectable(enumValue, level);
-            m_RuneData.SetActivation(m_RuneActivation);
-        }
 
         protected override void SetUpDescription()
         {

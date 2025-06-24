@@ -52,7 +52,7 @@ namespace Menu.MainMenu.MainTab
             m_PlayButton.onClick.AddListener(OnPlay);
 
             // initialize character preview section (with a delay to avoid issue with size)
-            CoroutineManager.DelayMethod(m_CharacterPreviewSection.Initialize);
+            CoroutineManager.DelayMethod(() => m_CharacterPreviewSection.Initialize(checkGameMod: true));
 
             // check if player is in a game currently
             CheckCurrentGameId();

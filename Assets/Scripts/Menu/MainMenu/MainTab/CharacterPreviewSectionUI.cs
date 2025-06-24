@@ -12,6 +12,9 @@ using System.Collections;
 using Assets;
 using Menu.Common.Buttons;
 using System;
+using static System.Net.Mime.MediaTypeNames;
+using Data;
+using Assets.Scripts.Managers;
 
 namespace Menu.MainMenu
 {
@@ -41,6 +44,12 @@ namespace Menu.MainMenu
         TemplateSpellItemUI     m_SpecialAbilityButton;
         TemplateSpellItemUI     m_AutoAttackButton;
 
+        // Local Data
+        bool                    m_CheckGameMode;
+        ECharacter              m_Character;
+
+        bool m_IsArenaMod => m_CheckGameMode && PlayerPrefsHandler.GetGameMode() == EGameMode.Arena && ProgressionCloudData.HasArenaInProgress;
+
         public Button CharacterPreviewButton => m_CharacterPreviewButton;
 
         #endregion
@@ -48,8 +57,11 @@ namespace Menu.MainMenu
 
         #region Init & End
 
-        public void Initialize()
+        public void Initialize(bool checkGameMod = false)
         {
+            m_CheckGameMode = checkGameMod;
+            m_Character = m_IsArenaMod ? Enum.Parse<ECharacter>(ProgressionCloudData.CurrentArena.BuildData.Character) : CharacterBuildsCloudData.SelectedCharacter;
+
             m_CharacterPreviewContainer         = Finder.Find(gameObject, "CharacterPreviewContainer");
             m_CharacterPreviewButton            = Finder.FindComponent<Button>(m_CharacterPreviewContainer);
             m_CharacterInfoButton               = Finder.FindComponent<CharacterInfoButton>(gameObject, "CharacterInfoButton");
@@ -58,9 +70,9 @@ namespace Menu.MainMenu
             m_CharacterLevelText                = Finder.FindComponent<TMP_Text>(m_XpBar.gameObject, "LevelValue");
 
             // init xp bar with current character cloud data
-            m_XpBar.Initialize(InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter));
+            m_XpBar.Initialize(InventoryCloudData.Instance.GetCollectable(m_Character));
             // init CharacterInfoButton with current character cloud data
-            m_CharacterInfoButton.Initialize(CharacterBuildsCloudData.SelectedCharacter);
+            m_CharacterInfoButton.Initialize(m_Character, allowsUpgrade: !m_IsArenaMod);
 
             // specials components 
             SetUpCharacterSpells();
@@ -72,6 +84,7 @@ namespace Menu.MainMenu
             CharacterBuildsCloudData.CurrentBuildIndexChangedEvent  += OnCurrentRuneChanged;
             CharacterBuildsCloudData.CurrentRuneChangedEvent        += OnCurrentRuneChanged;
             ProfileCloudData.AccountLevelUpEvent                    += OnAccountLevelUp;
+            ProgressionCloudData.CurrentArenaDataChangedEvent       += OnSelectedCharacterChanged;
             InventoryManager.CollectableUpgradedEvent               += OnCharacterLeveledUp;
             InventoryCloudData.CurrencyChangedEvent                 += OnCurrencyChanged;
 
@@ -91,6 +104,7 @@ namespace Menu.MainMenu
             CharacterBuildsCloudData.CurrentBuildIndexChangedEvent  -= OnCurrentRuneChanged;
             CharacterBuildsCloudData.CurrentRuneChangedEvent        -= OnCurrentRuneChanged;
             ProfileCloudData.AccountLevelUpEvent                    -= OnAccountLevelUp;
+            ProgressionCloudData.CurrentArenaDataChangedEvent       -= OnSelectedCharacterChanged;
             InventoryManager.CollectableUpgradedEvent               -= OnCharacterLeveledUp;
             InventoryCloudData.CurrencyChangedEvent                 -= OnCurrencyChanged;
 
@@ -151,7 +165,7 @@ namespace Menu.MainMenu
         /// </summary>
         void UpdateCharInfos()
         {
-            m_CharacterName.text = CharacterBuildsCloudData.SelectedCharacter.ToString();
+            m_CharacterName.text = m_Character.ToString();
             RefreshXpBarUI();
         }
 
@@ -165,7 +179,7 @@ namespace Menu.MainMenu
                 return;
 
             // get current character data
-            var charData = CharacterLoader.GetCharacterData(CharacterBuildsCloudData.SelectedCharacter, destroy: true);
+            var charData = CharacterLoader.GetCharacterData(m_Character, destroy: true);
 
             // init ultimate button
             if (m_UltimateButton != null)
@@ -191,13 +205,20 @@ namespace Menu.MainMenu
 
         void RefreshXpBarUI()
         {
-            var charData = InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter);
+            var charData = InventoryCloudData.Instance.GetCollectable(m_Character);
+
+            if (m_IsArenaMod)
+            {
+                m_CharacterLevelText.text = ProfileCloudData.AccountLevel.ToString();
+                m_XpBar.UpdateCollection(0f, 1f);
+                return;
+            }
 
             // update char level display
             m_CharacterLevelText.text = charData.Level.ToString();
 
             // refresh xp bar with new xp and max required xp
-            m_XpBar.RefreshCloudData(InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter));
+            m_XpBar.RefreshCloudData(charData);
         }
 
         /// <summary>
@@ -205,7 +226,20 @@ namespace Menu.MainMenu
         /// </summary>
         void SpawnCharPreview()
         {
-            UIHelper.SpawnCharacter(StaticPlayerData.Character.ToString(), m_CharacterPreviewContainer);
+            UIHelper.SpawnCharacter(m_Character.ToString(), m_CharacterPreviewContainer);
+        }
+
+        void RefreshCharacter()
+        {
+            m_Character = CharacterBuildsCloudData.SelectedCharacter;
+            if (m_IsArenaMod)
+            {
+                if (!Enum.TryParse(ProgressionCloudData.CurrentArena.BuildData.Character, out m_Character))
+                {
+                    ErrorHandler.Error("Unable to parse current arena character into ECharacter : " + ProgressionCloudData.CurrentArena.BuildData.Character);
+                    m_Character = CharacterBuildsCloudData.SelectedCharacter;
+                }
+            }
         }
 
         #endregion
@@ -222,7 +256,7 @@ namespace Menu.MainMenu
             }
 
             // display level up
-            if (character == CharacterBuildsCloudData.SelectedCharacter)
+            if (character == m_Character)
                 RefreshXpBarUI();
         }
 
@@ -239,6 +273,9 @@ namespace Menu.MainMenu
         /// <param name="character"></param>
         void OnSelectedCharacterChanged()
         {
+            // refresh current displayed character
+            RefreshCharacter();
+
             // update infos : name, xpbar, level, ...
             UpdateCharInfos();
 
@@ -249,7 +286,7 @@ namespace Menu.MainMenu
             RefreshRuneIcons();
 
             // refresh the info button UI
-            m_CharacterInfoButton.RefreshUI(CharacterBuildsCloudData.SelectedCharacter);
+            m_CharacterInfoButton.RefreshUI(m_Character);
 
             // spawn preview
             SpawnCharPreview();
@@ -270,11 +307,14 @@ namespace Menu.MainMenu
         /// <param name="xp"></param>
         void OnCurrencyChanged(ECurrency currency, int xp)
         {
+            if (m_IsArenaMod)
+                return;
+
             if (currency != ECurrency.Xp)
                 return;
 
             // refresh the info button UI
-            m_CharacterInfoButton.RefreshUI(CharacterBuildsCloudData.SelectedCharacter);
+            m_CharacterInfoButton.RefreshUI(m_Character);
 
             if (m_Activated && xp <= m_XpBar.CurrentCollection) 
             {
@@ -291,7 +331,7 @@ namespace Menu.MainMenu
         void OnAccountLevelUp()
         {
             // refresh the info button UI
-            m_CharacterInfoButton.RefreshUI(CharacterBuildsCloudData.SelectedCharacter);
+            m_CharacterInfoButton.RefreshUI(m_Character);
             RefreshXpBarUI();
         }
 
@@ -300,6 +340,9 @@ namespace Menu.MainMenu
         /// </summary>
         void OnCharacterLeveledUp(Enum character, int level)
         {
+            if (m_IsArenaMod)
+                return;
+
             if (character.GetType() != typeof(ECharacter))
                 return;
 
@@ -311,12 +354,18 @@ namespace Menu.MainMenu
                 RefreshXpBarUI();
 
             // refresh the info button UI
-            m_CharacterInfoButton.RefreshUI(CharacterBuildsCloudData.SelectedCharacter);
+            m_CharacterInfoButton.RefreshUI(m_Character);
         }
 
         void OnCharacterInfoButtonClicked()
         {
-            Main.SetPopUp(EPopUpState.CharacterInfoPopUp, CharacterBuildsCloudData.SelectedCharacter, InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter).Level);
+            ScreenManager.CollectableInfoPopUp(
+                CharacterLoader.GetCharacterData(
+                    m_Character, 
+                    level: m_IsArenaMod ? ProfileCloudData.AccountLevel : InventoryCloudData.Instance.GetCollectable(m_Character).Level
+                ), 
+                infoOnly: m_IsArenaMod
+            );
         }
 
         #endregion

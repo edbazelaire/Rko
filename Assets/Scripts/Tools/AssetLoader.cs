@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Menu.MainMenu.MainTab.Chests;
+using Data.ArenaEffects.ArenaMods;
 using Data.GameManagement;
 using Enums;
 using Game;
@@ -8,6 +9,7 @@ using Menu.Common.Rewards;
 using Save;
 using Save.Data.Progression.Structs;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -25,7 +27,9 @@ namespace Tools
         public const string c_CharacterDataPath             = c_DataPath + "Characters/";
         public const string c_SpellDataPath                 = c_DataPath + "Spells/";
         public const string c_StateEffectDataPath           = c_DataPath + "StateEffects/";
-        public const string c_PowerUpsPath                  = c_DataPath + "PowerUps/";
+        public const string c_ArenaEffectsPath              = c_DataPath + "ArenaEffects/";
+        public const string c_ArenaModsPath                 = c_ArenaEffectsPath + "ArenaMods/";
+        public const string c_PowerUpsPath                  = c_ArenaEffectsPath + "PowerUps/";
         public const string c_ItemsDataPath                 = c_DataPath + "Items/";
         public const string c_AchievementsDataPath          = c_DataPath + "Achievements/";
         public const string c_ChestsDataPath                = c_ItemsDataPath + "Chests/";
@@ -68,6 +72,8 @@ namespace Tools
         // ---- Menus
         public const string c_MainUIPath                    = c_UIPath + "Main/";
         public const string c_MainUIComponentsPath          = c_MainUIPath + "Components/";
+        public const string c_MainUIButtonsPath             = c_MainUIComponentsPath + "Buttons/";
+        public const string c_MainUISubButtonsPath          = c_MainUIButtonsPath + "SpellItemSubButtons/";
         public const string c_MainUIComponentsInfosPath     = c_MainUIComponentsPath + "Infos/";
         public const string c_MainMenuPath                  = c_MainUIPath + "MainMenu/";
         public const string c_MainTabPath                   = c_MainMenuPath + "MainTab/";
@@ -207,7 +213,7 @@ namespace Tools
         {
             if (! arenaDifficulty.HasValue)
             {
-                arenaDifficulty = ProgressionCloudData.GetUnlockedArenaDifficulty(arena);
+                arenaDifficulty = new SArenaDifficulty(ProgressionCloudData.GetUnlockedArenaDifficulty(arena));
             }
 
             var arenaData = Load<ArenaData>(arena.ToString() + "_" + arenaDifficulty.Value.Difficulty.ToString(), c_ArenaDataPath);
@@ -217,6 +223,11 @@ namespace Tools
 
             arenaData.SetDifficultyLevel(arenaDifficulty.Value.Level);
             return arenaData;
+        }
+
+        public static ArenaMod LoadArenaMod(EArenaMod arenaMod)
+        {
+            return Load<ArenaMod>(arenaMod.ToString(), c_ArenaModsPath);
         }
 
 
@@ -293,6 +304,11 @@ namespace Tools
         public static GameObject LoadTemplateItem(string suffix)
         {
             return Load<GameObject>(c_TemplatesUIPath + c_TemplatePrefix + suffix);
+        }
+
+        public static TemplateCollectableItemUI LoadTemplateCollectableItem(ECollectableType collectableType)
+        {
+            return Load<TemplateCollectableItemUI>(c_TemplatePrefix + collectableType.ToString() + "Item", c_TemplatesUIPath);
         }
 
         public static T LoadTemplateItem<T>(string suffix = "") where T : Object
@@ -372,6 +388,16 @@ namespace Tools
             return Load<AchievementRewardUI>(templateBaseName + "Button", c_AchievementsTemplatesPath);
         }
 
+        public static GameObject LoadDefaultButton()
+        {
+            return Load<GameObject>("DefaultButton", c_MainUISubButtonsPath);
+        }
+
+        public static Sprite LoadButtonWithColor(string color)
+        {
+            return Load<Sprite>("SimpleButton_" + color.FirstCharacterToUpper(), c_ButtonsPath);
+        }
+
         public static GameObject LoadArenaButton(EArenaType arenaType)
         {
             return Load<GameObject>(arenaType.ToString() + "Button", c_ArenaModeUIPath + "ArenaButtons/");
@@ -443,7 +469,7 @@ namespace Tools
 
         #region Icon Loading
 
-        public static Sprite LoadIcon (string itemName, System.Type iconType = null)
+        public static Sprite LoadIcon(string itemName, System.Type iconType = null)
         {
             string path;
             

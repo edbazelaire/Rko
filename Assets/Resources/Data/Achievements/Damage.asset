@@ -12,12 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bf96ab3cd590dd4eb64ef847e4c7983, type: 3}
   m_Name: Damage
   m_EditorClassIdentifier: 
-  Description: Damages delt to enemies
-  Analytics: 6
-  AnalyticsFilters:
-  - AnalyticParam: 51
-    Value: Damage
-    Comparator: 3
+  m_Description: Deal at least [TresholdValue] damage to the enemy
   AchievementSubData:
   - MaxValue: 10000
     Rewards:
@@ -263,3 +258,8 @@ MonoBehaviour:
         Badge: 3
         League: 7
       Boosts: []
+  Analytics: 6
+  AnalyticsFilters:
+  - AnalyticParam: 51
+    Value: Damage
+    Comparator: 3

@@ -12,12 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bf96ab3cd590dd4eb64ef847e4c7983, type: 3}
   m_Name: Wins
   m_EditorClassIdentifier: 
-  Description: Number of game won
-  Analytics: 0
-  AnalyticsFilters:
-  - AnalyticParam: 2
-    Value: True
-    Comparator: 3
+  m_Description: Win [TresholdValue] games
   AchievementSubData:
   - MaxValue: 1
     Rewards:
@@ -275,3 +270,8 @@ MonoBehaviour:
         Badge: 1002
         League: 0
       Boosts: []
+  Analytics: 0
+  AnalyticsFilters:
+  - AnalyticParam: 2
+    Value: True
+    Comparator: 3

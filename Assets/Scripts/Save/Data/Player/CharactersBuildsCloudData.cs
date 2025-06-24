@@ -1,6 +1,7 @@
 ﻿using Assets;
 using Enums;
 using Game.Loaders;
+using Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Text;
 using Tools;
 using Unity.Services.CloudSave.Models;
 using Unity.VisualScripting;
+using static Unity.Collections.Unicode;
 
 namespace Save
 {
@@ -32,7 +34,7 @@ namespace Save
         }
 
         [DoNotSerialize]
-        public readonly ESpell[] CurrentBuild => Builds[CurrentBuildIndex];
+        public readonly ESpell[] CurrentSpells => Builds[CurrentBuildIndex];
 
         public override string ToString()
         {
@@ -98,9 +100,19 @@ namespace Save
         /// <summary> get selected character's currently selected build's index </summary>
         public static int               CurrentBuildIndex                       => Builds[SelectedCharacter].CurrentBuildIndex;
         /// <summary> get current build of the currently seleceted characters </summary>
-        public static ESpell[]          CurrentBuild                            => Builds[SelectedCharacter].CurrentBuild;
+        public static ESpell[]          CurrentSpells                           => Builds[SelectedCharacter].CurrentSpells;
         /// <summary> get current rune of the currently seleceted characters </summary>
         public static ERune[]           CurrentRunes                            => Builds[SelectedCharacter].Runes[CurrentBuildIndex];
+
+        /// <summary> get current build as SBuildData </summary>
+        public static SBuildData CurrentBuild => new SBuildData(
+            characterLevel: InventoryCloudData.Instance.GetCollectable(SelectedCharacter).Level, 
+            character:      SelectedCharacter.ToString(),
+            runes:          CurrentRunes,
+            runeLevels:     CurrentRunes.Select(rune => InventoryCloudData.Instance.GetCollectable(rune).Level).ToArray(),
+            spells:         CurrentSpells,
+            spellLevels:    CurrentSpells.Select(rune => InventoryCloudData.Instance.GetCollectable(rune).Level).ToArray()
+        );
 
         #endregion
 
@@ -175,7 +187,7 @@ namespace Save
 
             if (collectable.GetType() == typeof(ESpell))
             {
-                return CurrentBuild.Contains((ESpell)collectable);
+                return CurrentSpells.Contains((ESpell)collectable);
             }
 
             if (collectable.GetType() == typeof(ERune))
@@ -229,7 +241,7 @@ namespace Save
         /// <param name="index"></param>
         public static void SetSpellInCurrentBuild(ESpell? spell, int index)
         {
-            CurrentBuild[index] = spell.HasValue ? spell.Value : ESpell.None;
+            CurrentSpells[index] = spell.HasValue ? spell.Value : ESpell.None;
 
             Instance.SaveValue(KEY_BUILDS);
             CurrentBuildValueChangedEvent?.Invoke();
@@ -588,7 +600,7 @@ namespace Save
         {
             get
             {
-                foreach (ESpell spell in CurrentBuild)
+                foreach (ESpell spell in CurrentSpells)
                 {
                     if (spell == ESpell.None)
                         return false;
@@ -626,7 +638,7 @@ namespace Save
             string str = base.ToString();
             str += "\n SelectedCharacter : "    + TextHandler.ToString(SelectedCharacter);
             str += "\n CurrentBuildIndex : "    + TextHandler.ToString(CurrentBuildIndex);
-            str += "\n CurrentBuild : "         + TextHandler.ToString(CurrentBuild);
+            str += "\n CurrentBuild : "         + TextHandler.ToString(CurrentSpells);
             str += "\n CurrentRunes : "         + TextHandler.ToString(CurrentRunes);
             return str;
         }

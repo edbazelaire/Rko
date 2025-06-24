@@ -1,8 +1,11 @@
 ﻿using Data;
 using Enums;
+using Save;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
+using UnityEngine;
+using UnityEngine.AI;
 
 namespace Game.Loaders
 {
@@ -22,6 +25,23 @@ namespace Game.Loaders
         public static void Initialize()
         {
             m_Achievements = AssetLoader.LoadAll<AchievementData>(AssetLoader.c_AchievementsDataPath).ToList();
+
+            RegisterListeners();
+        }
+
+        #endregion
+
+
+        #region Accessors
+
+        public static T Get<T> () where T : AchievementData
+        {
+            return (T)m_Achievements.First((AchievementData data) => data.GetType() == typeof(T));
+        }
+
+        public static AchievementData Get (string name) 
+        {
+            return m_Achievements.First((AchievementData data) => data.Name == name);
         }
 
         #endregion
@@ -39,23 +59,25 @@ namespace Game.Loaders
         {
             ErrorHandler.Warning("Call deactivated method : FilterAchievementsByStatData()");
             return achievements;
-
-            //if (statData == EStatData.None)
-            //    return achievements;
-
-            //List<AchievementData> filteredAchivements = new();
-
-            //foreach (AchievementData achievement in achievements)
-            //{
-            //    if (achievement.Ac == statData)
-            //        filteredAchivements.Add(achievement);
-            //}
-
-            //return filteredAchivements;
         }
 
         #endregion
 
 
+        #region Listeners
+
+        static void RegisterListeners()
+        {
+            // hook "on arena ended" events
+            foreach (var achievement in m_Achievements)
+            {
+                if (achievement is ArenaAchievementData arenaAchievement)
+                {
+                    ProgressionCloudData.CurrentArenaEndedEvent += arenaAchievement.CheckOnArenaEnded;
+                }
+            }
+        }
+
+        #endregion
     }
 }

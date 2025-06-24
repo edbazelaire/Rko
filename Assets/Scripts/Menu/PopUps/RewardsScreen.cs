@@ -511,6 +511,11 @@ namespace Menu.PopUps
             SetUpTemplateItem(collectable, qty);
             SetUpRewardInfos(collectable, qty, false);
 
+            // TODO : REMOVE    ====================================
+            if (m_CurrentTemplateItem.GetComponent<TemplateCollectableItemUI>().CSubButtons.isActiveAndEnabled)
+                ErrorHandler.Error("SUB BUTTONS ACTIVE");
+            // TODO : REMOVE    ====================================
+
             // skip one frame to be sure that the layout components are adjusted properly
             yield return null;
 
@@ -525,9 +530,21 @@ namespace Menu.PopUps
                 yield return PlayRewardAnimation();
             }
 
+
+            // TODO : REMOVE    ====================================
+            if (m_CurrentTemplateItem.GetComponent<TemplateCollectableItemUI>().CSubButtons.isActiveAndEnabled)
+                ErrorHandler.Error("SUB BUTTONS ACTIVE");
+            // TODO : REMOVE    ====================================
+
             // -- play collection fill bar animation
             m_Skip = false;
             yield return WaitForCoroutineOrSkip(m_CollectionFillBar.CollectionAnimationCoroutine(qty));
+
+
+            // TODO : REMOVE    ====================================
+            if (m_CurrentTemplateItem.GetComponent<TemplateCollectableItemUI>().CSubButtons.isActiveAndEnabled)
+                ErrorHandler.Error("SUB BUTTONS ACTIVE");
+            // TODO : REMOVE    ====================================
 
             // make sure that audio source is destroyed(in case of skip)
             if (! m_CollectionFillBar.AudioSource.IsDestroyed())
@@ -612,6 +629,9 @@ namespace Menu.PopUps
             template.Initialize(collectable, true);
             template.SetMysteryIcon(true);
             template.ForceState(EButtonState.Normal);
+
+            if (template.CSubButtons.isActiveAndEnabled)
+                ErrorHandler.Error("SUB BUTTONS ACTIVE");
         }
 
         void SetUpAchievementRewardTemplate(EAchievementReward ar, string value)

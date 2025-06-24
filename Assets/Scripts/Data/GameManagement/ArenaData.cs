@@ -94,10 +94,11 @@ namespace Data.GameManagement
 
         // ===============================================================================================
         // Public data
-        public int CurrentLevel                 => ProgressionCloudData.CurrentArena.Level;
-        public int CurrentStage                 => ProgressionCloudData.CurrentArena.Stage;
-        public int CurrentBaseCharacterLevel    => 1 + (int)ArenaDifficulty * 2 + m_ArenaDifficultyLevel;
-        public float CurrentRewardMultiplicator => 1 + (int)ArenaDifficulty * 0.5f + m_ArenaDifficultyLevel * 0.15f;
+        public SArenaPosition CurrentArenaPosition  => new SArenaPosition(ArenaDifficulty, CurrentLevel, CurrentStage);
+        public int CurrentLevel                     => ProgressionCloudData.CurrentArena.Level;
+        public int CurrentStage                     => ProgressionCloudData.CurrentArena.Stage;
+        public int CurrentBaseCharacterLevel        => 1 + (int)ArenaDifficulty * 2 + m_ArenaDifficultyLevel;
+        public float CurrentRewardMultiplicator     => 1 + (int)ArenaDifficulty * 0.5f + m_ArenaDifficultyLevel * 0.15f;
 
         public EArenaType               ArenaType               => Enum.TryParse(name.Split("_")[0], out EArenaType arenaType) ? arenaType : EArenaType.FrostArena;
         public SArenaDifficulty         SArenaDifficulty        => new SArenaDifficulty(ArenaDifficulty, ArenaDifficultyLevel);
@@ -198,13 +199,13 @@ namespace Data.GameManagement
             rewards.Add(ProgressionCloudData.CurrentArena.GetPowerOrb());
 
             // current difficulty inferior to already unlocked difficulty -> return rewards
-            if (SArenaDifficulty < ProgressionCloudData.GetUnlockedArenaReward(ArenaType).ArenaDifficulty)
+            if (CurrentArenaPosition < ProgressionCloudData.GetUnlockedArenaReward(ArenaType))
                 return rewards;  
             
             for (int arenaLevel = 0; arenaLevel < ProgressionCloudData.CurrentArena.Level; arenaLevel++)
             {
                 // check if this arena level has already been collected
-                if (ProgressionCloudData.IsArenaRewardCollected(ArenaType, SArenaDifficulty, arenaLevel))
+                if (ProgressionCloudData.IsArenaRewardCollected(ArenaType, ArenaDifficulty, arenaLevel))
                     continue;
 
                 rewards.Add(m_ArenaLevelData[arenaLevel].RewardsData);
@@ -247,6 +248,7 @@ namespace Data.GameManagement
                 powerScaling.GetValue()        // base power level from current arena level
                 * Math.Pow(1 + ArenaManagementData.BonusArenaDifficulty, (int)ArenaDifficulty)      // power level increase from arena difficulty (normal, hard, brutal, ...)
                 * (1 + ArenaManagementData.BonusArenaDifficultyLevel * ArenaDifficultyLevel)        // power level increase from arena difficulty bonus level (+, ++, ... etc)
+                * ProgressionCloudData.CurrentArena.GetBonusPowerOrb()                              // percentage of bonus reward
             );
         }
 

@@ -1,6 +1,7 @@
 ﻿using Inventory;
 using Menu.Common.Rewards;
 using System.Collections;
+using TMPro;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,6 +19,7 @@ namespace Menu.Common.Displayers
         // Components & GameObjects
         protected PowerOrbContainer         m_PowerOrbUI;
         protected CollectionFillBar         m_OrbFillBar;
+        protected TMP_Text                  m_BonusPower;
 
         // ================================================================================
         // Public Accessors
@@ -34,9 +36,10 @@ namespace Menu.Common.Displayers
 
             m_PowerOrbUI = Finder.FindComponent<PowerOrbContainer>(gameObject, "PowerOrbUI");
             m_OrbFillBar = Finder.FindComponent<CollectionFillBar>(gameObject, "OrbFillBar");
+            m_BonusPower = Finder.FindComponent<TMP_Text>(gameObject, "BonusPower", false);
         }
 
-        public virtual void Initialize(SPowerOrb powerOrb, int maxPower)
+        public virtual void Initialize(SPowerOrb powerOrb, int maxPower, float bonusPower = 1f)
         {
             m_PowerOrb = powerOrb;
 
@@ -44,6 +47,10 @@ namespace Menu.Common.Displayers
 
             m_OrbFillBar.Initialize(powerOrb.Power, maxPower);
             m_PowerOrbUI.Initialize(powerOrb);
+
+            m_BonusPower.gameObject.SetActive(bonusPower != 1);
+            if (bonusPower != 1)
+                m_BonusPower.text = "(Bonus: +" + Mathf.Round((bonusPower - 1) * 100) + "%)";
         }
 
         protected override void SetUpUI()
