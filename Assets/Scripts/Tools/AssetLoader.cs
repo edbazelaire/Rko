@@ -105,6 +105,7 @@ namespace Tools
         public const string c_ButtonsPath                   = c_UISpritesPath + "Buttons/";
         public const string c_RaysPath                      = c_UISpritesPath + "Rays/";
         public const string c_TutoUIPath                    = c_UISpritesPath + "Tuto/";
+        public const string c_OtherUIPath                   = c_UISpritesPath + "Other/";
         public const string c_CaptionsPath                  = c_TutoUIPath + "Captions/";
         public const string c_EmotsSpritePath               = c_SpritesPath + "Emots/";
         
@@ -225,9 +226,9 @@ namespace Tools
             return arenaData;
         }
 
-        public static ArenaMod LoadArenaMod(EArenaMod arenaMod)
+        public static ArenaModData LoadArenaMod(EArenaMod arenaMod)
         {
-            return Load<ArenaMod>(arenaMod.ToString(), c_ArenaModsPath);
+            return Load<ArenaModData>(arenaMod.ToString(), c_ArenaModsPath);
         }
 
 
@@ -502,6 +503,9 @@ namespace Tools
                 path = c_ChestsIconPath;
                 itemName += "Chest";
             }
+            else if (iconType == typeof(EArenaMod))
+                return LoadFilterIcon(itemName);
+
             else
             {
                 if (iconType != null)

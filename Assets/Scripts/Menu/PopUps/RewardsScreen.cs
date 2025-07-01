@@ -460,7 +460,7 @@ namespace Menu.PopUps
             if (currency == ECurrency.Xp)
                 currency = ECurrency.TotalXp;
 
-            int currentlyOwnValue = InventoryManager.GetCurrency(currency);
+            int currentlyOwnValue = (int)InventoryManager.GetCurrency(currency);
             int maxValue = currency == ECurrency.Xp || currency == ECurrency.TotalXp ? CollectablesManagementData.GetCurrentAccountLevelData().RequiredXp : currentlyOwnValue + qty;
 
             // init default template and clean previous content
@@ -470,7 +470,7 @@ namespace Menu.PopUps
             template.Initialize(currency, qty);
 
             // remove button and collection fillbar from item
-            template.AsIconOnly();
+            template.SetAsIconOnly();
 
             m_CollectionQty.text = "+ " + qty.ToString();
             m_RewardTitle.text = title;
@@ -511,11 +511,6 @@ namespace Menu.PopUps
             SetUpTemplateItem(collectable, qty);
             SetUpRewardInfos(collectable, qty, false);
 
-            // TODO : REMOVE    ====================================
-            if (m_CurrentTemplateItem.GetComponent<TemplateCollectableItemUI>().CSubButtons.isActiveAndEnabled)
-                ErrorHandler.Error("SUB BUTTONS ACTIVE");
-            // TODO : REMOVE    ====================================
-
             // skip one frame to be sure that the layout components are adjusted properly
             yield return null;
 
@@ -530,21 +525,9 @@ namespace Menu.PopUps
                 yield return PlayRewardAnimation();
             }
 
-
-            // TODO : REMOVE    ====================================
-            if (m_CurrentTemplateItem.GetComponent<TemplateCollectableItemUI>().CSubButtons.isActiveAndEnabled)
-                ErrorHandler.Error("SUB BUTTONS ACTIVE");
-            // TODO : REMOVE    ====================================
-
             // -- play collection fill bar animation
             m_Skip = false;
             yield return WaitForCoroutineOrSkip(m_CollectionFillBar.CollectionAnimationCoroutine(qty));
-
-
-            // TODO : REMOVE    ====================================
-            if (m_CurrentTemplateItem.GetComponent<TemplateCollectableItemUI>().CSubButtons.isActiveAndEnabled)
-                ErrorHandler.Error("SUB BUTTONS ACTIVE");
-            // TODO : REMOVE    ====================================
 
             // make sure that audio source is destroyed(in case of skip)
             if (! m_CollectionFillBar.AudioSource.IsDestroyed())

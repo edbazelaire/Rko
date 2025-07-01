@@ -533,7 +533,7 @@ namespace Tools
         public void ToggleChestSpeedBoost()
         {
             if (! TimeCloudData.HasBoost(EBoost.ChestSpeedBoost))
-                TimeCloudData.AddBoost(EBoost.ChestSpeedBoost, 3600 * 48);
+                TimeCloudData.AddBoost(EBoost.ChestSpeedBoost, 48 * 3600);
             else
                 TimeCloudData.RemoveBoost(EBoost.ChestSpeedBoost);
         }

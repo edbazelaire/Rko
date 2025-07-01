@@ -33,9 +33,9 @@ namespace Menu.MainMenu
 
         #region GUI Manipulators
 
-        public override void AsIconOnly(bool activate = true)
+        public override void SetAsIconOnly(bool activate = true)
         {
-            base.AsIconOnly(activate);
+            base.SetAsIconOnly(activate);
         }
 
         public override void SetUpCollectionFillBar(bool activate = true)

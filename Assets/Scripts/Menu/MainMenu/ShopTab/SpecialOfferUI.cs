@@ -100,7 +100,7 @@ namespace Menu.MainMenu.ShopTab
             {
                 // ============================================================
                 // TODO REMOVE : skip $ currencies
-                if (bundleData.Currency == ECurrency.Dollars)
+                if (bundleData.Currency == ECurrency.Real)
                     continue;
                 // ============================================================
 
@@ -194,6 +194,7 @@ namespace Menu.MainMenu.ShopTab
             rewards.Add(spell, qty);
 
             return new SShopData(
+                product :       EProduct.None,
                 name:           "",
                 icon:           AssetLoader.LoadIcon(spell),
                 rewards:        rewards,

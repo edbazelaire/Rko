@@ -7,19 +7,21 @@ using Tools;
 using Inventory;
 using Save;
 using Unity.VisualScripting;
+using MyBox;
+using Managers.Monetization.IAP;
 
 namespace Data.GameManagement
 {
     [Serializable]
     public struct SPriceData
     {
-        public int Price;
-        public ECurrency Currency;
+        public float        Price;
+        public ECurrency    Currency;
 
-        public SPriceData(int price, ECurrency currency)
+        public SPriceData(float price, ECurrency currency)
         {
-            Price = price;
-            Currency = currency;
+            Price       = price;
+            Currency    = currency;
         }
     }
 
@@ -318,6 +320,9 @@ namespace Data.GameManagement
     [Serializable]
     public struct SShopData
     {
+        // if can be bought with real currency - link to the product id
+        public EProduct Product;
+        /// <summary> Name or Title of the product on the TemplateItem </summary>
         public string Name;
         /// <summary> list of chests in this bundle </summary>
         public Sprite Icon;
@@ -331,10 +336,13 @@ namespace Data.GameManagement
         public int MaxCollection;
         /// <summary> percentage of reduction to apply on the price (between 0 & 1) </summary>
         public float Reduction;
-        public float Price => (1 - Reduction) * Cost;
 
-        public SShopData(string name, Sprite icon, SRewardsData rewards, ECurrency currency, int cost, int maxCollection, float reduction = 0)
+        public float Price => (1 - Reduction) * Cost;
+        public string ProductId => ! Name.IsNullOrEmpty() ? Name : (Rewards.Rewards[0].RewardName + (Rewards.Rewards[0].Qty > 0 ? "_" + Rewards.Rewards[0].Qty : ""));
+
+        public SShopData(EProduct product, string name, Sprite icon, SRewardsData rewards, ECurrency currency, int cost, int maxCollection, float reduction = 0)
         {
+            Product         = product;
             Name            = name;
             Icon            = icon;
             Rewards         = rewards;
@@ -361,6 +369,34 @@ namespace Data.GameManagement
             }
 
             Reduction = reduction;
+        }
+
+        public bool Check()
+        {
+            // CHECK : that a real currency product has Store ProductId
+            if (Currency == ECurrency.Real)
+            {
+                if (Product == EProduct.None)
+                {
+                    ErrorHandler.Error($"Product {Name} has a {ECurrency.Real} currency but has no product identifier");
+                    return false;
+                }
+
+                if (IAPManager.Instance.GetProduct(Product) == null)
+                {
+                    ErrorHandler.Error($"Product {Product} not found");
+                    return false;
+                }
+            }
+
+            // CHECK : price not negative
+            if (Price < 0)
+            {
+                ErrorHandler.Error($"ShopItem {Name} has a price {Price} < 0");
+                return false;
+            }
+
+            return true;
         }
     }
 

@@ -22,7 +22,6 @@ namespace Menu.Common.Buttons
         // ==============================================================================================
         // Data
         AchievementData m_Achievement;
-        bool m_IsMaxed;
 
         // ==============================================================================================
         // GameObjects & Components
@@ -32,7 +31,7 @@ namespace Menu.Common.Buttons
         CollectionFillBar   m_FillBar;
 
         public Button Button => m_Button;
-        public bool IsMaxed => m_IsMaxed;
+        public bool IsUnlockable => m_Achievement.IsUnlockable;
 
         #endregion
 
@@ -67,7 +66,6 @@ namespace Menu.Common.Buttons
             m_Title.text = TextLocalizer.SplitCamelCase(m_Achievement.name);
             m_FillBar.Initialize(m_Achievement.GetCount(), m_Achievement.RequestedValue);
             RefreshReward();
-            RefreshIsMaxed();
         }
 
         #endregion
@@ -78,7 +76,6 @@ namespace Menu.Common.Buttons
         void RefreshUI()
         {
             RefreshReward();
-            RefreshIsMaxed();
             m_FillBar.UpdateCollection(m_Achievement.GetCount(), m_Achievement.RequestedValue);
         }
 
@@ -101,18 +98,6 @@ namespace Menu.Common.Buttons
             m_RewardDisplayer.Initialize(m_Achievement.Current.Value.Rewards, 2);
         }
 
-        void RefreshIsMaxed()
-        {
-            // check if is a new completion (to update notifications)
-            bool isMaxed = m_Achievement.GetCount() >= m_Achievement.RequestedValue;
-            if (isMaxed != m_IsMaxed)
-            {
-                AchievementUpdateEvent?.Invoke(isMaxed);
-            }
-
-            m_IsMaxed = isMaxed;
-        }
-
         #endregion
 
 
@@ -123,8 +108,8 @@ namespace Menu.Common.Buttons
             base.RegisterListeners();
 
             m_Button.onClick.AddListener(OnClicked);
-            StatCloudData.AnalyticsDataChanged += OnAnalyticsDataChanged;
-            ProfileCloudData.AchievementChangedEvent += OnAchievementChanged;
+            StatCloudData.AnalyticsDataChanged          += OnAnalyticsDataChanged;
+            ProfileCloudData.AchievementChangedEvent    += OnAchievementChanged;
         }
 
 
@@ -136,8 +121,8 @@ namespace Menu.Common.Buttons
                 return;
 
             m_Button.onClick.RemoveAllListeners();
-            StatCloudData.AnalyticsDataChanged -= OnAnalyticsDataChanged;
-            ProfileCloudData.AchievementChangedEvent += OnAchievementChanged;
+            StatCloudData.AnalyticsDataChanged          -= OnAnalyticsDataChanged;
+            ProfileCloudData.AchievementChangedEvent    -= OnAchievementChanged;
         }
 
         /// <summary>

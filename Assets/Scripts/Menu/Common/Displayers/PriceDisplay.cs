@@ -25,7 +25,11 @@ namespace Menu.Common.Displayers
         {
             FindComponents();
 
-            m_Price.text = TextHandler.FormatNumericalString(priceData.Price);
+            if (priceData.Price == Mathf.Round(priceData.Price))
+                m_Price.text = TextHandler.FormatNumericalString((int)priceData.Price);
+            else
+                m_Price.text = priceData.Price.ToString();
+
             m_CurrencyIcon.sprite = AssetLoader.LoadCurrencyIcon(priceData.Currency);
         }
     }

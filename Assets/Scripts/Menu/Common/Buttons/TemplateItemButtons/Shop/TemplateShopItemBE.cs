@@ -73,14 +73,7 @@ namespace Menu.Common.Buttons
 
         protected override void OnClick()
         {
-            if (m_Currency == ECurrency.Dollars)
-            {
-                // TODO : for now money transactions are automatic success
-                OnPurchaseCompleted(true);
-                return;
-            }
-            
-            Main.ConfirmBuyRewards(m_Name, new SPriceData((int)m_Cost, m_Currency), m_Rewards, OnPurchaseCompleted);            
+            Main.ConfirmBuyRewards(m_Name, new SPriceData(m_Cost, m_Currency), m_Rewards, OnPurchaseCompleted);            
         }
 
         protected void OnPurchaseCompleted(bool success)

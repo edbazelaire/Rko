@@ -48,7 +48,7 @@ namespace Menu.PopUps
             m_Buttons           = Finder.Find(gameObject, "Buttons", false);
         }
 
-        public void Initialize(Action OnValidate = null, Action OnCancel = null)
+        public virtual void Initialize(Action OnValidate = null, Action OnCancel = null)
         {
             m_OnValidate = OnValidate;
             m_OnCancel = OnCancel;

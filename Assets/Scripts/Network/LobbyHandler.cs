@@ -889,13 +889,6 @@ namespace Network
                 if (string.IsNullOrEmpty(ProfileCloudData.Region))
                     return lobbies;
 
-                // ========================================================================================
-                // TODO : remove
-                //QueryResponse test = await Lobbies.Instance.QueryLobbiesAsync();
-                //ErrorHandler.Log("Total Lobbies found: " + test.Results.Count, ELogTag.Lobby);
-                // TODO : remove
-                // ========================================================================================
-
                 QueryLobbiesOptions queryLobbiesOptions = new QueryLobbiesOptions
                 {
                     Count = 25,

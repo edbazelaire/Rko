@@ -21,6 +21,8 @@ namespace Menu
 
         private void Awake()
         {
+            Initialize();
+
             if (!TimeCloudData.HasBoost(EBoost.ChestSpeedBoost))
             {
                 Activate(false);
@@ -44,7 +46,7 @@ namespace Menu
 
         private void Update()
         {
-            if (!m_Initialized)
+            if (! isActiveAndEnabled)
                 return;
 
             int remainingTime = m_ResetAt - (int)(new DateTimeOffset(DateTime.UtcNow)).ToUnixTimeSeconds();
@@ -65,9 +67,6 @@ namespace Menu
                 return;
 
             m_ResetAt = TimeCloudData.GetBoost(EBoost.ChestSpeedBoost).Value.ResetAt;
-
-            if (!m_Initialized)
-                Initialize();
         }
 
         #endregion

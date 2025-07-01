@@ -21,6 +21,8 @@ using Managers.Friends;
 using Unity.Services.Friends.Models;
 using UnityEngine.SceneManagement;
 using MyBox;
+using Managers.Monetization.IAP;
+
 
 
 #if UNITY_EDITOR
@@ -80,6 +82,7 @@ namespace Assets
             FriendsHandler.Initialized,
             RSDManager.LoadingCompleted,
             CloudSaveManager.LoadingCompleted,
+            IAPManager.Initialized,
             m_SignedIn
         };
 
@@ -422,8 +425,7 @@ namespace Assets
 
         public static void DisplayRewards(SRewardsData rewardsData, string context, Action OnRewardCollected = null, string title = null)
         {
-            Action callback = () => Main.SetPopUp(EPopUpState.RewardsScreen, rewardsData, context, OnRewardCollected, title);
-            callback?.Invoke();
+            Main.SetPopUp(EPopUpState.RewardsScreen, rewardsData, context, OnRewardCollected, title);
         }
      
         public static void DisplayAchievementRewards(List<SAchievementReward> rewardsData)
@@ -468,8 +470,9 @@ namespace Assets
         /// <param name="priceData"></param>
         /// <param name="rewardsData"></param>
         /// <param name="OnPurchase"></param>
-        public static void ConfirmBuyRewards(string itemName, SPriceData priceData, SRewardsData rewardsData, Action<bool> OnPurchase)
+        public static void ConfirmBuyRewards(string itemName, SPriceData priceData, SRewardsData rewardsData, Action<bool> OnPurchase, bool watchAd = false)
         {
+            
             if (rewardsData.Rewards.Count == 0)
             {
                 ErrorHandler.Error("Call reward popup with no rewards in list");
@@ -487,11 +490,11 @@ namespace Assets
                     return;
                 }
 
-                Main.SetPopUp(EPopUpState.ConfirmBuyItemPopUp, priceData, item, rewardsData.Rewards[0].Qty, onValidate, onCancel);
+                Main.SetPopUp(EPopUpState.ConfirmBuyItemPopUp, priceData, item, watchAd, rewardsData.Rewards[0].Qty, onValidate, onCancel);
                 return;
             }
 
-            Main.SetPopUp(EPopUpState.ConfirmBuyBundlePopUp, itemName, priceData, rewardsData, onValidate, onCancel);
+            Main.SetPopUp(EPopUpState.ConfirmBuyBundlePopUp, itemName, priceData, watchAd, rewardsData, onValidate, onCancel);
         }
 
         public static void SetMessagePopUp(string message, string title = "")
@@ -612,8 +615,7 @@ namespace Assets
             // setup analytics
             MAnalytics.Initialize();
             FriendsHandler.Instance.Initialize();
-
-            // load cloud data
+            IAPManager.Initialize();
             CloudSaveManager.Instance.LoadSave();
         }
 

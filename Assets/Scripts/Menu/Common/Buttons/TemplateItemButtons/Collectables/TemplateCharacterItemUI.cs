@@ -39,9 +39,9 @@ namespace Menu.Common.Buttons
             m_PriceDisplay.Initialize(ShopManagementData.GetPrice(m_Character));
         }
 
-        public override void AsIconOnly(bool activate = false)
+        public override void SetAsIconOnly(bool activate = false)
         {
-            base.AsIconOnly(activate);
+            base.SetAsIconOnly(activate);
 
             m_PriceDisplay.gameObject.SetActive(! activate);
         }
