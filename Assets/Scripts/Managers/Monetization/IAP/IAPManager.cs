@@ -99,7 +99,7 @@ namespace Managers.Monetization.IAP
         public void RestorePurchases()
         {
 #if UNITY_IOS || UNITY_STANDALONE_OSX
-            if (!IsInitialized())
+            if (!Initialized)
                 return;
 
             var apple = m_ExtensionProvider.GetExtension<IAppleExtensions>();
