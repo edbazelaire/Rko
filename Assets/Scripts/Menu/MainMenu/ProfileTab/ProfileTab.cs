@@ -1,6 +1,8 @@
 ﻿using Data;
+using Game.Loaders;
 using Menu.Common.Buttons;
 using Menu.Common.Notifications;
+using Save;
 using Tools;
 using UnityEngine;
 
@@ -29,7 +31,7 @@ namespace Menu.MainMenu.ProfileTab
         {
             base.Initialize(tabButton, activationSoundFX);
 
-            CheckNotifications();
+            RefreshTabButtonNotifications();
         }
 
         protected override void SetUpUI()
@@ -44,23 +46,15 @@ namespace Menu.MainMenu.ProfileTab
 
         #region Notifications
 
-        /// <summary>
-        /// Check if achievements are 
-        /// </summary>
-        void CheckNotifications()
+        void RefreshTabButtonNotifications()
         {
-            var achievementButtons = Finder.FindComponents<TemplateAchievementButton>(gameObject);
-            foreach (var acButton in achievementButtons)
+            m_NAchivementsToCollect = 0;
+            foreach (var achievementData in AchievementLoader.Achievements)
             {
-                if (acButton.IsMaxed)
+                if (achievementData.IsUnlockable)
                     m_NAchivementsToCollect++;
             }
 
-            RefreshTabButtonNotifications();
-        }
-
-        void RefreshTabButtonNotifications()
-        {
             if (m_NAchivementsToCollect < 0)
             {
                 ErrorHandler.Error("m_NAchivementsToCollect (" + m_NAchivementsToCollect + ") < 0");
@@ -86,19 +80,20 @@ namespace Menu.MainMenu.ProfileTab
         protected override void RegisterListeners()
         {
             base.RegisterListeners();
-            TemplateAchievementButton.AchievementUpdateEvent += OnAchievementUpdate;
+            ProfileCloudData.AchievementChangedEvent    += OnAchievementChanged;
+            ProfileCloudData.AchievementCompletedEvent  += OnAchievementChanged;
         }
 
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
 
-            TemplateAchievementButton.AchievementUpdateEvent -= OnAchievementUpdate;
+            ProfileCloudData.AchievementChangedEvent    -= OnAchievementChanged;
+            ProfileCloudData.AchievementCompletedEvent  -= OnAchievementChanged;
         }
 
-        protected void OnAchievementUpdate(bool isCompleted)
+        protected void OnAchievementChanged(string _)
         {
-            m_NAchivementsToCollect += isCompleted ? 1 : -1;
             RefreshTabButtonNotifications();
         }
 

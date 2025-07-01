@@ -1,6 +1,7 @@
 ﻿using Assets;
 using Data.GameManagement;
 using Enums;
+using Game.Spells;
 using Inventory;
 using Menu.Common.Buttons.TemplateItemButtons.Collectables;
 using Save;
@@ -33,13 +34,15 @@ namespace Menu.Common.Buttons
         protected SCollectableCloudData     m_CollectableCloudData;
 
         protected int m_Level;
+        protected bool m_RemoveAllListeners = false;
 
         protected Enum m_Collectable                        => m_CollectableCloudData.GetCollectable();
         public SCollectableCloudData CollectableCloudData   => m_CollectableCloudData;
         public CollectionFillBar CollectionFillBar          => m_CollectionFillBar;
-        public CollectablesSubButtons CSubButtons => m_CSubButtons;
+        public CollectablesSubButtons CSubButtons           => m_CSubButtons;
 
         public Enum Collectable => m_Collectable;
+        public bool AsIconOnly => m_AsIconOnly;
 
         #endregion
 
@@ -58,15 +61,17 @@ namespace Menu.Common.Buttons
         public virtual void Initialize(Enum collectable, bool asIconOnly = false)
         {
             m_AsIconOnly = asIconOnly;
+            m_RemoveAllListeners = false;
 
             base.Initialize();
 
             SetUpCollectable(collectable, asIconOnly);
         }
 
-        public virtual void Initialize(Enum collectable, int level, bool asIconOnly = false)
+        public virtual void Initialize(Enum collectable, int level, bool asIconOnly = false, bool removeListeners = true)
         {
             m_AsIconOnly = asIconOnly;
+            m_RemoveAllListeners = removeListeners;
 
             base.Initialize();
 
@@ -121,7 +126,7 @@ namespace Menu.Common.Buttons
             SetUpUI(asIconOnly);
 
             // remove extra features if this is only requested as icon
-            AsIconOnly(asIconOnly);
+            SetAsIconOnly(asIconOnly);
 
             // setup ui depending on context
             RefreshUI();
@@ -192,9 +197,9 @@ namespace Menu.Common.Buttons
             SetState(EButtonState.Normal);
         }
 
-        public override void AsIconOnly(bool activate = false)
+        public override void SetAsIconOnly(bool activate = false)
         {
-            base.AsIconOnly(activate);
+            base.SetAsIconOnly(activate);
 
             m_CollectionFillBar?.gameObject.SetActive(!activate);
         }
@@ -246,7 +251,7 @@ namespace Menu.Common.Buttons
         {
             base.RegisterListeners();
 
-            if (m_AsIconOnly)
+            if (m_RemoveAllListeners)
                 return;
 
             InventoryCloudData.CollectableDataChangedEvent  += OnCollectableDataChanged;
@@ -257,7 +262,7 @@ namespace Menu.Common.Buttons
         {
             base.UnRegisterListeners();
 
-            if (m_AsIconOnly)
+            if (m_RemoveAllListeners)
                 return;
 
             InventoryCloudData.CollectableDataChangedEvent  -= OnCollectableDataChanged;
@@ -290,10 +295,21 @@ namespace Menu.Common.Buttons
                 return;
 
             m_CollectableCloudData = data;
+            m_Level = data.Level;
             RefreshUI();
         }
 
-        protected virtual void OnCollectableUpgraded(Enum collectable, int level) { }
+        protected virtual void OnCollectableUpgraded(Enum collectable, int level) 
+        {
+            if (collectable != m_Collectable)
+                return;
+
+            // refresh spell cloud data
+            m_CollectableCloudData = InventoryCloudData.Instance.GetCollectable(collectable);
+            m_Level = level;
+
+            RefreshUI();
+        }
 
         protected virtual void OnClickLocked() { }
 

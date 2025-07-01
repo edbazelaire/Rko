@@ -5,20 +5,17 @@ using Enums;
 using Menu.PopUps;
 using Menu.PopUps.OverlayScreens;
 using Menu.PopUps.PopUps.MessagePopUps;
-using Save;
 using Scripts.Menu.PopUps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
-using UnityEditor;
 using UnityEngine;
 using Menu.MainMenu;
 using Unity.VisualScripting;
 using MyBox;
 using System.Collections;
 using Save.Data.Progression.Structs;
-using static UnityEngine.Rendering.GPUSort;
 
 namespace Assets.Scripts.Managers
 {
@@ -93,15 +90,15 @@ namespace Assets.Scripts.Managers
                     break;
 
                 case EPopUpState.ConfirmBuyPopUp:
-                    obj.GetComponent<ConfirmBuyPopUp>().Initialize((string)args[0], (SPriceData)args[1], (SRewardsData)args[2], (Action)args[3], (Action)args[4]);
+                    obj.GetComponent<ConfirmBuyPopUp>().Initialize((string)args[0], (SPriceData)args[1], (bool)args[2], (SRewardsData)args[3], (Action)args[4], (Action)args[5]);
                     break;
 
                 case EPopUpState.ConfirmBuyItemPopUp:
-                    obj.GetComponent<ConfirmBuyItemPopUp>().Initialize((SPriceData)args[0], (Enum)args[1], (int)args[2], (Action)args[3], (Action)args[4]);
+                    obj.GetComponent<ConfirmBuyItemPopUp>().Initialize((SPriceData)args[0], (Enum)args[1], (bool)args[2], (int)args[3], (Action)args[4], (Action)args[5]);
                     break;
 
                 case EPopUpState.ConfirmBuyBundlePopUp:
-                    obj.GetComponent<ConfirmBuyBundlePopUp>().Initialize((string)args[0], (SPriceData)args[1], (SRewardsData)args[2], (Action)args[3], (Action)args[4]);
+                    obj.GetComponent<ConfirmBuyBundlePopUp>().Initialize((string)args[0], (SPriceData)args[1], (bool)args[2], (SRewardsData)args[3], (Action)args[4], (Action)args[5]);
                     break;
 
                 // SCREENS -------------------------------------------------------
@@ -157,6 +154,10 @@ namespace Assets.Scripts.Managers
                     break;
 
                 // SETTINGS & OPTIONS -------------------------------------------------------
+                case EPopUpState.ArenaOptionsPopUp:
+                    obj.GetComponent<ArenaOptionsPopUp>().Initialize();
+                    break;
+
                 case EPopUpState.SettingsPopUp:
                     obj.GetComponent<SettingsPopUp>().Initialize();
                     break;
@@ -183,6 +184,22 @@ namespace Assets.Scripts.Managers
         public static void QuickMessage(string message, float duration = 3f)
         {
             SetPopUp(EPopUpState.QuickMessagePopUp, message, duration);
+        }
+
+        #endregion
+
+
+        #region Confirm PopUps
+
+        /// <summary>
+        /// Confirm purchase of an item or a bundle of items (currency, chests, collectables)
+        /// </summary>
+        /// <param name="priceData"></param>
+        /// <param name="rewardsData"></param>
+        /// <param name="OnPurchase"></param>
+        public static void ConfirmWatchAd(Action callback, string title = "", string text = "")
+        {
+            SetPopUp(EPopUpState.ConfirmBuyBundlePopUp, callback, title, text);
         }
 
         #endregion
@@ -232,6 +249,9 @@ namespace Assets.Scripts.Managers
 
         public static void RemoveScreen(OverlayScreen screen) 
         {
+            if (screen.IsDestroyed())
+                return;
+
             int index = Screens.IndexOf(screen);
             if (index == -1)
             {

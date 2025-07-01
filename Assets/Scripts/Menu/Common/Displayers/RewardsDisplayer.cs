@@ -11,6 +11,8 @@ namespace Menu.Common.Displayers
     {
         #region Members
 
+        [SerializeField] HorizontalLayoutGroup m_RowTemplate;
+
         HorizontalLayoutGroup m_RewardsDisplayRow;
         GameObject m_RewardsDisplayContainer;
         GameObject m_TemplateReward;
@@ -25,7 +27,7 @@ namespace Menu.Common.Displayers
         public void Initialize(List<SReward> rewardsData, int maxElemPerRow = 4)
         {
             m_RewardsDisplayContainer = Finder.Find(gameObject, "Content");
-            m_RewardsDisplayRow = Finder.FindComponent<HorizontalLayoutGroup>(m_RewardsDisplayContainer);
+            m_RewardsDisplayRow = m_RowTemplate != null ? m_RowTemplate : Finder.FindComponent<HorizontalLayoutGroup>(m_RewardsDisplayContainer);
             m_TemplateReward = AssetLoader.LoadTemplateItem("Reward");
 
             // clean items
@@ -36,7 +38,7 @@ namespace Menu.Common.Displayers
 
         public void SetUpRewards(List<SReward> rewards, int maxElemPerRow = 4)
         {
-            UIHelper.CleanContent(m_RewardsDisplayContainer, startAt: 1);
+            UIHelper.CleanContent(m_RewardsDisplayContainer, startAt: m_RowTemplate == null ? 1 : 0);
 
             // Total number of rewards
             int rewardCount = rewards.Count;
@@ -63,7 +65,7 @@ namespace Menu.Common.Displayers
                 if (i > 0)
                     row = Instantiate(m_RewardsDisplayRow, m_RewardsDisplayContainer.transform).GetComponent<Transform>();
               
-                UIHelper.CleanContent(row.gameObject);
+                UIHelper.CleanContent(row);
                 for (int j = 0; j < itemsInRow; j++)
                 {
                     // Instantiate the reward template and initialize it with the reward

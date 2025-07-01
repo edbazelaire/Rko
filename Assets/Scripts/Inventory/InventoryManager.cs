@@ -38,7 +38,7 @@ namespace Inventory
 
         public static int GetCurrency(ECurrency currency)
         {
-            return (int)InventoryCloudData.Instance.Data[currency.ToString()];
+            return InventoryCloudData.Instance.GetCurrency(currency);
         }
 
         public static void UpdateCurrency(ECurrency currency, int amount, string context, bool save = true)
@@ -70,7 +70,7 @@ namespace Inventory
         public static bool CanBuy(Enum collectable)
         {
             SPriceData priceData = ShopManagementData.GetPrice(collectable);
-            return CanBuy(priceData.Price, priceData.Currency);
+            return CanBuy((int)priceData.Price, priceData.Currency);
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace Inventory
         /// </summary>
         /// <param name="cost"></param>
         /// <returns></returns>
-        public static bool CanBuy(int cost, ECurrency currency = ECurrency.Gold)
+        public static bool CanBuy(float cost, ECurrency currency = ECurrency.Gold)
         {
             return GetCurrency(currency) - cost >= 0;
         }
@@ -94,7 +94,7 @@ namespace Inventory
         /// </summary>
         /// <param name="cost"></param>
         /// <returns></returns>
-        public static bool Spend(int cost, ECurrency currency, string context)
+        public static bool Spend(float cost, ECurrency currency, string context)
         {
             if (cost < 0)
             {
@@ -109,7 +109,7 @@ namespace Inventory
             }
 
             // fire analytics event that the currency has been spent
-            MAnalytics.SendEvent(new CurrencyEvent(currency, -cost, context));
+            MAnalytics.SendEvent(new CurrencyEvent(currency, -(int)cost, context));
 
             // save new currency value in cloud data
             InventoryCloudData.Instance.SetData(currency.ToString(), GetCurrency(currency) - cost);

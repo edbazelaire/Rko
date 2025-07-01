@@ -87,7 +87,7 @@ namespace Menu.PopUps.Components
                 // create template
                 var templateItem = Instantiate(template, m_ChoicesContainer.transform);
                 // init template with values
-                templateItem.Initialize(m_Values[i], true);
+                templateItem.Initialize(m_Values[i], ProfileCloudData.AccountLevel, asIconOnly: true, removeListeners: true);
                 templateItem.SetBottomOverlay(m_Values[i].ToString());
                 templateItem.OverrideOnClickListener(() => { ToggleSelection(templateItem); });
 

@@ -1,5 +1,8 @@
 ﻿using Data.GameManagement;
+using Enums;
 using Inventory;
+using Managers.Ads;
+using Managers.Monetization.IAP;
 using Menu.Common.Displayers;
 using System;
 using TMPro;
@@ -17,9 +20,11 @@ namespace Menu.PopUps
         protected string            m_ItemName;
         protected SPriceData        m_PriceData;
         protected SRewardsData      m_RewardsData;
+        protected bool              m_EnableWatchAd;
 
         // GameObjects & Components
         protected TMP_Text          m_ButtonsErrorMessage;
+        protected Button            m_WatchAdButton;
         protected Button            m_BuyButton;
         protected PriceDisplay      m_BuyButtonDisplay;
 
@@ -35,17 +40,20 @@ namespace Menu.PopUps
         {
             base.FindComponents();
 
-            m_ButtonsErrorMessage = Finder.FindComponent<TMP_Text>(gameObject, "ButtonsErrorMessage");
-            m_BuyButton = Finder.FindComponent<Button>(m_Buttons, "BuyButton");
-            m_BuyButtonDisplay = Finder.FindComponent<PriceDisplay>(m_BuyButton.gameObject);
+            m_ButtonsErrorMessage   = Finder.FindComponent<TMP_Text>(gameObject, "ButtonsErrorMessage");
+            m_WatchAdButton         = Finder.FindComponent<Button>(m_Buttons, "WatchAdButton");
+            m_BuyButton             = Finder.FindComponent<Button>(m_Buttons, "BuyButton");
+            m_BuyButtonDisplay      = Finder.FindComponent<PriceDisplay>(m_BuyButton.gameObject);
         }
 
-        public void Initialize(string itemName, SPriceData priceData, SRewardsData rewardsData, Action onValidate, Action onCancel)
+        public void Initialize(string itemName, SPriceData priceData, bool watchAd, SRewardsData rewardsData, Action onValidate, Action onCancel)
         {
-            base.Initialize(GetMessage(), "Confirm Buy", onValidate, onCancel);
             m_ItemName      = itemName;
             m_PriceData     = priceData;
             m_RewardsData   = rewardsData;
+            m_EnableWatchAd = watchAd;
+
+            base.Initialize(GetMessage(), "Confirm Buy", onValidate, onCancel);
         }
 
         protected override void OnPrefabLoaded()
@@ -54,6 +62,11 @@ namespace Menu.PopUps
 
             m_ButtonsErrorMessage.text = "";
             m_BuyButtonDisplay.Initialize(m_PriceData);
+
+            m_WatchAdButton.gameObject.SetActive(m_EnableWatchAd);
+
+            if (m_PriceData.Price == 0)
+                m_BuyButton.gameObject.SetActive(false);
         }
 
         #endregion
@@ -79,6 +92,10 @@ namespace Menu.PopUps
                     OnBuyClicked();
                     break;
 
+                case ("WatchAdButton"):
+                    OnWatchAdClicked();
+                    break;
+
                 default:
                     base.OnUIButton(bname);
                     break;
@@ -87,6 +104,13 @@ namespace Menu.PopUps
 
         protected virtual void OnBuyClicked()
         {
+            if (m_PriceData.Currency == Enums.ECurrency.Real)
+            {
+                IAPManager.Instance.BuyProduct(m_ItemName, m_OnValidate);
+                Exit();
+                return;
+            }
+
             if (! InventoryManager.CanBuy(m_PriceData.Price, m_PriceData.Currency))
             {
                 m_ButtonsErrorMessage.text = $"You do not have enough {m_PriceData.Currency} to buy this item";
@@ -98,6 +122,12 @@ namespace Menu.PopUps
 
             OnValidateButton();
 
+            Exit();
+        }
+
+        protected virtual void OnWatchAdClicked()
+        {
+            AdManager.Instance.ShowRewarded(m_OnValidate);
             Exit();
         }
 
