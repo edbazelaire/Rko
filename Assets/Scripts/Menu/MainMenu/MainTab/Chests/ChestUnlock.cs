@@ -21,7 +21,6 @@ namespace Menu
         const string c_EmptySlot                = "EmptySlot";
         const string c_ChestPreviewContainer    = "ChestPreviewContainer";
         const string c_ChestContainer           = "ChestContainer";
-        const string c_ChestPreview             = "ChestPreview";
         const string c_ChestTimer               = "ChestTimer";
 
         [SerializeField] Color m_EmptyColor;
@@ -174,7 +173,13 @@ namespace Menu
 
         void DisplayUnlockPopUp()
         {
-            Main.ConfirmBuyRewards("UnlockChest", GetUnlockPrice(), CreateRewardsData(), (bool success) => { if (success) UnlockChest(); });
+            Main.ConfirmBuyRewards(
+                "UnlockChest", 
+                GetUnlockPrice(), 
+                CreateRewardsData(), 
+                (bool success) => { if (success) UnlockChest(); },
+                watchAd: true
+            );
         }
 
         /// <summary>

@@ -1108,7 +1108,7 @@ namespace Game.Spells
                 value = m_Caster.StateHandler.ApplyBonusDamage(value, m_Controller, specialCondition: SBonusStats.AsUnique(StateEffectName));
 
                 // hit target
-                m_Controller.Life.Hit(value, casterId: m_Caster.PlayerId, source: StateEffectName, spellCategory: ESpellCategory.Direct, ignoreRes: m_IsTrueDamage);
+                m_Controller.Life.Hit(value, casterId: m_Caster.PlayerId, source: m_Parent, spellCategory: ESpellCategory.Direct, ignoreRes: m_IsTrueDamage);
 
                 // apply lifesteal (on caster)
                 var lifesteal = Mathf.Max(0f, GetInt(EStateEffectProperty.LifeSteal) + m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal, m_Controller, specialCondition: SBonusStats.AsUnique(StateEffectName)) - 1);
@@ -1127,7 +1127,7 @@ namespace Game.Spells
                 value = m_Caster.StateHandler.ApplyBonusExecutionDamage(value, m_Controller, specialCondition: StateEffectName);
 
                 // hit target
-                m_Controller.Life.Hit(value, casterId: m_Caster.PlayerId, source: StateEffectName, spellCategory: ESpellCategory.Direct, ignoreRes: m_IsTrueDamage);
+                m_Controller.Life.Hit(value, casterId: m_Caster.PlayerId, source: m_Parent, spellCategory: ESpellCategory.Direct, ignoreRes: m_IsTrueDamage);
 
                 // apply lifesteal (on caster)
                 var lifesteal = Mathf.Max(0f, GetInt(EStateEffectProperty.LifeSteal) + m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal, m_Controller, specialCondition: SBonusStats.AsUnique(StateEffectName)) - 1);
@@ -1141,7 +1141,7 @@ namespace Game.Spells
             // HEALING                  -  check if should heal the target
             value = GetInt(EStateEffectProperty.Heal, stacks);
             if (value != 0)
-                m_Controller.Life.Heal(value, casterId: m_Caster.PlayerId, source: StateEffectName, spellCategory: ESpellCategory.Direct);
+                m_Controller.Life.Heal(value, casterId: m_Caster.PlayerId, source: m_Parent, spellCategory: ESpellCategory.Direct);
 
             // ================================================================================================
             // SHIELD                   -  check if should shield the target

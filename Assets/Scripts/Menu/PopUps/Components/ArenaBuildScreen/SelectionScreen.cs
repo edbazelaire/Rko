@@ -79,7 +79,7 @@ namespace Menu.PopUps.Components
 
                 // instantiate the PowerUpItem with the provided data
                 var template = Instantiate(baseTemplate, m_SelectionContainer.transform);
-                template.Initialize(data.Id, level: ProfileCloudData.AccountLevel, asIconOnly: true);
+                template.Initialize(data.Id, level: ProfileCloudData.AccountLevel, asIconOnly: true, removeListeners: true);
                 template.Button.interactable = true;
 
                 int templateIndex = i;

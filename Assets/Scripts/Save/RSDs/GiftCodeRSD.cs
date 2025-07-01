@@ -1,7 +1,9 @@
 ﻿using Assets;
 using Assets.Scripts.Save.RSDs;
 using Data.GameManagement;
+using Enums;
 using MyBox;
+using System;
 using System.Collections;
 using System.Linq;
 using System.Text;
@@ -62,7 +64,7 @@ namespace Save.RSDs
 
             if (ProfileCloudData.HasGiftCode(data[0].Code))
             {
-                return (false, "Code as already been used");
+                return (false, "Code has already been used");
             }
             codeData = data[0];
 
@@ -71,68 +73,25 @@ namespace Save.RSDs
 
         public async Task<(bool, string)> Collect(SPromoCodeData codeData)
         {
-            if (!await ProfileCloudData.AddGiftCode(codeData.Code))
+            if (! await ProfileCloudData.AddGiftCode(codeData.Code))
                 return (false, "Unable to reach the database");
+
+            if (HandleSpecialCases(codeData.Code))
+                return (true, null);
 
             Main.DisplayRewards(codeData.Rewards, "PromoCode");
             return (true, null);
         }
 
-        /// <summary>
-        /// [OLD METHOD] - Remove or keep as example ?
-        /// 
-        /// This is how to update a value directly in the Sheets
-        /// </summary>
-        /// <param name="promoCode"></param>
-        /// <returns></returns>
-        IEnumerator MarkCodeAsUsed(SPromoCodeData promoCode)
+        public bool HandleSpecialCases(string code)
         {
-            int rowIndex = m_Data.FindIndex(t => t.Code == promoCode.Code);
-            if (rowIndex == -1)
+            if (code == ESpecialGiftCodes.FULLUNLOCK.ToString())
             {
-                ErrorHandler.Error($"Could not find promo code {promoCode.Code} in local data!");
-                yield break;
+                InventoryCloudData.Instance.UnlockAllCollectables();
+                return true;
             }
 
-            int sheetRowIndex = rowIndex + 2;
-            string updateUrl = UpdateUrl(sheetRowIndex);
-
-            string requestBody = "{ \"values\": [[\"TRUE\"]] }";
-            byte[] bodyRaw = Encoding.UTF8.GetBytes(requestBody);
-
-            // 🔹 FIXED: Properly wait for OAuth token retrieval
-            Task<string> tokenTask = OAuthTokenGenerator.GetAccessToken();
-            yield return new WaitUntil(() => tokenTask.IsCompleted); // Ensure Unity waits for the task
-
-            string accessToken = tokenTask.Result; // Retrieve the token safely
-
-            // CHECK Auth
-            if (string.IsNullOrEmpty(accessToken))
-            {
-                ErrorHandler.Error("❌ Failed to retrieve OAuth token");
-                yield break;
-            }
-
-            // Create request
-            UnityWebRequest request = UnityWebRequest.Put(updateUrl, requestBody);
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("Authorization", $"Bearer {accessToken}");
-            request.SetRequestHeader("Content-Type", "application/json");
-
-            // Send request
-            yield return request.SendWebRequest();
-
-            // Check result
-            if (request.result != UnityWebRequest.Result.Success)
-            {
-                ErrorHandler.Error($"❌ Failed to update promo code: {request.error}");
-                ErrorHandler.Error($"📥 API Response: {request.downloadHandler.text}");
-                yield break;
-            }
-
-            // Update value locally
-            //promoCode.IsUsed = true;
+            return false;
         }
 
         #endregion

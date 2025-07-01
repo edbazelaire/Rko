@@ -271,6 +271,10 @@ namespace Save
 
         public static void AddBoost(EBoost boost, int duration, bool save = true)
         {
+            // TODO : REMOVE    ==============================================================
+            Debug.Log("Adding boost : " + boost);
+            // TODO : REMOVE    ==============================================================
+
             var boosts = Boosts;
 
             // check if already has this boost
@@ -298,6 +302,10 @@ namespace Save
             Instance.m_Data[KEY_BOOSTS] = boosts;
             if (save)
                 Instance.SaveValue(KEY_BOOSTS);
+
+            // TODO : REMOVE    ==============================================================
+            Debug.Log("BoostChangedEvent");
+            // TODO : REMOVE    ==============================================================
 
             // call event that a boost has been added
             BoostChangedEvent?.Invoke(boost.ToString(), true);

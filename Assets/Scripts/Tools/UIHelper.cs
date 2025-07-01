@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Tools
 {
@@ -14,6 +15,28 @@ namespace Tools
     {
 
         #region Helpers
+
+        /// <summary>
+        /// Remove all childs of a container
+        /// </summary>
+        /// <param name="gameObject"></param>
+        public static void CleanContent(Transform transform, int startAt = 0)
+        {
+            if (transform == null)
+            {
+                ErrorHandler.Warning("Provided transform is null");
+                return;
+            }
+
+            int index = 0;
+            foreach (Transform child in transform)
+            {
+                if (index++ < startAt)
+                    continue;
+
+                GameObject.Destroy(child.gameObject);
+            }
+        }
 
         /// <summary>
         /// Remove all childs of a container
@@ -27,14 +50,7 @@ namespace Tools
                 return;
             }
 
-            int index = 0;
-            foreach (Transform child in gameObject.transform)
-            {
-                if (index++ < startAt)
-                    continue;
-
-                GameObject.Destroy(child.gameObject);
-            }
+            CleanContent(gameObject.transform);
         }
 
         /// <summary>
@@ -71,8 +87,33 @@ namespace Tools
             return context;
         }
 
+        public static void DisplayIconCount(int count, Sprite sprite, Transform container, float? ratio = null)
+        {
+            UIHelper.CleanContent(container);
+
+            var template = new GameObject();
+            var image = template.AddComponent<Image>();
+            image.sprite = sprite;
+            image.preserveAspect = true;
+
+            if (ratio.HasValue)
+            {
+                var arf = template.AddComponent<AspectRatioFitter>();
+                arf.aspectMode = AspectRatioFitter.AspectMode.HeightControlsWidth;
+                arf.aspectRatio = ratio.Value;
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                GameObject.Instantiate(template, container);
+            }
+
+            // destroy original template
+            GameObject.Destroy(template);
+        }
+
         #endregion
-        
+
 
         #region Size & Ratio
 

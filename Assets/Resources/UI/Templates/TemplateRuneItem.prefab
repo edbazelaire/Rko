@@ -894,6 +894,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 532483119991940785}
     m_Modifications:
+    - target: {fileID: 1042445941284201488, guid: 619321f9afb7b63418127aadaa0938b7, type: 3}
+      propertyPath: m_Maskable
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4878068629287117156, guid: 619321f9afb7b63418127aadaa0938b7, type: 3}
       propertyPath: m_fontSize
       value: 27.25
@@ -928,7 +932,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5965499506220919198, guid: 619321f9afb7b63418127aadaa0938b7, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 0.0000009536743
       objectReference: {fileID: 0}
     - target: {fileID: 5965499506220919198, guid: 619321f9afb7b63418127aadaa0938b7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -981,6 +985,14 @@ PrefabInstance:
     - target: {fileID: 6314609650883533834, guid: 619321f9afb7b63418127aadaa0938b7, type: 3}
       propertyPath: m_Name
       value: CollectionFillbar
+      objectReference: {fileID: 0}
+    - target: {fileID: 6614985265668053584, guid: 619321f9afb7b63418127aadaa0938b7, type: 3}
+      propertyPath: m_Maskable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6614985265668053584, guid: 619321f9afb7b63418127aadaa0938b7, type: 3}
+      propertyPath: m_FillAmount
+      value: 0.405
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

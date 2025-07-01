@@ -1,6 +1,5 @@
 ﻿using Enums;
-using System;
-using TMPro;
+using Save;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,20 +12,16 @@ namespace Menu.MainMenu.MainTab
         #region Members
 
         // =================================================================================
-        // Actions
-        public Action ArenaExtraDifficultyChangeEvent;
-
-        // =================================================================================
         // GameObjects & Components
-        Button      m_MinusButton;
-        Button      m_PlusButton;
-        TMP_Text    m_ValueDisplayer;
+        Button          m_MinusButton;
+        Button          m_PlusButton;
+        GameObject      m_ValueDisplayer;
 
         // =================================================================================
         // Local Data
-        EArenaType m_ArenaType;
-        EArenaDifficulty m_ArenaDifficulty;
-        int m_Value;
+        EArenaType          m_ArenaType;
+        EArenaDifficulty    m_ArenaDifficulty;
+        int                 m_Value;
 
         // =================================================================================
         // Public Accessors
@@ -45,7 +40,7 @@ namespace Menu.MainMenu.MainTab
 
             m_MinusButton = Finder.FindComponent<Button>(gameObject, "MinusButton");
             m_PlusButton = Finder.FindComponent<Button>(gameObject, "PlusButton");
-            m_ValueDisplayer = Finder.FindComponent<TMP_Text>(gameObject, "ValueDisplayer");
+            m_ValueDisplayer = Finder.Find(gameObject, "ValueDisplayer");
         }
 
         public virtual void Initialize(EArenaType arenaType, EArenaDifficulty arenaDifficulty)
@@ -60,7 +55,8 @@ namespace Menu.MainMenu.MainTab
         {
             base.SetUpUI();
 
-            SetValue(PlayerPrefsHandler.GetArenaExtraDifficulty(m_ArenaType, m_ArenaDifficulty));
+            SetValue(PlayerPrefsHandler.CurrentArenaExtraDifficulty);
+            RefreshButtons();
         }
 
         #endregion
@@ -73,12 +69,20 @@ namespace Menu.MainMenu.MainTab
             if (value > 5 || value < 0)
                 return;
 
+            // update value
             m_Value = value;
-            m_ValueDisplayer.text = new string('+', m_Value); ;
 
+            // display N times the "Skull" to represent the difficulty
+            UIHelper.DisplayIconCount(value, AssetLoader.Load<Sprite>("Skull_2_White", AssetLoader.c_OtherUIPath), m_ValueDisplayer.transform);
+
+            // save in player prefs (this send an event)
             PlayerPrefsHandler.SetArenaExtraDifficulty(m_ArenaType, m_ArenaDifficulty, value);
+        }
 
-            ArenaExtraDifficultyChangeEvent?.Invoke();
+        void RefreshButtons()
+        {
+            m_MinusButton.gameObject.SetActive(! ProgressionCloudData.HasArenaInProgress);
+            m_PlusButton.gameObject.SetActive(! ProgressionCloudData.HasArenaInProgress);
         }
 
         #endregion

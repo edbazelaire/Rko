@@ -48,8 +48,15 @@ namespace Tools
 
         public static Action<EGameMode> GameModeChangedEvent;
         public static Action<EArenaType> ArenaTypeChangedEvent;
+        public static Action ArenaModsChangedEvent;
+        public static Action ArenaExtraDifficultyChanged;
 
         public const EArenaType DEFAULT_ARENA_TYPE = EArenaType.FrostArena;
+
+        public static EArenaType        CurrentArenaType            => GetArenaType();
+        public static EArenaDifficulty  CurrentArenaDifficulty      => GetArenaDifficulty(CurrentArenaType);
+        public static int               CurrentArenaExtraDifficulty => GetArenaExtraDifficulty(CurrentArenaType, CurrentArenaDifficulty);
+        public static List<EArenaMod>   CurrentArenaMods            => GetArenaMods(CurrentArenaType, CurrentArenaDifficulty);
 
         #endregion
 
@@ -59,7 +66,7 @@ namespace Tools
         public static void Initialize()
         {
             if (PlayerPrefs.GetString(EPlayerPref.PlayerName.ToString()) == "")
-                PlayerPrefs.SetString(EPlayerPref.PlayerName.ToString(), "SheepRapist");
+                PlayerPrefs.SetString(EPlayerPref.PlayerName.ToString(), "DEFAULT_PSEUDO");
 
             if (!Enum.TryParse(PlayerPrefs.GetString(EPlayerPref.GameMode.ToString()), out EGameMode gameMode))
                 PlayerPrefs.SetString(EPlayerPref.GameMode.ToString(), EGameMode.Arena.ToString());
@@ -296,6 +303,8 @@ namespace Tools
         {
             string data = string.Join(",", arenaMods.Select(mod => mod.ToString()));
             PlayerPrefs.SetString(GetArenaModsKey(arenaType, arenaDifficulty), data);
+
+            ArenaModsChangedEvent?.Invoke();
         }
 
         public static int GetArenaExtraDifficulty(EArenaType arenaType, EArenaDifficulty arenaDifficulty)
@@ -306,6 +315,7 @@ namespace Tools
         public static void SetArenaExtraDifficulty(EArenaType arenaType, EArenaDifficulty arenaDifficulty, int extraDifficulty)
         {
             PlayerPrefs.SetInt(GetArenaExtraDifficultyKey(arenaType, arenaDifficulty), extraDifficulty);
+            ArenaExtraDifficultyChanged?.Invoke();
         }
 
         #endregion

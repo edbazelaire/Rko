@@ -3,6 +3,7 @@ using Data;
 using Data.GameManagement;
 using Enums;
 using Game.Loaders;
+using Save.RSDs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -359,7 +360,12 @@ namespace Save
 
         public int GetCurrency(ECurrency currency)
         {
-            return (int)m_Data[currency.ToString()];
+            if (!int.TryParse(m_Data[currency.ToString()].ToString(), out int iValue))
+            {
+                ErrorHandler.Error($"Unable to parse currency {currency} into {m_Data[currency.ToString()]}");
+                return 0;
+            }
+            return iValue;
         }
 
         public void SetCurrency(ECurrency currency, int value)
@@ -369,6 +375,7 @@ namespace Save
 
         public void AddCurrency(ECurrency currency, int value)
         {
+            value = Math.Clamp(GetCurrency(currency) + value, 0, 9999999); 
             SetData(currency.ToString(), GetCurrency(currency) + value);
         }
 
@@ -466,6 +473,13 @@ namespace Save
             return new List<string>() { KEY_CHARACTERS, KEY_SPELLS, KEY_RUNES }.Contains(key);
         }
 
+        public void UnlockAllCollectables()
+        {
+            Unlock(KEY_CHARACTERS, save: true);
+            Unlock(KEY_SPELLS, save: true);
+            Unlock(KEY_RUNES, save: true);
+        }
+
         public override void Unlock(string key, bool save = true)
         {
             base.Unlock(key, save);
@@ -478,21 +492,21 @@ namespace Save
                 case KEY_CHARACTERS:
                     foreach (Enum collectable in Enum.GetValues(typeof(ECharacter)))
                     {
-                        AddCollectableData(collectable, true);
+                        AddCollectableData(collectable, true, save: false);
                     }
                     break;
 
                 case KEY_SPELLS:
                     foreach (Enum collectable in Enum.GetValues(typeof(ESpell)))
                     {
-                        AddCollectableData(collectable, true);
+                        AddCollectableData(collectable, true, save: false);
                     }
                     break;
 
                 case KEY_RUNES:
                     foreach (Enum collectable in Enum.GetValues(typeof(ERune)))
                     {
-                        AddCollectableData(collectable, true);
+                        AddCollectableData(collectable, true, save: false);
                     }
                     break;
 
@@ -590,7 +604,10 @@ namespace Save
         /// <returns></returns>
         void CheckMissingCollectable(Type collectableType)
         {
+            // needs saving or not ?
             bool hasMissing = false;
+            // special gift code : unlock all characters
+            bool baseUnlock = ProfileCloudData.HasGiftCode(ESpecialGiftCodes.FULLUNLOCK.ToString());
 
             foreach (Enum collectable in Enum.GetValues(collectableType))
             {
@@ -609,7 +626,13 @@ namespace Save
                         continue;
                 }
 
-                bool addedData = AddCollectableData(collectable, GetInfos(collectable).DefaultData.Contains(collectable));
+                // if no rune says that the value must be unlock, check if is one of default values
+                bool unlock = baseUnlock;
+                if (!unlock)
+                    unlock = GetInfos(collectable).DefaultData.Contains(collectable);
+
+                // add to data
+                bool addedData = AddCollectableData(collectable, unlock, save: false);
                 if (addedData)
                     hasMissing = true;
             }
@@ -618,7 +641,7 @@ namespace Save
                 SaveValue(InfoCollectables[collectableType].Key);
         }
 
-        public bool AddCollectableData(Enum collectable, bool unlock)
+        public bool AddCollectableData(Enum collectable, bool unlock, bool save = true)
         {
             if (IGNORED_COLLECTABLES.Contains(collectable))
                 return false;
@@ -640,7 +663,7 @@ namespace Save
                 ErrorHandler.Warning("Adding " + collectable + " in cloud data (unlock : " + unlock + ")");
                 
                 // add new empty spell data, set save to false as we save the batch at the end
-                SetCollectable(new SCollectableCloudData(collectable, startLevel, 0), false);
+                SetCollectable(new SCollectableCloudData(collectable, startLevel, 0), save);
 
                 return true;
             }

@@ -5,44 +5,48 @@
         None = 0,   
 
         // -- screens
-        MainMenuScreen,
-        LoadingScreen,
-        RewardsScreen,
-        AchievementRewardScreen,
-        LevelUpScreen,
-        LobbyScreen,
-        ArenaPathScreen,
-        LeaguesPathScreen,
-        ArenaBuildScreen,
-        ArenaBuildConstructorScreen,
+        MainMenuScreen              = 1,
+        LoadingScreen               = 2,
+        RewardsScreen               = 3,
+        AchievementRewardScreen     = 4,
+        LevelUpScreen               = 5,
+        LobbyScreen                 = 6,
+        ArenaPathScreen             = 7,
+        LeaguesPathScreen           = 8,
+        ArenaBuildScreen            = 9,
+        ArenaBuildConstructorScreen = 10,
 
         // -- info PopUps
-        CollectableInfoPopUp,
-        CharacterInfoPopUp,
-        RuneInfoPopUp,
-        SpellInfoPopUp,
-        StateEffectPopUp,
-        TriggerEffectPopUp,
-        RunePowerPopUp,
-        PowerUpInfoScreen,
-        PowerUpSelectionScreen,
-        BossInfoScreen,
+        CollectableInfoPopUp        = 11,
+        CharacterInfoPopUp          = 12,
+        RuneInfoPopUp               = 13,
+        SpellInfoPopUp              = 14,
+        StateEffectPopUp            = 15,
+        TriggerEffectPopUp          = 16,
+        RunePowerPopUp              = 17,
+        PowerUpInfoScreen           = 18,
+        PowerUpSelectionScreen      = 19,
+        BossInfoScreen              = 20,
 
         // -- message PopUps
-        QuickMessagePopUp,
-        MessagePopUp,
-        ConfirmPopUp,
-        PseudoPopUp,
-        ErrorMessagePopUp,
-        ConfirmBuyPopUp,
-        ConfirmBuyItemPopUp,
-        ConfirmBuyBundlePopUp,
+        QuickMessagePopUp           = 21,
+        MessagePopUp                = 22,
+        ConfirmPopUp                = 23,
+        PseudoPopUp                 = 24,
+        ErrorMessagePopUp           = 25,
+        ConfirmBuyPopUp             = 26,
+        ConfirmBuyItemPopUp         = 27,
+        ConfirmBuyBundlePopUp       = 28,
+        ConfirmWatchAdPopUp         = 33,   
+
+        // -- options popup
+        ArenaOptionsPopUp           = 34,     // <-->
 
         // -- config popup
-        SettingsPopUp,
-        MessageriePopUp,
-        PromoCodePopUp,
-        LoginPopUp,
+        SettingsPopUp               = 29,
+        MessageriePopUp             = 30,
+        PromoCodePopUp              = 31,
+        LoginPopUp                  = 32,
     }
 
     public enum EEnv
@@ -63,6 +67,27 @@
         Arena,
         Ranked,
         Training,
+    }
+
+    public enum ESpecialGiftCodes
+    {
+        FULLUNLOCK = 0,
+    }
+
+    public enum EProduct
+    {
+        None = 0,
+
+        // DEFAULT OFFERS ----------------------------------------------
+        Gems_01 = 1,
+        Gems_02 = 2,
+        Gems_03 = 3,
+        Gems_04 = 4,
+        Gems_05 = 5,
+        Gems_06 = 6,
+
+        // SPECIAL PACKS ----------------------------------------------
+
     }
 
     public enum EArenaType
@@ -987,7 +1012,7 @@
     {
         Gold        = 0,
         Gems        = 1,
-        Dollars     = 2,
+        Real     = 2,
         Xp          = 3,
         TotalXp     = 4,
     }
