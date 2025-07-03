@@ -24,7 +24,8 @@ MonoBehaviour:
     Color: {r: 0.6223734, g: 0.27959237, b: 0.9716981, a: 1}
   m_DailyOffersRareties: 0000000001000000010000000200000003000000
   m_SpecialOffers:
-  - Name: DailyPack
+  - Product: 0
+    Name: DailyPack
     Icon: {fileID: 0}
     Rewards:
       Currencies:
@@ -38,7 +39,8 @@ MonoBehaviour:
     Cost: 100
     MaxCollection: 1
     Reduction: 0
-  - Name: StarterPack
+  - Product: 0
+    Name: StarterPack
     Icon: {fileID: 0}
     Rewards:
       Currencies:
@@ -52,7 +54,8 @@ MonoBehaviour:
     Cost: 0.99
     MaxCollection: 1
     Reduction: 0
-  - Name: FireWork
+  - Product: 0
+    Name: FireWork
     Icon: {fileID: 0}
     Rewards:
       Currencies: []
@@ -70,7 +73,8 @@ MonoBehaviour:
     Cost: 100
     MaxCollection: 1
     Reduction: 0
-  - Name: CryoPack
+  - Product: 0
+    Name: CryoPack
     Icon: {fileID: 0}
     Rewards:
       Currencies:
@@ -84,7 +88,8 @@ MonoBehaviour:
     Cost: 7.99
     MaxCollection: 1
     Reduction: 0
-  - Name: GeneralPack
+  - Product: 0
+    Name: GeneralPack
     Icon: {fileID: 0}
     Rewards:
       Currencies:
@@ -98,7 +103,8 @@ MonoBehaviour:
     Cost: 19.99
     MaxCollection: 1
     Reduction: 0
-  - Name: PyroMaster
+  - Product: 0
+    Name: PyroMaster
     Icon: {fileID: 0}
     Rewards:
       Currencies:
@@ -113,7 +119,8 @@ MonoBehaviour:
     MaxCollection: 1
     Reduction: 0
   m_BundleShopData:
-  - Name: 
+  - Product: 0
+    Name: 
     Icon: {fileID: 0}
     Rewards:
       Currencies: []
@@ -125,7 +132,8 @@ MonoBehaviour:
     Cost: 25
     MaxCollection: 0
     Reduction: 0
-  - Name: 
+  - Product: 0
+    Name: 
     Icon: {fileID: 0}
     Rewards:
       Currencies: []
@@ -137,7 +145,8 @@ MonoBehaviour:
     Cost: 80
     MaxCollection: 0
     Reduction: 0
-  - Name: 
+  - Product: 0
+    Name: 
     Icon: {fileID: 0}
     Rewards:
       Currencies: []
@@ -149,7 +158,8 @@ MonoBehaviour:
     Cost: 500
     MaxCollection: 0
     Reduction: 0
-  - Name: 
+  - Product: 0
+    Name: 
     Icon: {fileID: 0}
     Rewards:
       Currencies: []
@@ -161,7 +171,8 @@ MonoBehaviour:
     Cost: 1800
     MaxCollection: 0
     Reduction: 0
-  - Name: 
+  - Product: 0
+    Name: 
     Icon: {fileID: 0}
     Rewards:
       Currencies: []
@@ -173,7 +184,8 @@ MonoBehaviour:
     Cost: 2200
     MaxCollection: 0
     Reduction: 0
-  - Name: 
+  - Product: 0
+    Name: 
     Icon: {fileID: 0}
     Rewards:
       Currencies: []
@@ -185,7 +197,8 @@ MonoBehaviour:
     Cost: 2200
     MaxCollection: 0
     Reduction: 0
-  - Name: Pack_01
+  - Product: 0
+    Name: Pack_01
     Icon: {fileID: 0}
     Rewards:
       Currencies:
@@ -199,7 +212,8 @@ MonoBehaviour:
     Cost: 1200
     MaxCollection: 0
     Reduction: 0
-  - Name: Pack_02
+  - Product: 0
+    Name: Pack_02
     Icon: {fileID: 0}
     Rewards:
       Currencies:
@@ -213,7 +227,8 @@ MonoBehaviour:
     Cost: 3500
     MaxCollection: 0
     Reduction: 0
-  - Name: Pack_03
+  - Product: 0
+    Name: Pack_03
     Icon: {fileID: 0}
     Rewards:
       Currencies:
@@ -228,7 +243,8 @@ MonoBehaviour:
     MaxCollection: 0
     Reduction: 0
   m_GoldsShopData:
-  - Name: 
+  - Product: 0
+    Name: 
     Icon: {fileID: 21300000, guid: 2ff4d93b8bd76bd44a0d2e143b820b92, type: 3}
     Rewards:
       Currencies:
@@ -238,11 +254,12 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
-    Currency: 1
+    Currency: 0
     Cost: 60
     MaxCollection: 0
     Reduction: 0
-  - Name: 
+  - Product: 0
+    Name: 
     Icon: {fileID: 21300000, guid: e8a2d175cd1cd734c8ddb5592cf75518, type: 3}
     Rewards:
       Currencies:
@@ -256,7 +273,8 @@ MonoBehaviour:
     Cost: 500
     MaxCollection: 0
     Reduction: 0
-  - Name: 
+  - Product: 0
+    Name: 
     Icon: {fileID: 21300000, guid: 5f0e388edf6e76946a4c7642e0f4c7e3, type: 3}
     Rewards:
       Currencies:
@@ -270,7 +288,8 @@ MonoBehaviour:
     Cost: 4500
     MaxCollection: 0
     Reduction: 0
-  - Name: 
+  - Product: 0
+    Name: 
     Icon: {fileID: 21300000, guid: 5f0e388edf6e76946a4c7642e0f4c7e3, type: 3}
     Rewards:
       Currencies:
@@ -285,26 +304,28 @@ MonoBehaviour:
     MaxCollection: 0
     Reduction: 0
   m_GemsShopData:
-  - Name: 
+  - Product: 1
+    Name: 
     Icon: {fileID: 21300000, guid: 1cb3b7a2494234248b4990b640a94bfd, type: 3}
     Rewards:
       Currencies:
       - Currency: 1
-        Qty: 80
+        Qty: 100
       Chests: 
       Collectables: []
       AchievementRewards: []
       Boosts: []
     Currency: 2
-    Cost: 1.19
+    Cost: 0.99
     MaxCollection: 0
     Reduction: 0
-  - Name: 
+  - Product: 2
+    Name: 
     Icon: {fileID: 21300000, guid: 2d7eb998cd5dac745af8c7c57c44beaf, type: 3}
     Rewards:
       Currencies:
       - Currency: 1
-        Qty: 500
+        Qty: 750
       Chests: 
       Collectables: []
       AchievementRewards: []
@@ -313,40 +334,43 @@ MonoBehaviour:
     Cost: 5.99
     MaxCollection: 0
     Reduction: 0
-  - Name: 
+  - Product: 3
+    Name: 
     Icon: {fileID: 21300000, guid: 8e1d1d37974e7f34695e07285463306c, type: 3}
     Rewards:
       Currencies:
       - Currency: 1
-        Qty: 1200
+        Qty: 2000
       Chests: 
       Collectables: []
       AchievementRewards: []
       Boosts: []
     Currency: 2
-    Cost: 11.99
+    Cost: 12.99
     MaxCollection: 0
     Reduction: 0
-  - Name: 
+  - Product: 4
+    Name: 
     Icon: {fileID: 21300000, guid: fe67af3fe0263074f8243700f01d0d8b, type: 3}
     Rewards:
       Currencies:
       - Currency: 1
-        Qty: 2500
+        Qty: 5000
       Chests: 
       Collectables: []
       AchievementRewards: []
       Boosts: []
     Currency: 2
-    Cost: 23.99
+    Cost: 24.99
     MaxCollection: 0
     Reduction: 0
-  - Name: 
+  - Product: 5
+    Name: 
     Icon: {fileID: 21300000, guid: 5366dd5d958bffc42b914abe4288b432, type: 3}
     Rewards:
       Currencies:
       - Currency: 1
-        Qty: 6500
+        Qty: 11000
       Chests: 
       Collectables: []
       AchievementRewards: []
@@ -355,22 +379,24 @@ MonoBehaviour:
     Cost: 59.99
     MaxCollection: 0
     Reduction: 0
-  - Name: 
+  - Product: 6
+    Name: 
     Icon: {fileID: 21300000, guid: 66324f591d372a047811dde0acc95a4f, type: 3}
     Rewards:
       Currencies:
       - Currency: 1
-        Qty: 14000
+        Qty: 24000
       Chests: 
       Collectables: []
       AchievementRewards: []
       Boosts: []
     Currency: 2
-    Cost: 119.99
+    Cost: 99.99
     MaxCollection: 0
     Reduction: 0
   m_XpShopData:
-  - Name: 
+  - Product: 0
+    Name: 
     Icon: {fileID: 0}
     Rewards:
       Currencies:
@@ -384,7 +410,8 @@ MonoBehaviour:
     Cost: 1500
     MaxCollection: 0
     Reduction: 0
-  - Name: 
+  - Product: 0
+    Name: 
     Icon: {fileID: 0}
     Rewards:
       Currencies:
@@ -398,7 +425,8 @@ MonoBehaviour:
     Cost: 50000
     MaxCollection: 0
     Reduction: 0
-  - Name: 
+  - Product: 0
+    Name: 
     Icon: {fileID: 0}
     Rewards:
       Currencies:
@@ -412,7 +440,8 @@ MonoBehaviour:
     Cost: 3500
     MaxCollection: 0
     Reduction: 0
-  - Name: 
+  - Product: 0
+    Name: 
     Icon: {fileID: 0}
     Rewards:
       Currencies:

@@ -1,7 +1,5 @@
 using Data.GameManagement;
-using Menu.MainMenu.ShopTab;
 using System.Collections.Generic;
-using Tools;
 using UnityEngine;
 
 namespace Menu.MainMenu
@@ -16,8 +14,8 @@ namespace Menu.MainMenu
 
             m_Scroller.Initialize(new List<SShopData>[] { 
                 ShopManagementData.GoldsShopData, 
-                ShopManagementData.XpShopData, 
-                //ShopManagementData.GemsShopData       // TODO : SET BACK when Monetization is activated
+                ShopManagementData.XpShopData,
+                ShopManagementData.GemsShopData       
             });
         }
 

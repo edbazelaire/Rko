@@ -150,7 +150,7 @@ namespace Menu.Common.Buttons
                 m_TitleOverlay.color = backgroundColor.Value;
         }
 
-        public virtual void SetBottomOverlay(string text, Color? textColor = null, Color? backgroundColor = null)
+        public virtual void SetBottomOverlay(string text, Color? textColor = null, Color? backgroundColor = null, TextAlignmentOptions? alignment = null)
         {
             if (m_BottomOverlay == null)
             {
@@ -166,12 +166,15 @@ namespace Menu.Common.Buttons
 
             m_BottomOverlay.gameObject.SetActive(true);
             m_BottomText.text = text;
-
             if (textColor.HasValue)
                 m_BottomText.color = textColor.Value;
 
             if (backgroundColor.HasValue)
                 m_BottomOverlay.color = backgroundColor.Value;
+
+            if (alignment.HasValue)
+                m_BottomText.alignment = alignment.Value;
+
         }
 
         public virtual void SetBorderColor(Color? color)
@@ -267,7 +270,7 @@ namespace Menu.Common.Buttons
 
         #region Public Accessors
 
-        public virtual void AsIconOnly(bool activate = true)
+        public virtual void SetAsIconOnly(bool activate = true)
         {
             m_Button.interactable = ! activate;
             m_AsIconOnly = activate;

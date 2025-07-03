@@ -1,5 +1,6 @@
 ﻿using Data.GameManagement;
 using Enums;
+using TMPro;
 using Tools;
 using UnityEngine;
 
@@ -46,40 +47,40 @@ namespace Menu.Common.Buttons
         /// </summary>
         protected override void SetDefaultData()
         {
-            if (m_Rewards.Count > 1)
+            if (m_ShopData.Rewards.Count > 1)
                 ErrorHandler.Warning("Unhandled case : multiple rewards in Cards ShopItemUI");
 
             // CURRENCIES
-            if (m_Rewards.Currencies.Count > 0)
+            if (m_ShopData.Rewards.Currencies.Count > 0)
             {
                 if (m_Title == "")
-                    m_Title = m_Rewards.Currencies[0].Qty.ToString();
+                    m_Title = m_ShopData.Rewards.Currencies[0].Qty.ToString();
 
-                if (m_Image == null)
-                    m_Image = AssetLoader.LoadCurrencyIcon(m_Rewards.Currencies[0].Currency, m_Rewards.Currencies[0].Qty);
+                if (m_ShopData.Icon == null)
+                    m_ShopData.Icon = AssetLoader.LoadCurrencyIcon(m_ShopData.Rewards.Currencies[0].Currency, m_ShopData.Rewards.Currencies[0].Qty);
 
-                m_TitleColor = ShopManagementData.GetCurrencyColor(m_Rewards.Currencies[0].Currency);
+                m_TitleColor = ShopManagementData.GetCurrencyColor(m_ShopData.Rewards.Currencies[0].Currency);
             }
 
             // CHESTS
-            else if (m_Rewards.Chests.Count > 0)
+            else if (m_ShopData.Rewards.Chests.Count > 0)
             {
                 if (m_Title == "")
-                    m_Title = m_Rewards.Chests[0].ToString() + " Chest";
+                    m_Title = m_ShopData.Rewards.Chests[0].ToString() + " Chest";
 
-                if (m_Image == null)
-                    m_Image = AssetLoader.LoadChestIcon(m_Rewards.Chests[0]);
+                if (m_ShopData.Icon == null)
+                    m_ShopData.Icon = AssetLoader.LoadChestIcon(m_ShopData.Rewards.Chests[0]);
             }
 
             // COLLECTABLES
-            else if (m_Rewards.Collectables.Count > 0)
+            else if (m_ShopData.Rewards.Collectables.Count > 0)
             {
                 if (m_Title == "")
-                    m_Title = m_Rewards.Collectables[0].Qty.ToString();
+                    m_Title = m_ShopData.Rewards.Collectables[0].Qty.ToString();
 
-                var collectable = CollectablesManagementData.Cast(m_Rewards.Collectables[0].CollectableName, m_Rewards.Collectables[0].CollectableType);
-                if (m_Image == null)
-                    m_Image = AssetLoader.LoadIcon(collectable);
+                var collectable = CollectablesManagementData.Cast(m_ShopData.Rewards.Collectables[0].CollectableName, m_ShopData.Rewards.Collectables[0].CollectableType);
+                if (m_ShopData.Icon == null)
+                    m_ShopData.Icon = AssetLoader.LoadIcon(collectable);
 
                 var raretyData = CollectablesManagementData.GetRaretyData(collectable);
                 if (raretyData.Rarety > ERarety.Common)
@@ -109,21 +110,21 @@ namespace Menu.Common.Buttons
 
         protected override void SetIcon()
         {
-            if (m_Image == null)
+            if (m_ShopData.Icon == null)
                 return;
 
-            m_TemplateItemButton.SetIcon(m_Image);
+            m_TemplateItemButton.SetIcon(m_ShopData.Icon);
 
             if (m_ShopData.Rewards.Count == 1 && m_ShopData.Rewards.Collectables.Count == 1)
             {
                 m_TemplateItemButton.SetIconProportions(60, 60);
             }
         }
-       
 
         protected override void SetPrice()
         {
-            m_TemplateItemButton.SetBottomOverlay(m_CostString, textColor: ShopManagementData.GetCurrencyColor(m_Currency));
+            TextAlignmentOptions alignment = m_CurrencyIcon.gameObject.activeInHierarchy ? TextAlignmentOptions.MidlineRight : TextAlignmentOptions.Center;
+            m_TemplateItemButton.SetBottomOverlay(m_CostString, textColor: ShopManagementData.GetCurrencyColor(m_ShopData.Currency), alignment: alignment);
         }
 
         protected void SetUpBorder()

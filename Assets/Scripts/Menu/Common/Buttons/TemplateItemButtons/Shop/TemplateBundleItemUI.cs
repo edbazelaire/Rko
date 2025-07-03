@@ -32,13 +32,13 @@ namespace Menu.Common.Buttons
 
         protected override void SetIcon()
         {
-            if (m_Image == null)
+            if (m_ShopData.Icon == null)
             {
                 m_IconContainer.SetActive(false);
                 return;
             }
 
-            m_Icon.sprite = m_Image;
+            m_Icon.sprite = m_ShopData.Icon;
         }
 
         protected override void SetPrice()

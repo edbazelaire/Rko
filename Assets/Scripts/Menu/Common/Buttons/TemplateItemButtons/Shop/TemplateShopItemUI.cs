@@ -2,6 +2,7 @@
 using Assets.Scripts.Managers.Sound;
 using Data.GameManagement;
 using Enums;
+using Managers.Monetization.IAP;
 using Menu.Common.Displayers;
 using Save;
 using System;
@@ -28,18 +29,26 @@ namespace Menu.Common.Buttons
         protected Button            m_Button;
 
         // Data
-        protected EButtonState      m_State;
-        protected SShopData         m_ShopData;
-        protected STimeData?        m_TimeData;
-        protected string            m_Title;
-        protected ECurrency         m_Currency;
-        protected float             m_Cost;
-        protected SRewardsData      m_Rewards;
-        protected Sprite            m_Image;
+        protected EButtonState m_State;
+        protected SShopData m_ShopData;
+        protected STimeData? m_TimeData;
+        protected string m_Title;
 
         /// <summary> EVENT DATA : collection context </summary>
         protected string m_Context => ERewardContext.Shop + "." + m_Title;
-        protected string m_CostString => m_Cost > 0 ? (Mathf.Round(m_Cost) == m_Cost ? m_Cost.ToString("0") : m_Cost.ToString("F2")) : "Free";
+        protected string m_CostString { 
+            get {
+                if (m_ShopData.Cost <= 0)
+                    return "Free";
+
+                if (m_ShopData.Product != EProduct.None)
+                    return IAPUtils.GetProductPriceString(m_ShopData.Product);
+
+                string value = Mathf.Round(m_ShopData.Cost) == m_ShopData.Cost ? m_ShopData.Cost.ToString("0") : m_ShopData.Cost.ToString("F2");
+                return value;
+            } 
+        }
+    
 
         #endregion
 
@@ -61,15 +70,21 @@ namespace Menu.Common.Buttons
 
         public void Initialize(SShopData shopData, STimeData? timeData = null)
         {
+            if (!shopData.Check())
+            {
+                Destroy(gameObject); 
+                return;
+            }
+
             SetUpShopData(shopData);
 
             m_TimeData = timeData;
 
             // CHECK : provied data
-            if (m_Cost < 0)
+            if (m_ShopData.Cost < 0)
             {
-                ErrorHandler.Error("Cost set with negative value " + m_Cost + " for item " + m_Title);
-                m_Cost = 0;
+                ErrorHandler.Error("Cost set with negative value " + m_ShopData.Cost + " for item " + m_Title);
+                m_ShopData.Cost = 0;
             }
 
             base.Initialize();
@@ -82,8 +97,8 @@ namespace Menu.Common.Buttons
             SetTitle();
             SetIcon();
             SetRewards();
-            SetPrice();
             SetCurrencyIcon();
+            SetPrice();
 
             SetUpTimeDataUI();
         }
@@ -131,13 +146,7 @@ namespace Menu.Common.Buttons
         protected virtual void SetUpShopData(SShopData shopData)
         {
             m_ShopData = shopData;
-
-            m_Title     = shopData.Name;
-            m_Currency  = shopData.Currency;
-            m_Cost      = shopData.Cost;
-            m_Rewards   = shopData.Rewards;
-            m_Image     = shopData.Icon;
-
+            m_Title    = shopData.Name;
             SetDefaultData();
         }
 
@@ -153,10 +162,10 @@ namespace Menu.Common.Buttons
 
         protected virtual void SetIcon()
         {
-            if (m_Image == null)
+            if (m_ShopData.Icon == null)
                return;
 
-            m_Icon.sprite = m_Image;
+            m_Icon.sprite = m_ShopData.Icon;
         }
 
         protected virtual void SetRewards()
@@ -164,18 +173,18 @@ namespace Menu.Common.Buttons
             if (m_RewardsDisplayer == null)
                 return;
 
-            m_RewardsDisplayer.Initialize(m_Rewards, NRewardsPerRow);
+            m_RewardsDisplayer.Initialize(m_ShopData.Rewards, NRewardsPerRow);
         }
 
         protected virtual void SetCurrencyIcon()
         {
-            if (m_Cost <= 0)
+            if (m_ShopData.Cost <= 0 || m_ShopData.Currency == ECurrency.Real)
             {
                 m_CurrencyIcon.gameObject.SetActive(false);
                 return;
             }
             
-            m_CurrencyIcon.sprite = AssetLoader.LoadCurrencyIcon(m_Currency);
+            m_CurrencyIcon.sprite = AssetLoader.LoadCurrencyIcon(m_ShopData.Currency);
         }
 
         protected virtual void SetPrice() 
@@ -198,7 +207,7 @@ namespace Menu.Common.Buttons
         #endregion
 
 
-        #region StateManagement
+        #region State Management
 
         protected virtual void SetState(EButtonState state)
         {
@@ -258,20 +267,13 @@ namespace Menu.Common.Buttons
 
             SoundFXManager.PlayOnce(SoundFXManager.ClickButtonSoundFX);
 
-            if (m_Cost == 0)
+            if (m_ShopData.Cost == 0)
             {
-                OnPurchaseCompleted(true);
-                return;
-            }
-
-            if (m_Currency == ECurrency.Dollars)
-            {
-                // TODO : for now money transactions are automatic success
                 OnPurchaseCompleted(true);
                 return;
             }
             
-            Main.ConfirmBuyRewards(m_Title, new SPriceData((int)m_Cost, m_Currency), m_Rewards, OnPurchaseCompleted);
+            Main.ConfirmBuyRewards(m_ShopData.ProductId, new SPriceData(m_ShopData.Cost, m_ShopData.Currency), m_ShopData.Rewards, OnPurchaseCompleted);
         }
 
         protected void OnPurchaseCompleted(bool success)
@@ -282,7 +284,7 @@ namespace Menu.Common.Buttons
                     if (m_TimeData != null && ! TimeCloudData.CollectTimeData(m_TimeData.Value.Name))
                         return;
                     
-                    Main.DisplayRewards(m_Rewards, m_Context);
+                    Main.DisplayRewards(m_ShopData.Rewards, m_Context);
                     break;
                 
                 case false:

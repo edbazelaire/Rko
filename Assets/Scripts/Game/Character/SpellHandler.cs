@@ -463,6 +463,15 @@ namespace Game.Character
                 return false;
             }
 
+            // check : counter
+            if (m_Controller.CounterHandler.IsBlockingCast.Value)
+            {
+                reason = "Spell cast (" + spellData.Name + ") BLOCKED : counter is blocking cast";
+                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
+                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
+                return false;
+            }
+
             // check : global cooldown done
             if (m_GlobalCooldown.Value > 0f)
             {

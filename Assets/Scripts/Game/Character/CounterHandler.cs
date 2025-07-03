@@ -6,6 +6,7 @@ using System.Linq;
 using Tools;
 using Unity.Netcode;
 using Unity.VisualScripting;
+using UnityEngine;
 
 namespace Game.Character
 {
@@ -233,6 +234,8 @@ namespace Game.Character
 
         private void SetIsBlockingCast(bool blockingCast)
         {
+            Debug.Log("SetIsBlockingCast() : " + blockingCast);
+
             if (!IsServer)
                 return;
 

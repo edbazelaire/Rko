@@ -8,7 +8,6 @@ using MyBox;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tools;
@@ -19,8 +18,6 @@ using Unity.Services.CloudSave;
 using Unity.Services.CloudSave.Models;
 using Unity.Services.CloudSave.Models.Data.Player;
 using Unity.VisualScripting;
-using UnityEngine.SocialPlatforms;
-using UnityEngine.SocialPlatforms.Impl;
 
 namespace Save
 {

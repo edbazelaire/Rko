@@ -92,6 +92,9 @@ namespace Menu.Common.Buttons
             if (m_Rune == ERune.None)
                 return;
 
+            if (m_CollectionFillBar != null && ! m_AsIconOnly)
+                m_CollectionFillBar.gameObject.SetActive(! m_CollectionFillBar.gameObject.activeSelf);
+
             base.ToggleSubButtons();
         }
 

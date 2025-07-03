@@ -37,7 +37,7 @@ namespace Menu.PopUps
             m_QtyText = Finder.FindComponent<TMP_Text>(m_WindowContent, "QtyText");
         }
 
-        public void Initialize(SPriceData priceData, Enum item, int qty, Action onValidate, Action onCancel)
+        public void Initialize(SPriceData priceData, Enum item, bool watchAd, int qty, Action onValidate, Action onCancel)
         {
             // if item is a Collectable, and current level is 0 -> this is an unlock 
             m_IsUnlock = CollectablesManagementData.TryGetCollectableType(item, out var temp) && InventoryCloudData.Instance.GetCollectable(item).Level == 0;
@@ -47,7 +47,7 @@ namespace Menu.PopUps
             SRewardsData rewardsData = new SRewardsData();
             rewardsData.Add(item, qty);
 
-            base.Initialize(m_Item.ToString(), priceData, rewardsData, onValidate, onCancel);
+            base.Initialize(m_Item.ToString(), priceData, watchAd, rewardsData, onValidate, onCancel);
         }
 
         protected override void OnPrefabLoaded()

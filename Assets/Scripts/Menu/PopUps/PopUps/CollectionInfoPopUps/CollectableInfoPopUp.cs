@@ -197,7 +197,7 @@ namespace Menu.PopUps
         {
             UIHelper.CleanContent(m_PreviewContainer);
             m_CollectableItemUI = Instantiate(m_TemplateItemUI, m_PreviewContainer.transform).GetComponent<TemplateCollectableItemUI>();
-            m_CollectableItemUI.Initialize(m_Collectable, m_Level, asIconOnly: m_InfoOnly);
+            m_CollectableItemUI.Initialize(m_Collectable, m_Level, asIconOnly: m_InfoOnly, removeListeners: m_InfoOnly);
 
             // deactivate button
             m_CollectableItemUI.Button.interactable = false;
@@ -452,7 +452,7 @@ namespace Menu.PopUps
                 return;
 
             // unlock the item
-            InventoryCloudData.Instance.AddCollectableData(m_Collectable, true);
+            InventoryCloudData.Instance.AddCollectableData(m_Collectable, unlock: true, save: true);
 
             // pay the cost
             var priceData = ShopManagementData.GetPrice(m_Collectable);
