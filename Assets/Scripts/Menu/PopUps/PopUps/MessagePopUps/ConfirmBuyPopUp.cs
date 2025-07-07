@@ -1,7 +1,6 @@
 ﻿using Data.GameManagement;
 using Enums;
 using Inventory;
-using Managers.Ads;
 using Managers.Monetization.IAP;
 using Menu.Common.Displayers;
 using System;
