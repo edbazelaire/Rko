@@ -1,9 +1,14 @@
-﻿using Enums;
+﻿using Assets.Scripts.Managers;
+using Enums;
 using Menu.Common.Filters;
+using Menu.PopUps;
+using MyBox;
 using Save;
 using System;
+using TMPro;
 using Tools;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 namespace Menu.MainMenu.MainTab
@@ -13,22 +18,16 @@ namespace Menu.MainMenu.MainTab
         #region Members
 
         // =================================================================================
-        // Actions
-        public static Action ArenaModsChangeEvent;
-
-        // =================================================================================
         // GameObject & Components
-        SpellFilterDropdown m_ArenaModsDropdown;
-        ArenaExtraDifficultyUI m_ArenaExtraDifficulty;
+        CurrentArenaModsDisplayer m_CurrentArenaModsDisplayer;
+        Transform m_ArenaExtraDifficulty;
+        Button m_Button;
+        TMP_Text m_Replacement;
 
         // =================================================================================
         // Local Data
-        EArenaType m_ArenaType;
+        EArenaType m_ArenaType              = EArenaType.None;
         EArenaDifficulty m_ArenaDifficulty;
-
-        // =================================================================================
-        // Public Accessors
-        public ArenaExtraDifficultyUI ArenaExtraDifficulty => m_ArenaExtraDifficulty;
 
         #endregion
 
@@ -39,27 +38,38 @@ namespace Menu.MainMenu.MainTab
         {
             base.FindComponents();
 
-            m_ArenaModsDropdown = Finder.FindComponent<SpellFilterDropdown>(gameObject, "ArenaModsDropdown");
-            m_ArenaExtraDifficulty = Finder.FindComponent<ArenaExtraDifficultyUI>(gameObject, "ArenaExtraDifficulty");
+            m_CurrentArenaModsDisplayer = Finder.FindComponent<CurrentArenaModsDisplayer>(gameObject);
+            m_Button = Finder.FindComponent<Button>(gameObject, "Button");
+            m_ArenaExtraDifficulty = Finder.Find(gameObject, "ArenaExtraDifficulty").transform;
+            m_Replacement = Finder.FindComponent<TMP_Text>(gameObject, "Replacement");
         }
 
         public virtual void Initialize(EArenaType arenaType, EArenaDifficulty arenaDifficulty)
         {
-            Debug.LogWarning("m_ArenaOptionsUI.Initialize() : m_ArenaType = " + m_ArenaType);
+            if (arenaType == EArenaType.None)
+            {
+                ErrorHandler.Warning("Trying to set arena with arena type : " + arenaType);
+                return;
+            }
 
             m_ArenaType = arenaType;
             m_ArenaDifficulty = arenaDifficulty;
 
             base.Initialize();
 
-            var arenaMods = PlayerPrefsHandler.GetArenaMods(arenaType, arenaDifficulty);
-            m_ArenaModsDropdown.Initialize(typeof(EArenaMod), arenaMods.Count == 0 ? SpellFilterDropdown.CLEAR_VALUE : arenaMods[0].ToString(), withClearValue: true, allowNone: false);
-            m_ArenaExtraDifficulty.Initialize(arenaType, arenaDifficulty);
+            m_CurrentArenaModsDisplayer.Initialize();
+            RefreshExtraDifficulty();
         }
 
         protected override void SetUpUI()
         {
             base.SetUpUI();
+
+            if (m_ArenaType == EArenaType.None)
+            {
+                ErrorHandler.Warning("Trying to set arena with arena type : " + m_ArenaType);
+                return;
+            }
 
             if (m_ArenaDifficulty != ProgressionCloudData.MaxArenaDifficulty && m_ArenaDifficulty >= ProgressionCloudData.GetUnlockedArenaDifficulty(m_ArenaType))
             {
@@ -71,16 +81,20 @@ namespace Menu.MainMenu.MainTab
             }
         }
 
+        void CheckIsEmpty()
+        {
+            m_Replacement.gameObject.SetActive(PlayerPrefsHandler.CurrentArenaExtraDifficulty == 0 && PlayerPrefsHandler.CurrentArenaMods.IsNullOrEmpty());
+        }
+
         #endregion
 
 
         #region GUI Manipulators
 
-        public void Lock(bool isLocked = true)
+        void RefreshExtraDifficulty()
         {
-            m_ArenaModsDropdown.Dropdown.interactable = ! isLocked;
-            m_ArenaExtraDifficulty.MinusButton.interactable = ! isLocked;
-            m_ArenaExtraDifficulty.PlusButton.interactable = ! isLocked;
+            UIHelper.DisplayIconCount(PlayerPrefsHandler.CurrentArenaExtraDifficulty, AssetLoader.Load<Sprite>("Skull_2_White", AssetLoader.c_OtherUIPath), m_ArenaExtraDifficulty, ratio: 1f);
+            CheckIsEmpty();
         }
 
         #endregion
@@ -92,20 +106,23 @@ namespace Menu.MainMenu.MainTab
         {
             base.RegisterListeners();
 
-            m_ArenaModsDropdown.OnDropdownValueChanged += OnArenaModChanged;
+            m_Button.onClick.AddListener(OnButtonClicked);
+            PlayerPrefsHandler.ArenaModsChangedEvent        += CheckIsEmpty;
+            PlayerPrefsHandler.ArenaExtraDifficultyChanged  += RefreshExtraDifficulty;
         }
 
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
 
-            m_ArenaModsDropdown.OnDropdownValueChanged -= OnArenaModChanged;
+            m_Button.onClick.RemoveAllListeners();
+            PlayerPrefsHandler.ArenaModsChangedEvent -= CheckIsEmpty;
+            PlayerPrefsHandler.ArenaExtraDifficultyChanged -= RefreshExtraDifficulty;
         }
 
-        void OnArenaModChanged(string newValue)
+        void OnButtonClicked()
         {
-            PlayerPrefsHandler.SetArenaMods(m_ArenaType, m_ArenaDifficulty, m_ArenaModsDropdown.GetValues<EArenaMod>());
-            ArenaModsChangeEvent?.Invoke();
+            ScreenManager.SetPopUp(EPopUpState.ArenaOptionsPopUp);
         }
 
         #endregion

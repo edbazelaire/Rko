@@ -51,6 +51,12 @@ namespace Managers.Bots
             // Collect rewards in all achivements
             foreach (var achievementData in AchievementLoader.Achievements)
             {
+                // if not generated achievement value - skip
+                if (! AchievementValues.ContainsKey(achievementData.Name))
+                {
+                    continue;
+                }
+
                 int value = AchievementValues[achievementData.Name];
                 float weight = 1f;
                 foreach (var data in achievementData.AchievementSubData)

@@ -6,6 +6,7 @@ using Menu.MainMenu;
 using Save;
 using TMPro;
 using Tools;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -94,6 +95,11 @@ namespace Menu.Common.Buttons.TemplateItemButtons.Collectables
                 return;
 
             m_SubButtons.SetActive(false);
+
+            // re-apply collectables for runeItemUI if allowed
+            if (m_CollectableItemUI is TemplateRuneItemUI runeItemUI && ! runeItemUI.AsIconOnly)
+                m_CollectableItemUI.CollectionFillBar.gameObject.SetActive(true);
+
             MainMenuManager.OnClickedEvent -= CloseSubButtons;
         }
 

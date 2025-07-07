@@ -40,7 +40,7 @@ namespace Game.Spells
                 return true;
 
             // setup replacement data parent
-            m_ReplacementData.SetParent(StateEffectName);
+            m_ReplacementData.SetParent(m_Parent);
 
             if (m_ReplacementData.SpellType == ESpellType.MultiProjectiles)
             {

@@ -54,7 +54,7 @@ namespace Assets.Scripts.Menu
                 m_CollectionFillbar.Initialize(InventoryManager.GetCurrency(ECurrency.TotalXp), CollectablesManagementData.GetCurrentAccountLevelData().RequiredXp);
             }
 
-            m_CurrentXp = InventoryManager.GetCurrency(ECurrency.TotalXp);
+            m_CurrentXp = (int)InventoryManager.GetCurrency(ECurrency.TotalXp);
             m_LevelText.text = ProfileCloudData.AccountLevel.ToString();
         }
 

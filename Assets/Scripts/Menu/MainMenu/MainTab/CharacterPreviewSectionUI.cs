@@ -85,6 +85,7 @@ namespace Menu.MainMenu
             CharacterBuildsCloudData.CurrentRuneChangedEvent        += OnCurrentRuneChanged;
             ProfileCloudData.AccountLevelUpEvent                    += OnAccountLevelUp;
             ProgressionCloudData.CurrentArenaDataChangedEvent       += OnSelectedCharacterChanged;
+            PlayerPrefsHandler.GameModeChangedEvent                 += OnGameModeChanged;
             InventoryManager.CollectableUpgradedEvent               += OnCharacterLeveledUp;
             InventoryCloudData.CurrencyChangedEvent                 += OnCurrencyChanged;
 
@@ -101,6 +102,7 @@ namespace Menu.MainMenu
         {
             m_CharacterInfoButton.Button.onClick.RemoveAllListeners();
             CharacterBuildsCloudData.SelectedCharacterChangedEvent  -= OnSelectedCharacterChanged;
+            PlayerPrefsHandler.GameModeChangedEvent                 -= OnGameModeChanged;
             CharacterBuildsCloudData.CurrentBuildIndexChangedEvent  -= OnCurrentRuneChanged;
             CharacterBuildsCloudData.CurrentRuneChangedEvent        -= OnCurrentRuneChanged;
             ProfileCloudData.AccountLevelUpEvent                    -= OnAccountLevelUp;
@@ -290,6 +292,11 @@ namespace Menu.MainMenu
 
             // spawn preview
             SpawnCharPreview();
+        }
+
+        void OnGameModeChanged(EGameMode gameMode)
+        {
+            OnSelectedCharacterChanged();
         }
 
         void OnCurrentRuneChanged()

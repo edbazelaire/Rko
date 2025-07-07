@@ -21,12 +21,12 @@ namespace Data
 
         // ===========================================================================================
         // Dependent values
-        public virtual string ID        => Name;
-        public string Name              => name;
-        public float RequestedValue     => Current == null ? 0 : Current.Value.MaxValue;
-        public bool IsUnlockable        => Current != null && GetCount() >= RequestedValue;
-        public int CurrentIndex         => ProfileCloudData.GetAchievementThresholdIndex(ID);
-        public float TresholdValue       => Current.HasValue ? Current.Value.MaxValue : 0f;
+        public virtual string   ID                  => Name;
+        public string           Name                => name;
+        public float            RequestedValue      => Current == null ? 0 : Current.Value.MaxValue;
+        public bool             IsUnlockable        => Current != null && GetCount() >= RequestedValue;
+        public int              CurrentIndex        => ProfileCloudData.GetAchievementThresholdIndex(ID);
+        public float            TresholdValue       => Current.HasValue ? Current.Value.MaxValue : 0f;
 
         public virtual float GetCount() => ProfileCloudData.GetAchievementInfo(ID).Count;
 
