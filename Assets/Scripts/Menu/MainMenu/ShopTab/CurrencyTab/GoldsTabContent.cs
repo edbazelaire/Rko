@@ -1,5 +1,6 @@
 using Data.GameManagement;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Menu.MainMenu
@@ -15,7 +16,7 @@ namespace Menu.MainMenu
             m_Scroller.Initialize(new List<SShopData>[] { 
                 ShopManagementData.GoldsShopData, 
                 ShopManagementData.XpShopData,
-                ShopManagementData.GemsShopData       
+                ShopManagementData.GemsShopData.GetRange(0, 1)
             });
         }
 

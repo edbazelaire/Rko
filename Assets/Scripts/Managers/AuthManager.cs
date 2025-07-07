@@ -29,7 +29,7 @@ namespace Assets.Scripts.Managers
 
         // ===================================================================================
         // Events
-        public static Action LoginEvent;
+        public static Action<bool> LoginEvent;
         public static Action<string> LoginFailedEvent;
 
         // ===================================================================================
@@ -227,7 +227,7 @@ namespace Assets.Scripts.Managers
             LinkWithUnityAsync(PlayerAccountService.Instance.AccessToken);
 
             // call event that login is completed
-            LoginEvent?.Invoke();
+            LoginEvent?.Invoke(true);
         }
 
         async void LinkWithUnityAsync(string accessToken)
@@ -439,13 +439,16 @@ namespace Assets.Scripts.Managers
         /// <summary>
         /// Reset all Auth Settings and clear unity Session Token in the local files -> new account
         /// </summary>
-        void ResetLoginSettings()
+        public void Logout()
         {
-            // clear local id
-            AuthenticationService.Instance.ClearSessionToken();
+            // signe out from Authentication Service
+            AuthenticationService.Instance.SignOut(true);
 
             // reset AUTH data
             SetAuth("", EAuthServices.Anonymous);
+
+            // reload Release scene
+            SceneLoader.Instance.LoadScene("Release");
         }
 
         #endregion
