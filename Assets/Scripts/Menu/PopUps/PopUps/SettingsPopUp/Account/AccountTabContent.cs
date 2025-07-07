@@ -1,15 +1,18 @@
 ﻿using Assets.Scripts.Managers;
 using Assets.Scripts.Network;
+using Enums;
 using Managers.Friends;
 using Menu.MainMenu;
 using Network;
 using Save;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using TMPro;
 using Tools;
 using Unity.Services.Authentication;
 using Unity.Services.Relay;
+using UnityEngine.UI;
 
 namespace Assets.Scripts.UI
 {
@@ -17,10 +20,16 @@ namespace Assets.Scripts.UI
     {
         #region Members
 
-        TMP_Text        m_PseudoText;
-        TMP_Text        m_PlayerIdText; 
-        TMP_Text        m_VersionText;
-        TMP_Dropdown    m_RegionDropdown; 
+        // LEFT SIDE
+        ProfileDisplayUI    m_ProfileDisplay;
+        Button              m_LoginButton;
+        Button              m_LogoutButton;
+
+        // RIGHT SIDE
+        TMP_Text            m_PseudoText;
+        TMP_Text            m_PlayerIdText; 
+        TMP_Text            m_VersionText;
+        TMP_Dropdown        m_RegionDropdown; 
 
         #endregion
 
@@ -31,6 +40,12 @@ namespace Assets.Scripts.UI
         {
             base.FindComponents();
 
+            // LEFT SIDE
+            m_ProfileDisplay    = Finder.FindComponent<ProfileDisplayUI>(gameObject);
+            m_LoginButton       = Finder.FindComponent<Button>(gameObject, "LoginButton");
+            m_LogoutButton      = Finder.FindComponent<Button>(gameObject, "LogoutButton");
+
+            // RIGHT SIDE
             m_PseudoText        = Finder.FindComponent<TMP_Text>(Finder.Find(gameObject, "PseudoInfo"),     "Value");
             m_PlayerIdText      = Finder.FindComponent<TMP_Text>(Finder.Find(gameObject, "PlayerIdInfo"),   "Value");
             m_VersionText       = Finder.FindComponent<TMP_Text>(Finder.Find(gameObject, "VersionInfo"),    "Value");
@@ -40,6 +55,10 @@ namespace Assets.Scripts.UI
         protected override async void SetUpUI()
         {
             base.SetUpUI();
+
+            m_ProfileDisplay.Initialize(ProfileCloudData.CurrentProfileData);
+            m_LoginButton.gameObject.SetActive(! AuthManager.Instance.IsLoggedIn);
+            m_LogoutButton.gameObject.SetActive(AuthManager.Instance.IsLoggedIn);
 
             m_PseudoText.text       = ProfileCloudData.GamerTag;
             m_PlayerIdText.text     = AuthenticationService.Instance.PlayerId;
@@ -52,6 +71,8 @@ namespace Assets.Scripts.UI
 
 
         #region GUI Manipulators
+
+
 
         async Task SetUpDropdown()
         {
@@ -102,6 +123,22 @@ namespace Assets.Scripts.UI
 
         #region Listeners
 
+        protected override void RegisterListeners()
+        {
+            base.RegisterListeners();
+
+            m_LoginButton.onClick.AddListener(OnLoginClicked);
+            m_LogoutButton.onClick.AddListener(OnLogoutClicked);
+        }
+
+        protected override void UnRegisterListeners()
+        {
+            base.UnRegisterListeners();
+
+            m_LoginButton.onClick.RemoveAllListeners();
+            m_LogoutButton.onClick.RemoveAllListeners();
+        }
+
         /// <summary>
         /// When a region is manually changed
         /// </summary>
@@ -111,6 +148,17 @@ namespace Assets.Scripts.UI
             ProfileCloudData.SetRegion(CleanDropdownRegionValue(regionValue));
         }
 
+        void OnLoginClicked()
+        {
+            AuthManager.Instance.Login();
+        }
+
+        void OnLogoutClicked()
+        {
+            AuthManager.Instance.Logout();
+        }
+
         #endregion
+
     }
 }

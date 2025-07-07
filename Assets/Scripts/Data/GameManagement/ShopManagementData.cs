@@ -10,6 +10,7 @@ using Unity.VisualScripting;
 using MyBox;
 using Managers.Monetization.IAP;
 
+
 namespace Data.GameManagement
 {
     [Serializable]
@@ -337,8 +338,12 @@ namespace Data.GameManagement
         /// <summary> percentage of reduction to apply on the price (between 0 & 1) </summary>
         public float Reduction;
 
+        bool m_Abort;
+
         public float Price => (1 - Reduction) * Cost;
         public string ProductId => ! Name.IsNullOrEmpty() ? Name : (Rewards.Rewards[0].RewardName + (Rewards.Rewards[0].Qty > 0 ? "_" + Rewards.Rewards[0].Qty : ""));
+
+        public bool Abort => m_Abort;
 
         public SShopData(EProduct product, string name, Sprite icon, SRewardsData rewards, ECurrency currency, int cost, int maxCollection, float reduction = 0)
         {
@@ -349,15 +354,12 @@ namespace Data.GameManagement
             Currency        = currency;
             Cost            = cost;
             MaxCollection   = maxCollection;
+            Reduction       = reduction;
 
-            if (reduction < 0 || reduction > 1)
-            {
-                ErrorHandler.Error("Trying to apply reduction ("+ reduction + ") not between 0 and 1 on " + Name);
-                Reduction = 0;
-            } else
-            {
-                Reduction = reduction;
-            }
+            m_Abort = false;
+
+            // check on init
+            Check();
         }
 
         public void ApplyReduction(float reduction) 
@@ -373,20 +375,34 @@ namespace Data.GameManagement
 
         public bool Check()
         {
+            m_Abort = false;
+            
             // CHECK : that a real currency product has Store ProductId
             if (Currency == ECurrency.Real)
             {
                 if (Product == EProduct.None)
                 {
                     ErrorHandler.Error($"Product {Name} has a {ECurrency.Real} currency but has no product identifier");
+                    m_Abort = true;
                     return false;
                 }
 
-                if (IAPManager.Instance.GetProduct(Product) == null)
+                var storeProduct = IAPManager.Instance.GetProduct(Product);
+                if (storeProduct == null)
                 {
                     ErrorHandler.Error($"Product {Product} not found");
+                    m_Abort = true;
                     return false;
                 }
+
+                Cost = (float)storeProduct.metadata.localizedPrice;
+            }
+
+            // CHECK : Reduction
+            if (Reduction < 0 || Reduction > 1)
+            {
+                ErrorHandler.Error("Trying to apply reduction (" + Reduction + ") not between 0 and 1 on " + Name);
+                Reduction = 0;
             }
 
             // CHECK : price not negative

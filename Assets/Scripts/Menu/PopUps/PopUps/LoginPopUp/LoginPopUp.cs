@@ -65,7 +65,7 @@ namespace Menu.PopUps
             AuthManager.Instance.Login();
         }
 
-        void OnLogin()
+        void OnLogin(bool login)
         {
             // exit the popup when loggin completed
             Exit();

@@ -1,13 +1,10 @@
 ﻿using Data.GameManagement;
-using Enums;
 using Inventory;
-using Managers.Ads;
 using Managers.Monetization.IAP;
 using Menu.Common.Displayers;
 using System;
 using TMPro;
 using Tools;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace Menu.PopUps
@@ -51,7 +48,8 @@ namespace Menu.PopUps
             m_ItemName      = itemName;
             m_PriceData     = priceData;
             m_RewardsData   = rewardsData;
-            m_EnableWatchAd = watchAd;
+            //m_EnableWatchAd = watchAd;
+            m_EnableWatchAd = false;
 
             base.Initialize(GetMessage(), "Confirm Buy", onValidate, onCancel);
         }
@@ -127,7 +125,7 @@ namespace Menu.PopUps
 
         protected virtual void OnWatchAdClicked()
         {
-            AdManager.Instance.ShowRewarded(m_OnValidate);
+            //AdManager.Instance.ShowRewarded(m_OnValidate);
             Exit();
         }
 
