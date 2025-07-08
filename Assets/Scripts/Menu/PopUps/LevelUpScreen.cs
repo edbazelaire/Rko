@@ -48,8 +48,13 @@ namespace Menu.PopUps
             while (ProfileCloudData.IsAccountUpgradable)
             {
                 m_Rewards.Add(CollectablesManagementData.GetCurrentAccountLevelData().Rewards);
-                ProfileCloudData.UpgradeAccountLevel();
+                ProfileCloudData.UpgradeAccountLevel(false);
             }
+
+            // SAVE values at the end of the loop to avoid conflicts
+            InventoryCloudData.Instance.SaveValue(InventoryCloudData.KEY_TOTAL_XP);
+            InventoryCloudData.Instance.SaveValue(InventoryCloudData.KEY_XP);
+            ProfileCloudData.Instance.SaveValue(ProfileCloudData.KEY_CURRENT_PROFILE_DATA);
 
             // add golds to inventory manager
             base.Initialize();

@@ -440,7 +440,7 @@ namespace Menu.PopUps
             pulse.Initialize(UPGRADE_ANIMATION_ID, duration: 2f, minSize: 0.9f, maxSize: 1.1f, pulseDuration: 0.5f, pauseDuration: 0f);
 
             var particles = m_CollectableItemUI.IconObject.AddComponent<ParticlesAnimation>();
-
+            particles.Initialize(UPGRADE_ANIMATION_ID + "_2", duration: 2f);
         }
 
         /// <summary>
