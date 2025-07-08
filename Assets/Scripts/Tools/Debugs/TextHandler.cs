@@ -2,14 +2,17 @@
 using Data.DataStructures;
 using Data.DataStructures.CharacterSubStructures;
 using Data.DataStructures.StateEffectSubStructures;
+using Data.GameManagement;
 using Enums;
 using Game.Loaders;
 using Game.Spells;
 using Game.UI;
+using Managers.Monetization.IAP;
 using MyBox;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
@@ -381,6 +384,32 @@ namespace Tools
                 text = "<s>" + text + "</s>";
 
             return text;         
+        }
+
+        #endregion
+
+
+        #region Price 
+
+        public static string FormatPrice(float price, ECurrency currency)
+        {
+            if (price <= 0)
+                return "Free";
+
+            string value = Mathf.Round(price) == price ? price.ToString("0") : price.ToString("F2");
+
+            if (currency == ECurrency.Real)
+                value += GetLocalCurrencySymbol();
+
+            return value;
+        }
+
+        public static string GetLocalCurrencySymbol()
+        {
+            var culture = CultureInfo.CurrentCulture;
+            var region = new RegionInfo(culture.Name);
+
+            return region.CurrencySymbol;  // e.g., "$", "€", "¥"
         }
 
         #endregion

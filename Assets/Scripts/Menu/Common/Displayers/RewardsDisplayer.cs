@@ -30,9 +30,6 @@ namespace Menu.Common.Displayers
             m_RewardsDisplayRow = m_RowTemplate != null ? m_RowTemplate : Finder.FindComponent<HorizontalLayoutGroup>(m_RewardsDisplayContainer);
             m_TemplateReward = AssetLoader.LoadTemplateItem("Reward");
 
-            // clean items
-            UIHelper.CleanContent(m_RewardsDisplayRow.gameObject);
-
             SetUpRewards(rewardsData, maxElemPerRow);
         }
 
@@ -62,7 +59,7 @@ namespace Menu.Common.Displayers
                 int itemsInRow = baseItemsPerRow + (i < rowsWithExtraItem ? 1 : 0);
 
                 // Instantiate a new row
-                if (i > 0)
+                if (i > 0 || m_RowTemplate != null)
                     row = Instantiate(m_RewardsDisplayRow, m_RewardsDisplayContainer.transform).GetComponent<Transform>();
               
                 UIHelper.CleanContent(row);

@@ -1012,7 +1012,7 @@
     {
         Gold        = 0,
         Gems        = 1,
-        Real     = 2,
+        Real        = 2,
         Xp          = 3,
         TotalXp     = 4,
     }

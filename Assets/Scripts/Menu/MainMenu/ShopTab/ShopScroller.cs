@@ -40,6 +40,9 @@ namespace Menu.MainMenu.ShopTab
             {
                 foreach (SShopData data in dataList)
                 {
+                    if (data.Abort)
+                        continue;
+
                     var templateShopItem = GetTemplate(data);
                     if (templateShopItem == null)
                         continue;

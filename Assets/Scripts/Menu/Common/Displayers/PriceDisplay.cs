@@ -1,4 +1,5 @@
 ﻿using Data.GameManagement;
+using Enums;
 using TMPro;
 using Tools;
 using UnityEngine;
@@ -25,12 +26,18 @@ namespace Menu.Common.Displayers
         {
             FindComponents();
 
-            if (priceData.Price == Mathf.Round(priceData.Price))
-                m_Price.text = TextHandler.FormatNumericalString((int)priceData.Price);
-            else
-                m_Price.text = priceData.Price.ToString();
+            TextAlignmentOptions alignment = m_CurrencyIcon.gameObject.activeInHierarchy ? TextAlignmentOptions.MidlineRight : TextAlignmentOptions.Center;
+            m_Price.text = TextHandler.FormatPrice(priceData.Price, priceData.Currency);
 
-            m_CurrencyIcon.sprite = AssetLoader.LoadCurrencyIcon(priceData.Currency);
+            if (priceData.Currency == ECurrency.Real)
+            {
+                m_CurrencyIcon.transform.parent.gameObject.SetActive(false);
+            } 
+            else
+            {
+                m_CurrencyIcon.transform.parent.gameObject.SetActive(true);
+                m_CurrencyIcon.sprite = AssetLoader.LoadCurrencyIcon(priceData.Currency);
+            }
         }
     }
 }

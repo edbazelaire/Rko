@@ -122,9 +122,9 @@ namespace Assets.Scripts.Menu
             ScreenManager.SetPopUp(EPopUpState.LoginPopUp);
         }
 
-        void OnLogin()
+        void OnLogin(bool login)
         {
-            m_LoginButton.gameObject.SetActive(false);
+            m_LoginButton.gameObject.SetActive(!login);
         }
 
         #endregion

@@ -36,7 +36,8 @@ namespace Menu.PopUps
         private TMP_Text                    m_BonusRewardText;
 
         // Data
-        List<ArenaModButtonUI> m_ArenaModButtons;
+        List<ArenaModButtonUI> m_ArenaModButtons    = new();
+        ERarety? m_CurrentPowerOrbRarety            = null;    
 
         #endregion
 
@@ -109,13 +110,20 @@ namespace Menu.PopUps
         /// </summary>
         void RefreshRewards()
         {
-            m_PowerOrbContainer.Initialize(ProgressionCloudData.CurrentArena.GetPowerOrb(), activateIdle: false);
+            if (m_CurrentPowerOrbRarety != ProgressionCloudData.CurrentArena.GetPowerOrb().Rarety)
+                RefreshPowerOrb();
 
             // calculate current bonus value
             int bonus = (int)Mathf.Round((ProgressionCloudData.CurrentArena.GetBonusPowerOrb() + ArenaManagementData.BonusArenaDifficultyLevel * PlayerPrefsHandler.CurrentArenaExtraDifficulty - 1) * 100);
 
             // Display the bonus reward percentage
             m_BonusRewardText.text = $"+ {bonus}%";
+        }
+
+        void RefreshPowerOrb()
+        {
+            m_PowerOrbContainer.Initialize(ProgressionCloudData.CurrentArena.GetPowerOrb(), activateIdle: false);
+            m_CurrentPowerOrbRarety = ProgressionCloudData.CurrentArena.GetPowerOrb().Rarety;
         }
 
         /// <summary>

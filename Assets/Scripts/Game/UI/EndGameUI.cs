@@ -497,22 +497,24 @@ public class EndGameUI : MObject
         {
             case EGameMode.Arena:
                 MAnalytics.SendEvent(new ArenaGameEndedEvent(
-                    m_GameResult == EGameResult.Win,
+                    win:                m_GameResult == EGameResult.Win,
                     character:          StaticPlayerData.Character,
                     playerLevel:        StaticPlayerData.CharacterLevel,
                     runes:              StaticPlayerData.Runes,
                     spells:             StaticPlayerData.Spells.ToList(),
                     spellLevels:        StaticPlayerData.SpellLevels.ToList(),
                     arenaType:          PlayerPrefsHandler.GetArenaType(),
-                    arenaDifficulty:    ProgressionCloudData.CurrentArena.SArenaDifficulty.ToString(),
+                    arenaDifficulty:    ProgressionCloudData.CurrentArena.GetArenaDifficulty(),
                     level:              ProgressionCloudData.CurrentArena.Level,
-                    stage:              GameUIManager.Instance.PreviousStage
+                    stage:              GameUIManager.Instance.PreviousStage,
+                    extraDifficulty:    ProgressionCloudData.CurrentArena.SArenaDifficulty.Level,
+                    arenaMods:          ProgressionCloudData.CurrentArena.ArenaMods
                 ));
                 break;
 
             case EGameMode.Ranked:
                 MAnalytics.SendEvent(new RankedGameEndedEvent(
-                    m_GameResult == EGameResult.Win, 
+                    win:            m_GameResult == EGameResult.Win, 
                     character:      StaticPlayerData.Character, 
                     characterLevel: StaticPlayerData.CharacterLevel,
                     runes:          StaticPlayerData.Runes,

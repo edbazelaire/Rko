@@ -5,13 +5,30 @@ namespace Tools.Animations
 {
     public class Pulse : OvAnimation
     {
+        private enum PulseStage
+        {
+            None,
+            Growing,
+            Pausing
+        }
+
         #region Members
 
-        protected float        m_MinSize         = 0.95f;
-        protected float        m_MaxSize         = 1.05f;
-        protected float        m_PulseDuration   = 1f;
-        protected int          m_NPulsePerLoop   = 2;
-        protected float        m_PauseDuration   = 0.5f;
+        protected float m_MinSize = 0.95f;
+        protected float m_MaxSize = 1.05f;
+        protected float m_PulseDuration = 1f;
+        protected int m_NPulsePerLoop = 2;
+        protected float m_PauseDuration = 0.5f;
+
+        private PulseStage m_CurrentStage = PulseStage.None;
+        private float[] m_Stages = null;
+        private int m_CurrentPulse = 0;
+        private int m_StageIndex = 0;
+        private float m_CurrentSize = 1f;
+        private float m_NextSize = 1f;
+        private float m_StageTimer = 0f;
+        private float m_PauseTimer = 0f;
+        private float m_StageDuration = 0f;
 
         #endregion
 
@@ -46,44 +63,64 @@ namespace Tools.Animations
         {
             yield return base.AnimationFrame();
 
-            float[] stages = new float[] { m_MaxSize, 1f, m_MinSize, 1f };
-            // divide pulse stage duration by number of stages
-            float pulseDuration = m_PulseDuration / stages.Length;
-
-            for (int i = 0; i < m_NPulsePerLoop; i++)
+            if (m_Stages == null)
             {
-                float currentSize = 1f;
-
-                foreach (var nextSize in stages)
-                {
-                    // reset timer
-                    float pulseTimer = 0;
-
-                    while (pulseTimer <= pulseDuration)
-                    {
-                        // calculate scale
-                        float t = pulseTimer / pulseDuration;
-                        float scale = Mathf.Lerp(currentSize, nextSize, t);
-
-                        // update scale
-                        gameObject.transform.localScale = new Vector3(scale, scale, 1f);
-
-                        // update timer
-                        pulseTimer += Time.deltaTime;
-                        yield return null;
-                    }
-
-                    // set new current size 
-                    currentSize = nextSize;
-                }
+                // First-time initialization
+                m_Stages            = new float[] { m_MaxSize, 1f, m_MinSize, 1f };
+                m_StageDuration     = m_PulseDuration / m_Stages.Length;
+                m_CurrentPulse      = 0;
+                m_StageIndex        = 0;
+                m_CurrentSize       = 1f;
+                m_NextSize          = m_Stages[m_StageIndex];
+                m_StageTimer        = 0f;
+                m_CurrentStage      = PulseStage.Growing;
             }
 
-            // PAUSE BETWEEN TIMERS
-            float pauseTimer = m_PauseDuration;
-            while (pauseTimer > 0f)
+            switch (m_CurrentStage)
             {
-                pauseTimer -= Time.deltaTime;
-                yield return null;
+                case PulseStage.Growing:
+                    m_StageTimer += Time.deltaTime;
+
+                    float t = Mathf.Clamp01(m_StageTimer / m_StageDuration);
+                    float scale = Mathf.Lerp(m_CurrentSize, m_NextSize, t);
+                    transform.localScale = new Vector3(scale, scale, 1f);
+
+                    if (m_StageTimer >= m_StageDuration)
+                    {
+                        m_CurrentSize = m_NextSize;
+                        m_StageIndex++;
+                        m_StageTimer = 0f;
+
+                        if (m_StageIndex >= m_Stages.Length)
+                        {
+                            m_CurrentPulse++;
+                            m_StageIndex = 0;
+
+                            if (m_CurrentPulse >= m_NPulsePerLoop)
+                            {
+                                m_CurrentStage = PulseStage.Pausing;
+                                m_PauseTimer = m_PauseDuration;
+                                break;
+                            }
+                        }
+
+                        m_NextSize = m_Stages[m_StageIndex];
+                    }
+                    break;
+
+                case PulseStage.Pausing:
+                    m_PauseTimer -= Time.deltaTime;
+                    if (m_PauseTimer <= 0f)
+                    {
+                        // Reset for next pulse loop
+                        m_CurrentPulse = 0;
+                        m_StageIndex = 0;
+                        m_CurrentSize = 1f;
+                        m_NextSize = m_Stages[m_StageIndex];
+                        m_StageTimer = 0f;
+                        m_CurrentStage = PulseStage.Growing;
+                    }
+                    break;
             }
         }
 
