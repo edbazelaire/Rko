@@ -662,7 +662,7 @@ namespace Save
                 Instance.SaveValue(KEY_CURRENT_PROFILE_DATA);
 
             // update collectable
-            InventoryManager.Spend(requiredXp, ECurrency.TotalXp, "AccountLevelUp");
+            InventoryManager.Spend(requiredXp, ECurrency.TotalXp, "AccountLevelUp", save);
 
             // fire event that the account has been leveled up
             AccountLevelUpEvent?.Invoke();

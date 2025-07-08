@@ -42,18 +42,10 @@ namespace Inventory
 
         public static void UpdateCurrency(ECurrency currency, int amount, string context, bool save = true)
         {
-            var data = InventoryCloudData.Instance.Data;
-
-            if (!data.ContainsKey(currency.ToString()))
-            {
-                ErrorHandler.Error("Currency " + currency + " not found in inventory cloud data");
-                return;
-            }
-
-            var total = (int)data[currency.ToString()] + amount;
+            var total = InventoryCloudData.Instance.GetCurrency(currency) + amount;
             if (total < 0)
             {
-                ErrorHandler.Error($"Not enought {currency} ({(int)data[currency.ToString()]}) to spend ({amount})");
+                ErrorHandler.Error($"Not enought {currency} ({InventoryCloudData.Instance.GetCurrency(currency)}) to spend ({amount})");
                 return;
             }
 
@@ -83,9 +75,9 @@ namespace Inventory
         }
 
 
-        public static bool Spend(SPriceData priceData, string context)
+        public static bool Spend(SPriceData priceData, string context, bool save = true)
         {
-            return Spend(priceData.Price, priceData.Currency, context);
+            return Spend(priceData.Price, priceData.Currency, context, save);
         }
 
         /// <summary>
@@ -93,7 +85,7 @@ namespace Inventory
         /// </summary>
         /// <param name="cost"></param>
         /// <returns></returns>
-        public static bool Spend(float cost, ECurrency currency, string context)
+        public static bool Spend(float cost, ECurrency currency, string context, bool save = true)
         {
             if (cost < 0)
             {
@@ -111,7 +103,7 @@ namespace Inventory
             MAnalytics.SendEvent(new CurrencyEvent(currency, -(int)cost, context));
 
             // save new currency value in cloud data
-            InventoryCloudData.Instance.SetData(currency.ToString(), GetCurrency(currency) - cost);
+            InventoryCloudData.Instance.SetData(currency.ToString(), GetCurrency(currency) - cost, save);
             
             return true;
         }
