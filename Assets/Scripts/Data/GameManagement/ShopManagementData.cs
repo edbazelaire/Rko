@@ -387,6 +387,9 @@ namespace Data.GameManagement
                     return false;
                 }
 
+                if (!IAPManager.Initialized)
+                    return false;
+
                 var storeProduct = IAPManager.Instance.GetProduct(Product);
                 if (storeProduct == null)
                 {
