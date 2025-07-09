@@ -82,7 +82,7 @@ namespace Assets
             FriendsHandler.Initialized,
             RSDManager.LoadingCompleted,
             CloudSaveManager.LoadingCompleted,
-            IAPManager.Initialized,
+            //IAPManager.Initialized,               // REMOVE FOR NOW
             m_SignedIn
         };
 
