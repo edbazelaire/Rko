@@ -8,6 +8,9 @@ namespace Managers.Monetization.IAP
     {
         public static string GetProductPriceString(EProduct productId)
         {
+            if (!IAPManager.Initialized)
+                return "Not Available";
+
             return GetProductPriceString(IAPManager.Instance.GetProduct(productId));
         }
 
