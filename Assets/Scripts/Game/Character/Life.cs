@@ -218,6 +218,7 @@ public class Life : NetworkBehaviour
         }
 
         damages = -m_Shield;
+        m_Shield = 0;
         m_FinalShield.Value = 0;
 
         RecalculateShield();

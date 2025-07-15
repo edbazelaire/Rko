@@ -37,7 +37,8 @@ namespace Save.Data.Progression.Structs
         public readonly EArenaDifficulty GetArenaDifficulty()   => SArenaDifficulty.Difficulty;
         public string[] GetPowerUps()                           => PowerUps ?? (new string[4]);
         public readonly bool InProgress()                       => ArenaType != EArenaType.None;
-        public readonly bool IsOver()                           => m_IsOver || Losses >= ArenaData.MAX_LOSSES || Level > AssetLoader.LoadArenaData(ArenaType, SArenaDifficulty).MaxLevel;
+        public readonly int GetMaxLosses()                      => ArenaMods.Contains(EArenaMod.NoDeath) ? 1 : ArenaData.MAX_LOSSES;
+        public readonly bool IsOver()                           => m_IsOver || Losses >= GetMaxLosses() || Level > AssetLoader.LoadArenaData(ArenaType, SArenaDifficulty).MaxLevel;
         public bool IsBoss()
         {
             SArenaLevelData? arenaLevelData = ArenaLevelData();

@@ -22,25 +22,15 @@ namespace Managers.MainMenu
 
         protected void Awake()
         {
-            base.Initialize();
+            Initialize();
         }
 
         public override void Initialize()
         {
             base.Initialize();
 
-            // refresh current xp
-            m_CurrentXp = InventoryCloudData.Instance.GetCurrency(ECurrency.TotalXp);
-
-            if (NotificationCloudData.XpCollection > 0)
-            {
-                // collect xp from notifications
-                NotificationCloudData.CollectXp();
-            } 
-            else if (CollectablesManagementData.IsAccountUpgradable)
-            {
+            if (CollectablesManagementData.IsAccountUpgradable)
                 LevelUpAccount(0);
-            }
         }
 
         #endregion
@@ -50,7 +40,7 @@ namespace Managers.MainMenu
 
         protected void LevelUpAccount(int gainedXp)
         {
-            Main.SetPopUp(EPopUpState.LevelUpScreen, m_CurrentXp, CollectablesManagementData.GetCurrentAccountLevelData().RequiredXp, gainedXp);
+            Main.SetPopUp(EPopUpState.LevelUpScreen, InventoryCloudData.Instance.GetCurrency(ECurrency.TotalXp), CollectablesManagementData.GetCurrentAccountLevelData().RequiredXp, gainedXp);
         }
 
         #endregion

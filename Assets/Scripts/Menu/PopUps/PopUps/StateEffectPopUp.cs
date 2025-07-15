@@ -74,6 +74,13 @@ namespace Menu.PopUps
             UIHelper.CleanContent(m_PropertiesContainer);
 
             var infos = m_StateEffect.GetInfos();
+            if (infos.Count == 0)
+            {
+                m_PropertiesContainer.gameObject.SetActive(false);
+                return;
+            }
+
+            m_PropertiesContainer.gameObject.SetActive(true);
             Dictionary<string, object> nextLevelInfos = new ();
             if (m_StateEffect.Level < 14)
             {

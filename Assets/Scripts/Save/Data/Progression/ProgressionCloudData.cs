@@ -296,7 +296,7 @@ namespace Save
 
         public static void AddArenaLoss(int nLoss = 1, bool save = true)
         {
-            UpdateCurrentArena(losses: Math.Clamp(CurrentArena.Losses + nLoss, 0, ArenaData.MAX_LOSSES), erosion: 0f, save: save);
+            UpdateCurrentArena(losses: Math.Clamp(CurrentArena.Losses + nLoss, 0, CurrentArena.GetMaxLosses()), erosion: 0f, save: save);
         }
 
         public static void AddCurrentArenaPowerUp(string powerUpName, bool save = true)
@@ -508,7 +508,7 @@ namespace Save
             if (stage.HasValue)
                 currentArena.Stage = stage.Value;
             if (losses.HasValue)
-                currentArena.Losses = losses.Value > ArenaData.MAX_LOSSES ? ArenaData.MAX_LOSSES : losses.Value;
+                currentArena.Losses = losses.Value > currentArena.GetMaxLosses() ? currentArena.GetMaxLosses() : losses.Value;
             if (erosion.HasValue)
                 currentArena.Erosion = erosion.Value;
 

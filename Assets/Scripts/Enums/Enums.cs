@@ -217,7 +217,7 @@
         //Corrupted           = 42,
         VoidEmbrace         = 43,
         PlagueArrows        = 44,
-        EmperorOfFlames     = 45,
+        //EmperorOfFlames     = 45,
         ExperimentalVial    = 46,
         //Vortex              = 47,
         Shardrot            = 48,
@@ -441,6 +441,7 @@
         HammeredRune            = 25,
         CorruptionRune          = 26,
         IceLanceMastery         = 27,
+        EmperorOfFlames         = 28,
     }
 
     public enum EEffectType

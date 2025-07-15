@@ -3,12 +3,9 @@ using Data;
 using Data.GameManagement;
 using Enums;
 using Game.Loaders;
-using Google.Apis.Sheets.v4.Data;
 using Inventory;
 using Managers.Friends;
-using Menu.Common.Buttons;
 using MyBox;
-using NUnit.Framework.Internal;
 using Save;
 using System;
 using System.Collections.Generic;
@@ -97,6 +94,9 @@ namespace Assets.Scripts.Managers
 
             if (CurrentVersion.CompareTo(new Version("0.3.6")) == -1)
                 test = UpdateVersion_0_3_6();
+
+            if (CurrentVersion.CompareTo(new Version("0.3.8")) == -1)
+                test = UpdateVersion_0_3_8();
 
             // if does not trigger any version until now, update to current version
             if (CurrentVersion.CompareTo(GameVersion) == -1)
@@ -557,6 +557,33 @@ namespace Assets.Scripts.Managers
             // update collected data to match current unlocked arena
             ProgressionCloudData.SetArenaUnlockedReward(EArenaType.FrostArena, ProgressionCloudData.GetUnlockedArenaDifficulty(EArenaType.FrostArena), 0);
             return SetVersion("0.3.6");
+        }
+
+
+        #endregion
+
+
+        #region v0.3.8
+
+        static bool UpdateVersion_0_3_8()
+        {
+            // check if the version should be updated
+            if (GameVersion.CompareTo(new Version("0.3.8")) == -1)
+                return true;
+
+            // update collected data to match current unlocked arena
+            NotificationCloudData.Instance.DeleteKey("XpCollection");
+
+            // send reward of missing xp to player
+            SRewardsData rewards = new SRewardsData();
+            rewards.Add(ERune.EmperorOfFlames, 1);
+            NotificationCloudData.AddMessage(new SMessage(
+                title: "New Rune : Emperor of Flames",
+                content: "The spell \"Emperor of Flames\" is now a Rune !",
+                rewardsData: rewards
+            ));
+
+            return SetVersion("0.3.8");
         }
 
         

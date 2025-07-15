@@ -115,7 +115,7 @@ namespace Assets.Scripts.Managers
                     break;
 
                 case EPopUpState.LevelUpScreen:
-                    obj.GetComponent<LevelUpScreen>().Initialize(baseXp: (int)args[0], maxXp: (int)args[1], bonusXp: (int)args[2]);
+                    obj.GetComponent<LevelUpScreen>().Initialize(currentXp: (int)args[0], maxXp: (int)args[1], bonusXp: (int)args[2]);
                     break;
 
                 case EPopUpState.PowerUpInfoScreen:
