@@ -575,7 +575,7 @@ namespace Assets.Scripts.Managers
             NotificationCloudData.Instance.DeleteKey("XpCollection");
 
             // send reward of missing xp to player
-            SRewardsData rewards = new SRewardsData();
+            SRewardsData rewards = new SRewardsData(null);
             rewards.Add(ERune.EmperorOfFlames, 1);
             NotificationCloudData.AddMessage(new SMessage(
                 title: "New Rune : Emperor of Flames",
