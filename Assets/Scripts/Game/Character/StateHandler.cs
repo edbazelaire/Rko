@@ -355,6 +355,12 @@ namespace Game.Character
                 baseValue += effect.RemainingShield;
             }
 
+            if (baseValue < 0)
+            {
+                ErrorHandler.Warning("Remaining Shield (" + baseValue + ") < 0");
+                baseValue = 0;
+            }
+
             m_RemainingShield = baseValue;
             m_Controller.Life.RecalculateShield();
         }

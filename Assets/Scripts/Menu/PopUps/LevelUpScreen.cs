@@ -2,7 +2,6 @@
 using Data.GameManagement;
 using Menu.Common;
 using Save;
-using System.Collections.Generic;
 using TMPro;
 using Tools;
 
@@ -20,7 +19,7 @@ namespace Menu.PopUps
         // =====================================================================================
         // Data
         SRewardsData            m_Rewards = new();
-        int                     m_BaseXp;
+        int                     m_CurrentXp;
         int                     m_MaxXp;
         int                     m_BonusXp;
 
@@ -37,12 +36,12 @@ namespace Menu.PopUps
             m_LevelText = Finder.FindComponent<TMP_Text>(gameObject, "Level");
         }
 
-        public void Initialize(int baseXp, int maxXp, int bonusXp)
+        public void Initialize(int currentXp, int maxXp, int bonusXp)
         {
-            m_Rewards = new();
-            m_BaseXp    = baseXp;
-            m_MaxXp     = maxXp;
-            m_BonusXp   = bonusXp;
+            m_Rewards       = new();
+            m_CurrentXp     = currentXp;
+            m_MaxXp         = maxXp;
+            m_BonusXp       = bonusXp;
 
             // update account as many time as possible, and stack all rewards
             while (ProfileCloudData.IsAccountUpgradable)
@@ -70,7 +69,7 @@ namespace Menu.PopUps
             base.OnPrefabLoaded();
 
             m_LevelText.text = (ProfileCloudData.AccountLevel - 1).ToString();
-            m_XpBar.Initialize(m_BaseXp, m_MaxXp);
+            m_XpBar.Initialize(m_CurrentXp - m_BonusXp, m_MaxXp);
         }
 
         protected override void OnInitializationCompleted()

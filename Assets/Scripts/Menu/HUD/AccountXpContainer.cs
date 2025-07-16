@@ -30,6 +30,7 @@ namespace Assets.Scripts.Menu
             m_LevelText = Finder.FindComponent<TMP_Text>(gameObject, "Level");
 
             RefreshUI();
+
             InventoryCloudData.CurrencyChangedEvent += OnCurrencyChanged;
         }
 

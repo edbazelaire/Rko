@@ -32,7 +32,16 @@ MonoBehaviour:
   m_MaxStacks: 1
   m_StackDecay: -1
   m_StartsActivated: 1
-  m_StateEffectTriggers: []
+  m_StateEffectTriggers:
+  - ReverseEffect: 1
+    ConditionTriggers:
+    - Trigger: 4
+      Comparator: 5
+      Value: 0
+      IsPercValue: 0
+    StateEffectAction:
+      StateEffectEvent: 5
+      Value: 
   m_StateEffectActivations: []
   m_BonusStats:
   - StateEffectProperty: 5

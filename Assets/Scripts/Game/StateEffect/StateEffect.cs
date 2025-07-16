@@ -259,11 +259,8 @@ namespace Game.Spells
             // start holding
             ActivateHoldingStateEffects(true);
 
-            // apply cooldown reduction effects of that state effect
-            ApplyCooldownReduction();
-
+            // apply additional state effects
             ApplySubStateEffect();
-
             ApplyOnStartStateEffects();
 
             // if instantatious effect : end after start
@@ -549,9 +546,9 @@ namespace Game.Spells
                 m_Controller.StateHandler.RemoveHoldingStateEffects(m_HoldingStateEffects);
         }
 
-        protected virtual void ApplyCooldownReduction()
+        protected virtual void ApplyCooldownReduction(int stacks)
         {
-            if (! TryGetBonusStatValue(EStateEffectProperty.CooldownReduction, out float cooldownReduction, stacks: Stacks))
+            if (! TryGetBonusStatValue(EStateEffectProperty.CooldownReduction, out float cooldownReduction, stacks: stacks))
                 return;
 
             m_Controller.SpellHandler.ReduceCooldowns(cooldownReduction);
@@ -1148,6 +1145,10 @@ namespace Game.Spells
             value = GetInt(EStateEffectProperty.Shield, stacks);
             if (value != 0)
                 m_RemainingShield += value;
+
+            // ================================================================================================
+            // COOLDOWN REDUCTION
+            ApplyCooldownReduction(stacks);
         }
 
         protected virtual void OnTick() { }
@@ -1205,12 +1206,18 @@ namespace Game.Spells
         {
             m_Controller.StateHandler.HoldingStateEffects.OnListChanged += RecheckIsHolding;
             RegisterTriggers();
+
+            if (m_StateEffectActivations.Count() > 0)
+                StateEffect.StateEffectEvent += OnStateEffectEvent;
         }
 
         protected virtual void UnRegisterListeners()
         {
             m_Controller.StateHandler.HoldingStateEffects.OnListChanged -= RecheckIsHolding;
             UnRegisterTriggers();
+
+            if (m_StateEffectActivations.Count() > 0)
+                StateEffect.StateEffectEvent -= OnStateEffectEvent;
         }
 
         void RecheckIsHolding(NetworkListEvent<FixedString64Bytes> changeEvent)
@@ -1234,6 +1241,41 @@ namespace Game.Spells
             foreach (var trigger in m_StateEffectTriggers)
             {
                 trigger.UnRegister();
+            }
+        }
+
+        void OnStateEffectEvent(string stateEffectName, EStateEffectEvent stateEffectEvent, int stacks, ulong targetId, ulong casterId, string a)
+        {
+            // SAFETY : has a caster provided
+            if (m_Caster == null)
+            {
+                ErrorHandler.Error("Provided Controller is null for state effect : " + stateEffectName + " - at event " + stateEffectEvent);
+                return;
+            }
+
+            // SAFETY : is still active
+            if (!m_IsActivated)
+            {
+                return;
+            }
+
+            foreach (SStateEffectActivation stateEffectActivation in m_StateEffectActivations)
+            {
+                // CHECK : comes from the correct caster
+                if (casterId != m_Caster.PlayerId)
+                    return;
+
+                // CHECK : does the provided stateEffect have one of activation effect
+                if (stateEffectActivation.StateEffectName != stateEffectName)
+                    continue;
+
+                // CHECK : the event is the required one
+                if (stateEffectActivation.StateEffectEvent != stateEffectEvent)
+                    continue;
+
+                ErrorHandler.Log("OnStateEffectEvent - " + stateEffectName + " | " + stateEffectEvent + " (" + stacks + ")", ELogTag.StateEffects);
+
+                Refresh(stateEffectActivation.Stacks * stacks);
             }
         }
 
