@@ -116,8 +116,7 @@ namespace Menu.MainMenu
         public void SetButtonsActive(bool active)
         {
             // account manipulation buttons
-            m_PseudoChangeButton.gameObject.SetActive(active && ! ProfileCloudData.PseudoChanged);
-            m_PseudoChangeButton.gameObject.SetActive(active && ! AuthManager.Instance.IsLoggedIn);
+            m_PseudoChangeButton.gameObject.SetActive(active && ProfileCloudData.CanChangePseudo);
 
             // account achievements buttons
             m_AvatarButtonUI.Button.interactable = active;

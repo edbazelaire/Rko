@@ -133,7 +133,6 @@ namespace Game.Spells
 
         public override string GetDescription()
         {
-            Debug.Log("GetDescription()");
             return base.GetDescription();
         }
 

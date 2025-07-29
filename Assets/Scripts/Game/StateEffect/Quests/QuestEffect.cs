@@ -281,7 +281,7 @@ namespace Game.StateEffects.Quests
                 index++;
 
                 // Required Stacks is above max allowed stacks, meaning that the effect is never getting triggered
-                if ((! IsInfinite && questThreshold.RequiredStacks > m_MaxStacks) || index >= m_MaxIndex)
+                if ((m_MaxStacks > 0 && questThreshold.RequiredStacks > m_MaxStacks) || index >= m_MaxIndex)
                     break;
 
                 if (!description.IsNullOrEmpty())

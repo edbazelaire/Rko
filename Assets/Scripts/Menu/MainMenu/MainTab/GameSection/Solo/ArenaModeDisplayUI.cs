@@ -14,6 +14,7 @@ using Tools.Animations;
 using System.Collections;
 using Assets.Scripts.Managers;
 using Save.Data.Progression.Structs;
+using Managers;
 
 namespace Menu.MainMenu.MainTab
 {
@@ -170,7 +171,7 @@ namespace Menu.MainMenu.MainTab
 
                 m_ArenaTypeDropdown.interactable = false;
                 m_ArenaDifficultyDropdown.interactable = false;
-                m_BuildButton.gameObject.SetActive(true);
+                m_BuildButton.gameObject.SetActive(false);
                 m_LifesSection.Activate(false);
                 m_StageSectionUI.transform.parent.gameObject.SetActive(false);
                 m_ButtonsSection.gameObject.SetActive(true);
@@ -183,7 +184,7 @@ namespace Menu.MainMenu.MainTab
             {
                 m_ArenaTypeDropdown.interactable = false;
                 m_ArenaDifficultyDropdown.interactable = false;
-                m_BuildButton.gameObject.SetActive(true);
+                m_BuildButton.gameObject.SetActive(ProgressionCloudData.CurrentArena.HasBuildData());
                 m_ButtonsSection.gameObject.SetActive(false);
                 m_StageSectionUI.transform.parent.gameObject.SetActive(true);
                 m_StageSectionUI.Initialize(m_ArenaData.CurrentLevel, m_ArenaData);
@@ -270,6 +271,7 @@ namespace Menu.MainMenu.MainTab
             base.RegisterListeners();
 
             ProgressionCloudData.CurrentArenaDataChangedEvent += OnCurrentArenaDataChanged;
+            PlayerPrefsHandler.ArenaExtraDifficultyChanged += OnArenaExtraDifficultyChanged;
             PlayerPrefsHandler.ArenaModsChangedEvent += OnArenaModsChanged;
             m_ArenaTypeDropdown.onValueChanged.AddListener(OnArenaTypeValueChanged);
             m_ArenaDifficultyDropdown.onValueChanged.AddListener(OnArenaDifficultyValueChanged);
@@ -360,7 +362,12 @@ namespace Menu.MainMenu.MainTab
 
         public void OnSelectButtonClicked()
         {
-            ProgressionCloudData.CreateNewCurrentArena(m_ArenaData.ArenaType, m_ArenaDifficulty, PlayerPrefsHandler.GetArenaMods(m_ArenaData.ArenaType, m_ArenaDifficulty.Difficulty), CharacterBuildsCloudData.CurrentBuild);
+            ProgressionCloudData.CreateNewCurrentArena(
+                m_ArenaData.ArenaType, 
+                m_ArenaDifficulty, 
+                PlayerPrefsHandler.GetArenaMods(m_ArenaData.ArenaType, m_ArenaDifficulty.Difficulty), 
+                new SBuildData(0, "")
+            );
 
             // CHECK : Random mod
             if (ProgressionCloudData.CurrentArena.ArenaMods.Contains(EArenaMod.Random))

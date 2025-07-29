@@ -17,6 +17,7 @@ namespace Menu.Common.Buttons
 
         // Data
         private string          m_Name;
+        private string          m_ProductId;
         private ECurrency       m_Currency;
         private float           m_Cost;
         private SRewardsData    m_Rewards;
@@ -33,7 +34,7 @@ namespace Menu.Common.Buttons
             m_CurrencyIcon = Finder.FindComponent<Image>(m_BottomOverlay.gameObject, "CurrencyIcon");
         }
 
-        public void Initialize(string name, Sprite icon, ECurrency currency, float cost, SRewardsData rewards)
+        public void Initialize(string name, string productId, Sprite icon, ECurrency currency, float cost, SRewardsData rewards)
         {
             Color? titleColor = null;
             if (name == null || name == "") 
@@ -51,6 +52,7 @@ namespace Menu.Common.Buttons
             }
 
             m_Name = name;
+            m_ProductId = productId;
             m_Currency = currency;
             m_Cost = cost;
             m_Rewards = rewards;
@@ -73,7 +75,7 @@ namespace Menu.Common.Buttons
 
         protected override void OnClick()
         {
-            Main.ConfirmBuyRewards(m_Name, new SPriceData(m_Cost, m_Currency), m_Rewards, OnPurchaseCompleted);            
+            Main.ConfirmBuyRewards(m_Name, m_ProductId, new SPriceData(m_Cost, m_Currency), m_Rewards, OnPurchaseCompleted);            
         }
 
         protected void OnPurchaseCompleted(bool success)

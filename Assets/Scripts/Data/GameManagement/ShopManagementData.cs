@@ -9,6 +9,7 @@ using Save;
 using Unity.VisualScripting;
 using MyBox;
 using Managers.Monetization.IAP;
+using System.Linq;
 
 
 namespace Data.GameManagement
@@ -110,6 +111,8 @@ namespace Data.GameManagement
             Boosts              ??= new List<SBoostReward>();
         }
 
+        #region Adding Rewards
+
         public void Add(Enum item, int qty)
         {
             if (item.GetType() == typeof(ECurrency))
@@ -205,6 +208,27 @@ namespace Data.GameManagement
                 Boosts.AddRange(rewardsData.Boosts);
             }
         }
+
+        #endregion
+
+
+        #region Getters
+
+        public int GetCurrency(ECurrency currency)
+        {
+            int amount = 0;
+            foreach (var value in Currencies.Where(t => t.Currency == currency))
+            {
+                amount += value.Qty;
+            }
+
+            return amount;
+        }
+
+        #endregion
+
+
+        #region Formating Rewards
 
         public List<SReward> Rewards
         {
@@ -303,12 +327,14 @@ namespace Data.GameManagement
 
             return rewards;
         }
+
+        #endregion
     }
 
     [Serializable]
     public struct SRaretyPriceData
     {
-        public ERarety      Rarety;
+        public ERarety          Rarety;
         public SPriceData       Price;    
 
         public SRaretyPriceData(ERarety rarety, SPriceData price)
@@ -340,10 +366,25 @@ namespace Data.GameManagement
 
         bool m_Abort;
 
-        public float Price => (1 - Reduction) * Cost;
-        public string ProductId => ! Name.IsNullOrEmpty() ? Name : (Rewards.Rewards[0].RewardName + (Rewards.Rewards[0].Qty > 0 ? "_" + Rewards.Rewards[0].Qty : ""));
-
         public bool Abort => m_Abort;
+        public float Price => (1 - Reduction) * Cost;
+        public string ProductId => !Name.IsNullOrEmpty() ? Name : (Rewards.Rewards[0].RewardName + (Rewards.Rewards[0].Qty > 0 ? "_" + Rewards.Rewards[0].Qty : ""));
+        public string PrettyName {
+            get
+            {
+                if (!Name.IsNullOrEmpty())
+                    return Name;
+
+                var reward = Rewards.Rewards[0];
+                string rewardName = reward.RewardName;
+                if (reward.RewardType == typeof(EChest))
+                    rewardName += " Chest";
+                if (reward.Qty > 1)
+                    rewardName += " x" + Rewards.Rewards[0].Qty;
+
+                return rewardName;
+            }    
+        }
 
         public SShopData(EProduct product, string name, Sprite icon, SRewardsData rewards, ECurrency currency, int cost, int maxCollection, float reduction = 0)
         {
@@ -506,6 +547,9 @@ namespace Data.GameManagement
 
         public static SPriceData GetPrice(Enum collectable)
         {
+            if (collectable is not ECharacter)
+                return new SPriceData(0, ECurrency.Gold);
+
             ERarety rarety = CollectablesManagementData.GetData(collectable, 1, destroy: true).Rarety;
             foreach (var data in Instance.m_CharacterPrices)
             {

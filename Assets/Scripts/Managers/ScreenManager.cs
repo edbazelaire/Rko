@@ -90,7 +90,7 @@ namespace Assets.Scripts.Managers
                     break;
 
                 case EPopUpState.ConfirmBuyPopUp:
-                    obj.GetComponent<ConfirmBuyPopUp>().Initialize((string)args[0], (SPriceData)args[1], (bool)args[2], (SRewardsData)args[3], (Action)args[4], (Action)args[5]);
+                    obj.GetComponent<ConfirmBuyPopUp>().Initialize((string)args[0], (string)args[1], (SPriceData)args[2], (bool)args[3], (SRewardsData)args[4], (Action)args[5], (Action)args[6]);
                     break;
 
                 case EPopUpState.ConfirmBuyItemPopUp:
@@ -98,7 +98,7 @@ namespace Assets.Scripts.Managers
                     break;
 
                 case EPopUpState.ConfirmBuyBundlePopUp:
-                    obj.GetComponent<ConfirmBuyBundlePopUp>().Initialize((string)args[0], (SPriceData)args[1], (bool)args[2], (SRewardsData)args[3], (Action)args[4], (Action)args[5]);
+                    obj.GetComponent<ConfirmBuyBundlePopUp>().Initialize((string)args[0], (string)args[1], (SPriceData)args[2], (bool)args[3], (SRewardsData)args[4], (Action)args[5], (Action)args[6]);
                     break;
 
                 // SCREENS -------------------------------------------------------
@@ -163,7 +163,7 @@ namespace Assets.Scripts.Managers
                     break;
 
                 case EPopUpState.PseudoPopUp:
-                    obj.GetComponent<PseudoPopUp>().Initialize(args.Count() > 0 ? (string)args[0] : "");
+                    obj.GetComponent<PseudoPopUp>().Initialize(args.Count() > 0 ? (string)args[0] : "", "Select a Pseudo");
                     break;
 
                 case EPopUpState.PromoCodePopUp:

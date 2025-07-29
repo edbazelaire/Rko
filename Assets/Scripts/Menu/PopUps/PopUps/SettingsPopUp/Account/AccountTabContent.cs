@@ -3,6 +3,7 @@ using Assets.Scripts.Network;
 using Enums;
 using Managers.Friends;
 using Menu.MainMenu;
+using Menu.PopUps;
 using Network;
 using Save;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace Assets.Scripts.UI
 
         // LEFT SIDE
         ProfileDisplayUI    m_ProfileDisplay;
+        Button              m_DeleteButton;
         Button              m_LoginButton;
         Button              m_LogoutButton;
 
@@ -42,6 +44,7 @@ namespace Assets.Scripts.UI
 
             // LEFT SIDE
             m_ProfileDisplay    = Finder.FindComponent<ProfileDisplayUI>(gameObject);
+            m_DeleteButton      = Finder.FindComponent<Button>(gameObject, "DeleteButton");
             m_LoginButton       = Finder.FindComponent<Button>(gameObject, "LoginButton");
             m_LogoutButton      = Finder.FindComponent<Button>(gameObject, "LogoutButton");
 
@@ -58,6 +61,7 @@ namespace Assets.Scripts.UI
 
             m_ProfileDisplay.Initialize(ProfileCloudData.CurrentProfileData);
             m_LoginButton.gameObject.SetActive(! AuthManager.Instance.IsLoggedIn);
+            m_DeleteButton.gameObject.SetActive(AuthManager.Instance.IsLoggedIn);
             m_LogoutButton.gameObject.SetActive(AuthManager.Instance.IsLoggedIn);
 
             m_PseudoText.text       = ProfileCloudData.GamerTag;
@@ -127,6 +131,7 @@ namespace Assets.Scripts.UI
         {
             base.RegisterListeners();
 
+            m_DeleteButton.onClick.AddListener(OnDeleteButtonClicked);
             m_LoginButton.onClick.AddListener(OnLoginClicked);
             m_LogoutButton.onClick.AddListener(OnLogoutClicked);
         }
@@ -135,6 +140,7 @@ namespace Assets.Scripts.UI
         {
             base.UnRegisterListeners();
 
+            m_DeleteButton.onClick.RemoveAllListeners();
             m_LoginButton.onClick.RemoveAllListeners();
             m_LogoutButton.onClick.RemoveAllListeners();
         }
@@ -148,6 +154,15 @@ namespace Assets.Scripts.UI
             ProfileCloudData.SetRegion(CleanDropdownRegionValue(regionValue));
         }
 
+        void OnDeleteButtonClicked()
+        {
+            Main.ConfirmPopUp(
+                "Are you sure you want to delete your account ?\nThis action can not be reverted, your data will be lost permanantly.",
+                title: "Delete your Account",
+                onValidate: AuthManager.Instance.DeleteAccountAndUnlink
+            );
+        }
+
         void OnLoginClicked()
         {
             AuthManager.Instance.Login();
@@ -155,7 +170,11 @@ namespace Assets.Scripts.UI
 
         void OnLogoutClicked()
         {
-            AuthManager.Instance.Logout();
+            Main.ConfirmPopUp(
+                "Do you want to logout ?",
+                title: "Logout",
+                onValidate: AuthManager.Instance.Logout
+            );
         }
 
         #endregion

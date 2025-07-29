@@ -7,6 +7,7 @@ using System.Linq;
 using System;
 using Tools;
 using Managers;
+using MyBox;
 
 
 namespace Save.Data.Progression.Structs
@@ -39,6 +40,7 @@ namespace Save.Data.Progression.Structs
         public readonly bool InProgress()                       => ArenaType != EArenaType.None;
         public readonly int GetMaxLosses()                      => ArenaMods.Contains(EArenaMod.NoDeath) ? 1 : ArenaData.MAX_LOSSES;
         public readonly bool IsOver()                           => m_IsOver || Losses >= GetMaxLosses() || Level > AssetLoader.LoadArenaData(ArenaType, SArenaDifficulty).MaxLevel;
+        public readonly bool HasBuildData()                      => ! BuildData.Character.IsNullOrEmpty();
         public bool IsBoss()
         {
             SArenaLevelData? arenaLevelData = ArenaLevelData();

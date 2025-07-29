@@ -273,7 +273,7 @@ namespace Menu.Common.Buttons
                 return;
             }
             
-            Main.ConfirmBuyRewards(m_ShopData.ProductId, new SPriceData(m_ShopData.Cost, m_ShopData.Currency), m_ShopData.Rewards, OnPurchaseCompleted);
+            Main.ConfirmBuyRewards(m_ShopData.PrettyName, m_ShopData.ProductId, new SPriceData(m_ShopData.Cost, m_ShopData.Currency), m_ShopData.Rewards, OnPurchaseCompleted);
         }
 
         protected void OnPurchaseCompleted(bool success)

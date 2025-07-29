@@ -15,6 +15,7 @@ using System;
 using static System.Net.Mime.MediaTypeNames;
 using Data;
 using Assets.Scripts.Managers;
+using MyBox;
 
 namespace Menu.MainMenu
 {
@@ -60,7 +61,7 @@ namespace Menu.MainMenu
         public void Initialize(bool checkGameMod = false)
         {
             m_CheckGameMode = checkGameMod;
-            m_Character = m_IsArenaMod ? Enum.Parse<ECharacter>(ProgressionCloudData.CurrentArena.BuildData.Character) : CharacterBuildsCloudData.SelectedCharacter;
+            m_Character = m_IsArenaMod && ProgressionCloudData.CurrentArena.HasBuildData() ? Enum.Parse<ECharacter>(ProgressionCloudData.CurrentArena.BuildData.Character) : CharacterBuildsCloudData.SelectedCharacter;
 
             m_CharacterPreviewContainer         = Finder.Find(gameObject, "CharacterPreviewContainer");
             m_CharacterPreviewButton            = Finder.FindComponent<Button>(m_CharacterPreviewContainer);
@@ -234,7 +235,7 @@ namespace Menu.MainMenu
         void RefreshCharacter()
         {
             m_Character = CharacterBuildsCloudData.SelectedCharacter;
-            if (m_IsArenaMod)
+            if (m_IsArenaMod && ! ProgressionCloudData.CurrentArena.BuildData.Character.IsNullOrEmpty())
             {
                 if (!Enum.TryParse(ProgressionCloudData.CurrentArena.BuildData.Character, out m_Character))
                 {

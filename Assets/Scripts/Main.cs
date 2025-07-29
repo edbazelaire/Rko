@@ -42,9 +42,9 @@ namespace Assets
 
         // ==========================================================================================================
         // SERIALIZED MEMBERS
-        [SerializeField] Canvas m_Canvas;
-        [SerializeField] LeagueDataConfig m_LeagueDataConfig;
-        [SerializeField] bool m_ActivateSaveOnClose;
+        [SerializeField] Canvas             m_Canvas;
+        [SerializeField] LeagueDataConfig   m_LeagueDataConfig;
+        [SerializeField] bool               m_ActivateSaveOnClose;
 
         [Header("Debug Section")]
         [SerializeField] EEnv               m_Env = EEnv.beta;
@@ -95,7 +95,7 @@ namespace Assets
         public static Canvas            Canvas                  => Instance.m_Canvas;
         public static bool              ActivateSaveOnClose     => Instance.m_ActivateSaveOnClose;
         public static bool              ForceIsNewPlayer        => Instance.m_ForceIsNewPlayer;
-        public static bool              IsNewPlayer             => ForceIsNewPlayer || !ProfileCloudData.TutoDone;
+        public static bool              IsNewPlayer             => ForceIsNewPlayer || ! ProfileCloudData.TutoDone;
         public static List<ELogTag>     LogTags                 => s_Instance != null ? Instance.m_LogTags : new List<ELogTag>();
         public static bool StopPreventiveLoss
         {
@@ -461,7 +461,7 @@ namespace Assets
                 };
             }
 
-            ConfirmBuyRewards(collectable.ToString(), ShopManagementData.GetPrice(collectable), rewardsData, OnPurchase);
+            ConfirmBuyRewards(collectable.ToString(), "", ShopManagementData.GetPrice(collectable), rewardsData, OnPurchase);
         }
 
         /// <summary>
@@ -470,7 +470,7 @@ namespace Assets
         /// <param name="priceData"></param>
         /// <param name="rewardsData"></param>
         /// <param name="OnPurchase"></param>
-        public static void ConfirmBuyRewards(string itemName, SPriceData priceData, SRewardsData rewardsData, Action<bool> OnPurchase, bool watchAd = false)
+        public static void ConfirmBuyRewards(string itemName, string productId, SPriceData priceData, SRewardsData rewardsData, Action<bool> OnPurchase, bool watchAd = false)
         {
             
             if (rewardsData.Rewards.Count == 0)
@@ -494,7 +494,7 @@ namespace Assets
                 return;
             }
 
-            Main.SetPopUp(EPopUpState.ConfirmBuyBundlePopUp, itemName, priceData, watchAd, rewardsData, onValidate, onCancel);
+            Main.SetPopUp(EPopUpState.ConfirmBuyBundlePopUp, itemName, productId, priceData, watchAd, rewardsData, onValidate, onCancel);
         }
 
         public static void SetMessagePopUp(string message, string title = "")

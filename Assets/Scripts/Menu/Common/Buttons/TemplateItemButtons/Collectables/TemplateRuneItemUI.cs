@@ -1,4 +1,5 @@
-﻿using Enums;
+﻿using Assets.Scripts.Managers;
+using Enums;
 using Game.Spells;
 using Menu.MainMenu;
 using Save;
@@ -132,6 +133,16 @@ namespace Menu.Common.Buttons
             }
 
             base.OnClick();
+        }
+
+        /// <summary>
+        /// Do nothing on clicked while beeing locked
+        /// </summary>
+        protected override void OnClickLocked()
+        {
+            base.OnClickLocked();
+
+            ScreenManager.SetPopUp(EPopUpState.RuneInfoPopUp, Collectable, 0);
         }
 
         #endregion

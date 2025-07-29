@@ -15,10 +15,11 @@ MonoBehaviour:
   UnlockTime: 86400
   IdleSoundFX: {fileID: 0}
   OpenSoundFX: {fileID: 0}
+  RuneRarety: 3
   Currencies:
   - Currency: 0
-    Min: 10000
-    Max: 15000
+    Min: 0
+    Max: 10000
   ExtraCardData:
     ExtraCards: 0
     RaretyPercData:
@@ -32,10 +33,10 @@ MonoBehaviour:
       Percentage: 100
   SpellsDistribution:
   - Rarety: 0
-    Qty: 60
+    Qty: 50
     Splits: 3
   - Rarety: 1
-    Qty: 35
+    Qty: 50
     Splits: 2
   - Rarety: 2
     Qty: 15
