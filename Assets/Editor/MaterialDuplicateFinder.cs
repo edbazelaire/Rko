@@ -3,72 +3,73 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
-public class MaterialDuplicateFinder : EditorWindow
+public class MaterialDuplicateAnalyzer : EditorWindow
 {
     private Vector2 scroll;
-    private Dictionary<string, List<string>> duplicateMaterials = new();
+    private Dictionary<string, List<string>> duplicates = new();
 
-    [MenuItem("Tools/Analyze/Find Duplicate Materials")]
-    static void Init()
+    [MenuItem("Tools/Analyze/Find Truly Identical Materials")]
+    public static void ShowWindow()
     {
-        MaterialDuplicateFinder window = GetWindow<MaterialDuplicateFinder>("Material Duplicates");
-        window.FindDuplicates();
+        GetWindow<MaterialDuplicateAnalyzer>("Material Deduplicator").ScanMaterials();
     }
 
-    void FindDuplicates()
+    private void ScanMaterials()
     {
-        duplicateMaterials.Clear();
-
+        duplicates.Clear();
         string[] guids = AssetDatabase.FindAssets("t:Material");
-        Dictionary<string, List<string>> hashToPaths = new();
+
+        Dictionary<string, List<string>> keyToPaths = new();
 
         foreach (string guid in guids)
         {
             string path = AssetDatabase.GUIDToAssetPath(guid);
             Material mat = AssetDatabase.LoadAssetAtPath<Material>(path);
-            if (mat == null) continue;
+            if (mat == null || mat.shader == null)
+                continue;
 
-            string hash = mat.shader.name;
+            string shaderName = mat.shader.name;
+            string textureName = mat.mainTexture != null ? mat.mainTexture.name : "NULL";
 
-            if (mat.mainTexture != null)
-                hash += "|" + mat.mainTexture.name;
+            int srcBlend = mat.GetInt("_SrcBlend");
+            int dstBlend = mat.GetInt("_DstBlend");
 
-            if (!hashToPaths.ContainsKey(hash))
-                hashToPaths[hash] = new List<string>();
+            string key = $"{shaderName}|{textureName}|Src:{srcBlend}|Dst:{dstBlend}";
 
-            hashToPaths[hash].Add(path);
+            if (!keyToPaths.ContainsKey(key))
+                keyToPaths[key] = new List<string>();
+
+            keyToPaths[key].Add(path);
         }
 
-        foreach (var pair in hashToPaths)
+        foreach (var pair in keyToPaths)
         {
             if (pair.Value.Count > 1)
-                duplicateMaterials[pair.Key] = pair.Value;
+                duplicates[pair.Key] = pair.Value;
         }
     }
 
-    void OnGUI()
+    private void OnGUI()
     {
-        if (duplicateMaterials.Count == 0)
+        if (duplicates.Count == 0)
         {
-            GUILayout.Label("Aucune duplication détectée ou scan non lancé.");
-            if (GUILayout.Button("Analyser"))
-                FindDuplicates();
+            if (GUILayout.Button("Scanner les matériaux"))
+                ScanMaterials();
             return;
         }
 
         scroll = GUILayout.BeginScrollView(scroll);
 
-        foreach (var pair in duplicateMaterials)
+        foreach (var group in duplicates)
         {
-            GUILayout.Label($"Shader + Texture: {pair.Key} ({pair.Value.Count})", EditorStyles.boldLabel);
-            foreach (var path in pair.Value)
-            {
-                GUILayout.Label($"- {path}");
-            }
+            EditorGUILayout.SelectableLabel($"Groupe: {group.Key} ({group.Value.Count})", EditorStyles.boldLabel);
+            foreach (var path in group.Value)
+                EditorGUILayout.SelectableLabel(path);
             GUILayout.Space(10);
         }
 
         GUILayout.EndScrollView();
     }
 }
+
 #endif

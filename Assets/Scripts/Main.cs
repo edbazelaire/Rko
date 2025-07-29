@@ -95,7 +95,8 @@ namespace Assets
         public static Canvas            Canvas                  => Instance.m_Canvas;
         public static bool              ActivateSaveOnClose     => Instance.m_ActivateSaveOnClose;
         public static bool              ForceIsNewPlayer        => Instance.m_ForceIsNewPlayer;
-        public static bool              IsNewPlayer             => ForceIsNewPlayer || ! ProfileCloudData.TutoDone;
+        //public static bool              IsNewPlayer             => ForceIsNewPlayer || ! ProfileCloudData.TutoDone;
+        public static bool              IsNewPlayer             => false;
         public static List<ELogTag>     LogTags                 => s_Instance != null ? Instance.m_LogTags : new List<ELogTag>();
         public static bool StopPreventiveLoss
         {
@@ -534,7 +535,7 @@ namespace Assets
         public static void CheckLogInPopUp()
         {
             // do nto proc this popup on new player
-            if (IsNewPlayer || ! ProfileCloudData.PseudoChanged || ProfileCloudData.HasDefaultPseudo)
+            if (! ProfileCloudData.PseudoChanged || ProfileCloudData.HasDefaultPseudo)
                 return;
 
             // already authenticated

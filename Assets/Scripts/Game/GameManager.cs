@@ -44,6 +44,7 @@ namespace Game
         // ===================================================================================
         // GameObjects & Components
         private GameAnalyticsManager m_GameAnalyticsManager;
+        private InGameDebugger m_InGameDebugger;
 
         // ===================================================================================
         // PRIVATE VARIABLES 
@@ -110,16 +111,21 @@ namespace Game
             m_PlayersData           = new();
             m_Controllers           = new Dictionary<ulong, Controller>();
             m_GameAnalyticsManager  = Finder.FindComponent<GameAnalyticsManager>(gameObject);
+            m_InGameDebugger        = Finder.FindComponent<InGameDebugger>(gameObject);
 
             s_Instance = this;
 
             if (! GameUIManager.Initialized)
                 GameUIManager.Instance.Initialize();
 
+#if !UNITY_EDITOR
+            m_InGameDebugger.enabled = false;
+#endif
+
             AttachDebugMethods();
         }
 
-        #endregion
+#endregion
 
 
         #region Debug
