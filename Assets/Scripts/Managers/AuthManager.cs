@@ -82,38 +82,10 @@ namespace Assets.Scripts.Managers
         #endregion
 
 
-        #region Common
+        #region SingIn / Login
 
         public async void SignIn(string authId)
         {
-#if UNITY_EDITOR
-            //if (authId != "")
-            //{
-            //    var split = authId.Split(" | ");
-            //    if (split.Length != 2)
-            //    {
-            //        ErrorHandler.Error("Unhandled format authId : " + authId);
-            //    }
-            //    else
-            //    {
-            //        if (!Enum.TryParse(split[0], out EAuthServices authService))
-            //            ErrorHandler.Error("Unhandled format authId : " + authId);
-            //        else
-            //        {
-            //            switch (AuthService)
-            //            {
-            //                case EAuthServices.UnityPlayerAccount:
-            //                    await SignInWithUnityAsync(split[1]);
-            //                    return;
-
-            //                default:
-            //                    ErrorHandler.Error("Unhanlded case : " + authService);
-            //                    break;
-            //            }
-            //        }
-            //    }
-            //}
-#endif
             await SignInAnonymously(false);
         }
 
@@ -124,6 +96,79 @@ namespace Assets.Scripts.Managers
             // await for player account to be signed in to link current unity id and save auth data (token, service)
             StartCoroutine(AwaitLoginCouroutine());
         }
+
+        #endregion
+
+
+        #region Signout / Logout
+
+        public async void DeleteAccountAndUnlink()
+        {
+            // Delete Cloud Data
+            try
+            {
+                await CloudSaveManager.Instance.DeleteAccount();
+                Debug.Log("Cloud data deleted successfully.");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("Error deleting cloud data: " + ex.Message);
+            }
+
+            // Unlink from authentication
+            try
+            {
+                switch (AuthService)
+                {
+                    case EAuthServices.Apple:
+                        await AuthenticationService.Instance.UnlinkAppleAsync();
+                        Debug.Log("Apple account unlinked successfully.");
+                        break;
+
+                    case EAuthServices.UnityPlayerAccount:
+                        await AuthenticationService.Instance.UnlinkUnityAsync();
+                        Debug.Log("Unity Player Account unlinked successfully.");
+                        break;
+
+                     case EAuthServices.Google:
+                        await AuthenticationService.Instance.UnlinkGoogleAsync();
+                        Debug.Log("Unity Player Account unlinked successfully.");
+                        break;
+
+                    case EAuthServices.Anonymous:
+                        Debug.LogWarning("User is anonymous, nothing to unlink.");
+                        break;
+
+                    default:
+                        Debug.LogWarning("Unhandled AuthService: " + AuthService);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("Error unlinking account: " + ex.Message);
+            }
+
+            // Logout
+            Logout(); 
+        }
+
+
+        /// <summary>
+        /// Reset all Auth Settings and clear unity Session Token in the local files -> new account
+        /// </summary>
+        public void Logout()
+        {
+            // signe out from Authentication Service
+            AuthenticationService.Instance.SignOut(true);
+
+            // reset AUTH data
+            SetAuth("", EAuthServices.Anonymous);
+
+            // reload Release scene
+            SceneLoader.Instance.LoadScene("Release");
+        }
+
 
         #endregion
 
@@ -434,21 +479,6 @@ namespace Assets.Scripts.Managers
             }
 
             return (split[1], authService);
-        }
-
-        /// <summary>
-        /// Reset all Auth Settings and clear unity Session Token in the local files -> new account
-        /// </summary>
-        public void Logout()
-        {
-            // signe out from Authentication Service
-            AuthenticationService.Instance.SignOut(true);
-
-            // reset AUTH data
-            SetAuth("", EAuthServices.Anonymous);
-
-            // reload Release scene
-            SceneLoader.Instance.LoadScene("Release");
         }
 
         #endregion

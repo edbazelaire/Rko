@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Managers;
 using Enums;
 using Game.Loaders;
 using Inventory;
@@ -122,8 +123,9 @@ namespace Menu.MainMenu
         /// </summary>
         protected override void OnClickLocked()
         {
-            // TODO : lock message ?
-            return;
+            base.OnClickLocked();
+
+            ScreenManager.SetPopUp(EPopUpState.SpellInfoPopUp, Collectable, 0);
         }
 
         /// <summary>

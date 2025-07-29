@@ -337,7 +337,7 @@ namespace Menu.PopUps
 
         protected virtual void RefreshBuyButtonUI()
         {
-            if (m_IsUnlocked || m_InfoOnly)
+            if (m_IsUnlocked || m_InfoOnly || m_BuyPriceData.Price == 0)
             {
                 m_BuyButton.gameObject.SetActive(false);
                 return;

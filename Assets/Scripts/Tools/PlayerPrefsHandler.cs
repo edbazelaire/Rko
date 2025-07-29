@@ -78,6 +78,11 @@ namespace Tools
                 SetWarningAccepted(false);
         }
 
+        public static void ResetAll()
+        {
+            PlayerPrefs.SetString(EPlayerPref.ArenaType.ToString(), EArenaType.FrostArena.ToString());
+            
+        }
 
         #endregion
 
@@ -292,6 +297,14 @@ namespace Tools
             if (string.IsNullOrEmpty(data))
                 return new List<EArenaMod>();
 
+            // CHECK : check if this is allowed 
+            if ( ! ProgressionCloudData.IsCompleted(arenaType, arenaDifficulty))
+            {
+                ErrorHandler.Warning($"Arena {arenaType} at difficulty {arenaDifficulty} is set with value {data} but this difficulty was not completed yet - reseting value");
+                PlayerPrefs.SetString(GetArenaModsKey(arenaType, arenaDifficulty), "");
+                return new();
+            }
+
             return data.Split(',')
                        .Select(s => Enum.TryParse<EArenaMod>(s, out var mod) ? mod : (EArenaMod?)null)
                        .Where(mod => mod.HasValue)
@@ -309,7 +322,20 @@ namespace Tools
 
         public static int GetArenaExtraDifficulty(EArenaType arenaType, EArenaDifficulty arenaDifficulty)
         {
-            return PlayerPrefs.GetInt(GetArenaExtraDifficultyKey(arenaType, arenaDifficulty), 0);
+            // check : value is 0 - return instantly
+            int extraDifficulty = PlayerPrefs.GetInt(GetArenaExtraDifficultyKey(arenaType, arenaDifficulty), 0);
+            if (extraDifficulty == 0)
+                return extraDifficulty;
+
+            // CHECK : not 0 value - check if this is allowed 
+            if (! ProgressionCloudData.IsCompleted(arenaType, arenaDifficulty))
+            {
+                ErrorHandler.Warning($"Arena {arenaType} at difficulty {arenaDifficulty} is set with value {extraDifficulty} but this difficulty was not completed yet - reseting value");
+                extraDifficulty = 0;
+                PlayerPrefs.SetInt(GetArenaExtraDifficultyKey(arenaType, arenaDifficulty), 0);
+            }
+
+            return extraDifficulty;
         }
 
         public static void SetArenaExtraDifficulty(EArenaType arenaType, EArenaDifficulty arenaDifficulty, int extraDifficulty)
@@ -318,6 +344,29 @@ namespace Tools
             ArenaExtraDifficultyChanged?.Invoke();
         }
 
+        /// <summary>
+        /// Reset to default value ALL options of all arenas
+        /// </summary>
+        public static void ResetAllArenasOptions()
+        {
+            foreach (EArenaType arenaType in Enum.GetValues(typeof(EArenaType)))
+            {
+                ResetArenaOptions(arenaType);
+            }
+        }
+
+        /// <summary>
+        /// Reset all options at each difficulties for a specific arena
+        /// </summary>
+        /// <param name="arenaType"></param>
+        public static void ResetArenaOptions(EArenaType arenaType)
+        {
+            foreach (EArenaDifficulty arenaDifficulty in Enum.GetValues(typeof(EArenaDifficulty)))
+            {
+                SetArenaExtraDifficulty(arenaType, arenaDifficulty, 0);
+                SetArenaMods(arenaType, arenaDifficulty, new());
+            }
+        }
         #endregion
     }
 }

@@ -193,7 +193,9 @@ namespace Menu.PopUps.Components
         {
             m_Values = new List<Enum>();
 
-            var currentBuild = ProgressionCloudData.CurrentArena.BuildData;
+            // init default build
+            var currentBuild = new SBuildData(characterLevel: ProfileCloudData.AccountLevel, character: ECharacter.Alexander.ToString());
+            
             for (int i = 0; i < m_NPropositions; i++)
             {
                 Enum value;

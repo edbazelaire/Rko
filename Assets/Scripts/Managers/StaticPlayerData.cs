@@ -122,10 +122,10 @@ namespace Managers
         {
             CharacterLevel      = characterLevel;
             Character           = character;
-            Runes               = runes != default ? runes : new ERune[0];
-            RuneLevels          = runeLevels != default ? runeLevels : new int[0];
-            Spells              = spells != default ? spells : new ESpell[0];
-            SpellLevels         = spellLevels != default ? spellLevels : new int[0];
+            Runes               = runes != default ? runes : new ERune[3];
+            RuneLevels          = runeLevels != default ? runeLevels : new int[3];
+            Spells              = spells != default ? spells : new ESpell[4];
+            SpellLevels         = spellLevels != default ? spellLevels : new int[4];
         }
 
         public List<Enum> Get(ECollectableType collectableType)
