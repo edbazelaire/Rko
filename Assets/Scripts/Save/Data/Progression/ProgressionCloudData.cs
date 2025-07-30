@@ -275,7 +275,20 @@ namespace Save
 
         public static bool IsCompleted(EArenaType arenaType, EArenaDifficulty arenaDifficulty)
         {
-            return IsUnlocked(arenaType, arenaDifficulty) && (arenaDifficulty == ProgressionCloudData.MaxArenaDifficulty && UnlockedArenaRewards.ContainsKey(arenaType) && UnlockedArenaRewards[arenaType] >= new SArenaPosition(arenaDifficulty, 4, 2));
+            // no data at all
+            if (!UnlockedArenas.ContainsKey(arenaType))
+                return false;
+
+            // not unlocked difficulty
+            if (UnlockedArenas[arenaType] < arenaDifficulty)
+                return false;
+
+            // is below max unlocked difficulty
+            if (UnlockedArenas[arenaType] > arenaDifficulty)
+                return true;
+
+            // check is last arena and all reward of that arena has been collected
+            return arenaDifficulty == ProgressionCloudData.MaxArenaDifficulty && UnlockedArenaRewards.ContainsKey(arenaType) && UnlockedArenaRewards[arenaType] >= new SArenaPosition(arenaDifficulty, 4, 2);
         }
 
         public static SArenaPosition GetUnlockedArenaReward(EArenaType arenaType)
