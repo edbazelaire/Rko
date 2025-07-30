@@ -329,8 +329,8 @@ public class Controller : NetworkBehaviour
             // skip linked spells
             if (spell == characterData.Ultimate || spell == characterData.AutoAttack || spell == characterData.SpecialAbility)
                 continue;
-            
-            GameUIManager.Instance.CreateSpellTemplate(m_SpellHandler.SpellsData[i].Spell, m_SpellHandler.SpellsData[i].Level, i);
+
+            GameUIManager.Instance.CreateSpellTemplate(m_SpellHandler.Spells[i], m_SpellHandler.SpellLevelsNet[i], i);
         }
     }
 

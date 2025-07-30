@@ -778,6 +778,9 @@ namespace Game
                 returnedController = controller;
             }
 
+            if (returnedController == null)
+                return returnedController;
+
             // check can be targetted
             if (! returnedController.StateHandler.IsUnTargetable)
                 return returnedController;

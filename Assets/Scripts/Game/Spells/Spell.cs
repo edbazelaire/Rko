@@ -872,7 +872,9 @@ namespace Game.Spells
                 return;
 
             GameManager.Instance.State.OnValueChanged -= OnGameStateChanged;
-            m_Controller.SpellHandler.RelocationTargetChangedEvent -= OnRelocationTargetChanged;
+
+            if (m_Controller != null)
+                m_Controller.SpellHandler.RelocationTargetChangedEvent -= OnRelocationTargetChanged;
         }
 
         void OnGameStateChanged(EGameState oldValue, EGameState state)
