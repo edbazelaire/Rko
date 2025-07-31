@@ -264,8 +264,7 @@ namespace Network
                         );
 
                         // if has to fill game with bots - send bots data
-                        if (IsHost && m_FillWithBots)
-                            SendBotsData();
+                        SendBotsData();
                     
                         // go to next state
                         NextState();
