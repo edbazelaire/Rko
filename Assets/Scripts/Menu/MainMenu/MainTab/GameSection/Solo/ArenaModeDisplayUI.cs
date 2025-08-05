@@ -80,7 +80,8 @@ namespace Menu.MainMenu.MainTab
             {
                 // display max difficulty for last selected arena type
                 m_ArenaType = PlayerPrefsHandler.GetArenaType();
-                m_ArenaDifficulty = new SArenaDifficulty(PlayerPrefsHandler.GetArenaDifficulty(m_ArenaType), PlayerPrefs.GetInt(EPlayerPref.ArenaExtraDifficulty.ToString()));
+                var arenaDifficulty = PlayerPrefsHandler.GetArenaDifficulty(m_ArenaType);
+                m_ArenaDifficulty = new SArenaDifficulty(arenaDifficulty, PlayerPrefsHandler.GetArenaExtraDifficulty(m_ArenaType, arenaDifficulty));
             }
 
             if (m_ArenaType == EArenaType.None)
@@ -100,7 +101,8 @@ namespace Menu.MainMenu.MainTab
                     PlayerPrefsHandler.SetArenaType(EArenaType.FrostArena);
 
                 m_ArenaType = PlayerPrefsHandler.GetArenaType();
-                m_ArenaDifficulty = new SArenaDifficulty(PlayerPrefsHandler.GetArenaDifficulty(m_ArenaType), PlayerPrefs.GetInt(EPlayerPref.ArenaExtraDifficulty.ToString()));
+                var arenaDifficulty = PlayerPrefsHandler.GetArenaDifficulty(m_ArenaType);
+                m_ArenaDifficulty = new SArenaDifficulty(arenaDifficulty, PlayerPrefsHandler.GetArenaExtraDifficulty(m_ArenaType, arenaDifficulty));
                 m_ArenaData = AssetLoader.LoadArenaData(m_ArenaType, m_ArenaDifficulty);
             }
 

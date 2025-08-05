@@ -166,7 +166,6 @@ namespace Game.Spells
             RegisterListeners();
 
             // call event that spell has spawn
-            OnSpellSpawn?.Invoke(this);
             CallSpellEvent(ESpellEvent.OnSpawn);
         }
 
@@ -768,6 +767,9 @@ namespace Game.Spells
         [ClientRpc]
         void CallSpellEventClientRPC(ESpellEvent spellEvent)
         {
+            if (spellEvent == ESpellEvent.OnSpawn)
+                OnSpellSpawn?.Invoke(this);
+
             CallSpellEventGFX(spellEvent, null);
         }
 

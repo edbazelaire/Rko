@@ -1,7 +1,6 @@
 ﻿using Menu.Common;
 using Enums;
 using Game.Loaders;
-using Managers;
 using Save;
 using TMPro;
 using Tools;
@@ -9,11 +8,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using Inventory;
 using System.Collections;
-using Assets;
 using Menu.Common.Buttons;
 using System;
-using static System.Net.Mime.MediaTypeNames;
-using Data;
 using Assets.Scripts.Managers;
 using MyBox;
 
@@ -210,7 +206,7 @@ namespace Menu.MainMenu
         {
             var charData = InventoryCloudData.Instance.GetCollectable(m_Character);
 
-            if (m_IsArenaMod)
+            if (m_IsArenaMod && ProgressionCloudData.CurrentArena.HasBuildData())
             {
                 m_CharacterLevelText.text = ProfileCloudData.AccountLevel.ToString();
                 m_XpBar.UpdateCollection(0f, 1f);

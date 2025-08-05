@@ -57,7 +57,7 @@ namespace Game.Spells
         /// </summary>
         protected void InitializeTriggerZone()
         {
-            Collider2D[] colliders = new Collider2D[10]; // Adjust size based on expected objects
+            Collider2D[] colliders = new Collider2D[10];        // Adjust size based on expected objects
             ContactFilter2D filter = new ContactFilter2D();
             filter.useTriggers = true;
 
@@ -70,7 +70,9 @@ namespace Game.Spells
                 {
                     if (TryGetController(colliders[i], out Controller controller))
                     {
-                        hitControllers.Add(controller);
+                        if ((m_SpellData.IsEnemyTarget && controller.Team != m_Controller.Team) 
+                            || (m_SpellData.IsAllyTarget && controller.Team == m_Controller.Team))
+                            hitControllers.Add(controller);
                     }
                 }
             }
@@ -172,7 +174,10 @@ namespace Game.Spells
 
             // apply force
             if (m_SpellData.ZoneForce != default)
+            {
+                Debug.Log("Applying Zone Force on : " + controller.gameObject.name);
                 controller.Movement.AddForce(m_SpellData.ZoneForce);
+            }
         }
 
         void RemoveZoneEffects(Controller controller)
@@ -182,7 +187,10 @@ namespace Game.Spells
 
             // remove force
             if (m_SpellData.ZoneForce != default)
+            {
+                Debug.Log("Removing Zone Force on : " + controller.gameObject.name);
                 controller.Movement.RemoveForce(m_SpellData.ZoneForce);
+            }
         }
 
         #endregion

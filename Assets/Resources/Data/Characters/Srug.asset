@@ -33,14 +33,22 @@ MonoBehaviour:
   IsStructure: 0
   HealthScaleFactor: 0.1
   CharacterStatScaling:
-  - StateEffectProperty: 7
-    BaseValue: 10
-    BonusValue: 0
-    ScalingFactor: 0.12
-    StateEffectStackFactors: []
   - StateEffectProperty: 4
     BaseValue: 300
     BonusValue: 0
     ScalingFactor: 0.1
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 8
+    BaseValue: 0.1
+    BonusValue: 0
+    ScalingFactor: 0
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 21
+    BaseValue: 0.1
+    BonusValue: 0
+    ScalingFactor: 0
+    SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers: []

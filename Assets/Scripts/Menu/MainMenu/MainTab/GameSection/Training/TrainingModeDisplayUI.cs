@@ -219,7 +219,7 @@ namespace Menu.MainMenu.MainTab.GameSection.Training
         {
             return (ERune rune) =>
             {
-                template.SetUpCollectable(rune, true);
+                template.SetUpCollectable(rune, 9, true);
                 template.SetBottomOverlay("Level 9");
                 template.Button.interactable = true;
 
@@ -231,7 +231,7 @@ namespace Menu.MainMenu.MainTab.GameSection.Training
         {
             return (ESpell spell) =>
             {
-                template.SetUpCollectable(spell, true);
+                template.SetUpCollectable(spell, 9, true);
                 template.SetBottomOverlay("Level 9");
                 template.Button.interactable = true;
 

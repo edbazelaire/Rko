@@ -45,7 +45,10 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
   m_IsTrueDamage: 0
+  m_EndWithShield: 0
+  m_RefreshShield: 1
   m_Priority: 0
+  m_Delay: 0
   m_Duration: 5
   m_MaxStacks: 1
   m_StackDecay: -1
@@ -57,10 +60,12 @@ MonoBehaviour:
     BaseValue: 100
     LevelScalingFactor: 0.1
     StackScalingFactor: 1
+    SpecialConditions: []
   - StateEffectProperty: 5
     BaseValue: 25
     LevelScalingFactor: 0.1
     StackScalingFactor: 1
+    SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects: []
   m_HoldingStateEffects: []

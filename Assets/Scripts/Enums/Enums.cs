@@ -717,6 +717,7 @@
         Stun                = 1,
         Frozen              = 2,
         Invulnerable        = 3,
+        Uncontrollable      = 10,
         Invisible           = 4,
 
         // knockback effects
@@ -730,7 +731,6 @@
         Burn                = 8,
         Poison              = 9,
 
-        Uncontrollable      = 10,
         Jump                = 11,
         IronSkin            = 12,
         Cursed              = 13,
@@ -1021,20 +1021,30 @@
     public enum EChest
     {
         // classics
-        Common,
-        Rare,
-        Epic,
-        Legendary,
+        Common          = 0,
+        Rare            = 1,
+        Epic            = 2,
+        Legendary       = 3,
 
         // fire chests
-        Ember,
-        Scorchstone,
-        PyroMaster,
+        Ember           = 4,
+        Scorchstone     = 5,
+        PyroMaster      = 6,
 
         // frost chests
-        WintersBreath,
-        Iceforged,
-        FrostMaster,
+        WintersBreath   = 7,
+        Iceforged       = 8,
+        FrostMaster     = 9,
+
+        // poison chests
+        RarePoison      = 10,    // TODO
+        EpicPoison      = 11,    // TODO
+        Vinebound       = 12,
+
+        // poison chests
+        RareVoid        = 13,    // TODO
+        EpicVoid        = 14,    // TODO
+        Abyssforged     = 15,
     }
 
     public enum EPowerOrb
@@ -1219,6 +1229,7 @@
         Eternal_Winter_King     = 1005,
         // --
         TheDicey                = 1015,
+        Legend_Of_The_North     = 1016,
 
         // Fire Arena ======================================================
         Pyro_Master             = 1104,
@@ -1256,7 +1267,8 @@
         FrostMaster     = 11,
         ChibiFrostDemon = 105,
         QuiProQuo       = 501, 
-        IceGolem        = 502, 
+        IceGolem        = 502,
+        FrozenLand      = 503,
 
         // ======================================================================================
         Alexander       = 1000,
@@ -1264,6 +1276,10 @@
         Marcus          = 1010,
         Kahnan          = 1030,
         Srug            = 1040,
+
+        // ======================================================================================
+        // Achievements
+        Dragon          = 10001,
     }
 
     public enum EBorder
@@ -1316,7 +1332,7 @@
         HeartOfFire = 51,
 
         // -- pvp
-        PvpGamesWon = 100,
+        PvpGamesWon     = 100,
         // -- solo
         SoloGames       = 201,
         LoneWolf        = 202,
@@ -1336,7 +1352,10 @@
         UncertainShot   = 10001,
         MasterOfChaos   = 10002,        
         RandomEntity    = 10003,        // TODO (icon not made)  ----------------------------------
-        Undying         = 10004,       
+        Undying         = 10004,      
+        ItSnowProblem   = 10005,
+        FrozenBlade     = 10006,
+        LegendOfTheNorth = 10007,
     }
 
     public enum EAchievementReward

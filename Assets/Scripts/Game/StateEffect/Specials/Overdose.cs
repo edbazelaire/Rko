@@ -1,21 +1,23 @@
 ﻿using Enums;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Game.Spells
 {
     [CreateAssetMenu(fileName = "Overdose", menuName = "Game/StateEffects/SpecialEffects/Overdose")]
     public class Overdose : StateEffect
     {
-        protected override void ApplyPreProcessing()
+        public override int RecalculateStacks(int stacks, Controller caster, Controller targetController)
         {
-            base.ApplyPreProcessing();
+            Debug.Log("RecalculateStacks() : " + stacks);
+            base.RecalculateStacks(stacks, caster, targetController);
 
             int consumedStacks = 0;                 // currently consumed stacks
-            int maxStacks = m_MaxStacks - Stacks;   // maximum number of stacks to add
+            int maxStacks = m_MaxStacks - targetController.StateHandler.GetStacks("Overdose");   // maximum number of stacks to add
 
             // Create modifiable pool of enemy controllers
-            var potentialTargets = new List<Controller>(GameManager.Instance.GetAllEnemies(m_Controller.Team, spawnIncluded: true));
+            var potentialTargets = new List<Controller>(GameManager.Instance.GetAllEnemies(caster.Team, spawnIncluded: true));
 
             while (consumedStacks < maxStacks && potentialTargets.Count > 0)
             {
@@ -36,16 +38,18 @@ namespace Game.Spells
 
                 // Determine how many stacks to consume this round (1 to 3, capped by remaining maxStacks)
                 int toConsume = Mathf.Min(Random.Range(1, 4), maxStacks - consumedStacks);
+                if (toConsume <= 0)
+                    break;
 
                 // If room left and target has infected
-                if (toConsume > 0 && hasInfected)
+                if (hasInfected)
                 {
                     int infectedRemoved = stateHandler.RemoveStateEffect(EStateEffect.Infected.ToString(), consume: true, maxStacks: toConsume);
                     consumedStacks += 3 * infectedRemoved;
                     toConsume -= infectedRemoved;
                 }
 
-                // Try to consume from Poison first
+                // Try to consume from Poison
                 if (hasPoison)
                 {
                     int poisonRemoved = stateHandler.RemoveStateEffect(EStateEffect.Poison.ToString(), consume: true, maxStacks: toConsume);
@@ -53,7 +57,8 @@ namespace Game.Spells
                 }
             }
 
-            Refresh(consumedStacks, m_Level);
+            Debug.Log("     + Final stacks : " + consumedStacks);
+            return consumedStacks;
         }
     }
 }

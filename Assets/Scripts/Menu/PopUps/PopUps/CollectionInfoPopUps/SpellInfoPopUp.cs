@@ -127,6 +127,9 @@ namespace Menu.PopUps
         {
             if (key == "Effects")
                 return;
+
+            if (key == "MaxIndexThreshold")
+                return;
             
             base.SetUpInfoRow(container, key, value, newDataValue, scalingDirection);
         }

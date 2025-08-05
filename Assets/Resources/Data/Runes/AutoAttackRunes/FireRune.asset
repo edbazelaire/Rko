@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a402882a257d18548a281b17574b3711, type: 3}
   m_Name: FireRune
   m_EditorClassIdentifier: 
-  Rarety: 2
+  m_Rarety: 2
   m_Description: 
   m_DescriptionVariables: []
   m_SpellElements: 01000000
@@ -20,15 +20,17 @@ MonoBehaviour:
   m_MinorPower:
     Description: Increase [Burn] explosion damage by {0}
     m_DescriptionVariables:
-    - Name: BonusBurnDamage
+    - Name: BonusDamage
       WithIcon: 0
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
-    - StateEffectProperty: 112
+    - StateEffectProperty: 7
       BaseValue: 15
       BonusValue: 0
       ScalingFactor: 0.1
+      SpecialConditions:
+      - Burn
       StateEffectStackFactors: []
   m_MajorPower:
     Description: 'Apply [Burn] (level {0}) on every auto attack.\n[TriggerEffect.0]'
@@ -38,6 +40,7 @@ MonoBehaviour:
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: _FireRuneMajor
+      OverridingData: []
       Level: 0
       Target: 4
       SpellActivationEvent: 1
@@ -60,6 +63,7 @@ MonoBehaviour:
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: Burn
+      OverridingData: []
       Level: 0
       Target: 50
       SpellActivationEvent: 1

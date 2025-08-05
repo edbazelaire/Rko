@@ -62,21 +62,39 @@ namespace Menu.Common.Buttons
         {
             m_AsIconOnly = asIconOnly;
             m_RemoveAllListeners = false;
+            m_Level = 0;
+            m_CollectableCloudData = InventoryCloudData.Instance.GetCollectable(collectable);
 
             base.Initialize();
 
-            SetUpCollectable(collectable, asIconOnly);
+            //SetUpCollectable(collectable, 0, asIconOnly);
         }
 
         public virtual void Initialize(Enum collectable, int level, bool asIconOnly = false, bool removeListeners = true)
         {
-            m_AsIconOnly = asIconOnly;
-            m_RemoveAllListeners = removeListeners;
+            m_AsIconOnly            = asIconOnly;
+            m_RemoveAllListeners    = removeListeners;
+            m_Level                 = level;
+            m_CollectableCloudData  = InventoryCloudData.Instance.GetCollectable(collectable);
 
             base.Initialize();
+        }
 
-            m_Level = level;
-            SetUpCollectable(collectable, asIconOnly);
+        protected override void OnInitialisationCompleted() 
+        {
+            SetUpCollectable(m_Collectable, m_Level, m_AsIconOnly);
+        }
+
+
+        protected virtual void SetLevel(int level)
+        {
+            if (level > 0)
+            {
+                m_Level = level;
+                return;
+            }
+
+            m_Level = m_CollectableCloudData.Level;
         }
 
         /// <summary>
@@ -115,12 +133,11 @@ namespace Menu.Common.Buttons
             UpdateState();
         }
 
-        public virtual void SetUpCollectable(Enum collectable, bool asIconOnly = false)
+        public virtual void SetUpCollectable(Enum collectable, int level, bool asIconOnly = false)
         {
             // load cloud data of the collectable
             m_CollectableCloudData = InventoryCloudData.Instance.GetCollectable(collectable);
-            if (m_Level == 0)
-                m_Level = m_CollectableCloudData.Level;
+            SetLevel(level);
 
             // setup ui elements (icon, collection fillbar, ...)
             SetUpUI(asIconOnly);

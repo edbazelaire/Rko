@@ -9,14 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cac095da270c39146a2926f78948ff64, type: 3}
+  m_Script: {fileID: 11500000, guid: bdf9fa99f588d38479137fd3d7b8d353, type: 3}
   m_Name: Frozen
   m_EditorClassIdentifier: 
   m_Description: Consume a [Frost] effect to Freeze the enemy for {0} seconds that
     can no longer move or cast. When the shield is broken, the Freeze ends
   m_DescriptionVariables: 01000000
   m_StateEffectType: 0
-  m_IsDisplayed: 1
+  m_IsDisplayed: 0
   m_VisualEffects: []
   m_GfxEffects:
   - Prefab: {fileID: 7758585010674234526, guid: 4097eca5df8a5b1479a81a62b6bc7b03, type: 3}
@@ -46,6 +46,8 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
   m_IsTrueDamage: 0
+  m_EndWithShield: 1
+  m_RefreshShield: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: 3
@@ -67,3 +69,7 @@ MonoBehaviour:
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel: []
   m_StateEffectScalingStacks: []
+  m_Damage: 0
+  m_EndDamage: 0
+  m_Heal: 0
+  m_EndHeal: 0

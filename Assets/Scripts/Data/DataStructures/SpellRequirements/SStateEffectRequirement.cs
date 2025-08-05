@@ -31,7 +31,7 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
         public override bool CheckRequirement(Controller targetController)
         {
             base.CheckRequirement(targetController);
-            return targetController.StateHandler.GetStacks(m_StateEffect) >= m_Stacks;
+            return targetController.StateHandler.GetStacks(m_StateEffect) >= Stacks;
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
             if (!base.TryApplyRequirements(targetController))
                 return false;
 
-            targetController.StateHandler.RemoveStateEffect(m_StateEffect, consume: true, maxStacks: m_Stacks);
+            targetController.StateHandler.RemoveStateEffect(m_StateEffect, consume: true, maxStacks: Stacks);
             return true;
         }
 

@@ -295,13 +295,13 @@ namespace Game.Character
             switch (stateEffectProperty)
             {
                 case EStateEffectProperty.TickDamage:
-                    return (baseValue + GetInt(EStateEffectProperty.BonusTickDamage)) * GetFloat(EStateEffectProperty.BonusTickDamagePerc);
+                case EStateEffectProperty.EndDamage:
+                    return (baseValue + GetInt(EStateEffectProperty.BonusTickDamage, targetController, specialCondition)) * GetFloat(EStateEffectProperty.BonusTickDamagePerc);
 
                 case EStateEffectProperty.TickHeal:
                     return (baseValue + GetInt(EStateEffectProperty.BonusTickHeal));
 
                 case EStateEffectProperty.Damage:
-                case EStateEffectProperty.EndDamage:
                     return ApplyBonusDamage((int)Mathf.Round(baseValue), targetController, specialCondition);
 
                 case EStateEffectProperty.Heal:
@@ -430,7 +430,10 @@ namespace Game.Character
                 return;
 
             var pastState = GetAnimationState();
+
+            // calculate number of stacks that need to be applied
             int stacks = overridingData != null ? overridingData.Value.GetStacks() : 1;
+            stacks = stateEffect.RecalculateStacks(stacks, caster, m_Controller);
 
             // if already in the list of state effects, refresh it
             if (HasState(stateEffect.StateEffectName))
@@ -450,7 +453,7 @@ namespace Game.Character
             if (stacks == 0)
                 return;
 
-            if (! stateEffect.Initialize(m_Controller, caster, overridingData))
+            if (! stateEffect.Initialize(m_Controller, caster, overridingData, stacks))
                 return;
 
             ErrorHandler.Log("Adding state effect " + stateEffect, ELogTag.StateEffects);
@@ -629,7 +632,8 @@ namespace Game.Character
             if (m_RemainingShield == 0)
                 return damages;
 
-            foreach (var effect in m_StateEffects)
+            var allEffects = m_StateEffects;
+            foreach (var effect in allEffects)
             {
                 damages = effect.HitShield(damages);
                 if (damages == 0)
@@ -685,6 +689,9 @@ namespace Game.Character
             if (IsImmuneToEffects && ! (IsFriendlyEffect(stateEffect) || caster.Team == m_Controller.Team))
                 return false;
 
+            if (IsUncontrollable && IsControlEffect(stateEffect.StateEffectName))
+                return false;
+
             return true;
         }
 
@@ -699,6 +706,11 @@ namespace Game.Character
                 || stateEffect.StateEffectName == EStateEffect.BlockMovement.ToString()
                 || stateEffect.StateEffectName == EStateEffect.BlockCast.ToString()
                 || stateEffect.StateEffectName == EStateEffect.SpecialAnimation.ToString();
+        }
+
+        public bool IsControlEffect(string stateEffectName)
+        {
+            return Uncontrollable.CC_EFFECTS.Contains(stateEffectName);
         }
 
         #endregion
@@ -767,8 +779,8 @@ namespace Game.Character
         public EStateEffectEvent    StateEffectEvent;
         public FixedString64Bytes   StateEffectName;
         public ulong                CasterId;
-        public byte                 Stacks;
-        public byte                 MaxStacks;
+        public short                Stacks;
+        public short                MaxStacks;
         public half                 Duration;
 
         // Constructor with optional parameters
@@ -777,8 +789,8 @@ namespace Game.Character
             StateEffectEvent    = stateEffectEvent;
             StateEffectName     = stateEffectName;
             CasterId            = casterId;
-            Stacks              = (byte)stacks;
-            MaxStacks           = (byte)maxStacks;
+            Stacks              = (short)stacks;
+            MaxStacks           = (short)maxStacks;
             Duration            = (half)duration;
         }
 

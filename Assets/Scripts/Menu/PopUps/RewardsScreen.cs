@@ -609,7 +609,7 @@ namespace Menu.PopUps
         {
             m_CurrentTemplateItem = Instantiate(AssetLoader.LoadTemplateItem(collectable), m_RewardIconSection.transform);
             var template = m_CurrentTemplateItem.GetComponent<TemplateCollectableItemUI>();
-            template.Initialize(collectable, true);
+            template.Initialize(collectable, asIconOnly: true);
             template.SetMysteryIcon(true);
             template.ForceState(EButtonState.Normal);
 

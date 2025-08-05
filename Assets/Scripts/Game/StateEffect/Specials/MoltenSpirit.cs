@@ -1,7 +1,4 @@
-﻿using Enums;
-using Game.Character;
-using Game.StateEffects.Interfaces;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace Game.Spells
@@ -12,7 +9,7 @@ namespace Game.Spells
         #region Members
 
         [SerializeField, Tooltip("Percentage of healing converted")]
-        float m_HealConversionFactor = 0.1f;
+        float m_HealConversionFactor = 0.15f;
 
         #endregion
 

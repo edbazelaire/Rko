@@ -264,6 +264,11 @@ namespace Menu.PopUps
                 return;
             }
 
+            if (key == "MaxThresholdIndex")
+            {
+                return;
+            }
+
             // spawn a spellRowInfo from prefab and init with spell data
             SpellInfoRowUI spellRowInfo = Instantiate(m_InfoPrefab, container.transform).GetComponent<SpellInfoRowUI>();
             spellRowInfo.Initialize(key, value, newDataValue, scaling);

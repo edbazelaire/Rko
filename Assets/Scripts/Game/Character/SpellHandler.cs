@@ -1319,6 +1319,13 @@ namespace Game.Character
 
         public bool IsAutoAttack(SpellData spellData)
         {
+            // check that AA is not None
+            if (AutoAttack == ESpell.None)
+            {
+                ErrorHandler.Warning("Auto Attack is None for " + m_Controller.Character);
+                return false;
+            }
+
             // default case : is the default auto attack
             if (spellData.Name == AutoAttack.ToString())
                 return true;

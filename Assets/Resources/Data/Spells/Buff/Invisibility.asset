@@ -29,11 +29,11 @@ MonoBehaviour:
     - AudioClip: {fileID: 8300000, guid: 306a8a949c94ca448a2495d7c2fd7e40, type: 3}
       SoundDuration: 0
     GFXLifetime:
-      m_StartSpellPart: 0
+      m_StartSpellPart: 100
       m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
-      Persistance: 1
+      Persistance: 0.75
     Size: 1
     OrderInLayer: 0
     SpawnTarget: 1
@@ -106,6 +106,6 @@ MonoBehaviour:
   PersistanceAfterEnd: 0
   Animation: 9
   IsCancellable: 1
-  AnimationTimer: 0.3
+  AnimationTimer: 0
   m_Cooldown: 25
   IsAttachedToTarget: 1

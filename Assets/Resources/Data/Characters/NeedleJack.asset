@@ -46,21 +46,23 @@ MonoBehaviour:
   m_Ultimate: Overdose
   Size: 1
   BaseSpeed: 1
-  BaseHealth: 1800
+  BaseHealth: 1500
   MaxEnergy: 100
   BaseEnergy: 10
   IsStructure: 0
   HealthScaleFactor: 0.1
   CharacterStatScaling:
-  - StateEffectProperty: 8
+  - StateEffectProperty: 101
     BaseValue: 0.03
     BonusValue: 0
-    ScalingFactor: 0.15
+    ScalingFactor: 0.12
+    SpecialConditions: []
     StateEffectStackFactors: []
-  - StateEffectProperty: 4
-    BaseValue: 500
+  - StateEffectProperty: 22
+    BaseValue: 5
     BonusValue: 0
-    ScalingFactor: 0.15
+    ScalingFactor: 0.1
+    SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers:
   - Description: Junkheal
@@ -68,6 +70,7 @@ MonoBehaviour:
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: Junkheal
+      OverridingData: []
       Level: 0
       Target: 4
       SpellActivationEvent: 1

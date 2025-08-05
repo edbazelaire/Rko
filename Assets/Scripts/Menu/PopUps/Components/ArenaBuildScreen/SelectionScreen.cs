@@ -10,6 +10,7 @@ using Tools;
 using Tools.Animations;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Menu.PopUps.Components
 {
@@ -22,6 +23,7 @@ namespace Menu.PopUps.Components
         public Action       OnEndEvent;
 
         GameObject          m_SelectionContainer;
+        Button              m_CancelRefreshButton;
         List<TemplateCollectableItemUI> m_TemplateItems = new();
 
         ECollectableType    m_CollectableType;
@@ -38,6 +40,7 @@ namespace Menu.PopUps.Components
             base.FindComponents();
 
             m_SelectionContainer = Finder.Find(gameObject, "SelectionContainer");
+            m_CancelRefreshButton = Finder.FindComponent<Button>(gameObject, "CancelRefreshButton");
         }
 
         public override void Initialize()
@@ -174,11 +177,15 @@ namespace Menu.PopUps.Components
         protected override void RegisterListeners()
         {
             base.RegisterListeners();
+
+            m_CancelRefreshButton.onClick.AddListener(Deactivate);
         }
 
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
+
+            m_CancelRefreshButton.onClick.RemoveAllListeners();
         }
 
         UnityEngine.Events.UnityAction OnTemplateSelected(int index)

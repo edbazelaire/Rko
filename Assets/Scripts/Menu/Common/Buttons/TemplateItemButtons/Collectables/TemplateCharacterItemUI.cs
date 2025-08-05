@@ -32,9 +32,9 @@ namespace Menu.Common.Buttons
             m_PriceDisplay = Finder.FindComponent<PriceDisplay>(m_LockState, "PriceDisplay");
         }
 
-        public override void Initialize(Enum collectable, bool asIconOncly = false)
+        public override void Initialize(Enum collectable, int level = 0, bool asIconOnly = false, bool removeListeners = false)
         {
-            base.Initialize(collectable, asIconOncly);
+            base.Initialize(collectable, level, asIconOnly, removeListeners);
 
             m_PriceDisplay.Initialize(ShopManagementData.GetPrice(m_Character));
         }

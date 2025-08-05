@@ -182,7 +182,7 @@ namespace Game.StateEffects.Quests
             if (! questThreshold.BonusStats.IsNullOrEmpty())
             {
                 ErrorHandler.Log("     + Adding BonusStats : " + questThreshold.BonusStats.Count(), ELogTag.StateEffects);
-                m_BonusStats.AddRange(questThreshold.BonusStats);
+                AddProperties(questThreshold.BonusStats);
             }
         }
 
@@ -248,6 +248,7 @@ namespace Game.StateEffects.Quests
 
             base.SetProperty(property, value);
         }
+
 
         #endregion
 

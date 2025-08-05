@@ -51,9 +51,9 @@ namespace Game.UI
             m_Level.text = "Level " + playerData.BuildData.CharacterLevel;
 
             // init runes
-            m_RunePrimal.Initialize(playerData.BuildData.Runes.Length > 0 ? playerData.BuildData.Runes[0] : ERune.None, true);
-            m_RuneMajor.Initialize(playerData.BuildData.Runes.Length > 1 ? playerData.BuildData.Runes[1] : ERune.None, true);
-            m_RuneMinor.Initialize(playerData.BuildData.Runes.Length > 2 ? playerData.BuildData.Runes[2] : ERune.None, true);
+            m_RunePrimal.Initialize(playerData.BuildData.Runes.Length > 0 ? playerData.BuildData.Runes[0] : ERune.None, playerData.BuildData.RuneLevels.Length > 0 ? playerData.BuildData.RuneLevels[0] : 0, true);
+            m_RuneMajor.Initialize(playerData.BuildData.Runes.Length > 1 ? playerData.BuildData.Runes[1] : ERune.None, playerData.BuildData.RuneLevels.Length > 1 ? playerData.BuildData.RuneLevels[1] : 0, true);
+            m_RuneMinor.Initialize(playerData.BuildData.Runes.Length > 2 ? playerData.BuildData.Runes[2] : ERune.None, playerData.BuildData.RuneLevels.Length > 2 ? playerData.BuildData.RuneLevels[2] : 0, true);
         }
 
         #endregion

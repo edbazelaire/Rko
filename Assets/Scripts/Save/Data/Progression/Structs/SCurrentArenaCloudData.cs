@@ -36,6 +36,7 @@ namespace Save.Data.Progression.Structs
         private bool            m_IsOver;
 
         public readonly EArenaDifficulty GetArenaDifficulty()   => SArenaDifficulty.Difficulty;
+        public readonly int GetExtraDifficulty()                => SArenaDifficulty.Level;
         public string[] GetPowerUps()                           => PowerUps ?? (new string[4]);
         public readonly bool InProgress()                       => ArenaType != EArenaType.None;
         public readonly int GetMaxLosses()                      => ArenaMods.Contains(EArenaMod.NoDeath) ? 1 : ArenaData.MAX_LOSSES;

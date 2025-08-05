@@ -1,8 +1,4 @@
-﻿using Assets.Scripts.Data.Interfaces;
-using Data;
-using Enums;
-using System;
-using Tools;
+﻿using System;
 using UnityEngine;
 
 namespace Data.DataStructures.SpellSubStructures

@@ -10,7 +10,7 @@ namespace Game.Spells
             // if player is casting, improve the duration
             if (m_Controller.SpellHandler.IsCasting)
             {
-                m_Duration *= 2.5f;
+                m_Duration *= 2f;
             }
 
             return base.CheckBeforeGraphicInit();
