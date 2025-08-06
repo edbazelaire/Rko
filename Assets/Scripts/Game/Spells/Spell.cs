@@ -166,7 +166,6 @@ namespace Game.Spells
             RegisterListeners();
 
             // call event that spell has spawn
-            OnSpellSpawn?.Invoke(this);
             CallSpellEvent(ESpellEvent.OnSpawn);
         }
 
@@ -442,7 +441,6 @@ namespace Game.Spells
 
         #region Hit Methods
 
-
         /// <summary>
         /// Check if a Player has been hit
         /// </summary>
@@ -562,13 +560,17 @@ namespace Game.Spells
 
             if (m_SpellData.Heal > 0)
             {
-                targetController.Life.Heal(m_SpellData.Heal, m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
+                targetController.Life.Heal(
+                    m_Controller.StateHandler.ApplyBonusInt(m_SpellData.Heal, EStateEffectProperty.Heal, targetController, m_SpellData.Name), 
+                    m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
                 test = true;
             }
 
             if (m_SpellData.Shield > 0)
             {
-                targetController.Life.AddShield(m_SpellData.Shield, m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
+                targetController.Life.AddShield(
+                    m_Controller.StateHandler.ApplyBonusInt(m_SpellData.Shield, EStateEffectProperty.Shield, targetController, m_SpellData.Name),
+                    m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
                 test = true;
             }
 
@@ -768,6 +770,9 @@ namespace Game.Spells
         [ClientRpc]
         void CallSpellEventClientRPC(ESpellEvent spellEvent)
         {
+            if (spellEvent == ESpellEvent.OnSpawn)
+                OnSpellSpawn?.Invoke(this);
+
             CallSpellEventGFX(spellEvent, null);
         }
 
@@ -872,7 +877,9 @@ namespace Game.Spells
                 return;
 
             GameManager.Instance.State.OnValueChanged -= OnGameStateChanged;
-            m_Controller.SpellHandler.RelocationTargetChangedEvent -= OnRelocationTargetChanged;
+
+            if (m_Controller != null)
+                m_Controller.SpellHandler.RelocationTargetChangedEvent -= OnRelocationTargetChanged;
         }
 
         void OnGameStateChanged(EGameState oldValue, EGameState state)

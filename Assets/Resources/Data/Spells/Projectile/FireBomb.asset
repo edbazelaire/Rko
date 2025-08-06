@@ -13,15 +13,13 @@ MonoBehaviour:
   m_Name: FireBomb
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: Throw a fire bomb that explodes in contact of an enemy or the ground,
-    dealing {0} damage and applies {1} in an area of {2}
+  m_Description: 'Throw a fire bomb that explodes in contact of an enemy or the ground,
+    dealing {0} damage and applies [Scorched]'
   m_DescriptionVariables:
   - Name: Damage
     WithIcon: 1
   - Name: Scorched
     WithIcon: 1
-  - Name: Size
-    WithIcon: 0
   m_SpellElements: 01000000
   Linked: 0
   Graphics: {fileID: 1258406917094090, guid: d17c3aaa467df414ba6c247f64f8d4bb, type: 3}
@@ -54,7 +52,7 @@ MonoBehaviour:
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
-  SpellTarget: 6
+  SpellTarget: 102
   m_ClampTargetPos: 1
   TargetOffset:
     X: 0
@@ -72,7 +70,7 @@ MonoBehaviour:
   m_SpellRequirements: []
   MaxHit: 1
   m_Charges: 1
-  EnergyGain: 10
+  EnergyGain: 15
   EnergyCost: 0
   m_Damage: 50
   m_ExecutionDamage: 0

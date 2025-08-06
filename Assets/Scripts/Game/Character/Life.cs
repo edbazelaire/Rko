@@ -1,10 +1,8 @@
 using Assets.Scripts.Game;
-using Data;
 using Enums;
 using Game.StateEffects.Interfaces;
 using System;
 using Tools;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -155,7 +153,7 @@ public class Life : NetworkBehaviour
         }
 
         // Apply reductions
-        heal = m_Controller.StateHandler.ApplyHealReductions(heal);
+        heal = m_Controller.StateHandler.ApplyBonusHealReceived(heal);
 
         // Interception (before apply)
         foreach (var effect in m_Controller.StateHandler.StateEffects)

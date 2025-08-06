@@ -1,5 +1,4 @@
 ﻿using Enums;
-using Game.Loaders;
 using MyBox;
 using System;
 using System.Collections.Generic;
@@ -46,6 +45,7 @@ namespace Data.DataStructures.StateEffectSubStructures
             {
                 return 0f;
             }
+
             return BaseValue * Mathf.Pow(1 + LevelScalingFactor, level - 1) * (StackScalingFactor == 0 ? 1 : stacks * StackScalingFactor);
         }
 

@@ -19,8 +19,8 @@ namespace Game.Spells
                 ignoreRes:      true
             );
 
-            // set heal to 0
-            heal = 0;
+            // reduce healing by 50%
+            heal = (int)Math.Ceiling(0.5f * heal);
         }
     }
 }

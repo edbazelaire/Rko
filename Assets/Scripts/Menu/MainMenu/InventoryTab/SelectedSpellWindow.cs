@@ -38,7 +38,7 @@ namespace Assets.Scripts.Menu.MainMenu.InventoryTab
 
             // create spell item
             var spellItem = Instantiate(AssetLoader.LoadTemplateItem(collectable), m_SelectedCardContainer.transform).GetComponent<TemplateCollectableItemUI>();
-            spellItem.Initialize(collectable, true);
+            spellItem.Initialize(collectable, asIconOnly: true);
 
             // set game object anchors to match parent size
             UIHelper.SetFullSize(spellItem.gameObject);

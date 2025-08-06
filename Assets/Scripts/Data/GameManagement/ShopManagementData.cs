@@ -216,6 +216,9 @@ namespace Data.GameManagement
 
         public int GetCurrency(ECurrency currency)
         {
+            if (Currencies == null)
+                return 0;
+
             int amount = 0;
             foreach (var value in Currencies.Where(t => t.Currency == currency))
             {

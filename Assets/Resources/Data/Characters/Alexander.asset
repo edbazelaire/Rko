@@ -44,11 +44,13 @@ MonoBehaviour:
     BaseValue: 10
     BonusValue: 0
     ScalingFactor: 0.1
+    SpecialConditions: []
     StateEffectStackFactors: []
   - StateEffectProperty: 8
     BaseValue: -0.1
     BonusValue: 0
     ScalingFactor: 0
+    SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers:
   - Description: 
@@ -56,6 +58,7 @@ MonoBehaviour:
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: HeavyHitter
+      OverridingData: []
       Level: 0
       Target: 4
       SpellActivationEvent: 1

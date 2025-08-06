@@ -30,9 +30,9 @@ namespace Game.Spells
 
         #region Init & End
 
-        public override bool Initialize(Controller controller, Controller caster, SStateEffectData? stateEffect)
+        public override bool Initialize(Controller controller, Controller caster, SStateEffectData? stateEffect, int stacks = 1)
         {
-            if (!base.Initialize(controller, caster, stateEffect))
+            if (!base.Initialize(controller, caster, stateEffect, stacks))
                 return false;
 
             m_TickTimer = m_Tick;

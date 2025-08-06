@@ -2,6 +2,7 @@
 using Enums;
 using Game.Loaders;
 using Game.Spells;
+using NUnit.Framework.Internal;
 using System;
 using System.Collections.Generic;
 using Tools;
@@ -233,7 +234,7 @@ namespace Game.Character
             return damage;
         }
 
-        public int ApplyHealReductions(int heal)
+        public int ApplyBonusHealReceived(int heal)
         {
             // apply fix heal reduction
             heal = Math.Max(0, heal + GetInt(EStateEffectProperty.HealReduction));
@@ -276,7 +277,7 @@ namespace Game.Character
             return damage;
         }
 
-        public int ApplyBonusHeal(int heal, Controller targetController, string specialCondition = "")
+        public int ApplyBonusHealDealt(int heal, Controller targetController, string specialCondition = "")
         {
             // apply percentage res
             heal = Math.Max(0, heal + GetInt(EStateEffectProperty.BonusHeal));
@@ -295,21 +296,27 @@ namespace Game.Character
             switch (stateEffectProperty)
             {
                 case EStateEffectProperty.TickDamage:
-                    return (baseValue + GetInt(EStateEffectProperty.BonusTickDamage)) * GetFloat(EStateEffectProperty.BonusTickDamagePerc);
+                case EStateEffectProperty.EndDamage:
+                    return (baseValue + GetInt(EStateEffectProperty.BonusTickDamage, targetController, specialCondition)) * GetFloat(EStateEffectProperty.BonusTickDamagePerc);
 
                 case EStateEffectProperty.TickHeal:
-                    return (baseValue + GetInt(EStateEffectProperty.BonusTickHeal));
+                    return (baseValue + GetInt(EStateEffectProperty.BonusTickHeal, targetController, specialCondition)) * GetFloat(EStateEffectProperty.BonusHealPerc, targetController, specialCondition: specialCondition);
 
                 case EStateEffectProperty.Damage:
-                case EStateEffectProperty.EndDamage:
                     return ApplyBonusDamage((int)Mathf.Round(baseValue), targetController, specialCondition);
 
                 case EStateEffectProperty.Heal:
                 case EStateEffectProperty.EndHeal:
-                    return ApplyBonusHeal((int)Mathf.Round(baseValue), targetController, specialCondition);
+                    return ApplyBonusHealDealt((int)Mathf.Round(baseValue), targetController, specialCondition);
 
                 case EStateEffectProperty.Shield:
                     return ApplyBonusShield((int)Mathf.Round(baseValue), targetController, specialCondition);
+
+                case EStateEffectProperty.LifeSteal:
+                    return baseValue + GetFloat(EStateEffectProperty.BonusLifeSteal) - 1;
+
+                case EStateEffectProperty.BonusTickLifeSteal:
+                    return baseValue + GetFloat(EStateEffectProperty.BonusTickLifeSteal) - 1;
 
                 default:
                     return baseValue;
@@ -426,11 +433,19 @@ namespace Game.Character
             if (! IsServer)
                 return;
 
+            // TODO : REMOVE    ==================================================
+            if (stateEffect.StateEffectName == EStateEffect.Scorched.ToString())
+                Debug.Log("Applying " + stateEffect.StateEffectName);
+            // TODO : REMOVE    ==================================================
+
+            // calculate number of stacks that need to be applied
+            int stacks = overridingData != null ? overridingData.Value.GetStacks() : 1;
+            stacks = stateEffect.RecalculateStacks(stacks, caster, m_Controller);
+
             if (! CheckCanBeApplied(stateEffect, caster))
                 return;
 
             var pastState = GetAnimationState();
-            int stacks = overridingData != null ? overridingData.Value.GetStacks() : 1;
 
             // if already in the list of state effects, refresh it
             if (HasState(stateEffect.StateEffectName))
@@ -450,7 +465,7 @@ namespace Game.Character
             if (stacks == 0)
                 return;
 
-            if (! stateEffect.Initialize(m_Controller, caster, overridingData))
+            if (! stateEffect.Initialize(m_Controller, caster, overridingData, stacks))
                 return;
 
             ErrorHandler.Log("Adding state effect " + stateEffect, ELogTag.StateEffects);
@@ -629,7 +644,8 @@ namespace Game.Character
             if (m_RemainingShield == 0)
                 return damages;
 
-            foreach (var effect in m_StateEffects)
+            var allEffects = m_StateEffects;
+            foreach (var effect in allEffects)
             {
                 damages = effect.HitShield(damages);
                 if (damages == 0)
@@ -685,6 +701,9 @@ namespace Game.Character
             if (IsImmuneToEffects && ! (IsFriendlyEffect(stateEffect) || caster.Team == m_Controller.Team))
                 return false;
 
+            if (IsUncontrollable && IsControlEffect(stateEffect.StateEffectName))
+                return false;
+
             return true;
         }
 
@@ -699,6 +718,11 @@ namespace Game.Character
                 || stateEffect.StateEffectName == EStateEffect.BlockMovement.ToString()
                 || stateEffect.StateEffectName == EStateEffect.BlockCast.ToString()
                 || stateEffect.StateEffectName == EStateEffect.SpecialAnimation.ToString();
+        }
+
+        public bool IsControlEffect(string stateEffectName)
+        {
+            return Uncontrollable.CC_EFFECTS.Contains(stateEffectName);
         }
 
         #endregion
@@ -767,8 +791,8 @@ namespace Game.Character
         public EStateEffectEvent    StateEffectEvent;
         public FixedString64Bytes   StateEffectName;
         public ulong                CasterId;
-        public byte                 Stacks;
-        public byte                 MaxStacks;
+        public short                Stacks;
+        public short                MaxStacks;
         public half                 Duration;
 
         // Constructor with optional parameters
@@ -777,8 +801,8 @@ namespace Game.Character
             StateEffectEvent    = stateEffectEvent;
             StateEffectName     = stateEffectName;
             CasterId            = casterId;
-            Stacks              = (byte)stacks;
-            MaxStacks           = (byte)maxStacks;
+            Stacks              = (short)stacks;
+            MaxStacks           = (short)maxStacks;
             Duration            = (half)duration;
         }
 

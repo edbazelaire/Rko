@@ -43,12 +43,12 @@ namespace Menu.PopUps.OverlayScreens
         {
             base.FindComponents();
 
-            m_RefreshTokenCounter = Finder.FindComponent<TMP_Text>(gameObject, "RefreshTokenCounter");
-            m_PowerUpsSmallDisplayers = Finder.FindComponents<PowerUpSmallDisplay>(gameObject);
-            m_CharacterSection = Finder.Find(gameObject, "CharacterSection");
-            m_SpellsContainer = Finder.Find(gameObject, "SpellsContainer");
-            m_RunesContainer = Finder.Find(gameObject, "RunesContainer");
-            m_SelectionScreen = Finder.FindComponent<SelectionScreen>(gameObject, "SelectionScreen");
+            m_RefreshTokenCounter       = Finder.FindComponent<TMP_Text>(gameObject, "RefreshTokenCounter");
+            m_PowerUpsSmallDisplayers   = Finder.FindComponents<PowerUpSmallDisplay>(gameObject);
+            m_CharacterSection          = Finder.Find(gameObject, "CharacterSection");
+            m_SpellsContainer           = Finder.Find(gameObject, "SpellsContainer");
+            m_RunesContainer            = Finder.Find(gameObject, "RunesContainer");
+            m_SelectionScreen           = Finder.FindComponent<SelectionScreen>(gameObject, "SelectionScreen");
         }
 
         protected override void OnPrefabLoaded()
@@ -121,7 +121,7 @@ namespace Menu.PopUps.OverlayScreens
                 ESpell spell = ProgressionCloudData.CurrentArena.BuildData.Spells[i];
 
                 // init template with values
-                templateItem.Initialize(spell, true);
+                templateItem.Initialize(spell, asIconOnly: true);
                 templateItem.SetBottomOverlay(spell.ToString());
 
                 int buildIndex = i;
@@ -149,7 +149,7 @@ namespace Menu.PopUps.OverlayScreens
                 ERune rune = ProgressionCloudData.CurrentArena.BuildData.Runes[i];
 
                 // init template with values
-                templateItem.Initialize(rune, true);
+                templateItem.Initialize(rune, asIconOnly: true);
                 templateItem.SetBottomOverlay(rune.ToString());
 
                 int buildIndex = i;

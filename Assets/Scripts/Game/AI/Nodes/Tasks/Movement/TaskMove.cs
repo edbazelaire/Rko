@@ -33,12 +33,12 @@ public class TaskMove : BaseTask
     protected Coroutine m_CurrentCoroutine;     // current active coroutine
 
     // -- Serializable data (todo)
-    protected float m_CheckObstaclesSize = 0.5f;
-    protected float m_CheckZoneSize = 1f;
+    protected float m_CheckObstaclesSize        = 0.5f;
+    protected float m_CheckZoneSize             = 1f;
 
     // -- continue data
-    protected List<int> m_AllowedMovements    = new List<int> { -1, 1 };
-    protected int m_CurrentMoveX              = 1;
+    protected List<int> m_AllowedMovements      = new List<int> { -1, 1 };
+    protected int m_CurrentMoveX                = 1;
     protected Vector2 m_Position => m_Controller.transform.position;
 
     #endregion
@@ -62,17 +62,13 @@ public class TaskMove : BaseTask
         // select a movement direction
         SelectMovement();
 
-        if (m_State == NodeState.FAILURE)
+        if (m_State != NodeState.FAILURE)
         {
-            ErrorHandler.Log("TaskMove - FAILURE", ELogTag.AITaskMove);
-            return m_State;
+            // apply movement (-1) because of team effect
+            m_Movement.SetMovement((sbyte)((m_Controller.Team == 0 ? 1 : -1) * m_CurrentMoveX));
         }
 
-        // apply movement (-1) because of team effect
-        m_Movement.SetMovement((sbyte)((m_Controller.Team == 0 ? 1 : -1) * m_CurrentMoveX));
-
         ErrorHandler.Log("TaskMove - " + m_State, ELogTag.AITaskMove);
-
         return m_State;
     }
 
@@ -103,7 +99,9 @@ public class TaskMove : BaseTask
             CheckProjectiles();
 
         if (m_AllowedMovements.Count == 0)
+        {
             m_CurrentMoveX = 0;
+        }
         else if (! m_AllowedMovements.Contains(m_CurrentMoveX) || m_RefreshMovement)
         {
             // play coroutine on the side to call for movement refresh (= add randomness in movements)
@@ -345,6 +343,11 @@ public class TaskMove : BaseTask
 
     IEnumerator CheckMovementDuration()
     {
+        if (m_Controller.BehaviorTree.BotData.MaxMovementTime <= 0)
+        {
+            yield return null;
+        }
+
         var timer = UnityEngine.Random.Range(m_Controller.BehaviorTree.BotData.MinMovementTime, m_Controller.BehaviorTree.BotData.MaxMovementTime);
 
         while (timer > 0f)
@@ -372,6 +375,8 @@ public class TaskMove : BaseTask
             timer -= Time.deltaTime;
             yield return null;
         }
+
+        ErrorHandler.Log("      -- TaskMove CheckRefreshMovement() : REFRESHING", ELogTag.AITaskMove);
 
         m_RefreshMovement = true;
     }

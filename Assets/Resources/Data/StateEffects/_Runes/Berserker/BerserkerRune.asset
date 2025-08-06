@@ -16,7 +16,7 @@ MonoBehaviour:
     Attack Speed by {2}. Also, heal for {3} of the damage delt.\n\nThe effectiveness
     of the boosts is multiplied by the percentage of missing health (0% effectiveness
     at full health)
-  m_DescriptionVariables: 07000000030000001000000009000000
+  m_DescriptionVariables: 08000000030000001000000009000000
   m_StateEffectType: 0
   m_IsDisplayed: 1
   m_VisualEffects: []
@@ -67,6 +67,8 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
   m_IsTrueDamage: 0
+  m_EndWithShield: 0
+  m_RefreshShield: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: -1
@@ -81,14 +83,14 @@ MonoBehaviour:
     LevelScalingFactor: 0
     StackScalingFactor: 1
     SpecialConditions: []
-  - StateEffectProperty: 7
-    BaseValue: 10
-    LevelScalingFactor: 0.12
+  - StateEffectProperty: 8
+    BaseValue: 0.1
+    LevelScalingFactor: 0.1
     StackScalingFactor: 1
     SpecialConditions: []
   - StateEffectProperty: 9
-    BaseValue: 0.1
-    LevelScalingFactor: 0.04
+    BaseValue: 0.2
+    LevelScalingFactor: 0.06
     StackScalingFactor: 1
     SpecialConditions: []
   - StateEffectProperty: 16

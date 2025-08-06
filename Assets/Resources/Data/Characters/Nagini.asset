@@ -37,7 +37,7 @@ MonoBehaviour:
   m_Ultimate: PoisonFury
   Size: 0.9
   BaseSpeed: 1.15
-  BaseHealth: 1300
+  BaseHealth: 1500
   MaxEnergy: 100
   BaseEnergy: 10
   IsStructure: 0
@@ -47,10 +47,24 @@ MonoBehaviour:
     BaseValue: 0.1
     BonusValue: 0
     ScalingFactor: 0
+    SpecialConditions: []
     StateEffectStackFactors: []
   - StateEffectProperty: 16
     BaseValue: 0.1
     BonusValue: 0
     ScalingFactor: 0.05
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 107
+    BaseValue: 0.1
+    BonusValue: 0
+    ScalingFactor: 0
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 5
+    BaseValue: 3
+    BonusValue: 0
+    ScalingFactor: 0.1
+    SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers: []

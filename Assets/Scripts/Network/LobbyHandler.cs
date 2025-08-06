@@ -257,13 +257,16 @@ namespace Network
                             playerData.SetBuild(ProgressionCloudData.CurrentArena.HasBuildData() ? ProgressionCloudData.CurrentArena.BuildData : CharacterBuildsCloudData.CurrentBuild);
                         }
 
+                        // send self data to the GameManager
                         GameManager.Instance.AddPlayerDataServerRPC(
                             NetworkManager.Singleton.LocalClientId,
                             playerData
                         );
 
+                        // if has to fill game with bots - send bots data
                         SendBotsData();
                     
+                        // go to next state
                         NextState();
                         return;
 

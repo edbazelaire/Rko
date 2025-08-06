@@ -778,6 +778,9 @@ namespace Game
                 returnedController = controller;
             }
 
+            if (returnedController == null)
+                return returnedController;
+
             // check can be targetted
             if (! returnedController.StateHandler.IsUnTargetable)
                 return returnedController;
@@ -985,7 +988,7 @@ namespace Game
                     break;
 
                 case EGameState.PreparingGame:
-                    TimeErrorWrapper.Instance.New(TIME_WRAPPER_ID, 60f, OnPreparingGameTimeLimit);
+                    TimeErrorWrapper.Instance.New(TIME_WRAPPER_ID, 90f, OnPreparingGameTimeLimit);
                     StartCoroutine(WaitClientInitialized());
                     SpawnPlayers();
                     break;
@@ -1064,7 +1067,7 @@ namespace Game
         {
             ExitWithError(
                 "An error has occured while creating " + LobbyHandler.Instance.GameMode.ToString() + " game mode : "
-                    + "\n   + Game State : " + m_State.ToString()
+                    + "\n   + Game State : " + m_State.Value.ToString()
                     + "\n   + Reason : Initializing game has reached time limit"
             );
         }
@@ -1073,7 +1076,7 @@ namespace Game
         {
             ExitWithError(
                 "An error has occured while creating " + LobbyHandler.Instance.GameMode.ToString() + " game mode : "
-                    + "\n   + Game State : " + m_State.ToString()
+                    + "\n   + Game State : " + m_State.Value.ToString()
                     + "\n   + Reason : Preparing game has reached time limit"
             );
         }
@@ -1082,7 +1085,7 @@ namespace Game
         {
             ExitWithError(
                 "An error has occured while playing " + LobbyHandler.Instance.GameMode.ToString() + " game mode : "
-                    + "\n   + Game State : " + m_State.ToString()
+                    + "\n   + Game State : " + m_State.Value.ToString()
                     + "\n   + Reason : Game has reached its safety time limit"
             );
         }
@@ -1189,6 +1192,20 @@ namespace Game
             Owner.StateHandler.CharacterData.AddBonusStats(new List<SCharacterStatScaling>() { 
                 new SCharacterStatScaling(EStateEffectProperty.BonusDamage, 100f, 0f, 0f) 
             });
+        }
+
+        [Command(KeyCode.T)]
+        public void StunEnemy()
+        {
+            var stun = new SStateEffectData(EStateEffect.Stun, overridingProperties: new List<SStateEffectProperty>() { new SStateEffectProperty(EStateEffectProperty.Duration, 3) });
+            GetFirstEnemy(Owner.Team).StateHandler.AddStateEffect(stun, Owner, 1, "Debug");
+        }
+
+        [Command(KeyCode.R)]
+        public void StunSelf()
+        {
+            var stun = new SStateEffectData(EStateEffect.Stun, overridingProperties: new List<SStateEffectProperty>() { new SStateEffectProperty(EStateEffectProperty.Duration, 3) });
+            Owner.StateHandler.AddStateEffect(stun, Owner, 1, "Debug");
         }
 
         [Command(KeyCode.Y)]

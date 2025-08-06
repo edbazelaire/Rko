@@ -82,7 +82,7 @@ namespace Menu.Common
 
                 // instantiate Title Template
                 var template = Instantiate(baseTemplate, m_Icon.transform.parent);
-                template.Initialize(collectable, true);
+                template.Initialize(collectable, asIconOnly: true);
                 template.SetBottomOverlay(reward.Qty > 1 ? "x" + reward.Qty.ToString() : "");
 
                 var ratioFitter = template.AddComponent<AspectRatioFitter>();

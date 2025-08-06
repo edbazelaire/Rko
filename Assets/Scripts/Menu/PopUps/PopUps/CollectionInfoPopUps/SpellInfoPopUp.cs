@@ -127,6 +127,9 @@ namespace Menu.PopUps
         {
             if (key == "Effects")
                 return;
+
+            if (key == "MaxIndexThreshold")
+                return;
             
             base.SetUpInfoRow(container, key, value, newDataValue, scalingDirection);
         }
@@ -149,7 +152,10 @@ namespace Menu.PopUps
         protected override void RefreshUpgradeButtonUI()
         {
             if (m_IsLinked)
+            {
+                m_UpgradeButton.gameObject.SetActive(false);
                 return;
+            }
 
             base.RefreshUpgradeButtonUI();
         }

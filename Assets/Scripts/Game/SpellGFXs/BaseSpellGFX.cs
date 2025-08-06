@@ -39,7 +39,7 @@ namespace Game.SpellGFXs
         protected float                 m_Duration;
 
         public string m_Name => m_SpellData != null ? m_SpellData.Name : (string.IsNullOrEmpty(m_StateEffectName) ? "" : m_StateEffectName);
-        protected float m_Delay => m_PrefabSpawn.GFXLifetime.StartAt > 0 ? m_PrefabSpawn.GFXLifetime.StartAt * m_Duration : 0f;
+        protected float m_Delay => m_PrefabSpawn.GFXLifetime.StartAt > 0 ? m_PrefabSpawn.GFXLifetime.StartAt * GetDuration() : 0f;
 
         #endregion
 
@@ -86,7 +86,7 @@ namespace Game.SpellGFXs
             // make controller play animation if any
             if (prefabSpawn.Animation != EAnimation.None)
             {
-                controller.AnimationHandler.PlayAnimation(prefabSpawn.Animation != EAnimation.Self ? prefabSpawn.Animation.ToString() : spellData.Name);
+                controller.AnimationHandler.PlayAnimation(prefabSpawn.Animation != EAnimation.Self ? prefabSpawn.Animation.ToString() : spellData.Name, GetDuration());
             }
 
             // make spell play animation if any

@@ -31,15 +31,12 @@ MonoBehaviour:
     BaseValue: 750
     BonusValue: 0
     ScalingFactor: 0.15
+    SpecialConditions: []
     StateEffectStackFactors: []
   - StateEffectProperty: 5
     BaseValue: 30
     BonusValue: 0
     ScalingFactor: 0.12
+    SpecialConditions: []
     StateEffectStackFactors: []
-  m_SpecialPowers:
-  - Description: 
-    m_DescriptionVariables: []
-    m_BonusLevel: 0
-    m_TriggerEffects: []
-    m_BonusStats: []
+  m_SpecialPowers: []
