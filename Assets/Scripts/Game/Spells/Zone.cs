@@ -175,7 +175,6 @@ namespace Game.Spells
             // apply force
             if (m_SpellData.ZoneForce != default)
             {
-                Debug.Log("Applying Zone Force on : " + controller.gameObject.name);
                 controller.Movement.AddForce(m_SpellData.ZoneForce);
             }
         }

@@ -18,7 +18,26 @@ MonoBehaviour:
   m_StateEffectType: 0
   m_IsDisplayed: 0
   m_VisualEffects: []
-  m_GfxEffects: []
+  m_GfxEffects:
+  - Prefab: {fileID: 2910976597878939058, guid: bc842c50ae5559b42891be38b3af23bf, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 1
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 2
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 2
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
   m_PermanantSoundFX: {fileID: 0}
@@ -27,6 +46,8 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
   m_IsTrueDamage: 0
+  m_EndWithShield: 0
+  m_RefreshShield: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: 0

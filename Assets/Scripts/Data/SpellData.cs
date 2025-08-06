@@ -1041,7 +1041,7 @@ namespace Data
 
         public string GetTargetTypeInfo()
         {
-            if (SpellRelocation.Lifetime.StartSpellPart != ESpellEvent.None && SpellRelocation.Lifetime.StartSpellPart < ESpellEvent.OnSpawn)
+            if (SpellRelocation.Lifetime != null && (SpellRelocation.Lifetime.StartSpellPart != ESpellEvent.None && SpellRelocation.Lifetime.StartSpellPart < ESpellEvent.OnSpawn))
                 return "Redirectable";
 
             switch (SpellTarget)

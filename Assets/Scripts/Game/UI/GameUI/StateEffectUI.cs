@@ -78,7 +78,7 @@ namespace Game.UI
             if (maxStacks != null)
                 m_MaxStacks = maxStacks.Value;
 
-            m_Stacks = Math.Clamp(m_Stacks + stacks, 0, m_MaxStacks);
+            m_Stacks = Math.Clamp(m_Stacks + stacks, 0, m_MaxStacks > 0 ? m_MaxStacks : 999);
 
             if (m_Stacks <= 1)
                 m_StacksContainer.SetActive(false);

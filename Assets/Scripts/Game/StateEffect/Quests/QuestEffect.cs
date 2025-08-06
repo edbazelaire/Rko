@@ -57,7 +57,7 @@ namespace Game.StateEffects.Quests
             for (int i = 0; i < m_MaxIndex; i++)
             {
                 // CHECK : number of stacks above stacks treshold ?
-                if (stacks >= m_QuestThresholds[i].RequiredStacks)
+                if (m_Stacks >= m_QuestThresholds[i].RequiredStacks)
                 {
                     // CHECK : if is last of the thresholds - activate this effect
                     if (i == m_MaxIndex - 1)

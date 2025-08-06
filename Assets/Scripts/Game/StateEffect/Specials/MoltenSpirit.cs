@@ -9,7 +9,7 @@ namespace Game.Spells
         #region Members
 
         [SerializeField, Tooltip("Percentage of healing converted")]
-        float m_HealConversionFactor = 0.15f;
+        protected float m_HealConversionFactor = 0.15f;
 
         #endregion
 

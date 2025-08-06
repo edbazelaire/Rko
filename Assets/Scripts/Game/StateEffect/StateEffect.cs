@@ -166,6 +166,8 @@ namespace Game.Spells
         /// <returns></returns>
         public virtual bool Initialize(Controller controller, Controller caster, SStateEffectData? stateEffectData = null, int stacks = 1)
         {
+            if (StateEffectName == "21")
+                Debug.LogWarning("StateEffectName : 21 ==========================");
             Debug.Log("Initialize() " + StateEffectName + " with " + stacks + " stacks");
 
             if (controller == null)
@@ -179,7 +181,7 @@ namespace Game.Spells
             m_IsStarted     = false;                // on init - reset is started 
             m_IsActivated   = false;                // initialize activated to false
             m_IsOver        = false;                // initialize activated to false
-            SetStacks(stateEffectData.HasValue ? stateEffectData.Value.GetStacks() : stacks);
+            SetStacks(stacks);
 
             // check if has overriding data
             if (stateEffectData.HasValue && stateEffectData.Value.OverridingProperties != null && stateEffectData.Value.OverridingProperties.Count > 0)
@@ -238,13 +240,6 @@ namespace Game.Spells
         protected virtual bool CheckBeforeGraphicInit()
         {
             return true;
-
-            // TODO : Remove ?
-            if (m_ConsumeState == EStateEffect.None)
-                return true;
-
-            SetStacks(Mathf.Min(ApplyConsumeState(m_Stacks, m_Caster, m_Controller), MaxStacks));
-            return m_Stacks > 0;
         }
 
         /// <summary>
@@ -1216,7 +1211,8 @@ namespace Game.Spells
                 m_Controller.Life.Hit(value, casterId: m_Caster.PlayerId, source: StateEffectName, spellCategory: ESpellCategory.Direct, ignoreRes: m_IsTrueDamage);
 
                 // apply lifesteal (on caster)
-                var lifesteal = Mathf.Max(0f, GetFloat(EStateEffectProperty.BonusTickLifeSteal, stacks: stacks, specialCondition: StateEffectName) - 1);
+                var lifesteal = GetFloat(EStateEffectProperty.LifeSteal, stacks: stacks, specialCondition: StateEffectName);
+                lifesteal = m_Caster.StateHandler.ApplyBonus(lifesteal, EStateEffectProperty.BonusTickLifeSteal, m_Controller, StateEffectName);
                 if (lifesteal > 0)
                 {
                     m_Caster.Life.Heal((int)Mathf.Round(value * lifesteal), m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct);

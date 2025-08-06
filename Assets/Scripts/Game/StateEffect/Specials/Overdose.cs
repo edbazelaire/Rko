@@ -1,7 +1,10 @@
 ﻿using Enums;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Game.Spells
 {
@@ -10,20 +13,18 @@ namespace Game.Spells
     {
         public override int RecalculateStacks(int stacks, Controller caster, Controller targetController)
         {
-            Debug.Log("RecalculateStacks() : " + stacks);
             base.RecalculateStacks(stacks, caster, targetController);
 
             int consumedStacks = 0;                 // currently consumed stacks
-            int maxStacks = m_MaxStacks - targetController.StateHandler.GetStacks("Overdose");   // maximum number of stacks to add
+            int maxStacks = m_MaxStacks - caster.StateHandler.GetStacks("Overdose");   // maximum number of stacks to add
 
             // Create modifiable pool of enemy controllers
             var potentialTargets = new List<Controller>(GameManager.Instance.GetAllEnemies(caster.Team, spawnIncluded: true));
+            // put spawn at the end
+            potentialTargets = potentialTargets.OrderBy(t => t.IsSpawn).Reverse().ToList();
 
-            while (consumedStacks < maxStacks && potentialTargets.Count > 0)
+            foreach (Controller target in potentialTargets)
             {
-                // Select a random enemy
-                int index = Random.Range(0, potentialTargets.Count);
-                var target = potentialTargets[index];
                 var stateHandler = target.StateHandler;
 
                 // Check if the enemy has at least one of the effects
@@ -31,29 +32,26 @@ namespace Game.Spells
                 bool hasInfected = stateHandler.HasState(EStateEffect.Infected);
 
                 if (!hasPoison && !hasInfected)
-                {
-                    potentialTargets.RemoveAt(index);
                     continue;
-                }
 
-                // Determine how many stacks to consume this round (1 to 3, capped by remaining maxStacks)
-                int toConsume = Mathf.Min(Random.Range(1, 4), maxStacks - consumedStacks);
-                if (toConsume <= 0)
-                    break;
-
-                // If room left and target has infected
-                if (hasInfected)
-                {
-                    int infectedRemoved = stateHandler.RemoveStateEffect(EStateEffect.Infected.ToString(), consume: true, maxStacks: toConsume);
-                    consumedStacks += 3 * infectedRemoved;
-                    toConsume -= infectedRemoved;
-                }
+                // Determine how many stacks to consume 
+                int toConsume = 0;
 
                 // Try to consume from Poison
                 if (hasPoison)
                 {
+                    toConsume = Mathf.Max(maxStacks - consumedStacks, 0);
                     int poisonRemoved = stateHandler.RemoveStateEffect(EStateEffect.Poison.ToString(), consume: true, maxStacks: toConsume);
                     consumedStacks += poisonRemoved;
+                }
+
+                // If room left and target has infected
+                if (hasInfected)
+                {
+                    // Determine how many stacks to consume this round (1 to 3, capped by remaining maxStacks)
+                    toConsume = (int)Math.Ceiling(Mathf.Max(maxStacks - consumedStacks, 0) / 3f);
+                    int infectedRemoved = stateHandler.RemoveStateEffect(EStateEffect.Infected.ToString(), consume: true, maxStacks: toConsume);
+                    consumedStacks += 3 * infectedRemoved;
                 }
             }
 

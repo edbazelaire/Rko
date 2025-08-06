@@ -2,6 +2,7 @@
 using Enums;
 using Game.Loaders;
 using Game.Spells;
+using NUnit.Framework.Internal;
 using System;
 using System.Collections.Generic;
 using Tools;
@@ -233,7 +234,7 @@ namespace Game.Character
             return damage;
         }
 
-        public int ApplyHealReductions(int heal)
+        public int ApplyBonusHealReceived(int heal)
         {
             // apply fix heal reduction
             heal = Math.Max(0, heal + GetInt(EStateEffectProperty.HealReduction));
@@ -276,7 +277,7 @@ namespace Game.Character
             return damage;
         }
 
-        public int ApplyBonusHeal(int heal, Controller targetController, string specialCondition = "")
+        public int ApplyBonusHealDealt(int heal, Controller targetController, string specialCondition = "")
         {
             // apply percentage res
             heal = Math.Max(0, heal + GetInt(EStateEffectProperty.BonusHeal));
@@ -299,17 +300,23 @@ namespace Game.Character
                     return (baseValue + GetInt(EStateEffectProperty.BonusTickDamage, targetController, specialCondition)) * GetFloat(EStateEffectProperty.BonusTickDamagePerc);
 
                 case EStateEffectProperty.TickHeal:
-                    return (baseValue + GetInt(EStateEffectProperty.BonusTickHeal));
+                    return (baseValue + GetInt(EStateEffectProperty.BonusTickHeal, targetController, specialCondition)) * GetFloat(EStateEffectProperty.BonusHealPerc, targetController, specialCondition: specialCondition);
 
                 case EStateEffectProperty.Damage:
                     return ApplyBonusDamage((int)Mathf.Round(baseValue), targetController, specialCondition);
 
                 case EStateEffectProperty.Heal:
                 case EStateEffectProperty.EndHeal:
-                    return ApplyBonusHeal((int)Mathf.Round(baseValue), targetController, specialCondition);
+                    return ApplyBonusHealDealt((int)Mathf.Round(baseValue), targetController, specialCondition);
 
                 case EStateEffectProperty.Shield:
                     return ApplyBonusShield((int)Mathf.Round(baseValue), targetController, specialCondition);
+
+                case EStateEffectProperty.LifeSteal:
+                    return baseValue + GetFloat(EStateEffectProperty.BonusLifeSteal) - 1;
+
+                case EStateEffectProperty.BonusTickLifeSteal:
+                    return baseValue + GetFloat(EStateEffectProperty.BonusTickLifeSteal) - 1;
 
                 default:
                     return baseValue;
@@ -426,14 +433,19 @@ namespace Game.Character
             if (! IsServer)
                 return;
 
-            if (! CheckCanBeApplied(stateEffect, caster))
-                return;
-
-            var pastState = GetAnimationState();
+            // TODO : REMOVE    ==================================================
+            if (stateEffect.StateEffectName == EStateEffect.Scorched.ToString())
+                Debug.Log("Applying " + stateEffect.StateEffectName);
+            // TODO : REMOVE    ==================================================
 
             // calculate number of stacks that need to be applied
             int stacks = overridingData != null ? overridingData.Value.GetStacks() : 1;
             stacks = stateEffect.RecalculateStacks(stacks, caster, m_Controller);
+
+            if (! CheckCanBeApplied(stateEffect, caster))
+                return;
+
+            var pastState = GetAnimationState();
 
             // if already in the list of state effects, refresh it
             if (HasState(stateEffect.StateEffectName))

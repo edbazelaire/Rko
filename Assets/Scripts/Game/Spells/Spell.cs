@@ -441,7 +441,6 @@ namespace Game.Spells
 
         #region Hit Methods
 
-
         /// <summary>
         /// Check if a Player has been hit
         /// </summary>
@@ -561,13 +560,17 @@ namespace Game.Spells
 
             if (m_SpellData.Heal > 0)
             {
-                targetController.Life.Heal(m_SpellData.Heal, m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
+                targetController.Life.Heal(
+                    m_Controller.StateHandler.ApplyBonusInt(m_SpellData.Heal, EStateEffectProperty.Heal, targetController, m_SpellData.Name), 
+                    m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
                 test = true;
             }
 
             if (m_SpellData.Shield > 0)
             {
-                targetController.Life.AddShield(m_SpellData.Shield, m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
+                targetController.Life.AddShield(
+                    m_Controller.StateHandler.ApplyBonusInt(m_SpellData.Shield, EStateEffectProperty.Shield, targetController, m_SpellData.Name),
+                    m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
                 test = true;
             }
 

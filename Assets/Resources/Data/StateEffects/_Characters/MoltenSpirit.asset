@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e2e82768b5485247a5beca96c51753c, type: 3}
   m_Name: MoltenSpirit
   m_EditorClassIdentifier: 
-  m_Description: 15% of heals received are converted to <b>Bonus Damage</b> for [Burn]
+  m_Description: 12% of heals received are converted to <b>Bonus Damage</b> for [Burn]
     explosion
   m_DescriptionVariables: 
   m_StateEffectType: 0
@@ -51,4 +51,4 @@ MonoBehaviour:
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel: []
   m_StateEffectScalingStacks: []
-  m_HealConversionFactor: 0.1
+  m_HealConversionFactor: 0.12

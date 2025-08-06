@@ -27,6 +27,8 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
   m_IsTrueDamage: 0
+  m_EndWithShield: 0
+  m_RefreshShield: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: 0
@@ -55,7 +57,7 @@ MonoBehaviour:
   m_IsCumulativeEffects: 1
   m_QuestThresholds:
   - RequiredStacks: 6
-    ReplacementIcon: {fileID: 0}
+    ReplacementIcon: {fileID: 21300000, guid: 513fca82b49eca64f97247b379176ed4, type: 3}
     ActivableEffects:
     - Target: 4
       Effect: Ma_EmperorOfFlames
@@ -63,7 +65,7 @@ MonoBehaviour:
       IsDeactivable: 0
     BonusStats: []
   - RequiredStacks: 12
-    ReplacementIcon: {fileID: 0}
+    ReplacementIcon: {fileID: 21300000, guid: 0e8b1b23635b86249b604b8a1f66b878, type: 3}
     ActivableEffects:
     - Target: 4
       Effect: Pr_EmperorOfFlames
