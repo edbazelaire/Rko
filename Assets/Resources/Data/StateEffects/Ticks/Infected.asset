@@ -15,9 +15,11 @@ MonoBehaviour:
   m_Description: Consume stacks of [Poison] to inflict {0} damages every {1} seconds
     for {2} seconds
   m_DescriptionVariables: 0d0000000c00000001000000
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 1
   m_VisualEffects: []
+  m_GfxEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
   m_PermanantSoundFX: {fileID: 0}
@@ -25,17 +27,23 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
-  m_IsTrueDamage: 0
+  m_IsTrueDamage: 1
+  m_EndWithShield: 0
+  m_RefreshShield: 1
   m_Priority: 0
+  m_Delay: 0
   m_Duration: 4
   m_MaxStacks: 10
   m_StackDecay: -1
+  m_StartsActivated: 1
+  m_StateEffectTriggers: []
   m_StateEffectActivations: []
   m_BonusStats:
   - StateEffectProperty: 105
     BaseValue: 0.25
     LevelScalingFactor: 0
     StackScalingFactor: 0
+    SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects: []
   m_HoldingStateEffects: []

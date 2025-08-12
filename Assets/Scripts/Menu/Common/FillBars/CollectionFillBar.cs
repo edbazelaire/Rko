@@ -167,13 +167,25 @@ namespace Menu.Common
                 return;
             }
 
-            if (Mathf.Round(m_CurrentCollection) == m_CurrentCollection && Mathf.Round(m_MaxCollection) == m_MaxCollection)
+            m_CollectionValue.text = string.Format(COLLECTION_VALUE_FORMAT, FormatValueString(m_CurrentCollection), FormatValueString(m_MaxCollection));
+        }
+
+        string FormatValueString(float value)
+        {
+            string stringValue;
+            string suffix = "";
+            if (value >= 1e6)
             {
-                m_CollectionValue.text = string.Format(COLLECTION_VALUE_FORMAT, (int)m_CurrentCollection, (int)m_MaxCollection);
-                return;
+                value /= 1e6f;
+                suffix = "M";
             }
 
-            m_CollectionValue.text = string.Format(COLLECTION_VALUE_FORMAT, m_CurrentCollection, m_MaxCollection);
+            if (Mathf.Round(value) == value)
+                stringValue = TextHandler.FormatNumericalString((int)value);
+            else
+                stringValue = value.ToString("F2");
+
+            return stringValue + suffix;
         }
 
         #endregion

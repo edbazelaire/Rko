@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9dbf55325bf68f144a0f9d26392c181b, type: 3}
   m_Name: Melting
   m_EditorClassIdentifier: 
-  m_Description: 
+  m_Description: This effects is activated every time the IceGolem has no shield.\nThe
+    IceGolem starts melting, increasing his speed and damage but also reducing his
+    resistance by a lot.
   m_DescriptionVariables: 
   m_StateEffectType: 0
   m_IsDisplayed: 1
@@ -64,7 +66,10 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
   m_IsTrueDamage: 0
+  m_EndWithShield: 0
+  m_RefreshShield: 1
   m_Priority: 0
+  m_Delay: 0
   m_Duration: -1
   m_MaxStacks: 1
   m_StackDecay: -1
@@ -85,18 +90,22 @@ MonoBehaviour:
     BaseValue: 0.5
     LevelScalingFactor: 0
     StackScalingFactor: 0
+    SpecialConditions: []
   - StateEffectProperty: 5
     BaseValue: -20
     LevelScalingFactor: 0.1
     StackScalingFactor: 0
+    SpecialConditions: []
   - StateEffectProperty: 6
     BaseValue: -1
     LevelScalingFactor: 0
     StackScalingFactor: 0
+    SpecialConditions: []
   - StateEffectProperty: 7
     BaseValue: 50
     LevelScalingFactor: 0.12
     StackScalingFactor: 1
+    SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects: []
   m_HoldingStateEffects: []

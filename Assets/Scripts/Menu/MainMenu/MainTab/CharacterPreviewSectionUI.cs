@@ -12,6 +12,7 @@ using Menu.Common.Buttons;
 using System;
 using Assets.Scripts.Managers;
 using MyBox;
+using System.Collections.Generic;
 
 namespace Menu.MainMenu
 {
@@ -239,6 +240,14 @@ namespace Menu.MainMenu
                     m_Character = CharacterBuildsCloudData.SelectedCharacter;
                 }
             }
+        }
+
+        public void LockRuneButtons(List<ERuneActivation> runesToLock)
+        {
+            m_TemplateRuneButtonMinor.SetInteractable(!runesToLock.Contains(ERuneActivation.Minor));
+            m_TemplateRuneButtonMajor.SetInteractable(!runesToLock.Contains(ERuneActivation.Major));
+            m_TemplateRuneButtonPrimal.SetInteractable(!runesToLock.Contains(ERuneActivation.Primal));
+
         }
 
         #endregion

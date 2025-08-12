@@ -22,6 +22,7 @@ public class Controller : NetworkBehaviour
 {
     #region Members      
 
+    public static Action<Controller> OnDeathEvent;
     public Action OnDestroyedEvent;
 
     // ===================================================================================
@@ -37,8 +38,9 @@ public class Controller : NetworkBehaviour
     NetworkVariable<bool>                   m_IsInitialized     = new NetworkVariable<bool>(false);
 
     // -- Server Variable
-    RuneData[] m_RuneData;
-    CharacterData m_CharacterData;
+    RuneData[]      m_RuneData;
+    CharacterData   m_CharacterData;
+    Controller      m_SpawnOwner;
 
     // -- local variables
     bool m_GameRunning = false;
@@ -71,6 +73,7 @@ public class Controller : NetworkBehaviour
     public bool             IsPlayer            => m_IsPlayer.Value;
     public ulong            PlayerId            => m_PlayerId.Value;
     public bool             IsSpawn             => (int)PlayerId >= GameManager.SPAWN_CLIENT_ID;
+    public Controller       SpawnOwner          => m_SpawnOwner;
     public bool             GameRunning         => m_GameRunning;
 
 
@@ -184,14 +187,15 @@ public class Controller : NetworkBehaviour
         m_IsInitialized.Value = true;
     }
 
-    public void InitializeSpawn(SPlayerData playerData, int team)
+    public void InitializeSpawn(SPlayerData playerData, int team, Controller spawnOwner)
     {
         if (!IsServer)
             return;
 
-        m_Team.Value = team;
-        m_IsPlayer.Value = false;
-        m_PlayerId.Value = GameManager.Instance.GetNextSpawnId();
+        m_Team.Value        = team;
+        m_IsPlayer.Value    = false;
+        m_PlayerId.Value    = GameManager.Instance.GetNextSpawnId();
+        m_SpawnOwner        = spawnOwner;
 
         InitializeCharacterData(playerData);
 
@@ -210,7 +214,7 @@ public class Controller : NetworkBehaviour
         if (!IsSpawn)
             GameUIManager.Instance.SetPlayersUI(PlayerId, team);
         else
-            AddSpawnHealthBar();
+            AddSpawnBars();
 
         // update personnal UI if is owner (and not an AI)
         if (!IsOwner || !IsPlayer)
@@ -297,7 +301,7 @@ public class Controller : NetworkBehaviour
 
         // init health and energy
         m_Life.Initialize(characterData.MaxHealth, characterData.GetInt(EStateEffectProperty.Shield, ""));
-        m_EnergyHandler.Initialize(characterData.BaseEnergy, characterData.MaxEnergy);
+        m_EnergyHandler.Initialize(characterData.BaseEnergy, characterData.MaxEnergy, characterData.PassiveEnergyGain);
         m_TriggerEffectHandler.Initialize(GetTriggerEffects(characterData));
 
         // init BehaviorTree
@@ -334,25 +338,37 @@ public class Controller : NetworkBehaviour
         }
     }
 
-    protected void AddSpawnHealthBar()
+    protected void AddSpawnBars()
     {
         // Instantiate the health bar and position it above the unit
-        PlayerBarUI healthBarPrefab = AssetLoader.Load<PlayerBarUI>("SpawnHealthBar", AssetLoader.c_SpawnUIContentPath);
-        if (healthBarPrefab == null)
+        GameObject spawnUIPrefab = AssetLoader.Load<GameObject>("SpawnUI", AssetLoader.c_SpawnUIContentPath);
+        if (spawnUIPrefab == null)
         {
             ErrorHandler.Error("Unable to load health bar for Spawn");
             return;
         }
 
         // Parent the health bar to the unit for tracking movement
-        var healthBar = GameObject.Instantiate(healthBarPrefab, transform);
-        healthBar.transform.localPosition = new Vector3(0, 1f, 0); // Adjust Y position if necessary
-        healthBar.transform.localScale *= m_GFXHandler.CharacterSize;
+        var spawnUI = Instantiate(spawnUIPrefab, transform);
+        spawnUI.transform.localPosition = new Vector3(0, 3f, 0); // Adjust Y position if necessary
+        spawnUI.transform.localScale = Vector3.one * Mathf.Clamp(10f * m_CharacterData.Size, 2f, 8f);
 
-        // init with health value 
+        // setup health bar
+        PlayerBarUI healthBar = Finder.FindComponent<PlayerBarUI>(spawnUI, "SpawnHealthBar");
         healthBar.Initialize(m_Life.Hp.Value, m_Life.MaxHp.Value);
         m_Life.Hp.OnValueChanged    += healthBar.OnValueChanged;
         m_Life.MaxHp.OnValueChanged += healthBar.OnMaxValueChanged;
+
+        // setup shield bar
+        PlayerBarUI shieldBard = Finder.FindComponent<PlayerBarUI>(spawnUI, "SpawnShieldBar");
+        shieldBard.Initialize(m_Life.FinalShield.Value, m_Life.MaxHp.Value);
+        m_Life.FinalShield.OnValueChanged += (int _, int newValue) => shieldBard.OnValueChanged(0, newValue); ;
+
+        // setup energy bar
+        PlayerBarUI energyBar = Finder.FindComponent<PlayerBarUI>(spawnUI, "SpawnEnergyBar");
+        energyBar.Initialize(m_EnergyHandler.Energy.Value, m_EnergyHandler.MaxEnergy.Value);
+        m_EnergyHandler.Energy.OnValueChanged    += energyBar.OnValueChanged;
+        m_EnergyHandler.MaxEnergy.OnValueChanged += energyBar.OnMaxValueChanged;
     }
 
     public override void OnDestroy()
@@ -394,6 +410,14 @@ public class Controller : NetworkBehaviour
             foreach (var powerUp in m_PlayerData.Value.PowerUps)
             {
                 SRunePower data = SpellLoader.GetPowerUp(powerUp.ToString(), m_CharacterLevel.Value);
+                
+                // CHECK : Power up not already in Runes
+                if (Enum.TryParse(data.RuneName, out ERune rune) && m_PlayerData.Value.BuildData.Runes.Contains(rune))
+                {
+                    ErrorHandler.Warning("PowerUp " + data.Name + " was already in runes - skipped");
+                    continue;
+                }
+
                 if (data.BonusStats != null)
                     bonusStats.AddRange(data.BonusStats);
             }
@@ -431,6 +455,14 @@ public class Controller : NetworkBehaviour
             foreach (var powerUp in m_PlayerData.Value.PowerUps)
             {
                 SRunePower data = SpellLoader.GetPowerUp(powerUp.ToString(), m_CharacterLevel.Value);
+
+                // CHECK : Power up not already in Runes
+                if (Enum.TryParse(data.RuneName, out ERune rune) && m_PlayerData.Value.BuildData.Runes.Contains(rune))
+                {
+                    ErrorHandler.Warning("PowerUp " + data.Name + " was already in runes - skipped");
+                    continue;
+                }
+
                 list.AddRange(data.TriggerEffects);
             }
         }

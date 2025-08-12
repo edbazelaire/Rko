@@ -92,7 +92,7 @@ namespace Data.DataStructures.StateEffectSubStructures
         /// <returns></returns>
         public static bool IsUnique(string specialCondition, out string formatedName)
         {
-            if (specialCondition.StartsWith("=="))
+            if (!specialCondition.IsNullOrEmpty() && specialCondition.StartsWith("=="))
             {
                 formatedName = specialCondition.Replace("==", "");
                 return true;

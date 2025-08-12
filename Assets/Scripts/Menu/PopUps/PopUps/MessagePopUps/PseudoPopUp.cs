@@ -86,7 +86,6 @@ namespace Menu.PopUps.PopUps.MessagePopUps
             RecurrentPopupManager.Instance.Diseable(EPopUpState.PseudoPopUp);
 
             base.OnValidateButton();
-            Exit();
         }
 
         #endregion

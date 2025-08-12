@@ -1,5 +1,7 @@
 ﻿using Tools;
 using Unity.Netcode;
+using Unity.VisualScripting;
+using Unity.VisualScripting.FullSerializer;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,6 +17,13 @@ namespace Game.Character
         NetworkVariable<int> m_Energy       = new(0);
 
         // ===================================================================================
+        // Local Variables
+        Controller m_Controller;
+        int m_PassiveEnergy = 0;
+        float m_PassiveEnergyTick = 1f;
+        float m_PassiveEnergyTimer = 0f;
+
+        // ===================================================================================
         // PUBLIC ACCESSORS 
         /// <summary> Current health points </summary>
         public NetworkVariable<int> Energy => m_Energy;
@@ -27,13 +36,34 @@ namespace Game.Character
 
         #region Initialization
 
-        public void Initialize(int energy, int maxEnergy)
+        public void Initialize(int energy, int maxEnergy, int passiveEnergy)
         {
             if (!IsServer)
                 return;
 
             m_MaxEnergy.Value = maxEnergy;
             m_Energy.Value = energy;
+            m_PassiveEnergy = passiveEnergy;
+
+            m_Controller = Finder.FindComponent<Controller>(gameObject);
+        }
+
+        #endregion
+
+
+        #region Update
+
+        private void Update()
+        {
+            if (!IsServer)
+                return;
+
+            m_PassiveEnergyTimer += Time.deltaTime;
+            if (m_PassiveEnergyTimer > m_PassiveEnergyTick)
+            {
+                m_PassiveEnergyTimer = 0f;
+                AddEnergy(m_PassiveEnergy);
+            }
         }
 
         #endregion
@@ -51,6 +81,12 @@ namespace Game.Character
             if (!IsServer)
                 return;
 
+            if (energy == 0)
+                return;
+
+            if (!m_Controller.StateHandler.CanGainEnergy)
+                return;
+            
             // apply energy (min maxed between 0 and max energy)    
             m_Energy.Value = Mathf.Clamp(m_Energy.Value + energy, 0, m_MaxEnergy.Value);
         }

@@ -11,6 +11,10 @@ namespace Menu
         #region Members
 
         // =======================================================================================
+        // Actions
+        public Action<string> TabSelectedEvent;
+
+        // =======================================================================================
         // GameObjects & Components
         protected const string      c_TabButtonsContainer       = "TabButtonsContainer";
         protected const string      c_TabButtonSuffix           = "Button";
@@ -213,6 +217,9 @@ namespace Menu
 
             // activate new window tab
             m_CurrentTabContent.Activate(true);
+
+            // call event that the tab was selected
+            TabSelectedEvent?.Invoke(tabIndex.ToString());
         }
 
         /// <summary>

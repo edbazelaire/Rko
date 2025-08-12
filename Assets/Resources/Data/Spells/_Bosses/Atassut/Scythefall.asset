@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Scythefall
   m_EditorClassIdentifier: 
   m_Rarety: 2
-  m_Description: 
+  m_Description: Atassut throws her Scythe, which des [Damage] and applies [IceBreak]
+    and [Cursed] stacks.\nThe Scythe leaves a field of dark energy on the ground
+    that applies [Frost], [Cursed] and a [Slow].\n\nIf the Scythe hits a VoidMine,
+    Atassut is stunned and takes damage.
   m_DescriptionVariables: []
   m_SpellElements: 0200000004000000
   Linked: 1
@@ -138,7 +141,7 @@ MonoBehaviour:
     m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
-    Value: 0.1
+    Value: 0.12
     ScalingType: 0
     RoundingType: 0
     ScalingTresholds: []

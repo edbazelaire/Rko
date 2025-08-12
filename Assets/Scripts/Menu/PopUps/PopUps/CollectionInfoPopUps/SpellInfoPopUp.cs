@@ -130,6 +130,9 @@ namespace Menu.PopUps
 
             if (key == "MaxIndexThreshold")
                 return;
+
+            if (key == "Spawns")
+                return;
             
             base.SetUpInfoRow(container, key, value, newDataValue, scalingDirection);
         }
@@ -138,8 +141,9 @@ namespace Menu.PopUps
         {
             var spellInfo = m_Data.GetInfo();
             List<SStateEffectData> effectsData = spellInfo.ContainsKey("Effects") ? spellInfo["Effects"] as List<SStateEffectData> : new List<SStateEffectData>();
+            List<CharacterData> spawnsData = spellInfo.ContainsKey("Spawns") ? spellInfo["Spawns"] as List<CharacterData> : new List<CharacterData>();
 
-            if (effectsData.Count == 0)
+            if (effectsData.Count == 0 && spawnsData.Count == 0)
             {
                 m_StateEffectsInfoRow.gameObject.SetActive(false);
                 return;
@@ -147,6 +151,7 @@ namespace Menu.PopUps
 
             m_StateEffectsInfoRow.gameObject.SetActive(true);
             m_StateEffectsInfoRow.Initialize(effectsData, m_Level);
+            m_StateEffectsInfoRow.AddSpawnData(spawnsData);
         }
 
         protected override void RefreshUpgradeButtonUI()

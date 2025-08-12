@@ -33,7 +33,7 @@ public class TaskMove : BaseTask
     protected Coroutine m_CurrentCoroutine;     // current active coroutine
 
     // -- Serializable data (todo)
-    protected float m_CheckObstaclesSize        = 0.5f;
+    protected float m_CheckObstaclesSize        = 1f;
     protected float m_CheckZoneSize             = 1f;
 
     // -- continue data
@@ -138,26 +138,46 @@ public class TaskMove : BaseTask
     /// <summary>
     /// Check if there is an obstacle on the ground that prevents movement on the left or the right
     /// </summary>
-    /// <param name="m_AllowedMovements"></param>
     protected virtual void CheckObstacles()
     {
         if (m_AllowedMovements.Count == 0)
             return;
 
-        // duplicate array to be able to remove while going threw
+        // duplicate array to be able to remove while going through
         var allowedMovement = m_AllowedMovements.ToArray();
-         
-        // for each remaining allowed movements, check if there is obstacles in that direction
+
+        // Récupère le collider depuis le Controller -> GFXHandler
+        var col = m_Controller?.GFXHandler?.Collider;
+
+        // Marge de sécurité pour éviter les collisions "collées"
+        const float skin = 0.1f;
+
+        // Largeur monde du collider (avec scale), fallback sur CharacterSize si besoin
+        float colliderWidthWorld = (col != null)
+            ? col.bounds.size.x                      // largeur complète (gauche->droite)
+            : m_Controller.GFXHandler.CharacterSize; // fallback si pas de collider
+
+        // Option : travailler en "demi-largeur"
+        float halfWidth = colliderWidthWorld * 0.5f;
+
         foreach (int moveX in allowedMovement)
         {
-            Collider2D[] colliders = CollisionChecker.GetCollidersInDistance(m_Controller.transform.position.x, moveX * m_CheckObstaclesSize * m_Controller.GFXHandler.CharacterSize, CollisionChecker.OBSTACLES_LAYERS);
-            if (colliders.Length > 0)
+            // Si tu préfères baser le check sur la largeur complète, utilise colliderWidthWorld à la place.
+
+            Collider2D[] colliders = CollisionChecker.GetCollidersInDistance(
+                m_Controller.transform.position.x,
+                moveX * (m_CheckObstaclesSize * halfWidth + skin),
+                CollisionChecker.OBSTACLES_LAYERS
+            );
+
+            if (colliders != null && colliders.Length > 0)
             {
-                ErrorHandler.Log("      -- TaskMove CheckObstacles() : removing movement " + moveX, ELogTag.AITaskMove);
+                ErrorHandler.Log($"      -- TaskMove CheckObstacles() : removing movement {moveX}", ELogTag.AITaskMove);
                 m_AllowedMovements.Remove(moveX);
             }
         }
     }
+
 
     /// <summary>
     /// Check if there is a zone spell on the ground that prevents movement on the left or the right

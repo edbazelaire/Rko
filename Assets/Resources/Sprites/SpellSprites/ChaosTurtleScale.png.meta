@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: ffe3c01768a9ff7468c5e7912eae2168
+guid: 077cf83f371c2a94f8dd91276db2ac81
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -6961874877514799340
-    second: ChimicalSlime_0
-  - first:
-      213: 453540400998769851
-    second: ChimicalSlime_1
+      213: 6839173159022544823
+    second: ChaosTurtleScale_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,11 +46,11 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 9
-  spritePivot: {x: 0.51426023, y: 0.22667867}
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
@@ -129,43 +126,22 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ChimicalSlime_0
+      name: ChaosTurtleScale_0
       rect:
         serializedVersion: 2
-        x: 100
-        y: 92
-        width: 308
-        height: 276
+        x: 14
+        y: 141
+        width: 474
+        height: 233
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 417a30b3fa3726f90800000000000000
-      internalID: -6961874877514799340
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ChimicalSlime_1
-      rect:
-        serializedVersion: 2
-        x: 332
-        y: 354
-        width: 15
-        height: 15
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: bb4e1dc779c4b4600800000000000000
-      internalID: 453540400998769851
+      spriteID: 7b7cceca0cf99ee50800000000000000
+      internalID: 6839173159022544823
       vertices: []
       indices: 
       edges: []
@@ -173,16 +149,14 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
-    internalID: 1537655665
+    spriteID: 
+    internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable:
-      ChimicalSlime_0: -6961874877514799340
-      ChimicalSlime_1: 453540400998769851
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

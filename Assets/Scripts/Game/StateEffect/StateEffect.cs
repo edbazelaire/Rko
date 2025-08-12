@@ -34,12 +34,13 @@ namespace Game.Spells
         // =========================================================================================
         // SERIALIZED DATA
         [Header("Description")]
-        [SerializeField] protected      string                      m_Description = "";
-        [SerializeField] protected      List<EStateEffectProperty>  m_DescriptionVariables = new List<EStateEffectProperty>();
-        [SerializeField] protected      EStateEffectType            m_StateEffectType = EStateEffectType.Default;
+        [SerializeField] protected      string                      m_Description           = "";
+        [SerializeField] protected      List<EStateEffectProperty>  m_DescriptionVariables  = new List<EStateEffectProperty>();
+        [SerializeField] protected      int                         m_NStacksInDescription  = 1;
+        [SerializeField] protected      EStateEffectType            m_StateEffectType       = EStateEffectType.Default;
 
         [Header("Graphics")]
-        [SerializeField] protected      bool                        m_IsDisplayed = true;
+        [SerializeField] protected      bool                        m_IsDisplayed           = true;
         [SerializeField] protected      List<SpellPrefabSpawn>      m_VisualEffects;
         [SerializeField] protected      List<StateEffectSpawnGFX>   m_GfxEffects;
         [SerializeField] protected      EAnimation                  m_Animation;
@@ -119,11 +120,13 @@ namespace Game.Spells
         // =========================================================================================
         // DEPENDENT MEMBERS  
         public virtual EStateEffectType StateEffectType     => m_StateEffectType;
+        public int                      NStacksInDescription => m_NStacksInDescription;
         public List<SStateEffectData>   SubStateEffects     => m_SubStateEffects;
         public Controller               Controller          => m_Controller;
         public Controller               Caster              => m_Caster;
         public bool                     IsActivated         => m_IsActivated;
         public bool                     IsDisplayed         => m_IsDisplayed;
+        public bool                     IsTrueDamage         => m_IsTrueDamage;
         public bool                     IsUnique            => StateEffectType == EStateEffectType.Incarnation;
         public List<StateEffectSpawnGFX> GfxEffects         => m_GfxEffects;
         public List<SpellPrefabSpawn>   VisualEffects       => m_VisualEffects;
@@ -166,10 +169,6 @@ namespace Game.Spells
         /// <returns></returns>
         public virtual bool Initialize(Controller controller, Controller caster, SStateEffectData? stateEffectData = null, int stacks = 1)
         {
-            if (StateEffectName == "21")
-                Debug.LogWarning("StateEffectName : 21 ==========================");
-            Debug.Log("Initialize() " + StateEffectName + " with " + stacks + " stacks");
-
             if (controller == null)
             {
                 ErrorHandler.Error("Provided Controller is null");
@@ -177,7 +176,7 @@ namespace Game.Spells
             }
 
             m_Controller    = controller;
-            m_Caster        = caster;
+            m_Caster        = caster.IsSpawn && caster.SpawnOwner != null ? caster.SpawnOwner : caster;
             m_IsStarted     = false;                // on init - reset is started 
             m_IsActivated   = false;                // initialize activated to false
             m_IsOver        = false;                // initialize activated to false
@@ -354,9 +353,7 @@ namespace Game.Spells
             if (m_AudioSource != null)
                 Destroy(m_AudioSource);
 
-            if (m_Controller == null)
-                return;
-
+            // remove listeners
             UnRegisterListeners();
         }
 
@@ -434,6 +431,9 @@ namespace Game.Spells
         /// <param name="level"></param>
         public virtual void Refresh(int stacks = 0, int level = 0)
         {
+            if (m_Controller == null)
+                return;
+
             // if stacks > 0 -> just refresh timer
             if (m_Stacks > 0 && level > 0)
             {
@@ -444,7 +444,7 @@ namespace Game.Spells
             CallStateEffectEvent(EStateEffectEvent.OnRefreshed, stacks, m_Controller.PlayerId, m_Caster.PlayerId);
         }
 
-        protected virtual void SetStacks(int stacks)
+        public virtual void SetStacks(int stacks)
         {
             if (m_MaxStacks > 0)
                 m_Stacks = Math.Clamp(stacks, 0, m_MaxStacks);
@@ -652,7 +652,6 @@ namespace Game.Spells
                     m_SubStateEffects[i] = stateEffect;
                 }
             }
-            
         }
 
         public virtual void SetParent(string parent)
@@ -1144,15 +1143,21 @@ namespace Game.Spells
                 m_Caster.EnergyHandler.AddEnergy(value);
 
             // ================================================================================================
+            // ENERGY                   - check if should add energy
+            value = GetInt(EStateEffectProperty.Hp, stacks);
+            if (value != 0)
+                m_Controller.Life.AddHp(value);
+
+            // ================================================================================================
             // DAMAGE                   -  check if should damage the target
             value = GetInt(EStateEffectProperty.Damage, stacks);
             if (value != 0)
             {
                 // add bonus damage IF there are special "bonus damage" for this effect (StateEffect dont use common bonus damage)
-                value = m_Caster.StateHandler.ApplyBonusDamage(value, m_Controller, specialCondition: SBonusStats.AsUnique(StateEffectName));
+                value = m_Caster.StateHandler.ApplyBonusTickDamage(value, m_Controller, specialCondition: SBonusStats.AsUnique(StateEffectName));
 
                 // hit target
-                m_Controller.Life.Hit(value, casterId: m_Caster.PlayerId, source: m_Parent, spellCategory: ESpellCategory.Direct, ignoreRes: m_IsTrueDamage);
+                value = m_Controller.Life.Hit(value, casterId: m_Caster.PlayerId, source: m_Parent, spellCategory: ESpellCategory.Direct, ignoreRes: m_IsTrueDamage);
 
                 // apply lifesteal (on caster)
                 var lifesteal = Mathf.Max(0f, GetInt(EStateEffectProperty.LifeSteal) + m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal, m_Controller, specialCondition: SBonusStats.AsUnique(StateEffectName)) - 1);
@@ -1287,7 +1292,9 @@ namespace Game.Spells
 
         protected virtual void UnRegisterListeners()
         {
-            m_Controller.StateHandler.HoldingStateEffects.OnListChanged -= RecheckIsHolding;
+            if (m_Controller != null)
+                m_Controller.StateHandler.HoldingStateEffects.OnListChanged -= RecheckIsHolding;
+            
             UnRegisterTriggers();
 
             if (m_StateEffectActivations.Count() > 0)
@@ -1336,7 +1343,7 @@ namespace Game.Spells
             foreach (SStateEffectActivation stateEffectActivation in m_StateEffectActivations)
             {
                 // CHECK : comes from the correct caster
-                if (casterId != m_Caster.PlayerId)
+                if (GameManager.Instance.GetPlayer(casterId).Team != m_Caster.Team)
                     return;
 
                 // CHECK : does the provided stateEffect have one of activation effect

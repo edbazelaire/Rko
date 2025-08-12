@@ -635,14 +635,14 @@ namespace Data
             if (!Linked) 
                 return m_Rarety;
 
-            var character = CharacterLoader.GetCharacterWithSpell(Spell);
-            if (character == null)
+            string character = CharacterLoader.GetCharacterNameWithSpell(Spell);
+            if (character.IsNullOrEmpty())
             {
                 ErrorHandler.Error("Unable to find character with spell " + Spell);
                 return ERarety.Common;
             }
 
-            var charData = CharacterLoader.GetCharacterData(character.Value);
+            var charData = CharacterLoader.GetCharacterData(character);
             if (charData.AutoAttack == Spell)
                 return ERarety.Common;
             if (charData.SpecialAbility == Spell)

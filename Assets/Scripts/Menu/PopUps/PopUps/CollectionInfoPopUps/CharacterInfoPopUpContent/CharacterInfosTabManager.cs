@@ -6,6 +6,7 @@ namespace Menu.PopUps
     public enum ECharacterInfosTabs
     {
         Infos,
+        Spells,
         Description
     }
 

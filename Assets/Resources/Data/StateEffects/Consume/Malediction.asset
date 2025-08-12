@@ -15,6 +15,7 @@ MonoBehaviour:
   m_Description: Consume a [Cursed] stacks to inflict {0} damages for each stack
     consumed. Also apply a silence and a slow for {1} seconds
   m_DescriptionVariables: 0b00000001000000
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 1
   m_VisualEffects: []
@@ -27,9 +28,11 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
   m_IsTrueDamage: 1
+  m_EndWithShield: 0
+  m_RefreshShield: 0
   m_Priority: 0
   m_Delay: 0
-  m_Duration: 0.1
+  m_Duration: 0.2
   m_MaxStacks: 100
   m_StackDecay: -1
   m_StartsActivated: 1
@@ -37,13 +40,15 @@ MonoBehaviour:
   m_StateEffectActivations: []
   m_BonusStats:
   - StateEffectProperty: 11
-    BaseValue: 5
-    LevelScalingFactor: 0.12
+    BaseValue: 10
+    LevelScalingFactor: 0.1
     StackScalingFactor: 1
+    SpecialConditions: []
   - StateEffectProperty: 3
     BaseValue: -0.3
     LevelScalingFactor: 0.05
     StackScalingFactor: 0
+    SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects: []
   m_HoldingStateEffects: []

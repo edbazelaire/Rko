@@ -156,7 +156,7 @@ namespace Data
             } 
             
             if (SpellLoader.IsStateEffect(m_Effect))
-                return "Each " + Mathf.Floor(Ratio) + " damage blocked, apply a stack of " + TextHandler.FormatStateEffectIcon(m_Effect, true) + " on " + (m_Target == ESpellTarget.Self ? "your character" : "your enemy") + (MaxValue > 0 ? " (maxed at " + (int)Mathf.Round(MaxValue) + " stacks)" : "");
+                return "Apply " + Ratio * 100 + "% of damage blocked as stack of " + TextHandler.FormatStateEffectIcon(m_Effect, true) + " on " + (m_Target == ESpellTarget.Self ? "your character" : "your enemy") + (MaxValue > 0 ? " (maxed at " + (int)Mathf.Round(MaxValue) + " stacks)" : "");
             
             if (SpellLoader.IsSpell(m_Effect))
             {

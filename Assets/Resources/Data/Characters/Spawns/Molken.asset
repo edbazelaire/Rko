@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
+  m_Name: Molken
+  m_EditorClassIdentifier: 
+  m_Rarety: 0
+  m_Description: 'Every time a [Burn] effect is consummed, the Molken gains Energy.
+    On reaching [MaxEnergy] energy, they jump on the enemy to fufill there 2 minutes
+    life span goal : Explode on something yelling "Wazaaah !"'
+  m_DescriptionVariables: []
+  m_SpellElements: 
+  m_AutoAttack: Sparks
+  m_SpecialAbility: 
+  m_Ultimate: Wazaaah
+  Size: 0.3
+  BaseSpeed: 0.4
+  BaseHealth: 200
+  MaxEnergy: 35
+  BaseEnergy: 0
+  PassiveEnergyGain: 1
+  IsStructure: 0
+  HealthScaleFactor: 0.1
+  CharacterStatScaling: []
+  m_SpecialPowers:
+  - Description: 
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: BornedToBurn
+      OverridingData: []
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+    m_BonusStats: []

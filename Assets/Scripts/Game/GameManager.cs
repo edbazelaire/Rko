@@ -765,6 +765,10 @@ namespace Game
         {
             Controller returnedController = null;
 
+            var controllers = GetAllTauntingEnemies(team, spawnIncluded: true);
+            if (controllers.Count > 0)
+                return controllers[0];
+
             foreach (Controller controller in m_Controllers.Values)
             {
                 if (controller.Team == team)
@@ -808,10 +812,20 @@ namespace Game
 
         public List<Controller> GetAllEnemies(int team, bool spawnIncluded = true)
         {
+            var controllers = m_Controllers.Values.Where(controller => controller.Team != team).ToList();
             if (spawnIncluded)
-                return m_Controllers.Values.Where(controller => controller.Team != team).ToList();
+                controllers.AddRange(m_Spawns.Values.Where(controller => controller.Team != team).ToList());
 
-            return m_Controllers.Values.Where(controller => controller.Team != team && ! controller.IsSpawn).ToList();
+            return controllers;
+        }
+
+        public List<Controller> GetAllTauntingEnemies(int team, bool spawnIncluded = true)
+        {
+            var controllers = GetAllEnemies(team, spawnIncluded);
+            if (controllers.Count == 0) 
+                return controllers;
+
+            return controllers.Where(controller => controller.StateHandler.IsTaunting && ! controller.StateHandler.IsUnTargetable).ToList();
         }
 
         public List<Controller> GetAllAllies(int team)

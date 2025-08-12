@@ -169,7 +169,8 @@ namespace Game.Spells
             // initialize player data
             spawnController.InitializeSpawn(
                 playerData: CreatePlayerData(spawnElement),
-                team:       m_Controller.Team
+                team:       m_Controller.Team,
+                spawnOwner: m_Controller
             );
 
             // setup Kill coroutine if has duration
@@ -194,7 +195,8 @@ namespace Game.Spells
                 playerName:     "",
                 characterLevel: Math.Max(1, m_SpellData.Level + spawnElement.BonusLevel),
                 character:      spawnElement.CharacterName,
-                isPlayer:       false
+                isPlayer:       false,
+                botData:        new SBotData()
             );
         }
 

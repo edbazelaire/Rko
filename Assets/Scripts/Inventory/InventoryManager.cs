@@ -1,6 +1,7 @@
 ﻿using Analytics.Events;
 using Data.GameManagement;
 using Enums;
+using Game.Loaders;
 using Save;
 using System;
 using System.Security.Policy;
@@ -61,6 +62,12 @@ namespace Inventory
 
         public static bool CanBuy(Enum collectable)
         {
+            if (collectable is EBoss)
+                return false;
+
+            if (collectable is ESpawn)
+                return false;
+
             SPriceData priceData = ShopManagementData.GetPrice(collectable);
             return CanBuy((int)priceData.Price, priceData.Currency);
         }

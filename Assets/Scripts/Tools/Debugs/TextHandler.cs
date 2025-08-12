@@ -1,20 +1,16 @@
 ﻿using Data;
 using Data.DataStructures;
 using Data.DataStructures.CharacterSubStructures;
-using Data.DataStructures.StateEffectSubStructures;
-using Data.GameManagement;
 using Enums;
 using Game.Loaders;
 using Game.Spells;
 using Game.UI;
-using Managers.Monetization.IAP;
 using MyBox;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using Unity.VisualScripting;
@@ -36,6 +32,7 @@ namespace Tools
             EStateEffectProperty.Tick.ToString(),
             EStateEffectProperty.Level.ToString(),
 
+            ESpellProperty.Cooldown.ToString(),
             ESpellProperty.Size.ToString(),
             ESpellProperty.Delay.ToString(),
             ESpellProperty.DelayBetweenLaunches.ToString(),
@@ -205,7 +202,7 @@ namespace Tools
 
         public static string FormatPropertyValue(float value, string propertyName)
         {
-            if (CharacterData.CheckIsInt(propertyName))
+            if (CharacterData.CheckIsInt(propertyName) && ! (value > 0 && value < 1))
                 return value.ToString("0");
 
             if (CharacterData.CheckIsPercentageValue(propertyName))
@@ -417,6 +414,42 @@ namespace Tools
 
         #region Replace Token
 
+        /// <summary>
+        /// Convert a description variable into a string implemented into the description
+        /// </summary>
+        /// <returns></returns>
+        public static string ReplaceProperties(string description, Dictionary<string, object> infos, CollectableData data)
+        {
+            // Matches patterns like [Property] or [Property.SpecialCondition]
+            string pattern = @"\[(\w+)\]";
+
+            return Regex.Replace(description, pattern, match =>
+            {
+                string propertyStr = match.Groups[1].Value;
+                string specialCondition = match.Groups[2].Success ? match.Groups[2].Value : null;
+
+                if (propertyStr == "Level")
+                {
+                    return data.Level.ToString();
+                }
+                else if (! infos.ContainsKey(propertyStr))
+                {
+                    return match.Value; // leave the original text unchanged
+                }
+
+                object value = infos[propertyStr];
+                data.IsScalingProperty(propertyStr, out EScalingDirection scaling);
+
+                return FormatPropertyIcon(propertyStr, value, true, withPropertyName: false, scaling: scaling);
+            });
+        }
+
+        /// <summary>
+        /// Replace propert
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="stateEffect"></param>
+        /// <returns></returns>
         public static string ReplaceStateEffectProperties(string text, StateEffect stateEffect)
         {
             // Matches patterns like [Property] or [Property.SpecialCondition]
@@ -497,6 +530,17 @@ namespace Tools
                 string token = $"[TriggerEffect.{i}]";
                 if (text.Contains(token))
                     text = text.Replace(token, GetTriggerEffectDescription(triggerEffects[i]));
+            }
+            return text;
+        }
+
+        public static string ReplaceSpawnTokens(string text, List<CharacterData> spawns)
+        {
+            for (int i = 0; i < spawns.Count; i++)
+            {
+                string token = $"[Spawn.{i}]";
+                if (text.Contains(token))
+                    text = text.Replace(token, spawns[i].GetDescription());
             }
             return text;
         }

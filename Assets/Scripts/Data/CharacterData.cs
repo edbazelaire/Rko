@@ -19,8 +19,12 @@ namespace Data
             EStateEffectProperty.MaxStacks,
             EStateEffectProperty.Shield,
             EStateEffectProperty.ResistanceFix,
+            EStateEffectProperty.ResistanceTick,
             EStateEffectProperty.Damage,
             EStateEffectProperty.Heal,
+            EStateEffectProperty.Energy,
+            EStateEffectProperty.MaxEnergy,
+            EStateEffectProperty.PassiveEnergyGain,
             EStateEffectProperty.HealReduction,
             EStateEffectProperty.BonusDamage,
             EStateEffectProperty.BonusExecutionDamage,
@@ -46,12 +50,13 @@ namespace Data
         [SerializeField] protected string   m_Ultimate;
 
         [Header("Stats")]
-        public float            Size            = 1f;
-        public float            BaseSpeed       = 1f;
-        public int              BaseHealth      = 1000;
-        public int              MaxEnergy       = 100;
-        public int              BaseEnergy      = 10;
-        public bool             IsStructure     = false;
+        public float            Size                = 1f;
+        public float            BaseSpeed           = 1f;
+        public int              BaseHealth          = 1000;
+        public int              MaxEnergy           = 100;
+        public int              BaseEnergy          = 10;
+        public int              PassiveEnergyGain   = 1;
+        public bool             IsStructure         = false;
 
         [Header("Bonus Stats")]
         [SerializeField] public float           HealthScaleFactor = 0.1f;
@@ -66,7 +71,7 @@ namespace Data
         protected override Type m_EnumType  => typeof(ECharacter);
         public ECharacter Character         => (ECharacter)Id;
         public ESpell AutoAttack            => ParseSpell(m_AutoAttack);
-        public ESpell SpecialAbility        => ParseSpell( m_SpecialAbility);
+        public ESpell SpecialAbility        => ParseSpell(m_SpecialAbility);
         public ESpell Ultimate              => ParseSpell(m_Ultimate);
         public int MaxHealth                => (int)Math.Round(BaseHealth * Math.Pow(1 + HealthScaleFactor, m_Level - 1)) + (int)GetValue(EStateEffectProperty.Hp, "");
         public float Speed                  => BaseSpeed + GetValue(EStateEffectProperty.SpeedBonus, "");
@@ -216,6 +221,13 @@ namespace Data
 
             infosDict.Add("Health", MaxHealth);
             infosDict.Add("MovementSpeed", Speed);
+
+            if (MaxEnergy > 0)
+            {
+                infosDict.Add(EStateEffectProperty.MaxEnergy.ToString(), MaxEnergy);
+                if (PassiveEnergyGain > 0)
+                    infosDict.Add(EStateEffectProperty.PassiveEnergyGain.ToString(), PassiveEnergyGain);
+            }
 
             foreach (SCharacterStatScaling data in CharacterStatScaling)
             {

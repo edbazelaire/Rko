@@ -73,7 +73,7 @@ namespace Game.UI.EndGameUI
             // select a rarety for the PowerUps
             var runeActivation = ArenaManagementData.SelectRandomActivation(ProgressionCloudData.CurrentArena.Level - 1);
 
-            List<string> usedPowerUpData = new();       // init list of already used power up data
+            List<string> usedPowerUpData = ProgressionCloudData.CurrentArena.GetActivePowerUps();       // init list of already used power up data
             var template = AssetLoader.LoadPowerUpItem(runeActivation);  // load template of PowerUpItem
             for (int i = 0; i < NUM_POWER_UPS; i++)
             {

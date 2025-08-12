@@ -71,7 +71,6 @@ namespace Menu.PopUps.PopUps.MessagePopUps
             }
 
             base.OnValidateButton();
-            Exit();
         }
 
         #endregion

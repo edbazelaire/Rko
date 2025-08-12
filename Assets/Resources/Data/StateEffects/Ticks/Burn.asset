@@ -15,6 +15,7 @@ MonoBehaviour:
   m_Description: Burn the enemy, inflicting {0} damages every {1} seconds for {2}
     seconds.\nWhen the [Burn] is consumed, explodes for {3} damages
   m_DescriptionVariables: 0d0000000c000000010000006c000000
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 1
   m_VisualEffects: []
@@ -26,7 +27,9 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
-  m_IsTrueDamage: 1
+  m_IsTrueDamage: 0
+  m_EndWithShield: 0
+  m_RefreshShield: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: 5
@@ -42,7 +45,7 @@ MonoBehaviour:
     StackScalingFactor: 1
     SpecialConditions: []
   - StateEffectProperty: 108
-    BaseValue: 50
+    BaseValue: 65
     LevelScalingFactor: 0.1
     StackScalingFactor: 1
     SpecialConditions: []

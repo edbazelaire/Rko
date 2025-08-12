@@ -84,7 +84,21 @@ public class Life : NetworkBehaviour
         }
 
         DiedEvent?.Invoke();
+        Controller.OnDeathEvent?.Invoke(m_Controller);
         return true;
+    }
+
+
+    /// <summary>
+    /// Increase Max HP
+    /// </summary>
+    /// <param name="hp"></param>
+    public void AddHp(int hp)
+    {
+        m_MaxHp.Value += hp;
+        m_Hp.Value += hp;
+
+        Debug.LogWarning($"Adding {hp} hp : new hp = {m_Hp.Value} / {m_MaxHp.Value}");
     }
 
     /// <summary>
@@ -108,7 +122,7 @@ public class Life : NetworkBehaviour
         }
 
         // calculate damages after resistance
-        damage = ignoreRes ? damage : m_Controller.StateHandler.ApplyResistance(damage);
+        damage = ignoreRes ? damage : m_Controller.StateHandler.ApplyResistance(damage, spellCategory);
 
         // check provided value
         if (damage <= 0)

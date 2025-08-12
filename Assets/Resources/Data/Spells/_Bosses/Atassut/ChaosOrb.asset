@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: ChaosOrb
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 
+  m_Description: "A volatile sphere of void\u2011frost erupts on contact, dealing
+    [Damage] damage and inflicting [Malediction]."
   m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 1
@@ -87,8 +88,8 @@ MonoBehaviour:
   m_Size: 1.5
   TriggerPlayer: 1
   EnemyStateEffects:
-  - StateEffect: 27
-    Stacks: 5
+  - StateEffect: 18
+    Stacks: 10
     BonusStacksPerLevel: 0
     OverridingProperties: []
   AllyStateEffects: []

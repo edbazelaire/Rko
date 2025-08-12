@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bec91e441d966e438d35c0133adae84, type: 3}
   m_Name: AncientAegis
   m_EditorClassIdentifier: 
-  m_Description: Gain {0} resistance fix
-  m_DescriptionVariables: 05000000
+  m_Description: 'Gain [ResistanceFix] resistance and [ResistanceTick] resistance
+    to dots '
+  m_DescriptionVariables: 
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 1
   m_VisualEffects: []
@@ -26,6 +28,8 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
   m_IsTrueDamage: 0
+  m_EndWithShield: 0
+  m_RefreshShield: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: -1
@@ -45,6 +49,11 @@ MonoBehaviour:
   m_StateEffectActivations: []
   m_BonusStats:
   - StateEffectProperty: 5
+    BaseValue: 3
+    LevelScalingFactor: 0.1
+    StackScalingFactor: 0
+    SpecialConditions: []
+  - StateEffectProperty: 26
     BaseValue: 3
     LevelScalingFactor: 0.1
     StackScalingFactor: 0

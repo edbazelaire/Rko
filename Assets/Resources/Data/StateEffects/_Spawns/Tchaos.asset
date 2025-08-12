@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bec91e441d966e438d35c0133adae84, type: 3}
+  m_Name: Tchaos
+  m_EditorClassIdentifier: 
+  m_Description: 
+  m_DescriptionVariables: 
+  m_StateEffectType: 0
+  m_IsDisplayed: 1
+  m_VisualEffects: []
+  m_GfxEffects: []
+  m_Animation: 4
+  m_OnApplySoundFX: {fileID: 0}
+  m_PermanantSoundFX: {fileID: 0}
+  m_ConsumeState: 0
+  m_DefaultState: 0
+  m_IsInstantanious: 0
+  m_IsConsumedOnEnd: 0
+  m_IsTrueDamage: 0
+  m_EndWithShield: 1
+  m_RefreshShield: 1
+  m_Priority: 0
+  m_Delay: 0
+  m_Duration: -1
+  m_MaxStacks: 1
+  m_StackDecay: -1
+  m_StartsActivated: 1
+  m_StateEffectTriggers: []
+  m_StateEffectActivations: []
+  m_BonusStats:
+  - StateEffectProperty: 4
+    BaseValue: 500
+    LevelScalingFactor: 0.1
+    StackScalingFactor: 0
+    SpecialConditions: []
+  m_StatConversions: []
+  m_SubStateEffects:
+  - StateEffect: 28
+    Stacks: 1
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
+  - StateEffect: 100002
+    Stacks: 1
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
+  - StateEffect: 100004
+    Stacks: 1
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
+  m_HoldingStateEffects: []
+  m_OnStartStateEffect: []
+  m_OnEndStateEffect: []
+  m_StateEffectScalingLevel: []
+  m_StateEffectScalingStacks: []
