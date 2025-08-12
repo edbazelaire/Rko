@@ -21,6 +21,27 @@ namespace Data
         #endregion
 
 
+        #region Level
+
+        public override void SetLevel(int level)
+        {
+            base.SetLevel(level);
+
+            if (m_TriggerEffects == null)
+                return;
+
+            // upgrade level of all trigger effects
+            for (int i = 0; i < m_TriggerEffects.Count; i++)
+            {
+                STriggerEffect effect = m_TriggerEffects[i];
+                effect.Level = m_Level;
+                m_TriggerEffects[i] = effect;
+            }
+        }
+
+        #endregion
+
+
         #region Infos
 
         public override string GetDescription(ERuneActivation runeActivation)

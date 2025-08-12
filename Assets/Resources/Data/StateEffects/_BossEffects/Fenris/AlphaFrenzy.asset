@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bec91e441d966e438d35c0133adae84, type: 3}
   m_Name: AlphaFrenzy
   m_EditorClassIdentifier: 
-  m_Description: 
-  m_DescriptionVariables: 
+  m_Description: During {0} seconds, become Invulnerable and Uncontrollable.\nGain
+    {1} speed, +{2} damage and {3} lifesteal.
+  m_DescriptionVariables: 01000000030000000700000069000000
   m_StateEffectType: 0
   m_IsDisplayed: 1
   m_VisualEffects: []
@@ -45,7 +46,10 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
   m_IsTrueDamage: 0
+  m_EndWithShield: 0
+  m_RefreshShield: 1
   m_Priority: 0
+  m_Delay: 0
   m_Duration: 6
   m_MaxStacks: 1
   m_StackDecay: -1
@@ -57,25 +61,20 @@ MonoBehaviour:
     BaseValue: 0.25
     LevelScalingFactor: 0.05
     StackScalingFactor: 1
+    SpecialConditions: []
   - StateEffectProperty: 7
     BaseValue: 50
     LevelScalingFactor: 0.1
     StackScalingFactor: 1
+    SpecialConditions: []
   - StateEffectProperty: 105
     BaseValue: 1
     LevelScalingFactor: 0
     StackScalingFactor: 1
+    SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects:
-  - StateEffect: 10
-    Stacks: 1
-    BonusStacksPerLevel: 0
-    OverridingProperties: []
-  - StateEffect: 3
-    Stacks: 1
-    BonusStacksPerLevel: 0
-    OverridingProperties: []
-  - StateEffect: 26
+  - StateEffect: 21
     Stacks: 1
     BonusStacksPerLevel: 0
     OverridingProperties: []

@@ -100,7 +100,7 @@ namespace Game.Spells
                     return;
 
                 ErrorHandler.Log($"{name} : {damages} DAMAGES", ELogTag.StateEffects);
-                damages = m_Controller.Life.Hit(damages, m_Caster.PlayerId, m_Parent, ESpellCategory.Tick, true);
+                damages = m_Controller.Life.Hit(damages, m_Caster.PlayerId, m_Parent, ESpellCategory.Tick, m_IsTrueDamage);
 
                 int lifesteal = (int)Mathf.Round(damages * FinalTickLifeSteal);
                 if (lifesteal > 0)

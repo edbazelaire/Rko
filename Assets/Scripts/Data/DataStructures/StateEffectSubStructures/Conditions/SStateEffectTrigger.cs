@@ -63,6 +63,9 @@ namespace Data.DataStructures.StateEffectSubStructures
 
         public void Register(Controller controller)
         {
+            if (controller == null)
+                return;
+
             m_Controller = controller;
 
             switch (Trigger)
@@ -91,6 +94,9 @@ namespace Data.DataStructures.StateEffectSubStructures
 
         public void UnRegister()
         {
+            if (m_Controller == null)
+                return;
+
             switch (Trigger)
             {
                 case ETriggerType.None:

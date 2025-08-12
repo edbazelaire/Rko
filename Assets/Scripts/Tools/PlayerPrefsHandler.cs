@@ -273,7 +273,7 @@ namespace Tools
 
         public static EArenaDifficulty GetArenaDifficulty(EArenaType arenaType)
         {
-            var defaultValue = ProgressionCloudData.GetUnlockedArenaDifficulty(arenaType);
+            var defaultValue = ProgressionCloudData.GetUnlockedArenaDifficulty(arenaType, clamp: true);
 
             string data = PlayerPrefs.GetString($"{arenaType}.{EPlayerPref.ArenaDifficulty}", defaultValue.ToString());
             if (Enum.TryParse(data, out EArenaDifficulty arenaDifficulty))

@@ -35,6 +35,7 @@ namespace Menu.PopUps
         {
             m_StateEffect = SpellLoader.GetStateEffect(stateEffectData.StateEffect.ToString(), level);
             m_StateEffect.OverrideStateEffectData(stateEffectData.OverridingProperties);
+            m_StateEffect.SetStacks(m_StateEffect.NStacksInDescription);
 
             base.Initialize();
         }
@@ -48,9 +49,9 @@ namespace Menu.PopUps
             m_Description = Finder.FindComponent<TMP_Text>(iconSection, "Description");
             m_PropertiesContainer = Finder.Find(m_WindowContent, "PropertiesContainer");
 
-            m_Title.text = TextHandler.SplitCamelCase(m_StateEffect.StateEffectName);
-            m_Icon.sprite = AssetLoader.LoadStateEffectIcon(m_StateEffect.StateEffectName);
-            m_Description.text = m_StateEffect.GetDescription();
+            m_Title.text        = TextHandler.SplitCamelCase(m_StateEffect.StateEffectName);
+            m_Icon.sprite       = AssetLoader.LoadStateEffectIcon(m_StateEffect.StateEffectName);
+            m_Description.text  = m_StateEffect.GetDescription();
 
             InitProperties();
         }
@@ -94,6 +95,12 @@ namespace Menu.PopUps
                 var infoRow = Instantiate(templateInfoRow, m_PropertiesContainer.transform).GetComponent<SpellInfoRowUI>();
                 m_StateEffect.IsScalingProperty(item.Key, out EScalingDirection scaling);
                 infoRow.Initialize(item.Key, item.Value, nextLevelInfos[item.Key], scaling);
+            }
+
+            if (m_StateEffect.IsTrueDamage)
+            {
+                var infoRow = Instantiate(templateInfoRow, m_PropertiesContainer.transform).GetComponent<SpellInfoRowUI>();
+                infoRow.Initialize("IsTrueDamage", true);
             }
         }
 

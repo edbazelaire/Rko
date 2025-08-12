@@ -250,7 +250,7 @@ namespace Save
 
         #region Arena Data
 
-        public static EArenaDifficulty GetUnlockedArenaDifficulty(EArenaType arenaType)
+        public static EArenaDifficulty GetUnlockedArenaDifficulty(EArenaType arenaType, bool clamp = false)
         {
             if (! UnlockedArenas.ContainsKey(arenaType))
             {
@@ -259,6 +259,10 @@ namespace Save
 
                 Instance.SaveValue(KEY_UNLOCKED_ARENAS);
             }
+
+            // check if we need to get the "clamped" value
+            if (clamp && UnlockedArenas[arenaType] >= MaxArenaDifficulty)
+                return MaxArenaDifficulty;
 
             return UnlockedArenas[arenaType];
         }

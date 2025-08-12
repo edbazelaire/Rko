@@ -148,8 +148,6 @@ namespace Menu.PopUps
             InventoryManager.Spend(m_PriceData.Price, m_PriceData.Currency, m_Context);
 
             OnValidateButton();
-
-            Exit();
         }
 
         protected virtual void OnWatchAdClicked()

@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: FrostfistRain
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 
+  m_Description: 'Calls down a furious storm of frozen fists, each strike dealing
+    [Damage] damage and applying [Stun] and [IceBreak]'
   m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 0
@@ -44,7 +45,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
-  m_NCharges: 1
+  m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
@@ -87,6 +88,7 @@ MonoBehaviour:
   m_Cooldown: 45
   SubSpellData: {fileID: 11400000, guid: 6ae7fdb8f7fc30b4296200c63d39d184, type: 2}
   m_UseAutoAttack: 0
+  m_OverridingSubData: []
   MultiProjectileType: 2
   SubSpellSpawn:
     m_SpellTargetX:

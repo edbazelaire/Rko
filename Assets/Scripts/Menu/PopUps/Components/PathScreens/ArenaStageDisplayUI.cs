@@ -1,4 +1,5 @@
-﻿using Data;
+﻿using Assets.Scripts.Managers;
+using Data;
 using Data.DataStructures;
 using Data.GameManagement;
 using Enums;
@@ -135,7 +136,10 @@ namespace Menu.PopUps
 
         void SetUpBossPreview()
         {
-            m_BossPreviewDisplay.Initialize(m_ArenaData.GetBoss(m_ArenaLevel), (int)m_ArenaData.ArenaDifficulty + 1);
+            SStageData stageData = m_ArenaData.GetBossStageData(m_ArenaLevel);
+            int level = (int)m_ArenaData.ArenaDifficulty * 2 + 1 + m_ArenaData.ArenaDifficultyLevel;
+            m_BossPreviewDisplay.Initialize(stageData.Boss, level);
+            m_BossPreviewDisplay.Button.onClick.AddListener(() => ScreenManager.SetPopUp(EPopUpState.BossInfoPopUp, stageData.Boss.ToString(), level, stageData.Spells.ConvertAll(t => t.ToString())));
         }
 
         #endregion

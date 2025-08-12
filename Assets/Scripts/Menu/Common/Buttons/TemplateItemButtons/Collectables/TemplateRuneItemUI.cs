@@ -136,13 +136,12 @@ namespace Menu.Common.Buttons
         }
 
         /// <summary>
-        /// Do nothing on clicked while beeing locked
+        /// Open the info pop up of this item
         /// </summary>
-        protected override void OnClickLocked()
+        public override void OpenInfoPopUp(int? level = null)
         {
-            base.OnClickLocked();
-
-            ScreenManager.SetPopUp(EPopUpState.RuneInfoPopUp, Collectable, 0);
+            level ??= m_Level;
+            ScreenManager.SetPopUp(EPopUpState.RuneInfoPopUp, Collectable, level);
         }
 
         #endregion

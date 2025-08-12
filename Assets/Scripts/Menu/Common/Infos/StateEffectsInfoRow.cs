@@ -50,5 +50,18 @@ namespace Menu.Common.Infos
         }
 
         #endregion
+
+
+        #region GUI Manipulators
+
+        public void AddSpawnData(List<CharacterData> allSpawnsData)
+        {
+            foreach (CharacterData spawnData in allSpawnsData)
+            {
+                UIHelper.AddSpawnIconDisplayer(spawnData, m_ValueContainer.transform);
+            }
+        }
+
+        #endregion
     }
 }

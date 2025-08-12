@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
+  m_Name: ChaosTurtle
+  m_EditorClassIdentifier: 
+  m_Rarety: 0
+  m_Description: A rare creature that feeds on the soul of the damned.\nEach time
+    an ally creature dies, or when either a [Burn] or [Cursed] stacks is consumed,
+    the Chaos Turtle increase in Size, Hp, Damage and Resistances.\n\nIts carapace
+    sends shards of itself everytime it gets hit.
+  m_DescriptionVariables: []
+  m_SpellElements: 
+  m_AutoAttack: 
+  m_SpecialAbility: 
+  m_Ultimate: Tchaos
+  Size: 1
+  BaseSpeed: 0.1
+  BaseHealth: 650
+  MaxEnergy: 45
+  BaseEnergy: 0
+  PassiveEnergyGain: 1
+  IsStructure: 0
+  HealthScaleFactor: 0.12
+  CharacterStatScaling:
+  - StateEffectProperty: 27
+    BaseValue: 0.5
+    BonusValue: 0
+    ScalingFactor: 0
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  m_SpecialPowers:
+  - Description: 
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: ChaosTurtleDiet
+      OverridingData: []
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+    m_BonusStats: []
+  - Description: 
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: Uncontrollable
+      OverridingData: []
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+    m_BonusStats: []

@@ -91,6 +91,18 @@ namespace Save.RSDs
                 return true;
             }
 
+            if (code == ESpecialGiftCodes.MEOWMEOW.ToString())
+            {
+                InventoryCloudData.Instance.Unlock(InventoryCloudData.KEY_RUNES);
+
+                var rewards = new SRewardsData();
+                rewards.Add(EChest.Common,  2);
+                rewards.Add(EChest.Rare,    1);
+                rewards.Add(EChest.Epic,    1);
+                Main.DisplayRewards(rewards, "BugFix");
+                return true;
+            }
+
             return false;
         }
 

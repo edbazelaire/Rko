@@ -19,6 +19,7 @@
         // -- info PopUps
         CollectableInfoPopUp        = 11,
         CharacterInfoPopUp          = 12,
+        BossInfoPopUp               = 35,   // <-->
         RuneInfoPopUp               = 13,
         SpellInfoPopUp              = 14,
         StateEffectPopUp            = 15,
@@ -40,13 +41,16 @@
         ConfirmWatchAdPopUp         = 33,   
 
         // -- options popup
-        ArenaOptionsPopUp           = 34,     // <-->
+        ArenaOptionsPopUp           = 34,     
 
         // -- config popup
         SettingsPopUp               = 29,
         MessageriePopUp             = 30,
         PromoCodePopUp              = 31,
         LoginPopUp                  = 32,
+
+        // -- loading and other
+        BlackScreen                 = 1000,
     }
 
     public enum EEnv
@@ -72,6 +76,7 @@
     public enum ESpecialGiftCodes
     {
         FULLUNLOCK = 0,
+        MEOWMEOW = 1,
     }
 
     public enum EProduct
@@ -167,6 +172,8 @@
         DarkVeil        = 2,
         AzurePowerOrb   = 3,
         ChemicalSlime   = 4,
+        Molken          = 5,
+        ChaosTurtle     = 6,
     }
 
     public enum ESpell
@@ -243,7 +250,7 @@
         Hellnova            = 68,
         //Lavachunk           = 69,
         //VolcanicMeditation  = 70,
-        //MoltenSmash         = 71,
+        Molken              = 71,
         HollowDagger        = 72,
         TrueshotBarrage     = 73,
         PiercingBolts       = 74,
@@ -336,6 +343,9 @@
         // ======================================================================
         // SPAWN ABILITIES
         ChemicalSlimeAttack = 1000001,
+        Sparks              = 1000002,   // Molken (aa)
+        Wazaaah             = 1000003,   // Molken (ult)
+        Tchaos              = 1000004,   // Chaos Turtle (ult)
     }
 
     public enum ESpellType
@@ -442,6 +452,7 @@
         CorruptionRune          = 26,
         IceLanceMastery         = 27,
         EmperorOfFlames         = 28,
+        ChaosTurtle             = 29,
     }
 
     public enum EEffectType
@@ -718,7 +729,9 @@
         Frozen              = 2,
         Invulnerable        = 3,
         Uncontrollable      = 10,
+        Enraged             = 21,
         Invisible           = 4,
+        Taunt               = 28,   // <----->
 
         // knockback effects
         Knockback           = 5,
@@ -741,13 +754,12 @@
         Malediction         = 18,
         VoidPact            = 19,               // CHANGE THAT NAME !!! EFFECT REPLACING AUTO ATTACK IN "CORRUPTED"
         UnTargettable       = 20,
-        // todo             = 21
         Combustion          = 22,
         Airborne            = 23,
         Infection           = 24,
         Vanish              = 25,
         Cleanse             = 26,
-        RestlessBlade       = 27,
+        RestlessBlade       = 27,   
 
         // ======================================================================
         // Special Effects (boss)
@@ -755,6 +767,10 @@
         DragonicRest        = 10002,
         AzurePowerOrb       = 10003,
         Howling             = 10004,
+        Melting             = 10005,
+        AlphaFrenzyStack    = 10006,
+        BloodLust           = 10007,
+        Unyelding           = 10008,
 
         // ======================================================================
         // Special Effects (characters)
@@ -763,11 +779,16 @@
         MoltenSpirit        = 20003,
 
         // ======================================================================
+        // Special Effects (spawns)
+        ChaosTurtleDiet     = 30001,
+        BornedToBurn        = 30002,
+
+        // ======================================================================
         // Special Effects (animation)
         SpecialAnimation    = 100001,
         BlockMovement       = 100002, 
         BlockCast           = 100003,
-
+        BlockEnergyGain     = 100004,
     }
 
     public enum EStateEffectType
@@ -840,6 +861,8 @@
         BonusShieldPerc         = 21,
         ResistanceFix           = 5,
         ResistancePerc          = 6,
+        ResistanceTick          = 26,   
+        ResistanceTickPerc      = 27,   // <---->
         BonusDamage             = 7,
         BonusDamagePerc         = 8,
         BonusExecutionDamage    = 22,
@@ -847,7 +870,7 @@
         BonusLifeSteal          = 9,
         MissingLifeFactor       = 10,
         Damage                  = 11,
-        ExecutionDamage         = 25,   // -------------
+        ExecutionDamage         = 25,   
 
         Tick                    = 12,
         TickDamage              = 13,
@@ -882,7 +905,9 @@
         Priority                = 114,
         TickEnergy              = 115,
         Energy                  = 116,
-        MaxThresholdIndex       = 120,      // -------------
+        PassiveEnergyGain       = 121,      
+        MaxEnergy               = 122,      // <-->
+        MaxThresholdIndex       = 120,      
     }
 
     public enum EAnimation

@@ -49,7 +49,7 @@ namespace Game.StateEffects.Quests
 
         #region Stacks
 
-        protected override void SetStacks(int stacks)
+        public override void SetStacks(int stacks)
         {
             base.SetStacks(stacks);
 

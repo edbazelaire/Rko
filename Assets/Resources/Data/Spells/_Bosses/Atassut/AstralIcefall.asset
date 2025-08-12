@@ -13,13 +13,12 @@ MonoBehaviour:
   m_Name: AstralIcefall
   m_EditorClassIdentifier: 
   m_Rarety: 1
-  m_Description: '{0} comets falling from the sky each dealing {1} damage and applying
-    3 stacks of {2} and 1 stack of {3}'
+  m_Description: Calls down [Projectiles] star-cold shards of ice that slams into
+    the arena with eerie stillness, chilling the battlefield dealing [Damage] damage
+    and applying [Frozen] and [Cursed].
   m_DescriptionVariables:
-  - Name: Projectiles
-    WithIcon: 1
-  - Name: Damage
-    WithIcon: 1
+  - Name: NWaves
+    WithIcon: 0
   m_SpellElements: 0100000004000000
   Linked: 0
   Graphics: {fileID: 0}
@@ -96,15 +95,6 @@ MonoBehaviour:
     ScalingType: 1
     RoundingType: 1
     ScalingTresholds: []
-  - Property: 7
-    Value: 0
-    ScalingType: 1
-    RoundingType: 1
-    ScalingTresholds:
-    - Level: 13
-      Value: 2
-    - Level: 17
-      Value: 3
   m_Size: 0
   TriggerPlayer: 1
   EnemyStateEffects: []

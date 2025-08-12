@@ -1,4 +1,5 @@
 ﻿using Data;
+using Data.DataStructures.StateEffectSubStructures;
 using Enums;
 using Game.Loaders;
 using Game.Spells;
@@ -57,6 +58,8 @@ namespace Game.Character
             HasState(EStateEffect.Silence.ToString()) 
             || HasState(EStateEffect.Malediction.ToString());
 
+        public bool IsTaunting => HasState(EStateEffect.Taunt);
+
         public bool CanCast =>
             ! IsSilenced 
             && ! IsStunned 
@@ -72,7 +75,10 @@ namespace Game.Character
             && ! HasState(EStateEffect.Jump)
             && ! HasState(EStateEffect.BlockMovement)
             && ! HasState(EStateEffect.SpecialAnimation);
-        
+
+        public bool CanGainEnergy => !HasState(EStateEffect.BlockEnergyGain);
+
+
         public bool IsInvulnerable => 
             HasState(EStateEffect.Invulnerable.ToString())
             || HasState(EStateEffect.Jump.ToString())
@@ -223,14 +229,29 @@ namespace Game.Character
                 RemoveStateEffect(EStateEffect.Jump);
         }
 
-        public int ApplyResistance(int damage)
+        public int ApplyResistance(int damage, ESpellCategory spellCategory = ESpellCategory.Direct)
         {
+            // TICK
+            if (spellCategory == ESpellCategory.Tick || spellCategory == ESpellCategory.Zone)
+                return ApplyTickResistance(damage);
+
             // apply res fix first
             damage = Math.Max(0, damage - GetInt(EStateEffectProperty.ResistanceFix));
 
             // apply percentage res
             damage = (int)Mathf.Round(damage * Mathf.Max(2 - GetFloat(EStateEffectProperty.ResistancePerc), 0));
             
+            return damage;
+        }
+
+        public int ApplyTickResistance(int damage)
+        {
+            // apply res fix first
+            damage = Math.Max(0, damage - GetInt(EStateEffectProperty.ResistanceTick));
+
+            // apply percentage res
+            damage = (int)Mathf.Round(damage * Mathf.Max(2 - GetFloat(EStateEffectProperty.ResistanceTickPerc), 0));
+
             return damage;
         }
 
@@ -254,6 +275,27 @@ namespace Game.Character
 
             // apply res fix first
             damage = Math.Max(0, (int)Mathf.Round(damage * GetFloat(EStateEffectProperty.BonusDamagePerc, targetController, specialCondition: specialCondition)));
+
+            ErrorHandler.Log("Final : " + damage, ELogTag.BonusStats);
+
+            return damage;
+        }
+
+        public int ApplyBonusTickDamage(int damage, Controller targetController, string specialCondition = "")
+        {
+            ErrorHandler.Log("Base Damage : " + damage, ELogTag.BonusStats);
+
+            // apply fix bonus damages 
+            damage = Math.Max(0, damage + GetInt(EStateEffectProperty.BonusTickDamage, targetController, specialCondition));
+            if (specialCondition != "")
+                damage = Math.Max(0, damage + GetInt(EStateEffectProperty.BonusDamage, targetController, SBonusStats.AsUnique(specialCondition)));
+
+            ErrorHandler.Log("Damage + Fix : " + damage, ELogTag.BonusStats);
+
+            // apply res fix first
+            damage = Math.Max(0, (int)Mathf.Round(damage * GetFloat(EStateEffectProperty.BonusTickDamagePerc, targetController, specialCondition: specialCondition)));
+            if (specialCondition != "")
+                damage = Math.Max(0, damage + GetInt(EStateEffectProperty.BonusDamagePerc, targetController, SBonusStats.AsUnique(specialCondition)));
 
             ErrorHandler.Log("Final : " + damage, ELogTag.BonusStats);
 
@@ -432,11 +474,6 @@ namespace Game.Character
         {
             if (! IsServer)
                 return;
-
-            // TODO : REMOVE    ==================================================
-            if (stateEffect.StateEffectName == EStateEffect.Scorched.ToString())
-                Debug.Log("Applying " + stateEffect.StateEffectName);
-            // TODO : REMOVE    ==================================================
 
             // calculate number of stacks that need to be applied
             int stacks = overridingData != null ? overridingData.Value.GetStacks() : 1;
@@ -644,9 +681,13 @@ namespace Game.Character
             if (m_RemainingShield == 0)
                 return damages;
 
-            var allEffects = m_StateEffects;
+            var allEffects = m_StateEffects.ToArray();
             foreach (var effect in allEffects)
             {
+                // skip if effect no longet exists
+                if (!m_StateEffects.Contains(effect)) 
+                    continue;
+
                 damages = effect.HitShield(damages);
                 if (damages == 0)
                     break;

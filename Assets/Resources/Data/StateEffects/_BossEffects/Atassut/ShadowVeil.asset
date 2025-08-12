@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18f7ea3d56763fd408be3444f1896a70, type: 3}
   m_Name: ShadowVeil
   m_EditorClassIdentifier: 
-  m_Description: 
-  m_DescriptionVariables: 
-  m_StateEffectType: 1
+  m_Description: A shroud of living night spills around Atassut, increasing resistance
+    by {0}\n\nThe veil gets taked down when Atassut is CC ([Stun], [Frozen], [Airborne],
+    ...)
+  m_DescriptionVariables: 05000000
+  m_StateEffectType: 0
   m_IsDisplayed: 1
   m_VisualEffects: []
   m_GfxEffects:
@@ -45,6 +47,8 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
   m_IsTrueDamage: 0
+  m_EndWithShield: 0
+  m_RefreshShield: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: -1
@@ -58,6 +62,7 @@ MonoBehaviour:
     BaseValue: 35
     LevelScalingFactor: 0.2
     StackScalingFactor: 0
+    SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects: []
   m_HoldingStateEffects: []

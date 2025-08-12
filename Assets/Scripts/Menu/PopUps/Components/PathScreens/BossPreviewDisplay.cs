@@ -1,6 +1,5 @@
-﻿using Enums;
-using Menu.Common.Buttons;
-using System.Collections;
+﻿using Assets.Scripts.Managers;
+using Enums;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,7 +18,8 @@ namespace Menu.PopUps
         // ============================================================
         // Components
         GameObject m_CharacterPreviewContainer;
-        Button m_CharacterInfoButton;
+        Button m_Button;
+        public Button Button => m_Button;
 
         #endregion
 
@@ -31,7 +31,7 @@ namespace Menu.PopUps
             base.FindComponents();
 
             m_CharacterPreviewContainer = Finder.Find(gameObject, "CharacterPreviewContainer");
-            m_CharacterInfoButton       = Finder.FindComponent<Button>(gameObject, "CharacterInfoButton", false);
+            m_Button                    = Finder.FindComponent<Button>(gameObject, "ButtonFront");
         }
 
         public virtual void Initialize(EBoss boss, int level)
@@ -63,20 +63,11 @@ namespace Menu.PopUps
         protected override void RegisterListeners()
         {
             base.RegisterListeners();
-
-            m_CharacterInfoButton.onClick.AddListener(OnClickCharacterInfoButton);
         }
 
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
-
-            m_CharacterInfoButton.onClick.RemoveListener(OnClickCharacterInfoButton);
-        }
-
-        void OnClickCharacterInfoButton()
-        {
-            Debug.Log("TODO : OnClickCharacterInfoButton()");
         }
 
         #endregion

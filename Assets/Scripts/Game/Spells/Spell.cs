@@ -653,9 +653,10 @@ namespace Game.Spells
             if (!targetController.Life.IsAlive)
                 return;
 
+            var caster = m_Controller.IsSpawn ? m_Controller.SpawnOwner : m_Controller;
             foreach (var effect in stateEffects)
             {
-                targetController.StateHandler.AddStateEffect(effect, m_Controller, m_SpellData.Level, origin: m_SpellData.Parent);
+                targetController.StateHandler.AddStateEffect(effect, caster, m_SpellData.Level, origin: m_SpellData.Parent);
             }
         }
 

@@ -24,6 +24,7 @@ MonoBehaviour:
   BaseHealth: 3500
   MaxEnergy: 100
   BaseEnergy: 50
+  PassiveEnergyGain: 1
   IsStructure: 0
   HealthScaleFactor: 0.12
   CharacterStatScaling:
@@ -31,6 +32,7 @@ MonoBehaviour:
     BaseValue: 30
     BonusValue: 0
     ScalingFactor: 0.1
+    SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers:
   - Description: 
@@ -38,6 +40,7 @@ MonoBehaviour:
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: AlphaFrenzyStack
+      OverridingData: []
       Level: 0
       Target: 4
       SpellActivationEvent: 1
@@ -52,6 +55,7 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
     - SpellDataName: BloodLust
+      OverridingData: []
       Level: 0
       Target: 4
       SpellActivationEvent: 1
@@ -66,6 +70,7 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
     - SpellDataName: Unyelding
+      OverridingData: []
       Level: 0
       Target: 4
       SpellActivationEvent: 1

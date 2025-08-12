@@ -30,6 +30,7 @@ MonoBehaviour:
   BaseHealth: 2100
   MaxEnergy: 100
   BaseEnergy: 10
+  PassiveEnergyGain: 1
   IsStructure: 0
   HealthScaleFactor: 0.1
   CharacterStatScaling:
@@ -37,6 +38,12 @@ MonoBehaviour:
     BaseValue: 5
     BonusValue: 0
     ScalingFactor: 0.1
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 27
+    BaseValue: 0.1
+    BonusValue: 0
+    ScalingFactor: 0
     SpecialConditions: []
     StateEffectStackFactors: []
   - StateEffectProperty: 101

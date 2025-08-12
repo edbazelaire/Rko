@@ -3,7 +3,6 @@ using Data;
 using Data.GameManagement;
 using Enums;
 using Game.Loaders;
-using Inventory;
 using Managers.Friends;
 using MyBox;
 using Save;

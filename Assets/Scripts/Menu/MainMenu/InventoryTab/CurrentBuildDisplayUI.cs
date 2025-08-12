@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Menu.MainMenu.InventoryTab;
 using Enums;
+using Game.Spells;
 using Save;
 using System;
 using Tools;
@@ -119,6 +120,19 @@ namespace Menu.MainMenu
             }
 
             ErrorHandler.Error("Unable to find spell " + spell + " in current build values");
+        }
+
+        #endregion
+
+
+        #region GUI Manipulators
+
+        public void LockSpellButtons(bool isLocked = true)
+        {
+            foreach (var spellItemContainer in Instance.m_SpellItemContainers)
+            {
+                spellItemContainer.SpellItemUI.SetInteractable(! isLocked);
+            }
         }
 
         #endregion

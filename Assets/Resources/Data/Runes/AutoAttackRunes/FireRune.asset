@@ -33,8 +33,11 @@ MonoBehaviour:
       - Burn
       StateEffectStackFactors: []
   m_MajorPower:
-    Description: 'Apply [Burn] (level {0}) on every auto attack.\n[TriggerEffect.0]'
+    Description: 'Apply [Burn] (level {0}) on every auto attack.\n\n[Burn] (level
+      {1}): [TriggerEffect.0]'
     m_DescriptionVariables:
+    - Name: Level
+      WithIcon: 0
     - Name: Level
       WithIcon: 0
     m_BonusLevel: 0
@@ -56,8 +59,11 @@ MonoBehaviour:
       Cooldown: 0
     m_BonusStats: []
   m_PrimalPower:
-    Description: 'When a [Burn] effect is consumed, re-apply one (level {0}).\n[TriggerEffect.0]'
+    Description: 'When a [Burn] effect is consumed, re-apply one (level {0}).\n\n[Burn]
+      (level {1}): [TriggerEffect.0]'
     m_DescriptionVariables:
+    - Name: Level
+      WithIcon: 0
     - Name: Level
       WithIcon: 0
     m_BonusLevel: 0

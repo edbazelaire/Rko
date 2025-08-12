@@ -165,7 +165,7 @@ namespace Game.Character
                 spellLevels.Insert(1, m_Controller.CharacterLevel);
             }
 
-            if (specialAbility != ESpell.None)
+            if (ultimate != ESpell.None)
             {
                 extraSpells.Insert(2, ultimate);
                 spellLevels.Insert(2, m_Controller.CharacterLevel);
@@ -1322,7 +1322,6 @@ namespace Game.Character
             // check that AA is not None
             if (AutoAttack == ESpell.None)
             {
-                ErrorHandler.Warning("Auto Attack is None for " + m_Controller.Character);
                 return false;
             }
 

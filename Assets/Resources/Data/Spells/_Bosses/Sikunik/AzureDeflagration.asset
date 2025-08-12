@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: AzureDeflagration
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 
+  m_Description: Shoots a burst of searing azure flame in a straight line, dealing
+    [Damage] damage and applying [Frozen], [Scorched], and [Burn].
   m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 1
@@ -82,6 +83,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: -1
+  m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 150
@@ -99,8 +101,14 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
   - Property: 3
     Value: 0.05
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
   m_Size: 4
   TriggerPlayer: 1
   EnemyStateEffects:

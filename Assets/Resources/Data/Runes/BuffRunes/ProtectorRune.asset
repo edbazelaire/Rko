@@ -12,68 +12,115 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a402882a257d18548a281b17574b3711, type: 3}
   m_Name: ProtectorRune
   m_EditorClassIdentifier: 
-  Rarety: 1
+  m_Rarety: 1
   m_Description: 
   m_DescriptionVariables: []
   m_SpellElements: 00000000
   Description: 
   m_MinorPower:
-    Description: Gain {0} hp and +{1} resistances
+    Description: Gain {0} hp, +{1} resistances and +{2} resistance to DoTs
     m_DescriptionVariables:
     - Name: Hp
       WithIcon: 1
     - Name: ResistanceFix
       WithIcon: 1
+    - Name: ResistanceTick
+      WithIcon: 1
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
     - StateEffectProperty: 111
-      BaseValue: 150
+      BaseValue: 200
       BonusValue: 0
       ScalingFactor: 0.1
+      SpecialConditions: []
       StateEffectStackFactors: []
     - StateEffectProperty: 5
       BaseValue: 3
       BonusValue: 0
       ScalingFactor: 0.05
+      SpecialConditions: []
+      StateEffectStackFactors: []
+    - StateEffectProperty: 26
+      BaseValue: 3
+      BonusValue: 0
+      ScalingFactor: 0.05
+      SpecialConditions: []
       StateEffectStackFactors: []
   m_MajorPower:
-    Description: Gain {0} hp and +{1} resistances
+    Description: Gain {0} hp, +{1} resistances and +{2} resistance to DoTs
     m_DescriptionVariables:
     - Name: Hp
       WithIcon: 1
     - Name: ResistanceFix
       WithIcon: 1
+    - Name: ResistanceTick
+      WithIcon: 1
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
     - StateEffectProperty: 111
-      BaseValue: 300
+      BaseValue: 400
       BonusValue: 0
       ScalingFactor: 0.1
+      SpecialConditions: []
       StateEffectStackFactors: []
     - StateEffectProperty: 5
       BaseValue: 5
       BonusValue: 0
       ScalingFactor: 0.05
+      SpecialConditions: []
+      StateEffectStackFactors: []
+    - StateEffectProperty: 26
+      BaseValue: 5
+      BonusValue: 0
+      ScalingFactor: 0.05
+      SpecialConditions: []
       StateEffectStackFactors: []
   m_PrimalPower:
-    Description: Gain {0} hp and +{1} resistances
+    Description: 'Gain {0} hp, +{1} resistances and +{2} resistance to DoTs.\nAlso
+      gain {3} resistance and {4} resistance to DoTs '
     m_DescriptionVariables:
     - Name: Hp
       WithIcon: 1
     - Name: ResistanceFix
       WithIcon: 1
+    - Name: ResistanceTick
+      WithIcon: 1
+    - Name: ResistancePerc
+      WithIcon: 1
+    - Name: ResistanceTickPerc
+      WithIcon: 1
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
     - StateEffectProperty: 111
-      BaseValue: 500
+      BaseValue: 800
       BonusValue: 0
       ScalingFactor: 0.1
+      SpecialConditions: []
       StateEffectStackFactors: []
     - StateEffectProperty: 5
-      BaseValue: 10
+      BaseValue: 12
       BonusValue: 0
       ScalingFactor: 0.05
+      SpecialConditions: []
+      StateEffectStackFactors: []
+    - StateEffectProperty: 26
+      BaseValue: 12
+      BonusValue: 0
+      ScalingFactor: 0.05
+      SpecialConditions: []
+      StateEffectStackFactors: []
+    - StateEffectProperty: 6
+      BaseValue: 0.1
+      BonusValue: 0
+      ScalingFactor: 0
+      SpecialConditions: []
+      StateEffectStackFactors: []
+    - StateEffectProperty: 27
+      BaseValue: 0.1
+      BonusValue: 0
+      ScalingFactor: 0
+      SpecialConditions: []
       StateEffectStackFactors: []
