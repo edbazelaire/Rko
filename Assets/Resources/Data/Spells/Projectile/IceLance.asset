@@ -13,15 +13,10 @@ MonoBehaviour:
   m_Name: IceLance
   m_EditorClassIdentifier: 
   m_Rarety: 1
-  m_Description: Throw an ice lance in a straight line to your enemy dealing {0}
-    damage to your target and applying {1}. If the target is {2} breaks the shield
-    dealing a great amount of extra damage
+  m_Description: 'Throw an ice lance in a straight line to your enemy dealing [Damage]
+    damage to your target and applying [IceBreak]'
   m_DescriptionVariables:
   - Name: Damage
-    WithIcon: 1
-  - Name: Frost
-    WithIcon: 1
-  - Name: Frozen
     WithIcon: 1
   m_SpellElements: 02000000
   Linked: 0
@@ -71,7 +66,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
-  m_NCharges: 1
+  m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 40

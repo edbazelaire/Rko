@@ -44,6 +44,7 @@ namespace Game
         // ===================================================================================
         // GameObjects & Components
         private GameAnalyticsManager m_GameAnalyticsManager;
+        private InGameDebugger m_InGameDebugger;
 
         // ===================================================================================
         // PRIVATE VARIABLES 
@@ -110,16 +111,21 @@ namespace Game
             m_PlayersData           = new();
             m_Controllers           = new Dictionary<ulong, Controller>();
             m_GameAnalyticsManager  = Finder.FindComponent<GameAnalyticsManager>(gameObject);
+            m_InGameDebugger        = Finder.FindComponent<InGameDebugger>(gameObject);
 
             s_Instance = this;
 
             if (! GameUIManager.Initialized)
                 GameUIManager.Instance.Initialize();
 
+#if !UNITY_EDITOR
+            m_InGameDebugger.enabled = false;
+#endif
+
             AttachDebugMethods();
         }
 
-        #endregion
+#endregion
 
 
         #region Debug
@@ -759,6 +765,10 @@ namespace Game
         {
             Controller returnedController = null;
 
+            var controllers = GetAllTauntingEnemies(team, spawnIncluded: true);
+            if (controllers.Count > 0)
+                return controllers[0];
+
             foreach (Controller controller in m_Controllers.Values)
             {
                 if (controller.Team == team)
@@ -771,6 +781,9 @@ namespace Game
                 // save this as current returned controller but keep looking for a better fit
                 returnedController = controller;
             }
+
+            if (returnedController == null)
+                return returnedController;
 
             // check can be targetted
             if (! returnedController.StateHandler.IsUnTargetable)
@@ -799,10 +812,20 @@ namespace Game
 
         public List<Controller> GetAllEnemies(int team, bool spawnIncluded = true)
         {
+            var controllers = m_Controllers.Values.Where(controller => controller.Team != team).ToList();
             if (spawnIncluded)
-                return m_Controllers.Values.Where(controller => controller.Team != team).ToList();
+                controllers.AddRange(m_Spawns.Values.Where(controller => controller.Team != team).ToList());
 
-            return m_Controllers.Values.Where(controller => controller.Team != team && ! controller.IsSpawn).ToList();
+            return controllers;
+        }
+
+        public List<Controller> GetAllTauntingEnemies(int team, bool spawnIncluded = true)
+        {
+            var controllers = GetAllEnemies(team, spawnIncluded);
+            if (controllers.Count == 0) 
+                return controllers;
+
+            return controllers.Where(controller => controller.StateHandler.IsTaunting && ! controller.StateHandler.IsUnTargetable).ToList();
         }
 
         public List<Controller> GetAllAllies(int team)
@@ -979,7 +1002,7 @@ namespace Game
                     break;
 
                 case EGameState.PreparingGame:
-                    TimeErrorWrapper.Instance.New(TIME_WRAPPER_ID, 60f, OnPreparingGameTimeLimit);
+                    TimeErrorWrapper.Instance.New(TIME_WRAPPER_ID, 90f, OnPreparingGameTimeLimit);
                     StartCoroutine(WaitClientInitialized());
                     SpawnPlayers();
                     break;
@@ -1058,7 +1081,7 @@ namespace Game
         {
             ExitWithError(
                 "An error has occured while creating " + LobbyHandler.Instance.GameMode.ToString() + " game mode : "
-                    + "\n   + Game State : " + m_State.ToString()
+                    + "\n   + Game State : " + m_State.Value.ToString()
                     + "\n   + Reason : Initializing game has reached time limit"
             );
         }
@@ -1067,7 +1090,7 @@ namespace Game
         {
             ExitWithError(
                 "An error has occured while creating " + LobbyHandler.Instance.GameMode.ToString() + " game mode : "
-                    + "\n   + Game State : " + m_State.ToString()
+                    + "\n   + Game State : " + m_State.Value.ToString()
                     + "\n   + Reason : Preparing game has reached time limit"
             );
         }
@@ -1076,7 +1099,7 @@ namespace Game
         {
             ExitWithError(
                 "An error has occured while playing " + LobbyHandler.Instance.GameMode.ToString() + " game mode : "
-                    + "\n   + Game State : " + m_State.ToString()
+                    + "\n   + Game State : " + m_State.Value.ToString()
                     + "\n   + Reason : Game has reached its safety time limit"
             );
         }
@@ -1184,6 +1207,20 @@ namespace Game
                 new SCharacterStatScaling(EStateEffectProperty.BonusDamage, 100f, 0f, 0f) 
             });
         }
+
+        [Command(KeyCode.T)]
+        public void StunEnemy()
+        {
+            var stun = new SStateEffectData(EStateEffect.Stun, overridingProperties: new List<SStateEffectProperty>() { new SStateEffectProperty(EStateEffectProperty.Duration, 3) });
+            GetFirstEnemy(Owner.Team).StateHandler.AddStateEffect(stun, Owner, 1, "Debug");
+        }
+
+        //[Command(KeyCode.R)]
+        //public void StunSelf()
+        //{
+        //    var stun = new SStateEffectData(EStateEffect.Stun, overridingProperties: new List<SStateEffectProperty>() { new SStateEffectProperty(EStateEffectProperty.Duration, 3) });
+        //    Owner.StateHandler.AddStateEffect(stun, Owner, 1, "Debug");
+        //}
 
         [Command(KeyCode.Y)]
         public void ToogleInterface()

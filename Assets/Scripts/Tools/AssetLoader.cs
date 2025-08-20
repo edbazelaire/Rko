@@ -214,7 +214,7 @@ namespace Tools
         {
             if (! arenaDifficulty.HasValue)
             {
-                arenaDifficulty = new SArenaDifficulty(ProgressionCloudData.GetUnlockedArenaDifficulty(arena));
+                arenaDifficulty = new SArenaDifficulty(ProgressionCloudData.GetUnlockedArenaDifficulty(arena, clamp: true));
             }
 
             var arenaData = Load<ArenaData>(arena.ToString() + "_" + arenaDifficulty.Value.Difficulty.ToString(), c_ArenaDataPath);
@@ -475,6 +475,9 @@ namespace Tools
             string path;
             
             if (iconType == typeof(ECharacter))
+                path = c_IconCharactersPath;
+
+            else if (iconType == typeof(ESpawn))
                 path = c_IconCharactersPath;
 
             else if (iconType == typeof(ESpell))

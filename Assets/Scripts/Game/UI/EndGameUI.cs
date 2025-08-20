@@ -296,7 +296,7 @@ public class EndGameUI : MObject
         {
             m_XpRewardDisplay.SetActive(true);
             m_XpQty.text = string.Format(GOLD_FORMAT, xp);
-            NotificationCloudData.AddXp(xp);
+            InventoryManager.UpdateCurrency(ECurrency.Xp, xp, ERewardContext.ArenaReward.ToString());
         }
 
         // ----------------------------------------------------------------------------
@@ -307,7 +307,7 @@ public class EndGameUI : MObject
         {
             m_GoldRewardDisplay.SetActive(true);
             m_GoldQty.text = string.Format(GOLD_FORMAT, golds);
-            InventoryManager.UpdateCurrency(ECurrency.Gold, golds, ERewardContext.EndGameChest.ToString());
+            InventoryManager.UpdateCurrency(ECurrency.Gold, golds, ERewardContext.ArenaReward.ToString());
         }
 
         // ----------------------------------------------------------------------------
@@ -318,7 +318,7 @@ public class EndGameUI : MObject
         {
             m_GemsRewardDisplay.SetActive(true);
             m_GemsQty.text = string.Format(GOLD_FORMAT, gems);
-            InventoryManager.UpdateCurrency(ECurrency.Gems, gems, ERewardContext.EndGameChest.ToString());
+            InventoryManager.UpdateCurrency(ECurrency.Gems, gems, ERewardContext.ArenaReward.ToString());
         }
 
         // ----------------------------------------------------------------------------

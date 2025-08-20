@@ -185,6 +185,29 @@ namespace Game.Loaders
             return null;
         }
 
+        /// <summary>
+        /// Get the character that posses the provided spell
+        /// </summary>
+        /// <param name="spell"></param>
+        /// <returns></returns>
+        public static string GetCharacterNameWithSpell(ESpell spell)
+        {
+            foreach (var item in Instance.m_Characters)
+            {
+                if (item.Value.Ultimate == spell || item.Value.AutoAttack == spell || item.Value.SpecialAbility == spell)
+                    return item.Key.ToString();
+            }
+       
+            foreach (var item in Instance.m_Bosses)
+            {
+                if (item.Value.Ultimate == spell || item.Value.AutoAttack == spell || item.Value.SpecialAbility == spell)
+                    return item.Key.ToString();
+            }
+
+            ErrorHandler.Error("Unable to find character linked to spell : " + spell);
+            return null;
+        }
+
         #endregion
 
 

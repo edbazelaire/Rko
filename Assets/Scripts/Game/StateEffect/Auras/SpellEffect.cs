@@ -113,6 +113,30 @@ namespace Game.Spells
         #endregion
 
 
+        #region Level
+
+        protected override void SetLevel(int level)
+        {
+            base.SetLevel(level);
+
+            for (int i = 0; i < m_AllyStateEffects.Count; i++)
+            {
+                var effect = m_AllyStateEffects[i];
+                effect.SetLevel(level);
+                m_AllyStateEffects[i] = effect;
+            }
+
+            for (int i = 0; i < m_EnemyStateEffects.Count; i++)
+            {
+                var effect = m_EnemyStateEffects[i];
+                effect.SetLevel(level);
+                m_EnemyStateEffects[i] = effect;
+            }
+        }
+
+        #endregion
+
+
         #region Description
 
         protected override void ReplaceSubStateEffects(ref string description)

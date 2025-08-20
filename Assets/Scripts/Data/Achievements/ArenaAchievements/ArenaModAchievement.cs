@@ -1,5 +1,6 @@
 ﻿using Data.ArenaEffects.ArenaMods;
 using Enums;
+using MyBox;
 using Save;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace Data
         #region Members
 
         public List<EArenaMod> ArenaMods;
+        public int MinExtraDifficulty;
 
         #endregion
 
@@ -22,11 +24,12 @@ namespace Data
 
         public override void CheckOnArenaEnded(bool win)
         {
-            Debug.Log("CheckOnArenaEnded() : " + win);
-
             base.CheckOnArenaEnded(win);
 
             if (! win)
+                return;
+
+            if (ProgressionCloudData.CurrentArena.GetExtraDifficulty() < MinExtraDifficulty)
                 return;
 
             foreach (var mod in ArenaMods)
@@ -52,7 +55,13 @@ namespace Data
 
         public override string GetDescription()
         {
-            return CleanDescription($"Finish the <i>{m_ArenaType}</i> in difficulty at least <b>{(EArenaDifficulty)(Current.Value.MaxValue - 1)}</b> in <b>{String.Join(", ", ArenaMods)}</b> mod");
+            var description = $"Finish the <i>{m_ArenaType}</i> in difficulty at least <b>{(EArenaDifficulty)(Current.Value.MaxValue - 1)}</b>";
+            if (!ArenaMods.IsNullOrEmpty())
+                description += $" in <b>{String.Join(", ", ArenaMods)}</b> mod";   
+            if (MinExtraDifficulty > 0)
+                description += $" with at least +{MinExtraDifficulty} extra difficulty";
+
+            return CleanDescription(description);
         }
 
         #endregion

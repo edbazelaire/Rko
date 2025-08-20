@@ -175,6 +175,7 @@ namespace Menu
         {
             Main.ConfirmBuyRewards(
                 "UnlockChest", 
+                "",
                 GetUnlockPrice(), 
                 CreateRewardsData(), 
                 (bool success) => { if (success) UnlockChest(); },

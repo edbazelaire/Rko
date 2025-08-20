@@ -12,14 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8d2bcd733533b8499b0cb4a21b59b82, type: 3}
   m_Name: AzurePowerOrbs
   m_EditorClassIdentifier: 
-  Rarety: 0
-  m_Description: 
+  m_Rarety: 0
+  m_Description: Summons swirling orbs of condensed azure energy, pulsing with latent
+    power.
   m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions: []
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -27,16 +29,27 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 10
+  m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0.5
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
+  m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -44,6 +57,9 @@ MonoBehaviour:
   OverrideOnHitProperties: 
   m_Duration: 10
   Delay: 2
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
   m_SpellsScalingLevel: []
   m_Size: 3
   TriggerPlayer: 0

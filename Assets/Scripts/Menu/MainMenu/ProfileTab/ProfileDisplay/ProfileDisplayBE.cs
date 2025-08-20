@@ -179,7 +179,7 @@ namespace Menu.MainMenu
         void OnPseudoChanged()
         {
             m_ProfileDisplayUI.SetPseudo(ProfileCloudData.GamerTag);
-            m_ProfileDisplayUI.PseudoChangeButton.gameObject.SetActive(false);
+            m_ProfileDisplayUI.PseudoChangeButton.gameObject.SetActive(ProfileCloudData.CanChangePseudo);
         }
 
         #endregion

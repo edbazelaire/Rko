@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: FrostfangStrike
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 
+  m_Description: A brutal lunge that sinks frozen fangs into the prey, dealing [Damage]
+    and applying [Stun].
   m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 0
@@ -63,7 +64,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
-  m_NCharges: 1
+  m_Charges: 1
   EnergyGain: 0
   EnergyCost: 100
   m_Damage: 80

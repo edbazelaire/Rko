@@ -15,9 +15,12 @@ namespace Menu.MainMenu
         bool m_Empty;
         int m_Index = -1;
         GameObject m_TemplateSpellItem;
+        TemplateSpellItemUI m_SpellItemUI;
 
         GameObject m_TemplateSpellItemContainer;
         GameObject m_EmptyBackground;
+
+        public TemplateSpellItemUI SpellItemUI => m_SpellItemUI;
 
         #endregion
 
@@ -63,8 +66,8 @@ namespace Menu.MainMenu
             }
 
             m_EmptyBackground.SetActive(false);
-            var spellItemUI = Instantiate(m_TemplateSpellItem, m_TemplateSpellItemContainer.transform).GetComponent<TemplateSpellItemUI>();
-            spellItemUI.Initialize(Spell.Value);
+            m_SpellItemUI = Instantiate(m_TemplateSpellItem, m_TemplateSpellItemContainer.transform).GetComponent<TemplateSpellItemUI>();
+            m_SpellItemUI.Initialize(Spell.Value);
         }
 
         #endregion

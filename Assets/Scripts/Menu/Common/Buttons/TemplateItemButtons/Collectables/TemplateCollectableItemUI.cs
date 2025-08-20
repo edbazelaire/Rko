@@ -24,14 +24,15 @@ namespace Menu.Common.Buttons
     {
         #region Members
         /// <summary> event that the button has been clicked </summary>
-        public static Action<Enum> ButtonClickedEvent;
-        public Action ThisButtonClickedEvent;
+        public static Action<Enum>          ButtonClickedEvent;
+        public Action                       ThisButtonClickedEvent;
 
         // GameObjects & Components
         protected CollectablesSubButtons    m_CSubButtons           = null;
         protected SubButtons                m_SubButtons            = null;
         protected CollectionFillBar         m_CollectionFillBar     = null;
         protected SCollectableCloudData     m_CollectableCloudData;
+        protected HoldOnTrigger             m_HoldOnTrigger         = null;
 
         protected int m_Level;
         protected bool m_RemoveAllListeners = false;
@@ -40,6 +41,7 @@ namespace Menu.Common.Buttons
         public SCollectableCloudData CollectableCloudData   => m_CollectableCloudData;
         public CollectionFillBar CollectionFillBar          => m_CollectionFillBar;
         public CollectablesSubButtons CSubButtons           => m_CSubButtons;
+        public HoldOnTrigger HoldOnTrigger                  => m_HoldOnTrigger;
 
         public Enum Collectable => m_Collectable;
         public bool AsIconOnly => m_AsIconOnly;
@@ -56,27 +58,48 @@ namespace Menu.Common.Buttons
             m_Border                = Finder.FindComponent<Image>(gameObject, "IconContainer");
             m_CSubButtons           = Finder.FindComponent<CollectablesSubButtons>(gameObject,  throwError: false);
             m_CollectionFillBar     = Finder.FindComponent<CollectionFillBar>(gameObject,       throwError: false);
+            m_HoldOnTrigger         = Finder.FindComponent<HoldOnTrigger>(gameObject,           throwError: false);
         }
 
         public virtual void Initialize(Enum collectable, bool asIconOnly = false)
         {
             m_AsIconOnly = asIconOnly;
             m_RemoveAllListeners = false;
+            m_Level = 0;
+            m_CollectableCloudData = GetCollectableCloudData(collectable);
 
             base.Initialize();
 
-            SetUpCollectable(collectable, asIconOnly);
+            ActivateHoldOnTrigger(false);
         }
 
         public virtual void Initialize(Enum collectable, int level, bool asIconOnly = false, bool removeListeners = true)
         {
-            m_AsIconOnly = asIconOnly;
-            m_RemoveAllListeners = removeListeners;
+            m_AsIconOnly            = asIconOnly;
+            m_RemoveAllListeners    = removeListeners;
+            m_Level                 = level;
+            m_CollectableCloudData  = GetCollectableCloudData(collectable, level);
 
             base.Initialize();
 
-            m_Level = level;
-            SetUpCollectable(collectable, asIconOnly);
+            ActivateHoldOnTrigger(false);
+        }
+
+        protected override void OnInitialisationCompleted() 
+        {
+            SetUpCollectable(m_Collectable, m_Level, m_AsIconOnly);
+        }
+
+
+        protected virtual void SetLevel(int level)
+        {
+            if (level > 0)
+            {
+                m_Level = level;
+                return;
+            }
+
+            m_Level = m_CollectableCloudData.Level;
         }
 
         /// <summary>
@@ -115,12 +138,11 @@ namespace Menu.Common.Buttons
             UpdateState();
         }
 
-        public virtual void SetUpCollectable(Enum collectable, bool asIconOnly = false)
+        public virtual void SetUpCollectable(Enum collectable, int level, bool asIconOnly = false)
         {
             // load cloud data of the collectable
-            m_CollectableCloudData = InventoryCloudData.Instance.GetCollectable(collectable);
-            if (m_Level == 0)
-                m_Level = m_CollectableCloudData.Level;
+            m_CollectableCloudData = GetCollectableCloudData(collectable, level);
+            SetLevel(level);
 
             // setup ui elements (icon, collection fillbar, ...)
             SetUpUI(asIconOnly);
@@ -164,6 +186,33 @@ namespace Menu.Common.Buttons
                 SetBottomOverlay(string.Format(LEVEL_FORMAT, m_Level));
                 m_Icon.color = Color.white;
             }
+        }
+
+        public void ActivateHoldOnTrigger(bool activate)
+        {
+            if (m_HoldOnTrigger == null)
+            {
+                if (activate)
+                {
+                    ErrorHandler.Warning("Trying to activate HoldOnTrigger but the component is null");
+                }
+                return;
+            }
+
+            m_HoldOnTrigger.gameObject.SetActive(activate);
+        }
+
+        public void SetInteractable(bool interactable)
+        {
+            if (m_Button == null || m_Icon == null)
+                return;
+
+            m_Button.interactable = interactable;
+
+            if (! interactable)
+                m_Icon.color = new Color(0.3f, 0.3f, 0.3f);
+            else
+                m_Icon.color = new Color(1f, 1f, 1f);
         }
 
         #endregion
@@ -245,6 +294,28 @@ namespace Menu.Common.Buttons
         #endregion
 
 
+        #region Helpers
+
+        SCollectableCloudData GetCollectableCloudData(Enum collectable, int level = 0)
+        {
+            if (level <= 0)
+                return InventoryCloudData.Instance.GetCollectable(collectable);
+
+            int qty = 0;
+            if (! m_AsIconOnly)
+                qty = InventoryCloudData.Instance.GetCollectable(collectable).Qty;
+
+            return new SCollectableCloudData(collectable, level, qty);
+        }
+
+        public virtual void OpenInfoPopUp(int? level = null)
+        {
+            
+        }
+
+        #endregion
+
+
         #region Listeners
 
         protected override void RegisterListeners()
@@ -311,7 +382,10 @@ namespace Menu.Common.Buttons
             RefreshUI();
         }
 
-        protected virtual void OnClickLocked() { }
+        protected virtual void OnClickLocked() 
+        {
+            OpenInfoPopUp(0);
+        }
 
         protected virtual void OnPurchased(bool success)
         {

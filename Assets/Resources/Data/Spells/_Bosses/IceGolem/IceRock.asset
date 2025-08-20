@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: IceRock
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 
+  m_Description: 'Rips a jagged boulder from the frozen ground and hurls it toward
+    its foe, dealing [Damage] damage on impact and applying [Stun] and [IceBreak]'
   m_DescriptionVariables: []
   m_SpellElements: 02000000
   Linked: 1
@@ -86,10 +87,10 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
-  m_NCharges: 1
+  m_Charges: 1
   EnergyGain: 30
   EnergyCost: 0
-  m_Damage: 120
+  m_Damage: 150
   m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
@@ -103,7 +104,7 @@ MonoBehaviour:
     m_Duration: 0
   m_SpellsScalingLevel:
   - Property: 2
-    Value: 0.25
+    Value: 0.15
     ScalingType: 0
     RoundingType: 2
     ScalingTresholds: []

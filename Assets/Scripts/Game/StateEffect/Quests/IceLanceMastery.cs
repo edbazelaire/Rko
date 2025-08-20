@@ -53,7 +53,7 @@ namespace Game.StateEffects.Quests
                 return;
 
             // CHECK : must be applied by a specific spell - IceLance
-            if (origin != ESpell.IceLance.ToString())
+            if (! origin.Contains(ESpell.IceLance.ToString()))
                 return;
 
             // add one stack

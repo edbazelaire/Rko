@@ -107,6 +107,9 @@ namespace Menu.Common.Buttons
             // set normal state by default
             SetState(EButtonState.Normal);
 
+            // call that init is over, allowing children to call methods before registering events
+            OnInitialisationCompleted();
+
             // register events listeners
             RegisterListeners();
 
@@ -114,6 +117,7 @@ namespace Menu.Common.Buttons
             m_IsInitialized = true;
         }
 
+        protected virtual void OnInitialisationCompleted() { }
         protected virtual void SetUpUI() { }
 
         protected virtual void OnDestroy()

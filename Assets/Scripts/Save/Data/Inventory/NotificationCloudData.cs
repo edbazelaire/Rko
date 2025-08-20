@@ -41,7 +41,6 @@ namespace Save
         public const string KEY_ARENA_UNLOCKED_NOTIFICATIONS    = "ArenaUnlockedNotifications";
         public const string KEY_ARENA_REWARDS                   = "ArenaRewards";
         public const string KEY_LEAGUE_REWARDS                  = "LeagueRewards";
-        public const string KEY_XP_COLLECTION                   = "XpCollection";
         public const string KEY_MESSAGES                        = "Messages";
 
         // ===============================================================================================
@@ -58,7 +57,6 @@ namespace Save
             { KEY_ARENA_UNLOCKED_NOTIFICATIONS,     new List<EArenaType>()                      },
             { KEY_ARENA_REWARDS,                    new Dictionary<EArenaType,  List<int>>()    },
             { KEY_LEAGUE_REWARDS,                   new Dictionary<ELeague,     List<int>>()    },
-            { KEY_XP_COLLECTION,                    0                                           },
             { KEY_MESSAGES,                         new List<SMessage>()                        },
         };
 
@@ -67,7 +65,6 @@ namespace Save
         public static List<EArenaType>                  ArenaUnlocked   => Instance.m_Data[KEY_ARENA_UNLOCKED_NOTIFICATIONS] as List<EArenaType>;
         public static Dictionary<EArenaType, List<int>> ArenaRewards    => Instance.m_Data[KEY_ARENA_REWARDS] as Dictionary<EArenaType, List<int>>;
         public static Dictionary<ELeague, List<int>>    LeagueRewards   => Instance.m_Data[KEY_LEAGUE_REWARDS] as Dictionary<ELeague, List<int>>;
-        public static int                               XpCollection    => (int)Instance.m_Data[KEY_XP_COLLECTION];
         public static List<SMessage>                    Messages        => Instance.m_Data[KEY_MESSAGES] as List<SMessage>;
 
         #endregion
@@ -251,35 +248,6 @@ namespace Save
         public static bool HasRewardsForLeagueAtLevel(ELeague league, int level)
         {
             return HasRewardsForLeague(league) && LeagueRewards[league].Contains(level);
-        }
-
-        #endregion
-
-
-        #region Xp Collection
-
-        public static int GetXp()
-        {
-            return (int)Instance.m_Data[KEY_XP_COLLECTION];
-        }
-
-        public static void AddXp(int xp)
-        {
-            Instance.SetData(KEY_XP_COLLECTION, xp + XpCollection);
-        }
-
-        public static void CollectXp()
-        {
-            if (XpCollection <= 0)
-                return;
-
-            InventoryManager.UpdateCurrency(ECurrency.Xp, XpCollection, "EndGameReward");
-            ResetXpCollection();
-        }
-
-        public static void ResetXpCollection()
-        {
-            Instance.SetData(KEY_XP_COLLECTION, 0);
         }
 
         #endregion

@@ -90,7 +90,7 @@ namespace Assets.Scripts.Managers
                     break;
 
                 case EPopUpState.ConfirmBuyPopUp:
-                    obj.GetComponent<ConfirmBuyPopUp>().Initialize((string)args[0], (SPriceData)args[1], (bool)args[2], (SRewardsData)args[3], (Action)args[4], (Action)args[5]);
+                    obj.GetComponent<ConfirmBuyPopUp>().Initialize((string)args[0], (string)args[1], (SPriceData)args[2], (bool)args[3], (SRewardsData)args[4], (Action)args[5], (Action)args[6]);
                     break;
 
                 case EPopUpState.ConfirmBuyItemPopUp:
@@ -98,7 +98,7 @@ namespace Assets.Scripts.Managers
                     break;
 
                 case EPopUpState.ConfirmBuyBundlePopUp:
-                    obj.GetComponent<ConfirmBuyBundlePopUp>().Initialize((string)args[0], (SPriceData)args[1], (bool)args[2], (SRewardsData)args[3], (Action)args[4], (Action)args[5]);
+                    obj.GetComponent<ConfirmBuyBundlePopUp>().Initialize((string)args[0], (string)args[1], (SPriceData)args[2], (bool)args[3], (SRewardsData)args[4], (Action)args[5], (Action)args[6]);
                     break;
 
                 // SCREENS -------------------------------------------------------
@@ -115,7 +115,7 @@ namespace Assets.Scripts.Managers
                     break;
 
                 case EPopUpState.LevelUpScreen:
-                    obj.GetComponent<LevelUpScreen>().Initialize(baseXp: (int)args[0], maxXp: (int)args[1], bonusXp: (int)args[2]);
+                    obj.GetComponent<LevelUpScreen>().Initialize(currentXp: (int)args[0], maxXp: (int)args[1], bonusXp: (int)args[2]);
                     break;
 
                 case EPopUpState.PowerUpInfoScreen:
@@ -141,6 +141,10 @@ namespace Assets.Scripts.Managers
                     obj.GetComponent<CollectableInfoPopUp>().Initialize((ECharacter)args[0], (int)args[1]);
                     break;
 
+                case EPopUpState.BossInfoPopUp:
+                    obj.GetComponent<BossInfoPopUp>().Initialize((string)args[0], (int)args[1], args.Count() >= 3 ? (List<string>)args[2] : new List<string>());
+                    break;
+
                 case EPopUpState.StateEffectPopUp:
                     obj.GetComponent<StateEffectPopUp>().Initialize((SStateEffectData)args[0], (int)args[1]);
                     break;
@@ -163,7 +167,7 @@ namespace Assets.Scripts.Managers
                     break;
 
                 case EPopUpState.PseudoPopUp:
-                    obj.GetComponent<PseudoPopUp>().Initialize(args.Count() > 0 ? (string)args[0] : "");
+                    obj.GetComponent<PseudoPopUp>().Initialize(args.Count() > 0 ? (string)args[0] : "", "Select a Pseudo");
                     break;
 
                 case EPopUpState.PromoCodePopUp:
@@ -174,6 +178,23 @@ namespace Assets.Scripts.Managers
                     obj.GetComponent<OverlayScreen>().Initialize();
                     break;
             }
+        }
+
+        public static void SetPopUpFadeIn(EPopUpState popUpState, params object[] args)
+        {
+            Main.Instance.StartCoroutine(AddBlackScreenUntilLoaded(popUpState));
+            SetPopUp(popUpState, args);
+        }
+
+        public static IEnumerator AddBlackScreenUntilLoaded(EPopUpState popUpState)
+        {
+            SetPopUp(EPopUpState.BlackScreen);
+            while (! HasScreen(popUpState, checkInitialized: true))
+            {
+                yield return null;
+            }
+
+            Close(EPopUpState.BlackScreen);
         }
 
         #endregion
@@ -273,6 +294,19 @@ namespace Assets.Scripts.Managers
             m_WaitFocusCoroutine = Main.Instance.StartCoroutine(WaitScreenFocus(screen, false));
         }
 
+        public static void Close(EPopUpState popUpState)
+        {
+            var screen = Screens.Where(t => t.PopUpName == popUpState.ToString());
+            if (! screen.Any())
+            {
+                ErrorHandler.Warning("Trying to close " + popUpState + " but no screen with that name was found");
+                return;
+            }
+
+            // exit the screen
+            screen.Last().Exit();
+        }
+
         public static void Clear()
         {
             Screens = new List<OverlayScreen>();
@@ -296,12 +330,14 @@ namespace Assets.Scripts.Managers
             OrderInLayer = 0;
         }
 
-        public static bool HasScreen(EPopUpState popUpState)
+        public static bool HasScreen(EPopUpState popUpState, bool checkInitialized = false)
         {
             foreach(var screen in Screens)
             {
-                if (screen.PopUpState == popUpState)
+                if (screen.PopUpState == popUpState && (!checkInitialized || screen.Initialized))
+                {
                     return true;
+                }
             }
 
             return false;

@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Description: Your <b>Ice Lance</b> spell gains 1 extra charge
   m_DescriptionVariables: 
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 0
   m_VisualEffects: []
@@ -26,10 +27,12 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
   m_IsTrueDamage: 0
+  m_EndWithShield: 0
+  m_RefreshShield: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: -1
-  m_MaxStacks: 99
+  m_MaxStacks: 10
   m_StackDecay: -1
   m_StartsActivated: 1
   m_StateEffectTriggers: []
@@ -44,6 +47,7 @@ MonoBehaviour:
   m_StateEffectScalingStacks: []
   m_AllowedSpells:
   - IceLance
+  - MarcusIceLance
   m_SpellEffectType: 0
   m_AllowedSpellTypes: 
   m_OnHits: []

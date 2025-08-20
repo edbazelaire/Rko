@@ -131,16 +131,12 @@ MonoBehaviour:
       Boosts: []
   - MaxValue: 1500000
     Rewards:
-      Currencies: []
+      Currencies:
+      - Currency: 1
+        Qty: 100
       Chests: 
       Collectables: []
-      AchievementRewards:
-      - AchievementReward: 1
-        Title: 0
-        Avatar: 0
-        Border: 0
-        Badge: 501
-        League: 7
+      AchievementRewards: []
       Boosts: []
   - MaxValue: 2000000
     Rewards:

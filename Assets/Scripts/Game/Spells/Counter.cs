@@ -42,7 +42,6 @@ namespace Game.Spells
                 return;
 
             m_CounterTimer  = m_SpellData.Duration;
-            SetShield(m_SpellData.Shield);
 
             if (m_SpellData.OnCounterProc != null)
                 m_SpellData.OnCounterProc.SetParent(m_SpellData.Parent);
@@ -57,7 +56,11 @@ namespace Game.Spells
             if (m_SpellData.IsCanceledOnCast)
                 m_Controller.SpellHandler.OnPreSpellEvent += OnPreSpellEvent;
 
+            // add counter to the list of counters
             m_Controller.CounterHandler.AddCounter(this);
+
+            // set shield at the end (the "counter" needs to be added in the list of counters before Shield recalculation)
+            SetShield(m_SpellData.Shield);
         }
 
         protected override void End()
@@ -83,6 +86,10 @@ namespace Game.Spells
                     m_Controller.StateHandler.RemoveStateEffect(effect.StateEffect, true, effect.GetStacks());
                 }
             }
+
+            // at the end - recalculate shield if has one
+            if (m_SpellData.Shield > 0)
+                m_Controller.Life.RecalculateShield();
 
             base.End();
         }
@@ -313,8 +320,12 @@ namespace Game.Spells
                 return;
 
             m_Shield = Math.Max(0, m_Shield - damages);
+            
             if (m_Shield <= 0)
+            {
                 End();
+                return;
+            }
 
             m_Controller.Life.RecalculateShield();
         }

@@ -13,13 +13,8 @@ MonoBehaviour:
   m_Name: ExtraClaws
   m_EditorClassIdentifier: 
   m_Rarety: 1
-  m_Description: Your AutoAttack now fires {0} projectiles for {1} seconds.<br>Only
-    one buff of type "Auto Attack" can be active on your character.
-  m_DescriptionVariables:
-  - Name: Projectiles
-    WithIcon: 1
-  - Name: Duration
-    WithIcon: 1
+  m_Description: Gain extra projectiles on auto attack for [Duration] seconds
+  m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
@@ -49,7 +44,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
-  m_NCharges: 1
+  m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0

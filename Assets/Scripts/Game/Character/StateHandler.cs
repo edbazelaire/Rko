@@ -1,7 +1,9 @@
 ﻿using Data;
+using Data.DataStructures.StateEffectSubStructures;
 using Enums;
 using Game.Loaders;
 using Game.Spells;
+using NUnit.Framework.Internal;
 using System;
 using System.Collections.Generic;
 using Tools;
@@ -56,6 +58,8 @@ namespace Game.Character
             HasState(EStateEffect.Silence.ToString()) 
             || HasState(EStateEffect.Malediction.ToString());
 
+        public bool IsTaunting => HasState(EStateEffect.Taunt);
+
         public bool CanCast =>
             ! IsSilenced 
             && ! IsStunned 
@@ -71,7 +75,10 @@ namespace Game.Character
             && ! HasState(EStateEffect.Jump)
             && ! HasState(EStateEffect.BlockMovement)
             && ! HasState(EStateEffect.SpecialAnimation);
-        
+
+        public bool CanGainEnergy => !HasState(EStateEffect.BlockEnergyGain);
+
+
         public bool IsInvulnerable => 
             HasState(EStateEffect.Invulnerable.ToString())
             || HasState(EStateEffect.Jump.ToString())
@@ -90,10 +97,14 @@ namespace Game.Character
             || HasState(EStateEffect.Jump.ToString())
             || HasState(EStateEffect.Invisible.ToString());
 
-        public bool IsImmuneToEffects => 
+        public bool IsImmunedToEffects =>
             HasState(EStateEffect.SpecialAnimation)
-            || HasState(EStateEffect.Vanish.ToString())
-;
+            || HasState(EStateEffect.Vanish.ToString());
+
+        public bool IsImmunedToSlows =>
+            HasState(EStateEffect.SpecialAnimation)
+            || HasState(EStateEffect.Unstoppable.ToString());
+
 
         public NetworkVariable<float> SpeedBonus            => m_SpeedBonus;
         public int RemainingShield                          => m_RemainingShield;
@@ -222,8 +233,12 @@ namespace Game.Character
                 RemoveStateEffect(EStateEffect.Jump);
         }
 
-        public int ApplyResistance(int damage)
+        public int ApplyResistance(int damage, ESpellCategory spellCategory = ESpellCategory.Direct)
         {
+            // TICK
+            if (spellCategory == ESpellCategory.Tick || spellCategory == ESpellCategory.Zone)
+                return ApplyTickResistance(damage);
+
             // apply res fix first
             damage = Math.Max(0, damage - GetInt(EStateEffectProperty.ResistanceFix));
 
@@ -233,7 +248,18 @@ namespace Game.Character
             return damage;
         }
 
-        public int ApplyHealReductions(int heal)
+        public int ApplyTickResistance(int damage)
+        {
+            // apply res fix first
+            damage = Math.Max(0, damage - GetInt(EStateEffectProperty.ResistanceTick));
+
+            // apply percentage res
+            damage = (int)Mathf.Round(damage * Mathf.Max(2 - GetFloat(EStateEffectProperty.ResistanceTickPerc), 0));
+
+            return damage;
+        }
+
+        public int ApplyBonusHealReceived(int heal)
         {
             // apply fix heal reduction
             heal = Math.Max(0, heal + GetInt(EStateEffectProperty.HealReduction));
@@ -259,6 +285,27 @@ namespace Game.Character
             return damage;
         }
 
+        public int ApplyBonusTickDamage(int damage, Controller targetController, string specialCondition = "")
+        {
+            ErrorHandler.Log("Base Damage : " + damage, ELogTag.BonusStats);
+
+            // apply fix bonus damages 
+            damage = Math.Max(0, damage + GetInt(EStateEffectProperty.BonusTickDamage, targetController, specialCondition));
+            if (specialCondition != "")
+                damage = Math.Max(0, damage + GetInt(EStateEffectProperty.BonusDamage, targetController, SBonusStats.AsUnique(specialCondition)));
+
+            ErrorHandler.Log("Damage + Fix : " + damage, ELogTag.BonusStats);
+
+            // apply res fix first
+            damage = Math.Max(0, (int)Mathf.Round(damage * GetFloat(EStateEffectProperty.BonusTickDamagePerc, targetController, specialCondition: specialCondition)));
+            if (specialCondition != "")
+                damage = Math.Max(0, damage + GetInt(EStateEffectProperty.BonusDamagePerc, targetController, SBonusStats.AsUnique(specialCondition)));
+
+            ErrorHandler.Log("Final : " + damage, ELogTag.BonusStats);
+
+            return damage;
+        }
+
         public int ApplyBonusExecutionDamage(int damage, Controller targetController, string specialCondition = "")
         {
             ErrorHandler.Log("Base Execution Damage : " + damage, ELogTag.BonusStats);
@@ -276,7 +323,7 @@ namespace Game.Character
             return damage;
         }
 
-        public int ApplyBonusHeal(int heal, Controller targetController, string specialCondition = "")
+        public int ApplyBonusHealDealt(int heal, Controller targetController, string specialCondition = "")
         {
             // apply percentage res
             heal = Math.Max(0, heal + GetInt(EStateEffectProperty.BonusHeal));
@@ -295,21 +342,27 @@ namespace Game.Character
             switch (stateEffectProperty)
             {
                 case EStateEffectProperty.TickDamage:
-                    return (baseValue + GetInt(EStateEffectProperty.BonusTickDamage)) * GetFloat(EStateEffectProperty.BonusTickDamagePerc);
+                case EStateEffectProperty.EndDamage:
+                    return (baseValue + GetInt(EStateEffectProperty.BonusTickDamage, targetController, specialCondition)) * GetFloat(EStateEffectProperty.BonusTickDamagePerc);
 
                 case EStateEffectProperty.TickHeal:
-                    return (baseValue + GetInt(EStateEffectProperty.BonusTickHeal));
+                    return (baseValue + GetInt(EStateEffectProperty.BonusTickHeal, targetController, specialCondition)) * GetFloat(EStateEffectProperty.BonusHealPerc, targetController, specialCondition: specialCondition);
 
                 case EStateEffectProperty.Damage:
-                case EStateEffectProperty.EndDamage:
                     return ApplyBonusDamage((int)Mathf.Round(baseValue), targetController, specialCondition);
 
                 case EStateEffectProperty.Heal:
                 case EStateEffectProperty.EndHeal:
-                    return ApplyBonusHeal((int)Mathf.Round(baseValue), targetController, specialCondition);
+                    return ApplyBonusHealDealt((int)Mathf.Round(baseValue), targetController, specialCondition);
 
                 case EStateEffectProperty.Shield:
                     return ApplyBonusShield((int)Mathf.Round(baseValue), targetController, specialCondition);
+
+                case EStateEffectProperty.LifeSteal:
+                    return baseValue + GetFloat(EStateEffectProperty.BonusLifeSteal) - 1;
+
+                case EStateEffectProperty.BonusTickLifeSteal:
+                    return baseValue + GetFloat(EStateEffectProperty.BonusTickLifeSteal) - 1;
 
                 default:
                     return baseValue;
@@ -353,6 +406,12 @@ namespace Game.Character
             foreach (var effect in m_StateEffects)
             {
                 baseValue += effect.RemainingShield;
+            }
+
+            if (baseValue < 0)
+            {
+                ErrorHandler.Warning("Remaining Shield (" + baseValue + ") < 0");
+                baseValue = 0;
             }
 
             m_RemainingShield = baseValue;
@@ -420,11 +479,14 @@ namespace Game.Character
             if (! IsServer)
                 return;
 
+            // calculate number of stacks that need to be applied
+            int stacks = overridingData != null ? overridingData.Value.GetStacks() : 1;
+            stacks = stateEffect.RecalculateStacks(stacks, caster, m_Controller);
+
             if (! CheckCanBeApplied(stateEffect, caster))
                 return;
 
             var pastState = GetAnimationState();
-            int stacks = overridingData != null ? overridingData.Value.GetStacks() : 1;
 
             // if already in the list of state effects, refresh it
             if (HasState(stateEffect.StateEffectName))
@@ -444,7 +506,7 @@ namespace Game.Character
             if (stacks == 0)
                 return;
 
-            if (! stateEffect.Initialize(m_Controller, caster, overridingData))
+            if (! stateEffect.Initialize(m_Controller, caster, overridingData, stacks))
                 return;
 
             ErrorHandler.Log("Adding state effect " + stateEffect, ELogTag.StateEffects);
@@ -623,8 +685,13 @@ namespace Game.Character
             if (m_RemainingShield == 0)
                 return damages;
 
-            foreach (var effect in m_StateEffects)
+            var allEffects = m_StateEffects.ToArray();
+            foreach (var effect in allEffects)
             {
+                // skip if effect no longet exists
+                if (!m_StateEffects.Contains(effect)) 
+                    continue;
+
                 damages = effect.HitShield(damages);
                 if (damages == 0)
                     break;
@@ -676,7 +743,10 @@ namespace Game.Character
 
         public bool CheckCanBeApplied(StateEffect stateEffect, Controller caster)
         {
-            if (IsImmuneToEffects && ! (IsFriendlyEffect(stateEffect) || caster.Team == m_Controller.Team))
+            if (IsImmunedToEffects && ! (IsFriendlyEffect(stateEffect) || caster.Team == m_Controller.Team))
+                return false;
+
+            if (IsUncontrollable && IsControlEffect(stateEffect.StateEffectName))
                 return false;
 
             return true;
@@ -693,6 +763,11 @@ namespace Game.Character
                 || stateEffect.StateEffectName == EStateEffect.BlockMovement.ToString()
                 || stateEffect.StateEffectName == EStateEffect.BlockCast.ToString()
                 || stateEffect.StateEffectName == EStateEffect.SpecialAnimation.ToString();
+        }
+
+        public bool IsControlEffect(string stateEffectName)
+        {
+            return Uncontrollable.CC_EFFECTS.Contains(stateEffectName);
         }
 
         #endregion
@@ -761,8 +836,8 @@ namespace Game.Character
         public EStateEffectEvent    StateEffectEvent;
         public FixedString64Bytes   StateEffectName;
         public ulong                CasterId;
-        public byte                 Stacks;
-        public byte                 MaxStacks;
+        public short                Stacks;
+        public short                MaxStacks;
         public half                 Duration;
 
         // Constructor with optional parameters
@@ -771,8 +846,8 @@ namespace Game.Character
             StateEffectEvent    = stateEffectEvent;
             StateEffectName     = stateEffectName;
             CasterId            = casterId;
-            Stacks              = (byte)stacks;
-            MaxStacks           = (byte)maxStacks;
+            Stacks              = (short)stacks;
+            MaxStacks           = (short)maxStacks;
             Duration            = (half)duration;
         }
 

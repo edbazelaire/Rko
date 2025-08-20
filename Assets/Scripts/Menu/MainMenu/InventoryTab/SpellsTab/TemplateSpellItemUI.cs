@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Managers;
 using Enums;
 using Game.Loaders;
 using Inventory;
@@ -118,12 +119,12 @@ namespace Menu.MainMenu
         }
 
         /// <summary>
-        /// Do nothing on clicked while beeing locked
+        /// Open the info pop up of this item
         /// </summary>
-        protected override void OnClickLocked()
+        public override void OpenInfoPopUp(int? level = null)
         {
-            // TODO : lock message ?
-            return;
+            level ??= m_Level;
+            ScreenManager.SetPopUp(EPopUpState.SpellInfoPopUp, Collectable, level);
         }
 
         /// <summary>

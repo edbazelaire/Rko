@@ -51,11 +51,12 @@ namespace Menu.PopUps
         // =========================================================================================
         // Dependent Members
         protected Enum m_Collectable                    => m_Data.Id;
+        protected string m_CollectableName              => m_Data.Name;
         protected int m_Level                           => m_Data.Level;
-        protected virtual bool m_IsUnlocked             => InventoryCloudData.Instance.IsUnlocked(m_Collectable);
-        protected virtual bool m_IsMaxedLevel           => InventoryManager.IsMaxLevel(m_Collectable);
-        protected virtual bool m_CanUpgrade             => InventoryManager.CanUpgrade(m_Collectable);
-        protected virtual bool m_CanBuy                 => InventoryManager.CanBuy(m_Collectable);
+        protected virtual bool m_IsUnlocked             => m_InfoOnly || InventoryCloudData.Instance.IsUnlocked(m_Collectable);
+        protected virtual bool m_IsMaxedLevel           => m_Level >= 14;
+        protected virtual bool m_CanUpgrade             => ! m_InfoOnly && InventoryManager.CanUpgrade(m_Collectable);
+        protected virtual bool m_CanBuy                 => ! m_InfoOnly && InventoryManager.CanBuy(m_Collectable);
         protected virtual SPriceData m_BuyPriceData     => ShopManagementData.GetPrice(m_Collectable);
 
         #endregion
@@ -103,7 +104,7 @@ namespace Menu.PopUps
             m_TemplateInfoTitleSection = AssetLoader.Load<GameObject>("InfoTitleSection", AssetLoader.c_MainUIComponentsInfosPath);
 
             // load data of the item
-            m_TemplateItemUI = AssetLoader.LoadTemplateItem(m_Collectable);
+            LoadTemplateItem();
         }
 
         protected override void OnPrefabLoaded()
@@ -138,8 +139,8 @@ namespace Menu.PopUps
                 Destroy(m_Data);
 
             // load data of the item
-            if (enumValue.GetType() == typeof(ECharacter))
-                m_Data = CharacterLoader.GetCharacterData((ECharacter)enumValue, level, destroy: false);
+            if (enumValue.GetType() == typeof(ECharacter) || enumValue.GetType() == typeof(EBoss) || enumValue.GetType() == typeof(ESpawn))
+                m_Data = CharacterLoader.GetCharacterData(enumValue.ToString(), level, destroy: false);
 
             else if (enumValue.GetType() == typeof(ESpell))
                 m_Data = SpellLoader.GetSpellData((ESpell)enumValue, level, destroy: false);
@@ -174,7 +175,7 @@ namespace Menu.PopUps
 
         protected virtual void SetUpTitle()
         {
-            m_Title.text = TextLocalizer.SplitCamelCase(TextLocalizer.LocalizeText(m_Collectable.ToString()));
+            m_Title.text = TextLocalizer.SplitCamelCase(TextLocalizer.LocalizeText(m_Data.Name));
         }
 
         /// <summary>
@@ -259,8 +260,13 @@ namespace Menu.PopUps
                 if (value is List<SpellRequirements> spellRequirements)
                     SetupSpellRequirementsInfoRows(spellRequirements, newSpellRequirements);
                 else
-                    ErrorHandler.Warning("SpellRequirements was provided for " + m_Collectable.ToString() + " but unable to parse the value as SpellRequirements");
+                    ErrorHandler.Warning("SpellRequirements was provided for " + m_CollectableName + " but unable to parse the value as SpellRequirements");
 
+                return;
+            }
+
+            if (key == "MaxThresholdIndex")
+            {
                 return;
             }
 
@@ -337,7 +343,7 @@ namespace Menu.PopUps
 
         protected virtual void RefreshBuyButtonUI()
         {
-            if (m_IsUnlocked || m_InfoOnly)
+            if (m_IsUnlocked || m_InfoOnly || m_BuyPriceData.Price == 0)
             {
                 m_BuyButton.gameObject.SetActive(false);
                 return;
@@ -377,6 +383,16 @@ namespace Menu.PopUps
             m_UpgradeButton.gameObject.SetActive(true);
             m_UpgradeButton.interactable = m_CanUpgrade;
             m_CostText.text = CollectablesManagementData.GetLevelData(m_Collectable, m_Level).RequiredGold.ToString();
+        }
+
+        #endregion
+
+
+        #region Helpers
+
+        protected virtual void LoadTemplateItem()
+        {
+            m_TemplateItemUI = AssetLoader.LoadTemplateItem(m_Collectable);
         }
 
         #endregion

@@ -1,4 +1,5 @@
-﻿using Enums;
+﻿using Assets.Scripts.Managers;
+using Enums;
 using Game.Spells;
 using Menu.MainMenu;
 using Save;
@@ -132,6 +133,15 @@ namespace Menu.Common.Buttons
             }
 
             base.OnClick();
+        }
+
+        /// <summary>
+        /// Open the info pop up of this item
+        /// </summary>
+        public override void OpenInfoPopUp(int? level = null)
+        {
+            level ??= m_Level;
+            ScreenManager.SetPopUp(EPopUpState.RuneInfoPopUp, Collectable, level);
         }
 
         #endregion

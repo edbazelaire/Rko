@@ -15,10 +15,11 @@ MonoBehaviour:
   UnlockTime: 43200
   IdleSoundFX: {fileID: 8300000, guid: e43c07e1e45f26d4c84a8cfd18d42851, type: 3}
   OpenSoundFX: {fileID: 0}
+  RuneRarety: 2
   Currencies:
   - Currency: 0
-    Min: 4000
-    Max: 5000
+    Min: 0
+    Max: 5300
   ExtraCardData:
     ExtraCards: 5
     RaretyPercData:
@@ -43,4 +44,4 @@ MonoBehaviour:
   - Rarety: 3
     Qty: 0
     Splits: 0
-  StateEffectFilter: 
+  SpellElements: 

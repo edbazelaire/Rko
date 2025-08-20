@@ -1,7 +1,4 @@
-﻿using Enums;
-using Game.Character;
-using Game.StateEffects.Interfaces;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace Game.Spells
@@ -12,7 +9,7 @@ namespace Game.Spells
         #region Members
 
         [SerializeField, Tooltip("Percentage of healing converted")]
-        float m_HealConversionFactor = 0.1f;
+        protected float m_HealConversionFactor = 0.15f;
 
         #endregion
 
@@ -23,14 +20,16 @@ namespace Game.Spells
         {
             base.RegisterListeners();
 
-            m_Controller.Life.OnHealedEvent += OnHealedEvent;
+            if (m_Controller != null)
+                m_Controller.Life.OnHealedEvent += OnHealedEvent;
         }
 
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
 
-            m_Controller.Life.OnHealedEvent -= OnHealedEvent;
+            if (m_Controller != null) 
+                m_Controller.Life.OnHealedEvent -= OnHealedEvent;
         }
 
         private void OnHealedEvent(int heal, ulong casterId)

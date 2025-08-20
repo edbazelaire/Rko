@@ -32,9 +32,9 @@ namespace Menu.Common.Buttons
             m_PriceDisplay = Finder.FindComponent<PriceDisplay>(m_LockState, "PriceDisplay");
         }
 
-        public override void Initialize(Enum collectable, bool asIconOncly = false)
+        public override void Initialize(Enum collectable, int level = 0, bool asIconOnly = false, bool removeListeners = false)
         {
-            base.Initialize(collectable, asIconOncly);
+            base.Initialize(collectable, level, asIconOnly, removeListeners);
 
             m_PriceDisplay.Initialize(ShopManagementData.GetPrice(m_Character));
         }
@@ -63,11 +63,10 @@ namespace Menu.Common.Buttons
             CharacterBuildsCloudData.SelectedCharacterChangedEvent  -= OnSelectedCharacterChanged;
         }
 
-        protected override void OnClickLocked()
+        public override void OpenInfoPopUp(int? level = null)
         {
-            base.OnClickLocked();
-
-            ScreenManager.SetPopUp(EPopUpState.CharacterInfoPopUp, Collectable, 0);
+            level ??= m_Level;
+            ScreenManager.SetPopUp(EPopUpState.CharacterInfoPopUp, Collectable, level);
         }
 
         protected void OnSelectedCharacterChanged()

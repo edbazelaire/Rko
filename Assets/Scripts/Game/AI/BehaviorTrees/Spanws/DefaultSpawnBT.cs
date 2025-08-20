@@ -27,9 +27,9 @@ namespace Game.AI.BehaviorTrees
         {
             return new Selector(new List<Node>
             {
-                new TaskUseSpell(m_Controller, m_Controller.SpellHandler.AutoAttack),
                 new TaskAttack(m_Controller),
-                new TaskMove(m_Controller),
+                new TaskUseSpell(m_Controller, m_Controller.SpellHandler.AutoAttack, delay: 2),
+                new TaskMove(m_Controller, false, false),
                 new TaskWait(m_Controller),
             });
         }

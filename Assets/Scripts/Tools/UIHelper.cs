@@ -1,5 +1,7 @@
-﻿using Assets.Scripts.Managers.Sound;
+﻿using Assets.Scripts.Managers;
+using Assets.Scripts.Managers.Sound;
 using Assets.Scripts.Menu.MainMenu.MainTab.Chests;
+using Data;
 using Enums;
 using Game.Loaders;
 using System;
@@ -8,6 +10,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.UI.AspectRatioFitter;
 
 namespace Tools
 {
@@ -285,13 +288,19 @@ namespace Tools
             var characterPreview = CharacterLoader.GetCharacterData(character, destroy: true).InstantiateCharacterPreview(parent);
 
             // display character preview
-            var baseScale = characterPreview.transform.localScale;
-            var parentRect = Finder.FindComponent<RectTransform>(parent);
-            float scaleFactor = Mathf.Min(parentRect.rect.height / characterPreview.transform.localScale.y, parentRect.rect.width / characterPreview.transform.localScale.x);
-            characterPreview.transform.localScale = new Vector3(baseScale.x * scaleFactor, baseScale.y * scaleFactor, 1f);
-
+            AdjustScale(ref characterPreview, parent);
+            
             // remove offset
-            var characterContainer = Finder.Find(characterPreview, "CharacterContainer");
+            var characterContainer = Finder.Find(characterPreview, "CharacterContainer", false);
+            if (characterContainer == null)
+            {
+                characterContainer = characterPreview;
+                var rigidBody = characterContainer.GetComponent<Rigidbody2D>();
+                if (rigidBody != null)
+                    rigidBody.simulated = false;
+                padding.y -= characterPreview.transform.localScale.y / 2;
+            }
+
             var basePos = characterContainer.transform.localPosition;
             basePos.x = padding.x;
             basePos.y += padding.y;
@@ -317,6 +326,26 @@ namespace Tools
                 AdjustScale(ref go, parent);
 
             return go;
+        }
+
+        #endregion
+
+
+        #region Icons Display
+
+        public static GameObject AddSpawnIconDisplayer(CharacterData characterData, Transform parent, bool interraclable = true)
+        {
+            var template = GameObject.Instantiate(AssetLoader.Load<GameObject>("IconDisplayer", AssetLoader.c_TemplatesUIPath), parent);
+            Finder.FindComponent<Image>(template, "Icon").sprite = AssetLoader.LoadCharacterIcon(characterData.Name);
+            Finder.FindComponent<AspectRatioFitter>(template).aspectMode = AspectMode.HeightControlsWidth;
+
+            if (interraclable)
+            {
+                Button button = template.AddComponent<Button>();
+                button.onClick.AddListener(() => ScreenManager.SetPopUp(EPopUpState.BossInfoPopUp, characterData.Name, characterData.Level));
+            }
+
+            return template;
         }
 
         #endregion

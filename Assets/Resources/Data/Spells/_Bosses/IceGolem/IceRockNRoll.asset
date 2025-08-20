@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56b41aca370c9c94b9847be98bc4e21f, type: 3}
   m_Name: IceRockNRoll
   m_EditorClassIdentifier: 
-  Rarety: 0
-  m_Description: 
+  m_Rarety: 0
+  m_Description: 'Unleashes [NWaves] spinning boulders of ice that smash through
+    anything in their path, each dealing [Damage] damage, applying [Stun] and [IceBreak]'
   m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 1
@@ -41,6 +42,7 @@ MonoBehaviour:
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -54,8 +56,17 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_Charges: 1
   EnergyGain: 0
   EnergyCost: 100
   m_Damage: 120
@@ -82,6 +93,8 @@ MonoBehaviour:
   AnimationTimer: 1.2
   m_Cooldown: 0
   SubSpellData: {fileID: 11400000, guid: ee3424fe91110014ca42e09e61b6bff1, type: 2}
+  m_UseAutoAttack: 0
+  m_OverridingSubData: []
   MultiProjectileType: 2
   SubSpellSpawn:
     m_SpellTargetX:

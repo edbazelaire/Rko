@@ -19,6 +19,7 @@
         // -- info PopUps
         CollectableInfoPopUp        = 11,
         CharacterInfoPopUp          = 12,
+        BossInfoPopUp               = 35,   // <-->
         RuneInfoPopUp               = 13,
         SpellInfoPopUp              = 14,
         StateEffectPopUp            = 15,
@@ -40,13 +41,16 @@
         ConfirmWatchAdPopUp         = 33,   
 
         // -- options popup
-        ArenaOptionsPopUp           = 34,     // <-->
+        ArenaOptionsPopUp           = 34,     
 
         // -- config popup
         SettingsPopUp               = 29,
         MessageriePopUp             = 30,
         PromoCodePopUp              = 31,
         LoginPopUp                  = 32,
+
+        // -- loading and other
+        BlackScreen                 = 1000,
     }
 
     public enum EEnv
@@ -72,6 +76,7 @@
     public enum ESpecialGiftCodes
     {
         FULLUNLOCK = 0,
+        MEOWMEOW = 1,
     }
 
     public enum EProduct
@@ -167,6 +172,8 @@
         DarkVeil        = 2,
         AzurePowerOrb   = 3,
         ChemicalSlime   = 4,
+        Molken          = 5,
+        ChaosTurtle     = 6,
     }
 
     public enum ESpell
@@ -217,7 +224,7 @@
         //Corrupted           = 42,
         VoidEmbrace         = 43,
         PlagueArrows        = 44,
-        EmperorOfFlames     = 45,
+        //EmperorOfFlames     = 45,
         ExperimentalVial    = 46,
         //Vortex              = 47,
         Shardrot            = 48,
@@ -243,12 +250,13 @@
         Hellnova            = 68,
         //Lavachunk           = 69,
         //VolcanicMeditation  = 70,
-        //MoltenSmash         = 71,
+        Molken              = 71,
         HollowDagger        = 72,
         TrueshotBarrage     = 73,
         PiercingBolts       = 74,
         PressureShot        = 75,
         WeaponsSalve        = 76,
+        GreatIceLance       = 77,
 
         // ======================================================================
         // Character ABILITIES
@@ -258,7 +266,7 @@
         Erasement           = 1003,
         // -- Marcus
         FrozenOrb           = 1004,
-        WinterProtection    = 1005,
+        MarcusIceLance      = 1005,
         ArcticToundra       = 1006,
         // -- Srug
         Curse               = 1007,
@@ -336,6 +344,9 @@
         // ======================================================================
         // SPAWN ABILITIES
         ChemicalSlimeAttack = 1000001,
+        Sparks              = 1000002,   // Molken (aa)
+        Wazaaah             = 1000003,   // Molken (ult)
+        Tchaos              = 1000004,   // Chaos Turtle (ult)
     }
 
     public enum ESpellType
@@ -441,6 +452,8 @@
         HammeredRune            = 25,
         CorruptionRune          = 26,
         IceLanceMastery         = 27,
+        EmperorOfFlames         = 28,
+        ChaosTurtle             = 29,
     }
 
     public enum EEffectType
@@ -716,7 +729,11 @@
         Stun                = 1,
         Frozen              = 2,
         Invulnerable        = 3,
+        Uncontrollable      = 10,
+        Enraged             = 21,
         Invisible           = 4,
+        Taunt               = 28,   
+        Unstoppable         = 29,   // <----->
 
         // knockback effects
         Knockback           = 5,
@@ -729,7 +746,6 @@
         Burn                = 8,
         Poison              = 9,
 
-        Uncontrollable      = 10,
         Jump                = 11,
         IronSkin            = 12,
         Cursed              = 13,
@@ -740,13 +756,12 @@
         Malediction         = 18,
         VoidPact            = 19,               // CHANGE THAT NAME !!! EFFECT REPLACING AUTO ATTACK IN "CORRUPTED"
         UnTargettable       = 20,
-        // todo             = 21
         Combustion          = 22,
         Airborne            = 23,
         Infection           = 24,
         Vanish              = 25,
         Cleanse             = 26,
-        RestlessBlade       = 27,
+        RestlessBlade       = 27,   
 
         // ======================================================================
         // Special Effects (boss)
@@ -754,6 +769,10 @@
         DragonicRest        = 10002,
         AzurePowerOrb       = 10003,
         Howling             = 10004,
+        Melting             = 10005,
+        AlphaFrenzyStack    = 10006,
+        BloodLust           = 10007,
+        Unyelding           = 10008,
 
         // ======================================================================
         // Special Effects (characters)
@@ -762,11 +781,16 @@
         MoltenSpirit        = 20003,
 
         // ======================================================================
+        // Special Effects (spawns)
+        ChaosTurtleDiet     = 30001,
+        BornedToBurn        = 30002,
+
+        // ======================================================================
         // Special Effects (animation)
         SpecialAnimation    = 100001,
         BlockMovement       = 100002, 
         BlockCast           = 100003,
-
+        BlockEnergyGain     = 100004,
     }
 
     public enum EStateEffectType
@@ -801,30 +825,31 @@
 
     public enum ESpellProperty
     {
-        None,
+        None = 0,
 
-        Heal,
-        Damage,
-        Cooldown,
-        Duration,
-        LifeSteal,
-        NProjectiles,
-        NWaves,
-        DelayBetweenLaunches,
-        DelayBetweenWaves,
-        ProjectileZoneSize,
-        Size,
-        DurationTick,
-        GrowSizeFactor,
-        TickDamage,
-        TickHeal,
-        TickShield,
-        Shield,
-        Delay,
-        ExecutionDamage,
-        Charges,
-        Trajectory,
-        AnimationTimer,
+        Heal                    = 1,
+        Damage                  = 2,
+        Cooldown                = 3,
+        Duration                = 4,
+        LifeSteal               = 5,
+        NProjectiles            = 6,
+        NWaves                  = 7,
+        DelayBetweenLaunches    = 8,
+        DelayBetweenWaves       = 9,
+        ProjectileZoneSize      = 10,
+        Size                    = 11,
+        DurationTick            = 12,
+        GrowSizeFactor          = 13,
+        TickDamage              = 14,
+        TickHeal                = 15,
+        TickShield              = 16,
+        TickEnergy              = 23,   // <--->
+        Shield                  = 17,
+        Delay                   = 18,
+        ExecutionDamage         = 19,
+        Charges                 = 20,
+        Trajectory              = 21,
+        AnimationTimer          = 22,
     }
 
     public enum EStateEffectProperty
@@ -839,6 +864,8 @@
         BonusShieldPerc         = 21,
         ResistanceFix           = 5,
         ResistancePerc          = 6,
+        ResistanceTick          = 26,   
+        ResistanceTickPerc      = 27,   // <---->
         BonusDamage             = 7,
         BonusDamagePerc         = 8,
         BonusExecutionDamage    = 22,
@@ -846,12 +873,13 @@
         BonusLifeSteal          = 9,
         MissingLifeFactor       = 10,
         Damage                  = 11,
-        ExecutionDamage         = 25,   // -------------
+        ExecutionDamage         = 25,   
 
         Tick                    = 12,
         TickDamage              = 13,
         TickHeal                = 14,
         TickShield              = 15,
+        TickEnergy              = 115,   
         AttackSpeed             = 16,
 
         CastSpeed               = 17,
@@ -879,9 +907,10 @@
         BonusBurnDamage         = 112,
         BonusSlowPerc           = 113,
         Priority                = 114,
-        TickEnergy              = 115,
         Energy                  = 116,
-        MaxThresholdIndex       = 120,      // -------------
+        PassiveEnergyGain       = 121,      
+        MaxEnergy               = 122,      // <-->
+        MaxThresholdIndex       = 120,      
     }
 
     public enum EAnimation
@@ -1020,20 +1049,30 @@
     public enum EChest
     {
         // classics
-        Common,
-        Rare,
-        Epic,
-        Legendary,
+        Common          = 0,
+        Rare            = 1,
+        Epic            = 2,
+        Legendary       = 3,
 
         // fire chests
-        Ember,
-        Scorchstone,
-        PyroMaster,
+        Ember           = 4,
+        Scorchstone     = 5,
+        PyroMaster      = 6,
 
         // frost chests
-        WintersBreath,
-        Iceforged,
-        FrostMaster,
+        WintersBreath   = 7,
+        Iceforged       = 8,
+        FrostMaster     = 9,
+
+        // poison chests
+        RarePoison      = 10,    // TODO
+        EpicPoison      = 11,    // TODO
+        Vinebound       = 12,
+
+        // poison chests
+        RareVoid        = 13,    // TODO
+        EpicVoid        = 14,    // TODO
+        Abyssforged     = 15,
     }
 
     public enum EPowerOrb
@@ -1218,6 +1257,7 @@
         Eternal_Winter_King     = 1005,
         // --
         TheDicey                = 1015,
+        Legend_Of_The_North     = 1016,
 
         // Fire Arena ======================================================
         Pyro_Master             = 1104,
@@ -1255,7 +1295,8 @@
         FrostMaster     = 11,
         ChibiFrostDemon = 105,
         QuiProQuo       = 501, 
-        IceGolem        = 502, 
+        IceGolem        = 502,
+        FrozenLand      = 503,
 
         // ======================================================================================
         Alexander       = 1000,
@@ -1263,6 +1304,10 @@
         Marcus          = 1010,
         Kahnan          = 1030,
         Srug            = 1040,
+
+        // ======================================================================================
+        // Achievements
+        Dragon          = 10001,
     }
 
     public enum EBorder
@@ -1315,7 +1360,7 @@
         HeartOfFire = 51,
 
         // -- pvp
-        PvpGamesWon = 100,
+        PvpGamesWon     = 100,
         // -- solo
         SoloGames       = 201,
         LoneWolf        = 202,
@@ -1335,7 +1380,10 @@
         UncertainShot   = 10001,
         MasterOfChaos   = 10002,        
         RandomEntity    = 10003,        // TODO (icon not made)  ----------------------------------
-        Undying         = 10004,       
+        Undying         = 10004,      
+        ItSnowProblem   = 10005,
+        FrozenBlade     = 10006,
+        LegendOfTheNorth = 10007,
     }
 
     public enum EAchievementReward

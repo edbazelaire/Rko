@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bec91e441d966e438d35c0133adae84, type: 3}
+  m_Name: Enraged
+  m_EditorClassIdentifier: 
+  m_Description: Prevent character from taking any damages, and makes him immune
+    to CC
+  m_DescriptionVariables: 
+  m_StateEffectType: 0
+  m_IsDisplayed: 1
+  m_VisualEffects: []
+  m_GfxEffects:
+  - Prefab: {fileID: 2910976597878939058, guid: 3080b5e33c6b8054f815bdf19f89f303, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 1
+      m_EndSpellPart: 7
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0.7
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 1
+    Offset: {x: 0, y: 0.2}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
+  m_Animation: 0
+  m_OnApplySoundFX: {fileID: 0}
+  m_PermanantSoundFX: {fileID: 0}
+  m_ConsumeState: 0
+  m_DefaultState: 0
+  m_IsInstantanious: 0
+  m_IsConsumedOnEnd: 0
+  m_IsTrueDamage: 0
+  m_EndWithShield: 0
+  m_RefreshShield: 0
+  m_Priority: 0
+  m_Delay: 0
+  m_Duration: -1
+  m_MaxStacks: 1
+  m_StackDecay: -1
+  m_StartsActivated: 1
+  m_StateEffectTriggers: []
+  m_StateEffectActivations: []
+  m_BonusStats: []
+  m_StatConversions: []
+  m_SubStateEffects:
+  - StateEffect: 3
+    Stacks: 1
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
+  - StateEffect: 10
+    Stacks: 1
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
+  m_HoldingStateEffects: []
+  m_OnStartStateEffect: []
+  m_OnEndStateEffect: []
+  m_StateEffectScalingLevel: []
+  m_StateEffectScalingStacks: []

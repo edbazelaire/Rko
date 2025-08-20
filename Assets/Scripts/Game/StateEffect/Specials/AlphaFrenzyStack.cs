@@ -1,7 +1,5 @@
 ﻿using Enums;
 using System.Collections.Generic;
-using Unity.Collections;
-using Unity.Netcode;
 using UnityEngine;
 
 namespace Game.Spells
@@ -49,12 +47,18 @@ namespace Game.Spells
         {
             base.RegisterListeners();
 
+            if (m_Controller == null)
+                return;
+
             m_Controller.StateHandler.StateEffectEvent += OnStateEffectEvent;
         }
 
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
+
+            if (m_Controller == null)
+                return;
 
             m_Controller.StateHandler.StateEffectEvent -= OnStateEffectEvent;
         }
@@ -71,6 +75,18 @@ namespace Game.Spells
 
             SetStacks(1);
             Refresh();
+        }
+
+        #endregion
+
+
+        #region Description
+
+        public override string GetDescription()
+        {
+            string description = base.GetDescription();
+            description += "\n\nAlpha Frenzy : " + m_OnEndStateEffect[0].GetDescription();
+            return description;
         }
 
         #endregion

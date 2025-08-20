@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Game.SpellGFXs
 {
-    public class EmperorOfFlamesGFX : SpellGFX
+    public class EmperorOfFlamesGFX : StateEffectGFX
     {
         #region Members
 
@@ -39,6 +39,8 @@ namespace Game.SpellGFXs
 
         protected override void FindComponents()
         {
+            Debug.LogWarning("EmperorOfFlames GFX : FindComponents()");
+
             // Find all Particles
             m_FireTorch         = Finder.FindComponent<ParticleSystem>("FireTorch");
             m_FireMovingLeft    = Finder.FindComponent<ParticleSystem>("FireMoving_Left");
@@ -55,7 +57,7 @@ namespace Game.SpellGFXs
 
             // init data 
             m_BasePosition = m_CharacterPreview.localPosition;
-            m_AnimationTimer = m_SpellData.AnimationTimer / m_Controller.SpellHandler.GetCastSpeed(m_SpellData.Name);
+            m_AnimationTimer = m_PrefabSpawn.GFXLifetime.Persistance;
             m_Timer = m_AnimationTimer;
         }
 
@@ -123,7 +125,7 @@ namespace Game.SpellGFXs
 
         IEnumerator MoveFire()
         {
-            var halfTimer = m_SpellData.AnimationTimer * 0.25f / 2;         // half the time the animation should take
+            var halfTimer = m_AnimationTimer * 0.25f / 2;         // half the time the animation should take
             var timer = halfTimer * 2;
 
             m_FireMovingLeft.gameObject.SetActive(true);
@@ -147,7 +149,7 @@ namespace Game.SpellGFXs
         {
             m_FireTorch.gameObject.SetActive(true);
 
-            var baseTimer = m_SpellData.AnimationTimer * 0.25f;         // half the time the animation should take
+            var baseTimer = m_AnimationTimer * 0.25f;                   // half the time the animation should take
             var timer = baseTimer;                                      // remaining time for the animation
             var baseScale = m_FireTorch.transform.localScale;           // base scale of the fire torch
 
@@ -184,6 +186,7 @@ namespace Game.SpellGFXs
             }
 
             m_FireEnergyCharge.gameObject.SetActive(false);
+            m_CharacterPreview.localPosition = m_BasePosition;
         }
 
         #endregion

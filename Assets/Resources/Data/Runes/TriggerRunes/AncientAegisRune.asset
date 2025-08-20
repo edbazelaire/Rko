@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e83ee2023ecc7e04480ae9c612ad7749, type: 3}
   m_Name: AncientAegisRune
   m_EditorClassIdentifier: 
-  Rarety: 1
+  m_Rarety: 1
   m_Description: 
   m_DescriptionVariables: []
-  Description: 
   m_SpellElements: 02000000
+  Description: 
   m_MinorPower:
     Description: 'While your character has shield [TriggerEffect.0].\n[TriggerEffect.1]
       whenever your character procs [Frozen] or [IceBreak] '
@@ -24,19 +24,22 @@ MonoBehaviour:
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: AncientAegis
+      OverridingData: []
       Level: 0
       Target: 0
-      SpellActivationEvent: 4
-      ActivationTreshold: 1
-      SpellDeactivationEvent: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
-      NActivations: -1
+      NActivations: 0
       Cooldown: 0
     - SpellDataName: AncientAegisShield
+      OverridingData: []
       Level: 0
       Target: 0
       SpellActivationEvent: 1
@@ -45,6 +48,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 1
       StateEffectName: Frozen,IceBreak
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: -1
@@ -57,19 +61,22 @@ MonoBehaviour:
     m_BonusLevel: 6
     m_TriggerEffects:
     - SpellDataName: AncientAegis
+      OverridingData: []
       Level: 0
       Target: 0
-      SpellActivationEvent: 4
-      ActivationTreshold: 1
-      SpellDeactivationEvent: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
-      NActivations: -1
+      NActivations: 0
       Cooldown: 0
     - SpellDataName: AncientAegisShield
+      OverridingData: []
       Level: 0
       Target: 0
       SpellActivationEvent: 1
@@ -78,6 +85,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 1
       StateEffectName: Frozen,IceBreak
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: -1
@@ -90,19 +98,22 @@ MonoBehaviour:
     m_BonusLevel: 12
     m_TriggerEffects:
     - SpellDataName: AncientAegis
+      OverridingData: []
       Level: 0
       Target: 0
-      SpellActivationEvent: 4
-      ActivationTreshold: 1
-      SpellDeactivationEvent: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
-      NActivations: -1
+      NActivations: 0
       Cooldown: 0
     - SpellDataName: AncientAegisShield
+      OverridingData: []
       Level: 0
       Target: 0
       SpellActivationEvent: 1
@@ -111,6 +122,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 1
       StateEffectName: Frozen,IceBreak
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: -1
@@ -118,6 +130,7 @@ MonoBehaviour:
     m_BonusStats: []
   m_TriggerEffects:
   - SpellDataName: AncientAegis
+    OverridingData: []
     Level: 0
     Target: 0
     SpellActivationEvent: 4
@@ -126,11 +139,13 @@ MonoBehaviour:
     DeactivationTreshold: 0
     StateEffectEvent: 0
     StateEffectName: 
+    NStateEffectActivationThreshold: 0
     Delay: 0
     Duration: 0
     NActivations: -1
     Cooldown: 0
   - SpellDataName: AncientAegisShield
+    OverridingData: []
     Level: 0
     Target: 0
     SpellActivationEvent: 1
@@ -139,6 +154,7 @@ MonoBehaviour:
     DeactivationTreshold: 0
     StateEffectEvent: 1
     StateEffectName: Frozen,IceBreak
+    NStateEffectActivationThreshold: 0
     Delay: 0
     Duration: 0
     NActivations: -1

@@ -1,5 +1,4 @@
 ﻿using Enums;
-using Game.Loaders;
 using System;
 using System.Collections.Generic;
 using Tools;
@@ -142,7 +141,7 @@ namespace Data
                 values.Add(ConvertDescriptionVariable(descriptionVariable, infos));
             }
 
-            return string.Format(TextHandler.ReplaceStateEffectTokens(m_Description), values.ToArray());
+            return string.Format(TextHandler.ReplaceProperties(TextHandler.ReplaceStateEffectTokens(m_Description), infos, this), values.ToArray());
         }
 
         /// <summary>

@@ -1,8 +1,4 @@
-﻿using Assets.Scripts.Data.Interfaces;
-using Data;
-using Enums;
-using System;
-using Tools;
+﻿using System;
 using UnityEngine;
 
 namespace Data.DataStructures.SpellSubStructures
@@ -31,6 +27,17 @@ namespace Data.DataStructures.SpellSubStructures
         public float        Duration    => m_Duration;
 
         public bool         IsActive    => Speed != 0;
+
+        #endregion
+
+
+        #region Init & End
+
+        public SForce(float speed, float duration)
+        {
+            m_Speed = speed;
+            m_Duration = duration;
+        }
 
         #endregion
 

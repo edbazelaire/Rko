@@ -253,16 +253,20 @@ namespace Network
                         if (GameMode == EGameMode.Arena)
                         {
                             playerData.SetPowerUps(ProgressionCloudData.CurrentArena.GetActivePowerUps());
-                            playerData.SetBuild(ProgressionCloudData.CurrentArena.BuildData);
+                            // if a specific build data was locked for this run, use it. Otherwise, use current selected build
+                            playerData.SetBuild(ProgressionCloudData.CurrentArena.HasBuildData() ? ProgressionCloudData.CurrentArena.BuildData : CharacterBuildsCloudData.CurrentBuild);
                         }
 
+                        // send self data to the GameManager
                         GameManager.Instance.AddPlayerDataServerRPC(
                             NetworkManager.Singleton.LocalClientId,
                             playerData
                         );
 
+                        // if has to fill game with bots - send bots data
                         SendBotsData();
                     
+                        // go to next state
                         NextState();
                         return;
 
@@ -526,9 +530,15 @@ namespace Network
         /// </summary>
         public async void LeaveLobby()
         {
+            // stop all current coroutines
+            StopAllCoroutines();
+            m_CurrentCoroutine = null;
+
+            // if has lobby : remove player from this lobby
             if (LobbyService.Instance != null && m_JoinedLobby != null)
                 await LobbyService.Instance.RemovePlayerAsync(m_JoinedLobby.Id, AuthenticationService.Instance.PlayerId);
 
+            // reset value of the lobby
             ResetLobby();
 
             ErrorHandler.Log("Lobby left", ELogTag.Lobby);

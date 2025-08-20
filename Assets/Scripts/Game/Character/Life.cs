@@ -1,10 +1,8 @@
 using Assets.Scripts.Game;
-using Data;
 using Enums;
 using Game.StateEffects.Interfaces;
 using System;
 using Tools;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -86,7 +84,19 @@ public class Life : NetworkBehaviour
         }
 
         DiedEvent?.Invoke();
+        Controller.OnDeathEvent?.Invoke(m_Controller);
         return true;
+    }
+
+
+    /// <summary>
+    /// Increase Max HP
+    /// </summary>
+    /// <param name="hp"></param>
+    public void AddHp(int hp)
+    {
+        m_MaxHp.Value += hp;
+        m_Hp.Value += hp;
     }
 
     /// <summary>
@@ -110,7 +120,7 @@ public class Life : NetworkBehaviour
         }
 
         // calculate damages after resistance
-        damage = ignoreRes ? damage : m_Controller.StateHandler.ApplyResistance(damage);
+        damage = ignoreRes ? damage : m_Controller.StateHandler.ApplyResistance(damage, spellCategory);
 
         // check provided value
         if (damage <= 0)
@@ -155,7 +165,7 @@ public class Life : NetworkBehaviour
         }
 
         // Apply reductions
-        heal = m_Controller.StateHandler.ApplyHealReductions(heal);
+        heal = m_Controller.StateHandler.ApplyBonusHealReceived(heal);
 
         // Interception (before apply)
         foreach (var effect in m_Controller.StateHandler.StateEffects)
@@ -218,6 +228,7 @@ public class Life : NetworkBehaviour
         }
 
         damages = -m_Shield;
+        m_Shield = 0;
         m_FinalShield.Value = 0;
 
         RecalculateShield();

@@ -176,14 +176,19 @@ namespace Data.GameManagement
             return arenaStage == m_ArenaLevelData[arenaLevel].StageData.Count - 1;
         }
 
-        public EBoss GetBoss(int arenaLevel)
+        public SStageData GetBossStageData(int arenaLevel)
         {
             if (arenaLevel > m_ArenaLevelData.Count)
             {
                 ErrorHandler.Error("Trying to get boss for arena level " + arenaLevel + " with arena max level beeing " + m_ArenaLevelData.Count);
-                return EBoss.None;
+                return default;
             }
-            return m_ArenaLevelData[arenaLevel].StageData.LastOrDefault().Boss;
+            return m_ArenaLevelData[arenaLevel].StageData.LastOrDefault();
+        }
+
+        public EBoss GetBoss(int arenaLevel)
+        {
+            return GetBossStageData(arenaLevel).Boss;
         }
 
         public SRewardsData GetCurrentRewards()

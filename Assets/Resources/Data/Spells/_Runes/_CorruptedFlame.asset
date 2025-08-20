@@ -44,6 +44,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
@@ -63,8 +64,8 @@ MonoBehaviour:
   TriggerPlayer: 1
   EnemyStateEffects:
   - StateEffect: 13
-    Stacks: 2
-    BonusStacksPerLevel: 0.3
+    Stacks: 3
+    BonusStacksPerLevel: 0.5
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0

@@ -49,7 +49,7 @@ namespace Game.StateEffects.Quests
 
         #region Stacks
 
-        protected override void SetStacks(int stacks)
+        public override void SetStacks(int stacks)
         {
             base.SetStacks(stacks);
 
@@ -57,7 +57,7 @@ namespace Game.StateEffects.Quests
             for (int i = 0; i < m_MaxIndex; i++)
             {
                 // CHECK : number of stacks above stacks treshold ?
-                if (stacks >= m_QuestThresholds[i].RequiredStacks)
+                if (m_Stacks >= m_QuestThresholds[i].RequiredStacks)
                 {
                     // CHECK : if is last of the thresholds - activate this effect
                     if (i == m_MaxIndex - 1)
@@ -182,7 +182,7 @@ namespace Game.StateEffects.Quests
             if (! questThreshold.BonusStats.IsNullOrEmpty())
             {
                 ErrorHandler.Log("     + Adding BonusStats : " + questThreshold.BonusStats.Count(), ELogTag.StateEffects);
-                m_BonusStats.AddRange(questThreshold.BonusStats);
+                AddProperties(questThreshold.BonusStats);
             }
         }
 
@@ -249,6 +249,7 @@ namespace Game.StateEffects.Quests
             base.SetProperty(property, value);
         }
 
+
         #endregion
 
 
@@ -269,67 +270,7 @@ namespace Game.StateEffects.Quests
         #endregion
 
 
-        #region Listeners
-
-        protected override void RegisterListeners()
-        {
-            base.RegisterListeners();
-
-            foreach (var effectTrigger in m_StateEffectTriggers)
-            {
-
-            }
-
-            if (m_StateEffectActivations.Count() > 0)
-                StateEffect.StateEffectEvent += OnStateEffectEvent;
-        }
-
-        protected override void UnRegisterListeners()
-        {
-            base.UnRegisterListeners();
-            if (m_StateEffectActivations.Count() > 0)
-                StateEffect.StateEffectEvent -= OnStateEffectEvent;
-        }
-
-        void OnStateEffectEvent(string stateEffectName, EStateEffectEvent stateEffectEvent, int stacks, ulong targetId, ulong casterId, string a)
-        {
-            // SAFETY : has a caster provided
-            if (m_Caster == null)
-            {
-                ErrorHandler.Error("Provided Controller is null for state effect : " + stateEffectName + " - at event " + stateEffectEvent);
-                return;
-            }
-
-            // SAFETY : is still active
-            if (! m_IsActivated)
-            {
-                return;
-            }
-
-            foreach (SStateEffectActivation stateEffectActivation in m_StateEffectActivations)
-            {
-                // CHECK : comes from the correct caster
-                if (casterId != m_Caster.PlayerId)
-                    return;
-
-                // CHECK : does the provided stateEffect have one of activation effect
-                if (stateEffectActivation.StateEffectName != stateEffectName)
-                    continue;
-
-                // CHECK : the event is the required one
-                if (stateEffectActivation.StateEffectEvent != stateEffectEvent)
-                    continue;
-
-                ErrorHandler.Log("OnStateEffectEvent - " + stateEffectName + " | " + stateEffectEvent + " (" + stacks + ")", ELogTag.StateEffects);
-
-                Refresh(stateEffectActivation.Stacks * stacks);
-            }
-        }
-
-        #endregion
-
-
-        #region Info & Description
+       #region Info & Description
 
         public override string GetDescription()
         {
@@ -341,7 +282,7 @@ namespace Game.StateEffects.Quests
                 index++;
 
                 // Required Stacks is above max allowed stacks, meaning that the effect is never getting triggered
-                if (questThreshold.RequiredStacks > m_MaxStacks || index >= m_MaxIndex)
+                if ((m_MaxStacks > 0 && questThreshold.RequiredStacks > m_MaxStacks) || index >= m_MaxIndex)
                     break;
 
                 if (!description.IsNullOrEmpty())

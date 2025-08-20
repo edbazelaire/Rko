@@ -48,6 +48,7 @@ namespace Menu.PopUps
             m_ErrorScreen.SetActive(false);
             m_VideoPlayer.clip = clip;
             m_VideoPlayer.isLooping = true;
+            m_VideoPlayer.Prepare();
         }
 
         public override void Activate(bool activate)

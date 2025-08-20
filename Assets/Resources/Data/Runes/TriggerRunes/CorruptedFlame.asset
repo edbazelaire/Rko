@@ -23,6 +23,7 @@ MonoBehaviour:
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: _CorruptedFlame
+      OverridingData: []
       Level: 0
       Target: 50
       SpellActivationEvent: 1
@@ -40,9 +41,10 @@ MonoBehaviour:
   m_MajorPower:
     Description: 
     m_DescriptionVariables: []
-    m_BonusLevel: 6
+    m_BonusLevel: 10
     m_TriggerEffects:
     - SpellDataName: _CorruptedFlame
+      OverridingData: []
       Level: 0
       Target: 50
       SpellActivationEvent: 1
@@ -60,9 +62,10 @@ MonoBehaviour:
   m_PrimalPower:
     Description: '[TriggerEffect.0]\nEach [Burn] tick apply a stack of [Cursed]'
     m_DescriptionVariables: []
-    m_BonusLevel: 8
+    m_BonusLevel: 10
     m_TriggerEffects:
     - SpellDataName: _CorruptedFlame
+      OverridingData: []
       Level: 0
       Target: 50
       SpellActivationEvent: 1
@@ -77,6 +80,7 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
     - SpellDataName: Cursed
+      OverridingData: []
       Level: 0
       Target: 50
       SpellActivationEvent: 1

@@ -208,9 +208,6 @@ namespace Save
         /// <summary> event fired when reset called in the database </summary>
         public static Action<ECollectableType>      ResetCollectableEvent;
 
-        /// <summary> SPECIFIC EVENT : for collectable data changed of type "Character" : (remove ?) </summary>
-        public static Action<SCollectableCloudData> CharacterDataChangedEvent;
-
         // ===============================================================================================
         // DATA
         /// <summary> default data for the Inventory </summary>

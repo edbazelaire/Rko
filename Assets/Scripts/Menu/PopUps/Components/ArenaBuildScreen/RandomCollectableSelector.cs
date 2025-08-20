@@ -89,7 +89,14 @@ namespace Menu.PopUps.Components
                 // init template with values
                 templateItem.Initialize(m_Values[i], ProfileCloudData.AccountLevel, asIconOnly: true, removeListeners: true);
                 templateItem.SetBottomOverlay(m_Values[i].ToString());
-                templateItem.OverrideOnClickListener(() => { ToggleSelection(templateItem); });
+                templateItem.OverrideOnClickListener(() => { });
+                templateItem.ActivateHoldOnTrigger(true);
+                templateItem.HoldOnTrigger.HoldTriggeredEvent += (bool activate) => { 
+                    if (activate)
+                        templateItem.OpenInfoPopUp(); 
+                    else
+                        ToggleSelection(templateItem);
+                };
 
                 // add to list of templates
                 m_Templates.Add(templateItem);
@@ -193,7 +200,8 @@ namespace Menu.PopUps.Components
         {
             m_Values = new List<Enum>();
 
-            var currentBuild = ProgressionCloudData.CurrentArena.BuildData;
+            // init default build
+            var currentBuild = new SBuildData(characterLevel: ProfileCloudData.AccountLevel, character: ECharacter.Alexander.ToString());
             for (int i = 0; i < m_NPropositions; i++)
             {
                 Enum value;

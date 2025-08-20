@@ -30,7 +30,7 @@ namespace Managers.Monetization.IAP
         private IExtensionProvider  m_ExtensionProvider;
 
         private Action              m_OnPurchaseSuccess;
-        public static bool Initialized => Instance != null && Instance.m_StoreController != null && Instance.m_ExtensionProvider != null && false;
+        public static bool Initialized => Instance != null && Instance.m_StoreController != null && Instance.m_ExtensionProvider != null;
 
         #endregion
 

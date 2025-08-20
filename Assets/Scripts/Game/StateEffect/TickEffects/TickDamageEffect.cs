@@ -30,9 +30,9 @@ namespace Game.Spells
 
         #region Init & End
 
-        public override bool Initialize(Controller controller, Controller caster, SStateEffectData? stateEffect)
+        public override bool Initialize(Controller controller, Controller caster, SStateEffectData? stateEffect, int stacks = 1)
         {
-            if (!base.Initialize(controller, caster, stateEffect))
+            if (!base.Initialize(controller, caster, stateEffect, stacks))
                 return false;
 
             m_TickTimer = m_Tick;
@@ -100,7 +100,7 @@ namespace Game.Spells
                     return;
 
                 ErrorHandler.Log($"{name} : {damages} DAMAGES", ELogTag.StateEffects);
-                damages = m_Controller.Life.Hit(damages, m_Caster.PlayerId, m_Parent, ESpellCategory.Tick, true);
+                damages = m_Controller.Life.Hit(damages, m_Caster.PlayerId, m_Parent, ESpellCategory.Tick, m_IsTrueDamage);
 
                 int lifesteal = (int)Mathf.Round(damages * FinalTickLifeSteal);
                 if (lifesteal > 0)
@@ -133,7 +133,6 @@ namespace Game.Spells
 
         public override string GetDescription()
         {
-            Debug.Log("GetDescription()");
             return base.GetDescription();
         }
 

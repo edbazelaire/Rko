@@ -33,6 +33,7 @@ namespace Menu
 
         // ========================================================================================
         // Public accessors
+        public Button Button => m_Button;
         public Image BackgroundImage => m_BackgroundImage;
 
         #endregion

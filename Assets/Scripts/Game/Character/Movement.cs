@@ -1,4 +1,3 @@
-using Assets.Scripts.Data.DataStructures.SpellSubStructures;
 using Assets.Scripts.Game.Character.Netcode;
 using Data.DataStructures.SpellSubStructures;
 using Data.GameManagement;
@@ -11,7 +10,6 @@ using Tools;
 using Unity.Netcode;
 using UnityEngine;
 using Utilities;
-using static UnityEngine.Rendering.DebugUI;
 
 namespace Game.Character
 {
@@ -80,7 +78,6 @@ namespace Game.Character
         public int MoveX        => m_MoveX;
 
         protected float GetVelocity(int direction)
-        //=> direction * Speed + m_Force.Value;
         {
             if (float.IsNaN(direction * Speed + m_Force.Value))
             {

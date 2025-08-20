@@ -25,6 +25,8 @@ namespace Data
         protected int                   m_TickHeal      = 0;
         [SerializeField, Tooltip("Shield provided at each ticks")]
         protected int                   m_TickShield    = 0;
+        [SerializeField, Tooltip("Energy provided at each ticks")]
+        protected int                   m_TickEnergy    = 0;
         [SerializeField, Tooltip("Continuous force in the zone")]
         protected SForce                m_ZoneForce     = default;
         [Tooltip("Growing factor of the spell (as bonus percentage)")]
@@ -39,6 +41,7 @@ namespace Data
         public int TickDamage       => (int)GetScaledValue(ESpellProperty.TickDamage, m_TickDamage);
         public int TickHeal         => (int)GetScaledValue(ESpellProperty.TickHeal, m_TickHeal);
         public int TickShield       => (int)GetScaledValue(ESpellProperty.TickShield, m_TickShield);
+        public int TickEnergy       => (int)GetScaledValue(ESpellProperty.TickEnergy, m_TickEnergy);
         public SForce ZoneForce     => m_ZoneForce;
 
         #endregion

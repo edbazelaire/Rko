@@ -4,10 +4,12 @@ using Data.DataStructures.CharacterSubStructures;
 using Data.DataStructures.StateEffectSubStructures;
 using Enums;
 using Game.Loaders;
+using MyBox;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Tools;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Data
@@ -215,6 +217,31 @@ namespace Data
             return TextHandler.ReplaceCharacterStat(description, m_BonusStats, m_Level);
         }
 
+        /// <summary>
+        /// Get all spawns data in trigger effects
+        /// </summary>
+        /// <returns></returns>
+        public List<CharacterData> GetSpawnsData()
+        {
+            var spawns = new List<CharacterData>();
+
+            foreach (var triggerEffect in m_TriggerEffects)
+            {
+                if (! SpellLoader.IsSpell(triggerEffect.SpellDataName))
+                    continue;
+
+                // get the spell data at the level of the trigger effect
+                SpellData spellData = SpellLoader.GetSpellData(triggerEffect.SpellDataName, triggerEffect.Level);
+                if (spellData is not SpawnerData spawnerData)
+                    continue;
+
+                // add spawns data
+                spawns.AddRange(spawnerData.GetSpawnsCharacterData());
+            }
+
+            return spawns;
+        }
+
         #endregion
     }
 
@@ -281,7 +308,8 @@ namespace Data
 
         public bool HasActivationPower(ERuneActivation runeActivation)
         {
-            return GetRunePower(runeActivation) != default;
+            var runePower = GetRunePower(runeActivation);
+            return ! runePower.BonusStats.IsNullOrEmpty() || ! runePower.TriggerEffects.IsNullOrEmpty();
         }
 
         bool IsPowerActive(ERuneActivation runeActivation)
@@ -350,6 +378,26 @@ namespace Data
                 description += "\n\n    ";
 
             return description + GetRunePower(runeActivation).GetDescription();
+        }
+
+        public List<CharacterData> GetSpawnsData(ERuneActivation runeActivation)
+        {
+            return GetRunePower(runeActivation).GetSpawnsData();
+        }
+
+        public List<ERuneActivation> GetNotAllowedActivations()
+        {
+            var notAllowedActivations = new List<ERuneActivation>();
+            foreach (ERuneActivation runeActivation in Enum.GetValues(typeof(ERuneActivation)))
+            {
+                if (runeActivation == ERuneActivation.None)
+                    continue;
+
+                if (! HasActivationPower(runeActivation))
+                    notAllowedActivations.Add(runeActivation);
+            }
+
+            return notAllowedActivations;
         }
 
         #endregion

@@ -14,7 +14,6 @@ namespace Game.Spells
         const float COLLISION_CHECK_REFRESH = 0.1f;
         protected override float DELAY_END_DURATION => 0f;
 
-
         ZoneData m_SpellData => m_BaseSpellData as ZoneData;
 
         /// <summary> timer before next check of collision </summary>
@@ -57,7 +56,7 @@ namespace Game.Spells
         /// </summary>
         protected void InitializeTriggerZone()
         {
-            Collider2D[] colliders = new Collider2D[10]; // Adjust size based on expected objects
+            Collider2D[] colliders = new Collider2D[10];        // Adjust size based on expected objects
             ContactFilter2D filter = new ContactFilter2D();
             filter.useTriggers = true;
 
@@ -70,7 +69,9 @@ namespace Game.Spells
                 {
                     if (TryGetController(colliders[i], out Controller controller))
                     {
-                        hitControllers.Add(controller);
+                        if ((m_SpellData.IsEnemyTarget && controller.Team != m_Controller.Team) 
+                            || (m_SpellData.IsAllyTarget && controller.Team == m_Controller.Team))
+                            hitControllers.Add(controller);
                     }
                 }
             }
@@ -115,8 +116,10 @@ namespace Game.Spells
             if (!IsServer)
                 return;
 
+            // increase size if needs to
             GrowSize();
 
+            // check who's in the collision
             CheckCollision();
 
             // update time before re-appliance to each players affected
@@ -172,7 +175,9 @@ namespace Game.Spells
 
             // apply force
             if (m_SpellData.ZoneForce != default)
+            {
                 controller.Movement.AddForce(m_SpellData.ZoneForce);
+            }
         }
 
         void RemoveZoneEffects(Controller controller)
@@ -182,7 +187,10 @@ namespace Game.Spells
 
             // remove force
             if (m_SpellData.ZoneForce != default)
+            {
+                Debug.Log("Removing Zone Force on : " + controller.gameObject.name);
                 controller.Movement.RemoveForce(m_SpellData.ZoneForce);
+            }
         }
 
         #endregion
@@ -218,7 +226,7 @@ namespace Game.Spells
         protected override void OnCollisionController(Controller controller)
         {
             // check that players was not already affected by the AoE too recently
-            if (m_PlayersAffected.ContainsKey(controller.OwnerClientId))
+            if (m_PlayersAffected.ContainsKey(controller.PlayerId))
                 return;
 
             // hit the player
@@ -244,7 +252,7 @@ namespace Game.Spells
 
             // add player to affected players
             if (m_SpellData.DurationTick > 0)
-                m_PlayersAffected.Add(controller.OwnerClientId, m_SpellData.DurationTick);
+                m_PlayersAffected.Add(controller.PlayerId, m_SpellData.DurationTick);
         }
 
         /// <summary>
@@ -300,7 +308,7 @@ namespace Game.Spells
             if (controller.Team != m_Controller.Team)
                 return false;
 
-            if (m_SpellData.TickHeal <= 0 && m_SpellData.AllyStateEffects.Count == 0)
+            if (m_SpellData.TickHeal <= 0 && m_SpellData.TickEnergy == 0 && m_SpellData.AllyStateEffects.Count == 0)
                 return false;
 
             // add bonus heal from state bonus & boosts 
@@ -313,6 +321,14 @@ namespace Game.Spells
 
             // heal the target for the specified amount
             controller.Life.Heal(heal, m_Controller.PlayerId, m_SpellData.Name, m_SpellData.SpellCategory);
+
+            // add energy to the target for the specified amount
+            int energy = m_SpellData.TickEnergy;
+            if (m_SpellData.StateEffectStackFactor != EStateEffect.None)
+            {
+                energy *= controller.StateHandler.GetStacks(m_SpellData.StateEffectStackFactor);
+            }
+            controller.EnergyHandler.AddEnergy(energy);
 
             if (m_Controller.ClientAnalytics != null)
                 m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Heal, heal);

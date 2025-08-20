@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7d51f633e46b344920f012b0e1eca8, type: 3}
   m_Name: FrostArena_Brutal
   m_EditorClassIdentifier: 
-  m_BotPerfLevelCeiling: 10
+  m_NLifes: 1
   m_ArenaLevelData:
   - RewardsData:
       Currencies:
@@ -167,12 +167,12 @@ MonoBehaviour:
     StageData:
     - m_Boss: 1002
       m_BonusLevel: 1
-      m_Spells: 1a00000030000000170000004a00000028000000
+      m_Spells: 1a000000300000001700000028000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1002
       m_BonusLevel: 2
-      m_Spells: 1a00000030000000170000004a00000028000000
+      m_Spells: 1a000000300000001700000028000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1

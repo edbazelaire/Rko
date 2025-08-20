@@ -7,6 +7,7 @@ using System.Linq;
 using System;
 using Tools;
 using Managers;
+using MyBox;
 
 
 namespace Save.Data.Progression.Structs
@@ -35,9 +36,12 @@ namespace Save.Data.Progression.Structs
         private bool            m_IsOver;
 
         public readonly EArenaDifficulty GetArenaDifficulty()   => SArenaDifficulty.Difficulty;
+        public readonly int GetExtraDifficulty()                => SArenaDifficulty.Level;
         public string[] GetPowerUps()                           => PowerUps ?? (new string[4]);
         public readonly bool InProgress()                       => ArenaType != EArenaType.None;
-        public readonly bool IsOver()                           => m_IsOver || Losses >= ArenaData.MAX_LOSSES || Level > AssetLoader.LoadArenaData(ArenaType, SArenaDifficulty).MaxLevel;
+        public readonly int GetMaxLosses()                      => ArenaMods.Contains(EArenaMod.NoDeath) ? 1 : ArenaData.MAX_LOSSES;
+        public readonly bool IsOver()                           => m_IsOver || Losses >= GetMaxLosses() || Level > AssetLoader.LoadArenaData(ArenaType, SArenaDifficulty).MaxLevel;
+        public readonly bool HasBuildData()                      => ! BuildData.Character.IsNullOrEmpty();
         public bool IsBoss()
         {
             SArenaLevelData? arenaLevelData = ArenaLevelData();

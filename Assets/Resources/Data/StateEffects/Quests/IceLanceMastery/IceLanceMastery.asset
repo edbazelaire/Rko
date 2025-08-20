@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2f7cf99ca9cfff48ba99e6ee5168909, type: 3}
   m_Name: IceLanceMastery
   m_EditorClassIdentifier: 
-  m_Description: Each time you applie [IceBreak] using the spell <i>IceLance</i>,
-    this effect gains a stack.\nGain [BonusDamage.IceBreak] IceBreak damage for each
-    stack.
+  m_Description: Each time you applie [IceBreak] using a spell containing the name
+    <i>IceLance</i>, this effect gains a stack.\nGain [BonusDamage.IceBreak] IceBreak
+    damage for each stack.
   m_DescriptionVariables: 
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 1
   m_VisualEffects: []
@@ -28,6 +29,8 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
   m_IsTrueDamage: 0
+  m_EndWithShield: 0
+  m_RefreshShield: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: -1
@@ -38,8 +41,8 @@ MonoBehaviour:
   m_StateEffectActivations: []
   m_BonusStats:
   - StateEffectProperty: 7
-    BaseValue: 15
-    LevelScalingFactor: 0.1
+    BaseValue: 25
+    LevelScalingFactor: 0.12
     StackScalingFactor: 1
     SpecialConditions:
     - IceBreak

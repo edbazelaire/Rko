@@ -31,9 +31,9 @@ namespace Game.Spells
 
         #region Init & End
 
-        public override bool Initialize(Controller controller, Controller caster, SStateEffectData? stateEffectData = null)
+        public override bool Initialize(Controller controller, Controller caster, SStateEffectData? stateEffectData = null, int stacks = 1)
         {
-            if (! base.Initialize(controller, caster, stateEffectData))
+            if (! base.Initialize(controller, caster, stateEffectData, stacks))
                 return false;
 
             if (m_ReplacementData == null)

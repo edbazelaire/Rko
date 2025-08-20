@@ -35,6 +35,7 @@ namespace Menu.PopUps.PopUps.MessagePopUps
             base.OnPrefabLoaded();
 
             m_ErrorMessage.text = "";
+            m_ErrorMessage.gameObject.SetActive(false);
         }
 
         #endregion
@@ -45,8 +46,12 @@ namespace Menu.PopUps.PopUps.MessagePopUps
         protected override void SetUpMessage()
         {
             if (m_Message.IsNullOrEmpty())
+            {
+                m_MessageText.transform.parent.parent.gameObject.SetActive(false);
                 return;
+            }
 
+            m_MessageText.transform.parent.parent.gameObject.SetActive(true);
             m_MessageText.text = m_Message;
         }
 
@@ -66,6 +71,7 @@ namespace Menu.PopUps.PopUps.MessagePopUps
                 SoundFXManager.PlayOnce(SoundFXManager.ErrorSoundFX);
 
                 // display why is not valid
+                m_ErrorMessage.gameObject.SetActive(true);
                 m_ErrorMessage.text = reason;
                 return;
             }
@@ -80,7 +86,6 @@ namespace Menu.PopUps.PopUps.MessagePopUps
             RecurrentPopupManager.Instance.Diseable(EPopUpState.PseudoPopUp);
 
             base.OnValidateButton();
-            Exit();
         }
 
         #endregion

@@ -250,7 +250,7 @@ namespace Save
 
         #region Arena Data
 
-        public static EArenaDifficulty GetUnlockedArenaDifficulty(EArenaType arenaType)
+        public static EArenaDifficulty GetUnlockedArenaDifficulty(EArenaType arenaType, bool clamp = false)
         {
             if (! UnlockedArenas.ContainsKey(arenaType))
             {
@@ -260,7 +260,39 @@ namespace Save
                 Instance.SaveValue(KEY_UNLOCKED_ARENAS);
             }
 
+            // check if we need to get the "clamped" value
+            if (clamp && UnlockedArenas[arenaType] >= MaxArenaDifficulty)
+                return MaxArenaDifficulty;
+
             return UnlockedArenas[arenaType];
+        }
+
+        public static bool IsUnlocked(EArenaType arenaType, EArenaDifficulty arenaDifficulty)
+        {
+            return UnlockedArenas.ContainsKey(arenaType) && UnlockedArenas[arenaType] >= arenaDifficulty;
+        }
+
+        public static bool IsMaxUnlocked(EArenaType arenaType, EArenaDifficulty arenaDifficulty)
+        {
+            return UnlockedArenas.ContainsKey(arenaType) && UnlockedArenas[arenaType] == arenaDifficulty;
+        }
+
+        public static bool IsCompleted(EArenaType arenaType, EArenaDifficulty arenaDifficulty)
+        {
+            // no data at all
+            if (!UnlockedArenas.ContainsKey(arenaType))
+                return false;
+
+            // not unlocked difficulty
+            if (UnlockedArenas[arenaType] < arenaDifficulty)
+                return false;
+
+            // is below max unlocked difficulty
+            if (UnlockedArenas[arenaType] > arenaDifficulty)
+                return true;
+
+            // check is last arena and all reward of that arena has been collected
+            return arenaDifficulty == ProgressionCloudData.MaxArenaDifficulty && UnlockedArenaRewards.ContainsKey(arenaType) && UnlockedArenaRewards[arenaType] >= new SArenaPosition(arenaDifficulty, 4, 2);
         }
 
         public static SArenaPosition GetUnlockedArenaReward(EArenaType arenaType)
@@ -296,7 +328,7 @@ namespace Save
 
         public static void AddArenaLoss(int nLoss = 1, bool save = true)
         {
-            UpdateCurrentArena(losses: Math.Clamp(CurrentArena.Losses + nLoss, 0, ArenaData.MAX_LOSSES), erosion: 0f, save: save);
+            UpdateCurrentArena(losses: Math.Clamp(CurrentArena.Losses + nLoss, 0, CurrentArena.GetMaxLosses()), erosion: 0f, save: save);
         }
 
         public static void AddCurrentArenaPowerUp(string powerUpName, bool save = true)
@@ -331,8 +363,6 @@ namespace Save
             if (save)
                 Instance.SaveValue(KEY_CURRENT_ARENA);
         }
-
-
 
         public static void SetCurrentArenaMods(List<EArenaMod> arenaMods, bool save = true)
         {
@@ -467,11 +497,11 @@ namespace Save
         {
             Instance.SetData(KEY_CURRENT_ARENA, new SCurrentArenaCloudData(
                 arenaType,
-                arenaDifficulty: arenaDifficulty,
-                arenaMods:      arenaMods,
-                buildData:      buildData,
-                maxLifes:       CalculateArenaMaxLifes(arenaMods),
-                rewardRarety:   CalculateArenaRarety(arenaMods)
+                arenaDifficulty:    arenaDifficulty,
+                arenaMods:          arenaMods,
+                buildData:          buildData,
+                maxLifes:           CalculateArenaMaxLifes(arenaMods),
+                rewardRarety:       CalculateArenaRarety(arenaMods)
             ));
 
             CurrentArenaDataChangedEvent?.Invoke();
@@ -508,7 +538,7 @@ namespace Save
             if (stage.HasValue)
                 currentArena.Stage = stage.Value;
             if (losses.HasValue)
-                currentArena.Losses = losses.Value > ArenaData.MAX_LOSSES ? ArenaData.MAX_LOSSES : losses.Value;
+                currentArena.Losses = losses.Value > currentArena.GetMaxLosses() ? currentArena.GetMaxLosses() : losses.Value;
             if (erosion.HasValue)
                 currentArena.Erosion = erosion.Value;
 
@@ -650,7 +680,8 @@ namespace Save
 
             if (CurrentArena.SArenaDifficulty.Difficulty > UnlockedArenas[CurrentArena.ArenaType])
             {
-                ErrorHandler.Error($"CurrentArena data has difficulty ({CurrentArena.SArenaDifficulty.Difficulty}) > unlocked difficulty : ({CurrentArena.SArenaDifficulty.Difficulty}) - reseting data");
+                ErrorHandler.Error($"CurrentArena data has difficulty ({UnlockedArenas[CurrentArena.ArenaType]}) - reseting data");
+                PlayerPrefsHandler.SetArenaDifficulty(currentArena.ArenaType, UnlockedArenas[currentArena.ArenaType]);
                 ResetCurrentArena();
                 return;
             }
@@ -662,9 +693,9 @@ namespace Save
                 save = true;
             }
 
-            if (currentArena.SArenaDifficulty.Level >= ArenaManagementData.NDifficultyLevels)
+            if (currentArena.SArenaDifficulty.Level > ArenaManagementData.NDifficultyLevels)
             {
-                ErrorHandler.Error($"CurrentArena data : has level ({currentArena.SArenaDifficulty.Level}) >= " + ArenaManagementData.NDifficultyLevels);
+                ErrorHandler.Error($"CurrentArena data : has level ({currentArena.SArenaDifficulty.Level}) > " + ArenaManagementData.NDifficultyLevels);
                 currentArena.SArenaDifficulty.Level = ArenaManagementData.NDifficultyLevels;
                 save = true;
             }
@@ -675,7 +706,7 @@ namespace Save
             if (! currentArena.CheckMods())
                 save = true;
 
-            if (! currentArena.BuildData.Check())
+            if (currentArena.HasBuildData() && ! currentArena.BuildData.Check())
             {
                 ResetCurrentArena();
                 return;

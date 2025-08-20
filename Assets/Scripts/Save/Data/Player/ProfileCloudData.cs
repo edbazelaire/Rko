@@ -418,7 +418,7 @@ namespace Save
 
         /// <summary> default data for the Inventory </summary>
         protected override Dictionary<string, object> m_Data { get; set; } = new Dictionary<string, object>() {
-            { KEY_TUTO_DONE,                true                                                },
+            { KEY_TUTO_DONE,                false                                               },
             { KEY_PSEUDO_CHANGED,           false                                               },
             { KEY_GAMER_TAG,                ""                                                  },
             { KEY_IS_ADMIN,                 false                                               },
@@ -457,6 +457,7 @@ namespace Save
         public static Dictionary<EAchievementReward, List<string>> AchievementRewards => (Instance.m_Data[KEY_ACHIEVEMENT_REWARDS] as Dictionary<EAchievementReward, List<string>>);
         public static Dictionary<EBadge, ELeague> Badges        => Instance.m_Badges;
         public static List<string>          GiftCodes           => Instance.m_Data[KEY_GIFT_CODES] as List<string>;
+        public static bool                  CanChangePseudo     => true || ! PseudoChanged || HasDefaultPseudo;
         public static bool                  HasDefaultPseudo    => Regex.IsMatch(GamerTag, @"^User_\d{6}$") || GamerTag == "DEFAULT_PSEUDO";
 
         #endregion
@@ -1027,10 +1028,12 @@ namespace Save
                     var data = new SProfileCurrentData(accountLevel: 1);
                     data.Check();
                     Instance.m_Data[key] = data;
+
+                    SetGamerTag(data.GamerTag);
                     break;
 
                 case KEY_GAMER_TAG:
-                    SetGamerTag(SProfileCurrentData.DEFAULT_PSEUDO);
+                    SetGamerTag(GenerateDefaultPseudo());
                     return;
                     
                 case KEY_TOKEN:
@@ -1250,6 +1253,24 @@ namespace Save
             }
         }
 
+        void CheckTuto()
+        {
+            if (! m_Data.ContainsKey(KEY_TUTO_DONE))
+            {
+                m_Data[KEY_TUTO_DONE] = false;
+            }
+
+            if (TutoDone)
+                return;
+
+            // if player has played already, no need to display tuto
+            if (AccountLevel > 1)
+            {
+                m_Data[KEY_TUTO_DONE] = true;
+                SaveValue(KEY_TUTO_DONE);
+            }
+        }
+
         public async Task<EntityData> FindPlayerWithValue(string key, string value)
         {
             var query = new Query(
@@ -1349,6 +1370,7 @@ namespace Save
             CheckAchievements();
             CheckCurrentData();
             CheckGiftCodes();
+            CheckTuto();
         }
 
         /// <summary>

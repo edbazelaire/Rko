@@ -100,7 +100,7 @@ namespace Game.AI.BehaviorTrees
                 new Sequence(new List<Node> {
                     new CheckTimer(controller, "TaskAttack", 1f),
                     new TaskAttack(controller),
-                    new ResetTimer(controller, "TaskAttack", 0.5f)
+                    new ResetTimer(controller, "TaskAttack", Random.Range(0.5f, 7f))
                 }),
 
                 // Check if character is currently in a ZoneSpell

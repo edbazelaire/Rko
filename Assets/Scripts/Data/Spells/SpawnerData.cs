@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Data.DataStructures.SpellSubStructures;
 using Enums;
 using Game.Loaders;
+using MyBox;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -106,14 +107,30 @@ namespace Data
         {
             var infos = base.GetInfo();
 
-            if (IsUniqueSpawn)
+            if (! m_SpawnElements.IsNullOrEmpty())
             {
-                var charData = CharacterLoader.GetCharacterData(m_SpawnElements[0].CharacterName);
-                charData.SetLevel(m_Level);
-                infos["Hp"] = charData.MaxHealth;
+                infos["Spawns"] = GetSpawnsCharacterData();
             }
 
             return infos;
+        }
+
+        public List<CharacterData> GetSpawnsCharacterData()
+        {
+            var spawns = new List<CharacterData>();
+            foreach (var spawn in m_SpawnElements)
+            {
+                var charData = CharacterLoader.GetCharacterData(spawn.CharacterName);
+                charData.SetLevel(m_Level + spawn.BonusLevel);
+                spawns.Add(charData);
+            }
+
+            return spawns;
+        }
+
+        public override string GetDescription()
+        {
+            return TextHandler.ReplaceSpawnTokens(base.GetDescription(), GetSpawnsCharacterData());
         }
 
         public override string GetTypeInfo()

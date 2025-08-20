@@ -12,17 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
   m_Name: DarkVeil
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: 
   m_DescriptionVariables: []
+  m_SpellElements: 
   m_AutoAttack: 
   m_SpecialAbility: 
   m_Ultimate: 
   Size: 2
   BaseSpeed: 0
   BaseHealth: 350
-  MaxEnergy: 1
+  MaxEnergy: 0
   BaseEnergy: 0
+  PassiveEnergyGain: 0
   IsStructure: 1
   HealthScaleFactor: 0.1
   CharacterStatScaling: []
@@ -32,6 +34,7 @@ MonoBehaviour:
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: _DarkVeilZone
+      OverridingData: []
       Level: 0
       Target: 4
       SpellActivationEvent: 1
@@ -40,6 +43,7 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: 0
