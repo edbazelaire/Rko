@@ -214,7 +214,7 @@ public class Controller : NetworkBehaviour
         if (!IsSpawn)
             GameUIManager.Instance.SetPlayersUI(PlayerId, team);
         else
-            AddSpawnBars();
+            AddSpawnUI();
 
         // update personnal UI if is owner (and not an AI)
         if (!IsOwner || !IsPlayer)
@@ -290,14 +290,14 @@ public class Controller : NetworkBehaviour
         characterData.AddBonusStats(GetBonusStats());
         m_CharacterData = characterData;
 
+        // initialize StateHandler with character data
+        m_StateHandler.Initialize(characterData);
+
         // initialize SpellHandler with character's spells
         m_SpellHandler.Initialize(characterData.AutoAttack, characterData.SpecialAbility, characterData.Ultimate, playerData.BuildData.Spells.ToList(), playerData.BuildData.SpellLevels.ToList());
 
         // initialize MovementSpeed with character's speed
         m_Movement.Initialize(characterData.Speed);
-
-        // initialize StateHandler with character data
-        m_StateHandler.Initialize(characterData);
 
         // init health and energy
         m_Life.Initialize(characterData.MaxHealth, characterData.GetInt(EStateEffectProperty.Shield, ""));
@@ -338,38 +338,36 @@ public class Controller : NetworkBehaviour
         }
     }
 
-    protected void AddSpawnBars()
+    protected void AddSpawnUI()
     {
-        // Instantiate the health bar and position it above the unit
-        GameObject spawnUIPrefab = AssetLoader.Load<GameObject>("SpawnUI", AssetLoader.c_SpawnUIContentPath);
+        var spawnUIPrefab = AssetLoader.Load<SpawnUI>("SpawnUI", AssetLoader.c_SpawnUIContentPath);
         if (spawnUIPrefab == null)
         {
             ErrorHandler.Error("Unable to load health bar for Spawn");
             return;
         }
 
-        // Parent the health bar to the unit for tracking movement
-        var spawnUI = Instantiate(spawnUIPrefab, transform);
-        spawnUI.transform.localPosition = new Vector3(0, 3f, 0); // Adjust Y position if necessary
-        spawnUI.transform.localScale = Vector3.one * Mathf.Clamp(10f * m_CharacterData.Size, 2f, 8f);
+        var spawnUI = Instantiate(spawnUIPrefab, transform); // parent is fine
+        spawnUI.Initialize(m_CharacterData.Size);
 
         // setup health bar
-        PlayerBarUI healthBar = Finder.FindComponent<PlayerBarUI>(spawnUI, "SpawnHealthBar");
+        PlayerBarUI healthBar = Finder.FindComponent<PlayerBarUI>(spawnUI.gameObject, "SpawnHealthBar");
         healthBar.Initialize(m_Life.Hp.Value, m_Life.MaxHp.Value);
-        m_Life.Hp.OnValueChanged    += healthBar.OnValueChanged;
+        m_Life.Hp.OnValueChanged += healthBar.OnValueChanged;
         m_Life.MaxHp.OnValueChanged += healthBar.OnMaxValueChanged;
 
         // setup shield bar
-        PlayerBarUI shieldBard = Finder.FindComponent<PlayerBarUI>(spawnUI, "SpawnShieldBar");
-        shieldBard.Initialize(m_Life.FinalShield.Value, m_Life.MaxHp.Value);
-        m_Life.FinalShield.OnValueChanged += (int _, int newValue) => shieldBard.OnValueChanged(0, newValue); ;
+        PlayerBarUI shieldBar = Finder.FindComponent<PlayerBarUI>(spawnUI.gameObject, "SpawnShieldBar");
+        shieldBar.Initialize(m_Life.FinalShield.Value, m_Life.MaxHp.Value);
+        m_Life.FinalShield.OnValueChanged += (int _, int newValue) => shieldBar.OnValueChanged(0, newValue);
 
         // setup energy bar
-        PlayerBarUI energyBar = Finder.FindComponent<PlayerBarUI>(spawnUI, "SpawnEnergyBar");
+        PlayerBarUI energyBar = Finder.FindComponent<PlayerBarUI>(spawnUI.gameObject, "SpawnEnergyBar");
         energyBar.Initialize(m_EnergyHandler.Energy.Value, m_EnergyHandler.MaxEnergy.Value);
-        m_EnergyHandler.Energy.OnValueChanged    += energyBar.OnValueChanged;
+        m_EnergyHandler.Energy.OnValueChanged += energyBar.OnValueChanged;
         m_EnergyHandler.MaxEnergy.OnValueChanged += energyBar.OnMaxValueChanged;
     }
+
 
     public override void OnDestroy()
     {

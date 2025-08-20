@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Tools;
 using Unity.Collections;
 using Unity.Netcode;
@@ -1049,7 +1050,10 @@ namespace Game.Spells
             // if is a slow, check the bonus from the caster bonus slow 
             if (property == EStateEffectProperty.SpeedBonus && baseValue < 0 && m_Caster != null)
             {
-                // ADD : && baseValue < 0
+                // can't be slowed - skip
+                if (m_Controller.StateHandler.IsImmunedToSlows)
+                    return 0f;
+
                 baseValue *= Mathf.Max(0, m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusSlowPerc, ignoreConversion: ignoreConversion));
             }
 
@@ -1072,6 +1076,9 @@ namespace Game.Spells
 
         protected virtual void CallStateEffectEvent(EStateEffectEvent stateEffectEvent, int stacks, ulong targetId, ulong casterId)
         {
+            if (!GameManager.IsGameRunning)
+                return;
+
             ErrorHandler.Log($"{StateEffectName} - {stateEffectEvent} : {stacks} stacks", ELogTag.StateEffects);
             
             // call event on server side
@@ -1459,6 +1466,12 @@ namespace Game.Spells
             description = TextHandler.ReplaceStateEffectProperties(description, this);
             ReplaceSubStateEffects(ref description);
             return description;
+        }
+
+        public virtual bool TryGetSpecialPropertyValue(string propertyName, out object value)
+        {
+            value = null;
+            return false;
         }
 
         protected virtual void ReplaceSubStateEffects(ref string description)

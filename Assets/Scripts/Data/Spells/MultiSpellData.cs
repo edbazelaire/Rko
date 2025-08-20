@@ -13,6 +13,7 @@ using Assets.Scripts.Data.DataStructures.SpellSubStructures;
 using Game.Loaders;
 using Data.DataStructures.SpellSubStructures;
 using MyBox;
+using Google.Apis.Sheets.v4.Data;
 
 namespace Data
 {
@@ -140,7 +141,7 @@ namespace Data
                     controller.AnimationHandler.PlayAnimationClientRPC(Animation, DelayBetweenWaves);
 
                     // spawn SubSpell - SpellGFX
-                    controller.SpellHandler.CallSpellEvent(Name, ESpellEvent.OnStartCast);
+                    controller.SpellHandler.CallSpellEvent(Name, ESpellEvent.OnStartCast, m_Level);
                 }
 
                 var delay = DelayBetweenWaves;
@@ -163,7 +164,7 @@ namespace Data
                 if (m_IsBlocking)
                 {
                     // spawn SubSpell - SpellGFX
-                    controller.SpellHandler.CallSpellEvent(Name, ESpellEvent.OnCast);
+                    controller.SpellHandler.CallSpellEvent(Name, ESpellEvent.OnCast, m_Level);
                 }
             }
 

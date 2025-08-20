@@ -1,7 +1,4 @@
 ﻿using Data;
-using Enums;
-using Game.StateEffects.Interfaces;
-using System;
 using UnityEngine;
 
 namespace Game.Spells

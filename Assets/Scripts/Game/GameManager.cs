@@ -1215,12 +1215,12 @@ namespace Game
             GetFirstEnemy(Owner.Team).StateHandler.AddStateEffect(stun, Owner, 1, "Debug");
         }
 
-        [Command(KeyCode.R)]
-        public void StunSelf()
-        {
-            var stun = new SStateEffectData(EStateEffect.Stun, overridingProperties: new List<SStateEffectProperty>() { new SStateEffectProperty(EStateEffectProperty.Duration, 3) });
-            Owner.StateHandler.AddStateEffect(stun, Owner, 1, "Debug");
-        }
+        //[Command(KeyCode.R)]
+        //public void StunSelf()
+        //{
+        //    var stun = new SStateEffectData(EStateEffect.Stun, overridingProperties: new List<SStateEffectProperty>() { new SStateEffectProperty(EStateEffectProperty.Duration, 3) });
+        //    Owner.StateHandler.AddStateEffect(stun, Owner, 1, "Debug");
+        //}
 
         [Command(KeyCode.Y)]
         public void ToogleInterface()

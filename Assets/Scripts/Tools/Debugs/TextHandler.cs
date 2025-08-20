@@ -460,13 +460,17 @@ namespace Tools
                 string propertyStr = match.Groups[1].Value;
                 string specialCondition = match.Groups[2].Success ? match.Groups[2].Value : null;
 
+                object value;
+                if (stateEffect.TryGetSpecialPropertyValue(propertyStr, out value))
+                    return value.ToString();
+
                 if (!Enum.TryParse(propertyStr, out EStateEffectProperty property))
                 {
                     Debug.LogWarning($"Invalid property: {propertyStr}");
                     return match.Value; // leave the original text unchanged
                 }
 
-                object value = stateEffect.GetProperty(property, specialCondition: specialCondition);
+                value = stateEffect.GetProperty(property, specialCondition: specialCondition);
 
                 // is float : format into clean string
                 if (float.TryParse(value.ToString(), out float fValue))
@@ -713,6 +717,42 @@ namespace Tools
                 text = text.Replace(
                     token,
                     stateEffect.Description
+                );
+            }
+
+            return text;
+        }
+
+        public static string ReplacePassiveEffects(string text, SpellData spellData)
+        {
+            // Define a regex to find tokens in the format [StateEffect.N_EFFECT]
+            string pattern = @"\[(PassiveEffects\.[0-9]+)\]";
+            MatchCollection matches = Regex.Matches(text, pattern);
+
+            foreach (Match match in matches)
+            {
+                string token = match.Value;
+
+                // Extract the index and target from name
+                int index = int.Parse(token.Split('.')[1].TrimEnd(']'));
+                if (index < 0)
+                {
+                    ErrorHandler.Error("Error with token " + token + " : BAD index (" + index + ")");
+                    continue;
+                }
+
+                if (spellData.PassiveEffects.Count <= index)
+                {
+                    ErrorHandler.Error("Error with token " + token + " : index (" + index + ") is >= number of StateEffects (" + spellData.PassiveEffects.Count + ")" );
+                    continue;
+                }
+
+                StateEffect stateEffect = spellData.PassiveEffects[index].StateEffect.Clone(spellData.Level);
+
+                // Replace token with the state effect description
+                text = text.Replace(
+                    token,
+                    stateEffect.GetDescription()
                 );
             }
 

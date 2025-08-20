@@ -30,6 +30,17 @@ namespace Data.DataStructures.SpellSubStructures
 
         #endregion
 
+
+        #region Init & End
+
+        public SForce(float speed, float duration)
+        {
+            m_Speed = speed;
+            m_Duration = duration;
+        }
+
+        #endregion
+
         #region Clone & Level
 
         public void SetLevel(int level) 

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Molken
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 'Every time a [Burn] effect is consummed, the Molken gains Energy.
+  m_Description: 'Every time a [Burn] effect is consummed, the Molken gains 10 Energy.
     On reaching [MaxEnergy] energy, they jump on the enemy to fufill there 2 minutes
     life span goal : Explode on something yelling "Wazaaah !"'
   m_DescriptionVariables: []
@@ -21,7 +21,7 @@ MonoBehaviour:
   m_AutoAttack: Sparks
   m_SpecialAbility: 
   m_Ultimate: Wazaaah
-  Size: 0.3
+  Size: 0.5
   BaseSpeed: 0.4
   BaseHealth: 200
   MaxEnergy: 35

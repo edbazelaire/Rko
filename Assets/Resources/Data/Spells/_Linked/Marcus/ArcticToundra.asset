@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c134d41ca291c244b96cfda56a7e83fd, type: 3}
   m_Name: ArcticToundra
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: A violant storm dealing {0} damage each {1} seconds for {2} seconds
     and applying {3}.<br>The size of the zone increases during its lifetime. When
     reaching max size, the storm explodes dealing {4} damage and applying {5}
@@ -35,6 +35,8 @@ MonoBehaviour:
   SpellEventActions: []
   OnHit:
   - {fileID: 11400000, guid: 96980145c41455a4aaebef628b96d1a6, type: 2}
+  PassiveEffects: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 3ecced41c79ec3840824bd3813604df2, type: 3}
@@ -48,8 +50,17 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 0
+  m_Charges: 1
   EnergyGain: 0
   EnergyCost: 100
   m_Damage: 0
@@ -65,9 +76,12 @@ MonoBehaviour:
     m_Speed: 0
     m_Duration: 0
   m_SpellsScalingLevel:
-  - Property: 2
+  - Property: 14
     Value: 0.1
-  m_Size: 4
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
+  m_Size: 3
   TriggerPlayer: 1
   EnemyStateEffects:
   - StateEffect: 6
@@ -83,12 +97,19 @@ MonoBehaviour:
   m_Cooldown: 0
   m_SpellSpawn: 1
   DurationTick: 0.5
-  m_TickDamage: 25
+  m_TickDamage: 40
   m_TickHeal: 0
   m_TickShield: 0
+  m_TickEnergy: 0
   m_ZoneForce:
     m_Speed: 0
     m_Duration: 0
-  GrowSizeFactor: 1
+  GrowSizeFactor: 2
   MaxSizeAt: 1
-  PersistentStateEffects: []
+  PersistentStateEffects:
+  - StateEffect: 7
+    Stacks: 1
+    BonusStacksPerLevel: 0
+    OverridingProperties:
+    - StateEffectProperty: 3
+      Value: -0.4

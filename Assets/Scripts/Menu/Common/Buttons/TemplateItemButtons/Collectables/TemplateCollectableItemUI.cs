@@ -204,6 +204,9 @@ namespace Menu.Common.Buttons
 
         public void SetInteractable(bool interactable)
         {
+            if (m_Button == null || m_Icon == null)
+                return;
+
             m_Button.interactable = interactable;
 
             if (! interactable)

@@ -15,8 +15,8 @@ namespace Data.GameManagement
         static Dictionary<ESpellSlot, KeyCode> m_SpellKeys = new()
         {
             { ESpellSlot.AutoAttack,        KeyCode.None    },
-            { ESpellSlot.SpecialAbility,    KeyCode.R       },
-            { ESpellSlot.Ultimate,          KeyCode.T       },
+            { ESpellSlot.SpecialAbility,    KeyCode.Z       },
+            { ESpellSlot.Ultimate,          KeyCode.R       },
             { ESpellSlot.Spell1,            KeyCode.Alpha1  },
             { ESpellSlot.Spell2,            KeyCode.Alpha2  },
             { ESpellSlot.Spell3,            KeyCode.Alpha3  },

@@ -97,10 +97,14 @@ namespace Game.Character
             || HasState(EStateEffect.Jump.ToString())
             || HasState(EStateEffect.Invisible.ToString());
 
-        public bool IsImmuneToEffects => 
+        public bool IsImmunedToEffects =>
             HasState(EStateEffect.SpecialAnimation)
-            || HasState(EStateEffect.Vanish.ToString())
-;
+            || HasState(EStateEffect.Vanish.ToString());
+
+        public bool IsImmunedToSlows =>
+            HasState(EStateEffect.SpecialAnimation)
+            || HasState(EStateEffect.Unstoppable.ToString());
+
 
         public NetworkVariable<float> SpeedBonus            => m_SpeedBonus;
         public int RemainingShield                          => m_RemainingShield;
@@ -739,7 +743,7 @@ namespace Game.Character
 
         public bool CheckCanBeApplied(StateEffect stateEffect, Controller caster)
         {
-            if (IsImmuneToEffects && ! (IsFriendlyEffect(stateEffect) || caster.Team == m_Controller.Team))
+            if (IsImmunedToEffects && ! (IsFriendlyEffect(stateEffect) || caster.Team == m_Controller.Team))
                 return false;
 
             if (IsUncontrollable && IsControlEffect(stateEffect.StateEffectName))

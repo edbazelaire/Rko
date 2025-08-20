@@ -1,5 +1,4 @@
 ﻿using Enums;
-using Game.Spells;
 using UnityEngine;
 
 namespace Data

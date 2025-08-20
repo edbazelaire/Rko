@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Description: Consume [Frozen] to inflict an extra {0} damages
   m_DescriptionVariables: 0b000000
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 0
   m_VisualEffects: []
@@ -44,7 +45,9 @@ MonoBehaviour:
   m_DefaultState: 6
   m_IsInstantanious: 1
   m_IsConsumedOnEnd: 0
-  m_IsTrueDamage: 0
+  m_IsTrueDamage: 1
+  m_EndWithShield: 0
+  m_RefreshShield: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: 0

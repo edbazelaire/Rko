@@ -20,6 +20,9 @@ using Assets.Scripts.Data.DataStructures.SpellSubStructures;
 using Assets.Scripts.Game;
 using Game.NetworkStructures;
 using Data.DataStructures.SpellSubStructures;
+using System.Globalization;
+using System.Text.RegularExpressions;
+using UnityEngine.Windows;
 
 namespace Data
 {
@@ -44,6 +47,13 @@ namespace Data
         public ESpellTarget SpellTarget;
     }
 
+    [Serializable]
+    public struct SSpellPassiveEffect
+    {
+        public StateEffect  StateEffect;
+        public bool         DeactivateOnCooldown;
+    }
+
 
     [CreateAssetMenu(fileName = "Spell", menuName = "Game/Spells/Default")]
     public class SpellData : CollectableData
@@ -66,8 +76,11 @@ namespace Data
         [Description("List of all Effects appening when the targets")]
         public List<SpellPrefabSpawn> SpellEventActions;
 
-        [Description("Prefab of the spell when it hits a target")]
+        [Description("SpellData of the spell casted when it hits a target")]
         public List<SpellData> OnHit;
+
+        [Description("List of passive effects of the spell")]
+        public List<SSpellPassiveEffect> PassiveEffects;
 
         [Description("List of effects (spell / stateEffect) activated on a specific spell event")]
         public List<SSpellEventEffect> SpellEventEffects;
@@ -328,7 +341,104 @@ namespace Data
             controller.StartCoroutine(spellData.CastDelay(casterId, targetPos, position, rotation, recalculateTarget: recalculateTarget, recalculatePosition: recalculatePosition));
 
             // call graphics event
-            controller.SpellHandler.CallSpellEvent(spellData.Name, ESpellEvent.OnStartCast, targetPosition: targetPos);
+            controller.SpellHandler.CallSpellEvent(spellData.Name, ESpellEvent.OnStartCast, level: m_Level, targetPosition: targetPos);
+        }
+
+        #endregion
+
+
+        #region Event Sub Effects
+
+        /// <summary>
+        /// Cast all spells and effects at requested Event
+        /// </summary>
+        /// <param name="spellEvent"></param>
+        /// <param name="level"></param>
+        /// <param name="parent"></param>
+        /// <param name="caster"></param>
+        /// <param name="targetController"></param>
+        /// <param name="targetPosition"></param>
+        /// <param name="position"></param>
+        public void CallSubEffects(ESpellEvent spellEvent, int level, string parent, Controller caster, Controller targetController = null, Vector2 targetPosition = default, Vector2 position = default)
+        {
+            // ======================================================================================
+            // SPAWN SUB EFFECTS
+            foreach (SSpellEventEffect spellEventEffect in SpellEventEffects)
+            {
+                if (spellEventEffect.SpellEvent != spellEvent)
+                    continue;
+
+                if (CheckSpellEventEffectSpecialCase(spellEventEffect, caster)) 
+                { 
+                    // ...
+                }
+                else if (SpellLoader.IsSpell(spellEventEffect.EffectName))
+                {
+                    SubCastSpell(
+                        subSpellData:           SpellLoader.GetSpellData(spellEventEffect.EffectName, level),
+                        casterId:               caster.PlayerId,
+                        targetId:               targetController != null ? targetController.PlayerId : null,
+                        spellTarget:            spellEventEffect.SpellTarget,
+                        position:               position,
+                        targetPos:              targetPosition,
+                        recalculatePosition:    true
+                    );
+                }
+
+                else if (SpellLoader.IsStateEffect(spellEventEffect.EffectName))
+                {
+                    Controller finalTargetController = GetTargetController(
+                        casterId:       caster.PlayerId,
+                        spellTarget:    spellEventEffect.SpellTarget,
+                        targetId:       targetController != null ? targetController.PlayerId : null
+                    );
+
+                    if (finalTargetController == null)
+                    {
+                        ErrorHandler.Warning("Unable to find controller for stateEffect " + spellEventEffect.EffectName + " of spell " + Name);
+                        return;
+                    }
+
+                    finalTargetController.StateHandler.AddStateEffect(SpellLoader.GetStateEffect(spellEventEffect.EffectName, level, parent: parent), caster);
+                }
+
+                else
+                {
+                    ErrorHandler.Error("Unable to find " + spellEventEffect.EffectName + " as Spell or StateEffect");
+                    continue;
+                }
+            }
+        }
+
+        bool CheckSpellEventEffectSpecialCase(SSpellEventEffect spellEventEffect, Controller caster)
+        {
+            if (CheckSpecialCase_Dash(spellEventEffect, out float speed, out float duration))
+            {
+                caster.Movement.AddForce(new SForce(speed, duration));
+                return true;
+            }
+            return false;
+        }
+
+        bool CheckSpecialCase_Dash(SSpellEventEffect spellEventEffect, out float speed, out float duration)
+        {
+            string pattern = @"^Dash\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)$";
+            var match = Regex.Match(spellEventEffect.EffectName, pattern);
+
+            speed = 0f; 
+            duration = 0f;
+
+            if (!match.Success)
+                return false;
+
+            // Utiliser InvariantCulture pour éviter les problèmes de virgules/décimales
+            if (float.TryParse(match.Groups[1].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out speed) &&
+                float.TryParse(match.Groups[2].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out duration))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         #endregion
@@ -339,7 +449,7 @@ namespace Data
         void CallSpellEvent(Controller controller, ESpellEvent spellEvent, Vector3 target)
         {
             // spawn SubSpell - SpellGFX
-            controller.SpellHandler.CallSpellEvent(Name, spellEvent, targetPosition: target);
+            controller.SpellHandler.CallSpellEvent(Name, spellEvent, m_Level, targetPosition: target);
         }
 
         public bool HasEventAt(ESpellEvent spellEvent, bool checkStart = true, bool checkEnd = true)
@@ -903,9 +1013,16 @@ namespace Data
         {
             var description = base.GetDescription();
 
+            // TODO : Better ==================================================================
+            // todo - handle multiple sub spells
             if (OnHit.Count() > 0)
                 description = TextHandler.ReplaceSubSpellData(description, OnHit[0]);
+            if (SpellEventEffects.Count > 0 && SpellLoader.IsSpell(SpellEventEffects[0].EffectName))
+                description = TextHandler.ReplaceSubSpellData(description, SpellLoader.GetSpellData(SpellEventEffects[0].EffectName, m_Level));
+            // TODO : Better ==================================================================
+
             description = TextHandler.ReplaceSubStateEffects(description, this);
+            description = TextHandler.ReplacePassiveEffects(description, this);
             description = TextHandler.ReplaceSpellRequirements(description, this);
 
             return description;
@@ -974,7 +1091,7 @@ namespace Data
 
         public void AddAsSubSpellInfos(ref Dictionary<string, object> infosDict)
         {
-            string[] keysToIgnore = new string[] { "Type", "Target", "Cooldown", "CastDuration", "Distance", "EnergyCost", "Delay" };        // keys to ignore as overwrite  
+            string[] keysToIgnore = new string[] { "Type", "Target", "Cooldown", "CastDuration", "Distance", "EnergyCost", "Delay", "Charges" };        // keys to ignore as overwrite  
             string[] keysToAdd = new string[] { "Damage", "Heal", "Shield", "TickDamage", "TickHeal", "Effects" };                                // keys that are not overritten but additionned 
 
             var subSpellInfos = GetInfo();

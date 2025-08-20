@@ -20,14 +20,16 @@ namespace Game.Spells
         {
             base.RegisterListeners();
 
-            m_Controller.Life.OnHealedEvent += OnHealedEvent;
+            if (m_Controller != null)
+                m_Controller.Life.OnHealedEvent += OnHealedEvent;
         }
 
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
 
-            m_Controller.Life.OnHealedEvent -= OnHealedEvent;
+            if (m_Controller != null) 
+                m_Controller.Life.OnHealedEvent -= OnHealedEvent;
         }
 
         private void OnHealedEvent(int heal, ulong casterId)
