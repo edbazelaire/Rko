@@ -18,26 +18,26 @@ MonoBehaviour:
   m_SpellElements: 0200000004000000
   Description: 
   m_MinorPower:
-    Description: On proccing [IceBreak] [TriggerEffect.0]. This effect can only happen
-      once every 9 seconds
+    Description: 'On proccing [IceBreak] : [TriggerEffect.0]. This effect can only
+      happen once every 9 seconds'
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: _Shardcurse
       OverridingData: []
       Level: 0
-      Target: 6
-      SpellActivationEvent: 0
+      Target: 0
+      SpellActivationEvent: 1
       ActivationTreshold: 0
       SpellDeactivationEvent: 0
       DeactivationTreshold: 0
-      StateEffectEvent: 0
+      StateEffectEvent: 1
       StateEffectName: IceBreak
       NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: -1
-      Cooldown: 9
+      Cooldown: 0
     m_BonusStats: []
   m_MajorPower:
     Description: On proccing [IceBreak]  [TriggerEffect.0]. This effect can only
@@ -48,21 +48,21 @@ MonoBehaviour:
     - SpellDataName: _Shardcurse
       OverridingData: []
       Level: 0
-      Target: 6
-      SpellActivationEvent: 0
+      Target: 0
+      SpellActivationEvent: 1
       ActivationTreshold: 0
       SpellDeactivationEvent: 0
       DeactivationTreshold: 0
-      StateEffectEvent: 0
+      StateEffectEvent: 1
       StateEffectName: IceBreak
       NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: -1
-      Cooldown: 4
+      Cooldown: 3
     m_BonusStats: []
   m_PrimalPower:
-    Description: 'On proccing [IceBreak]  [TriggerEffect.0]'
+    Description: 'On proccing [IceBreak] [TriggerEffect.0]'
     m_DescriptionVariables: []
     m_BonusLevel: 17
     m_TriggerEffects:
@@ -70,11 +70,11 @@ MonoBehaviour:
       OverridingData: []
       Level: 0
       Target: 0
-      SpellActivationEvent: 0
+      SpellActivationEvent: 1
       ActivationTreshold: 0
       SpellDeactivationEvent: 0
       DeactivationTreshold: 0
-      StateEffectEvent: 0
+      StateEffectEvent: 1
       StateEffectName: IceBreak
       NStateEffectActivationThreshold: 0
       Delay: 0

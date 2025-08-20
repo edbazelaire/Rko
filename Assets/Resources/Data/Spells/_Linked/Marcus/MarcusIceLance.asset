@@ -9,18 +9,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be1429166f6c7054fa65815783a3681a, type: 3}
-  m_Name: _Shardcurse
+  m_Script: {fileID: 11500000, guid: 97d922f84cb67114f9537fd0ee3a84fc, type: 3}
+  m_Name: MarcusIceLance
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: '[EnemyStateEffect.0]'
+  m_Description: 'Marcus received a special training to master the spell IceLance.\nThrow
+    an Ice Lance while jumping back.\n\nIceLance : [SubSpellData.Description]'
   m_DescriptionVariables: []
   m_SpellElements: 
-  Linked: 0
+  Linked: 1
   Graphics: {fileID: 0}
   SpellEventActions: []
   OnHit: []
-  SpellEventEffects: []
+  SpellEventEffects:
+  - EffectName: IceLance
+    SpellEvent: 300
+    SpellTarget: 6
+  - EffectName: Dash(-11, 0.15)
+    SpellEvent: 100
+    SpellTarget: 4
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -28,11 +35,11 @@ MonoBehaviour:
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
   SpellTarget: 6
-  m_ClampTargetPos: 1
+  m_ClampTargetPos: 0
   TargetOffset:
     X: 0
     Y: 0
-  LockTarget: 300
+  LockTarget: 100
   ApplyIfNotHitting: 0
   SpellRelocation:
     Lifetime:
@@ -44,7 +51,7 @@ MonoBehaviour:
     Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
-  m_Charges: 1
+  m_Charges: 2
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
@@ -62,16 +69,12 @@ MonoBehaviour:
   m_SpellsScalingLevel: []
   m_Size: 1
   TriggerPlayer: 1
-  EnemyStateEffects:
-  - StateEffect: 13
-    Stacks: 2
-    BonusStacksPerLevel: 0.5
-    OverridingProperties: []
+  EnemyStateEffects: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
-  Animation: 0
+  Animation: 1
   IsCancellable: 0
-  AnimationTimer: 0
-  m_Cooldown: 0
-  IsAttachedToTarget: 0
+  AnimationTimer: 0.2
+  m_Cooldown: 18
+  m_SpellType: 1

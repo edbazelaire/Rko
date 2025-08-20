@@ -101,6 +101,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9ee4a1debb55ae4da540c2ea9f60bf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  aboveHeadFactor: 0.6
+  minAbove: 0.2
+  worldYClamp: {x: 0, y: 3}
 --- !u!1001 &1678692403305859777
 PrefabInstance:
   m_ObjectHideFlags: 0

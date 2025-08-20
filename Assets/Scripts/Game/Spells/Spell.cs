@@ -9,6 +9,7 @@ using MyBox;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Tools;
 using Unity.Collections;
 using Unity.Netcode;
@@ -100,7 +101,7 @@ namespace Game.Spells
             m_IsOver = true;
 
             // call an end on client side (this method happens localy so no need to get throught RPC)
-            CallSpellEvent(ESpellEvent.OnEnd);
+            CallSpellEvent(ESpellEvent.OnOver);
 
             // unregister from any listeners
             UnRegisterListeners();
@@ -169,11 +170,6 @@ namespace Game.Spells
             CallSpellEvent(ESpellEvent.OnSpawn);
         }
 
-        public void CallEnd()
-        {
-            End();
-        }
-
         /// <summary>
         /// 
         /// </summary>
@@ -184,6 +180,9 @@ namespace Game.Spells
 
             // set is over to true (in case of persistance of graphisme, to stop spell behavior)
             m_IsOver = true;
+
+            // call on end event
+            CallSpellEvent(ESpellEvent.OnEnd);
 
             // ending effect
             SpawnOnHitPrefab();
@@ -700,47 +699,15 @@ namespace Game.Spells
 
             // ======================================================================================
             // SPAWN SUB EFFECTS
-            foreach (SSpellEventEffect spellEventEffect in m_SpellData.SpellEventEffects)
-            {
-                if (spellEventEffect.SpellEvent != spellEvent)
-                    continue;
-
-                if (SpellLoader.IsSpell(spellEventEffect.EffectName))
-                {
-                    m_SpellData.SubCastSpell(
-                        subSpellData:           SpellLoader.GetSpellData(spellEventEffect.EffectName),
-                        casterId:               m_Controller.PlayerId,
-                        targetId:               targetController != null ? targetController.PlayerId : null,
-                        spellTarget:            spellEventEffect.SpellTarget,
-                        position:               transform.position,
-                        targetPos:              m_Target,
-                        recalculatePosition:    false
-                    );
-                }
-
-                else if (SpellLoader.IsStateEffect(spellEventEffect.EffectName))
-                {
-                    Controller finalTargetController = m_SpellData.GetTargetController(
-                        casterId:       m_Controller.PlayerId,
-                        spellTarget:    spellEventEffect.SpellTarget,
-                        targetId:       targetController != null ? targetController.PlayerId : null
-                    );
-                    
-                    if (finalTargetController == null)
-                    {
-                        ErrorHandler.Warning("Unable to find controller for stateEffect " + spellEventEffect.EffectName + " of spell " + m_SpellData.Name);
-                        return;
-                    }
-
-                    finalTargetController.StateHandler.AddStateEffect(SpellLoader.GetStateEffect(spellEventEffect.EffectName, m_SpellData.Level, parent: m_SpellData.Parent), m_Controller);
-                }
-
-                else
-                {
-                    ErrorHandler.Error("Unable to find " + spellEventEffect.EffectName + " as Spell or StateEffect");
-                    continue;
-                }
-            }
+            m_SpellData.CallSubEffects(
+                spellEvent:         spellEvent, 
+                level:              m_SpellData.Level,
+                parent:             m_SpellData.Parent,
+                caster:             m_Controller,
+                targetController:   targetController, 
+                targetPosition:     m_Target, 
+                position:           transform.position
+            );
 
             // ======================================================================================
             // CHECK Spell Relocation Event

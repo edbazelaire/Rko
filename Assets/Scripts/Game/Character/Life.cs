@@ -97,8 +97,6 @@ public class Life : NetworkBehaviour
     {
         m_MaxHp.Value += hp;
         m_Hp.Value += hp;
-
-        Debug.LogWarning($"Adding {hp} hp : new hp = {m_Hp.Value} / {m_MaxHp.Value}");
     }
 
     /// <summary>

@@ -194,6 +194,7 @@ namespace Game.Character
             m_SelectedSpellData = null;
             m_NextSelectedSpell = ESpell.None;
 
+            AddSpellsPassiveEffects();
             RegisterListeners();
             RegisterListenersClientRPC();
         }
@@ -206,6 +207,17 @@ namespace Game.Character
             }
 
             this.enabled = activate;
+        }
+
+        void AddSpellsPassiveEffects()
+        {
+            foreach(SpellData spellData in m_SpellsData)
+            {
+                foreach(SSpellPassiveEffect effect in spellData.PassiveEffects)
+                {
+                    m_Controller.StateHandler.AddStateEffect(effect.StateEffect.StateEffectName, m_Controller, spellData.Level, spellData.Parent);
+                }
+            }
         }
 
         #endregion
@@ -669,7 +681,7 @@ namespace Game.Character
             m_AnimationTimer = spellData.AnimationTimer / CurrentCastSpeedFactor;
 
             // call for the spell animation
-            CallSpellEvent(spellData.name, ESpellEvent.OnStartCast);
+            CallSpellEvent(spellData.name, ESpellEvent.OnStartCast, spellData.Level);
             if (spellData.Animation != EAnimation.None)
             {
                 // special animation for the spell
@@ -754,7 +766,7 @@ namespace Game.Character
             ResetCastProperties();
 
             // call PreSpellEvent
-            CallSpellEvent(m_SelectedSpell.ToString(), ESpellEvent.OnCancelCast);
+            CallSpellEvent(m_SelectedSpell.ToString(), ESpellEvent.OnCancelCast, 1);
         }
 
         public void OnCastCompleted()
@@ -994,6 +1006,24 @@ namespace Game.Character
             }
         }
 
+        public void ReduceCooldown(ESpell spell, float cooldownReduction)
+        {
+            int i = GetSpellIndex(spell.ToString());
+            if (i < 0)
+                return;
+
+            if (m_Cooldowns[i] <= 0)
+                return;
+
+            // update cooldown server value
+            m_Cooldowns[i] = Mathf.Max(0, m_Cooldowns[i] - cooldownReduction);
+
+            // fire event that cooldown has been updated
+            OnCooldownEvent?.Invoke(spell, m_Cooldowns[i]);
+
+            Debug.Log("ReduceCooldown - " + spell + " : " + m_Cooldowns[i]);
+        }
+
         public void ResetCooldowns()
         {
             if (!IsServer)
@@ -1195,9 +1225,9 @@ namespace Game.Character
             OnCooldownEvent?.Invoke(spell, cooldown);
         }
 
-        public void CallSpellEvent(string spellName, ESpellEvent spellEvent, Vector2? targetPosition = null, float? forcedDuration = null, Vector2? forcedPosition = null)
+        public void CallSpellEvent(string spellName, ESpellEvent spellEvent, int level, Vector2? targetPosition = null, float? forcedDuration = null, Vector2? forcedPosition = null)
         {
-            var spellData = SpellLoader.GetSpellData(spellName, destroy: true);
+            var spellData = SpellLoader.GetSpellData(spellName, level, destroy: true);
 
             // call just on server side
             OnPreSpellEvent?.Invoke(spellName, spellEvent);
@@ -1213,6 +1243,9 @@ namespace Game.Character
 
             if (targetPosition == null)
                 targetPosition = m_TargetPos.Value;
+
+            // CALL SPELL SUB EFFECTS
+            spellData.CallSubEffects(spellEvent, level, "", m_Controller, null, targetPosition.Value);
 
             // FORCED POSITION REQUESTED
             if (forcedPosition != null)

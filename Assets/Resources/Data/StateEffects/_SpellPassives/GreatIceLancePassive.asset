@@ -9,10 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37a2110fb8b24914fb18b6f82bc81e62, type: 3}
-  m_Name: _IceLanceMastery0
+  m_Script: {fileID: 11500000, guid: 8196e0a3b70c68c498c9124a9e0c7e13, type: 3}
+  m_Name: GreatIceLancePassive
   m_EditorClassIdentifier: 
-  m_Description: Your <b>Ice Lance</b> spell gains 1 extra charge
+  m_Description: 'Reduce the cooldown of this spell by [CooldownReduction] seconds
+    each time an [IceBreak] effect is applied '
   m_DescriptionVariables: 
   m_NStacksInDescription: 1
   m_StateEffectType: 0
@@ -32,11 +33,14 @@ MonoBehaviour:
   m_Priority: 0
   m_Delay: 0
   m_Duration: -1
-  m_MaxStacks: 10
+  m_MaxStacks: 1
   m_StackDecay: -1
   m_StartsActivated: 1
   m_StateEffectTriggers: []
-  m_StateEffectActivations: []
+  m_StateEffectActivations:
+  - StateEffectEvent: 1
+    StateEffectName: IceBreak
+    Stacks: 1
   m_BonusStats: []
   m_StatConversions: []
   m_SubStateEffects: []
@@ -45,21 +49,4 @@ MonoBehaviour:
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel: []
   m_StateEffectScalingStacks: []
-  m_AllowedSpells:
-  - IceLance
-  - MarcusIceLance
-  m_SpellEffectType: 0
-  m_AllowedSpellTypes: 
-  m_OnHits: []
-  m_AllyStateEffects: []
-  m_EnemyStateEffects: []
-  m_SpellOverridingData:
-  - Property: 20
-    OverridingType: 1
-    Value: 1
-    SpellPropertyScaling:
-      Property: 0
-      Value: 0
-      ScalingType: 0
-      RoundingType: 0
-      ScalingTresholds: []
+  m_CooldownReduction: 10

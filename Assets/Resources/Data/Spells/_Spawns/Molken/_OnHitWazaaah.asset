@@ -20,9 +20,10 @@ MonoBehaviour:
   Graphics: {fileID: 150222, guid: 2e6b5d05af27ad649bc3d426e567e4b5, type: 3}
   SpellEventActions: []
   OnHit: []
+  PassiveEffects: []
   SpellEventEffects:
   - EffectName: Kill
-    SpellEvent: 1000
+    SpellEvent: 500
     SpellTarget: 4
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}

@@ -256,6 +256,7 @@
         PiercingBolts       = 74,
         PressureShot        = 75,
         WeaponsSalve        = 76,
+        GreatIceLance       = 77,
 
         // ======================================================================
         // Character ABILITIES
@@ -265,7 +266,7 @@
         Erasement           = 1003,
         // -- Marcus
         FrozenOrb           = 1004,
-        WinterProtection    = 1005,
+        MarcusIceLance      = 1005,
         ArcticToundra       = 1006,
         // -- Srug
         Curse               = 1007,
@@ -731,7 +732,8 @@
         Uncontrollable      = 10,
         Enraged             = 21,
         Invisible           = 4,
-        Taunt               = 28,   // <----->
+        Taunt               = 28,   
+        Unstoppable         = 29,   // <----->
 
         // knockback effects
         Knockback           = 5,
@@ -823,30 +825,31 @@
 
     public enum ESpellProperty
     {
-        None,
+        None = 0,
 
-        Heal,
-        Damage,
-        Cooldown,
-        Duration,
-        LifeSteal,
-        NProjectiles,
-        NWaves,
-        DelayBetweenLaunches,
-        DelayBetweenWaves,
-        ProjectileZoneSize,
-        Size,
-        DurationTick,
-        GrowSizeFactor,
-        TickDamage,
-        TickHeal,
-        TickShield,
-        Shield,
-        Delay,
-        ExecutionDamage,
-        Charges,
-        Trajectory,
-        AnimationTimer,
+        Heal                    = 1,
+        Damage                  = 2,
+        Cooldown                = 3,
+        Duration                = 4,
+        LifeSteal               = 5,
+        NProjectiles            = 6,
+        NWaves                  = 7,
+        DelayBetweenLaunches    = 8,
+        DelayBetweenWaves       = 9,
+        ProjectileZoneSize      = 10,
+        Size                    = 11,
+        DurationTick            = 12,
+        GrowSizeFactor          = 13,
+        TickDamage              = 14,
+        TickHeal                = 15,
+        TickShield              = 16,
+        TickEnergy              = 23,   // <--->
+        Shield                  = 17,
+        Delay                   = 18,
+        ExecutionDamage         = 19,
+        Charges                 = 20,
+        Trajectory              = 21,
+        AnimationTimer          = 22,
     }
 
     public enum EStateEffectProperty
@@ -876,6 +879,7 @@
         TickDamage              = 13,
         TickHeal                = 14,
         TickShield              = 15,
+        TickEnergy              = 115,   
         AttackSpeed             = 16,
 
         CastSpeed               = 17,
@@ -903,7 +907,6 @@
         BonusBurnDamage         = 112,
         BonusSlowPerc           = 113,
         Priority                = 114,
-        TickEnergy              = 115,
         Energy                  = 116,
         PassiveEnergyGain       = 121,      
         MaxEnergy               = 122,      // <-->

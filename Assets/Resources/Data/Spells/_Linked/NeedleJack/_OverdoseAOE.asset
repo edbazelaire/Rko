@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3187be67d58548144a9d4f83cb44e7d2, type: 3}
   m_Name: _OverdoseAOE
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: 
   m_DescriptionVariables: []
   m_SpellElements: 
@@ -20,6 +20,7 @@ MonoBehaviour:
   Graphics: {fileID: 152580, guid: dfc0a6db2db3c2443bff937f88a83990, type: 3}
   SpellEventActions: []
   OnHit: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
@@ -33,12 +34,21 @@ MonoBehaviour:
     Y: 0.3
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
   m_Damage: 0
-  m_ExecutionDamages: 0
+  m_ExecutionDamage: 0
   m_Heal: 120
   m_Shield: 0
   m_LifeSteal: 0
@@ -52,6 +62,9 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 1
     Value: 0.12
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
   m_Size: 9
   TriggerPlayer: 1
   EnemyStateEffects: []
