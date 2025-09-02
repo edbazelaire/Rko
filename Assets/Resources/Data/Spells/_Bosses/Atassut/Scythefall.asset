@@ -100,6 +100,7 @@ MonoBehaviour:
     StateEffects: 
   OnHit:
   - {fileID: 11400000, guid: 571795489b731da46821152f08c2f4f0, type: 2}
+  PassiveEffects: []
   SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -156,7 +157,11 @@ MonoBehaviour:
     Stacks: 10
     BonusStacksPerLevel: 0
     OverridingProperties: []
-  AllyStateEffects: []
+  AllyStateEffects:
+  - StateEffect: 10001
+    Stacks: 0
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 0

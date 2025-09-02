@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Managers;
 using Data;
 using Data.DataStructures;
+using Data.DataStructures.PowerEffects;
 using Data.GameManagement;
 using Enums;
 using Game.Loaders;
@@ -128,9 +129,9 @@ namespace Menu.PopUps
             TemplateRunePowerUI templateRune = AssetLoader.LoadTemplateItem<TemplateRunePowerUI>();     // load template
             foreach (string powerName in m_ArenaLevelData.PowerUps)
             {
-                SRunePower runePower = SpellLoader.GetPowerUp(powerName, level);
+                SPowerEffect powerEffect = SpellLoader.GetPowerUp(powerName, level);
                 TemplateRunePowerUI runeItemUI = Instantiate(templateRune, m_RunesContainer.transform);
-                runeItemUI.Initialize(runePower);
+                runeItemUI.Initialize(powerEffect);
             }
         }
 

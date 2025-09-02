@@ -128,6 +128,33 @@
         NoDeath     = 2,
     }
 
+    public enum EBlessing
+    {
+        None = 0,
+
+        Alexander = 1,
+    }
+
+    public enum EPowerUpTag
+    {
+        Damage      = 0,
+        Heal        = 1,
+        Shield      = 2,
+        Dots        = 3,
+        Buffs       = 4,
+        Energy      = 5,
+
+        Reward      = 101,
+
+        Tank        = 1001,
+        Healer      = 1002,
+        Assassin    = 1003,
+        Mage        = 1004,
+        Berserker   = 1005,
+        Invocation  = 1006,
+
+    }
+
     public enum ECharacter
     {
         None = -1,
@@ -454,6 +481,7 @@
         IceLanceMastery         = 27,
         EmperorOfFlames         = 28,
         ChaosTurtle             = 29,
+        LethalityRune           = 30,
     }
 
     public enum EEffectType
@@ -616,6 +644,15 @@
         AllAllies   = 11,
     }
 
+    public enum ETargetLayer
+    {
+        None = 0,
+
+        Player      = 1,
+        Invocation  = 2,
+        Structure   = 3,
+    }
+
     public enum ESpellSpawn
     {
         None,
@@ -733,7 +770,8 @@
         Enraged             = 21,
         Invisible           = 4,
         Taunt               = 28,   
-        Unstoppable         = 29,   // <----->
+        Unstopable          = 29,  
+        Grounded            = 30,   // <----->
 
         // knockback effects
         Knockback           = 5,
@@ -773,6 +811,7 @@
         AlphaFrenzyStack    = 10006,
         BloodLust           = 10007,
         Unyelding           = 10008,
+        EldersTouch         = 10009,
 
         // ======================================================================
         // Special Effects (characters)
@@ -865,11 +904,12 @@
         ResistanceFix           = 5,
         ResistancePerc          = 6,
         ResistanceTick          = 26,   
-        ResistanceTickPerc      = 27,   // <---->
+        ResistanceTickPerc      = 27,   
         BonusDamage             = 7,
         BonusDamagePerc         = 8,
         BonusExecutionDamage    = 22,
         BonusExecutionDamagePerc = 23,
+        Lethality               = 28,   // <---->
         BonusLifeSteal          = 9,
         MissingLifeFactor       = 10,
         Damage                  = 11,
@@ -986,6 +1026,7 @@
         SpellHandler        = 105,      // casting error/success messages, cancel, all stages of spell casting, spell ending, ...
         Animation           = 106,      // animations playing
         StateEffects        = 107,      // state effects changes
+        Quests              = 113,      // quests state effects changes
         SpellGFX            = 108,      // spell graphics playing
         StateEffectGFX      = 109,      // spell graphics playing
         BonusStats          = 110,      // track increased statistiques

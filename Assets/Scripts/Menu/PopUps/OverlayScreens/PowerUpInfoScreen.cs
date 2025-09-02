@@ -1,6 +1,8 @@
-﻿using Assets.Scripts.Data.PowerUps;
-using Data;
+﻿using Data;
+using Data.DataStructures.PowerEffects;
+using Save;
 using Tools;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -10,8 +12,8 @@ namespace Menu.PopUps.OverlayScreens
     {
         #region Members
 
-        SRunePower m_PowerUpData;
-        GameObject  m_Container;
+        SPowerEffect    m_PowerUpData;
+        GameObject      m_Container;
 
         #endregion
 
@@ -25,7 +27,7 @@ namespace Menu.PopUps.OverlayScreens
             m_Container = Finder.Find(gameObject, "Container");
         }
 
-        public virtual void Initialize(SRunePower powerUpData)
+        public virtual void Initialize(SPowerEffect powerUpData)
         {
             m_PowerUpData = powerUpData;
             base.Initialize();

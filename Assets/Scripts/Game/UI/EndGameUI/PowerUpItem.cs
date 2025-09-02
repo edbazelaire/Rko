@@ -1,4 +1,5 @@
 ﻿using Data;
+using Data.DataStructures.PowerEffects;
 using Save;
 using TMPro;
 using Tools;
@@ -11,15 +12,18 @@ namespace Game.UI.EndGameUI
     {
         #region Members
 
-        SRunePower m_PowerUpData;
+        SPowerEffect    m_PowerUpData;
 
-        TMP_Text    m_Title;
-        TMP_Text    m_Description;
-        Image       m_Icon;
-        Button      m_Button;
+        TMP_Text        m_Title;
+        TMP_Text        m_Description;
+        Image           m_Icon;
+        Image           m_IconOverlay;
+        Button          m_Button;
+        Button          m_RefreshButton;
 
-        public SRunePower PowerUpData => m_PowerUpData;
-        public Button Button => m_Button;
+        public SPowerEffect PowerUpData => m_PowerUpData;
+        public Button Button            => m_Button;
+        public Button RefreshButton     => m_RefreshButton;
 
         
         #endregion
@@ -34,27 +38,32 @@ namespace Game.UI.EndGameUI
             m_Title         = Finder.FindComponent<TMP_Text>(gameObject, "Title");
             m_Description   = Finder.FindComponent<TMP_Text>(gameObject, "Description");
             m_Icon          = Finder.FindComponent<Image>(gameObject, "Icon");
+            m_IconOverlay   = Finder.FindComponent<Image>(gameObject, "IconOverlay");
             m_Button        = Finder.FindComponent<Button>(gameObject);
+            m_RefreshButton = Finder.FindComponent<Button>(gameObject, "RefreshButton");
         }
 
-        public void Initialize(SRunePower powerUpData)
+        public void Initialize(SPowerEffect powerUpData, bool withRefreshButton = false)
         {
-            // adapat level of the powerUp to level of the current character
-            powerUpData.SetLevel(InventoryCloudData.Instance.GetCollectable(CharacterBuildsCloudData.SelectedCharacter).Level);
-
-            // save powerUpData
-            m_PowerUpData = powerUpData;
-
             base.Initialize();
+            RefreshUI(powerUpData);
+            
+            m_RefreshButton.gameObject.SetActive(withRefreshButton);
         }
 
         protected override void SetUpUI()
         {
             base.SetUpUI();
+        }
 
-            m_Title.text        = TextHandler.SplitCamelCase(m_PowerUpData.RuneName) + " " + m_PowerUpData.RuneActivation;
-            m_Description.text  = m_PowerUpData.GetDescription();
-            m_Icon.sprite       = AssetLoader.LoadIcon(m_PowerUpData.RuneName);
+        public void RefreshUI(SPowerEffect powerUpData)
+        {
+            m_PowerUpData = powerUpData;
+
+            m_Title.text = TextHandler.SplitCamelCase(m_PowerUpData.BaseName);
+            m_Description.text = m_PowerUpData.GetDescription();
+            m_Icon.sprite = AssetLoader.LoadIcon(m_PowerUpData.BaseName);
+            m_IconOverlay.sprite = AssetLoader.LoadPowerUpIconBorder(m_PowerUpData.RuneActivation);
         }
 
         #endregion

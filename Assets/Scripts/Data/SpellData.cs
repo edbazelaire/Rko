@@ -23,6 +23,7 @@ using Data.DataStructures.SpellSubStructures;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using UnityEngine.Windows;
+using Tools.Helpers;
 
 namespace Data
 {
@@ -188,9 +189,9 @@ namespace Data
 
         // ===========================================================================
         // Dependent Members
-        public override ERarety Rarety => GetRarety();
-        public virtual string Parent => m_Parent.IsNullOrEmpty() ? Name : m_Parent;
-        public ESpell Spell => Id == null ? ESpell.None : (ESpell)Id;
+        public override ERarety Rarety          => GetRarety();
+        public virtual string Parent            => m_Parent.IsNullOrEmpty() ? Name : m_Parent;
+        public ESpell Spell                     => Id == null ? ESpell.None : (ESpell)Id;
         public ulong? CurrentTargetId           => m_CurrentTargetId;
         public virtual List<SpellRequirements> SpellRequirements => m_SpellRequirements;
         public virtual ESpellType SpellType     => ESpellType.InstantSpell;
@@ -198,6 +199,9 @@ namespace Data
         public float Size                       => m_Size >= 0 ? m_Size * Settings.SpellSizeFactor : ArenaManager.Instance.TargettableAreaSize;
         protected override Type m_EnumType      => typeof(ESpell);
         public bool ClampTargetPos              => m_ClampTargetPos;
+        public bool IsAutoTarget                => true;
+        public bool IsEnemyTarget               => TargetHelper.IsEnemyTarget(SpellTarget);
+        public bool IsAllyTarget                => TargetHelper.IsAllyTarget(SpellTarget);
 
         // ===========================================================================
         // Level Dependent Members
@@ -280,19 +284,18 @@ namespace Data
                 RecalculateRotation(ref rotation);
 
             // instantiate the prefab of the spell
-            NetworkObject spellGO = PoolManager.Pool(GetSpellPrefab(), clientId, position, rotation);
-
-            // reparent if any
             Transform parent = FindParent(clientId);
-            if (parent != null)
-                spellGO.transform.SetParent(FindParent(clientId));
+            GameObject spellGO = GameManager.Instance.IsOfflineMode
+                ? PoolManager.Pool(GetSpellPrefabOffline(), position, rotation, parent, checkSpawnLogic: true)
+                : PoolManager.Pool(GetSpellPrefab(), clientId, position, rotation, parent).gameObject;
 
             // initialize the spell
             var spell = Finder.FindComponent<Spell>(spellGO.gameObject);
             spell.Initialize(clientId, target, this);
 
             // backpropagate the spell intialization to the client (for the preview)
-            spell.InitializeClientRpc(clientId, new Vector2Short(target), Name, (byte)m_Level);
+            if (! GameManager.Instance.IsOfflineMode)
+                spell.InitializeClientRpc(clientId, new Vector2Short(target), Name, (byte)m_Level);
 
             // call event that spell spawned
             OnSpellSpawn?.Invoke(spell);
@@ -414,7 +417,7 @@ namespace Data
         {
             if (CheckSpecialCase_Dash(spellEventEffect, out float speed, out float duration))
             {
-                caster.Movement.AddForce(new SForce(speed, duration));
+                caster.Movement.AddForce(new SForce(speed, duration, null));
                 return true;
             }
             return false;
@@ -557,6 +560,11 @@ namespace Data
 
 
         #region Spell Helpers
+
+        protected virtual GameObject GetSpellPrefabOffline()
+        {
+            return SpellLoader.GetSpellPrefab(Name, SpellType);
+        }
 
         protected virtual NetworkObject GetSpellPrefab()
         {
@@ -778,7 +786,6 @@ namespace Data
         {
             rotation = Quaternion.identity;
         }
-
 
         #endregion
 
@@ -1369,30 +1376,6 @@ namespace Data
                     break;
             }
         }
-
-        public bool IsAutoTarget
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-        public bool IsEnemyTarget => SpellTarget == ESpellTarget.FirstEnemy
-            || SpellTarget == ESpellTarget.EnemyZone
-            || SpellTarget == ESpellTarget.EnemyZoneStart
-            || SpellTarget == ESpellTarget.EnemyZoneCenter
-            || SpellTarget == ESpellTarget.EnemyZoneEnd
-            || SpellTarget == ESpellTarget.Fixed
-            || SpellTarget == ESpellTarget.Mirror;
-            
-
-        public bool IsAllyTarget => SpellTarget == ESpellTarget.FirstAlly
-            || SpellTarget == ESpellTarget.Self
-            || SpellTarget == ESpellTarget.AllyZone
-            || SpellTarget == ESpellTarget.AllyZoneStart
-            || SpellTarget == ESpellTarget.AllyZoneCenter
-            || SpellTarget == ESpellTarget.AllyZoneEnd;
 
         #endregion
 

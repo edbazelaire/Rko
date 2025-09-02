@@ -302,7 +302,7 @@ namespace Game
             void OnSpellSpawn(Spell spell)
             {
                 // check is right spell
-                if (spell.SpellData.Spell != m_Enemy.Controller.SpellHandler.AutoAttack || spell.Controller.PlayerId != m_Enemy.Controller.PlayerId)
+                if (spell.SpellData.Spell != m_Enemy.Controller.SpellHandler.AutoAttack || spell.Caster.PlayerId != m_Enemy.Controller.PlayerId)
                     return;
 
                 spell.OnSpellEvent += OnSpellEvent;
@@ -350,7 +350,7 @@ namespace Game
             void OnSpellSpawn(Spell spell)
             {
                 // check is right spell
-                if (spell.SpellData.Spell != ESpell.FireBarrage || spell.Controller.PlayerId != m_Enemy.Controller.PlayerId)
+                if (spell.SpellData.Spell != ESpell.FireBarrage || spell.Caster.PlayerId != m_Enemy.Controller.PlayerId)
                     return;
 
                 spell.OnSpellEvent += OnSpellEvent;
@@ -487,7 +487,7 @@ namespace Game
             void OnSpellSpawn(Spell spellObject)
             {
                 // check is right spell
-                if (spellObject.SpellData.Name != spell.ToString() || spellObject.Controller != controller)
+                if (spellObject.SpellData.Name != spell.ToString() || spellObject.Caster != controller)
                     return;
 
                 spellObject.OnSpellEvent += OnSpellEvent;

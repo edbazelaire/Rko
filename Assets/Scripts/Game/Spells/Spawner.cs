@@ -32,14 +32,6 @@ namespace Game.Spells
         /// <summary>
         /// 
         /// </summary>
-        public override void OnNetworkSpawn()
-        {
-            base.OnNetworkSpawn();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="radius"></param>
         /// <param name="damage"></param>
         /// <param name="duration"></param>
@@ -169,8 +161,8 @@ namespace Game.Spells
             // initialize player data
             spawnController.InitializeSpawn(
                 playerData: CreatePlayerData(spawnElement),
-                team:       m_Controller.Team,
-                spawnOwner: m_Controller
+                team:       m_Caster.Team,
+                spawnOwner: m_Caster
             );
 
             // setup Kill coroutine if has duration
@@ -223,7 +215,7 @@ namespace Game.Spells
 
         protected virtual Vector3 CalculateSpawnPosition(int index, int maxSpawns)
         {
-            return m_SpellData.SpawnTarget.RecalculateTarget(transform.position, index, m_Controller.Team, maxSpawns);
+            return m_SpellData.SpawnTarget.RecalculateTarget(transform.position, index, m_Caster.Team, maxSpawns);
         }
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Managers;
 using Data.GameManagement;
 using Enums;
 using Game.Spells;
@@ -308,9 +309,23 @@ namespace Menu.Common.Buttons
             return new SCollectableCloudData(collectable, level, qty);
         }
 
-        public virtual void OpenInfoPopUp(int? level = null)
+        public virtual void OpenInfoPopUp(int? level = null, bool asIconOnly = false)
         {
-            
+            level ??= m_Level;
+            EPopUpState popup = Collectable switch
+            {
+                ECharacter character   => EPopUpState.CharacterInfoPopUp,
+                ESpell spell           => EPopUpState.SpellInfoPopUp,
+                ERune rune             => EPopUpState.RuneInfoPopUp,
+                _ => EPopUpState.None
+            };
+
+            if (popup == EPopUpState.None)
+            {
+                ErrorHandler.Error("Unable to find info popup for collectable : " + Collectable);
+            }
+
+            ScreenManager.SetPopUp(popup, Collectable, level, asIconOnly);
         }
 
         #endregion

@@ -1,6 +1,6 @@
-﻿using Assets.Scripts.Data.PowerUps;
-using Data;
+﻿using Data;
 using Data.DataStructures;
+using Data.DataStructures.PowerEffects;
 using Enums;
 using MyBox;
 using System;
@@ -18,8 +18,6 @@ namespace Game.Character
         public Action<string, int> QuestValueChanged;
 
         protected List<STriggerEffect>      m_TriggerEffects;
-        protected List<PowerEffectData>     m_PowerEffects;     // TODO : Remove if not used (replacement to TriggerEffects)
-
         protected bool                      m_IsActivated = false;
         protected Controller                m_Controller;
 
@@ -86,7 +84,7 @@ namespace Game.Character
 
         #region Add / Remove
 
-        public void AddPowerUp(SRunePower runePower)
+        public void AddPowerUp(SPowerEffect runePower)
         {
             if (!IsServer)
                 return;
@@ -142,6 +140,10 @@ namespace Game.Character
             if (effect.SpellActivationEvent == ETriggerType.GameStart)
             {
                 effect.Activate(m_Controller);
+            }
+            else if (effect.SpellActivationEvent == ETriggerType.Time)
+            {
+                effect.Activate(m_Controller, effect.ActivationTreshold);
             }
             else if (effect.SpellActivationEvent == ETriggerType.Hp && effect.ActivationTreshold >= (float)m_Controller.Life.Hp.Value / m_Controller.Life.MaxHp.Value)
             {

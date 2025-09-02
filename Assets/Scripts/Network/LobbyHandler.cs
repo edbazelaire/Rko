@@ -99,6 +99,7 @@ namespace Network
         public ELobbyState      State               => m_State;
         public bool             IsActive            => m_State != ELobbyState.Inactive;
         public bool             IsTuto              { get => m_IsTuto; set => m_IsTuto = value; }
+        public bool             IsFilledWithBots    => m_FillWithBots;
 
         /// <summary> time waiting in ranked before filling with bots </summary>
         public float WaitForPlayerDuration => Main.SkipWaitingRanked ? 0f : UnityEngine.Random.Range(1f, 5f * ((int)ProgressionCloudData.CurrentLeague + 1)); 

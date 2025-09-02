@@ -1,8 +1,10 @@
 ﻿using Data;
+using Game.NetworkStructures;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
+using Tools.Helpers;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -26,20 +28,32 @@ namespace Game.Spells
     {
         #region Members
 
+        // ===================================================================================
+        // Network Variables
         NetworkVariable<EMineState> m_State = new NetworkVariable<EMineState>(EMineState.None);
+        public IReplicatedVar<EMineState> State;
 
-        public NetworkVariable<EMineState> State => m_State;
-        MineData m_SpellData => m_BaseSpellData as MineData;
-        float m_Radius => m_SpellData.Size / 2;
+        // ===================================================================================
+        // Dependent Members
+        MineData m_SpellData    => m_BaseSpellData as MineData;
+        float m_Radius          => m_SpellData.Size / 2;
 
+        // ===================================================================================
+        // Local Members
         Coroutine       m_Coroutine;
         float           m_DurationTimer;
         int             m_ActivationCounter;
 
         #endregion
 
-        
+
         #region Init & End
+
+        public override void OnSpawned()
+        {
+            base.OnSpawned();
+            State = ReplicatedVar.Create(m_State);
+        }
 
         protected override void ApplyPostProcessing()
         {
@@ -51,7 +65,7 @@ namespace Game.Spells
             m_DurationTimer = m_SpellData.Duration;
             m_ActivationCounter = 0;
 
-            m_State.OnValueChanged += SpawnGFXPrefabs;
+            State.OnValueChanged += SpawnGFXPrefabs;
 
             SetState(EMineState.Inactive);
         }
@@ -64,6 +78,12 @@ namespace Game.Spells
         protected override void Update()
         {
             base.Update();
+
+            if (! GameManager.Exists)
+            {
+                Destroy(gameObject);
+                return;
+            }
 
             if (!IsServer)
                 return;
@@ -79,12 +99,12 @@ namespace Game.Spells
 
         protected void CreateCollisionCircle()
         {
-            // Check for collisions within a circle with variableRadius radius
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, m_Radius);
-
-            foreach (Collider2D collider in colliders)
+            // check for collisions within a circle with variableRadius radius
+            var filter = Physics2DQueries.BuildFilter(TargetHelper.PLAYER_LAYER_MASK);
+            int count = Physics2DQueries.OverlapCircle(transform.position, m_Radius, filter, out Collider2D[]  hits);
+            for (int i = 0; i < count; i++)
             {
-                if (TryGetController(collider, out Controller _))
+                if (TryGetController(hits[i], out Controller _))
                 {
                     SetState(EMineState.Trigerred);
                     return;
@@ -98,7 +118,11 @@ namespace Game.Spells
                 return;
 
             // must be armed to start
-            if (m_State.Value != EMineState.Armed)
+            if (State.Value != EMineState.Armed)
+                return;
+
+            // Check if collider belongs to expected layers
+            if ((TargetHelper.PLAYER_LAYER_MASK & (1 << collider.gameObject.layer)) == 0)
                 return;
 
             if (!TryGetController(collider, out Controller _))
@@ -113,7 +137,11 @@ namespace Game.Spells
                 return;
 
             // must be armed to start
-            if (m_State.Value != EMineState.Trigerred)
+            if (State.Value != EMineState.Trigerred)
+                return;
+
+            // Check if collider belongs to expected layers
+            if ((TargetHelper.PLAYER_LAYER_MASK & (1 << collider.gameObject.layer)) == 0)
                 return;
 
             if (!TryGetController(collider, out Controller _))
@@ -129,7 +157,7 @@ namespace Game.Spells
 
         void SetState(EMineState state)
         {
-            m_State.Value = state;
+            State.Value = state;
 
             if (m_Coroutine != null)
                 StopCoroutine(m_Coroutine);
@@ -156,7 +184,7 @@ namespace Game.Spells
                     if (m_SpellData.ActivationData == null)
                         ErrorHandler.Error("MineData set with no ActivationData");
                     else
-                        m_SpellData.ActivationData.Cast(OwnerClientId, transform.position, transform.position, recalculateTarget: false);
+                        m_SpellData.ActivationData.Cast(m_Caster.PlayerId, transform.position, transform.position, recalculateTarget: false);
 
                     m_ActivationCounter++;
                     if (m_SpellData.NumActivations < 0 || m_ActivationCounter < m_SpellData.NumActivations)
@@ -174,7 +202,7 @@ namespace Game.Spells
 
         void NextSate()
         {
-            SetState(m_State.Value + 1);
+            SetState(State.Value + 1);
         }
 
         IEnumerator WaitForNextState(float timer)
@@ -212,7 +240,7 @@ namespace Game.Spells
                 if (spawnPrefab.GFXLifetime.StartSpellPart != mineState)
                     continue;
 
-                spawnPrefab.Spawn(m_Controller, m_SpellData, this, null, null, transform.position, m_Target);
+                spawnPrefab.Spawn(m_Caster, m_SpellData, this, null, null, transform.position, m_Target);
             }
         }
 

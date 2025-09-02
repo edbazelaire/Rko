@@ -26,7 +26,7 @@ namespace Tools.Animations
 
         #region Init & End
 
-        public void Initialize(string id = "", float duration = 1f, float startScale = 1f, float endScale = 1f, float startOpacity = 1f, float endOpacity = 1f)
+        public void Initialize(string id = "", float duration = 1f, float startScale = 1f, float endScale = 1f, float startOpacity = 1f, float endOpacity = 1f, float? forcedBaseOpacity = null)
         {
             if (duration <= 0f)
             {
@@ -37,7 +37,7 @@ namespace Tools.Animations
             base.Initialize(id, duration);
 
             // Init sub images that might change with opacity
-            FindSubImages();
+            FindSubImages(forcedBaseOpacity);
 
             // init animation variables
             m_StartScale    = startScale;
@@ -90,7 +90,7 @@ namespace Tools.Animations
 
         #region Helpers
 
-        private void FindSubImages()
+        private void FindSubImages(float? forcedBasedOpacity = null)
         {
             // add texts
             m_Texts = Finder.FindComponents<TMP_Text>(gameObject);
@@ -100,7 +100,7 @@ namespace Tools.Animations
             Image[] images = Finder.FindComponents<Image>(gameObject).ToArray();
             foreach (Image image in images)
             {
-                m_Images.Add((image, image.color.a));
+                m_Images.Add((image, forcedBasedOpacity ?? image.color.a));
             }
 
             // add Raw Images
@@ -108,7 +108,7 @@ namespace Tools.Animations
             RawImage[] rawImages = Finder.FindComponents<RawImage>(gameObject).ToArray();
             foreach (RawImage image in rawImages)
             {
-                m_RawImages.Add((image, image.color.a));
+                m_RawImages.Add((image, forcedBasedOpacity ?? image.color.a));
             }
 
             // add sprites
@@ -116,7 +116,7 @@ namespace Tools.Animations
             var sprites = Finder.FindComponents<SpriteRenderer>(gameObject);
             foreach (SpriteRenderer spriteR in sprites)
             {
-                m_Sprites.Add((spriteR, spriteR.color.a));
+                m_Sprites.Add((spriteR, forcedBasedOpacity ?? spriteR.color.a));
             }
         }
 

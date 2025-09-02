@@ -117,7 +117,7 @@ namespace Game.AI.BehaviorTrees
                 }),
 
                 // MOVE
-                new TaskMove(controller, checkZones: true, checkProjectiles: false),         
+                new TaskMove(controller, checkZones: false, checkProjectiles: false),         
 
                 // Default - if cant move (should not be used most of the time)
                 new TaskWait(controller),

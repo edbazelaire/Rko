@@ -1,8 +1,11 @@
 ﻿using Data;
 using Enums;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
+using Tools.Helpers;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Game.Spells
@@ -29,15 +32,6 @@ namespace Game.Spells
         /// <summary>
         /// 
         /// </summary>
-        public override void OnNetworkSpawn()
-        {
-            base.OnNetworkSpawn();
-            m_Radius.OnValueChanged += OnRadiusChanged;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="radius"></param>
         /// <param name="damage"></param>
         /// <param name="duration"></param>
@@ -49,6 +43,7 @@ namespace Game.Spells
             base.Initialize(clientId, target, spellData);
 
             InitializeTriggerZone();
+            StartCoroutine(CheckActivation());   
         }
 
         /// <summary>
@@ -58,7 +53,9 @@ namespace Game.Spells
         {
             Collider2D[] colliders = new Collider2D[10];        // Adjust size based on expected objects
             ContactFilter2D filter = new ContactFilter2D();
+            filter.layerMask = TargetHelper.ALL_LAYER_MASK;
             filter.useTriggers = true;
+            filter.useLayerMask = true;
 
             int count = GetComponent<Collider2D>().Overlap(filter, colliders);
 
@@ -69,15 +66,15 @@ namespace Game.Spells
                 {
                     if (TryGetController(colliders[i], out Controller controller))
                     {
-                        if ((m_SpellData.IsEnemyTarget && controller.Team != m_Controller.Team) 
-                            || (m_SpellData.IsAllyTarget && controller.Team == m_Controller.Team))
+                        if ((m_SpellData.IsEnemyTarget && controller.Team != m_Caster.Team) 
+                            || (m_SpellData.IsAllyTarget && controller.Team == m_Caster.Team))
                             hitControllers.Add(controller);
                     }
                 }
             }
             else
             {
-                var allControllers = m_SpellData.IsEnemyTarget ? GameManager.Instance.GetAllEnemies(m_Controller.Team) : GameManager.Instance.GetAllAllies(m_Controller.Team);
+                var allControllers = m_SpellData.IsEnemyTarget ? GameManager.Instance.GetAllEnemies(m_Caster.Team) : GameManager.Instance.GetAllAllies(m_Caster.Team);
                 hitControllers = allControllers.Where(
                     controller => hitControllers.Any(hitController => hitController.PlayerId == controller.PlayerId)
                 ).ToList();
@@ -89,13 +86,22 @@ namespace Game.Spells
             }
         }
 
-        /// <summary>
-        /// Unsubscribe from events
-        /// </summary>
-        public override void OnDestroy()
+        IEnumerator CheckActivation()
         {
-            m_Radius.OnValueChanged -= OnRadiusChanged;
-            base.OnDestroy();
+            var timer = m_SpellData.DurationTick;
+            while (!m_IsOver && !gameObject.IsDestroyed())
+            {
+                timer -= Time.deltaTime;
+                if (timer <= 0)
+                {
+                    // call "OnActivation" event
+                    CallSpellEvent(ESpellEvent.OnActivation);
+                    timer = m_SpellData.DurationTick;
+                }
+
+                yield return null;
+            }
+            yield return null;
         }
 
         #endregion
@@ -137,6 +143,10 @@ namespace Game.Spells
             if (!IsServer)
                 return;
 
+            // Check if collider belongs to expected layers
+            if ((TargetHelper.ALL_LAYER_MASK & (1 << collider.gameObject.layer)) == 0)
+                return;
+
             if (!TryGetController(collider, out Controller controller))
                 return;
 
@@ -152,6 +162,10 @@ namespace Game.Spells
 
         protected void OnTriggerExit2D(Collider2D collider)
         {
+            // Check if collider belongs to expected layers
+            if ((TargetHelper.ALL_LAYER_MASK & (1 << collider.gameObject.layer)) == 0)
+                return;
+
             if (!TryGetController(collider, out Controller controller))
                 return;
 
@@ -174,7 +188,7 @@ namespace Game.Spells
             ApplyPersistentStateEffects(controller);
 
             // apply force
-            if (m_SpellData.ZoneForce != default)
+            if (m_SpellData.ZoneForce != default && TargetHelper.IsAllowedTarget(controller, m_Caster, m_SpellData.ZoneForce.Targets))
             {
                 controller.Movement.AddForce(m_SpellData.ZoneForce);
             }
@@ -188,7 +202,6 @@ namespace Game.Spells
             // remove force
             if (m_SpellData.ZoneForce != default)
             {
-                Debug.Log("Removing Zone Force on : " + controller.gameObject.name);
                 controller.Movement.RemoveForce(m_SpellData.ZoneForce);
             }
         }
@@ -248,7 +261,7 @@ namespace Game.Spells
 
             // energy gain (if not structure)
             if (! controller.CharacterData.IsStructure)
-                m_Controller.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
+                m_Caster.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
 
             // add player to affected players
             if (m_SpellData.DurationTick > 0)
@@ -263,7 +276,7 @@ namespace Game.Spells
         protected virtual bool CheckHitEnemyTick(Controller controller)
         {
             // Target is Ally - return
-            if (controller.Team == m_Controller.Team)
+            if (controller.Team == m_Caster.Team)
                 return false;
 
             // no base Damage, StateEffects or OnHit effects - return
@@ -276,20 +289,20 @@ namespace Game.Spells
             {
                 damage *= controller.StateHandler.GetStacks(m_SpellData.StateEffectStackFactor);
             }
-            damage = m_Controller.StateHandler.ApplyBonusInt(damage, EStateEffectProperty.TickDamage, controller, specialCondition: m_SpellData.Name);
+            damage = m_Caster.StateHandler.ApplyBonusInt(damage, EStateEffectProperty.TickDamage, controller, specialCondition: m_SpellData.Name);
 
             // get final damage after shields and resistances
-            int finalDamage = controller.Life.Hit(damage, m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
-            if (finalDamage > 0 && m_Controller.ClientAnalytics != null)
-                m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Damage, finalDamage);
+            int finalDamage = controller.Life.Hit(damage, m_Caster.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
+            if (finalDamage > 0 && m_Caster.ClientAnalytics != null)
+                m_Caster.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Damage, finalDamage);
 
             ErrorHandler.Log(m_SpellData.Name + " : " + finalDamage, ELogTag.Spells);
 
             // apply lifesteal if any (remove 1 because floats values are always based on 1 as default value)
-            float lifeSteal = SpellData.LifeSteal + Mathf.Max(0f, m_Controller.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal) - 1);
+            float lifeSteal = SpellData.LifeSteal + Mathf.Max(0f, m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal) - 1);
             if (lifeSteal > 0 && finalDamage > 0)
             {
-                m_Controller.Life.Heal((int)Mathf.Round(lifeSteal * finalDamage), m_Controller.PlayerId, m_SpellData.Name, m_SpellData.SpellCategory);
+                m_Caster.Life.Heal((int)Mathf.Round(lifeSteal * finalDamage), m_Caster.PlayerId, m_SpellData.Name, m_SpellData.SpellCategory);
             }
 
             // apply state effects specifics to enemies
@@ -305,7 +318,7 @@ namespace Game.Spells
         /// <returns></returns>
         protected virtual bool CheckHitAllyTick(Controller controller)
         {
-            if (controller.Team != m_Controller.Team)
+            if (controller.Team != m_Caster.Team)
                 return false;
 
             if (m_SpellData.TickHeal <= 0 && m_SpellData.TickEnergy == 0 && m_SpellData.AllyStateEffects.Count == 0)
@@ -317,10 +330,10 @@ namespace Game.Spells
             {
                 heal *= controller.StateHandler.GetStacks(m_SpellData.StateEffectStackFactor);
             }
-            heal = m_Controller.StateHandler.ApplyBonusInt(heal, EStateEffectProperty.TickHeal, controller, specialCondition: m_SpellData.Name);
+            heal = m_Caster.StateHandler.ApplyBonusInt(heal, EStateEffectProperty.TickHeal, controller, specialCondition: m_SpellData.Name);
 
             // heal the target for the specified amount
-            controller.Life.Heal(heal, m_Controller.PlayerId, m_SpellData.Name, m_SpellData.SpellCategory);
+            controller.Life.Heal(heal, m_Caster.PlayerId, m_SpellData.Name, m_SpellData.SpellCategory);
 
             // add energy to the target for the specified amount
             int energy = m_SpellData.TickEnergy;
@@ -330,8 +343,8 @@ namespace Game.Spells
             }
             controller.EnergyHandler.AddEnergy(energy);
 
-            if (m_Controller.ClientAnalytics != null)
-                m_Controller.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Heal, heal);
+            if (m_Caster.ClientAnalytics != null)
+                m_Caster.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Heal, heal);
 
             // apply ally state effects
             ApplyStateEffects(controller, m_SpellData.AllyStateEffects);
@@ -353,7 +366,7 @@ namespace Game.Spells
             float timeFactor = Mathf.Clamp(m_SpellData.Duration <= 0 || m_SpellData.MaxSizeAt <= 0 ? 1 : (m_SpellData.Duration - m_DurationTimer) / (m_SpellData.Duration * m_SpellData.MaxSizeAt), 0, 1);
             
             // value of the radius
-            m_Radius.Value = (1 + timeFactor * m_SpellData.GrowSizeFactor) * m_SpellData.Size / 2;
+            Radius.Value = (1 + timeFactor * m_SpellData.GrowSizeFactor) * m_SpellData.Size / 2;
         }
 
         #endregion

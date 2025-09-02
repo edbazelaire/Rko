@@ -47,17 +47,17 @@ namespace Game.Spells
                 m_SpellData.OnCounterProc.SetParent(m_SpellData.Parent);
 
             // apply self state effects
-            ApplyStateEffects(m_Controller, m_SpellData.AllyStateEffects);
+            ApplyStateEffects(m_Caster, m_SpellData.AllyStateEffects);
 
             // TODO : BETTER - if spell is not impacting player by blocking movement or cast, and is not Trigger by player, do not add to list of Counters
             if (! m_SpellData.IsLinkedCounter)
                 return;
 
             if (m_SpellData.IsCanceledOnCast)
-                m_Controller.SpellHandler.OnPreSpellEvent += OnPreSpellEvent;
+                m_Caster.SpellHandler.OnPreSpellEvent += OnPreSpellEvent;
 
             // add counter to the list of counters
-            m_Controller.CounterHandler.AddCounter(this);
+            m_Caster.CounterHandler.AddCounter(this);
 
             // set shield at the end (the "counter" needs to be added in the list of counters before Shield recalculation)
             SetShield(m_SpellData.Shield);
@@ -71,38 +71,38 @@ namespace Game.Spells
             if (m_IsOver)
                 return;
 
-            m_Controller.SpellHandler.OnPreSpellEvent -= OnPreSpellEvent;
+            m_Caster.SpellHandler.OnPreSpellEvent -= OnPreSpellEvent;
 
             if (m_SpellData.IsLinkedCounter)
-                m_Controller.CounterHandler.RemoveCounter(this);
+                m_Caster.CounterHandler.RemoveCounter(this);
 
             if (m_SpellData.AllyStateEffects != null)
             {
                 foreach (var effect in m_SpellData.AllyStateEffects)
                 {
-                    if (!m_Controller.StateHandler.HasState(effect.StateEffect))
+                    if (!m_Caster.StateHandler.HasState(effect.StateEffect))
                         continue;
 
-                    m_Controller.StateHandler.RemoveStateEffect(effect.StateEffect, true, effect.GetStacks());
+                    m_Caster.StateHandler.RemoveStateEffect(effect.StateEffect, true, effect.GetStacks());
                 }
             }
 
             // at the end - recalculate shield if has one
             if (m_SpellData.Shield > 0)
-                m_Controller.Life.RecalculateShield();
+                m_Caster.Life.RecalculateShield();
 
             base.End();
         }
 
-        public override void OnNetworkDespawn()
+        public override void OnDespawned()
         {
             if (!IsServer)
                 return;
 
             if (! m_IsOver) 
-                m_Controller.SpellHandler.OnPreSpellEvent -= OnPreSpellEvent;
+                m_Caster.SpellHandler.OnPreSpellEvent -= OnPreSpellEvent;
 
-            base.OnNetworkDespawn();
+            base.OnDespawned();
         }
 
         #endregion
@@ -174,24 +174,24 @@ namespace Game.Spells
             if (! CanBeProc(enemySpell.SpellData.SpellCategory))
                 return false;
 
-            var targetPosition = enemySpell.Controller.transform.position;
+            var targetPosition = enemySpell.Caster.transform.position;
             targetPosition.y = 0;
             switch (m_SpellData.CounterType)
             {
                 // cast the counter spell on the enemy
                 case ECounterType.Proc:
                     if (m_SpellData.OnCounterProc != null)
-                        m_SpellData.OnCounterProc.Cast(OwnerClientId, targetPosition, transform.position, recalculateTarget: true);
+                        m_SpellData.OnCounterProc.Cast(m_Caster.PlayerId, targetPosition, transform.position, recalculateTarget: true);
                     break;
 
                 // block the spell : do nothing
                 case ECounterType.Block:
                     if (m_SpellData.Shield > 0)
                     {
-                        HitShield(enemySpell.GetBoostedDamage(m_Controller) + enemySpell.GetBoostedExecutionDamage(m_Controller));
+                        HitShield(enemySpell.GetBoostedDamage(m_Caster) + enemySpell.GetBoostedExecutionDamage(m_Caster));
                     }
 
-                    enemySpell.CallSpellEvent(ESpellEvent.OnHit, m_Controller);
+                    enemySpell.CallSpellEvent(ESpellEvent.OnHit, m_Caster);
                     break;
 
                 // Recast the spell to the enemy
@@ -202,11 +202,11 @@ namespace Game.Spells
                     // if enemy spell is sub-spell of a multiprojectile spell : only cast one instance of the spell
                     if (enemySpell.SpellData.SpellType == ESpellType.MultiProjectiles)
                     {
-                        ((MultiProjectilesData)enemySpell.SpellData).CastOneProjectile(OwnerClientId, targetPosition, transform.position);
+                        ((MultiProjectilesData)enemySpell.SpellData).CastOneProjectile(m_Caster.PlayerId, targetPosition, transform.position);
                         break;
                     }
 
-                    enemySpell.SpellData.Cast(OwnerClientId, targetPosition, transform.position, recalculateTarget: false);
+                    enemySpell.SpellData.Cast(m_Caster.PlayerId, targetPosition, transform.position, recalculateTarget: false);
                     break;
 
                 default:
@@ -215,7 +215,7 @@ namespace Game.Spells
             }
 
             // Add energy from counter proc
-            m_Controller.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
+            m_Caster.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
 
             // Converts spell incoming damages into someting else
             ProcDamageConversionEffects(enemySpell);
@@ -248,13 +248,13 @@ namespace Game.Spells
                 return false;
 
             // if caster is null (dead spawn, for exemple) get first available enemy
-            var targetPosition = caster != null ? caster.transform.position : GameManager.Instance.GetFirstEnemy(m_Controller.Team).transform.position;
+            var targetPosition = caster != null ? caster.transform.position : GameManager.Instance.GetFirstEnemy(m_Caster.Team).transform.position;
             targetPosition.y = 0;
             switch (m_SpellData.CounterType)
             {
                 // cast the counter spell on the enemy
                 case ECounterType.Proc:
-                    m_SpellData.OnCounterProc.Cast(OwnerClientId, targetPosition, transform.position, recalculateTarget: true);
+                    m_SpellData.OnCounterProc.Cast(m_Caster.PlayerId, targetPosition, transform.position, recalculateTarget: true);
                     break;
 
                 // block the spell : do nothing
@@ -276,7 +276,7 @@ namespace Game.Spells
             }
 
             // Add energy from counter proc
-            m_Controller.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
+            m_Caster.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
 
             // Call "OnHit" event for the Counter
             CallSpellEvent(ESpellEvent.OnHit);
@@ -299,7 +299,7 @@ namespace Game.Spells
 
             foreach(var effect in m_SpellData.DamageConversionEffects)
             {
-                effect.Apply(enemySpell, Controller, m_SpellData.Parent);
+                effect.Apply(enemySpell, Caster, m_SpellData.Parent);
             }
         }
 
@@ -327,7 +327,7 @@ namespace Game.Spells
                 return;
             }
 
-            m_Controller.Life.RecalculateShield();
+            m_Caster.Life.RecalculateShield();
         }
 
         public void SetShield(int shield)
@@ -341,12 +341,12 @@ namespace Game.Spells
             if (shield == 0)
                 return;
 
-            shield = m_Controller.StateHandler.ApplyBonusShield(shield, m_Controller);
+            shield = m_Caster.StateHandler.ApplyBonusShield(shield, m_Caster);
 
-            GameAnalyticsManager.Instance.OnSpellHit(m_Controller.PlayerId, m_Controller.PlayerId, m_SpellData.Name, shield, EHitType.Shield, ESpellCategory.Direct);
+            GameAnalyticsManager.Instance.OnSpellHit(m_Caster.PlayerId, m_Caster.PlayerId, m_SpellData.Name, shield, EHitType.Shield, ESpellCategory.Direct);
 
             m_Shield = shield;
-            m_Controller.Life.RecalculateShield();
+            m_Caster.Life.RecalculateShield();
         }
 
         public void AddShield(int shield)

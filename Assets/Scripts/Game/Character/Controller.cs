@@ -2,6 +2,7 @@ using AI;
 using Data;
 using Data.DataStructures;
 using Data.DataStructures.CharacterSubStructures;
+using Data.DataStructures.PowerEffects;
 using Enums;
 using Game;
 using Game.Character;
@@ -407,10 +408,10 @@ public class Controller : NetworkBehaviour
         {
             foreach (var powerUp in m_PlayerData.Value.PowerUps)
             {
-                SRunePower data = SpellLoader.GetPowerUp(powerUp.ToString(), m_CharacterLevel.Value);
+                SPowerEffect data = SpellLoader.GetPowerUp(powerUp.ToString(), m_CharacterLevel.Value);
                 
                 // CHECK : Power up not already in Runes
-                if (Enum.TryParse(data.RuneName, out ERune rune) && m_PlayerData.Value.BuildData.Runes.Contains(rune))
+                if (Enum.TryParse(data.BaseName, out ERune rune) && m_PlayerData.Value.BuildData.Runes.Contains(rune))
                 {
                     ErrorHandler.Warning("PowerUp " + data.Name + " was already in runes - skipped");
                     continue;
@@ -430,7 +431,7 @@ public class Controller : NetworkBehaviour
         List<STriggerEffect> list = ! m_PlayerData.Value.TriggerEffects.IsNullOrEmpty() ? m_PlayerData.Value.TriggerEffects.ToList() : new();
 
         // CHARACTER : base trigger effects
-        foreach (SRunePower data in characterData.SpecialPowers)
+        foreach (SPowerEffect data in characterData.SpecialPowers)
         {
             list.AddRange(data.TriggerEffects);
         }
@@ -452,10 +453,10 @@ public class Controller : NetworkBehaviour
         {
             foreach (var powerUp in m_PlayerData.Value.PowerUps)
             {
-                SRunePower data = SpellLoader.GetPowerUp(powerUp.ToString(), m_CharacterLevel.Value);
+                SPowerEffect data = SpellLoader.GetPowerUp(powerUp.ToString(), m_CharacterLevel.Value);
 
                 // CHECK : Power up not already in Runes
-                if (Enum.TryParse(data.RuneName, out ERune rune) && m_PlayerData.Value.BuildData.Runes.Contains(rune))
+                if (Enum.TryParse(data.BaseName, out ERune rune) && m_PlayerData.Value.BuildData.Runes.Contains(rune))
                 {
                     ErrorHandler.Warning("PowerUp " + data.Name + " was already in runes - skipped");
                     continue;

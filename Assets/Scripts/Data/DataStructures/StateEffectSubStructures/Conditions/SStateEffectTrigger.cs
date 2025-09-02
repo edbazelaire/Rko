@@ -253,6 +253,8 @@ namespace Data.DataStructures.StateEffectSubStructures
             if (activate == m_IsActivated)
                 return;
 
+            Debug.Log(m_StateEffect.StateEffectName + " : Activate - " + activate);
+
             m_IsActivated = activate;
 
             if (activate)

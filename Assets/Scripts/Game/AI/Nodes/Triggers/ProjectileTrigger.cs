@@ -79,7 +79,7 @@ public class ProjectileTrigger : Sensor
             return;
 
         // check is enemy
-        if (spell.Controller.Team == m_Controller.Team)
+        if (spell.Caster.Team == m_Controller.Team)
             return;
 
         m_Spells.Add(spell);
@@ -93,7 +93,7 @@ public class ProjectileTrigger : Sensor
             return;
 
         // check is enemy
-        if (spell.Controller.Team == m_Controller.Team)
+        if (spell.Caster.Team == m_Controller.Team)
             return;
 
         m_Spells.Remove(spell);

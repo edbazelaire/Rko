@@ -43,15 +43,34 @@ MonoBehaviour:
     Animation: 0
     SpellAnimation: 
     StateEffects: 
-  OnHit:
-  - {fileID: 11400000, guid: 56417b5bba9def04eae71ca21e594175, type: 2}
+  - Prefab: {fileID: 3903842169140113438, guid: ff0a76846b4ace54a99a33b5b70bb0fc, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 1000
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 2
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 3
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
+  OnHit: []
+  PassiveEffects: []
   SpellEventEffects: []
-  OnHitSpellSpawn: 2
+  OnHitSpellSpawn: 0
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: acded229ef27b08438e9aec48559a382, type: 3}
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
-  OnEndSoundFX: {fileID: 0}
+  OnEndSoundFX: {fileID: 8300000, guid: 01a713bf23f13684d929745b03a12493, type: 3}
   SpellTarget: 102
   m_ClampTargetPos: 1
   TargetOffset:
@@ -70,9 +89,9 @@ MonoBehaviour:
   m_SpellRequirements: []
   MaxHit: 1
   m_Charges: 1
-  EnergyGain: 15
+  EnergyGain: 5
   EnergyCost: 0
-  m_Damage: 50
+  m_Damage: 90
   m_ExecutionDamage: 0
   m_Heal: 0
   m_Shield: 0
@@ -106,7 +125,11 @@ MonoBehaviour:
       Value: 3
   m_Size: 2
   TriggerPlayer: 1
-  EnemyStateEffects: []
+  EnemyStateEffects:
+  - StateEffect: 15
+    Stacks: 1
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0

@@ -12,22 +12,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33c7b0d6efb178c4db1658488d1ecfdd, type: 3}
   m_Name: FerociousBite
   m_EditorClassIdentifier: 
-  Rarety: 0
-  m_Description: Jumps on the enemy , dealing {0} Damages for each stack of {1} on
-    him and applying {2}
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
-  - Name: Poison
-    WithIcon: 1
-  - Name: Infected
-    WithIcon: 1
+  m_Rarety: 0
+  m_Description: Jumps on the enemy, dealing [Damage] damage (+ [ExecutionDamage]
+    execution) while applying [IceBreak].\nHeals for [LifeSteal] of the damage delt.
+  m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 0}
-  SpellEventActions: []
+  SpellEventActions:
+  - Prefab: {fileID: 610942752557020422, guid: 96af89b9ab04fee40b27045c4b8c9037, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX:
+    - AudioClip: {fileID: 8300000, guid: 649bbd02eab33e04ba90a65c0c1e0f37, type: 3}
+      SoundDuration: 0
+    GFXLifetime:
+      m_StartSpellPart: 100
+      m_EndSpellPart: 300
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 1.5
+    OrderInLayer: 0
+    SpawnTarget: 4
+    SpawnLocation: 2
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
   OnHit:
   - {fileID: 11400000, guid: 8155107807c2fb147b45417707eab14a, type: 2}
+  PassiveEffects: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 0d76716516b75774eaff0bf422c35113, type: 3}
@@ -39,10 +56,19 @@ MonoBehaviour:
   TargetOffset:
     X: 0
     Y: 0
-  LockTarget: 300
+  LockTarget: 100
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
   MaxHit: 1
+  m_Charges: 1
   EnergyGain: 0
   EnergyCost: 100
   m_Damage: 0
@@ -57,25 +83,22 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
-  m_SpellsScalingLevel:
-  - Property: 2
-    Value: 0.1
-  - Property: 3
-    Value: 0.05
+    m_Targets: 
+  m_SpellsScalingLevel: []
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
-  Animation: 5
+  Animation: 17
   IsCancellable: 0
-  AnimationTimer: 0
+  AnimationTimer: 2
   m_Cooldown: 0
   Trajectory: 1
   m_TriggerGround: 0
   m_StopOnTargetPos: 1
-  m_Speed: 15
+  m_Speed: 20
   m_YSpawnPos: 0
   JumpType: 1
   JumpAnimation: 5

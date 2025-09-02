@@ -112,7 +112,8 @@ namespace Assets.Scripts.Game
 
             var pos = GameManager.Instance.GetPlayer(clientId).transform.position;
             pos.y += 0.7f;
-            var damageText = Instantiate(m_FloatingTextPrefab, pos, Quaternion.identity);
+
+            var damageText = PoolManager.Pool(m_FloatingTextPrefab, pos, Quaternion.identity, null, true);
             damageText.GetComponent<FloatingTextUI>().SetText(data.Damage, data.HitType);
 
             if (GameManager.Instance.Owner.Team == 1)

@@ -1,4 +1,5 @@
 ﻿using Data.DataStructures.CharacterSubStructures;
+using Data.DataStructures.PowerEffects;
 using Enums;
 using System;
 using System.Collections.Generic;
@@ -64,7 +65,7 @@ namespace Data
 
         [Header("Trigger Effects")]
         [SerializeField]
-        protected List<SRunePower> m_SpecialPowers = new();
+        protected List<SPowerEffect> m_SpecialPowers = new();
 
         // ===============================================================================================================
         // DEPENDENT ACCESSORS
@@ -74,8 +75,8 @@ namespace Data
         public ESpell SpecialAbility        => ParseSpell(m_SpecialAbility);
         public ESpell Ultimate              => ParseSpell(m_Ultimate);
         public int MaxHealth                => (int)Math.Round(BaseHealth * Math.Pow(1 + HealthScaleFactor, m_Level - 1)) + (int)GetValue(EStateEffectProperty.Hp, "");
-        public float Speed                  => BaseSpeed + GetValue(EStateEffectProperty.SpeedBonus, "");
-        public List<SRunePower> SpecialPowers => m_SpecialPowers;
+        public float Speed                  => BaseSpeed;
+        public List<SPowerEffect> SpecialPowers => m_SpecialPowers;
 
         #endregion
 
@@ -204,6 +205,7 @@ namespace Data
                 || property == EStateEffectProperty.CastSpeed.ToString()
                 || property == EStateEffectProperty.LifeSteal.ToString()
                 || property == EStateEffectProperty.SpeedBonus.ToString()
+                || property == EStateEffectProperty.Lethality.ToString()
 
                 // SPELL properties
                 || property == ESpellProperty.GrowSizeFactor.ToString()

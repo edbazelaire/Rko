@@ -93,7 +93,7 @@ namespace Menu.PopUps.Components
                 templateItem.ActivateHoldOnTrigger(true);
                 templateItem.HoldOnTrigger.HoldTriggeredEvent += (bool activate) => { 
                     if (activate)
-                        templateItem.OpenInfoPopUp(); 
+                        templateItem.OpenInfoPopUp(asIconOnly: true); 
                     else
                         ToggleSelection(templateItem);
                 };

@@ -12,7 +12,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using Tools;
 using Unity.Collections;
 using Unity.Netcode;
@@ -42,7 +41,6 @@ namespace Game.Spells
 
         [Header("Graphics")]
         [SerializeField] protected      bool                        m_IsDisplayed           = true;
-        [SerializeField] protected      List<SpellPrefabSpawn>      m_VisualEffects;
         [SerializeField] protected      List<StateEffectSpawnGFX>   m_GfxEffects;
         [SerializeField] protected      EAnimation                  m_Animation;
         [SerializeField] protected      AudioClip                   m_OnApplySoundFX;
@@ -57,12 +55,14 @@ namespace Game.Spells
         [SerializeField] protected      bool                        m_IsConsumedOnEnd       = false;
         [SerializeField] protected      bool                        m_IsTrueDamage          = false;
         [SerializeField] protected      bool                        m_EndWithShield         = false;
+        [SerializeField] protected      bool                        m_EndAt0Stacks          = true;
         [SerializeField] protected      bool                        m_RefreshShield         = true;
         [SerializeField] protected      int                         m_Priority              = 0;
 
         [Header("Stacks & Duration")]
         [SerializeField] protected      float                       m_Delay                 = 0f;
         [SerializeField] protected      float                       m_Duration              = 0f;
+        [SerializeField] protected      int                         m_StartingStacks        = 1;
         [SerializeField] protected      int                         m_MaxStacks             = 1;
         [SerializeField, Tooltip("Number of stacks decaying at the end of the duration")]
         protected int                                               m_StackDecay            = -1;
@@ -130,7 +130,6 @@ namespace Game.Spells
         public bool                     IsTrueDamage         => m_IsTrueDamage;
         public bool                     IsUnique            => StateEffectType == EStateEffectType.Incarnation;
         public List<StateEffectSpawnGFX> GfxEffects         => m_GfxEffects;
-        public List<SpellPrefabSpawn>   VisualEffects       => m_VisualEffects;
         public EAnimation               Animation           => m_Animation;
         public EStateEffect             Type                => Enum.TryParse(name, out EStateEffect type) ? type : m_Type ;
         public virtual int              Stacks              => m_Stacks;
@@ -138,6 +137,7 @@ namespace Game.Spells
         public virtual bool             IsInfinite          => ! m_IsInstantanious && m_Duration <= 0;
         public int                      RemainingShield     => m_RemainingShield;
         public bool                     IsInstantanious     => m_IsInstantanious;
+        public virtual int              StartingStacks      => m_StartingStacks;
         public virtual int              MaxStacks           => m_MaxStacks;
         public EStateEffect             ConsumeState        => m_ConsumeState;
         public EStateEffect             DefaultState        => m_DefaultState;
@@ -168,7 +168,7 @@ namespace Game.Spells
         /// <param name="caster"></param>
         /// <param name="stateEffectData"></param>
         /// <returns></returns>
-        public virtual bool Initialize(Controller controller, Controller caster, SStateEffectData? stateEffectData = null, int stacks = 1)
+        public virtual bool Initialize(Controller controller, Controller caster, SStateEffectData? stateEffectData = null, int? stacks = null)
         {
             if (controller == null)
             {
@@ -176,12 +176,19 @@ namespace Game.Spells
                 return false;
             }
 
+            if (! stacks.HasValue)
+                stacks = m_StartingStacks;
+
+            // provided stacks < to number of starting stacks : exit
+            if (stacks.Value < m_StartingStacks)
+                return false;
+
             m_Controller    = controller;
             m_Caster        = caster.IsSpawn && caster.SpawnOwner != null ? caster.SpawnOwner : caster;
             m_IsStarted     = false;                // on init - reset is started 
             m_IsActivated   = false;                // initialize activated to false
             m_IsOver        = false;                // initialize activated to false
-            SetStacks(stacks);
+            SetStacks(stacks.Value);
 
             // check if has overriding data
             if (stateEffectData.HasValue && stateEffectData.Value.OverridingProperties != null && stateEffectData.Value.OverridingProperties.Count > 0)
@@ -425,6 +432,26 @@ namespace Game.Spells
             }
         }
 
+        public virtual void SetStacks(int stacks)
+        {
+            if (m_MaxStacks > 0)
+                m_Stacks = Math.Clamp(stacks, 0, m_MaxStacks);
+            else
+                m_Stacks = Math.Max(stacks, 0);
+
+            // if not enough stacks - end the state effect
+            if (m_EndAt0Stacks && m_Stacks <= 0)
+                End();
+        }
+
+        protected virtual void RefreshStats()
+        {
+            m_Timer = m_Duration;
+
+            if (m_RefreshShield)
+                RefreshShield();
+        }
+
         /// <summary>
         /// Refresh an effect and add N stacks. Also upgrade level if the spell that is refreshing the spell is higher level
         /// </summary>
@@ -445,22 +472,6 @@ namespace Game.Spells
             CallStateEffectEvent(EStateEffectEvent.OnRefreshed, stacks, m_Controller.PlayerId, m_Caster.PlayerId);
         }
 
-        public virtual void SetStacks(int stacks)
-        {
-            if (m_MaxStacks > 0)
-                m_Stacks = Math.Clamp(stacks, 0, m_MaxStacks);
-            else
-                m_Stacks = Math.Max(stacks, 0);
-        }
-
-        protected virtual void RefreshStats()
-        {
-            m_Timer = m_Duration;
-
-            if (m_RefreshShield)
-                RefreshShield();
-        }
-
         public virtual int RemoveStacks(int nStacks, bool consume = false)
         {
             // adjust nStacks to correct value (not over current number of stacks)
@@ -473,13 +484,6 @@ namespace Game.Spells
                 m_Controller.PlayerId,
                 m_Caster.PlayerId
             );
-
-            // if not enough stacks - end the state effect
-            if (nStacks >= m_Stacks || nStacks <= 0)
-            {
-                End();
-                return nStacks;
-            }
 
             // update stacks
             SetStacks(m_Stacks - nStacks);
@@ -1119,11 +1123,19 @@ namespace Game.Spells
                     break;
             }
 
-            // CLIENT RPC  ---------------------------------------------------------------------
+            // OFFLINE      ---------------------------------------------------------------------
+            if (GameManager.Instance.IsOfflineMode)
+            {
+                m_Controller.StateHandler.CallOnStateEffectEventUI(stateEffectEvent, StateEffectName, stacks, m_MaxStacks, m_Duration, m_Caster.PlayerId);
+                return; 
+            }
+
+            // CLIENT RPC   ---------------------------------------------------------------------
             if (HasClientEventAt(stateEffectEvent))
             {
                 m_Controller.StateHandler.CallStateEffectEventClientRPC(new StateEventData(stateEffectEvent, StateEffectName, casterId, stacks, m_MaxStacks, m_Duration));
             }
+            
         }
 
         protected virtual void OnApplied(int stacks) 
@@ -1181,15 +1193,17 @@ namespace Game.Spells
             {
                 // add bonus execution damage
                 value = m_Caster.StateHandler.ApplyBonusExecutionDamage(value, m_Controller, specialCondition: StateEffectName);
+                var lethality = m_Caster.StateHandler.GetFloat(EStateEffectProperty.Lethality, m_Controller, specialCondition: StateEffectName);
+                var finalDamage = (int)Math.Round(value * (lethality + 1 - m_Controller.Life.PercHp));
 
                 // hit target
-                m_Controller.Life.Hit(value, casterId: m_Caster.PlayerId, source: m_Parent, spellCategory: ESpellCategory.Direct, ignoreRes: m_IsTrueDamage);
+                m_Controller.Life.Hit(finalDamage, casterId: m_Caster.PlayerId, source: m_Parent, spellCategory: ESpellCategory.Direct, ignoreRes: m_IsTrueDamage);
 
                 // apply lifesteal (on caster)
                 var lifesteal = Mathf.Max(0f, GetInt(EStateEffectProperty.LifeSteal) + m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal, m_Controller, specialCondition: SBonusStats.AsUnique(StateEffectName)) - 1);
                 if (lifesteal > 0)
                 {
-                    m_Caster.Life.Heal((int)Mathf.Round(value * lifesteal), m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct);
+                    m_Caster.Life.Heal((int)Mathf.Round(finalDamage * lifesteal), m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct);
                 }
             }
 
@@ -1381,6 +1395,9 @@ namespace Game.Spells
             foreach (EStateEffectProperty property in Enum.GetValues(typeof(EStateEffectProperty)))
             {
                 if (property == EStateEffectProperty.Level)
+                    continue;
+
+                if (property == EStateEffectProperty.MaxThresholdIndex)
                     continue;
 
                 if (!HasEffectProperty(property))

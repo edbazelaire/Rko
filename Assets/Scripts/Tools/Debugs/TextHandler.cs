@@ -500,20 +500,20 @@ namespace Tools
                 }
 
                 // filter bonus stats
-                characterStats = characterStats.Where(t => t.StateEffectProperty == property && t.HasSpecialCondition(specialCondition)).ToList();
-                if (characterStats.Count() == 0)
+                var subCharacterStats = characterStats.Where(t => t.StateEffectProperty == property && t.HasSpecialCondition(specialCondition)).ToList();
+                if (subCharacterStats.Count() == 0)
                 {
                     ErrorHandler.Warning($"Invalid property: {propertyStr}");
                     return "";
                 }
 
-                object value = characterStats[0].GetValue(level);
+                object value = subCharacterStats[0].GetValue(level);
 
                 // is float : format into clean string
                 if (float.TryParse(value.ToString(), out float fValue))
                     value = FormatPropertyValue(fValue, property.ToString());
 
-                value = FormatScaling(value.ToString(), characterStats[0].ScalingDirection);
+                value = FormatScaling(value.ToString(), subCharacterStats[0].ScalingDirection);
                 return value?.ToString() ?? string.Empty;
             });
         }

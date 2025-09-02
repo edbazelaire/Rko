@@ -1,6 +1,7 @@
 ﻿using Assets;
 using Data;
 using Data.DataStructures;
+using Data.DataStructures.PowerEffects;
 using Enums;
 using Tools;
 
@@ -12,14 +13,14 @@ namespace Menu.Common.Buttons.TemplateItemButtons
         #region Members
 
         // Init Data
-        SRunePower      m_RunePower;
+        SPowerEffect m_PowerEffect;
 
         #endregion
 
 
         #region Init & End
 
-        public virtual void Initialize(SRunePower runePower)
+        public virtual void Initialize(SPowerEffect runePower)
         {
             if (runePower == null)
             {
@@ -28,7 +29,7 @@ namespace Menu.Common.Buttons.TemplateItemButtons
                 return;
             }
 
-            m_RunePower = runePower;
+            m_PowerEffect = runePower;
 
             base.Initialize();
 
@@ -39,9 +40,9 @@ namespace Menu.Common.Buttons.TemplateItemButtons
         {
             base.SetUpUI();
 
-            m_Icon.sprite = AssetLoader.LoadIcon(m_RunePower.RuneName);
+            m_Icon.sprite = AssetLoader.LoadIcon(m_PowerEffect.BaseName);
 
-            SetBottomOverlay("Level " + m_RunePower.Level);
+            SetBottomOverlay("Level " + m_PowerEffect.Level);
         }
 
         #endregion
@@ -70,7 +71,7 @@ namespace Menu.Common.Buttons.TemplateItemButtons
         {
             base.OnClick();
 
-            Main.SetPopUp(EPopUpState.RunePowerPopUp, m_RunePower);
+            Main.SetPopUp(EPopUpState.RunePowerPopUp, m_PowerEffect);
         }
 
         #endregion
