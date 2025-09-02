@@ -64,7 +64,7 @@ public class TaskExitZone : TaskMove
                 continue;
 
             // ignore allies spells
-            if (spell.Controller.Team == m_Controller.Team)
+            if (spell.Caster.Team == m_Controller.Team)
                 continue;
 
             if (spell.SpellData.SpellType != ESpellType.Zone)

@@ -1,6 +1,5 @@
 ﻿using System;
 using Tools;
-using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Scripts.Data.DataStructures.Common

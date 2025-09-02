@@ -98,7 +98,7 @@ namespace Data.DataStructures.CharacterSubStructures
         public float GetValue(int level, Controller controller = null, Controller targetController = null)
         {
             return BonusValue
-                + BaseValue * Mathf.Pow(1 + ScalingFactor, level - 1)
+                + BaseValue * Mathf.Pow(1 + ScalingFactor, Mathf.Max(0, level - 1))
                 + GetStateEffectStackBonus(level, controller, targetController);
         }
 

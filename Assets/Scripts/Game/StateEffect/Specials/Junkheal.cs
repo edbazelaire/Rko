@@ -14,7 +14,7 @@ namespace Game.Spells
             GameManager.Instance.GetFirstEnemy(m_Controller.Team).Life.Hit(
                 damage:         (int)Math.Round(0.5f * heal), 
                 casterId:       m_Controller.PlayerId, 
-                source:         "Junkheal", 
+                source:         StateEffectName, 
                 spellCategory:  ESpellCategory.Tick, 
                 ignoreRes:      true
             );

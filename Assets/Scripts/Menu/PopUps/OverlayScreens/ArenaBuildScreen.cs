@@ -198,7 +198,7 @@ namespace Menu.PopUps.OverlayScreens
                 if (buildIndex == 1)
                     runeActivation = ERuneActivation.Major;
 
-                Main.SetPopUp(EPopUpState.RuneInfoPopUp, (ERune)template.Collectable, ProgressionCloudData.CurrentArena.BuildData.RuneLevels[buildIndex], runeActivation);
+                Main.SetPopUp(EPopUpState.RuneInfoPopUp, (ERune)template.Collectable, ProgressionCloudData.CurrentArena.BuildData.RuneLevels[buildIndex], true, runeActivation);
                 return;
             }
 

@@ -1,6 +1,7 @@
 ﻿using Assets;
 using Data.GameManagement;
 using Enums;
+using Game;
 using Inventory;
 using Save;
 using System;
@@ -313,6 +314,10 @@ namespace Tools
         {
             if (CheckCurrencyCommand(command))
                 return true;
+
+            if (GameManager.Exists && GameManager.IsGameRunning)
+                if (GameManager.Instance.CheckSpecialCommands(command))
+                    return true;
 
             return false;
         }

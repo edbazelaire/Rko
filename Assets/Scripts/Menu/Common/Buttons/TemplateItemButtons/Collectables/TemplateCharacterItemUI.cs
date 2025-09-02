@@ -63,12 +63,6 @@ namespace Menu.Common.Buttons
             CharacterBuildsCloudData.SelectedCharacterChangedEvent  -= OnSelectedCharacterChanged;
         }
 
-        public override void OpenInfoPopUp(int? level = null)
-        {
-            level ??= m_Level;
-            ScreenManager.SetPopUp(EPopUpState.CharacterInfoPopUp, Collectable, level);
-        }
-
         protected void OnSelectedCharacterChanged()
         {
             SetSelected(m_Character == CharacterBuildsCloudData.SelectedCharacter);

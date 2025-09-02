@@ -1,134 +1,47 @@
-﻿using System.Collections.Generic;
-using Tools;
-using UnityEngine;
+﻿using UnityEngine;
+using Game.Background.NightSky;
+using System.Collections;
 
-
-namespace Game.Background.NightSky
+public class CloudSpawner : MonoBehaviour
 {
-    [System.Serializable]
-    public struct SMinMax
+    [SerializeField] private Cloud m_CloudPrefab;
+    [SerializeField] private int m_InitialCount         = 15; // number of clouds to spawn at start
+    [SerializeField] private Vector2 m_SpawnYRange      = new Vector2(-2f, 2f);
+    [SerializeField] private Vector2 m_SpawnDelayRange  = new Vector2(0.5f, 5f);
+    [SerializeField] private Vector2 m_SpeedRange       = new Vector2(0.5f, 1.5f);
+
+    public void Initialize()
     {
-        public float Min;
-        public float Max;
+        StartCoroutine(SpawnClouds());
     }
 
-    public class CloudSpawner : MObject
+    IEnumerator SpawnClouds()
     {
-        #region Members
-
-        [SerializeField] Cloud m_CloudObject;
-
-        [SerializeField] string m_LayerName;
-        [SerializeField] int m_NLayers;
-        [SerializeField] int m_BaseSorterOrder;
-        [SerializeField] int m_SorterOrderLayerFactor;
-        [SerializeField] float m_CloudSpeed;
-        [SerializeField] SMinMax m_YPosition;
-        [SerializeField] SMinMax m_CloudSize;
-        [SerializeField] SMinMax m_ProcInterval;
-        [SerializeField] List<Sprite> m_Clouds;
-
-        Canvas m_Canvas;
-        RectTransform m_RectTransform;
-
-        float m_NextProcTimer;
-
-        #endregion
-
-
-        #region Init & End
-
-        private void Awake()
+        // Prewarm clouds at Arena start
+        for (int i = 0; i < m_InitialCount; i++)
         {
-            Initialize();
+            SpawnCloud();
+            yield return new WaitForSeconds(Random.Range(m_SpawnDelayRange[0], m_SpawnDelayRange[1]));
         }
+    }
 
-        protected override void FindComponents()
-        {
-            base.FindComponents();
+    private void SpawnCloud()
+    {
+        Vector3 pos = transform.position;
+        pos.y += Random.Range(m_SpawnYRange.x, m_SpawnYRange.y);
 
-            m_Canvas = UIHelper.GetFirstCanvas(transform);
-            m_RectTransform = Finder.FindComponent<RectTransform>(gameObject);
-        }
+        Cloud cloud = Instantiate(m_CloudPrefab, pos, Quaternion.identity, transform);
+        cloud.Initialize(this, Random.Range(m_SpeedRange.x, m_SpeedRange.y));
+    }
 
-        public override void Initialize()
-        {
-            base.Initialize();
+    /// <summary>
+    /// Called by a Cloud when it leaves the screen bounds.
+    /// </summary>
+    public void RecycleCloud(Cloud cloud)
+    {
+        Vector3 pos = transform.position;
+        pos.y += Random.Range(m_SpawnYRange.x, m_SpawnYRange.y);
 
-            SpawnRandomClouds(6);
-        }
-
-        protected override void SetUpUI()
-        {
-            base.SetUpUI();
-        }
-
-        #endregion
-
-
-        #region Update
-
-        private void Update()
-        {
-            if (!m_Initialized)
-                return;
-
-            if (m_NextProcTimer > 0)
-            {
-                m_NextProcTimer -= Time.deltaTime;
-                return;
-            }
-
-            m_NextProcTimer = Random.Range(m_ProcInterval.Min, m_ProcInterval.Max);
-            SpawnCloud(transform.position.x);
-        }
-
-
-
-        #endregion
-
-
-        #region GUI Manipulators
-
-        void SpawnRandomClouds(int nClouds)
-        {
-            for (int i = 0; i < nClouds; i++)
-            {
-                SpawnCloud(Random.Range(-3f, 3f));
-            }
-        }
-
-        void SpawnCloud(float xPos)
-        {
-            int sorterOrder = Random.Range(0, m_NLayers + 1);
-
-            Cloud cloud = Instantiate(m_CloudObject, transform.position, Quaternion.identity, m_Canvas.transform);
-            var yPos = Random.Range(m_YPosition.Min, m_YPosition.Max);
-            cloud.transform.position = new Vector3(xPos, yPos, 0f);
-            cloud.Initialize(
-                m_Clouds[Random.Range(0, m_Clouds.Count)], 
-                m_CloudSpeed * (sorterOrder + 1 / m_NLayers + 1), 
-                (sorterOrder + 1 / m_NLayers + 1) * Random.Range(m_CloudSize.Min, m_CloudSize.Max), 
-                m_Canvas.sortingOrder + m_BaseSorterOrder + sorterOrder * m_SorterOrderLayerFactor,
-                m_LayerName == "" ? m_Canvas.sortingLayerName : m_LayerName
-            );
-        }
-
-        #endregion
-
-
-        #region Listeners
-
-        protected override void RegisterListeners()
-        {
-            base.RegisterListeners();
-        }
-
-        protected override void UnRegisterListeners()
-        {
-            base.UnRegisterListeners();
-        }
-
-        #endregion
+        cloud.ResetCloud(pos, Random.Range(m_SpeedRange.x, m_SpeedRange.y));
     }
 }

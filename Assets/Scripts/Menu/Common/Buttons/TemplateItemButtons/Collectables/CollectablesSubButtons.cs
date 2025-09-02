@@ -253,7 +253,7 @@ namespace Menu.Common.Buttons.TemplateItemButtons.Collectables
             {
                 // display info
                 CharacterBuildsCloudData.TryGetRuneActivationInBuild((ERune)m_CollectableItemUI.Collectable, out ERuneActivation runeActivation);
-                Main.SetPopUp(EPopUpState.RuneInfoPopUp, (ERune)m_CollectableItemUI.Collectable, m_CollectableItemUI.CollectableCloudData.Level, runeActivation);
+                Main.SetPopUp(EPopUpState.RuneInfoPopUp, (ERune)m_CollectableItemUI.Collectable, m_CollectableItemUI.CollectableCloudData.Level, false, runeActivation);
                 return;
             }
 

@@ -1,6 +1,5 @@
 ﻿using Data;
 using Enums;
-using System;
 using Tools;
 using UnityEngine;
 
@@ -40,11 +39,15 @@ namespace Game.Spells.SpecialEffects
         void CheckVoidMines()
         {
             int nStacks = 0;
-            // Check for collisions within a circle with variableRadius radius
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, m_Radius);
-            foreach (Collider2D collider in colliders)
+
+            // check for collisions within a circle with variableRadius radius
+            int layerMask = LayerMask.GetMask("Spell");
+            var filter = Tools.Physics2DQueries.BuildFilter(layerMask);
+            int count = Physics2DQueries.OverlapCircle(transform.position, m_Radius, filter, out Collider2D[] hits);
+            
+            for (int i = 0; i < count; i++)
             {
-                if (! CheckCollision(collider, out Mine spell))
+                if (!CheckCollision(hits[i], out Mine spell))
                     continue;
 
                 if (!spell.TryEnd())
@@ -56,7 +59,7 @@ namespace Game.Spells.SpecialEffects
             if (nStacks == 0)
                 return;
 
-            m_Spell.Controller.StateHandler.AddStateEffect(new SStateEffectData(EStateEffect.DarkRetribution, nStacks), m_Spell.Controller, m_Level, ESpell.Scythefall.ToString());
+            m_Spell.Caster.StateHandler.AddStateEffect(new SStateEffectData(EStateEffect.DarkRetribution, nStacks), m_Spell.Caster, m_Level, ESpell.Scythefall.ToString());
         }
 
         bool CheckCollision(Collider2D collider, out Mine spell) 
@@ -75,5 +78,6 @@ namespace Game.Spells.SpecialEffects
         }
 
         #endregion
+
     }
 }

@@ -122,7 +122,7 @@ namespace Game.UI
                 return;
 
             // check that is not one of the state that are not displayed
-            if (IGNORED_STATE_EFFECTS.Contains(state) || state.StartsWith("_"))
+            if (IGNORED_STATE_EFFECTS.Contains(state))
                 return;
 
             var stateEffectData = SpellLoader.GetStateEffect(state);
@@ -133,16 +133,16 @@ namespace Game.UI
             {
                 case EStateEffectEvent.OnApplied:
                 case EStateEffectEvent.OnActivated:
-                    AddState(state, stacks, maxStacks, duration);
+                    AddState(state, stacks, maxStacks, duration, stateEffectData.StartingStacks);
                     break;
 
                 case EStateEffectEvent.OnRefreshed:
-                    UpdateStacks(state, stacks, maxStacks, duration);
+                    UpdateStacks(state, stacks, maxStacks, duration, stateEffectData.StartingStacks);
                     break;
 
                 case EStateEffectEvent.OnRemoved:
                 case EStateEffectEvent.OnConsumed:
-                    UpdateStacks(state, -stacks, maxStacks, duration);
+                    UpdateStacks(state, -stacks, maxStacks, duration, stateEffectData.StartingStacks);
                     break;
 
                 case EStateEffectEvent.OnDeactivated:
@@ -162,7 +162,7 @@ namespace Game.UI
             }
         }
 
-        void AddState(string stateEffect, int stacks, int maxStacks, float duration)
+        void AddState(string stateEffect, int stacks, int maxStacks, float duration, int startingStacks)
         {
             // if already in existing state, refresh it
             if (m_StateEffectsUI.ContainsKey(stateEffect))
@@ -176,15 +176,15 @@ namespace Game.UI
             m_StateEffectsUI.Add(stateEffect, stateEffectUI.GetComponent<StateEffectUI>());
 
             // initialize the state (or refresh it)
-            m_StateEffectsUI[stateEffect].Initialize(stateEffect, stacks, maxStacks, duration);
+            m_StateEffectsUI[stateEffect].Initialize(stateEffect, stacks, maxStacks, duration, startingStacks);
         }
 
-        void UpdateStacks(string stateEffect, int stacks, int maxStacks, float duration)
+        void UpdateStacks(string stateEffect, int stacks, int maxStacks, float duration, int startingStacks)
         {
             if (! m_StateEffectsUI.ContainsKey(stateEffect))
             {
                 ErrorHandler.Warning($"UpdateStacks ({stacks}) of {stateEffect} but this state effect UI was not found");
-                AddState(stateEffect, stacks, maxStacks, duration);
+                AddState(stateEffect, stacks, maxStacks, duration, startingStacks);
                 return;
             }
 
@@ -231,15 +231,18 @@ namespace Game.UI
 
         void OnQuestTreshold(string stateEffectName, int index)
         {
+            // CHECK : UI is enabled
             if (!isActiveAndEnabled)
                 return;
 
+            // CHECK : is in our list of effects
             if (! m_StateEffectsUI.ContainsKey(stateEffectName))
             {
                 ErrorHandler.Warning($"Unable to find {stateEffectName} in list of effects");
                 return;
             }
 
+            // CHECK : StateEffect is indeed Quest
             var stateEffect = SpellLoader.GetStateEffect(stateEffectName);
             if (stateEffect is not QuestEffect questEffect)
             {
@@ -247,10 +250,27 @@ namespace Game.UI
                 return;
             }
 
-            var replacementIcon = questEffect.QuestThresholds[index].ReplacementIcon;
-            if (replacementIcon == null)
+            // CHECK : index is allowed
+            if (index >= questEffect.QuestThresholds.Count)
+            {
+                ErrorHandler.Warning($"Call OnQuestTreshold() on state effect {stateEffectName} at index {index} but max index is {questEffect.QuestThresholds.Count}");
                 return;
+            }
+
+            // Select icon
+            Sprite replacementIcon;
+            if (index >= 0)
+            {
+                // CHECK : requires special ICON
+                replacementIcon = questEffect.QuestThresholds[index].ReplacementIcon;
+                if (replacementIcon == null)
+                    return;
+            } else
+            {
+                replacementIcon = null;
+            }
             
+            // change the Icon of the state effect
             m_StateEffectsUI[stateEffectName].ReloadIcon(replacementIcon);
         }
 

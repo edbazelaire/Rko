@@ -14,9 +14,12 @@ namespace Game.Spells
         protected float m_MaxHeight;
         protected float m_MaxDistance;
 
-        protected Vector3 m_OriginalPosition;
+        protected Vector3   m_OriginalPosition;
+        private Rigidbody2D m_RigidBody;
+        private Vector2     m_LastPosition;
 
         public Vector3 OriginalPosition => m_OriginalPosition;
+        public virtual float Speed => m_SpellData.Speed;
 
         #endregion
 
@@ -27,7 +30,9 @@ namespace Game.Spells
         {
             base.Initialize(clientId, target, spellData);
 
+            m_RigidBody = Finder.FindComponent<Rigidbody2D>(gameObject);
             m_OriginalPosition = transform.position;
+            m_LastPosition = m_OriginalPosition;
 
             switch (m_SpellData.Trajectory)
             {
@@ -57,6 +62,33 @@ namespace Game.Spells
 
 
         #region Inherited Manipulators
+
+        /// <summary>
+        /// Raycast projectile between last and current position to avoid tunnelling
+        /// </summary>
+        void FixedUpdate()
+        {
+            // Position actuelle
+            Vector2 currentPosition = m_RigidBody.position;
+
+            // Distance parcourue depuis la dernière frame
+            Vector2 direction = currentPosition - m_LastPosition;
+            float distance = direction.magnitude;
+
+            if (distance > 0f)
+            {
+                // Raycast entre l’ancienne et la nouvelle position
+                RaycastHit2D hit = Physics2D.Raycast(m_LastPosition, direction.normalized, distance);
+
+                if (hit.collider != null)
+                {
+                    // Collision détectée via raycast
+                    OnTriggerEnter2D(hit.collider);
+                }
+            }
+
+            m_LastPosition = currentPosition;
+        }
 
         /// <summary>
         /// [SERVER] check for collision with wall or player
@@ -156,7 +188,7 @@ namespace Game.Spells
             }
 
             // all clients update the position of the spell (previsualisation)
-            transform.Translate(m_SpellData.Speed * Time.deltaTime, 0, 0);
+            transform.Translate(Speed * Time.deltaTime, 0, 0);
 
             // only server can check for distance
             if (!IsServer)
@@ -242,7 +274,7 @@ namespace Game.Spells
         void UpdateCurveMovement()
         {
             // calculate next position
-            var x = Mathf.MoveTowards(transform.position.x, m_Target.x, m_SpellData.Speed * Time.deltaTime);
+            var x = Mathf.MoveTowards(transform.position.x, m_Target.x, Speed * Time.deltaTime);
             var baseY = Mathf.Lerp(m_OriginalPosition.y, m_Target.y, (x - m_OriginalPosition.x) / m_MaxDistance);
             var height = m_MaxHeight * Math.Abs(x - m_OriginalPosition.x) * Math.Abs(x - m_Target.x) / (0.25f * m_MaxDistance * m_MaxDistance);
 

@@ -1,5 +1,6 @@
 ﻿using Data;
 using Data.DataStructures;
+using Data.DataStructures.PowerEffects;
 using Game.Loaders;
 using Menu.Common.Buttons.TemplateItemButtons;
 using TMPro;
@@ -14,7 +15,7 @@ namespace Menu.PopUps
 
         // =========================================================================================
         // Data
-        SRunePower                          m_RunePower;
+        SPowerEffect                        m_RunePower;
 
         // =========================================================================================
         // GameObjects & Components

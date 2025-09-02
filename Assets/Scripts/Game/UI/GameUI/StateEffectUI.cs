@@ -20,6 +20,7 @@ namespace Game.UI
         string          m_StateEffectName;
         int             m_Stacks;
         int             m_MaxStacks;
+        int             m_StartingStacks;
         float           m_Duration;
         float           m_Timer;
         bool            m_IsHolding;
@@ -34,10 +35,11 @@ namespace Game.UI
             m_TimerFill         = Finder.FindComponent<Image>(gameObject, "TimerFill");
         }
 
-        public void Initialize(string stateEffect, int stacks, int maxStacks, float duration)
+        public void Initialize(string stateEffect, int stacks, int maxStacks, float duration, int startingStacks)
         {
             m_StateEffectName   = stateEffect;
             m_MaxStacks         = maxStacks;
+            m_StartingStacks    = startingStacks;
 
             // Setup icon (if found)
             ReloadIcon();
@@ -80,7 +82,20 @@ namespace Game.UI
 
             m_Stacks = Math.Clamp(m_Stacks + stacks, 0, m_MaxStacks > 0 ? m_MaxStacks : 999);
 
-            if (m_Stacks <= 1)
+            ErrorHandler.Log(m_StateEffectName + " : new stacks " + m_Stacks, ELogTag.StateEffectGFX);
+            // TODO : REMOVE    ============================================================================
+            if (m_StateEffectName == "_MeteorRain")
+            {
+                Debug.Log(m_StateEffectName + " : new stacks " + m_Stacks);
+                int actualStacks = GameManager.Instance.Owner.StateHandler.GetStacks("_MeteorRain");
+                if (m_Stacks != actualStacks)
+                {
+                    Debug.LogWarning("Missmatching number of stacks : " + m_Stacks + " vs " + actualStacks);
+                }
+            }
+            // TODO : REMOVE    ============================================================================
+
+            if (m_Stacks <= 0 || m_StartingStacks >= 1 && m_Stacks == 1)
                 m_StacksContainer.SetActive(false);
             else
             {

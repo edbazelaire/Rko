@@ -58,6 +58,10 @@ namespace Game.Character
             HasState(EStateEffect.Silence.ToString()) 
             || HasState(EStateEffect.Malediction.ToString());
 
+        public bool IsGrounded => 
+            HasState(EStateEffect.Grounded)
+            || HasState(EStateEffect.Frozen);
+
         public bool IsTaunting => HasState(EStateEffect.Taunt);
 
         public bool CanCast =>
@@ -103,7 +107,7 @@ namespace Game.Character
 
         public bool IsImmunedToSlows =>
             HasState(EStateEffect.SpecialAnimation)
-            || HasState(EStateEffect.Unstoppable.ToString());
+            || HasState(EStateEffect.Unstopable.ToString());
 
 
         public NetworkVariable<float> SpeedBonus            => m_SpeedBonus;
@@ -174,9 +178,14 @@ namespace Game.Character
             CallOnStateEffectEventUI(stateEventData.StateEffectEvent, stateEventData.StateEffectName.ToString(), stateEventData.Stacks, stateEventData.MaxStacks, stateEventData.Duration, stateEventData.CasterId);
         }
 
-        void CallOnStateEffectEventUI(EStateEffectEvent stateEffectEvent, string stateEffectName, int stacks, int maxStacks, float duration, ulong casterId)
+        public void CallOnStateEffectEventUI(EStateEffectEvent stateEffectEvent, string stateEffectName, int stacks, int maxStacks, float duration, ulong casterId)
         {
-            ErrorHandler.Log(stateEffectName + " " + stateEffectEvent, ELogTag.StateEffectGFX);
+            // TODO : REMOVE    ============================================================================
+            if (stateEffectName == "_MeteorRain")
+                Debug.Log(stateEffectName + " : event " + stateEffectEvent + " | stacks " + stacks);
+            // TODO : REMOVE    ============================================================================
+
+            ErrorHandler.Log(stateEffectName + " : event " + stateEffectEvent + " | stacks " + stacks, ELogTag.StateEffectGFX);
 
             // event already called on SERVER side
             StateEffectEvent?.Invoke(stateEffectEvent, stateEffectName, stacks, maxStacks, duration);
@@ -197,7 +206,11 @@ namespace Game.Character
         [ClientRpc]
         public void CallQuestThresholdEventClientRPC(string stateEffectName, int index)
         {
-            // Call SpellGFX event
+            CallQuestThresholdEvent(stateEffectName, index);
+        }
+
+        public void CallQuestThresholdEvent(string stateEffectName, int index)
+        {
             QuestThresholdEvent?.Invoke(stateEffectName, index);
         }
 
@@ -394,7 +407,7 @@ namespace Game.Character
         /// <summary>
         /// Calculate the total bonus provided by all current state effects
         /// </summary>
-        void RecalculateBonus()
+        public void RecalculateBonus()
         {
             // only server can calculate speed factor
             if (!IsServer)
@@ -480,8 +493,9 @@ namespace Game.Character
                 return;
 
             // calculate number of stacks that need to be applied
-            int stacks = overridingData != null ? overridingData.Value.GetStacks() : 1;
-            stacks = stateEffect.RecalculateStacks(stacks, caster, m_Controller);
+            int stacks = overridingData != null ? overridingData.Value.GetStacks() : stateEffect.StartingStacks;
+            if (stateEffect.ConsumeState != EStateEffect.None)
+                stacks = stateEffect.RecalculateStacks(stacks, caster, m_Controller);
 
             if (! CheckCanBeApplied(stateEffect, caster))
                 return;
@@ -502,10 +516,6 @@ namespace Game.Character
             if (stateEffect.IsUnique)
                 RemoveStateEffectsOfType(stateEffect.StateEffectType);
 
-            // no stacks and no active effect : return
-            if (stacks == 0)
-                return;
-
             if (! stateEffect.Initialize(m_Controller, caster, overridingData, stacks))
                 return;
 
@@ -525,9 +535,9 @@ namespace Game.Character
         /// <summary>
         /// Add a state effect to the character
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="effect"></param>
         /// <param name="duration"></param>
-        public void AddStateEffect(EStateEffect type, Controller caster, string origin, int? stacks = default, float? duration = default)
+        public void AddStateEffect(EStateEffect effect, Controller caster, string origin, int? stacks = default, float? duration = default)
         {
             if (!IsServer)
                 return;
@@ -535,7 +545,7 @@ namespace Game.Character
             var overridingProperties = duration.HasValue ? new List<SStateEffectProperty> { new SStateEffectProperty(EStateEffectProperty.Duration, duration.Value) } : new(); 
 
             AddStateEffect(new SStateEffectData(
-                type, 
+                effect, 
                 stacks:                 stacks      ??      1,
                 overridingProperties:   overridingProperties
             ), caster, 1, origin);
@@ -782,10 +792,12 @@ namespace Game.Character
                 return 1f;
 
             float value;
-            if (property == EStateEffectProperty.SpeedBonus)
+            if (property == EStateEffectProperty.SpeedBonus || property == EStateEffectProperty.Lethality)
                 value = 0f;
             else
-                value = 1f + m_CharacterData.GetValue(property, specialCondition, m_Controller, targetController);
+                value = 1f;
+
+            value += m_CharacterData.GetValue(property, specialCondition, m_Controller, targetController);
 
             ErrorHandler.Log("Base value (" + property + ") : " + value, ELogTag.BonusStats);
 

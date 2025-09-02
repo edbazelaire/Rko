@@ -8,6 +8,8 @@ using System;
 using Tools;
 using Managers;
 using MyBox;
+using Game.Loaders;
+using Data.DataStructures.PowerEffects;
 
 
 namespace Save.Data.Progression.Structs
@@ -143,6 +145,16 @@ namespace Save.Data.Progression.Structs
             foreach (var mod in GetArenaMods())
             {
                 bonus += AssetLoader.LoadArenaMod(mod).BonusPower;
+            }
+
+            foreach (var powerUpName in GetPowerUps())
+            {
+                if (powerUpName.IsNullOrEmpty())
+                    continue;
+
+                var powerUp = SpellLoader.GetPowerUp(powerUpName);
+                if (powerUp is SPowerUp sPowerUp)
+                    bonus += sPowerUp.BonusPowerOrb;
             }
 
             return bonus;

@@ -122,7 +122,7 @@ namespace Game.SpellGFXs
             }
 
             // check if is same name and same player
-            if (m_SpellData.Name != spell.SpellData.Name || m_Controller.PlayerId != spell.Controller.PlayerId)
+            if (m_SpellData.Name != spell.SpellData.Name || m_Controller.PlayerId != spell.Caster.PlayerId)
                 return;
 
             // register to events of the provided spell

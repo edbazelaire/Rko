@@ -1,8 +1,5 @@
-﻿using Assets.Scripts.Data.PowerUps;
-using Game.UI.EndGameUI;
-using System.Collections;
+﻿using Game.UI.EndGameUI;
 using Tools;
-using UnityEngine;
 
 
 namespace Menu.PopUps.OverlayScreens

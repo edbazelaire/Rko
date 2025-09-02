@@ -20,6 +20,7 @@ MonoBehaviour:
   Graphics: {fileID: 0}
   SpellEventActions: []
   OnHit: []
+  PassiveEffects: []
   SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -59,6 +60,7 @@ MonoBehaviour:
   m_Force:
     m_Speed: 12
     m_Duration: 0.2
+    m_Targets: 
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.15

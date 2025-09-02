@@ -625,6 +625,11 @@ namespace Tools
             return Load<Sprite>(c_IconFiltersPath + c_IconPrefix + name);
         }
 
+        public static Sprite LoadPowerUpIconBorder(ERuneActivation runeActivation)
+        {
+            return Load<Sprite>(c_ButtonsPath + "PowerUpCards/PowerUpBorder_" + runeActivation.ToString());
+        }
+
         #endregion
 
 

@@ -11,9 +11,6 @@ namespace Game.Spells
         protected override void OnRefreshed(int stacks)
         {
             base.OnRefreshed(stacks);
-
-            Debug.Log("GreatIceLancePassive - OnRefreshed() : " + stacks);
-
             m_Controller.SpellHandler.ReduceCooldown(ESpell.GreatIceLance, stacks * m_CooldownReduction);
         }
 

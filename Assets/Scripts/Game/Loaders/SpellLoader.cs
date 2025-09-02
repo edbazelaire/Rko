@@ -1,4 +1,5 @@
 ﻿using Data;
+using Data.DataStructures.PowerEffects;
 using Data.DataStructures.SpellSubStructures;
 using Data.GameManagement;
 using Enums;
@@ -28,10 +29,12 @@ namespace Game.Loaders
         static Dictionary<string, SpellData>       m_ExtraSpellData;
         static Dictionary<string, StateEffect>     m_StateEffects;
         static Dictionary<string, RuneData>        m_RunesData;
+        static Dictionary<string, PowerUpData>     m_PowerUpsData;
 
-        public static List<ESpell> Spells                       => m_Spells.Keys.ToList();
-        public static List<SpellData> SpellsData                => m_Spells.Values.ToList();
-        public static Dictionary<string, RuneData> RunesData    => m_RunesData;
+        public static List<ESpell> Spells                           => m_Spells.Keys.ToList();
+        public static List<SpellData> SpellsData                    => m_Spells.Values.ToList();
+        public static Dictionary<string, RuneData> RunesData        => m_RunesData;
+        public static Dictionary<string, PowerUpData> PowerUpsData  => m_PowerUpsData;
 
         #endregion
 
@@ -44,6 +47,7 @@ namespace Game.Loaders
             InitializeSpells();
             InitializeStateEffects();
             InitializeRuneData();
+            InitializePowerUpsData();
 
             Initialized = true;
         }
@@ -116,6 +120,17 @@ namespace Game.Loaders
             }
         }
 
+        static void InitializePowerUpsData()
+        {
+            PowerUpData[] allData = LoadPowerUpsData();
+
+            m_PowerUpsData = new Dictionary<string, PowerUpData>();
+            foreach (PowerUpData data in allData)
+            {
+                m_PowerUpsData.Add(data.Name, data);
+            }
+        }
+
         static SpellData[] LoadSpells()
         {
            return Resources.LoadAll<SpellData>("Data/Spells");
@@ -128,10 +143,12 @@ namespace Game.Loaders
 
         static RuneData[] LoadRunesData()
         {
-            var data = AssetLoader.LoadAll<RuneData>(AssetLoader.c_PowerUpsPath).ToList();
-            data.AddRange(Resources.LoadAll<RuneData>("Data/Runes"));
-            return data.ToArray();
-            
+            return Resources.LoadAll<RuneData>("Data/Runes").ToArray();
+        }
+
+        static PowerUpData[] LoadPowerUpsData()
+        {
+            return Resources.LoadAll<PowerUpData>(AssetLoader.c_PowerUpsPath).ToArray();
         }
 
         #endregion
@@ -196,6 +213,12 @@ namespace Game.Loaders
                 return true;
             }
 
+            if (IsPowerUp(name))
+            {
+                effectType = EEffectType.PowerUp;
+                return true;
+            }
+
             if (PowerUpExists(name))
             {
                 effectType = EEffectType.PowerUp;
@@ -239,6 +262,16 @@ namespace Game.Loaders
         public static bool IsRune(string name)
         {
             return Enum.TryParse(name, out ERune _) || m_RunesData.ContainsKey(name);
+        }
+
+        /// <summary>
+        /// Check if power up exists
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static bool IsPowerUp(string name)
+        {
+            return m_PowerUpsData.ContainsKey(name);
         }
 
         /// <summary>
@@ -666,6 +699,7 @@ namespace Game.Loaders
         }
 
         #endregion
+
         /// <summary>
         /// 
         /// </summary>
@@ -680,6 +714,26 @@ namespace Game.Loaders
             }
 
             var data = m_RunesData[rune].Clone(level);
+            if (destroy)
+                CoroutineManager.DelayMethod(() => GameObject.Destroy(data));
+
+            return data;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rune"></param>
+        /// <returns></returns>
+        public static PowerUpData GetPowerUpData(string powerUp, int level = 1, bool destroy = false)
+        {
+            if (!m_PowerUpsData.ContainsKey(powerUp))
+            {
+                ErrorHandler.Error("Rune not found in dict of PowerUpData : " + powerUp);
+                return default;
+            }
+
+            var data = m_PowerUpsData[powerUp].Clone(level);
             if (destroy)
                 CoroutineManager.DelayMethod(() => GameObject.Destroy(data));
 
@@ -780,12 +834,21 @@ namespace Game.Loaders
         /// <param name="powerUpName"></param>
         /// <param name="level"></param>
         /// <returns></returns>
-        public static SRunePower GetPowerUp(string powerUpName, int level = 1)
+        public static SPowerEffect GetPowerUp(string powerUpName, int level = 1, bool powerUpOnly = false)
         {
-            if (! SRunePower.TrySplitPowerUpName(powerUpName, out string runeName, out ERuneActivation runeActivation, throwError: true))
+            if (! SPowerEffect.TrySplitPowerUpName(powerUpName, out string powerEffectName, out ERuneActivation runeActivation, throwError: true))
                 return null;
 
-            return GetRuneData(runeName, level).GetRunePower(runeActivation);
+            if (IsPowerUp(powerEffectName))
+                return GetPowerUpData(powerEffectName, level).GetRunePower(runeActivation);
+
+            if (powerUpOnly)
+            {
+                ErrorHandler.Warning("Unable to find " + powerUpName + " as SPowerUp");
+                return null;
+            }
+
+            return GetRuneData(powerEffectName, level).GetRunePower(runeActivation);
         }
 
         /// <summary>
@@ -797,9 +860,9 @@ namespace Game.Loaders
         /// <param name="unlocked"></param>
         /// <param name="containsName"></param>
         /// <returns></returns>
-        public static SRunePower GetRandomPowerUp(List<ERuneActivation> runeActivationFilter = default, List<string> notAllowedFilter = default,string containsName = "")
+        public static SPowerEffect GetRandomPowerUp(int level = 0, List<ERuneActivation> runeActivationFilter = default, bool powerUpOnly = false, List<string> notAllowedFilter = default,string containsName = "")
         {
-            var powerUps = FilterPowerUps(runeActivationFilter, notAllowedFilter, containsName);
+            var powerUps = FilterPowerUps(level, runeActivationFilter, powerUpOnly, notAllowedFilter, containsName);
             if (powerUps.Count == 0)
                 return null;
 
@@ -817,16 +880,50 @@ namespace Game.Loaders
         /// <param name="elementsFilter">  allowed elements of the runes                                   </param>
         /// <param name="notAllowedFilter">     list of not runes that are not allowed to be in the return data </param>
         /// <returns></returns>
-        public static List<SRunePower> FilterPowerUps(List<ERuneActivation> runeActivationFilter = default, List<string> notAllowedFilter = default, string containsName = "")
+        public static List<SPowerEffect> FilterPowerUps(int level = 0, List<ERuneActivation> runeActivationFilter = default, bool powerUpOnly = false, List<string> notAllowedFilter = default, string containsName = "")
         {
-            List<SRunePower> filteredData = new List<SRunePower>();
+            List<SPowerEffect> filteredData = new List<SPowerEffect>();
 
+            // =================================================================================
+            // CHECK : PowerUps
+            for (int i = 0; i < m_PowerUpsData.Count; i++)
+            {
+                // clone the data to avoid overwritting
+                PowerUpData powerUpData = m_PowerUpsData.Values.ToList()[i].Clone(level);
+
+                if (powerUpData.Name == "None")
+                    continue;
+                // get throught each activation level to collect as SRunePower
+                foreach (ERuneActivation runeActivation in Enum.GetValues(typeof(ERuneActivation)))
+                {
+                    if (runeActivation == ERuneActivation.None)
+                        continue;
+
+                    SPowerUp data = powerUpData.GetRunePower(runeActivation);
+
+                    if (! CheckPowerUpFilters(data, runeActivationFilter, powerUpOnly, notAllowedFilter, containsName))
+                        continue;
+
+                    filteredData.Add(data);
+                }
+            }
+
+            if (powerUpOnly)
+                return filteredData;
+
+            // =================================================================================
+            // CHECK : Runes
             for (int i = 0; i < m_RunesData.Count; i++)
             {
                 // clone the data to avoid overwritting
-                RuneData runeData = m_RunesData.Values.ToList()[i].Clone();
+                RuneData runeData = m_RunesData.Values.ToList()[i].Clone(level);
 
+                // prevent None rune
                 if (runeData.Name == "None")
+                    continue;
+
+                // if rune rarety is below Epic, the rune can't be a "Power Up Effect"
+                if (runeData.Rarety < ERarety.Rare)
                     continue;
 
                 // get throught each activation level to collect as SRunePower
@@ -837,16 +934,7 @@ namespace Game.Loaders
 
                     SRunePower data = runeData.GetRunePower(runeActivation);
 
-                    // CHECK : activation
-                    if (runeActivationFilter != null && runeActivationFilter.Count > 0 && ! runeActivationFilter.Contains(data.RuneActivation))
-                        continue;
-
-                    // FILTER : not in not allowed spells
-                    if (notAllowedFilter != null && notAllowedFilter.Contains(data.Name))
-                        continue;
-
-                    // FILTER : name contains string
-                    if (!string.IsNullOrEmpty(containsName) && !data.Name.ToLower().Contains(containsName.ToLower()))
+                    if (!CheckPowerUpFilters(data, runeActivationFilter, powerUpOnly, notAllowedFilter, containsName))
                         continue;
 
                     filteredData.Add(data);
@@ -856,6 +944,26 @@ namespace Game.Loaders
             return filteredData;
         }
 
+        public static bool CheckPowerUpFilters(SPowerEffect runePower, List<ERuneActivation> runeActivationFilter = default, bool powerUpOnly = false, List<string> notAllowedFilter = default, string containsName = "")
+        {
+            // CHECK : check is powerUp
+            if (powerUpOnly && runePower is not SPowerUp)
+                return false;
+
+            // CHECK : activation
+            if (runeActivationFilter != null && runeActivationFilter.Count > 0 && !runeActivationFilter.Contains(runePower.RuneActivation))
+                return false;
+
+            // FILTER : not in not allowed spells
+            if (notAllowedFilter != null && notAllowedFilter.Contains(runePower.Name))
+                return false;
+
+            // FILTER : name contains string
+            if (!string.IsNullOrEmpty(containsName) && !runePower.Name.ToLower().Contains(containsName.ToLower()))
+                return false;
+
+            return true;
+        }
 
         #endregion
     }

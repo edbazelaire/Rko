@@ -72,7 +72,7 @@ namespace Game.Character
                 return false;
 
             // check is same team
-            if (GameManager.Instance.GetPlayer(spell.OwnerClientId).Team == m_Controller.Team)
+            if (GameManager.Instance.GetPlayer(spell.Caster.PlayerId).Team == m_Controller.Team)
                 return false;
 
             // duplicate to avoid inference during loop

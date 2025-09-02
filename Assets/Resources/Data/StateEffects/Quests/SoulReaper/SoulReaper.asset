@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Description: 
   m_DescriptionVariables: 
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 1
-  m_VisualEffects: []
   m_GfxEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
@@ -27,6 +27,7 @@ MonoBehaviour:
   m_IsConsumedOnEnd: 0
   m_IsTrueDamage: 0
   m_EndWithShield: 0
+  m_EndAt0Stacks: 0
   m_RefreshShield: 0
   m_Priority: 0
   m_Delay: 0
@@ -45,6 +46,7 @@ MonoBehaviour:
   m_StateEffectScalingLevel: []
   m_StateEffectScalingStacks: []
   m_IsCumulativeEffects: 1
+  m_ResetsOnMaxStacks: 0
   m_QuestThresholds:
   - RequiredStacks: 1
     ReplacementIcon: {fileID: 0}

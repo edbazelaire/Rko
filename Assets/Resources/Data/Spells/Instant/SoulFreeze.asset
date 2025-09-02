@@ -39,6 +39,7 @@ MonoBehaviour:
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  PassiveEffects: []
   SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -83,12 +84,8 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
-  m_SpellsScalingLevel:
-  - Property: 3
-    Value: -0.5
-    ScalingType: 1
-    RoundingType: 0
-    ScalingTresholds: []
+    m_Targets: 
+  m_SpellsScalingLevel: []
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects:

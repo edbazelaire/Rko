@@ -1,36 +1,37 @@
-﻿using System.Collections;
-using Tools;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
 namespace Game.Background.NightSky
 {
     public class Cloud : MonoBehaviour
     {
-        #region Members
+        private CloudSpawner m_Spawner;
+        private float m_Speed;
 
-        SpriteRenderer m_SpriteRenderer;
-        float m_Speed = 0f;
-
-        #endregion
-
-        public void Initialize(Sprite sprite, float speed, float sizeFactor, int sorterOrder, string layer)
+        public void Initialize(CloudSpawner spawner, float speed)
         {
-            m_SpriteRenderer = Finder.FindComponent<SpriteRenderer>(gameObject);
-            m_SpriteRenderer.sprite = sprite;
-            m_SpriteRenderer.sortingOrder = sorterOrder;
-            m_SpriteRenderer.sortingLayerName = layer;
-
-            transform.localScale *= sizeFactor;
-
+            m_Spawner = spawner;
             m_Speed = speed;
         }
 
-        public void Update()
+        private void Update()
         {
-            transform.position += new Vector3(- Time.deltaTime * m_Speed, 0f, 0f);
+            transform.Translate(Vector3.left * m_Speed * Time.deltaTime);
 
-            // CHECK IF IN VIEW
+            // Example: recycle when leaving the right side of the camera
+            if (transform.position.x > -10f)
+            {
+                m_Spawner.RecycleCloud(this);
+            }
+        }
+
+        /// <summary>
+        /// Reset cloud position and speed for reuse instead of destroying/instantiating.
+        /// </summary>
+        public void ResetCloud(Vector3 newPos, float newSpeed)
+        {
+            transform.position = newPos;
+            m_Speed = newSpeed;
         }
     }
+
 }

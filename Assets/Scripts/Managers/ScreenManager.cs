@@ -16,6 +16,7 @@ using Unity.VisualScripting;
 using MyBox;
 using System.Collections;
 using Save.Data.Progression.Structs;
+using Data.DataStructures.PowerEffects;
 
 namespace Assets.Scripts.Managers
 {
@@ -119,7 +120,7 @@ namespace Assets.Scripts.Managers
                     break;
 
                 case EPopUpState.PowerUpInfoScreen:
-                    obj.GetComponent<PowerUpInfoScreen>().Initialize((SRunePower)args[0]);
+                    obj.GetComponent<PowerUpInfoScreen>().Initialize((SPowerEffect)args[0]);
                     break;
 
                 case EPopUpState.PowerUpSelectionScreen:
@@ -128,17 +129,16 @@ namespace Assets.Scripts.Managers
 
                 // INFO POP UPS -------------------------------------------------------
                 case EPopUpState.SpellInfoPopUp:
-                    bool infoOnly = args.Length > 2 && (bool)args[2];
-                    obj.GetComponent<SpellInfoPopUp>().Initialize((ESpell)args[0], (int)args[1], infoOnly);
+                    obj.GetComponent<SpellInfoPopUp>().Initialize((ESpell)args[0], (int)args[1], infoOnly: args.Length > 2 && (bool)args[2]);
                     break;
 
                 case EPopUpState.RuneInfoPopUp:
-                    obj.GetComponent<RuneInfoPopUp>().Initialize((ERune)args[0], (int)args[1], args.Count() >= 3 ? (ERuneActivation)args[2] : ERuneActivation.None);
+                    obj.GetComponent<RuneInfoPopUp>().Initialize((ERune)args[0], (int)args[1], infoOnly: args.Length > 2 && (bool)args[2], runeActivation: args.Length > 3 ? (ERuneActivation)args[3] : ERuneActivation.None);
                     break;
 
                 case EPopUpState.CollectableInfoPopUp:
                 case EPopUpState.CharacterInfoPopUp:
-                    obj.GetComponent<CollectableInfoPopUp>().Initialize((ECharacter)args[0], (int)args[1]);
+                    obj.GetComponent<CollectableInfoPopUp>().Initialize((ECharacter)args[0], (int)args[1], infoOnly: args.Length > 2 && (bool)args[2]);
                     break;
 
                 case EPopUpState.BossInfoPopUp:

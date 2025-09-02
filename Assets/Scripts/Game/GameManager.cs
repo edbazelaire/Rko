@@ -1,9 +1,10 @@
-using Assets;
+﻿using Assets;
 using Assets.Scripts.Game;
 using Assets.Scripts.Managers.Sound;
 using Assets.Scripts.Tools;
 using Data;
 using Data.DataStructures.CharacterSubStructures;
+using Data.DataStructures.SpellSubStructures;
 using Enums;
 using Externals;
 using Game.GameManagers.Components;
@@ -16,7 +17,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Tools;
+using Tools.Helpers;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -56,6 +59,9 @@ namespace Game
         /// <summary> expected number of players in the game </summary>
         NetworkVariable<int> m_NPlayers = new NetworkVariable<int>(-1);
 
+        // -- Game Data
+        public EGameMode GameMode { get; private set; }
+
         // -- Player Data
         /// <summary> [SERVER] number of player data expected to be received (includes bot's PlayerData) </summary>
         protected int m_NPlayerDataExpected => 2;
@@ -90,6 +96,9 @@ namespace Game
 
         /// <summary> check if GameManager exists, if has an Instance or the game object exists in the scene </summary>
         public static bool Exists => s_Instance != null || FindAnyObjectByType<GameManager>() != null;
+        /// <summary> is the game mode an "offline" mode ? e.g : not a ranked mode NOT filled with bots </summary>
+        //public bool IsOfflineMode => false;
+        public bool IsOfflineMode => ! (GameMode == EGameMode.Ranked && !LobbyHandler.Instance.IsFilledWithBots);
         /// <summary> intro starting : game fully loaded </summary>
         public bool IsGameLoaded => m_State.Value >= EGameState.Intro;
         /// <summary> intro completed : game starts </summary>
@@ -124,7 +133,6 @@ namespace Game
 
             AttachDebugMethods();
         }
-
 #endregion
 
 
@@ -153,6 +161,7 @@ namespace Game
 
             m_Controllers               = new Dictionary<ulong, Controller>();
             m_InitOnClientSide          = false;
+            GameMode                    = LobbyHandler.Instance.GameMode;
             m_IsTuto                    = LobbyHandler.Instance.IsTuto;
 
             // instantiate listeners
@@ -319,7 +328,7 @@ namespace Game
         /// <param name="playerData"></param>
         void UpdatePlayerData(ref SPlayerData playerData)
         {
-            if (LobbyHandler.Instance.GameMode != EGameMode.Training)
+            if (GameMode != EGameMode.Training)
                 return;
 
             playerData.BuildData.CharacterLevel = DEFAULT_PVP_LEVEL;
@@ -388,7 +397,7 @@ namespace Game
 
         bool CheckIsFilledWithBots()
         {
-            if (LobbyHandler.Instance.GameMode != EGameMode.Ranked)
+            if (GameMode != EGameMode.Ranked)
                 return false;
 
             int nBots = 1; // 1 because Host is server side so it count has one initialized on Server side
@@ -446,7 +455,7 @@ namespace Game
                 var cameraAdjuster = Finder.FindComponent<CameraAdjuster>(Camera.main.gameObject);
                 if (cameraAdjuster == null)
                 {
-                    ErrorHandler.Error("No CameraAdjuster was found for client " + OwnerClientId);
+                    ErrorHandler.Error("No CameraAdjuster was found for client " + m_PlayerId);
                     return;
                 }
 
@@ -803,7 +812,7 @@ namespace Game
         {
             // find first non self ally
             foreach (Controller controller in m_Controllers.Values)
-                if (controller.Team == team && controller.OwnerClientId != slefId)
+                if (controller.Team == team && controller.PlayerId != slefId)
                     return controller;
 
             // none found -> return self
@@ -873,7 +882,7 @@ namespace Game
 
             foreach (Spell tempSpell in spells)
             {
-                if (tempSpell.Controller == controller)
+                if (tempSpell.Caster == controller)
                 {
                     spell = tempSpell;
                     return true;
@@ -1115,9 +1124,15 @@ namespace Game
 
         #region Debug Callbacks
 
-        public void AddStateEffect(string effect)
+        public bool CheckSpecialCommands(string command)
         {
-            Owner.StateHandler.AddStateEffect(SpellLoader.GetStateEffect(effect), Owner);
+            if (CheckAddStat(command))
+                return true;
+
+            if (CheckAddStateEffect(command))
+                return true;
+
+            return false;
         }
 
         [Command(KeyCode.N)]
@@ -1215,13 +1230,6 @@ namespace Game
             GetFirstEnemy(Owner.Team).StateHandler.AddStateEffect(stun, Owner, 1, "Debug");
         }
 
-        //[Command(KeyCode.R)]
-        //public void StunSelf()
-        //{
-        //    var stun = new SStateEffectData(EStateEffect.Stun, overridingProperties: new List<SStateEffectProperty>() { new SStateEffectProperty(EStateEffectProperty.Duration, 3) });
-        //    Owner.StateHandler.AddStateEffect(stun, Owner, 1, "Debug");
-        //}
-
         [Command(KeyCode.Y)]
         public void ToogleInterface()
         {
@@ -1233,6 +1241,105 @@ namespace Game
         {
             Owner.EnergyHandler.AddEnergy(100);
             Owner.SpellHandler.ResetCooldowns();
+        }
+
+        public bool CheckAddStateEffect(string command)
+        {
+            // Regex : nom de l’effet, puis options -t et -d
+            Regex regex = new Regex(
+                @"^(?<effect>\w+)(?:\s+-t\s+(?<target>[se]))?(?:\s+-l\s+(?<level>\d+))?",
+                RegexOptions.IgnoreCase
+            );
+
+            Match match = regex.Match(command);
+            if (!match.Success)
+            {
+                return false;
+            }
+
+            // Nom de l’effet
+            string effectName = match.Groups["effect"].Value;
+
+            if (!Enum.TryParse(effectName, true, out EStateEffect effect))
+            {
+                return false;
+            }
+
+            // Target
+            EStateEffectTarget target = EStateEffectTarget.Self;
+            if (match.Groups["target"].Success)
+            {
+                target = match.Groups["target"].Value.ToLower() == "e"
+                    ? EStateEffectTarget.Enemy
+                    : EStateEffectTarget.Self;
+            }
+
+            // get target controller
+            Controller targetController = TargetHelper.GetTargetController(Owner.PlayerId, target);
+            if (targetController == null)
+                return false;
+
+            // Level
+            int level = 0;
+            if (match.Groups["level"].Success)
+            {
+                level = int.Parse(match.Groups["level"].Value);
+            }
+
+            targetController.StateHandler.AddStateEffect(SpellLoader.GetStateEffect(effect.ToString(), level), Owner);
+            return true;
+        }
+
+        public bool CheckAddStat(string command)
+        {
+            // Regex : signe, valeur, stat, puis options -t et -d
+            Regex regex = new Regex(
+                @"^(?<sign>[+-])(?<value>\d+(?:[.,]\d+)?)\s+(?<stat>[A-Za-z0-9_]+)(?:\s+-t\s+(?<target>[se]))?(?:\s+-d\s+(?<duration>\d+))?",
+                RegexOptions.IgnoreCase
+            );
+
+            Match match = regex.Match(command);
+            if (!match.Success)
+            {
+                return false;
+            }
+
+            // Récupération des groupes
+            string sign = match.Groups["sign"].Value;
+            float value = float.Parse(match.Groups["value"].Value);
+            string statName = match.Groups["stat"].Value;
+
+            // Appliquer le signe
+            if (sign == "-") value *= -1;
+
+            // Vérifier l'enum
+            if (!Enum.TryParse(statName, true, out EStateEffectProperty stat))
+            {
+                Debug.LogError($"Unknown stat '{statName}'. Must match EStatEffectProperty.");
+                return false;
+            }
+
+            // Target
+            EStateEffectTarget target = EStateEffectTarget.Self;
+            if (match.Groups["target"].Success)
+            {
+                target = match.Groups["target"].Value.ToLower() == "e"
+                    ? EStateEffectTarget.Enemy
+                    : EStateEffectTarget.Self;
+            }
+
+            // get target controller
+            Controller targetController = TargetHelper.GetTargetController(Owner.PlayerId, target);
+            if (targetController == null)
+                return false;
+
+            // add stats
+            targetController.StateHandler.CharacterData.AddBonusStat(stat, value, null);
+            targetController.StateHandler.RecalculateBonus();
+
+            // ✅ Log résultat
+            Debug.Log($"AddStat: {value} {stat} | Target={target}");
+            return true;
         }
 
         #endregion

@@ -4,6 +4,7 @@ using Enums;
 using Game.Loaders;
 using Game.Spells;
 using MyBox;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
@@ -22,7 +23,9 @@ namespace Game.StateEffects.Quests
         // Serialize Fields
         [Header("Quest")]
         [SerializeField, Tooltip("Are the effect of the list cumulative ?")]
-        protected bool m_IsCumulativeEffects = new();
+        protected bool m_IsCumulativeEffects = false;
+        [SerializeField, Tooltip("Is the effect reseting to 0 stacks when reaching max stacks ?")]
+        protected bool m_ResetsOnMaxStacks = false;
 
         [SerializeField, Tooltip("List of effects for each thresholds")]
         protected List<SQuestThreshold> m_QuestThresholds = new();
@@ -53,6 +56,9 @@ namespace Game.StateEffects.Quests
         {
             base.SetStacks(stacks);
 
+            if (m_Controller == null)
+                return;
+
             // go through all allowed thresholds
             for (int i = 0; i < m_MaxIndex; i++)
             {
@@ -63,7 +69,7 @@ namespace Game.StateEffects.Quests
                     if (i == m_MaxIndex - 1)
                     {
                         ActivateThresholdIndex(i);
-                        return;
+                        break;
                     }
 
                     // CHECK : if is NOT last - check next effect
@@ -73,7 +79,13 @@ namespace Game.StateEffects.Quests
 
                 // Current threshold not reached - activate last threshold
                 ActivateThresholdIndex(i - 1);
-                return;
+                break;
+            }
+
+            if (m_Stacks >= m_MaxStacks && m_ResetsOnMaxStacks)
+            {
+                Debug.Log("Stacks == m_MaxStacks - Resets number of stacks");
+                ResetQuest();
             }
         }
         
@@ -85,6 +97,12 @@ namespace Game.StateEffects.Quests
         public void SetMaxStacks(int maxStacks)
         {
             m_MaxStacks = maxStacks;
+        }
+
+        void ResetQuest()
+        {
+            // remove "-1" to remove all the stacks at once
+            RemoveStacks(-1);
         }
 
         #endregion
@@ -117,7 +135,7 @@ namespace Game.StateEffects.Quests
                 }
                 else
                 {
-                    for (int i = m_CurrentThresholdIndex - 1; i >= index; i--)
+                    for (int i = m_CurrentThresholdIndex - 1; i > index; i--)
                     {
                         DeactivateEffectAtIndex(i);
                     }
@@ -125,30 +143,36 @@ namespace Game.StateEffects.Quests
             }
 
             // set new index
+            ErrorHandler.Log(StateEffectName + " - New threshold index : " + index, ELogTag.Quests);
             m_CurrentThresholdIndex = index;
 
             // call CLIENT event that a new index has been activated
-            m_Controller.StateHandler.CallQuestThresholdEventClientRPC(StateEffectName, index);
+            if (GameManager.Instance.IsOfflineMode)
+                m_Controller.StateHandler.CallQuestThresholdEvent(StateEffectName, index);
+            else
+                m_Controller.StateHandler.CallQuestThresholdEventClientRPC(StateEffectName, index);
         }
 
         void ActivateEffect(SQuestThreshold questThreshold)
         {
             int tresholdIndex = m_QuestThresholds.IndexOf(questThreshold);
 
-            ErrorHandler.Log("ActivateEffect at treshold : " + questThreshold.RequiredStacks, ELogTag.StateEffects);
+            ErrorHandler.Log("ActivateEffect at treshold : " + questThreshold.RequiredStacks, ELogTag.Quests);
 
             foreach (SActivableEffect activableEffect in questThreshold.ActivableEffects)
             {
                 if (SpellLoader.IsSpell(activableEffect.Effect))
                 {
-                    ErrorHandler.Log("     + ActivateEffect Spell : " + activableEffect.Effect, ELogTag.StateEffects);
+                    ErrorHandler.Log("     + ActivateEffect Spell : " + activableEffect.Effect, ELogTag.Quests);
 
+                    // load / setup the spell data
                     SpellData spellData = SpellLoader.GetSpellData(activableEffect.Effect, activableEffect.Level);
                     spellData.SetParent(m_Parent);
                     if (activableEffect.Target != ESpellTarget.None)
                         spellData.SpellTarget = activableEffect.Target;
 
-                    spellData.CastDelay(m_Controller.PlayerId, Vector3.zero, recalculateTarget: true, recalculatePosition: true);
+                    // cast the spell
+                    m_Controller.StartCoroutine(spellData.CastDelay(m_Controller.PlayerId, Vector3.zero, recalculateTarget: true, recalculatePosition: true));
 
                     // add to list of state effects - to allow deactivation if necessary
                     if (activableEffect.IsDeactivable)
@@ -157,9 +181,9 @@ namespace Game.StateEffects.Quests
 
                 else if (SpellLoader.IsStateEffect(activableEffect.Effect))
                 {
-                    ErrorHandler.Log("     + ActivateEffect StateEffect : " + activableEffect.Effect, ELogTag.StateEffects);
+                    ErrorHandler.Log("     + ActivateEffect StateEffect : " + activableEffect.Effect, ELogTag.Quests);
 
-                    Controller targetController = TargetHelper.GetTargetController(m_Caster.PlayerId, activableEffect.Target);
+                    Controller targetController = TargetHelper.GetTargetController(m_Caster.PlayerId, activableEffect.Target, targetId: m_Controller.PlayerId);
                     if (targetController == null)
                         return;
 
@@ -188,7 +212,7 @@ namespace Game.StateEffects.Quests
 
         void DeactivateEffectAtIndex(int thresholdIndex)
         {
-            ErrorHandler.Log("DeactivateEffectAtIndex : " + thresholdIndex, ELogTag.StateEffects);
+            ErrorHandler.Log("DeactivateEffectAtIndex : " + thresholdIndex, ELogTag.Quests);
             
             var spells = m_Spells;
 

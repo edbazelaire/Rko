@@ -1,4 +1,5 @@
-﻿using Enums;
+﻿using Data.DataStructures.PowerEffects;
+using Enums;
 using Game;
 using Game.Loaders;
 using Game.Spells;
@@ -47,6 +48,7 @@ namespace Data.DataStructures
         public  float                   Duration;
         public  int                     NActivations;
         public  float                   Cooldown;
+        public  bool                    RepeatWhenCooldownOver;
 
         // ==================================================================================
         // Data
@@ -84,6 +86,7 @@ namespace Data.DataStructures
             serializer.SerializeValue(ref Duration);
             serializer.SerializeValue(ref NActivations);
             serializer.SerializeValue(ref Cooldown);
+            serializer.SerializeValue(ref RepeatWhenCooldownOver);
         }
 
         #endregion
@@ -98,7 +101,7 @@ namespace Data.DataStructures
             && m_CooldownTimer <= 0;                                            // AND not in cooldown
         }
 
-        public void Activate(Controller controller)
+        public void Activate(Controller controller, float delay = 0f)
         {
             if (m_IsActivated)
                 return;
@@ -119,12 +122,12 @@ namespace Data.DataStructures
             m_TargetController      = CalculateTarget();
             m_NActivationsCtr++;
 
-            m_Coroutine = m_Caster.StartCoroutine(ActivationDelay());
+            m_Coroutine = m_Caster.StartCoroutine(ActivationDelay(delay));
         }
 
-        IEnumerator ActivationDelay()
+        IEnumerator ActivationDelay(float extraDelay = 0f)
         {
-            yield return new WaitForSeconds(Delay);
+            yield return new WaitForSeconds(Delay + extraDelay);
 
             if (NStateEffectActivationThreshold > 1)
             {
@@ -170,6 +173,8 @@ namespace Data.DataStructures
             if (SpellLoader.IsSpell(SpellDataName))
             {
                 SpellData spellData = SpellLoader.GetSpellData(SpellDataName, Level);
+                if (Target != ESpellTarget.None)
+                    spellData.SpellTarget = Target;
                 spellData.SetCurrentTargetId(m_TargetController.PlayerId);
                 spellData.SetParent(m_Parent);
                 m_Caster.StartCoroutine(spellData.CastDelay(m_Caster.PlayerId, Vector3.zero, recalculateTarget: true));
@@ -183,7 +188,7 @@ namespace Data.DataStructures
 
             else if (SpellLoader.PowerUpExists(SpellDataName))
             {
-                SRunePower powerUp = SpellLoader.GetPowerUp(SpellDataName, Level);
+                SPowerEffect powerUp = SpellLoader.GetPowerUp(SpellDataName, Level);
                 m_TargetController.TriggerEffectHandler.AddPowerUp(powerUp);
             }
 
@@ -213,6 +218,8 @@ namespace Data.DataStructures
         {
             if (! m_IsActivated)
                 return;
+
+            Debug.Log("Deactivate Effect : " + SpellDataName);
 
             StateEffect.StateEffectEvent -= OnStateEffectEvent;
 
@@ -256,6 +263,10 @@ namespace Data.DataStructures
                 m_CooldownTimer -= Time.deltaTime;
                 yield return null;
             }
+
+            if (RepeatWhenCooldownOver && m_IsActivated && IsActivable())
+                ActivateEffect();
+
         }
 
         bool HasStateEffect(string stateEffectName)

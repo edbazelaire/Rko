@@ -1,37 +1,18 @@
-﻿using Enums;
+﻿using Assets.Scripts.Game;
+using Enums;
 using System.Collections;
 using TMPro;
 using Tools;
 using UnityEngine;
 
 
-public class FloatingTextUI : MObject
+public class FloatingTextUI : MonoBehaviour
 {
     #region Members
 
     public TMP_Text Text;
     public float    Duration = 1f;
     public Vector3  FloatOffset = new Vector3(0, 1, 0);
-
-    #endregion
-
-
-    #region Init & End
-
-    protected override void FindComponents()
-    {
-        base.FindComponents();
-    }
-
-    public override void Initialize()
-    {
-        base.Initialize();
-    }
-
-    protected override void SetUpUI()
-    {
-        base.SetUpUI();
-    }
 
     #endregion
 
@@ -79,22 +60,7 @@ public class FloatingTextUI : MObject
             yield return null;
         }
 
-        Destroy(gameObject);
-    }
-
-    #endregion
-
-
-    #region Listeners
-
-    protected override void RegisterListeners()
-    {
-        base.RegisterListeners();
-    }
-
-    protected override void UnRegisterListeners()
-    {
-        base.UnRegisterListeners();
+        PoolManager.ReturnObject(gameObject);
     }
 
     #endregion

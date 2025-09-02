@@ -15,9 +15,9 @@ MonoBehaviour:
   m_Description: Every time you consume a [Burn] stack, this effect gain 1 stack.
     For each stack, [Burn] explosion damage increase by [BonusDamage.Burn].
   m_DescriptionVariables: 
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 1
-  m_VisualEffects: []
   m_GfxEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
@@ -28,6 +28,7 @@ MonoBehaviour:
   m_IsConsumedOnEnd: 0
   m_IsTrueDamage: 0
   m_EndWithShield: 0
+  m_EndAt0Stacks: 0
   m_RefreshShield: 1
   m_Priority: 0
   m_Delay: 0
@@ -55,6 +56,7 @@ MonoBehaviour:
   m_StateEffectScalingLevel: []
   m_StateEffectScalingStacks: []
   m_IsCumulativeEffects: 1
+  m_ResetsOnMaxStacks: 0
   m_QuestThresholds:
   - RequiredStacks: 6
     ReplacementIcon: {fileID: 21300000, guid: 513fca82b49eca64f97247b379176ed4, type: 3}
