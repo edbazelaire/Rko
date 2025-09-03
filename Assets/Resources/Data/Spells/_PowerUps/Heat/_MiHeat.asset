@@ -13,13 +13,8 @@ MonoBehaviour:
   m_Name: _MiHeat
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: Heat the entire field dealing {0} damage and applying {1} every
-    {2} seconds
+  m_Description: Heat the entire field applying [Burn] every {0} seconds
   m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
-  - Name: Burn
-    WithIcon: 1
   - Name: DurationTick
     WithIcon: 1
   m_SpellElements: 

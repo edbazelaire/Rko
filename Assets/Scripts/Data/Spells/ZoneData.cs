@@ -1,11 +1,7 @@
-﻿using Assets.Scripts.Data.DataStructures.SpellSubStructures;
-using Data.DataStructures.SpellSubStructures;
+﻿using Data.DataStructures.SpellSubStructures;
 using Enums;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.Video;
 
 namespace Data
 {
@@ -64,6 +60,7 @@ namespace Data
         public override Dictionary<string, object> GetInfo()
         {
             var infosDict = base.GetInfo();
+            infosDict.Add("Tick", DurationTick);
 
             if (TickDamage > 0)
                 infosDict.Add("TickDamage", TickDamage);

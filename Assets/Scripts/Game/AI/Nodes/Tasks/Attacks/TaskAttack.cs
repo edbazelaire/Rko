@@ -393,6 +393,12 @@ public class TaskAttack : BaseTask
         for (int i = 0; i < m_SpellHandler.Spells.Count; i++)
         {
             ESpell spell = m_SpellHandler.Spells[i];
+            if (spells.Contains(spell))
+            {
+                ErrorHandler.Warning("Found same spell multiple time : " + spell);
+                continue;
+            }
+
             SpellData spellData = SpellLoader.GetSpellData(spell);
 
             var stateEffects = GetConsumeStateEffects(spellData);

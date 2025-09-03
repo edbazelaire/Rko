@@ -992,7 +992,7 @@ namespace Data
                 infosDict.Add("Energy", EnergyGain);
             if (m_Size > 0 && m_Size != 1)
                 infosDict.Add("Size", m_Size);
-            if (SpellRelocation.Lifetime.StartSpellPart >= ESpellEvent.OnSpawn)
+            if (SpellRelocation.Exists && SpellRelocation.Lifetime.StartSpellPart >= ESpellEvent.OnSpawn)
                 infosDict.Add("Movement", "Manual");
 
             infosDict.Add("CastDuration",   AnimationTimer);

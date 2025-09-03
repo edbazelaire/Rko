@@ -122,7 +122,7 @@ namespace Game.UI
                 return;
 
             // check that is not one of the state that are not displayed
-            if (IGNORED_STATE_EFFECTS.Contains(state))
+            if (IGNORED_STATE_EFFECTS.Contains(state) || state.StartsWith("_"))
                 return;
 
             var stateEffectData = SpellLoader.GetStateEffect(state);
