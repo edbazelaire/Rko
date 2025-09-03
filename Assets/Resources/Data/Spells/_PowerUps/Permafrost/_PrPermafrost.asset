@@ -13,14 +13,8 @@ MonoBehaviour:
   m_Name: _PrPermafrost
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: Applies [Frozen] effect every [DurationTick] seconds.
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
-  - Name: Burn
-    WithIcon: 1
-  - Name: DurationTick
-    WithIcon: 1
+  m_Description: Applies [Frozen] effect every [Tick] seconds.
+  m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}

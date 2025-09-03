@@ -103,11 +103,11 @@ namespace Game.AI.BehaviorTrees
                     new ResetTimer(controller, "TaskAttack", Random.Range(0.5f, 7f))
                 }),
 
-                // Check if character is currently in a ZoneSpell
-                new Sequence(new List<Node> {
-                    new CheckInZone(controller),
-                    new TaskExitZone(controller),
-                }),
+                //// Check if character is currently in a ZoneSpell
+                //new Sequence(new List<Node> {
+                //    new CheckInZone(controller),
+                //    new TaskExitZone(controller),
+                //}),
 
                 // Attack 4 times 
                 new Sequence(new List<Node> {

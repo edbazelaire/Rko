@@ -234,6 +234,12 @@ namespace Game.Spells
                 yield return null;
             }
 
+            if (!GameManager.Exists)
+            {
+                Destroy(this);
+                yield break;
+            }
+
             // destroy the spell
             if (GameManager.Instance.IsOfflineMode)
                 PoolManager.ReturnObject(gameObject, checkSpawnLogic: true);
