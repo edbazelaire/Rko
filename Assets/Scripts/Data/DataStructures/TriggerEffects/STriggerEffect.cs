@@ -3,6 +3,7 @@ using Enums;
 using Game;
 using Game.Loaders;
 using Game.Spells;
+using MyBox;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -183,6 +184,8 @@ namespace Data.DataStructures
             else if (SpellLoader.IsStateEffect(SpellDataName))
             {
                 StateEffect stateEffect = SpellLoader.GetStateEffect(SpellDataName, Level, overridingData: OverridingData, parent: m_Parent);
+                if (stateEffect.StateEffectName.StartsWith("_"))
+                    stateEffect.SetParent(m_Parent);
                 m_TargetController.StateHandler.AddStateEffect(stateEffect, m_Caster);
             }
 
@@ -253,6 +256,9 @@ namespace Data.DataStructures
 
         public void SetParent(string parent)
         {
+            if (parent.IsNullOrEmpty())
+                return;
+
             m_Parent = parent;
         }
 

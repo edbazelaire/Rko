@@ -8,7 +8,6 @@ using System.ComponentModel;
 using System.Linq;
 using Tools;
 using UnityEngine;
-using UnityEngine.Animations.Rigging;
 using UnityEngine.Serialization;
 
 namespace Data.GameManagement
@@ -45,6 +44,24 @@ namespace Data.GameManagement
     }
 
     [Serializable]
+    public struct SMasteryUpgradeData
+    {
+        /// <summary> quantity of gems required to level up </summary>
+        public ERarety Rarety;
+        /// <summary> Number of cards required to level up </summary>
+        public List<SPriceData> MasteryCosts;
+    }
+
+    [Serializable]
+    public struct SMasteryPriceReductionData
+    {
+        /// <summary> quantity of gems required to level up </summary>
+        public ECollectableType Collectable;
+        /// <summary> Number of cards required to level up </summary>
+        public List<SPriceData> PriceReductions;
+    }
+
+    [Serializable]
     public struct SRaretyData
     {
         public ERarety  Rarety;
@@ -58,17 +75,23 @@ namespace Data.GameManagement
         #region Members
 
         public const int MAX_LEVEL = 14;
+        public const int MAX_MASTERY = 3;
 
-        [Description("Specific data for each rarety type of spells")]
-        public List<SRaretyData>        RaretyData;
-        [Description("Required xp of each account levelup + associated rewards")]
-        public List<SAccountLevelData>  AccountLevelData;
-        [Description("Quantity and Gold required for each Character level up")]
-        public List<SLevelData>         CharacterLevelData;
-        [Description("Quantity and Gold required for each Spell level up")]
-        public List<SLevelData>         SpellLevelData;
-        [Description("Quantity and Gold required for each Rune level up")]
-        public List<SLevelData>         RuneLevelData;
+        [Tooltip("Specific data for each rarety type of spells")]
+        public List<SRaretyData>                RaretyData;
+        [Tooltip("Required xp of each account levelup + associated rewards")]
+        public List<SAccountLevelData>          AccountLevelData;
+        [Tooltip("Quantity and Gold required for each Character level up")]
+        public List<SLevelData>                 CharacterLevelData;
+        [Tooltip("Quantity and Gold required for each Spell level up")]
+        public List<SLevelData>                 SpellLevelData;
+        [Tooltip("Quantity and Gold required for each Rune level up")]
+        public List<SLevelData>                 RuneLevelData;
+        [Header("Mastery")]
+        [Tooltip("Quantity and Gems required for each Mastery upgrade")]
+        public List<SMasteryUpgradeData>        MasteryUpgradeData;
+        [Tooltip("List of price reduction for each mastery upgrade")]
+        public List<SMasteryPriceReductionData> MasteryPriceReductions;
 
         public static CollectablesManagementData s_Instance;
 
@@ -325,7 +348,7 @@ namespace Data.GameManagement
         /// <param name="level"></param>
         /// <param name="rarety"></param>
         /// <returns></returns>
-        public static SLevelData GetLevelData(Enum collectable, int level)
+        public static SLevelData GetLevelData(Enum collectable, int level, int mastery = 0)
         {
             // error control
             if (level < 0 || level > GetMaxLevel(collectable))
@@ -339,20 +362,42 @@ namespace Data.GameManagement
             if (level >= GetMaxLevel(collectable))
                 return new SLevelData(0, 0);
 
+            SLevelData levelData;
             // character has its own level up values (gold, qty, ...) and is not dependent on rarety
             if (collectable.GetType() == typeof(ECharacter))
-                return GetCharacterLevelData(level);
+                levelData = GetCharacterLevelData(level);
 
             // Rune & Spells have same level up data
-            if (collectable.GetType() == typeof(ESpell))
-                return GetSpellLevelData(level, GetRaretyData(collectable).Rarety);
+            else if (collectable.GetType() == typeof(ESpell))
+                levelData = GetSpellLevelData(level, GetRaretyData(collectable).Rarety);
 
             // Rune & Spells have same level up data
-            if ( collectable.GetType() == typeof(ERune))
-                return GetRuneLevelData(level, GetRaretyData(collectable).Rarety);
+            else if (collectable.GetType() == typeof(ERune))
+                levelData = GetRuneLevelData(level, GetRaretyData(collectable).Rarety);
 
-            ErrorHandler.Error("unable to find level data for " + collectable);
-            return default;
+            else
+            {
+                ErrorHandler.Error("unable to find level data for " + collectable);
+                return default;
+            }
+
+            // --------------------------------------------------------------------------
+            // CHECK if there are reductions set for this Enum at this mastery
+            // NOTE : ERROR DISEABLED caus atm, this is not fully set yet.
+            //        PUT "withError: true" as soon as possible
+            if (TryGetMasteryPriceReduction(collectable, mastery, out SPriceData priceReduction, withError: false))
+            {
+                if (priceReduction.Currency == ECurrency.Xp)
+                    levelData.RequiredQty = (int)Math.Round((1 - priceReduction.Price) * levelData.RequiredQty);
+
+                else if (priceReduction.Currency == ECurrency.Gold)
+                    levelData.RequiredGold = (int)Math.Round((1 - priceReduction.Price) * levelData.RequiredGold);
+
+                else
+                    ErrorHandler.Warning("Unhandled type of reduction : " + priceReduction.Currency);
+            }
+
+            return levelData;
         }
 
         /// <summary>
@@ -374,7 +419,8 @@ namespace Data.GameManagement
                 return new SLevelData(0, 0);
             }
 
-            return Instance.CharacterLevelData[level - 1];
+            var data = Instance.CharacterLevelData[level - 1];
+            return data;
         }
 
         /// <summary>
@@ -423,6 +469,126 @@ namespace Data.GameManagement
             }
 
             return new SLevelData(Instance.RuneLevelData[level - 1].RequiredGold, Instance.RuneLevelData[levelIndex].RequiredQty);
+        }
+
+        #endregion
+
+
+        #region Mastery
+
+        /// <summary>
+        /// Get all mastery upgrade data for a certain rarety
+        /// </summary>
+        /// <param name="rarety"></param>
+        /// <param name="masteryUpradeData"></param>
+        /// <returns></returns>
+        public static bool TryGetMasteryUpgradeData(ERarety rarety, out SMasteryUpgradeData masteryUpradeData) 
+        {
+            masteryUpradeData = new();
+            var temp = Instance.MasteryUpgradeData.Where(data => data.Rarety == rarety).ToList();
+            if (temp.Count != 1)
+            {
+                ErrorHandler.Error("Bad data config : found " + temp.Count + " MasteryUpgradeData with rarety = " + rarety);
+                return false;
+            }
+
+            masteryUpradeData = temp[0];
+            return true;
+        }
+
+        /// <summary>
+        /// Get the cost/currency value to upgrade a specific rarety at a specific mastery
+        /// </summary>
+        /// <param name="rarety"></param>
+        /// <param name="currentMastery"></param>
+        /// <param name="currencyCost"></param>
+        /// <returns></returns>
+        public static bool TryGetMasteryUpgradeCost(ERarety rarety, int currentMastery, out SPriceData currencyCost)
+        {
+            currencyCost = new();
+            if (! TryGetMasteryUpgradeData(rarety, out SMasteryUpgradeData masteryUpradeData))
+                return false;
+
+            if (currentMastery >= masteryUpradeData.MasteryCosts.Count)
+            {
+                ErrorHandler.Error("Bad data config : currentMastery (" + currentMastery + ") >= number of masteries upgrade " + masteryUpradeData.MasteryCosts.Count);
+                return false;
+            }
+
+            currencyCost = masteryUpradeData.MasteryCosts[currentMastery];
+            return true;
+        }
+
+        public static bool TryGetMasteryPriceReduction(Enum collectable, int mastery, out SPriceData priceReduction, bool withError = true)
+        {
+            priceReduction = new();
+            if (!TryGetCollectableType(collectable, out ECollectableType collectableType, true))
+                return false;
+
+            return TryGetMasteryPriceReduction(collectableType, mastery, out priceReduction, withError);
+        }
+            
+        public static bool TryGetMasteryPriceReduction(ECollectableType collectableType, int mastery, out SPriceData priceReduction, bool withError = true)
+        {
+            priceReduction = new();
+
+            if (mastery < 0)
+            {
+                ErrorHandler.Error("Bad mastery provided : " + mastery);
+                return false;
+            }
+
+            // if mastery = 0 just return no price reduction
+            if (mastery == 0)
+            {
+                return true;
+            }
+
+            var values = Instance.MasteryPriceReductions.Where(t => t.Collectable == collectableType).ToList();
+            if (values.Count == 0)
+            {
+                if (withError)
+                    ErrorHandler.Warning("Unable to find any price reduction data for " + collectableType);
+                return false;
+            }
+
+            if (values.Count > 1)
+            {
+                if (withError) 
+                    ErrorHandler.Warning("Found multiple MasteryPriceReduction for collectable type : " + collectableType);
+            }
+
+            if (values[0].PriceReductions.IsNullOrEmpty())
+            {
+                if (withError)
+                    ErrorHandler.Warning("No price reduction is set for coolectable type : " + collectableType);
+            }
+
+            if (values[0].PriceReductions.Count < mastery)
+            {
+                if (withError) 
+                    ErrorHandler.Warning("Mastery ("+ mastery + ") is above PriceRecutions max index (" + values[0].PriceReductions.Count + ") for collectable type " + collectableType);
+
+                priceReduction = values[0].PriceReductions[^1];
+            } 
+            else
+            {
+                priceReduction = values[0].PriceReductions[mastery - 1];
+            }
+
+            // CHECK : Price between 0 and 1
+            if (priceReduction.Price < 0)
+            {
+                ErrorHandler.Warning("Bad reduction set : reduction must be >= 0");
+                priceReduction.Price = Mathf.Abs(priceReduction.Price);
+            }
+            if (priceReduction.Price > 1)
+            {
+                ErrorHandler.Warning("Bad reduction set : reduction must be <= 1");
+                priceReduction.Price = 1f;
+            }
+
+            return true;
         }
 
         #endregion

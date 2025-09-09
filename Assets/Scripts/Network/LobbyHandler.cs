@@ -672,16 +672,16 @@ namespace Network
 
                     string trainingCharacter = PlayerPrefsHandler.GetString<ECharacter>(EPlayerPref.TrainingCharacter).ToString();
                     return new SPlayerData(
-                        TextHandler.SplitCamelCase(trainingCharacter),
-                        9,
-                        trainingCharacter,
-                        PlayerPrefsHandler.GetTrainingRunes(),
-                        new int[] { 9, 9, 9 },
-                        PlayerPrefsHandler.GetTrainingSpells(),
-                        new int[] { 9, 9, 9, 9 },
-                        new SProfileCurrentData(accountLevel: 9, gamerTag: trainingCharacter.ToString()).AsNetworkSerializable(),
-                        isPlayer: false,
-                        botData: new SBotData(
+                        playerName:         TextHandler.SplitCamelCase(trainingCharacter),
+                        characterLevel:     9,
+                        character:          trainingCharacter,
+                        runes:              PlayerPrefsHandler.GetTrainingRunes(),
+                        runeLevels:         new int[] { 9, 9, 9 },
+                        spells:             PlayerPrefsHandler.GetTrainingSpells(),
+                        spellLevels:        new int[] { 9, 9, 9, 9 },
+                        profileData:        new SProfileCurrentData(accountLevel: 9, gamerTag: trainingCharacter.ToString()).AsNetworkSerializable(),
+                        isPlayer:           false,
+                        botData:            new SBotData(
                             difficulty:         PlayerPrefs.GetString(EPlayerPref.TrainingDifficulty.ToString(), ELeague.Silver.ToString()), 
                             decisionRefresh:    PlayerPrefs.GetFloat(EPlayerPref.TrainingDecisionRefresh.ToString(), 0.05f), 
                             randomness:         PlayerPrefs.GetFloat(EPlayerPref.TrainingRandomness.ToString(), 0f),

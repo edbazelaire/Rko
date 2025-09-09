@@ -107,7 +107,7 @@ namespace Game.Character
         /// </summary>
         /// <param name="spell"></param>
         /// <returns></returns>
-        public bool CheckCounters(int damages, Controller caster, ESpellCategory spellCategory)
+        public bool CheckCounters(int damages, Controller caster, EHitCategory spellCategory)
         {
             // check has counters
             if (m_Counters.Count == 0)

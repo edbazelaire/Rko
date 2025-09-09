@@ -238,7 +238,17 @@ namespace Data
                     continue;
                 }
 
-                rewards.Add(new SReward(typeof(ECurrency), data.Currency.ToString(), UnityEngine.Random.Range(data.Min, data.Max)));
+                // calculate random value of the currency
+                int value = UnityEngine.Random.Range(data.Min, data.Max);
+
+                // CHECK : Achievements
+                if (data.Currency == ECurrency.Gold && value <= 0.05 * data.Max)
+                {
+                    AchievementLoader.Get(EAchievement.Lootless).Increase();
+                }
+
+                // add currency to list of rewards
+                rewards.Add(new SReward(typeof(ECurrency), data.Currency.ToString(), value));
             }
 
             // SPELLS

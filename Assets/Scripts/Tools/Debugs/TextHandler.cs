@@ -273,14 +273,19 @@ namespace Tools
         {
             switch (number)
             {
+                case "Ⅰ":
                 case "I":
                     return 1;
+                case "Ⅱ":
                 case "II":
                     return 2;
+                case "Ⅲ":
                 case "III":
                     return 3;
+                case "Ⅳ":
                 case "IV":
                     return 4;
+                case "Ⅴ":
                 case "V":
                     return 5;
 

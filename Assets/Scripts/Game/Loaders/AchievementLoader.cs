@@ -1,11 +1,10 @@
 ﻿using Data;
+using Data.GameManagement;
 using Enums;
 using Save;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
-using UnityEngine;
-using UnityEngine.AI;
 
 namespace Game.Loaders
 {
@@ -14,17 +13,36 @@ namespace Game.Loaders
         #region Members
 
         static List<AchievementData> m_Achievements;
+        static Dictionary<ECharacter, List<CharacterAchievementData>> m_CharacterAchievements;
 
         public static List<AchievementData> Achievements => m_Achievements;
+        public static Dictionary<ECharacter, List<CharacterAchievementData>> CharacterAchievements => m_CharacterAchievements;
 
         #endregion
 
 
         #region Init & End
-        
+
         public static void Initialize()
         {
-            m_Achievements = AssetLoader.LoadAll<AchievementData>(AssetLoader.c_AchievementsDataPath).ToList();
+            m_Achievements = new();
+            m_CharacterAchievements = new();
+
+            var allAchivements = AssetLoader.LoadAll<AchievementData>(AssetLoader.c_AchievementsDataPath).ToList();
+            foreach (var achvievementData in allAchivements)
+            {
+                if (achvievementData is CharacterAchievementData characterAchievementData)
+                {
+                    if (!m_CharacterAchievements.ContainsKey(characterAchievementData.Character))
+                        m_CharacterAchievements.Add(characterAchievementData.Character, new());
+                    m_CharacterAchievements[characterAchievementData.Character].Add(characterAchievementData);
+                }
+
+                else
+                {
+                    m_Achievements.Add(achvievementData);
+                }
+            }
 
             RegisterListeners();
         }
@@ -34,14 +52,44 @@ namespace Game.Loaders
 
         #region Accessors
 
-        public static T Get<T> () where T : AchievementData
+        public static T Get<T> (string name) where T : AchievementData
         {
-            return (T)m_Achievements.First((AchievementData data) => data.GetType() == typeof(T));
+            return (T)m_Achievements.First((AchievementData data) => data.GetType() == typeof(T) && data.Name == name);
+        }
+
+        public static AchievementData Get (EAchievement achievement) 
+        {
+            return Get(achievement.ToString());
         }
 
         public static AchievementData Get (string name) 
         {
             return m_Achievements.First((AchievementData data) => data.Name == name);
+        }
+
+        #endregion
+
+
+        #region Character Achievements
+
+        public static SRewardsData GetAllRewardsAtMastery(ECharacter character, int mastery)
+        {
+            SRewardsData rewards = new SRewardsData();
+
+            // CHECK : character has achievements
+            if (! m_CharacterAchievements.ContainsKey(character)) 
+            {
+                ErrorHandler.Warning("Unable to find any achievement for character " + character);
+                return rewards;
+            }
+
+            // get all rewards for each achievements
+            foreach (var achievementData in m_CharacterAchievements[character])
+            {
+                rewards.Add(achievementData.GetAllRewardsAtMastery(mastery));
+            }
+
+            return rewards;
         }
 
         #endregion

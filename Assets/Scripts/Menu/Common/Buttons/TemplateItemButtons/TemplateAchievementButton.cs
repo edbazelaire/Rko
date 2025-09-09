@@ -6,7 +6,6 @@ using Save;
 using System;
 using TMPro;
 using Tools;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace Menu.Common.Buttons
@@ -21,7 +20,7 @@ namespace Menu.Common.Buttons
 
         // ==============================================================================================
         // Data
-        AchievementData m_Achievement;
+        protected AchievementData m_Achievement;
 
         // ==============================================================================================
         // GameObjects & Components
@@ -29,6 +28,7 @@ namespace Menu.Common.Buttons
         RewardsDisplayer    m_RewardDisplayer;
         TMP_Text            m_Title;
         CollectionFillBar   m_FillBar;
+        TMP_Text            m_CurrentIndexText;
 
         public Button Button => m_Button;
         public bool IsUnlockable => m_Achievement.IsUnlockable;
@@ -46,6 +46,7 @@ namespace Menu.Common.Buttons
             m_RewardDisplayer   = Finder.FindComponent<RewardsDisplayer>(gameObject);
             m_Title             = Finder.FindComponent<TMP_Text>(gameObject, "Title");
             m_FillBar           = Finder.FindComponent<CollectionFillBar>(gameObject);
+            m_CurrentIndexText  = Finder.FindComponent<TMP_Text>(gameObject, "CurrentIndexText");
         }
         
         public void Initialize(AchievementData achievement)
@@ -64,6 +65,7 @@ namespace Menu.Common.Buttons
         protected override void SetUpUI()
         {
             m_Title.text = TextLocalizer.SplitCamelCase(m_Achievement.name);
+            m_CurrentIndexText.text = (m_Achievement.CurrentIndex + 1).ToString();
             m_FillBar.Initialize(m_Achievement.GetCount(), m_Achievement.RequestedValue);
             RefreshReward();
         }
@@ -76,6 +78,7 @@ namespace Menu.Common.Buttons
         void RefreshUI()
         {
             RefreshReward();
+            m_CurrentIndexText.text = (m_Achievement.CurrentIndex + 1).ToString();
             m_FillBar.UpdateCollection(m_Achievement.GetCount(), m_Achievement.RequestedValue);
         }
 
@@ -111,7 +114,6 @@ namespace Menu.Common.Buttons
             StatCloudData.AnalyticsDataChanged          += OnAnalyticsDataChanged;
             ProfileCloudData.AchievementChangedEvent    += OnAchievementChanged;
         }
-
 
         protected override void UnRegisterListeners()
         {

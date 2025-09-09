@@ -66,6 +66,7 @@ namespace Tools
         public const string c_PowerOrbsTemplatesPath        = c_TemplatesUIPath + "PowerOrbs/";
         public const string c_PowerUpsTemplatesPath         = c_TemplatesUIPath + "PowerUps/";
         public const string c_BoostsTemplatesPath           = c_TemplatesUIPath + "Boosts/";
+        public const string c_EmotsTemplatesPath            = c_TemplatesUIPath + "Emots/";
         // ---- Commons
         public const string c_CommonPath                    = c_UIPath + "Common/";
         public const string c_ButtonPath                    = c_CommonPath + "Buttons/";
@@ -81,6 +82,7 @@ namespace Tools
         // ---- Arena Background
         public const string c_GameContentPath               = c_UIPath + "Game/";
         public const string c_GameUIContentPath             = c_GameContentPath + "GameUI/";
+        public const string c_EndGameUIPath                 = c_GameUIContentPath + "EndGameUI/";
         public const string c_EmotsSectionUIPath            = c_GameUIContentPath + "EmotsSectionUI/";
         public const string c_SpawnUIContentPath            = c_GameUIContentPath + "Spawns/";
         public const string c_ArenaBackgroundPath           = c_GameContentPath + "Arena/";
@@ -103,6 +105,7 @@ namespace Tools
         // -- UI
         public const string c_UISpritesPath                 = c_SpritesPath + "UI/";
         public const string c_ButtonsPath                   = c_UISpritesPath + "Buttons/";
+        public const string c_CardsPath                     = c_ButtonsPath + "Cards/";
         public const string c_RaysPath                      = c_UISpritesPath + "Rays/";
         public const string c_TutoUIPath                    = c_UISpritesPath + "Tuto/";
         public const string c_OtherUIPath                   = c_UISpritesPath + "Other/";
@@ -419,6 +422,15 @@ namespace Tools
             return Load<GameObject>(boost.ToString(), c_BoostsTemplatesPath);
         }
 
+        public static EmotTemplateUI LoadEmotRewardTemplate(EEmot emot)
+        {
+            var template = Load<EmotTemplateUI>(c_EmotsTemplatesPath + emot.ToString(), warning: false);
+            if (template == null)
+                template = Load<EmotTemplateUI>(c_EmotsTemplatesPath + "EmotTemplate", warning: false);
+
+            return template;
+        }
+
         #endregion
 
 
@@ -500,6 +512,9 @@ namespace Tools
 
             else if (iconType == typeof(EBadge))
                 return Load<Sprite>(itemName, AssetLoader.c_BadgesPath);
+
+            else if (iconType == typeof(EEmot))
+                return Load<Sprite>(itemName, AssetLoader.c_EmotsSpritePath);
 
             else if (iconType == typeof(EChest))
             {
@@ -627,7 +642,18 @@ namespace Tools
 
         public static Sprite LoadPowerUpIconBorder(ERuneActivation runeActivation)
         {
-            return Load<Sprite>(c_ButtonsPath + "PowerUpCards/PowerUpBorder_" + runeActivation.ToString());
+            return Load<Sprite>(c_CardsPath + "PowerUpCards/PowerUpBorder_" + runeActivation.ToString());
+        }
+
+        public static Sprite LoadMasteryBorder(int mastery)
+        {
+            if (mastery <= 0)
+            {
+                ErrorHandler.Warning("Trying to load border for mastery <= 0 : " + mastery);
+                return null;
+            }
+
+            return Load<Sprite>(c_CardsPath + "MasteryBorders/MasteryBorder_" + mastery.ToString());
         }
 
         #endregion

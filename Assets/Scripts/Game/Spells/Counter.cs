@@ -160,7 +160,7 @@ namespace Game.Spells
 
         #region Counter Proc 
 
-        public bool CanBeProc(Enums.ESpellCategory damageType)
+        public bool CanBeProc(Enums.EHitCategory damageType)
         {
             return m_SpellData.DamageTypeActivation.Contains(damageType);
         }
@@ -235,7 +235,7 @@ namespace Game.Spells
             return true;
         }
 
-        public bool ProcCounter(int damages, Controller caster, ESpellCategory damageType)
+        public bool ProcCounter(int damages, Controller caster, EHitCategory damageType)
         {
             if (!IsServer)
                 return false;
@@ -343,7 +343,7 @@ namespace Game.Spells
 
             shield = m_Caster.StateHandler.ApplyBonusShield(shield, m_Caster);
 
-            GameAnalyticsManager.Instance.OnSpellHit(m_Caster.PlayerId, m_Caster.PlayerId, m_SpellData.Name, shield, EHitType.Shield, ESpellCategory.Direct);
+            GameAnalyticsManager.Instance.OnSpellHit(m_Caster.PlayerId, m_Caster.PlayerId, m_SpellData.Name, shield, EHitType.Shield, EHitCategory.Direct);
 
             m_Shield = shield;
             m_Caster.Life.RecalculateShield();

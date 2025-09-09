@@ -89,10 +89,10 @@ namespace Data
             switch (property)
             {
                 case EStateEffectProperty.Heal:
-                    target.Life.Heal(stacks, caster.PlayerId, parent, ESpellCategory.Direct);
+                    target.Life.Heal(stacks, caster.PlayerId, parent, EHitCategory.Direct);
                     break;
                 case EStateEffectProperty.Damage:
-                    target.Life.Heal(stacks, caster.PlayerId, parent, ESpellCategory.Direct);
+                    target.Life.Heal(stacks, caster.PlayerId, parent, EHitCategory.Direct);
                     break;
                 default:
                     target.CharacterData.AddBonusStat(property, stacks, default);
@@ -183,7 +183,7 @@ namespace Data
         [Tooltip("How is the counter triggerred ? ")]
         public ECounterActivation   CounterActivation;
         [SerializeField, Tooltip("Type of spells that can proc the counter")] 
-        protected List<Enums.ESpellCategory>  m_DamageTypeActivation                   = new List<Enums.ESpellCategory>() { Enums.ESpellCategory.Direct };
+        protected List<Enums.EHitCategory>  m_DamageTypeActivation                   = new List<Enums.EHitCategory>() { Enums.EHitCategory.Direct };
         [SerializeField, Tooltip("Offset spawning of the counter proc spell")] 
         protected Vector2           m_SpawnOffset                           = new Vector2(0, 0);
         [SerializeField, Tooltip("")]
@@ -205,7 +205,7 @@ namespace Data
 
         // ===================================================================================
         // Public Accessors
-        public List<Enums.ESpellCategory>       DamageTypeActivation    => m_DamageTypeActivation;
+        public List<Enums.EHitCategory>       DamageTypeActivation    => m_DamageTypeActivation;
         public bool                             IsLinkedCounter         => IsBlockingCast || IsBlockingMovement || CounterActivation == ECounterActivation.OnHitPlayer;
         public List<SDamageConversionEffects>   DamageConversionEffects => m_DamageConversionEffects;
         public Vector2                          SpawnOffset             => m_SpawnOffset;

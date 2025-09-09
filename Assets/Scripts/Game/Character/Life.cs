@@ -18,7 +18,7 @@ public class Life : NetworkBehaviour
     /// <summary> thrown when the character dies </summary>
     public Action                               DiedEvent;
     public Action<int, ulong>                   OnHealedEvent;
-    public Action<int, ulong, ESpellCategory>   OnHittedEvent;
+    public Action<int, ulong, EHitCategory>   OnHittedEvent;
 
     // ===================================================================================
     // NETWORK VARIABLES
@@ -88,7 +88,6 @@ public class Life : NetworkBehaviour
         return true;
     }
 
-
     /// <summary>
     /// Increase Max HP
     /// </summary>
@@ -103,7 +102,7 @@ public class Life : NetworkBehaviour
     /// Apply damage to the character
     /// </summary>
     /// <param name="damage"> amount of damages </param>
-    public int Hit(int damage, ulong casterId, string source, ESpellCategory spellCategory, bool ignoreRes = false)
+    public int Hit(int damage, ulong casterId, string source, EHitCategory spellCategory, bool ignoreRes = false)
     {
         // only server can apply damages
         if (! IsServer || ! IsAlive)
@@ -120,7 +119,10 @@ public class Life : NetworkBehaviour
         }
 
         // calculate damages after resistance
+        int baseDamage = damage;
         damage = ignoreRes ? damage : m_Controller.StateHandler.ApplyResistance(damage, spellCategory);
+        if (baseDamage > damage)
+            GameAnalyticsManager.Instance.AddSpecialValue(m_Controller.PlayerId, ESpecialValue.DamageReduction, baseDamage - damage);
 
         // check provided value
         if (damage <= 0)
@@ -151,7 +153,7 @@ public class Life : NetworkBehaviour
     /// Apply healing to the character
     /// </summary>
     /// <param name="heal"></param>
-    public int Heal(int heal, ulong casterId, string source, ESpellCategory spellCategory)
+    public int Heal(int heal, ulong casterId, string source, EHitCategory spellCategory)
     {
         // only server can apply heals
         if (!IsServer)
@@ -194,7 +196,7 @@ public class Life : NetworkBehaviour
         return heal;
     }
 
-    public int AddShield(int shield, ulong casterId, string source, ESpellCategory spellCategory)
+    public int AddShield(int shield, ulong casterId, string source, EHitCategory spellCategory)
     {
         if (shield <= 0)
             return 0;

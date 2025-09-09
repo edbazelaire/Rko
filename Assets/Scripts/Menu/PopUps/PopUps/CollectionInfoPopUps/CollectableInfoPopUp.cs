@@ -53,9 +53,12 @@ namespace Menu.PopUps
         protected Enum m_Collectable                    => m_Data.Id;
         protected string m_CollectableName              => m_Data.Name;
         protected int m_Level                           => m_Data.Level;
+        protected int m_Mastery                         => ! m_InfoOnly ? InventoryCloudData.Instance.GetCollectable(m_Collectable).Mastery : 0;
         protected virtual bool m_IsUnlocked             => m_InfoOnly || InventoryCloudData.Instance.IsUnlocked(m_Collectable);
-        protected virtual bool m_IsMaxedLevel           => m_Level >= 14;
+        protected virtual bool m_IsMaxedLevel           => m_Level >= CollectablesManagementData.MAX_LEVEL;
+        protected virtual bool m_IsMaxedMastery         => m_Mastery >= CollectablesManagementData.MAX_MASTERY;
         protected virtual bool m_CanUpgrade             => ! m_InfoOnly && InventoryManager.CanUpgrade(m_Collectable);
+        protected virtual bool m_CanUpgradeMastery      => ! m_InfoOnly && InventoryManager.CanUpgradeMastery(m_Collectable);
         protected virtual bool m_CanBuy                 => ! m_InfoOnly && InventoryManager.CanBuy(m_Collectable);
         protected virtual SPriceData m_BuyPriceData     => ShopManagementData.GetPrice(m_Collectable);
 
@@ -198,7 +201,7 @@ namespace Menu.PopUps
         {
             UIHelper.CleanContent(m_PreviewContainer);
             m_CollectableItemUI = Instantiate(m_TemplateItemUI, m_PreviewContainer.transform).GetComponent<TemplateCollectableItemUI>();
-            m_CollectableItemUI.Initialize(m_Collectable, m_Level, asIconOnly: m_InfoOnly, removeListeners: m_InfoOnly);
+            m_CollectableItemUI.Initialize(m_Collectable, m_Level, mastery: m_Mastery, asIconOnly: m_InfoOnly, removeListeners: m_InfoOnly);
 
             // deactivate button
             m_CollectableItemUI.Button.interactable = false;
@@ -382,7 +385,7 @@ namespace Menu.PopUps
 
             m_UpgradeButton.gameObject.SetActive(true);
             m_UpgradeButton.interactable = m_CanUpgrade;
-            m_CostText.text = CollectablesManagementData.GetLevelData(m_Collectable, m_Level).RequiredGold.ToString();
+            m_CostText.text = CollectablesManagementData.GetLevelData(m_Collectable, m_Level, m_Mastery).RequiredGold.ToString();
         }
 
         #endregion
@@ -407,7 +410,6 @@ namespace Menu.PopUps
             if (m_InfoOnly)
                 return;
 
-            //InventoryManager.CollectableUpgradedEvent += OnLevelUp;
             InventoryCloudData.CollectableDataChangedEvent += OnCollectableDataChanged;
         }
 
@@ -418,7 +420,6 @@ namespace Menu.PopUps
             if (m_InfoOnly)
                 return;
 
-            //InventoryManager.CollectableUpgradedEvent -= OnLevelUp;
             InventoryCloudData.CollectableDataChangedEvent -= OnCollectableDataChanged;
         }
 

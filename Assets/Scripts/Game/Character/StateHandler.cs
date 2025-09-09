@@ -246,10 +246,10 @@ namespace Game.Character
                 RemoveStateEffect(EStateEffect.Jump);
         }
 
-        public int ApplyResistance(int damage, ESpellCategory spellCategory = ESpellCategory.Direct)
+        public int ApplyResistance(int damage, EHitCategory spellCategory = EHitCategory.Direct)
         {
             // TICK
-            if (spellCategory == ESpellCategory.Tick || spellCategory == ESpellCategory.Zone)
+            if (spellCategory == EHitCategory.Tick)
                 return ApplyTickResistance(damage);
 
             // apply res fix first

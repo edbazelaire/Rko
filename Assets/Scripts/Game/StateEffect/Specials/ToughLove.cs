@@ -52,8 +52,8 @@ namespace Game.Spells
             GameManager.Instance.GetFirstEnemy(m_Controller.Team).Life.Hit(
                 damage:         (int)Math.Round(heal * m_HealConversion.GetValue()),
                 casterId:       m_Controller.PlayerId,
-                source:         StateEffectName,
-                spellCategory:  ESpellCategory.Direct,
+                source:         m_Parent,
+                spellCategory:  EHitCategory.Tick,
                 ignoreRes:      false
             );
         }

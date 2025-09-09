@@ -22,7 +22,7 @@ namespace Menu.MainMenu.ProfileTab
         protected override void FindComponents()
         {
             m_ScrollerContent = gameObject;
-            m_TemplateAchievementButton = AssetLoader.LoadTemplateItem<TemplateAchievementButton>();
+            m_TemplateAchievementButton = AssetLoader.LoadTemplateItem<TemplateAchievementButton>("Achievement");
         }
 
         protected override void SetUpUI()

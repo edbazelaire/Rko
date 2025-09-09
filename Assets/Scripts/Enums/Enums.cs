@@ -19,7 +19,7 @@
         // -- info PopUps
         CollectableInfoPopUp        = 11,
         CharacterInfoPopUp          = 12,
-        BossInfoPopUp               = 35,   // <-->
+        BossInfoPopUp               = 35,   
         RuneInfoPopUp               = 13,
         SpellInfoPopUp              = 14,
         StateEffectPopUp            = 15,
@@ -38,7 +38,8 @@
         ConfirmBuyPopUp             = 26,
         ConfirmBuyItemPopUp         = 27,
         ConfirmBuyBundlePopUp       = 28,
-        ConfirmWatchAdPopUp         = 33,   
+        ConfirmWatchAdPopUp         = 33,
+        ConfirmUpgradeMasteryPopUp  = 36,       // <-->
 
         // -- options popup
         ArenaOptionsPopUp           = 34,     
@@ -404,13 +405,27 @@
         Void,
     }
 
-    public enum ESpellCategory
+    public enum ESpecialValue
+    {
+        DamageReduction,
+    }
+
+    public enum EHitType
+    {
+        Damage,
+        Heal,
+        LifeSteal,
+        Shield,
+    }
+
+    public enum EHitCategory
     {
         None,
 
         Direct,
-        Zone,
+        Aoe,
         Tick,
+        Execution,
     }
 
     public enum ESpellSelectionState
@@ -1220,14 +1235,6 @@
         Qty             = 103,
     }
 
-    public enum EHitType
-    {
-        Damage,
-        Heal,
-        LifeSteal,
-        Shield,
-    }
-
     public enum ELeague
     {
         None = 0,
@@ -1251,6 +1258,11 @@
         PvpWins,
     }
 
+    public enum EAchievement
+    {
+        Lootless = 1,
+    }
+
     public enum ETitle
     {
         None = 0,
@@ -1263,6 +1275,9 @@
         Alpha_Tester        = 11,
         The_Shadow          = 12,
         Le_Charclo          = 22,
+        The_Lootless        = 23,       
+        The_Barrel          = 23,       
+        ProtectorOfMaedonis = 24,       // <-->
 
         // [Wins] Achievement ======================================================
         The_Unbeatable      = 13,
@@ -1320,6 +1335,7 @@
         Tao             = 8,
         ChibiTao        = 9,
         Assassin        = 12,
+        PrincessLife    = 13,
 
         // ======================================================================================
         // Chibis
@@ -1338,13 +1354,22 @@
         QuiProQuo       = 501, 
         IceGolem        = 502,
         FrozenLand      = 503,
+        NiceGolem       = 504,  // unused ATM
 
         // ======================================================================================
         Alexander       = 1000,
         YoungAlexander  = 1001,
         Marcus          = 1010,
         Kahnan          = 1030,
-        Srug            = 1040,
+        Srug            = 1040, 
+        ChibiSrug       = 1041,
+        Nagini          = 1050,
+        Chibini         = 1051,
+        Subrog          = 1060,
+        NeedleJack      = 1070,
+        Bulgor          = 1080,
+        HappyBulgor     = 1081,
+        Sophia          = 1090,
 
         // ======================================================================================
         // Achievements
@@ -1396,6 +1421,7 @@
         Wins        = 2,
         Damage      = 3,
         Heals       = 4,
+
         // -- speciaux
         DamageDealer = 50,
         HeartOfFire = 51,
@@ -1406,8 +1432,8 @@
         SoloGames       = 201,
         LoneWolf        = 202,
 
-        // Collectables
-        GoldCollector   = 501,
+        // -- collectables
+        GoldCollector   =  501,
         CardCollector   = 502,
         XpCollector     = 503,
 
@@ -1415,6 +1441,9 @@
         DemonLord       = 1001,
         Gladiator       = 1002,
         Rank1           = 1003,
+
+        // Characters Achievements
+        BattleAxe       = 2001,
 
         // Arena Frost
         SeedOfChance    = 10000,
@@ -1429,24 +1458,59 @@
 
     public enum EAchievementReward
     {
-        None = 0,
-
         Badge       = 1,
         Avatar      = 2,
         Border      = 3,
         Title       = 4,
+        Emot        = 5,
     }
 
     public enum EEmot
     {
-        //Test        = 0,
-        Ah          = 1,
-        SadKitty    = 2,
-        Omg         = 3,
-        Pidgeon     = 4,
-        Pokerface   = 5,
-        ThumbUp     = 6,
-        Trollol     = 7,
+        // ====================================================
+        // Common
+        SadKitty            = 2,
+        Pidgeon             = 4,
+        ThumbUp             = 6,
+        Mehven              = 8,
+        MeGusta             = 9,
+        
+        // ====================================================
+        // Sophia 
+        HowCouldYou         = 10,
+        IBelieveInYou       = 11,
+        Kawai               = 12,
+        PleaseDont          = 13,
+        Kaching             = 18,
+        SadPrincess         = 20,       
+
+        // ====================================================
+        // Alexander
+        Pokerface           = 5,
+        Trollexander         = 7,
+        Hey                 = 17,
+        BigMuscles          = 15,
+        CuteAlexander       = 16,
+        Hahalexander        = 21,
+        UGotThis            = 22,
+        RedBarel            = 23,
+        Hilexander          = 24,
+        Sadlexander         = 25,
+        BigPunch            = 26,
+
+        // ====================================================
+        // Kahanan
+        Ah                  = 1,
+
+        // ====================================================
+        // Marcus
+        Omg                 = 3,
+        Yada                = 19,
+
+        // ====================================================
+        // Bulgor
+        OhLord              = 14,
+
     }
 
     public enum EBoost

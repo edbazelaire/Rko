@@ -1176,13 +1176,13 @@ namespace Game.Spells
                 value = m_Caster.StateHandler.ApplyBonusTickDamage(value, m_Controller, specialCondition: SBonusStats.AsUnique(StateEffectName));
 
                 // hit target
-                value = m_Controller.Life.Hit(value, casterId: m_Caster.PlayerId, source: m_Parent, spellCategory: ESpellCategory.Direct, ignoreRes: m_IsTrueDamage);
+                value = m_Controller.Life.Hit(value, casterId: m_Caster.PlayerId, source: m_Parent, spellCategory: EHitCategory.Direct, ignoreRes: m_IsTrueDamage);
 
                 // apply lifesteal (on caster)
                 var lifesteal = Mathf.Max(0f, GetInt(EStateEffectProperty.LifeSteal) + m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal, m_Controller, specialCondition: SBonusStats.AsUnique(StateEffectName)) - 1);
                 if (lifesteal > 0)
                 {
-                    m_Caster.Life.Heal((int)Mathf.Round(value * lifesteal), m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct);
+                    m_Caster.Life.Heal((int)Mathf.Round(value * lifesteal), m_Caster.PlayerId, StateEffectName, EHitCategory.Direct);
                 }
             }
 
@@ -1197,13 +1197,13 @@ namespace Game.Spells
                 var finalDamage = (int)Math.Round(value * (lethality + 1 - m_Controller.Life.PercHp));
 
                 // hit target
-                m_Controller.Life.Hit(finalDamage, casterId: m_Caster.PlayerId, source: m_Parent, spellCategory: ESpellCategory.Direct, ignoreRes: m_IsTrueDamage);
+                m_Controller.Life.Hit(finalDamage, casterId: m_Caster.PlayerId, source: m_Parent, spellCategory: EHitCategory.Direct, ignoreRes: m_IsTrueDamage);
 
                 // apply lifesteal (on caster)
                 var lifesteal = Mathf.Max(0f, GetInt(EStateEffectProperty.LifeSteal) + m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal, m_Controller, specialCondition: SBonusStats.AsUnique(StateEffectName)) - 1);
                 if (lifesteal > 0)
                 {
-                    m_Caster.Life.Heal((int)Mathf.Round(finalDamage * lifesteal), m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct);
+                    m_Caster.Life.Heal((int)Mathf.Round(finalDamage * lifesteal), m_Caster.PlayerId, StateEffectName, EHitCategory.Direct);
                 }
             }
 
@@ -1211,7 +1211,7 @@ namespace Game.Spells
             // HEALING                  -  check if should heal the target
             value = GetInt(EStateEffectProperty.Heal, stacks);
             if (value != 0)
-                m_Controller.Life.Heal(value, casterId: m_Caster.PlayerId, source: m_Parent, spellCategory: ESpellCategory.Direct);
+                m_Controller.Life.Heal(value, casterId: m_Caster.PlayerId, source: m_Parent, spellCategory: EHitCategory.Direct);
 
             // ================================================================================================
             // COOLDOWN REDUCTION
@@ -1234,21 +1234,21 @@ namespace Game.Spells
                 value = m_Caster.StateHandler.ApplyBonusDamage(value, m_Controller, SBonusStats.AsUnique(StateEffectName));
 
                 // hit target
-                m_Controller.Life.Hit(value, casterId: m_Caster.PlayerId, source: StateEffectName, spellCategory: ESpellCategory.Direct, ignoreRes: m_IsTrueDamage);
+                m_Controller.Life.Hit(value, casterId: m_Caster.PlayerId, source: StateEffectName, spellCategory: EHitCategory.Direct, ignoreRes: m_IsTrueDamage);
 
                 // apply lifesteal (on caster)
                 var lifesteal = GetFloat(EStateEffectProperty.LifeSteal, stacks: stacks, specialCondition: StateEffectName);
                 lifesteal = m_Caster.StateHandler.ApplyBonus(lifesteal, EStateEffectProperty.BonusTickLifeSteal, m_Controller, StateEffectName);
                 if (lifesteal > 0)
                 {
-                    m_Caster.Life.Heal((int)Mathf.Round(value * lifesteal), m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct);
+                    m_Caster.Life.Heal((int)Mathf.Round(value * lifesteal), m_Caster.PlayerId, StateEffectName, EHitCategory.Direct);
                 }
             }
 
             // check if should add energy
             value = GetInt(EStateEffectProperty.EndHeal, stacks);
             if (value != 0)
-                m_Controller.Life.Heal(value, casterId: m_Caster.PlayerId, source: StateEffectName, spellCategory: ESpellCategory.Direct);
+                m_Controller.Life.Heal(value, casterId: m_Caster.PlayerId, source: StateEffectName, spellCategory: EHitCategory.Direct);
         }
 
         protected virtual void OnActivated() { }
@@ -1283,7 +1283,7 @@ namespace Game.Spells
             // send added shield to analytics
             var shieldAdded = m_RemainingShield - currentShield;
             if (shieldAdded > 0)
-                GameAnalyticsManager.Instance.OnSpellHit(m_Controller.PlayerId, m_Controller.PlayerId, StateEffectName, shieldAdded, EHitType.Shield, ESpellCategory.Direct);
+                GameAnalyticsManager.Instance.OnSpellHit(m_Controller.PlayerId, m_Controller.PlayerId, StateEffectName, shieldAdded, EHitType.Shield, EHitCategory.Direct);
         }
 
         #endregion

@@ -70,9 +70,9 @@ namespace Game.Spells
             Refresh(25);
         }
 
-        void OnHit(int damage, ulong casterId, ESpellCategory spellCategory)
+        void OnHit(int damage, ulong casterId, EHitCategory spellCategory)
         {
-            if (spellCategory != ESpellCategory.Direct)
+            if (spellCategory != EHitCategory.Direct)
                 return;
 
             var target = GameManager.Instance.GetPlayer(casterId);

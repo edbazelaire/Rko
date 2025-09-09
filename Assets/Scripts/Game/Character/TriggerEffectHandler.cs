@@ -31,7 +31,7 @@ namespace Game.Character
             m_Controller = Finder.FindComponent<Controller>(gameObject);
         }
 
-        public void Initialize(List<STriggerEffect> triggerEffects) 
+        public void Initialize(List<STriggerEffect> triggerEffects)
         {
             m_TriggerEffects = triggerEffects;
         }

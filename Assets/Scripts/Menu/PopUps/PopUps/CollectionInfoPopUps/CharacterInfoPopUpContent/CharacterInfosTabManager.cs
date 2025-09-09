@@ -7,7 +7,8 @@ namespace Menu.PopUps
     {
         Infos,
         Spells,
-        Description
+        Description,
+        Mastery
     }
 
     public class CharacterInfosTabManager : TabsManager

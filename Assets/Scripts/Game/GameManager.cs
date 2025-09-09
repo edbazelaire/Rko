@@ -34,10 +34,10 @@ namespace Game
 
         public const string TIME_WRAPPER_ID = "Game";
 
-        public const int BOT_CLIENT_ID      = 100;
-        public const int SPAWN_CLIENT_ID    = 1000;
-        public const int N_LOADING_STEPS    = 3;
-        public const int DEFAULT_PVP_LEVEL  = 9;
+        public const int BOT_CLIENT_ID = 100;
+        public const int SPAWN_CLIENT_ID = 1000;
+        public const int N_LOADING_STEPS = 3;
+        public const int DEFAULT_PVP_LEVEL = 9;
 
         // ===================================================================================
         // ACTIONS
@@ -85,6 +85,12 @@ namespace Game
         bool m_InitOnClientSide = false;
         /// <summary> is this a TUTORIAL game ? </summary>
         bool m_IsTuto = false;
+
+        // ===================================================================================
+        // LOCAL CLIENT DATA
+        public ulong MyId { get; private set;}
+        public SPlayerData MyPlayerData { get; private set;}
+
 
         // ===================================================================================
         // PUBLIC ACCESSORS 
@@ -1150,13 +1156,13 @@ namespace Game
         [Command(KeyCode.M)]
         public void HitSelf()
         {
-            Owner.Life.Hit(500, 999, "Debug", Enums.ESpellCategory.Direct, true);
+            Owner.Life.Hit(500, 999, "Debug", Enums.EHitCategory.Direct, true);
         }
 
         [Command(KeyCode.L)]
         public void Hit()
         {
-            GetFirstEnemy(Owner.Team).Life.Hit(1000, 0, "Debug", Enums.ESpellCategory.Direct, true);
+            GetFirstEnemy(Owner.Team).Life.Hit(1000, 0, "Debug", Enums.EHitCategory.Direct, true);
         }
 
         /// <summary>

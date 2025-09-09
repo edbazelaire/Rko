@@ -96,17 +96,17 @@ namespace Game.Spells
             int damages = GetInt(EStateEffectProperty.TickDamage);
             if (damages > 0)
             {
-                if (m_Controller.CounterHandler.CheckCounters(damages, m_Caster, spellCategory: ESpellCategory.Tick))
+                if (m_Controller.CounterHandler.CheckCounters(damages, m_Caster, spellCategory: EHitCategory.Tick))
                     return;
 
                 ErrorHandler.Log($"{name} : {damages} DAMAGES", ELogTag.StateEffects);
-                damages = m_Controller.Life.Hit(damages, m_Caster.PlayerId, m_Parent, ESpellCategory.Tick, m_IsTrueDamage);
+                damages = m_Controller.Life.Hit(damages, m_Caster.PlayerId, m_Parent, EHitCategory.Tick, m_IsTrueDamage);
 
                 int lifesteal = (int)Mathf.Round(damages * FinalTickLifeSteal);
                 if (lifesteal > 0)
                 {
                     ErrorHandler.Log($"{name} : {lifesteal} LIFESTEAL", ELogTag.StateEffects);
-                    m_Caster.Life.Heal(lifesteal, m_Caster.PlayerId, m_Parent, ESpellCategory.Tick);
+                    m_Caster.Life.Heal(lifesteal, m_Caster.PlayerId, m_Parent, EHitCategory.Tick);
                 }
             }
 
@@ -115,11 +115,11 @@ namespace Game.Spells
             if (heal > 0)
             {
                 ErrorHandler.Log($"{name} : {heal} HEALS", ELogTag.StateEffects);
-                m_Controller.Life.Heal(heal, m_Caster.PlayerId, m_Parent, ESpellCategory.Tick);
+                m_Controller.Life.Heal(heal, m_Caster.PlayerId, m_Parent, EHitCategory.Tick);
             }
 
             // add bonus tick shield
-            m_Controller.Life.AddShield(GetInt(EStateEffectProperty.TickShield), m_Caster.PlayerId, m_Parent, ESpellCategory.Tick);
+            m_Controller.Life.AddShield(GetInt(EStateEffectProperty.TickShield), m_Caster.PlayerId, m_Parent, EHitCategory.Tick);
 
             // add bonus tick energy
             if (!m_Controller.CharacterData.IsStructure)

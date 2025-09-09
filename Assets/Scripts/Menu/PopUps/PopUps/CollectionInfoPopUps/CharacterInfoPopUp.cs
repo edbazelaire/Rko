@@ -1,6 +1,12 @@
-﻿using Data;
+﻿using Assets;
+using Assets.Scripts.Managers;
+using Data;
+using Data.GameManagement;
 using Enums;
+using Game.Loaders;
 using Google.Apis.Util;
+using Inventory;
+using Menu.Common.Buttons;
 using Menu.Common.Infos;
 using Save;
 using System;
@@ -8,6 +14,7 @@ using System.Collections.Generic;
 using TMPro;
 using Tools;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Menu.PopUps
 {
@@ -20,7 +27,14 @@ namespace Menu.PopUps
         protected TMP_Text              m_DescriptionText;
         protected StateEffectsInfoRow   m_StateEffectsInfoRow;
         protected GameObject            m_SpellsContent;
+        protected GameObject            m_MasteryContent;
         protected AbilityInfoRowUI      m_TemplateAbilityInfoRowUI;
+        protected Button                m_MasteryUpgradeButton;
+        protected TMP_Text              m_MasteryUpgradeCostText;
+
+        // =========================================================================================
+        // Local Variables
+        protected SPriceData            m_UpgradeMasteryPrice;
 
         // =========================================================================================
         // Dependent Members
@@ -39,6 +53,10 @@ namespace Menu.PopUps
             m_DescriptionText           = Finder.FindComponent<TMP_Text>(gameObject, "Description");
             m_StateEffectsInfoRow       = Finder.FindComponent<StateEffectsInfoRow>(gameObject);
             m_SpellsContent             = Finder.Find(gameObject, "SpellsContent");
+            m_MasteryContent            = Finder.Find(gameObject, "MasteryContent");
+            m_MasteryUpgradeButton      = Finder.FindComponent<Button>(gameObject, "MasteryUpgradeButton");
+            m_MasteryUpgradeCostText    = Finder.FindComponent<TMP_Text>(m_MasteryUpgradeButton.gameObject, "CostText");
+
             m_TemplateAbilityInfoRowUI  = AssetLoader.Load<AbilityInfoRowUI>("AbilityInfoRow", AssetLoader.c_MainUIComponentsInfosPath);
         }
 
@@ -47,21 +65,29 @@ namespace Menu.PopUps
             base.OnPrefabLoaded();
             SetUpAbilities();
             SetUpSpecialEffects();
+            RefreshMasteryDisplay();
         }
 
         #endregion
 
 
-        #region UIManipulators
+        #region GUI Manipulators
+
+        protected override void RefreshUI()
+        {
+            base.RefreshUI();
+
+            RefreshMasteryDisplay();
+        }
 
         void SetUpSpecialEffects()
         {
             List<SStateEffectData> stateEffects = new List<SStateEffectData>();
             foreach (var runePower in m_CharacterData.SpecialPowers)
             {
-                foreach (var triggerEffect in runePower.TriggerEffects) 
+                foreach (var triggerEffect in runePower.TriggerEffects)
                 {
-                    if (! Enum.TryParse(triggerEffect.SpellDataName, out EStateEffect stateEffect))
+                    if (!Enum.TryParse(triggerEffect.SpellDataName, out EStateEffect stateEffect))
                     {
                         ErrorHandler.Error("Unhandled case : " + triggerEffect.SpellDataName + " is not a state effect");
                         continue;
@@ -80,9 +106,21 @@ namespace Menu.PopUps
             m_DescriptionText.text = m_CharacterData.GetDescription();
         }
 
+        protected override void RefreshButtons()
+        {
+            base.RefreshButtons();
+
+            RefreshMasteryUpgradeButton();
+        }
+
+        #endregion
+
+
+        #region Abilities
+
         protected virtual List<string> GetAbilities()
         {
-            var abilities = new List<string>(); 
+            var abilities = new List<string>();
             if (m_CharacterData.AutoAttack != ESpell.None)
                 abilities.Add(m_CharacterData.AutoAttack.ToString());
             if (m_CharacterData.SpecialAbility != ESpell.None)
@@ -103,6 +141,138 @@ namespace Menu.PopUps
                 AbilityInfoRowUI abilityInfoRow = Instantiate(m_TemplateAbilityInfoRowUI, m_SpellsContent.transform);
                 abilityInfoRow.Initialize(ability, m_Level);
             }
+        }
+
+        #endregion
+
+
+        #region Mastery Management
+
+        protected void RefreshMasteryDisplay()
+        {
+            if (m_InfoOnly || !CharacterLoader.IsCharacter(m_CharacterData.Character.ToString()))
+            {
+                DeactivateMastery();
+                return;
+            }
+
+            if (!AchievementLoader.CharacterAchievements.ContainsKey(m_CharacterData.Character))
+            {
+                ErrorHandler.Warning("No achievements were found for " + m_CharacterData.Character);
+                DeactivateMastery();
+                return;
+            }
+
+            if (m_MasteryContent == null)
+            {
+                ErrorHandler.Error("Unable to find mastery content");
+                DeactivateMastery();
+                return;
+            }
+
+            SetUpAchievements();
+        }
+
+        void SetUpAchievements()
+        {
+            UIHelper.CleanContent(m_MasteryContent);
+
+            var template = AssetLoader.LoadTemplateItem<TemplateCharacterAchievement>();
+            var achievements = AchievementLoader.CharacterAchievements[m_CharacterData.Character];
+            foreach (var achievement in achievements)
+            {
+                var characterAchivement = Instantiate(template, m_MasteryContent.transform);
+                characterAchivement.Initialize(achievement);
+            }
+        }
+
+        void RefreshMasteryUpgradeButton()
+        {
+            // SAFETY : make sure the button exists
+            if (m_MasteryUpgradeButton == null)
+            {
+                ErrorHandler.Error("Unable to find MasteryUpgradeButton");
+                return;
+            }
+
+            // CHECK : mastery already maxed
+            if (m_IsMaxedMastery)
+            {
+                m_MasteryUpgradeButton.gameObject.SetActive(false);
+                return;
+            }
+
+            // SAFETY : make sure the text exists
+            if (m_MasteryUpgradeCostText == null)
+            {
+                ErrorHandler.Error("Unable to find MasteryUpgradeCostText");
+                m_MasteryUpgradeButton.gameObject.SetActive(false);
+                return;
+            }
+
+            // SAFETY : make sure the price is properly configured in data
+            if (! CollectablesManagementData.TryGetMasteryUpgradeCost(m_Data.Rarety, m_Mastery, out SPriceData price))
+            {
+                m_MasteryUpgradeButton.gameObject.SetActive(false);
+                return;
+            }
+
+            m_UpgradeMasteryPrice = price;
+            m_MasteryUpgradeButton.gameObject.SetActive(true);
+            m_MasteryUpgradeCostText.text = price.Price.ToString();
+        }
+
+        /// <summary>
+        /// If there is an error, or the context does not allow "Mastery", deactivate everything related to Mastery
+        /// </summary>
+        void DeactivateMastery()
+        {
+            // if there is a mastery content, deactivate it
+            if (m_MasteryContent != null)
+                m_MasteryContent.SetActive(false);
+
+            // try to find Mastery Tab Button and deactivate it
+            var masteryTabButton = Finder.Find(gameObject, "MasteryButton", false);
+            if (masteryTabButton != null)
+            {
+                masteryTabButton.SetActive(false);
+            }
+
+            if (m_MasteryUpgradeButton != null)
+                m_MasteryUpgradeButton.gameObject.SetActive(false);
+        }
+
+        #endregion
+
+
+        #region Listeners
+
+        protected override void RegisterListeners()
+        {
+            base.RegisterListeners();
+
+            m_MasteryUpgradeButton.onClick.AddListener(OnMasteryUpgradeButtonClicked);
+        }
+
+        protected override void UnRegisterListeners()
+        {
+            base.UnRegisterListeners();
+
+            m_MasteryUpgradeButton.onClick.RemoveAllListeners();
+        }
+
+        protected override void OnCollectableDataChanged(SCollectableCloudData collectableCloudData)
+        {
+            base.OnCollectableDataChanged(collectableCloudData);
+            if (collectableCloudData.CollectableName != m_CollectableName)
+                return;
+
+            RefreshMasteryDisplay();
+        }
+
+        void OnMasteryUpgradeButtonClicked()
+        {
+            ScreenManager.ConfirmUpgradeMastery(m_Collectable, m_Mastery + 1, m_UpgradeMasteryPrice);
         }
 
         #endregion

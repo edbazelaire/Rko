@@ -227,3 +227,45 @@ MonoBehaviour:
     RequiredQty: 250
   - RequiredGold: 200000
     RequiredQty: 350
+  MasteryUpgradeData:
+  - Rarety: 0
+    MasteryCosts:
+    - Price: 250
+      Currency: 1
+    - Price: 550
+      Currency: 1
+    - Price: 1000
+      Currency: 1
+  - Rarety: 1
+    MasteryCosts:
+    - Price: 450
+      Currency: 1
+    - Price: 750
+      Currency: 1
+    - Price: 1250
+      Currency: 1
+  - Rarety: 2
+    MasteryCosts:
+    - Price: 550
+      Currency: 1
+    - Price: 1050
+      Currency: 1
+    - Price: 1650
+      Currency: 1
+  - Rarety: 3
+    MasteryCosts:
+    - Price: 750
+      Currency: 1
+    - Price: 1550
+      Currency: 1
+    - Price: 2250
+      Currency: 1
+  MasteryPriceReductions:
+  - Collectable: 1
+    PriceReductions:
+    - Price: 0.05
+      Currency: 3
+    - Price: 0.1
+      Currency: 3
+    - Price: 0.2
+      Currency: 3

@@ -22,15 +22,17 @@ namespace Save
         public string   CollectableName;
         public int      Level;
         public int      Qty;
+        public int      Mastery;
 
         [NonSerialized]
         private Enum m_Collectable;
 
-        public SCollectableCloudData(Enum collectable, int level = 1, int qty = 0)
+        public SCollectableCloudData(Enum collectable, int level = 1, int qty = 0, int mastery = 0)
         {
             CollectableName = collectable.ToString();
             Level           = level;
             Qty             = qty;
+            Mastery         = mastery;
 
             m_Collectable   = collectable;
         }
@@ -116,7 +118,7 @@ namespace Save
         /// <returns></returns>
         public bool HasEnoughQty()
         {
-            return GetQty() >= CollectablesManagementData.GetLevelData(GetCollectable(), Level).RequiredQty;
+            return GetQty() >= CollectablesManagementData.GetLevelData(GetCollectable(), Level, Mastery).RequiredQty;
         }
 
         /// <summary>
@@ -249,6 +251,11 @@ namespace Save
             if (m_Data[item.Key].GetType() == typeof(List<SCollectableCloudData>))
             {
                 return item.Value.GetAs<SCollectableCloudData[]>().ToList();
+            }
+
+            if (m_Data[item.Key].GetType() == typeof(List<EEmot>))
+            {
+                return item.Value.GetAs<EEmot[]>().ToList();
             }
    
             return base.Convert(item);
@@ -660,7 +667,7 @@ namespace Save
                 ErrorHandler.Warning("Adding " + collectable + " in cloud data (unlock : " + unlock + ")");
                 
                 // add new empty spell data, set save to false as we save the batch at the end
-                SetCollectable(new SCollectableCloudData(collectable, startLevel, 0), save);
+                SetCollectable(new SCollectableCloudData(collectable, startLevel, qty: 0, mastery: 0), save);
 
                 return true;
             }

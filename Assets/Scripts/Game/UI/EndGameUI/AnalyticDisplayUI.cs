@@ -5,47 +5,47 @@ using System.Collections;
 using TMPro;
 using Tools;
 using UnityEngine;
-
+using UnityEngine.UI;
 
 namespace Game.UI.EndGameUI
 {
+    /// <summary>
+    /// UI element that displays analytics for one HitType (Damage/Heal/Shield).
+    /// Supports both total and split display (Direct vs Tick).
+    /// </summary>
     public class AnalyticDisplayUI : MObject
     {
-        #region Members
-
         float m_AnimationDuration = 1f;
 
-        // =====================================================================================
-        // GameObjects & Components
-        TMP_Text            m_Name;
-        ExtansibleFillbar   m_Fillbar;
-        TMP_Text            m_Value;
-
-        #endregion
-
-
-        #region Init & End
+        TMP_Text m_Name;
+        ExtansibleFillbar m_Fillbar;
+        TMP_Text m_Value;
+        LayoutElement m_LayoutElement;
 
         protected override void FindComponents()
         {
             base.FindComponents();
 
-            m_Name      = Finder.FindComponent<TMP_Text>(gameObject, "Name");
-            m_Fillbar   = Finder.FindComponent<ExtansibleFillbar>(gameObject, "Fillbar");
-            m_Value     = Finder.FindComponent<TMP_Text>(gameObject, "Value");
+            m_Name          = Finder.FindComponent<TMP_Text>(gameObject, "Name");
+            m_Fillbar       = Finder.FindComponent<ExtansibleFillbar>(gameObject, "Fillbar");
+            m_Value         = Finder.FindComponent<TMP_Text>(gameObject, "Value");
+            m_LayoutElement = Finder.FindComponent<LayoutElement>(gameObject);
         }
 
+        /// <summary>
+        /// Initialize with a single value (legacy mode).
+        /// </summary>
         public void Initialize(EHitType hitType, int value, int maxValue, bool withAnimation = true)
         {
             base.Initialize();
 
-            var color = Settings.GetHitTypeColor(hitType);
+            var color = PlayerSettings.GetHitTypeColor(hitType, EHitCategory.Direct);
 
-            m_Name.text     = hitType.ToString();
-            m_Name.color    = color;
-            m_Value.color   = color;
+            m_Name.text = hitType.ToString();
+            m_Name.color = color;
+            m_Value.color = color;
 
-            if (! withAnimation)
+            if (!withAnimation)
             {
                 m_Value.text = value.ToString();
             }
@@ -57,15 +57,53 @@ namespace Game.UI.EndGameUI
             m_Fillbar.Initialize(value, maxValue, color, withAnimation);
         }
 
-        protected override void SetUpUI()
+        /// <summary>
+        /// Initialize with a single value (legacy mode).
+        /// </summary>
+        public void Initialize(ESpecialValue specialValue, int value, int maxValue, bool withAnimation = true)
         {
-            base.SetUpUI();
+            base.Initialize();
+
+            var color = PlayerSettings.GetSpecialValueColor(specialValue);
+
+            m_Name.text = TextHandler.SplitCamelCase(specialValue.ToString());
+            m_Name.color = color;
+            m_Value.color = color;
+
+            if (!withAnimation)
+            {
+                m_Value.text = value.ToString();
+            }
+            else
+            {
+                StartCoroutine(PlayValueAnimation(0, value));
+            }
+
+            m_Fillbar.Initialize(value, maxValue, color, withAnimation);
         }
 
-        #endregion
+        /// <summary>
+        /// Initialize with split values (Direct vs Tick).
+        /// </summary>
+        public void InitializeSplit(EHitType hitType, int directValue, int tickValue, int maxValue, int expectedHeight = 35, bool withAnimation = true)
+        {
+            base.Initialize();
 
+            m_LayoutElement.preferredHeight = expectedHeight;
 
-        #region Animation
+            int total = directValue + tickValue;
+
+            var colorDirect = PlayerSettings.GetHitTypeColor(hitType, EHitCategory.Direct);
+            var colorTick = PlayerSettings.GetHitTypeColor(hitType, EHitCategory.Tick);
+
+            m_Name.text = hitType.ToString();
+            m_Name.color = colorDirect;
+            m_Value.color = colorDirect;
+            m_Value.text = total.ToString();
+
+            // Custom fillbar mode to show split
+            m_Fillbar.InitializeSplit(directValue, tickValue, maxValue, colorDirect, colorTick, withAnimation);
+        }
 
         public IEnumerator PlayValueAnimation(int fromValue, int toValue)
         {
@@ -79,7 +117,5 @@ namespace Game.UI.EndGameUI
 
             m_Value.text = toValue.ToString();
         }
-
-        #endregion
     }
 }

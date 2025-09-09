@@ -3,6 +3,12 @@ using Tools;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// A UI component that displays a horizontal fill bar.
+/// Supports both:
+/// - Single mode (classic bar with one value)
+/// - Split mode (Direct + Tick stacked inside the same container)
+/// </summary>
 public class ExtansibleFillbar : MObject
 {
     #region Members
@@ -12,19 +18,22 @@ public class ExtansibleFillbar : MObject
 
     // ===================================================================================
     // Data
-    protected Coroutine         m_Animation;
-    protected int               m_MaxValue      = 1;
-    protected int               m_CurrentValue  = 0;
+    protected Coroutine m_Animation;
+    protected int m_MaxValue = 1;
+    protected int m_CurrentValue = 0;
 
     // ===================================================================================
     // GameObject & Components
-    protected GameObject        m_Container;
-    protected Image             m_Bar;
-    protected RectTransform     m_ContainerRect;
-    protected RectTransform     m_BarRect;
+    protected GameObject m_Container;
+    protected Image m_Bar;            // Main bar (used for Direct or single mode)
+    protected RectTransform m_ContainerRect;
+    protected RectTransform m_BarRect;
+
+    // --- New for Split Mode ---
+    protected Image m_BarTick;        // Secondary bar for Tick values
+    protected RectTransform m_BarTickRect;
 
     #endregion
-
 
     #region Init & End
 
@@ -33,9 +42,12 @@ public class ExtansibleFillbar : MObject
         base.FindComponents();
 
         m_Container = Finder.Find(gameObject, "Container");
-        m_Bar = Finder.FindComponent<Image>(gameObject, "Bar");
         m_ContainerRect = Finder.FindComponent<RectTransform>(m_Container);
+        m_Bar = Finder.FindComponent<Image>(gameObject, "Bar");
         m_BarRect = Finder.FindComponent<RectTransform>(m_Bar.gameObject);
+
+        m_BarTick = Finder.FindComponent<Image>(gameObject, "BarTick");
+        m_BarTickRect = Finder.FindComponent<RectTransform>(m_BarTick.gameObject);
     }
 
     public virtual void Initialize(int currentValue, int maxValue, Color? color = null, bool withAnimation = false)
@@ -45,8 +57,42 @@ public class ExtansibleFillbar : MObject
         if (color.HasValue)
             SetColor(color.Value);
 
+        m_BarTick.gameObject.SetActive(false);
+
         // delay the refresh by one to avoid conflicts with bar
         UpdateValue(currentValue, maxValue > 0 ? maxValue : currentValue, withAnimation);
+    }
+
+    /// <summary>
+    /// Initialize in split mode (Direct + Tick values).
+    /// </summary>
+    public virtual void InitializeSplit(int firstValue, int secondValue, int maxValue, Color colorDirect, Color colorTick, bool withAnimation = false)
+    {
+        base.Initialize();
+
+        m_MaxValue = Mathf.Max(1, maxValue);
+
+        // Ensure both bars exist
+        if (m_Bar == null || m_BarTick == null)
+        {
+            ErrorHandler.Warning("ExtansibleFillbar.InitializeSplit called but 'BarTick' is missing in prefab.");
+            return;
+        }
+
+        // Set colors
+        m_Bar.color = colorDirect;
+        m_BarTick.color = colorTick;
+
+        if (withAnimation)
+        {
+            if (m_Animation != null)
+                StopCoroutine(m_Animation);
+            m_Animation = StartCoroutine(UpdateSplitAnimationCoroutine(firstValue, secondValue));
+        }
+        else
+        {
+            UpdateSplitBarSize(firstValue, secondValue);
+        }
     }
 
     protected override void SetUpUI()
@@ -55,7 +101,6 @@ public class ExtansibleFillbar : MObject
     }
 
     #endregion
-
 
     #region GUI Manipulators
 
@@ -92,8 +137,35 @@ public class ExtansibleFillbar : MObject
         m_BarRect.sizeDelta = new Vector2(m_ContainerRect.rect.width * fillPercentage, m_BarRect.sizeDelta.y);
     }
 
-    #endregion
+    void UpdateSplitBarSize(int directValue, int tickValue)
+    {
+        float directFill = Mathf.Clamp01((float)directValue / m_MaxValue);
+        float tickFill = Mathf.Clamp01((float)(directValue + tickValue) / m_MaxValue);
 
+        // Direct is the base bar
+        if (directValue <= 0)
+        {
+            m_Bar.gameObject.SetActive(false);
+        }
+        else
+        {
+            m_Bar.gameObject.SetActive(true);
+            m_BarRect.sizeDelta = new Vector2(m_ContainerRect.rect.width * directFill, m_BarRect.sizeDelta.y);
+        }
+
+        // Tick overlays on top (wider than direct)
+        if (tickValue <= 0)
+        {
+            m_BarTick.gameObject.SetActive(false);
+        }
+        else
+        {
+            m_BarTick.gameObject.SetActive(true);
+            m_BarTickRect.sizeDelta = new Vector2(m_ContainerRect.rect.width * tickFill, m_BarTickRect.sizeDelta.y);
+        }
+    }
+
+    #endregion
 
     #region Animation
 
@@ -118,8 +190,29 @@ public class ExtansibleFillbar : MObject
         m_Animation = null;
     }
 
-    #endregion
+    IEnumerator UpdateSplitAnimationCoroutine(int targetDirect, int targetTick)
+    {
+        int startDirect = 0;
+        int startTick = 0;
+        float elapsedTime = 0f;
 
+        while (elapsedTime < m_AnimationDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsedTime / m_AnimationDuration);
+
+            int currentDirect = Mathf.RoundToInt(Mathf.Lerp(startDirect, targetDirect, t));
+            int currentTick = Mathf.RoundToInt(Mathf.Lerp(startTick, targetTick, t));
+
+            UpdateSplitBarSize(currentDirect, currentTick);
+            yield return null;
+        }
+
+        UpdateSplitBarSize(targetDirect, targetTick);
+        m_Animation = null;
+    }
+
+    #endregion
 
     #region Listeners
 

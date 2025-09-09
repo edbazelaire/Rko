@@ -69,12 +69,12 @@ namespace Menu.PopUps
             m_Title.text += $" (Level {m_Level})";
         }
 
-
         protected override void SetUpPreview()
         {
             UIHelper.CleanContent(m_PreviewContainer);
             CoroutineManager.DelayMethod(() => UIHelper.SpawnCharacter(m_CharacterData.Name, m_PreviewContainer));
         }
+
 
         #endregion
 

@@ -149,7 +149,6 @@ namespace Data.GameManagement
 
             else
                 ErrorHandler.Error("Unhandled type of item " + item.GetType());
-
         }
 
         public void Add(SPowerOrb powerOrb)
@@ -326,6 +325,20 @@ namespace Data.GameManagement
             foreach (SBoostReward data in boosts)
             {
                 rewards.Add(data.AsReward());
+            }
+
+            return rewards;
+        }
+
+        public List<SReward> AsRewardStruct(List<EEmot> emots)
+        {
+            if (emots == null || emots.Count == 0)
+                return new List<SReward>();
+
+            var rewards = new List<SReward>();
+            foreach (EEmot data in emots)
+            {
+                rewards.Add(new SReward(typeof(EEmot), data.ToString(), 1));
             }
 
             return rewards;

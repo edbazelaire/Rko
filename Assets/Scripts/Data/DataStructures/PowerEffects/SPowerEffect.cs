@@ -59,6 +59,16 @@ namespace Data.DataStructures.PowerEffects
             m_RuneActivation = runeActivation;
         }
 
+        public void SetParent(string parent)
+        {
+            for (int i = 0; i < m_TriggerEffects.Count; i++)
+            {
+                var triggerEffect = m_TriggerEffects[i];
+                triggerEffect.SetParent(parent);
+                m_TriggerEffects[i] = triggerEffect;
+            }
+        }
+
         public virtual void SetLevel(int level)
         {
             m_Level = level + m_BonusLevel;
@@ -92,6 +102,15 @@ namespace Data.DataStructures.PowerEffects
 
         #region Info
 
+        /// <summary>
+        /// Split the raw name of the effect "Name - RuneActivation" 
+        /// into the name of the effect + the Rune Activation
+        /// </summary>
+        /// <param name="baseName">         Raw name : "Berserker - Major"                              </param>
+        /// <param name="powerUpName">      output name of the effect : "Berserker"                     </param>
+        /// <param name="runeActivation">   output rune activation of the effect : "Major"              </param>
+        /// <param name="throwError">       throw an error if the rune or powerup name is not found ?   </param>
+        /// <returns></returns>
         public static bool TrySplitPowerUpName(string baseName, out string powerUpName, out ERuneActivation runeActivation, bool throwError = true)
         {
             powerUpName = "";
@@ -139,6 +158,16 @@ namespace Data.DataStructures.PowerEffects
             return true;
         }
 
+        /// <summary>
+        /// Try to get the value of a property from bonus stats.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="characterStat"></param>
+        /// <param name="throwError"></param>
+        /// <returns> 
+        ///     + true : found
+        ///     + false : value not found
+        /// </returns>
         bool TryGetCharacterStat(EStateEffectProperty property, out SCharacterStatScaling characterStat, bool throwError = false)
         {
             characterStat = default;

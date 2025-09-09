@@ -1,7 +1,4 @@
-﻿using Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using Tools;
 using UnityEngine;
 
@@ -18,12 +15,7 @@ namespace Data.GameManagement
         SpellFixedDistance,
     }
 
-    [Serializable]
-    public struct SHitTypeColor
-    {
-        public EHitType HitType;
-        public Color Color;
-    }
+
 
     [CreateAssetMenu(fileName = "Settings", menuName = "Game/Management/Settings")]
     public class Settings : ScriptableObject
@@ -45,9 +37,6 @@ namespace Data.GameManagement
         [Header("Distances")]
         [SerializeField] float m_SpellFixedDistance = 7f;
 
-        [Header("UI")]
-        [SerializeField] List<SHitTypeColor> m_HitTypeColor;
-
         // InGame Settings
         public static float CharacterSizeFactor     { get => Get(ESettings.CharacterSizeFactor);    }
         public static float CharacterSpeedFactor    { get => Get(ESettings.CharacterSpeedFactor);   }
@@ -56,9 +45,6 @@ namespace Data.GameManagement
         public static float AutoAttackSpeedFactor   { get => Get(ESettings.AutoAttackSpeedFactor);  }
         public static float CastSpeedFactor         { get => Get(ESettings.CastSpeedFactor);        }
         public static float SpellFixedDistance      { get => Get(ESettings.SpellFixedDistance);     }
-
-        // UI Settings
-        public static List<SHitTypeColor> HitTypeColor => Instance.m_HitTypeColor;
 
         #endregion
 
@@ -152,11 +138,6 @@ namespace Data.GameManagement
             }
 
             PlayerPrefs.SetFloat(setting.ToString(), value);
-        }
-
-        public static Color GetHitTypeColor(EHitType hitType)
-        {
-            return HitTypeColor.Where((sHitTypeColor) => sHitTypeColor.HitType == hitType).FirstOrDefault().Color;
         }
 
         #endregion

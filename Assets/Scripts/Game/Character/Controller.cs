@@ -1,4 +1,5 @@
 using AI;
+using Assets.Scripts.Game;
 using Data;
 using Data.DataStructures;
 using Data.DataStructures.CharacterSubStructures;
@@ -152,6 +153,10 @@ public class Controller : NetworkBehaviour
         if (! IsSpawn)
         {
             GameManager.Instance.AddController(PlayerId, this);
+            if (PlayerId == NetworkManager.LocalClientId)
+            {
+                GameAnalyticsManager.Instance.SetUpLocalData(PlayerId, m_PlayerData.Value);
+            }
         } else
         {
             GameManager.Instance.AddSpawnController(PlayerId, this);
@@ -234,7 +239,10 @@ public class Controller : NetworkBehaviour
         SetupSpellUI();
 
         // setup Emots
-        GameUIManager.EmotsSectionUI.Initialize(new List<EEmot> { EEmot.ThumbUp, EEmot.Trollol, EEmot.Ah, EEmot.SadKitty, EEmot.Ah, EEmot.Pidgeon });
+        var emotList = m_PlayerData.Value.ProfileData.Emots
+            .Select(emotName => Enum.TryParse<EEmot>(emotName.ToString(), out var result) ? result : EEmot.Trollexander)
+            .ToList();
+        GameUIManager.EmotsSectionUI.Initialize(emotList);
 
         // select auto attack by default (if not IsAutoTarget)
         bool isAutoTarget = true;           // TODO : use PlayerPref to set isAutoTarget or not by default
@@ -462,6 +470,7 @@ public class Controller : NetworkBehaviour
                     continue;
                 }
 
+                data.SetParent(data.BaseName);
                 list.AddRange(data.TriggerEffects);
             }
         }

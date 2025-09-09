@@ -219,7 +219,7 @@ namespace Data
 
         /// <summary> is the "IsCasting" over once the spell has been casted (before delay) ? </summary>
         public virtual bool IsCompletedOnCast   => true;
-        public virtual ESpellCategory SpellCategory => ESpellCategory.Direct;
+        public virtual EHitCategory SpellCategory => EHitCategory.Direct;
 
         #endregion
 

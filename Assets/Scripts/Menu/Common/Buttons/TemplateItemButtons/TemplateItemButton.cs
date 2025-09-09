@@ -10,7 +10,6 @@ namespace Menu.Common.Buttons
 {
     public class TemplateItemButton : MonoBehaviour
     {
-
         #region Members
 
         // ========================================================================================

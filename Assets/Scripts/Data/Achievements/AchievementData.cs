@@ -18,13 +18,12 @@ namespace Data
         [Tooltip("List of each sub-achiemevents linked to their rewards")]
         public List<SAchievementSubData> AchievementSubData;
 
-
         // ===========================================================================================
         // Dependent values
         public virtual string   ID                  => Name;
         public string           Name                => name;
         public float            RequestedValue      => Current == null ? 0 : Current.Value.MaxValue;
-        public bool             IsUnlockable        => Current != null && GetCount() >= RequestedValue;
+        public virtual bool     IsUnlockable        => Current != null && GetCount() >= RequestedValue;
         public int              CurrentIndex        => ProfileCloudData.GetAchievementThresholdIndex(ID);
         public float            TresholdValue       => Current.HasValue ? Current.Value.MaxValue : 0f;
 
@@ -46,6 +45,11 @@ namespace Data
 
 
         #region Count Management
+
+        public virtual void Increase(float count = 1)
+        {
+            UpdateCount(GetCount() + count);
+        }
 
         public virtual void UpdateCount(float count)
         {

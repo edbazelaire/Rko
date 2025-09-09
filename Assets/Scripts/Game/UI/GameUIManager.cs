@@ -24,6 +24,9 @@ public class GameUIManager : MonoBehaviour
     private bool m_Initialized;
     public static bool Initialized => s_Instance != null && s_Instance.m_Initialized;
 
+    [SerializeField] private Canvas m_Canvas;
+    public Canvas Canvas => m_Canvas;
+
     private IntroGameUI     m_IntroGameUI;
     private EndGameUI       m_EndGameUI;
     private ErrorGameUI     m_ErrorGameUI;

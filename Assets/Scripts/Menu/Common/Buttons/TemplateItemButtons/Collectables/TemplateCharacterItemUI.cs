@@ -1,6 +1,4 @@
-﻿using Assets;
-using Assets.Scripts.Managers;
-using Data.GameManagement;
+﻿using Data.GameManagement;
 using Enums;
 using Menu.Common.Displayers;
 using Save;
@@ -32,9 +30,9 @@ namespace Menu.Common.Buttons
             m_PriceDisplay = Finder.FindComponent<PriceDisplay>(m_LockState, "PriceDisplay");
         }
 
-        public override void Initialize(Enum collectable, int level = 0, bool asIconOnly = false, bool removeListeners = false)
+        public override void Initialize(Enum collectable, int level = 0, int mastery = 0, bool asIconOnly = false, bool removeListeners = false)
         {
-            base.Initialize(collectable, level, asIconOnly, removeListeners);
+            base.Initialize(collectable, level, mastery, asIconOnly, removeListeners);
 
             m_PriceDisplay.Initialize(ShopManagementData.GetPrice(m_Character));
         }

@@ -17,6 +17,8 @@ using MyBox;
 using System.Collections;
 using Save.Data.Progression.Structs;
 using Data.DataStructures.PowerEffects;
+using static UnityEditor.U2D.ScriptablePacker;
+using UnityEngine.Rendering;
 
 namespace Assets.Scripts.Managers
 {
@@ -100,6 +102,10 @@ namespace Assets.Scripts.Managers
 
                 case EPopUpState.ConfirmBuyBundlePopUp:
                     obj.GetComponent<ConfirmBuyBundlePopUp>().Initialize((string)args[0], (string)args[1], (SPriceData)args[2], (bool)args[3], (SRewardsData)args[4], (Action)args[5], (Action)args[6]);
+                    break;
+
+                case EPopUpState.ConfirmUpgradeMasteryPopUp:
+                    obj.GetComponent<ConfirmUpgradeMasteryPopUp>().Initialize(collectable: (Enum)args[0], mastery: (int)args[1], priceData: (SPriceData)args[2]);
                     break;
 
                 // SCREENS -------------------------------------------------------
@@ -221,6 +227,14 @@ namespace Assets.Scripts.Managers
         public static void ConfirmWatchAd(Action callback, string title = "", string text = "")
         {
             SetPopUp(EPopUpState.ConfirmBuyBundlePopUp, callback, title, text);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void ConfirmUpgradeMastery(Enum collectable, int mastery, SPriceData price)
+        {
+            SetPopUp(EPopUpState.ConfirmUpgradeMasteryPopUp, collectable, mastery, price);
         }
 
         #endregion

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace Game.UI
 {
-    public class EmotButton : MObject
+    public class EmotSelectionUI : MObject
     {
         #region Members
 
@@ -33,7 +33,6 @@ namespace Game.UI
         public virtual void Initialize(EEmot emot)
         {
             m_Emot = emot;
-
             base.Initialize();
         }
 

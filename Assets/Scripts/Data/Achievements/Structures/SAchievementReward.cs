@@ -13,15 +13,17 @@ namespace Data
         public EAchievementReward AchievementReward;
 
         [ConditionalField("AchievementReward", false, EAchievementReward.Title)]
-        public ETitle Title;
+        public ETitle   Title;
         [ConditionalField("AchievementReward", false, EAchievementReward.Avatar)]
-        public EAvatar Avatar;
+        public EAvatar  Avatar;
         [ConditionalField("AchievementReward", false, EAchievementReward.Border)]
-        public EBorder Border;
+        public EBorder  Border;
+        [ConditionalField("AchievementReward", false, EAchievementReward.Emot)]
+        public EEmot    Emot;
         [ConditionalField("AchievementReward", false, EAchievementReward.Badge)]
-        public EBadge Badge;
+        public EBadge   Badge;
         [ConditionalField("AchievementReward", false, EAchievementReward.Badge)]
-        public ELeague League;
+        public ELeague  League;
 
         public void Set(Enum value)
         {
@@ -47,6 +49,8 @@ namespace Data
                         return Border;
                     case EAchievementReward.Badge:
                         return Badge;
+                    case EAchievementReward.Emot:
+                        return Emot;
 
                     default:
                         ErrorHandler.Error("Unahandled case : " + AchievementReward);
@@ -92,6 +96,11 @@ namespace Data
 
                     case EAchievementReward.Badge:
                         if (!ProfileCloudData.TryGetBadgeFromString(value, out Badge, out League))
+                            break;
+                        return;
+
+                    case EAchievementReward.Emot:
+                        if (!Enum.TryParse(value, out Emot))
                             break;
                         return;
 

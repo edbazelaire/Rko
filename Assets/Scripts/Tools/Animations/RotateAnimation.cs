@@ -8,17 +8,19 @@ namespace Tools.Animations
         #region Members
 
         [SerializeField] Vector3 m_Rotation;
+        Vector3 m_BaseRotation;
 
         #endregion
 
 
         #region Init & End
 
-        public void Initialize(string id = "", float duration = 1f, Vector3 rotation = default)
+        public void Initialize(string id = "", float duration = 1f, Vector3 rotation = default, Vector3? fromRotation = null)
         {
             base.Initialize(id, duration);
 
             m_Rotation = rotation;
+            m_BaseRotation = fromRotation ?? transform.rotation.eulerAngles;
         }
 
         public override void Deactivate()
@@ -35,14 +37,8 @@ namespace Tools.Animations
 
         protected override IEnumerator AnimationFrame()
         {
-            float progress = GetProgress();
-
             // interpolate position
-            transform.rotation = Quaternion.Euler(
-                m_Rotation.x * progress, 
-                m_Rotation.y * progress, 
-                m_Rotation.z * progress
-            );
+            transform.rotation = Quaternion.Euler(Vector3.Lerp(m_BaseRotation, m_Rotation, GetProgress()));
 
             m_Timer += Time.deltaTime;
             yield return null;

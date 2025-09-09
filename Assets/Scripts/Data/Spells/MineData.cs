@@ -10,8 +10,8 @@ namespace Data
     [CreateAssetMenu(fileName = "Mine", menuName = "Game/Spells/Mine")]
     public class MineData : SpellData
     { 
-        public override ESpellType SpellType    => ESpellType.Mine;
-        public override Enums.ESpellCategory SpellCategory  => Enums.ESpellCategory.Zone;
+        public override ESpellType SpellType        => ESpellType.Mine;
+        public override EHitCategory SpellCategory  => EHitCategory.Aoe;
 
 
         [Header("MineData")]
