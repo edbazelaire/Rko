@@ -1,8 +1,12 @@
 ﻿using Assets;
+using Data.GameManagement;
 using Enums;
+using MyBox;
 using Save;
+using System;
 using System.Collections.Generic;
 using Tools;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Data
@@ -12,24 +16,41 @@ namespace Data
     {
         #region Members
 
+        [Header("Info")]
         [SerializeField]
         string m_Description;
 
+        [Header("Mastery")]
+        [SerializeField]
+        protected ECharacter m_Character = ECharacter.None;
+        [SerializeField, Tooltip("Tresholds of each index allowed by Nth Mastery")]
+        protected List<int> m_MasteryThresholds = new List<int>() { 3, 6 };
+
+        [Header("Rewards")]
         [Tooltip("List of each sub-achiemevents linked to their rewards")]
         public List<SAchievementSubData> AchievementSubData;
 
         // ===========================================================================================
         // Dependent values
-        public virtual string   ID                  => Name;
-        public string           Name                => name;
-        public float            RequestedValue      => Current == null ? 0 : Current.Value.MaxValue;
-        public virtual bool     IsUnlockable        => Current != null && GetCount() >= RequestedValue;
-        public int              CurrentIndex        => ProfileCloudData.GetAchievementThresholdIndex(ID);
-        public float            TresholdValue       => Current.HasValue ? Current.Value.MaxValue : 0f;
+        #region Common
+        public virtual string ID            => IsCharacterMastery ? m_Character.ToString() + "_" + Name : Name;
+        public string Name                  => name;
+        public float RequestedValue         => Current == null ? 0 : Current.MaxValue;
+        public virtual bool IsUnlockable    => Current != null && GetCount() >= RequestedValue && IsMasteryUnlocked();
+        public int CurrentIndex             => ProfileCloudData.GetAchievementThresholdIndex(ID);
+        public float TresholdValue          => Current != null ? Current.MaxValue : 0f;
+        #endregion
+
+        #region Mastery
+        public bool IsMastery           => IsCharacterMastery;
+        public bool IsCharacterMastery  => m_Character != ECharacter.None;
+        public ECharacter Character     => m_Character;
+        public int CurrentMastery       => InventoryCloudData.Instance.GetCollectable(m_Character).Mastery;
+        #endregion
 
         public virtual float GetCount() => ProfileCloudData.GetAchievementInfo(ID).Count;
 
-        public SAchievementSubData? Current
+        public SAchievementSubData Current
         {
             get
             {
@@ -40,6 +61,13 @@ namespace Data
             }
         }
 
+
+        #endregion
+
+
+        #region Check
+
+        public virtual void Check() { }
 
         #endregion
 
@@ -63,13 +91,13 @@ namespace Data
 
         public void Unlock()
         {
-            if (! Current.HasValue)
+            if (Current == null)
             {
                 ErrorHandler.Error("Current has no value");
                 return;
             }    
 
-            SAchievementSubData achievementData = Current.Value;
+            SAchievementSubData achievementData = Current;
 
             // ACHIEVEMENT REWARDS (only)
             if (achievementData.AchivementRewardData.Count == achievementData.Rewards.Count) 
@@ -91,6 +119,31 @@ namespace Data
             ProfileCloudData.CompleteAchievement(ID);
         }
 
+        /// <summary>
+        /// Check if character's mastery is unlocked for this level of achievement
+        /// </summary>
+        /// <returns></returns>
+        public bool IsMasteryUnlocked()
+        {
+            // NO MASTERY : return true
+            if (! IsMastery)
+                return true;
+
+            // get mastery from cloud data
+            var charCloudData = InventoryCloudData.Instance.GetCollectable(m_Character);
+
+            // no thresholds OR current mastery > max threshold - means no restrictions
+            if (m_MasteryThresholds.IsNullOrEmpty() || charCloudData.Mastery > m_MasteryThresholds.Count)
+                return true;
+
+            // no mastery - exit
+            if (charCloudData.Mastery <= 0)
+                return false;
+
+            // current index must be below the threshold for next mastery
+            return CurrentIndex < m_MasteryThresholds[charCloudData.Mastery - 1];
+        }
+
         #endregion
 
 
@@ -98,12 +151,69 @@ namespace Data
 
         public virtual string GetDescription()
         {
-            return CleanDescription(m_Description);
+            string description = CleanDescription(m_Description);
+            if (!IsMasteryUnlocked())
+                description += "\n<color=\"red\">Requires Mastery " + (CurrentMastery + 1).ToString() + " to be unlockable</color>";
+            return description;
         }
 
         public virtual string CleanDescription(string baseDescription)
         {
             return baseDescription.Replace("[TresholdValue]", TextHandler.FormatNumericalString((int)TresholdValue));
+        }
+
+        public SRewardsData GetAllRewardsAtMastery(int mastery)
+        {
+            var rewards = new SRewardsData();
+
+            // CHECK : is actually mastery
+            if (!IsMastery)
+            {
+                ErrorHandler.Warning("Trying to get mastery rewards on a non-mastery achivement : " + ID);
+                return rewards;
+            }
+
+            // CHECK : > 0
+            if (mastery <= 0)
+            {
+                ErrorHandler.Error("Bad mastery provided, must be > 0 - " + mastery);
+                return rewards;
+            }
+
+            // CHECK : Has sub data
+            if (AchievementSubData.IsNullOrEmpty())
+            {
+                ErrorHandler.Error("Achievement " + Name + " has no sub data");
+                return rewards;
+            }
+
+            // CHECK : not too big
+            if (mastery > m_MasteryThresholds.Count + 1)
+            {
+                ErrorHandler.Warning("mastery requested (" + mastery + ") is > number of mastery thresholds + 1" + (m_MasteryThresholds.Count + 1));
+            }
+
+            // calculate min/max indexes of rewards for this mastery
+            int minIndex = 0;
+            int maxIndex = AchievementSubData.Count;
+            if (mastery >= 2)
+            {
+                minIndex = m_MasteryThresholds[mastery - 2];
+            }
+            if (mastery <= m_MasteryThresholds.Count)
+            {
+                maxIndex = m_MasteryThresholds[mastery - 1];
+            }
+            // make sure maxIndex does not go ever N subData
+            maxIndex = Math.Min(maxIndex, AchievementSubData.Count);
+
+            // add rewards between min/max index
+            for (int i = minIndex; i < maxIndex; i++)
+            {
+                rewards.Add(AchievementSubData[i].Rewards);
+            }
+
+            return rewards;
         }
 
         #endregion

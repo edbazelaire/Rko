@@ -1,6 +1,6 @@
 ﻿using Analytics.Events;
 using Assets;
-using Assets.Scripts.Menu.MainMenu.MainTab.Chests;
+using Assets.Scripts.Game;
 using Assets.Scripts.Tools;
 using Data.GameManagement;
 using Enums;
@@ -38,9 +38,11 @@ public class EndGameUI : MObject
 
     const string GOLD_FORMAT = "+ {0}";
 
+    // static context
+    static EGameResult m_GameResult;
+
     // Data
     EEndGameState m_State;
-    EGameResult m_GameResult;
     bool m_IsBossFight = false;
     // -- arena
     ArenaData m_ArenaData = null;
@@ -70,6 +72,8 @@ public class EndGameUI : MObject
     GameObject          m_Fireworks;
 
     public EndGameAnalyticsUI EndGameAnalyticsUI => m_EndGameAnalyticsUI;
+    public static EGameResult GameResult => m_GameResult;
+    public static EGameMode GameMode => LobbyHandler.Instance.GameMode;
 
     #endregion
 
@@ -155,6 +159,7 @@ public class EndGameUI : MObject
         SetUpTitle();
 
         // handle data processing before animation & stuff
+        GameAnalyticsManager.Instance.CalculateAchievements();
         HandleEndGameData();
         HandleProgression(preventiveLossApplied);
 

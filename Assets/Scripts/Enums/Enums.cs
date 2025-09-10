@@ -1493,10 +1493,10 @@
         CuteAlexander       = 16,
         Hahalexander        = 21,
         UGotThis            = 22,
-        RedBarel            = 23,
+        RedBarrel           = 23,
         Hilexander          = 24,
         Sadlexander         = 25,
-        BigPunch            = 26,
+        BigPunch            = 26,   // <-->
 
         // ====================================================
         // Kahanan

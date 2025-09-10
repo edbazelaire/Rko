@@ -279,16 +279,6 @@ namespace Assets.Scripts.Game
                     SendPlayerDataClientRPC(playerData.ToArray(), playerId);
                 }
             }
-
-            // ANALYTICS : confirm they were sent
-            if (GameManager.Instance.IsOfflineMode)
-            {
-                ValidateAnalytics();
-            } 
-            else
-            {
-                ValidateAnalyticsClientRPC();
-            }
         }
 
         [ClientRpc]
@@ -319,52 +309,54 @@ namespace Assets.Scripts.Game
             GameUIManager.EndGameUI.EndGameAnalyticsUI.AddSpecialValue(specialValue, value, index: playerId == myPlayerId ? 0 : 1);
         }
 
-        /// <summary>
-        /// Send confirmation that the analytics were sent
-        /// </summary>
-        [ClientRpc]
-        private void ValidateAnalyticsClientRPC()
-        {
-            if (!NetworkManager.Singleton.IsClient)
-                return;
-
-            ValidateAnalytics();
-        }
-
-        /// <summary>
-        /// Confirm that the analytics were sent + call methods that uses the Analytics (Achivements)
-        /// </summary>
-        void ValidateAnalytics()
-        {
-            CalculateAchievements();
-        }
-
         #endregion
 
 
         #region End Game Achievements
 
-        void CalculateAchievements()
+        public void CalculateAchievements()
         {
-            CalculateCharacterAchievements();
-        }
-
-        void CalculateCharacterAchievements()
-        {
-            if (! Enum.TryParse(m_PlayerData.BuildData.Character, out ECharacter character))
+            if (!Enum.TryParse(m_PlayerData.BuildData.Character, out ECharacter character))
             {
                 ErrorHandler.Error("Unable to parse " + m_PlayerData.BuildData.Character + " as character");
                 return;
             }
 
+            CalculateEndGameAchievements(character);
+            CalculatePropertyAchievements(character);
+        }
+
+        void CalculateEndGameAchievements(ECharacter character)
+        {
+            var allAchievements = AchievementLoader.GetAll<GameAchievementData>(character);
+            foreach (var achievement in allAchievements)
+            {
+                achievement.Check(EndGameUI.GameMode, EndGameUI.GameResult == EGameResult.Win);
+            }
+        }
+
+        void CalculatePropertyAchievements(ECharacter character)
+        {
             var endGameAnalytics = GameUIManager.EndGameUI.EndGameAnalyticsUI.GetDisplayer(0);
-            if (endGameAnalytics == null) 
+            if (endGameAnalytics == null)
                 return;
 
-            foreach (var achievement in AchievementLoader.CharacterAchievements[character])
+            var propertyAchievements = AchievementLoader.GetAll<PropertyAchievementData>(character);
+            foreach (var achievement in propertyAchievements)
             {
-                if (achievement is CharacterPropertyAchievementData charPropAchData)
-                    charPropAchData.Check(endGameAnalytics.SpellHitSummary, endGameAnalytics.SpecialValues, endGameAnalytics.SpellHitTypeDatas);
+                achievement.Check(endGameAnalytics.SpellHitSummary, endGameAnalytics.SpecialValues, endGameAnalytics.SpellHitTypeDatas);
+            }
+        }
+
+        void CalculateArenaAchievements(ECharacter character)
+        {
+            if (EndGameUI.GameMode != EGameMode.Arena)
+                return;
+
+            var allAchievements = AchievementLoader.GetAll<ArenaAchievementData>(character);
+            foreach (ArenaAchievementData achievement in allAchievements)
+            {
+                achievement.Check();
             }
         }
 

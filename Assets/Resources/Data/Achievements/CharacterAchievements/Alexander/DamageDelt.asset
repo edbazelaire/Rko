@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: DamageDelt
   m_EditorClassIdentifier: 
   m_Description: Deal [TresholdValue] damage with Alexander
+  m_Character: 1
+  m_MasteryThresholds: 0300000006000000
   AchievementSubData:
   - MaxValue: 5000
     Rewards:
@@ -35,7 +37,7 @@ MonoBehaviour:
       Collectables:
       - CollectableType: 3
         CollectableName: BerserkerRune
-        Qty: 3
+        Qty: 1
       AchievementRewards: []
       Boosts: []
   - MaxValue: 35000
@@ -52,7 +54,7 @@ MonoBehaviour:
       Collectables:
       - CollectableType: 3
         CollectableName: BerserkerRune
-        Qty: 10
+        Qty: 3
       AchievementRewards: []
       Boosts: []
   - MaxValue: 150000
@@ -65,21 +67,28 @@ MonoBehaviour:
   - MaxValue: 250000
     Rewards:
       Currencies: []
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 500000
+    Rewards:
+      Currencies: []
       Chests: 
       Collectables:
       - CollectableType: 3
         CollectableName: BerserkerRune
-        Qty: 35
+        Qty: 5
       AchievementRewards: []
       Boosts: []
-  - MaxValue: 500000
+  - MaxValue: 1000000
     Rewards:
       Currencies: []
       Chests: 03000000
       Collectables: []
       AchievementRewards: []
       Boosts: []
-  - MaxValue: 1000000
+  - MaxValue: 1500000
     Rewards:
       Currencies: []
       Chests: 
@@ -93,7 +102,5 @@ MonoBehaviour:
         Badge: 2001
         League: 0
       Boosts: []
-  m_Character: 1
-  m_MasteryThresholds: 0300000006000000
   m_Property: 11
   m_SpecialConditions: []

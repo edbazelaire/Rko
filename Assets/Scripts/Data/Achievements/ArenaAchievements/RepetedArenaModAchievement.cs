@@ -31,7 +31,7 @@ namespace Data
 
         public override string GetDescription()
         {
-            return CleanDescription($"Finish {Current.Value.MaxValue} times the <i>{m_ArenaType}</i> in difficulty at least <b>{m_RequiredArenaDifficulty}</b> in <b>{String.Join(", ", ArenaMods)}</b> mod");
+            return CleanDescription($"Finish {Current.MaxValue} times the <i>{m_ArenaType}</i> in difficulty at least <b>{m_RequiredArenaDifficulty}</b> in <b>{String.Join(", ", ArenaMods)}</b> mod");
         }
 
         #endregion

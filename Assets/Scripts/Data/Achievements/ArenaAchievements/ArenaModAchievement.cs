@@ -56,7 +56,7 @@ namespace Data
 
         public override string GetDescription()
         {
-            var description = $"Finish the <i>{m_ArenaType}</i> in difficulty at least <b>{(EArenaDifficulty)(Current.Value.MaxValue - 1)}</b>";
+            var description = $"Finish the <i>{m_ArenaType}</i> in difficulty at least <b>{(EArenaDifficulty)(Current.MaxValue - 1)}</b>";
             if (!ArenaMods.IsNullOrEmpty())
                 description += $" in <b>{String.Join(", ", ArenaMods)}</b> mod";   
             if (MinExtraDifficulty > 0)

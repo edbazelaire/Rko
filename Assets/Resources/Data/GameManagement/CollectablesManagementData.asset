@@ -202,31 +202,31 @@ MonoBehaviour:
   - RequiredGold: 50
     RequiredQty: 1
   - RequiredGold: 100
-    RequiredQty: 2
+    RequiredQty: 1
   - RequiredGold: 250
-    RequiredQty: 4
+    RequiredQty: 1
   - RequiredGold: 1000
-    RequiredQty: 8
+    RequiredQty: 2
   - RequiredGold: 2500
-    RequiredQty: 12
+    RequiredQty: 2
   - RequiredGold: 5000
-    RequiredQty: 20
+    RequiredQty: 3
   - RequiredGold: 10000
-    RequiredQty: 35
+    RequiredQty: 3
   - RequiredGold: 20000
-    RequiredQty: 50
+    RequiredQty: 4
   - RequiredGold: 35000
-    RequiredQty: 75
+    RequiredQty: 5
   - RequiredGold: 50000
-    RequiredQty: 100
+    RequiredQty: 6
   - RequiredGold: 75000
-    RequiredQty: 150
+    RequiredQty: 7
   - RequiredGold: 100000
-    RequiredQty: 200
+    RequiredQty: 8
   - RequiredGold: 150000
-    RequiredQty: 250
+    RequiredQty: 9
   - RequiredGold: 200000
-    RequiredQty: 350
+    RequiredQty: 10
   MasteryUpgradeData:
   - Rarety: 0
     MasteryCosts:
@@ -263,9 +263,9 @@ MonoBehaviour:
   MasteryPriceReductions:
   - Collectable: 1
     PriceReductions:
-    - Price: 0.05
-      Currency: 3
     - Price: 0.1
       Currency: 3
-    - Price: 0.2
+    - Price: 0.15
+      Currency: 3
+    - Price: 0.25
       Currency: 3

@@ -22,11 +22,5 @@ namespace Data
         public override float GetCount() => StatCloudData.GetAnalyticsCount(Analytics, AnalyticsFilters);
 
         #endregion
-
-
-        #region Unlocking
-
-        #endregion
-
     }
 }

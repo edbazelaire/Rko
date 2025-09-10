@@ -8,8 +8,8 @@ using UnityEngine;
 
 namespace Data
 {
-    [CreateAssetMenu(fileName = "CharacterPropertyAchievementData", menuName = "Game/Achievements/CharacterAchievements/CharacterProperty")]
-    public class CharacterPropertyAchievementData : CharacterAchievementData
+    [CreateAssetMenu(fileName = "PropertyAchievementData", menuName = "Game/Achievements/Analytics/Property")]
+    public class PropertyAchievementData : AchievementData
     {
         #region Members
 
@@ -18,7 +18,6 @@ namespace Data
         [SerializeField]
         protected List<string> m_SpecialConditions;
 
-        public override string ID => m_Character.ToString() + "_" + base.ID;
         public EStateEffectProperty Property => m_Property;
         public List<string> SpecialConditions => m_SpecialConditions;
 

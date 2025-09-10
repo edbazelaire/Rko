@@ -13,10 +13,10 @@ namespace Game.Loaders
         #region Members
 
         static List<AchievementData> m_Achievements;
-        static Dictionary<ECharacter, List<CharacterAchievementData>> m_CharacterAchievements;
+        static Dictionary<ECharacter, List<AchievementData>> m_CharacterAchievements;
 
         public static List<AchievementData> Achievements => m_Achievements;
-        public static Dictionary<ECharacter, List<CharacterAchievementData>> CharacterAchievements => m_CharacterAchievements;
+        public static Dictionary<ECharacter, List<AchievementData>> CharacterAchievements => m_CharacterAchievements;
 
         #endregion
 
@@ -31,11 +31,11 @@ namespace Game.Loaders
             var allAchivements = AssetLoader.LoadAll<AchievementData>(AssetLoader.c_AchievementsDataPath).ToList();
             foreach (var achvievementData in allAchivements)
             {
-                if (achvievementData is CharacterAchievementData characterAchievementData)
+                if (achvievementData.IsCharacterMastery)
                 {
-                    if (!m_CharacterAchievements.ContainsKey(characterAchievementData.Character))
-                        m_CharacterAchievements.Add(characterAchievementData.Character, new());
-                    m_CharacterAchievements[characterAchievementData.Character].Add(characterAchievementData);
+                    if (!m_CharacterAchievements.ContainsKey(achvievementData.Character))
+                        m_CharacterAchievements.Add(achvievementData.Character, new());
+                    m_CharacterAchievements[achvievementData.Character].Add(achvievementData);
                 }
 
                 else
@@ -55,6 +55,16 @@ namespace Game.Loaders
         public static T Get<T> (string name) where T : AchievementData
         {
             return (T)m_Achievements.First((AchievementData data) => data.GetType() == typeof(T) && data.Name == name);
+        }
+
+        public static List<T> GetAll<T>(ECharacter character = ECharacter.None) where T : AchievementData
+        {
+            var list = new List<T>();
+            list.AddRange(m_Achievements.Select((AchievementData data) => data.GetType() == typeof(T)).ToList() as List<T>);
+            if (character != ECharacter.None)
+                list.AddRange(m_CharacterAchievements[character].Select((AchievementData data) => data.GetType() == typeof(T)).ToList() as List<T>);
+            
+            return list;
         }
 
         public static AchievementData Get (EAchievement achievement) 

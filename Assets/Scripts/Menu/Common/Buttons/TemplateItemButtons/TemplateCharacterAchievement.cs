@@ -12,8 +12,6 @@ namespace Menu.Common.Buttons
     {
         #region Members
 
-        CharacterAchievementData m_AchievementData => m_Achievement as CharacterAchievementData;
-
         GameObject m_Lock;
         TMP_Text m_MasteryText;
 

@@ -33,7 +33,7 @@ namespace Menu.MainMenu.ProfileTab
             foreach (AchievementData achievement in AchievementLoader.Achievements)
             {
                 // skip completed achievements 
-                if (! achievement.Current.HasValue)
+                if (achievement.Current == null)
                     continue;
 
                 var go = Instantiate(m_TemplateAchievementButton, m_ScrollerContent.transform);
