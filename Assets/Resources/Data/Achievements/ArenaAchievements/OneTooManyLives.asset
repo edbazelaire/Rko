@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: OneTooManyLives
   m_EditorClassIdentifier: 
   m_Description: 
+  m_ResetCount: 1
+  m_Character: -1
+  m_MasteryThresholds: 0300000006000000
   AchievementSubData:
   - MaxValue: 5
     Rewards:
@@ -23,6 +26,10 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 0
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   - MaxValue: 10
     Rewards:
       Currencies:
@@ -32,6 +39,10 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 0
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   - MaxValue: 20
     Rewards:
       Currencies: []
@@ -42,9 +53,14 @@ MonoBehaviour:
         Title: 0
         Avatar: 107
         Border: 0
+        Emot: 0
         Badge: 0
         League: 0
       Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 0
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   - MaxValue: 35
     Rewards:
       Currencies: []
@@ -52,6 +68,10 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 0
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   - MaxValue: 50
     Rewards:
       Currencies: []
@@ -62,8 +82,17 @@ MonoBehaviour:
         Title: 0
         Avatar: 0
         Border: 203
+        Emot: 0
         Badge: 0
         League: 0
       Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 0
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   m_ArenaType: 1
+  m_ArenaDifficulty: 0
+  m_ArenaMods: 
+  m_MinExtraDifficulty: 0
   ArenaMods: 02000000
+  MinExtraDifficulty: 0

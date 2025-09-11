@@ -1,9 +1,11 @@
-﻿using Data;
+﻿using Assets.Scripts.Game.Loaders.Filters;
+using Data;
 using Enums;
 using Game;
 using Game.Loaders;
 using Game.UI.EndGameUI;
 using Managers;
+using MyBox;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,6 +77,8 @@ namespace Assets.Scripts.Game
         /// </summary>
         public int GetTotal(EHitType hitType)
         {
+            if (HitDetails.IsNullOrEmpty())
+                return 0;
             return HitDetails.Where(h => h.HitType == hitType).Sum(h => h.Value);
         }
 
@@ -83,6 +87,8 @@ namespace Assets.Scripts.Game
         /// </summary>
         public int GetCategoryValue(EHitType hitType, EHitCategory category)
         {
+            if (HitDetails.IsNullOrEmpty())
+                return 0;
             return HitDetails.Where(h => h.HitType == hitType && h.Category == category).Sum(h => h.Value);
         }
 
@@ -324,12 +330,12 @@ namespace Assets.Scripts.Game
 
             CalculateEndGameAchievements(character);
             CalculatePropertyAchievements(character);
+            CalculateArenaAchievements(character);
         }
 
         void CalculateEndGameAchievements(ECharacter character)
         {
-            var allAchievements = AchievementLoader.GetAll<GameAchievementData>(character);
-            foreach (var achievement in allAchievements)
+            foreach (var achievement in AchievementLoader.Get<EndGameAchievementData>(character))
             {
                 achievement.Check(EndGameUI.GameMode, EndGameUI.GameResult == EGameResult.Win);
             }
@@ -341,8 +347,7 @@ namespace Assets.Scripts.Game
             if (endGameAnalytics == null)
                 return;
 
-            var propertyAchievements = AchievementLoader.GetAll<PropertyAchievementData>(character);
-            foreach (var achievement in propertyAchievements)
+            foreach (var achievement in AchievementLoader.Get<PropertyAchievementData>(character))
             {
                 achievement.Check(endGameAnalytics.SpellHitSummary, endGameAnalytics.SpecialValues, endGameAnalytics.SpellHitTypeDatas);
             }
@@ -353,8 +358,7 @@ namespace Assets.Scripts.Game
             if (EndGameUI.GameMode != EGameMode.Arena)
                 return;
 
-            var allAchievements = AchievementLoader.GetAll<ArenaAchievementData>(character);
-            foreach (ArenaAchievementData achievement in allAchievements)
+            foreach (ArenaAchievementData achievement in AchievementLoader.Get<ArenaAchievementData>(character))
             {
                 achievement.Check();
             }

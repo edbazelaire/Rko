@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Data;
 using Data.GameManagement;
 using Enums;
 using MyBox;
@@ -6,19 +7,98 @@ using Save;
 using System;
 using System.Collections.Generic;
 using Tools;
-using Unity.VisualScripting;
 using UnityEngine;
+
 
 namespace Data
 {
-    [CreateAssetMenu(fileName = "AchievementData", menuName = "Game/Achievements/Achievement")]
-    public class AchievementData : ScriptableObject
+    public interface IAchievement
+    {
+        // ===========================================================================================
+        // Dependent values
+        #region Common
+        public string GetID();
+        public string GetName();
+        public float RequestedValue => Current == null ? 0 : Current.MaxValue;
+        public virtual bool IsUnlockable => Current != null && GetCount() >= RequestedValue && IsMasteryUnlocked();
+        public int CurrentIndex => ProfileCloudData.GetAchievementThresholdIndex(GetID());
+        public float TresholdValue => GetCurrent() != null ? Current.MaxValue : 0f;
+        #endregion
+
+        #region Mastery
+        public bool IsMastery => IsCharacterMastery;
+        public bool IsCharacterMastery => Character != ECharacter.None;
+        public int CurrentMastery => InventoryCloudData.Instance.GetCollectable(Character).Mastery;
+        #endregion
+
+        public virtual float GetCount() => ProfileCloudData.GetAchievementInfo(GetID()).Count;
+
+        public ECharacter Character => GetCharacter();
+        public ECharacter GetCharacter();
+
+        public SAchievementSubData Current => GetCurrent();
+        public SAchievementSubData GetCurrent();
+
+        public List<SAchievementSubData> AchievementSubData => GetAchievementSubData();
+        public List<SAchievementSubData> GetAchievementSubData();
+
+
+        #region Check
+
+        public virtual void Check() { }
+
+        #endregion
+
+
+        #region Count Management
+
+        public virtual void Increase(float count = 1) {
+            UpdateCount(GetCount() + count);
+        }
+
+        public virtual void UpdateCount(float count)
+        {
+            ProfileCloudData.UpdateAchievementCount(GetID(), count);
+        }
+
+        #endregion
+
+
+        #region Unlocking
+
+        public void Unlock() { }
+
+        /// <summary>
+        /// Check if character's mastery is unlocked for this level of achievement
+        /// </summary>
+        /// <returns></returns>
+        public bool IsMasteryUnlocked() => true;
+
+        #endregion
+
+
+        #region Description
+
+        public virtual string GetDescription() => "";
+
+        public virtual string CleanDescription(string baseDescription)
+        {
+            return baseDescription.Replace("[TresholdValue]", TextHandler.FormatNumericalString((int)TresholdValue));
+        }
+
+        public SRewardsData GetAllRewardsAtMastery(int mastery) => new SRewardsData();
+
+        #endregion
+    }
+}
+
+    public class AchievementData<T> : ScriptableObject, IAchievement where T : SAchievementSubData
     {
         #region Members
 
         [Header("Info")]
-        [SerializeField]
-        string m_Description;
+        [SerializeField] string m_Description;
+        [SerializeField] bool m_ResetCount = false;
 
         [Header("Mastery")]
         [SerializeField]
@@ -28,7 +108,7 @@ namespace Data
 
         [Header("Rewards")]
         [Tooltip("List of each sub-achiemevents linked to their rewards")]
-        public List<SAchievementSubData> AchievementSubData;
+        public List<T> AchievementSubData;
 
         // ===========================================================================================
         // Dependent values
@@ -42,15 +122,16 @@ namespace Data
         #endregion
 
         #region Mastery
-        public bool IsMastery           => IsCharacterMastery;
-        public bool IsCharacterMastery  => m_Character != ECharacter.None;
-        public ECharacter Character     => m_Character;
-        public int CurrentMastery       => InventoryCloudData.Instance.GetCollectable(m_Character).Mastery;
+        public bool IsMastery               => IsCharacterMastery;
+        public bool IsCharacterMastery      => m_Character != ECharacter.None;
+        public ECharacter Character         => m_Character;
+        public int CurrentMastery           => InventoryCloudData.Instance.GetCollectable(m_Character).Mastery;
         #endregion
 
         public virtual float GetCount() => ProfileCloudData.GetAchievementInfo(ID).Count;
+        public virtual float GetCountAtIndex(int index) => ProfileCloudData.GetAchievementInfo(ID).GetCountAtIndex(index);
 
-        public SAchievementSubData Current
+        public T Current
         {
             get
             {
@@ -79,9 +160,19 @@ namespace Data
             UpdateCount(GetCount() + count);
         }
 
+        public virtual void IncreaseAtIndex(int index, float count = 1)
+        {
+            UpdateCountAtIndex(index, GetCountAtIndex(index) + count);
+        }
+
         public virtual void UpdateCount(float count)
         {
             ProfileCloudData.UpdateAchievementCount(ID, count);
+        }
+
+        public virtual void UpdateCountAtIndex(int index, float count)
+        {
+            ProfileCloudData.UpdateAchievementCount(ID, count, index);
         }
 
         #endregion
@@ -95,12 +186,12 @@ namespace Data
             {
                 ErrorHandler.Error("Current has no value");
                 return;
-            }    
+            }
 
             SAchievementSubData achievementData = Current;
 
             // ACHIEVEMENT REWARDS (only)
-            if (achievementData.AchivementRewardData.Count == achievementData.Rewards.Count) 
+            if (achievementData.AchivementRewardData.Count == achievementData.Rewards.Count)
             {
                 foreach (SAchievementReward data in achievementData.AchivementRewardData)
                 {
@@ -116,7 +207,7 @@ namespace Data
                 Main.DisplayRewards(achievementData.Rewards, ERewardContext.Achievements.ToString());
 
             // save that the achievement was completed
-            ProfileCloudData.CompleteAchievement(ID);
+            ProfileCloudData.CompleteAchievement(ID, m_ResetCount);
         }
 
         /// <summary>
@@ -126,7 +217,7 @@ namespace Data
         public bool IsMasteryUnlocked()
         {
             // NO MASTERY : return true
-            if (! IsMastery)
+            if (!IsMastery)
                 return true;
 
             // get mastery from cloud data
@@ -216,6 +307,33 @@ namespace Data
             return rewards;
         }
 
-        #endregion
+    public string GetID()
+    {
+        return IsCharacterMastery ? m_Character.ToString() + "_" + GetName() : GetName();
     }
+
+    public string GetName()
+    {
+        return name;
+    }
+
+    public ECharacter GetCharacter()
+    {
+        return m_Character;
+    }
+
+    public SAchievementSubData GetCurrent()
+    {
+        if (CurrentIndex >= AchievementSubData.Count)
+            return null;
+
+        return AchievementSubData[CurrentIndex];
+    }
+
+    public List<SAchievementSubData> GetAchievementSubData()
+    {
+        return AchievementSubData as List<SAchievementSubData>;
+    }
+
+    #endregion
 }

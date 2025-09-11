@@ -1,4 +1,6 @@
-﻿using Data;
+﻿using Assets.Scripts.Game.Loaders.Filters;
+using Data;
+using Enums;
 using Game.Loaders;
 using Menu.Common.Buttons;
 using Tools;
@@ -30,7 +32,7 @@ namespace Menu.MainMenu.ProfileTab
             // reset UI
             UIHelper.CleanContent(m_ScrollerContent);
 
-            foreach (AchievementData achievement in AchievementLoader.Achievements)
+            foreach (IAchievement achievement in AchievementLoader.Achievements.FilterByCharacter(ECharacter.None, strict: true))
             {
                 // skip completed achievements 
                 if (achievement.Current == null)

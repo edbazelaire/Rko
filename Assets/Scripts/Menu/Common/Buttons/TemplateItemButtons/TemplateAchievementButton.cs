@@ -20,7 +20,7 @@ namespace Menu.Common.Buttons
 
         // ==============================================================================================
         // Data
-        protected AchievementData m_AchievementData;
+        protected IAchievement m_AchievementData;
 
         // ==============================================================================================
         // GameObjects & Components
@@ -49,7 +49,7 @@ namespace Menu.Common.Buttons
             m_CurrentIndexText  = Finder.FindComponent<TMP_Text>(gameObject, "CurrentIndexText");
         }
         
-        public void Initialize(AchievementData achievement)
+        public void Initialize(IAchievement achievement)
         {
             // if has no Current value (e.q : is finished) : remove
             if (achievement.Current == null)
@@ -64,7 +64,7 @@ namespace Menu.Common.Buttons
 
         protected override void SetUpUI()
         {
-            m_Title.text = TextLocalizer.SplitCamelCase(m_AchievementData.name);
+            m_Title.text = TextLocalizer.SplitCamelCase(m_AchievementData.GetName());
             m_CurrentIndexText.text = (m_AchievementData.CurrentIndex + 1).ToString();
             m_FillBar.Initialize(m_AchievementData.GetCount(), m_AchievementData.RequestedValue);
             RefreshReward();
@@ -158,7 +158,7 @@ namespace Menu.Common.Buttons
 
         void OnAchievementChanged(string achievementId)
         {
-            if (m_AchievementData.ID != achievementId)
+            if (m_AchievementData.GetID() != achievementId)
                 return;
 
             RefreshUI();

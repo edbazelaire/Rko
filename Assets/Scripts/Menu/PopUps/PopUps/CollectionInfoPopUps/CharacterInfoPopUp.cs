@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Game.Loaders.Filters;
 using Assets.Scripts.Managers;
 using Data;
 using Data.GameManagement;
@@ -156,7 +157,8 @@ namespace Menu.PopUps
                 return;
             }
 
-            if (!AchievementLoader.CharacterAchievements.ContainsKey(m_CharacterData.Character))
+            //if (!AchievementLoader.CharacterAchievements.ContainsKey(m_CharacterData.Character))
+            if (AchievementLoader.Achievements.FilterByCharacter(m_CharacterData.Character).Count == 0)
             {
                 ErrorHandler.Warning("No achievements were found for " + m_CharacterData.Character);
                 DeactivateMastery();
@@ -178,7 +180,7 @@ namespace Menu.PopUps
             UIHelper.CleanContent(m_MasteryContent);
 
             var template = AssetLoader.LoadTemplateItem<TemplateCharacterAchievement>();
-            var achievements = AchievementLoader.CharacterAchievements[m_CharacterData.Character];
+            var achievements = AchievementLoader.Achievements.FilterByCharacter(m_CharacterData.Character, strict: true);
             foreach (var achievement in achievements)
             {
                 var characterAchivement = Instantiate(template, m_MasteryContent.transform);

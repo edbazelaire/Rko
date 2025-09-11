@@ -145,9 +145,9 @@ namespace Assets.Scripts.Managers
             SRewardsData missingRewards = new SRewardsData();
             missingRewards.SetDefaultData();
 
-            foreach (AchievementData achievementData in AchievementLoader.Achievements)
+            foreach (IAchievement achievementData in AchievementLoader.Achievements)
             {
-                int currentIndex = ProfileCloudData.GetAchievementThresholdIndex(achievementData.Name);
+                int currentIndex = ProfileCloudData.GetAchievementThresholdIndex(achievementData.GetName());
 
                 // check all achievements so far to see if any reward is missing
                 for (int i = 0; i < currentIndex; i++)

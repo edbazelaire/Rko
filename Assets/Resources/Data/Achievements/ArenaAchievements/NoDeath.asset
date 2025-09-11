@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: NoDeath
   m_EditorClassIdentifier: 
   m_Description: 
+  m_ResetCount: 1
+  m_Character: -1
+  m_MasteryThresholds: 0300000006000000
   AchievementSubData:
   - MaxValue: 1
     Rewards:
@@ -24,6 +27,10 @@ MonoBehaviour:
         Qty: 1
       AchievementRewards: []
       Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 0
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   - MaxValue: 2
     Rewards:
       Currencies:
@@ -33,6 +40,10 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 0
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   - MaxValue: 3
     Rewards:
       Currencies: []
@@ -40,6 +51,10 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 0
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   - MaxValue: 4
     Rewards:
       Currencies: []
@@ -50,8 +65,17 @@ MonoBehaviour:
         Title: 0
         Avatar: 0
         Border: 0
+        Emot: 0
         Badge: 10004
         League: 0
       Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 0
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   m_ArenaType: 1
+  m_ArenaDifficulty: 0
+  m_ArenaMods: 
+  m_MinExtraDifficulty: 0
   ArenaMods: 02000000
+  MinExtraDifficulty: 0

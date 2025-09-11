@@ -23,6 +23,7 @@ namespace Data
     [Serializable]
     public class SArenaAchievementSubData : SAchievementSubData
     {
+        public EArenaType       ArenaType;
         public EArenaDifficulty ArenaDifficulty;
         public List<EArenaMod>  ArenaMods;
         public int              ArenaExtraDifficulty = 0;
@@ -34,8 +35,11 @@ namespace Data
         /// <param name="arenaMods"></param>
         /// <param name="arenaArenaExtraDifficulty"></param>
         /// <returns></returns>
-        public bool Check(EArenaDifficulty arenaDifficulty, List<EArenaMod> arenaMods, int arenaArenaExtraDifficulty)
+        public bool Check(EArenaType arenaType, EArenaDifficulty arenaDifficulty, int arenaArenaExtraDifficulty, List<EArenaMod> arenaMods)
         {
+            if (arenaType != EArenaType.None && arenaType != ArenaType)
+                return false;
+
             if (arenaDifficulty < ArenaDifficulty)
                 return false;
 

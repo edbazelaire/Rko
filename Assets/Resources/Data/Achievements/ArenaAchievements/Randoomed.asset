@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: Randoomed
   m_EditorClassIdentifier: 
   m_Description: 
+  m_ResetCount: 1
+  m_Character: -1
+  m_MasteryThresholds: 0300000006000000
   AchievementSubData:
   - MaxValue: 1
     Rewards:
@@ -24,9 +27,14 @@ MonoBehaviour:
         Title: 0
         Avatar: 502
         Border: 0
+        Emot: 0
         Badge: 10001
         League: 0
       Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 0
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   - MaxValue: 2
     Rewards:
       Currencies: []
@@ -34,6 +42,10 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 0
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   - MaxValue: 3
     Rewards:
       Currencies: []
@@ -44,9 +56,14 @@ MonoBehaviour:
         Title: 0
         Avatar: 0
         Border: 0
+        Emot: 0
         Badge: 10001
         League: 0
       Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 0
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   - MaxValue: 4
     Rewards:
       Currencies: []
@@ -54,6 +71,10 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 0
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   - MaxValue: 5
     Rewards:
       Currencies: []
@@ -64,8 +85,17 @@ MonoBehaviour:
         Title: 0
         Avatar: 0
         Border: 0
+        Emot: 0
         Badge: 10000
         League: 0
       Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 0
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   m_ArenaType: 1
+  m_ArenaDifficulty: 0
+  m_ArenaMods: 01000000
+  m_MinExtraDifficulty: 0
   ArenaMods: 01000000
+  MinExtraDifficulty: 0

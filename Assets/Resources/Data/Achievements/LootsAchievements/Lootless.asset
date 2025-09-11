@@ -9,10 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aa017a98016dbb44b47e053411fd3b7, type: 3}
+  m_Script: {fileID: 11500000, guid: e28aeed435a1ff3489af42321b29362a, type: 3}
   m_Name: Lootless
   m_EditorClassIdentifier: 
-  m_Description: Get less than 5% of the total gold amount a chest can contain.
+  m_Description: 
+  m_Character: -1
+  m_MasteryThresholds: 
   AchievementSubData:
   - MaxValue: 1
     Rewards:

@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Data
 {
     [CreateAssetMenu(fileName = "GameAchievementData", menuName = "Game/Achievements/Analytics/GameAchievementData")]
-    public class GameAchievementData : AchievementData
+    public class EndGameAchievementData : DefaultAchievementData
     {
         #region Members
 

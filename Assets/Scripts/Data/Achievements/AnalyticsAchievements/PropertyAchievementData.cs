@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Game;
 using Enums;
+using MyBox;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using UnityEngine;
 namespace Data
 {
     [CreateAssetMenu(fileName = "PropertyAchievementData", menuName = "Game/Achievements/Analytics/Property")]
-    public class PropertyAchievementData : AchievementData
+    public class PropertyAchievementData : DefaultAchievementData
     {
         #region Members
 
@@ -92,6 +93,8 @@ namespace Data
                 // SPECIAL VALUES
                 // -----------------------------------------------------------
                 case EStateEffectProperty.ResistanceFix:
+                    if (specialValues.IsNullOrEmpty() || ! specialValues.ContainsKey(ESpecialValue.DamageReduction))
+                        return 0;
                     return (int)Math.Round(specialValues[ESpecialValue.DamageReduction]);
 
                 default:

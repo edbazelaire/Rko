@@ -417,19 +417,66 @@ namespace Save
     }
 
     [Serializable]
+    public struct IndexCount
+    {
+        public int Index;
+        public float Count;
+
+        public IndexCount(int index, float count)
+        {
+            Index = index;
+            Count = count;
+        }
+    }
+
+    [Serializable]
     public struct SAchievementInfo
     {
         public string Id;
         public float Count;
         public int Index;
+        public List<IndexCount> CountAtIndex;
 
-        public SAchievementInfo(string id, float count = 0f, int index = 0)
+        public SAchievementInfo(string id, float count = 0f, int index = 0, List<IndexCount> countAtIndex = null)
         {
-            Id = id;
-            Count = count;
-            Index = index;
+            Id              = id;
+            Count           = count;
+            Index           = index;
+            CountAtIndex    = countAtIndex ?? new List<IndexCount>();
+        }
+
+        public void SetCountAtIndex(int index, float count)
+        {
+            if (index == Index)
+            {
+                Count = count;
+                return;
+            }
+
+            if (CountAtIndex == null)
+                CountAtIndex = new List<IndexCount>();
+
+            int idx = CountAtIndex.FindIndex(item => item.Index == index);
+            if (idx >= 0)
+            {
+                // Replace
+                CountAtIndex[idx] = new IndexCount(index, count);
+            }
+            else
+            {
+                // Add new
+                CountAtIndex.Add(new IndexCount(index, count));
+            }
+        }
+
+        public float GetCountAtIndex(int index)
+        {
+            if (index == Index) return (int)Count;
+            var found = CountAtIndex?.Find(item => item.Index == index);
+            return found.HasValue ? found.Value.Count : 0;
         }
     }
+
 
     public class ProfileCloudData : CloudData
     {
@@ -792,20 +839,27 @@ namespace Save
                 Instance.SaveValue(KEY_ACHIEVEMENTS);
         }
 
-        public static void UpdateAchievementCount(string achievementId, float count)
+        public static void UpdateAchievementCount(string achievementId, float count, int? index = null)
         {
             var achInfo = GetAchievementInfo(achievementId);
-            achInfo.Count = count;
+            if (index == null)
+                achInfo.Count = count;
+            else
+                achInfo.SetCountAtIndex(index.Value, count);
             SetAchievementInfo(achInfo, true);
 
             AchievementChangedEvent?.Invoke(achievementId);
         }
 
-        public static void CompleteAchievement(string achievementId)
+        public static void CompleteAchievement(string achievementId, bool resetCount)
         {
             ErrorHandler.Log("CompleteAchievement : " + achievementId, ELogTag.Achievements);
             var achievementInfo = GetAchievementInfo(achievementId);
             achievementInfo.Index++;
+
+            // if count needs to be reset between indexes, get count at new current index
+            if (resetCount)
+                achievementInfo.Count = achievementInfo.GetCountAtIndex(achievementInfo.Index);
 
             SetAchievementInfo(achievementInfo, true);
 

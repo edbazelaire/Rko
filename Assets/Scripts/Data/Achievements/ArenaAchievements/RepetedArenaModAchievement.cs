@@ -17,22 +17,22 @@ namespace Data
 
         #region Check
 
-        public override void OnCheckValidated()
-        {
-            // check is min required arena difficulty
-            if (ProgressionCloudData.CurrentArena.GetArenaDifficulty() >= m_RequiredArenaDifficulty)
-                UpdateCount(GetCount() + 1);
-        }
+        //public override void OnCheckValidated()
+        //{
+        //    // check is min required arena difficulty
+        //    if (ProgressionCloudData.CurrentArena.GetArenaDifficulty() >= m_RequiredArenaDifficulty)
+        //        UpdateCount(GetCount() + 1);
+        //}
 
         #endregion
 
 
         #region Description
 
-        public override string GetDescription()
-        {
-            return CleanDescription($"Finish {Current.MaxValue} times the <i>{m_ArenaType}</i> in difficulty at least <b>{m_RequiredArenaDifficulty}</b> in <b>{String.Join(", ", ArenaMods)}</b> mod");
-        }
+        //public override string GetDescription()
+        //{
+        //    return CleanDescription($"Finish {Current.MaxValue} times the <i>{m_ArenaType}</i> in difficulty at least <b>{m_RequiredArenaDifficulty}</b> in <b>{String.Join(", ", ArenaMods)}</b> mod");
+        //}
 
         #endregion
     }

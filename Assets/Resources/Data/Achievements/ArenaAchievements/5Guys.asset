@@ -13,42 +13,11 @@ MonoBehaviour:
   m_Name: 5Guys
   m_EditorClassIdentifier: 
   m_Description: 
+  m_ResetCount: 1
+  m_Character: -1
+  m_MasteryThresholds: 0300000006000000
   AchievementSubData:
   - MaxValue: 1
-    Rewards:
-      Currencies:
-      - Currency: 0
-        Qty: 500
-      Chests: 
-      Collectables: []
-      AchievementRewards: []
-      Boosts: []
-  - MaxValue: 2
-    Rewards:
-      Currencies:
-      - Currency: 3
-        Qty: 50
-      Chests: 
-      Collectables: []
-      AchievementRewards: []
-      Boosts: []
-  - MaxValue: 3
-    Rewards:
-      Currencies:
-      - Currency: 1
-        Qty: 25
-      Chests: 
-      Collectables: []
-      AchievementRewards: []
-      Boosts: []
-  - MaxValue: 4
-    Rewards:
-      Currencies: []
-      Chests: 01000000
-      Collectables: []
-      AchievementRewards: []
-      Boosts: []
-  - MaxValue: 5
     Rewards:
       Currencies: []
       Chests: 
@@ -58,9 +27,35 @@ MonoBehaviour:
         Title: 0
         Avatar: 0
         Border: 0
+        Emot: 0
         Badge: 10005
         League: 0
       Boosts: []
+    ArenaType: -1
+    ArenaDifficulty: 3
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
+  - MaxValue: 2
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 1
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 10005
+        League: 0
+      Boosts: []
+    ArenaType: -1
+    ArenaDifficulty: 4
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   m_ArenaType: 1
+  m_ArenaDifficulty: 0
+  m_ArenaMods: 
+  m_MinExtraDifficulty: 0
   ArenaMods: 
   MinExtraDifficulty: 5

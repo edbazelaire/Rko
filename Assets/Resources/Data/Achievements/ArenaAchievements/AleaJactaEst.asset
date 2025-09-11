@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: AleaJactaEst
   m_EditorClassIdentifier: 
   m_Description: 
+  m_ResetCount: 1
+  m_Character: -1
+  m_MasteryThresholds: 0300000006000000
   AchievementSubData:
   - MaxValue: 5
     Rewards:
@@ -24,9 +27,14 @@ MonoBehaviour:
         Title: 0
         Avatar: 501
         Border: 0
+        Emot: 0
         Badge: 0
         League: 0
       Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 0
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   - MaxValue: 10
     Rewards:
       Currencies: []
@@ -34,6 +42,10 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 0
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   - MaxValue: 20
     Rewards:
       Currencies: []
@@ -44,9 +56,14 @@ MonoBehaviour:
         Title: 1015
         Avatar: 13
         Border: 0
+        Emot: 0
         Badge: 10000
         League: 3
       Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 0
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   - MaxValue: 35
     Rewards:
       Currencies: []
@@ -57,6 +74,10 @@ MonoBehaviour:
         Qty: 1
       AchievementRewards: []
       Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 0
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   - MaxValue: 50
     Rewards:
       Currencies: []
@@ -67,8 +88,17 @@ MonoBehaviour:
         Title: 0
         Avatar: 0
         Border: 203
+        Emot: 0
         Badge: 10002
         League: 0
       Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 0
+    ArenaMods: 
+    ArenaExtraDifficulty: 0
   m_ArenaType: 1
+  m_ArenaDifficulty: 0
+  m_ArenaMods: 
+  m_MinExtraDifficulty: 0
   ArenaMods: 01000000
+  MinExtraDifficulty: 0

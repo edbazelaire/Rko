@@ -52,12 +52,12 @@ namespace Managers.Bots
             foreach (var achievementData in AchievementLoader.Achievements)
             {
                 // if not generated achievement value - skip
-                if (! AchievementValues.ContainsKey(achievementData.Name))
+                if (! AchievementValues.ContainsKey(achievementData.GetName()))
                 {
                     continue;
                 }
 
-                int value = AchievementValues[achievementData.Name];
+                int value = AchievementValues[achievementData.GetName()];
                 float weight = 1f;
                 foreach (var data in achievementData.AchievementSubData)
                 {
