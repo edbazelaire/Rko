@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Menu.MainMenu.MainTab.Chests;
+using Assets.Scripts.UI;
 using Data.ArenaEffects.ArenaMods;
 using Data.GameManagement;
 using Enums;
@@ -45,6 +46,7 @@ namespace Tools
         // ---- Backgrounds 
         public const string c_BackgroundsPath               = c_PrefabsPath + "Backgrounds/";
         public const string c_ArenaBackgroundsPath          = c_BackgroundsPath + "Arenas/";
+        public const string c_LoadingScreenPath             = c_BackgroundsPath + "LoadingScreen/";
         // ---- Characters 
         public const string c_CharactersPreviewPath         = c_PrefabsPath + "Characters/";
         public const string c_BossesPreviewPath             = c_PrefabsPath + "Bosses/";
@@ -129,6 +131,7 @@ namespace Tools
         public const string c_IconPath                      = c_SpritesPath + "Icons/";
         public const string c_IconCharactersPath            = c_IconPath + "Characters/";
         public const string c_IconBossesHeadsPath           = c_IconCharactersPath + "BossesHeads/";
+        public const string c_IconSpawnsPath                = c_IconCharactersPath + "Spawns/";
         public const string c_IconSpellsPath                = c_IconPath + "Spells/";
         public const string c_IconStateEffectsPath          = c_IconSpellsPath + "StateEffects/";
         public const string c_IconRunesPath                 = c_IconPath + "Runes/";
@@ -490,7 +493,7 @@ namespace Tools
                 path = c_IconCharactersPath;
 
             else if (iconType == typeof(ESpawn))
-                path = c_IconCharactersPath;
+                path = c_IconSpawnsPath;
 
             else if (iconType == typeof(ESpell))
                 path = c_IconSpellsPath;
@@ -521,6 +524,7 @@ namespace Tools
                 path = c_ChestsIconPath;
                 itemName += "Chest";
             }
+
             else if (iconType == typeof(EArenaMod))
                 return LoadFilterIcon(itemName);
 
@@ -654,6 +658,17 @@ namespace Tools
             }
 
             return Load<Sprite>(c_CardsPath + "MasteryBorders/MasteryBorder_" + mastery.ToString());
+        }
+
+        #endregion
+
+
+        #region Loading Screens
+
+        public static bool TryLoadLoadingScreen(string name, out LoadingScreen screen)
+        {
+            screen = Load<LoadingScreen>("LoadingScreen_" + name, c_LoadingScreenPath, warning: false);
+            return screen != null;
         }
 
         #endregion

@@ -1,6 +1,4 @@
 ﻿using Enums;
-using MyBox;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,8 +15,6 @@ namespace Data
         protected EArenaDifficulty  m_ArenaDifficulty;
         [SerializeField]
         public List<EArenaMod>      m_ArenaMods;
-        [SerializeField]
-        public int                  m_MinExtraDifficulty;
 
         public override string ID => m_ArenaType.ToString() + base.ID;
 
@@ -27,7 +23,7 @@ namespace Data
 
         #region Check
 
-        public virtual bool Check(EGameMode gameMode, EGameResult gameResult, EArenaType arenaType, EArenaDifficulty arenaDifficulty, int extraDifficulty, List<EArenaMod> arenaMods)
+        public virtual bool Check(EGameMode gameMode, EGameResult gameResult, EArenaType arenaType, EArenaDifficulty arenaDifficulty, List<EArenaMod> arenaMods, bool save = false)
         {
             if (gameMode != EGameMode.Arena)
                 return false;
@@ -35,45 +31,18 @@ namespace Data
             if (Current == null)
                 return false;
 
-            // CHECK : BASE requirements of the Achievements
-            if (! CheckRequirements(arenaType, arenaDifficulty, extraDifficulty, arenaMods))
-                return false;
-
             // CHECK : Specific requirements of each achievement thresholds from the current index 
             bool test = false;
             for (int i = CurrentIndex; i < AchievementSubData.Count; i++)
             {
-                if (! AchievementSubData[i].Check(arenaType, arenaDifficulty, extraDifficulty, arenaMods))
+                if (! AchievementSubData[i].Check(arenaType, arenaDifficulty, arenaMods))
                     break;
 
-                IncreaseAtIndex(i);
+                IncreaseAtIndex(i, save: save);
                 test = true;
             }
 
             return test;
-        }
-
-        protected virtual bool CheckRequirements(EArenaType arenaType, EArenaDifficulty arenaDifficulty, int extraDifficulty, List<EArenaMod> arenaMods)
-        {
-            if (arenaType != EArenaType.None && arenaType != m_ArenaType)
-                return false;
-
-            if (arenaDifficulty < m_ArenaDifficulty)
-                return false;
-
-            if (extraDifficulty < m_MinExtraDifficulty)
-                return false;
-
-            if (m_ArenaMods.IsNullOrEmpty())
-                return true;
-
-            foreach (EArenaMod mod in m_ArenaMods)
-            {
-                if (!arenaMods.Contains(mod))
-                    return false;
-            }
-
-            return true;
         }
 
         #endregion
@@ -81,16 +50,22 @@ namespace Data
 
         #region Description
 
+        public void OverrideSubAchievements()
+        {
+            foreach (var subAchievement in AchievementSubData)
+            {
+                subAchievement.Override(
+                    arenaType:              m_ArenaType,
+                    arenaDifficulty:        m_ArenaDifficulty,
+                    arenaMods:              m_ArenaMods
+                ); 
+            }
+        }
+
         public override string GetDescription()
         {
             var description = base.GetDescription();
-
-            description += $"Finish the <i>{m_ArenaType}</i> in difficulty at least <b>{(EArenaDifficulty)(Current.MaxValue - 1)}</b>";
-            if (!m_ArenaMods.IsNullOrEmpty())
-                description += $" in <b>{String.Join(", ", m_ArenaMods)}</b> mod";
-            if (m_MinExtraDifficulty > 0)
-                description += $" with at least +{m_MinExtraDifficulty} extra difficulty";
-
+            description += Current.GetDescription();
             return CleanDescription(description);
         }
 

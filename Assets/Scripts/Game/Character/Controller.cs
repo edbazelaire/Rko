@@ -1,4 +1,5 @@
 using AI;
+using Assets;
 using Assets.Scripts.Game;
 using Data;
 using Data.DataStructures;
@@ -45,14 +46,15 @@ public class Controller : NetworkBehaviour
     Controller      m_SpawnOwner;
 
     // -- local variables
-    bool m_GameRunning = false;
+    bool m_IsActive     = false;
+    bool m_GameRunning  = false;
 
     // -- Components & GameObjects
     BehaviorTree            m_BehaviorTree;
     Game.Character.AnimationHandler        m_AnimationHandler;
     GFXHandler              m_GFXHandler;
     Movement                m_Movement;
-    Life                    m_Life;
+    protected Life          m_Life;
     EnergyHandler           m_EnergyHandler;
     SpellHandler            m_SpellHandler;
     StateHandler            m_StateHandler;
@@ -65,13 +67,15 @@ public class Controller : NetworkBehaviour
     // PUBLIC ACCESSORS
 
     // -- Data
+    public bool             IsActive            => m_IsActive;
+    public bool             IsTargettable       => IsActive && Life.IsAlive && ! StateHandler.IsUnTargetable;
     public SPlayerData      PlayerData          => m_PlayerData.Value;
     public string           PlayerName          => m_PlayerName.Value.ToString();
     public string           Character           => m_Character.Value.ToString();
     public CharacterData    CharacterData       => m_StateHandler.CharacterData;
     public int              CharacterLevel      => m_CharacterLevel.Value;
     public RuneData[]       RuneData            => m_RuneData;
-    public int              Team                => m_Team.Value;
+    public virtual int      Team                => m_Team.Value;
     public bool             IsPlayer            => m_IsPlayer.Value;
     public ulong            PlayerId            => m_PlayerId.Value;
     public bool             IsSpawn             => (int)PlayerId >= GameManager.SPAWN_CLIENT_ID;
@@ -132,8 +136,23 @@ public class Controller : NetworkBehaviour
         FindComponents();
 
         // add event to call UI initialization after NetworkVariable update 
-        m_IsInitialized.OnValueChanged  += OnInitializedChanged;
-        m_Life.DiedEvent                += OnDied;
+        m_IsInitialized.OnValueChanged      += OnInitializedChanged;
+        m_Life.OnDeathEvent                 += OnDied;
+    }
+
+    private void Update()
+    {
+        if (! IsSpawn)
+            return;
+
+        if (! GameManager.IsGameRunning)
+            return;
+
+        if (Life.Hp.Value <= 0)
+        {
+            ErrorHandler.Warning($"Found SPAWN ({m_Character.Value}) with no HP but not destroyed");
+            Destroy(gameObject);
+        }
     }
 
     /// <summary>
@@ -149,6 +168,9 @@ public class Controller : NetworkBehaviour
 
         if (IsPlayer)
             transform.position = ArenaManager.Instance.Spawns[m_Team.Value][0].position;
+
+        // set character is activated
+        m_IsActive = true;
 
         if (! IsSpawn)
         {
@@ -175,7 +197,7 @@ public class Controller : NetworkBehaviour
     /// <summary>
     /// Initialize the controller
     /// </summary>
-    public void Initialize(SPlayerData playerData, int team, bool isPlayer = true)
+    public virtual void Initialize(SPlayerData playerData, int team, bool isPlayer = true)
     {
         if (!IsServer)
             return;
@@ -203,6 +225,7 @@ public class Controller : NetworkBehaviour
         m_PlayerId.Value    = GameManager.Instance.GetNextSpawnId();
         m_SpawnOwner        = spawnOwner;
 
+        transform.rotation = Quaternion.Euler(0f, team == 0 ? 0f : -180f, 0f);
         InitializeCharacterData(playerData);
 
         gameObject.name = m_Character.Value.ToString() + "_" + PlayerId.ToString();
@@ -253,7 +276,7 @@ public class Controller : NetworkBehaviour
     public void InitializeGraphics()
     {
         // setup character preview
-        m_GFXHandler.Initialize(m_Character.Value.ToString());
+        m_GFXHandler.Initialize(m_Character.Value.ToString(), m_PlayerData.Value.Skin);
 
         // get animator
         Animator animator = Finder.FindComponent<Animator>(m_GFXHandler.CharacterPreview);
@@ -309,7 +332,7 @@ public class Controller : NetworkBehaviour
         m_Movement.Initialize(characterData.Speed);
 
         // init health and energy
-        m_Life.Initialize(characterData.MaxHealth, characterData.GetInt(EStateEffectProperty.Shield, ""));
+        m_Life.Initialize(characterData.MaxHealth, characterData.GetInt(EStateEffectProperty.Shield));
         m_EnergyHandler.Initialize(characterData.BaseEnergy, characterData.MaxEnergy, characterData.PassiveEnergyGain);
         m_TriggerEffectHandler.Initialize(GetTriggerEffects(characterData));
 
@@ -373,10 +396,9 @@ public class Controller : NetworkBehaviour
         // setup energy bar
         PlayerBarUI energyBar = Finder.FindComponent<PlayerBarUI>(spawnUI.gameObject, "SpawnEnergyBar");
         energyBar.Initialize(m_EnergyHandler.Energy.Value, m_EnergyHandler.MaxEnergy.Value);
-        m_EnergyHandler.Energy.OnValueChanged += energyBar.OnValueChanged;
-        m_EnergyHandler.MaxEnergy.OnValueChanged += energyBar.OnMaxValueChanged;
+        m_EnergyHandler.Energy.OnValueChanged       += energyBar.OnValueChanged;
+        m_EnergyHandler.MaxEnergy.OnValueChanged    += energyBar.OnMaxValueChanged;
     }
-
 
     public override void OnDestroy()
     {
@@ -384,6 +406,27 @@ public class Controller : NetworkBehaviour
 
         OnDestroyedEvent?.Invoke();
         GameManager.GameStartedEvent -= OnGameStarted;
+    }
+
+    #endregion
+
+
+    #region Activation / Deactivation
+
+    public void Activate(bool activate)
+    {
+        if (activate == m_IsActive)
+            return;
+
+        m_IsActive = activate;
+        gameObject.SetActive(activate);
+
+        if (activate)
+        {
+            // check that OnGameStarted was called
+            if (GameManager.IsGameRunning && ! GameRunning)
+                OnGameStarted();
+        }
     }
 
     #endregion
@@ -494,6 +537,9 @@ public class Controller : NetworkBehaviour
     /// </summary>
     void OnGameStarted()
     {
+        if (!m_IsActive)
+            return;
+
         // set to "true" the variable that the game has started
         m_GameRunning = true;
 
@@ -504,7 +550,7 @@ public class Controller : NetworkBehaviour
             return;
 
         // when game starts, activate behavior tree
-        if (! IsPlayer && m_BehaviorTree != null)
+        if (! IsPlayer && m_BehaviorTree != null && ! Main.DeactivateEnemy)
         {
             m_BehaviorTree.Activate(true);
         }
@@ -539,13 +585,14 @@ public class Controller : NetworkBehaviour
     {
         if (IsSpawn)
         {
+            Debug.Log("OnDied() : " + m_Character.Value);
             Destroy(gameObject);
             return;
         }
 
         ActivateActionComponent(false);
     }
-  
+
     public void OnGameEnded(bool win)
     {
         // stop all current coroutines
@@ -593,5 +640,4 @@ public class Controller : NetworkBehaviour
     }
 
     #endregion
-
 }

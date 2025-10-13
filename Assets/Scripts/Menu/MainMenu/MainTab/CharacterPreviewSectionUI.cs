@@ -226,7 +226,7 @@ namespace Menu.MainMenu
         /// </summary>
         void SpawnCharPreview()
         {
-            UIHelper.SpawnCharacter(m_Character.ToString(), m_CharacterPreviewContainer);
+            UIHelper.SpawnCharacter(m_Character.ToString(), ESkin.None, m_CharacterPreviewContainer);
         }
 
         void RefreshCharacter()

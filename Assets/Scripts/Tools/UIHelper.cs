@@ -279,13 +279,13 @@ namespace Tools
 
         #region Spawning
 
-        public static void SpawnCharacter(string character, GameObject parent, string layerName = "", Vector2 padding = default)
+        public static void SpawnCharacter(string character, ESkin skin, GameObject parent, string layerName = "", Vector2 padding = default)
         {
             // clean container before spawning
             CleanContent(parent);
 
             // get selected character preview
-            var characterPreview = CharacterLoader.GetCharacterData(character, destroy: true).InstantiateCharacterPreview(parent);
+            var characterPreview = CharacterLoader.GetCharacterData(character, destroy: true).InstantiateCharacterPreview(parent, skin);
 
             // display character preview
             AdjustScale(ref characterPreview, parent);
@@ -342,7 +342,7 @@ namespace Tools
             if (interraclable)
             {
                 Button button = template.AddComponent<Button>();
-                button.onClick.AddListener(() => ScreenManager.SetPopUp(EPopUpState.BossInfoPopUp, characterData.Name, characterData.Level));
+                button.onClick.AddListener(() => ScreenManager.SetPopUp(EPopUpState.BossInfoPopUp, ESkin.None, characterData.Name, characterData.Level));
             }
 
             return template;
@@ -358,8 +358,8 @@ namespace Tools
             // display character preview
             var baseScale = go.transform.localScale;
             var parentRect = Finder.FindComponent<RectTransform>(parent);
-            float scaleFactor = Mathf.Min(parentRect.rect.height / baseScale.y, parentRect.rect.width / baseScale.x);
-            go.transform.localScale = new Vector3(baseScale.x * scaleFactor, baseScale.y * scaleFactor, baseScale.y * scaleFactor);
+            float scaleFactor = Mathf.Min(parentRect.rect.width / baseScale.x, parentRect.rect.height / baseScale.y);
+            go.transform.localScale = new Vector3(baseScale.x * scaleFactor, baseScale.y * scaleFactor, baseScale.z * scaleFactor);
         }
 
 
@@ -421,6 +421,8 @@ namespace Tools
                 if (particleRenderer != null)
                 {
                     particleRenderer.sortingLayerName = canvas.sortingLayerName;
+                    if (particleRenderer.sortingOrder < 0)
+                        particleRenderer.sortingOrder = 0;
                     particleRenderer.sortingOrder += canvas.sortingOrder + 1; // Render above the Canvas
                 }
             }

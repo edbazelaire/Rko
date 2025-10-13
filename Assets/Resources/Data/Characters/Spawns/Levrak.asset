@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
+  m_Name: Levrak
+  m_EditorClassIdentifier: 
+  m_Rarety: 0
+  m_Description: 
+  m_DescriptionVariables: []
+  m_SpellElements: 
+  m_AutoAttack: SoulShards
+  m_SpecialAbility: Netherglacier
+  m_Ultimate: GlacialBreath
+  Size: 2.5
+  BaseSpeed: 0.35
+  BaseHealth: 2600
+  MaxEnergy: 500
+  BaseEnergy: 0
+  PassiveEnergyGain: 0
+  IsStructure: 0
+  HealthScaleFactor: 0.12
+  CharacterStatScaling:
+  - StateEffectProperty: 5
+    BaseValue: 20
+    BonusValue: 0
+    ScalingFactor: 0.1
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 27
+    BaseValue: 0.2
+    BonusValue: 0
+    ScalingFactor: 0
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 26
+    BaseValue: 15
+    BonusValue: 0
+    ScalingFactor: 0.1
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 4
+    BaseValue: 1000
+    BonusValue: 0
+    ScalingFactor: 0.12
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  m_SpecialPowers:
+  - Description: 
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: SoulFeast
+      OverridingData: []
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    m_BonusStats: []

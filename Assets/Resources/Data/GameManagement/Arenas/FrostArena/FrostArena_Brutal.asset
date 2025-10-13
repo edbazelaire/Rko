@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7d51f633e46b344920f012b0e1eca8, type: 3}
   m_Name: FrostArena_Brutal
   m_EditorClassIdentifier: 
-  m_NLifes: 1
+  m_NLifes: 2
   m_ArenaLevelData:
   - RewardsData:
       Currencies:
@@ -77,9 +77,9 @@ MonoBehaviour:
       Cooldown: 8
       RepeatWhenCooldownOver: 0
     m_PowerUps:
-    - ShieldRune - Primal
-    - AncientAegisRune - Primal
+    - AncientAegisRune - Major
     - BerserkerRune - Major
+    - ShieldRune - Minor
     StageData:
     - m_Boss: 1001
       m_BonusLevel: 0
@@ -128,28 +128,12 @@ MonoBehaviour:
       StateEffectEvent: 0
       StateEffectName: 
       NStateEffectActivationThreshold: 0
-      Delay: 5
+      Delay: 20
       Duration: 0
       NActivations: 0
       Cooldown: 0
       RepeatWhenCooldownOver: 0
     - SpellDataName: _SporeSacks
-      OverridingData: []
-      Level: 0
-      Target: 0
-      SpellActivationEvent: 3
-      ActivationTreshold: 0.6
-      SpellDeactivationEvent: 0
-      DeactivationTreshold: 0
-      StateEffectEvent: 0
-      StateEffectName: 
-      NStateEffectActivationThreshold: 0
-      Delay: 0
-      Duration: 0
-      NActivations: 0
-      Cooldown: 0
-      RepeatWhenCooldownOver: 0
-    - SpellDataName: _VenomSpikes
       OverridingData: []
       Level: 0
       Target: 0
@@ -166,10 +150,10 @@ MonoBehaviour:
       Cooldown: 0
       RepeatWhenCooldownOver: 0
     m_PowerUps:
-    - PoisonRune - Major
-    - ToxicWaterRune - Primal
-    - ParasiteRune - Primal
-    - PoisonfangRune - Major
+    - PoisonRune - Minor
+    - ToxicWaterRune - Major
+    - ParasiteRune - Major
+    - PoisonfangRune - Minor
     StageData:
     - m_Boss: 1002
       m_BonusLevel: 1
@@ -221,7 +205,7 @@ MonoBehaviour:
       Level: 0
       Target: 0
       SpellActivationEvent: 3
-      ActivationTreshold: 0.5
+      ActivationTreshold: 0.35
       SpellDeactivationEvent: 0
       DeactivationTreshold: 0
       StateEffectEvent: 0
@@ -233,10 +217,8 @@ MonoBehaviour:
       Cooldown: 0
       RepeatWhenCooldownOver: 0
     m_PowerUps:
-    - HealRune - Primal
     - CurseRune - Major
-    - CurseRune - Primal
-    - SoulSiffonRune - Primal
+    - SoulSiffonRune - Major
     - ShardcurseRune - Major
     StageData:
     - m_Boss: 1003
@@ -308,17 +290,17 @@ MonoBehaviour:
     StageData:
     - m_Boss: 1004
       m_BonusLevel: 0
-      m_Spells: 1c0000002800000011000000200000004c000000
+      m_Spells: 1c00000011000000200000004c000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1004
       m_BonusLevel: 1
-      m_Spells: 1c0000002800000011000000200000004c000000
+      m_Spells: 1c00000011000000200000004c000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 3
       m_BonusLevel: 0
-      m_Spells: 4028000041280000
+      m_Spells: 402800004128000042280000
       m_TriggerEffects:
       - SpellDataName: _BlueMeteorsRain
         OverridingData: []
@@ -350,6 +332,7 @@ MonoBehaviour:
         Title: 0
         Avatar: 0
         Border: 202
+        Emot: 0
         Badge: 0
         League: 0
       Boosts: []
@@ -406,12 +389,12 @@ MonoBehaviour:
     StageData:
     - m_Boss: 1005
       m_BonusLevel: 0
-      m_Spells: 1d0000001e0000001f000000150000004c000000
+      m_Spells: 1d0000001e0000001f0000001500000049000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1005
       m_BonusLevel: 1
-      m_Spells: 1d0000001e0000001f000000490000004c00000004000000
+      m_Spells: 1d0000001e0000001f0000004900000004000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 4

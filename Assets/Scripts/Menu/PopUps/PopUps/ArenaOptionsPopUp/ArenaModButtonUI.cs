@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using Tools;
-using System;
-using Data.ArenaEffects.ArenaMods;
 using Enums;
 
 namespace Menu.PopUps
@@ -10,6 +8,8 @@ namespace Menu.PopUps
     public class ArenaModButtonUI : MObject
     {
         #region Members
+
+        [SerializeField] Color m_IsCurrentColor;
 
         EArenaMod m_ArenaMod;
 
@@ -51,6 +51,11 @@ namespace Menu.PopUps
         public void SetSelected(bool selected)
         {
             m_Selected.gameObject.SetActive(selected);
+        }
+        
+        public void SetIsCurrent(bool isCurrent)
+        {
+            m_Icon.color = isCurrent ? m_IsCurrentColor : Color.white;
         }
 
         #endregion

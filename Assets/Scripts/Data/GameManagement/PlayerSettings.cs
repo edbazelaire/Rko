@@ -123,9 +123,6 @@ namespace Data.GameManagement
         public static Color GetHitTypeColor(EHitType hitType, EHitCategory damageType)
         {
             var hitTypeColor = HitTypeColor.Where((sHitTypeColor) => sHitTypeColor.HitType == hitType).FirstOrDefault();
-            if (damageType == EHitCategory.None)
-                damageType = EHitCategory.Direct;
-
             return hitTypeColor.Colors.Where((damageTypeColor) => damageTypeColor.DamageType == damageType).FirstOrDefault().Color;
         }
 

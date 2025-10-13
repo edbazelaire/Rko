@@ -22,8 +22,8 @@ namespace Menu.PopUps
     {
         #region Members
 
-        protected EStageRewardState     m_State;
-        protected NotificationParticles   m_NotificationDisplay;
+        protected EStageRewardState         m_State;
+        protected NotificationParticles     m_NotificationDisplay;
 
         protected StageSectionUI        m_StageSectionUI;
         protected RewardsDisplayer      m_RewardsDisplayer;

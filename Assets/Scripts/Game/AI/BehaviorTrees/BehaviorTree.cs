@@ -25,6 +25,7 @@ namespace AI
 
         protected int m_Phase                           = 0;
         protected string m_State                        = "None";
+        protected Node m_CurrentNode                    = null;
         protected Dictionary<string, float> m_Timers    = new Dictionary<string, float>();
         protected List<string> m_FrozenTimers           = new ();
         protected Dictionary<string, int> m_Counters    = new Dictionary<string, int>();
@@ -173,6 +174,14 @@ namespace AI
                 FreezeTimer(id, false);
 
             return m_Timers[id] <= 0;
+        }
+
+        public float GetTimer(string id)
+        {
+            if (! m_Timers.ContainsKey(id))
+                return 0f;
+
+            return m_Timers[id];
         }
 
         public void ResetTimer(string id, float timer)

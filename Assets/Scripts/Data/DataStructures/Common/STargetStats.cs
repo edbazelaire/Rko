@@ -15,6 +15,8 @@ namespace Assets.Scripts.Data.DataStructures.Common
 
         int m_Level;
 
+        public EStateEffectTarget Target => m_Target;
+        public List<SBonusStats> BonusStats => m_BonusStats;
         public int Level => m_Level;
 
         public STargetStats(EStateEffectTarget target, List<SBonusStats> bonusStats = default, int level = 0)

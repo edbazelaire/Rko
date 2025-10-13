@@ -27,13 +27,14 @@ MonoBehaviour:
       m_EndSpellPart: 0
       StartAt: 0
       EndAt: 0
-      Persistance: 3
+      Persistance: 1
     Size: 0
     OrderInLayer: 0
     SpawnTarget: 3
     SpawnLocation: 2
     BodyPart: 0
     IsFollowing: 0
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -63,7 +64,7 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: 0
+  m_MaxHit: -1
   m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
@@ -91,8 +92,37 @@ MonoBehaviour:
     ScalingType: 0
     RoundingType: 2
     ScalingTresholds: []
-  m_Size: -1
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
+  m_Size: 50
   TriggerPlayer: 1
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
   EnemyStateEffects:
   - StateEffect: 2
     Stacks: 1
@@ -103,6 +133,7 @@ MonoBehaviour:
   PersistanceAfterEnd: 0
   Animation: 0
   IsCancellable: 0
+  IsInterruptable: 1
   AnimationTimer: 0
   m_Cooldown: 0
   m_SpellSpawn: 1

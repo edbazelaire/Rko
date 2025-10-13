@@ -1,11 +1,8 @@
 ﻿using Data;
-using Data.DataStructures.SpellSubStructures;
 using Enums;
-using Game.Loaders;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Tools;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Game.Spells
@@ -112,7 +109,7 @@ namespace Game.Spells
 
         public override string GetDescription()
         {
-            if (m_Description == "")
+            if (m_Description == "" && m_ReplacementData != null)
                 return m_ReplacementData.GetDescription();
 
             return base.GetDescription();

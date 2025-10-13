@@ -26,12 +26,29 @@ namespace Game.Loaders
 
         public static void Initialize()
         {
-            m_Achievements = new();
+            // load all scriptables in Achievements data file
+            var loadedAssets = Resources.LoadAll<ScriptableObject>(AssetLoader.c_AchievementsDataPath);
 
-            // DEFAULT achievements
-            m_Achievements = Resources.LoadAll<ScriptableObject>(AssetLoader.c_AchievementsDataPath).OfType<IAchievement>().ToList();
+            // clone all achievements (to be able to manipulate without re-writting)
+            m_Achievements = new List<IAchievement>();
+            foreach (var asset in loadedAssets)
+            {
+                var clone = Object.Instantiate(asset);
 
-            RegisterListeners();
+                if (clone is ArenaAchievementData arenaData)
+                {
+                    arenaData.OverrideSubAchievements();
+                    m_Achievements.Add(arenaData);
+                }
+                else if (clone is IAchievement ach)
+                {
+                    m_Achievements.Add(ach);
+                }
+                else
+                {
+                    ErrorHandler.Warning("Found ScriptableObject that is not an IAchievement in " + AssetLoader.c_AchievementsDataPath + " : " + clone.name);
+                }
+            }
         }
 
         #endregion
@@ -81,17 +98,6 @@ namespace Game.Loaders
 
         #region Listeners
 
-        static void RegisterListeners()
-        {
-            // hook "on arena ended" events
-            //foreach (var achievement in m_Achievements)
-            //{
-            //    if (achievement is ArenaAchievementData arenaAchievement)
-            //    {
-            //        ProgressionCloudData.CurrentArenaEndedEvent += arenaAchievement.CheckOnArenaEnded;
-            //    }
-            //}
-        }
 
         #endregion
     }

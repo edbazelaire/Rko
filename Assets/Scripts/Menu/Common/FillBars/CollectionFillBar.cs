@@ -70,7 +70,7 @@ namespace Menu.Common
         public void InitializePercentage(float percentage)
         {
             m_IsPerc = true;
-            Initialize(percentage, 100);
+            Initialize(Mathf.Round(percentage * 100), 100);
         }
 
         protected override void FindComponents()

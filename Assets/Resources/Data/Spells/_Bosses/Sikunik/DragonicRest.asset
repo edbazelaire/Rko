@@ -21,6 +21,7 @@ MonoBehaviour:
   Graphics: {fileID: 0}
   SpellEventActions: []
   OnHit: []
+  PassiveEffects: []
   SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -60,16 +61,13 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
+    m_Targets: 
   m_SpellsScalingLevel: []
   m_Size: 1
   TriggerPlayer: 1
   EnemyStateEffects: []
   AllyStateEffects:
   - StateEffect: 10002
-    Stacks: 1
-    BonusStacksPerLevel: 0
-    OverridingProperties: []
-  - StateEffect: 10
     Stacks: 1
     BonusStacksPerLevel: 0
     OverridingProperties: []
@@ -81,7 +79,7 @@ MonoBehaviour:
   m_Cooldown: 0
   CounterType: 1
   CounterActivation: 0
-  m_DamageTypeActivation: 010000000200000003000000
+  m_DamageTypeActivation: 0100000002000000
   m_SpawnOffset: {x: 0, y: 0.3}
   m_IsFollowing: 1
   m_CounterAnimation: 4
@@ -89,6 +87,6 @@ MonoBehaviour:
   IsDestroyingSpell: 0
   IsBlockingMovement: 1
   IsBlockingCast: 0
-  IsCanceledOnCast: 1
+  IsCanceledOnCast: 0
   m_DamageConversionEffects: []
   OnCounterProc: {fileID: 11400000, guid: dedfeeba1ae69694d833481db6cadfa8, type: 2}

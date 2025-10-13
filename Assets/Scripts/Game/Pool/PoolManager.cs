@@ -3,6 +3,7 @@ using Game.Pool;
 using System.Collections.Generic;
 using Tools;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Assets.Scripts.Game
@@ -54,8 +55,17 @@ namespace Assets.Scripts.Game
             {
                 // Otherwise, retrieve an object from the pool
                 obj = Instance.m_GameObjectPool[key].Dequeue();
-                obj.transform.SetParent(parent);
-                obj.gameObject.SetActive(activate);
+                if (obj.IsDestroyed())
+                {
+                    // If the pool is empty, create a new object
+                    obj = Instantiate(prefab, parent);
+                    obj.gameObject.SetActive(activate);
+                }
+                else
+                {
+                    obj.transform.SetParent(parent);
+                    obj.gameObject.SetActive(activate);
+                }
             }
 
             if (checkSpawnLogic)
@@ -79,6 +89,7 @@ namespace Assets.Scripts.Game
 
         #endregion
 
+
         #region Pooling (NetworkObject)
 
         /// <summary>
@@ -100,6 +111,9 @@ namespace Assets.Scripts.Game
             {
                 // Otherwise, retrieve an object from the pool
                 obj = Instance.m_NetworkObjectPool[key].Dequeue();
+                if (obj.transform.parent != null)
+                    obj.transform.SetParent(null);
+
                 obj.transform.SetPositionAndRotation(position, rotation);
                 obj.gameObject.SetActive(true);
             }
@@ -109,8 +123,7 @@ namespace Assets.Scripts.Game
             {
                 if (parent != null)
                 {
-                    if (!obj.TrySetParent(parent, worldPositionStays))
-                        obj.gameObject.transform.SetParent(parent, worldPositionStays);
+                    obj.gameObject.transform.SetParent(parent, worldPositionStays);
                 }
 
                 obj.gameObject.SetActive(true);
@@ -190,6 +203,7 @@ namespace Assets.Scripts.Game
         }
 
         #endregion
+
 
         #region IPoolLifecycle Management
 

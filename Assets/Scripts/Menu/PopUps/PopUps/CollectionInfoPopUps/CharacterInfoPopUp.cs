@@ -54,11 +54,14 @@ namespace Menu.PopUps
             m_DescriptionText           = Finder.FindComponent<TMP_Text>(gameObject, "Description");
             m_StateEffectsInfoRow       = Finder.FindComponent<StateEffectsInfoRow>(gameObject);
             m_SpellsContent             = Finder.Find(gameObject, "SpellsContent");
-            m_MasteryContent            = Finder.Find(gameObject, "MasteryContent");
-            m_MasteryUpgradeButton      = Finder.FindComponent<Button>(gameObject, "MasteryUpgradeButton");
-            m_MasteryUpgradeCostText    = Finder.FindComponent<TMP_Text>(m_MasteryUpgradeButton.gameObject, "CostText");
 
-            m_TemplateAbilityInfoRowUI  = AssetLoader.Load<AbilityInfoRowUI>("AbilityInfoRow", AssetLoader.c_MainUIComponentsInfosPath);
+            // -- mastery content
+            m_MasteryContent            = Finder.Find(gameObject, "MasteryContent", false);
+            m_MasteryUpgradeButton      = Finder.FindComponent<Button>(gameObject, "MasteryUpgradeButton", false);
+            if (m_MasteryUpgradeButton != null)
+                m_MasteryUpgradeCostText = Finder.FindComponent<TMP_Text>(m_MasteryUpgradeButton.gameObject, "CostText", false);
+
+            m_TemplateAbilityInfoRowUI = AssetLoader.Load<AbilityInfoRowUI>("AbilityInfoRow", AssetLoader.c_MainUIComponentsInfosPath);
         }
 
         protected override void OnPrefabLoaded()
@@ -112,6 +115,15 @@ namespace Menu.PopUps
             base.RefreshButtons();
 
             RefreshMasteryUpgradeButton();
+        }
+
+        protected override bool HandleSpecialCases(GameObject container, string key, object value, object newDataValue = null, EScalingDirection scaling = EScalingDirection.None)
+        {
+            // skip bonus hp (contained in Character's health)
+            if (key == EStateEffectProperty.Hp.ToString())
+                return true;
+
+            return base.HandleSpecialCases(container, key, value, newDataValue, scaling);
         }
 
         #endregion
@@ -193,7 +205,6 @@ namespace Menu.PopUps
             // SAFETY : make sure the button exists
             if (m_MasteryUpgradeButton == null)
             {
-                ErrorHandler.Error("Unable to find MasteryUpgradeButton");
                 return;
             }
 
@@ -253,14 +264,16 @@ namespace Menu.PopUps
         {
             base.RegisterListeners();
 
-            m_MasteryUpgradeButton.onClick.AddListener(OnMasteryUpgradeButtonClicked);
+            if (m_MasteryUpgradeButton != null)
+                m_MasteryUpgradeButton.onClick.AddListener(OnMasteryUpgradeButtonClicked);
         }
 
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
 
-            m_MasteryUpgradeButton.onClick.RemoveAllListeners();
+            if (m_MasteryUpgradeButton != null)
+                m_MasteryUpgradeButton.onClick.RemoveAllListeners();
         }
 
         protected override void OnCollectableDataChanged(SCollectableCloudData collectableCloudData)

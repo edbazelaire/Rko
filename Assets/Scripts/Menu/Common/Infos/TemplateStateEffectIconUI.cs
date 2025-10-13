@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Managers;
 using Data;
 using Enums;
 using Game.Loaders;
@@ -15,13 +16,13 @@ namespace Menu.Common.Infos
     {
         #region Members
 
-        Image               m_Icon;
-        GameObject          m_StateEffectTextContainer;
-        TMP_Text            m_StateEffectText;
-        Button              m_Button;
+        protected Image                 m_Icon;
+        protected GameObject            m_StateEffectTextContainer;
+        protected TMP_Text              m_StateEffectText;
+        protected Button                m_Button;
 
-        SStateEffectData    m_StateEffectData;
-        int                 m_Level;
+        protected SStateEffectData      m_StateEffectData;
+        protected int                   m_Level;
 
         #endregion
 
@@ -64,7 +65,7 @@ namespace Menu.Common.Infos
 
         #region GUI Manipulators
 
-        void DisplayDuration()
+        protected virtual void DisplayDuration()
         {
             float duration;
             if (m_StateEffectData.OverridingProperties.Any(value => value.StateEffectProperty.Equals(EStateEffectProperty.Duration)))
@@ -89,7 +90,7 @@ namespace Menu.Common.Infos
             }
         }
 
-        void DisplayStacks()
+        protected virtual void DisplayStacks()
         {
             if (m_StateEffectData.GetStacks() > 1)
             {
@@ -114,9 +115,9 @@ namespace Menu.Common.Infos
             m_Button.onClick.AddListener(OnClick);
         }
 
-        private void OnClick()
+        protected virtual void OnClick()
         {
-            Main.StateEffectPopUp(m_StateEffectData, m_Level);
+            ScreenManager.StateEffectPopUp(m_StateEffectData, m_Level);
         }
 
         #endregion

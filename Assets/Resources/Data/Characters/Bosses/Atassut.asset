@@ -22,9 +22,22 @@ MonoBehaviour:
   Size: 3
   BaseSpeed: 1.5
   BaseHealth: 2000
-  MaxEnergy: 300
-  BaseEnergy: 300
+  MaxEnergy: 500
+  BaseEnergy: 500
+  PassiveEnergyGain: 1
   IsStructure: 0
   HealthScaleFactor: 0.12
-  CharacterStatScaling: []
+  CharacterStatScaling:
+  - StateEffectProperty: 26
+    BaseValue: 20
+    BonusValue: 0
+    ScalingFactor: 0.12
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 5
+    BaseValue: 20
+    BonusValue: 0
+    ScalingFactor: 0.12
+    SpecialConditions: []
+    StateEffectStackFactors: []
   m_SpecialPowers: []

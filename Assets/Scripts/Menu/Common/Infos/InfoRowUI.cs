@@ -13,6 +13,7 @@ namespace Menu.Common.Infos
         protected TMP_Text  m_ValueText;
 
         protected string m_Name;
+        protected string m_Key;
         protected object m_Value;
 
         #endregion
@@ -28,13 +29,21 @@ namespace Menu.Common.Infos
             m_ValueText = Finder.FindComponent<TMP_Text>(gameObject, "Value", false);
         }
 
-        public virtual void Initialize(string name, object value)
+        public virtual void Initialize(string key, object value, string title = "")
         {
-            // setup name of the property
-            if (!TextHandler.IsSpecialPropertyName(name, out string propertyName, out string specialCondition))
-                propertyName = name;
+            // Title provided - force as name
+            if (title != "")
+                m_Name = title;
 
-            m_Name = propertyName;
+            // Special PropertyName - set as name
+            else if (TextHandler.IsSpecialPropertyName(key, out string propertyName, out string specialCondition))
+                m_Name = propertyName;
+
+            // No specific value - use key as name
+            else
+                m_Name = key;
+
+            m_Key = key;
             m_Value = value;
 
             base.Initialize();

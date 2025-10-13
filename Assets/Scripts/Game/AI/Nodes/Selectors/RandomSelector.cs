@@ -14,7 +14,7 @@ namespace AI
 
         #region Core
 
-        public RandomSelector(List<Node> nodes, Func<float> weight = null) : base(nodes, false, weight)
+        public RandomSelector(List<Node> nodes, bool saveCurrentNode, Func<float> weight = null) : base(nodes, saveCurrentNode, false, weight)
         {
             
         }

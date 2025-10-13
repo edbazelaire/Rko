@@ -25,6 +25,14 @@ namespace Game.Spells
             m_GrowingAreaBaseScale = m_GrowingArea.transform.localScale;
         }
 
+        protected override void ForceEnd()
+        {
+            // make sure to reset this value
+            m_GrowingArea.transform.localScale = m_GrowingAreaBaseScale;
+
+            base.ForceEnd();
+        }
+
         #endregion
 
 
@@ -35,13 +43,13 @@ namespace Game.Spells
             base.OnAnimationStarting();
 
             // init scale
-            transform.localScale = new Vector3(m_SpellData.Size, m_SpellData.Size, m_SpellData.Size);
             m_GrowingArea.transform.localScale = Vector3.zero;
         }
 
 
         protected override void OnAnimationTick()
         {
+            base.OnAnimationTick();
             m_GrowingArea.transform.localScale = m_GrowingAreaBaseScale * (1 - (m_Timer / m_Duration));
         }
 

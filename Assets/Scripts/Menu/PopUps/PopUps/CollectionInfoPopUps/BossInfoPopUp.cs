@@ -1,4 +1,7 @@
-﻿using Enums;
+﻿using Data;
+using Data.DataStructures.CharacterSubStructures;
+using Data.DataStructures.StateEffectSubStructures;
+using Enums;
 using System;
 using System.Collections.Generic;
 using Tools;
@@ -11,7 +14,9 @@ namespace Menu.PopUps
 
         // =========================================================================================
         // Data
-        List<string> m_ExtraAbilities = new List<string>();
+        ESkin                       m_Skin              = ESkin.None;
+        List<string>                m_ExtraAbilities    = new List<string>();
+        List<SCharacterStatScaling> m_BonusStats        = new List<SCharacterStatScaling>();
 
         // =========================================================================================
         // Dependent Members
@@ -30,10 +35,15 @@ namespace Menu.PopUps
             base.FindComponents();
         }
 
-        public void Initialize(string charName, int level, List<string> extraAbilities = default)
+        public void Initialize(string charName, ESkin skin, int level, List<string> extraAbilities = default, List<SCharacterStatScaling> bonusStats = default)
         {
+            m_Skin = skin;
+
             if (extraAbilities != null)
                 m_ExtraAbilities = extraAbilities;
+
+            if (bonusStats != null)
+                m_BonusStats = bonusStats;
 
             Enum enumValue = null;
             if (Enum.TryParse(charName, out EBoss boss))
@@ -72,7 +82,7 @@ namespace Menu.PopUps
         protected override void SetUpPreview()
         {
             UIHelper.CleanContent(m_PreviewContainer);
-            CoroutineManager.DelayMethod(() => UIHelper.SpawnCharacter(m_CharacterData.Name, m_PreviewContainer));
+            CoroutineManager.DelayMethod(() => UIHelper.SpawnCharacter(m_CharacterData.Name, m_Skin, m_PreviewContainer));
         }
 
 
@@ -82,6 +92,18 @@ namespace Menu.PopUps
         #region Helpers
 
         protected override void LoadTemplateItem() { }
+
+        protected override CollectableData PreprocessData(CollectableData data)
+        {
+            if (data is not CharacterData characterData)
+            {
+                ErrorHandler.Warning("Unable to set data as CharacterData");
+                return base.PreprocessData(data);
+            }
+
+            characterData.AddBonusStats(m_BonusStats);
+            return characterData;
+        }
 
         protected override List<string> GetAbilities()
         {

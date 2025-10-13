@@ -1,0 +1,140 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f76340b3e7c71c048bac1f79c6d71276, type: 3}
+  m_Name: Plague
+  m_EditorClassIdentifier: 
+  m_Rarety: 0
+  m_Description: 
+  m_DescriptionVariables: []
+  m_SpellElements: 
+  m_MinorPower:
+    Description: A toxic miasm is in the air applying [Poison] to the enemies every
+      [TriggerEffect.0.Cooldown] seconds.
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: _Plague
+      OverridingData: []
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 2
+      ActivationTreshold: 5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: -1
+      Cooldown: 5
+      RepeatWhenCooldownOver: 1
+      ConsumeLifeOnActivation: 0
+    m_BonusStats: []
+    BonusPowerOrb: 0
+    BonusRewardsRarety: 0
+  m_MajorPower:
+    Description: A toxic miasm is in the air applying [Poison] to the enemies every
+      [TriggerEffect.0.Cooldown] seconds and [Infected] every [TriggerEffect.1.Cooldown]
+      seconds
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: _Plague
+      OverridingData: []
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 2
+      ActivationTreshold: 3
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: -1
+      Cooldown: 3
+      RepeatWhenCooldownOver: 1
+      ConsumeLifeOnActivation: 0
+    - SpellDataName: _SuperPlague
+      OverridingData: []
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 2
+      ActivationTreshold: 12
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: -1
+      Cooldown: 12
+      RepeatWhenCooldownOver: 1
+      ConsumeLifeOnActivation: 0
+    m_BonusStats: []
+    BonusPowerOrb: 0
+    BonusRewardsRarety: 0
+  m_PrimalPower:
+    Description: 'A toxic miasm is in the air applying [Poison] to the enemies every
+      [TriggerEffect.0.Cooldown] seconds and [Infected] every [TriggerEffect.1.Cooldown]
+      seconds.\n\nIncreased [Poison] damage by [BonusDamagePerc.Poison]'
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: _Plague
+      OverridingData: []
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 2
+      ActivationTreshold: 2
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: -1
+      Cooldown: 2
+      RepeatWhenCooldownOver: 1
+      ConsumeLifeOnActivation: 0
+    - SpellDataName: _SuperPlague
+      OverridingData: []
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 2
+      ActivationTreshold: 5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: -1
+      Cooldown: 5
+      RepeatWhenCooldownOver: 1
+      ConsumeLifeOnActivation: 0
+    m_BonusStats:
+    - StateEffectProperty: 8
+      BaseValue: 0.5
+      BonusValue: 0
+      ScalingFactor: 0
+      SpecialConditions:
+      - Poison
+      StateEffectStackFactors: []
+    BonusPowerOrb: 0
+    BonusRewardsRarety: 0
+  PowerUpTags: 

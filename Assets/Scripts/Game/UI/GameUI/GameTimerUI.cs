@@ -29,6 +29,18 @@ namespace Game.UI.GameUI
             m_Text = Finder.FindComponent<TMP_Text>(gameObject);
         }
 
+        public virtual void Initialize(int gameDuration)
+        {
+            m_GameDuration = gameDuration;
+
+            base.Initialize();
+
+            if (m_GameDuration < 0)
+            {
+                gameObject.SetActive(false);
+            }
+        }
+
         protected override void SetUpUI()
         {
             base.SetUpUI();
@@ -54,8 +66,11 @@ namespace Game.UI.GameUI
 
             RefreshTimer();
 
+            if (! GameManager.Instance.IsServer)
+                return;
+
             if (m_Timer <= 0)
-                GameManager.Instance.OnTimerEnd();
+                GameManager.TimerEndedEvent?.Invoke();
         }
 
         void RefreshTimer()

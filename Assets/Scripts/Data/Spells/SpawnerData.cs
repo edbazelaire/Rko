@@ -1,71 +1,15 @@
 ﻿using Assets.Scripts.Data.DataStructures.SpellSubStructures;
+using Data.DataStructures.SpellSubStructures.Spawns;
 using Enums;
 using Game.Loaders;
 using MyBox;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
 
 namespace Data
 {
-    [Serializable]
-    public class SSpawnElement
-    {
-        // ===========================================================================
-        // Serialized Data
-        [Tooltip("Name of the character to spawn")]
-        public string       CharacterName;                   
-        [SerializeField, Tooltip("max number of spawn for that element (-1 to infinite)")]
-        protected int       m_MaxSpawns           = -1;       
-        [SerializeField, Tooltip("probability that this spawn element is selected")]
-        protected float     m_SpawnProbability    = 1f;      
-        [SerializeField, Tooltip("bonus levels of the spawn")]
-        public int          m_BonusLevel          = 0;       
-        [SerializeField, Tooltip("interval between each spawns")]
-        public float        m_SpawnInterval       = 0f;     
-        [SerializeField, Tooltip("delay before starting")]
-        public float        m_Delay               = 0f;    
-        [SerializeField, Tooltip("duration of the spawn (-1 to infinite)")]
-        public float        m_Duration            = -1f;      
-
-        // ===========================================================================
-        // Private Data
-        protected bool  m_CanSpawn;
-        protected int   m_NSpawnCounter;
-
-        // ===========================================================================
-        // Public Accessors
-        public int MaxSpawns            => m_MaxSpawns;
-        public float SpawnProbability   => m_SpawnProbability;
-        public int BonusLevel           => m_BonusLevel;
-        public float SpawnInterval      => m_SpawnInterval;
-        public float Delay              => m_Delay;
-        public float Duration           => m_Duration;
-        public bool CanSpawn            => m_CanSpawn;
-        public int NSpawnCounter { get { return m_NSpawnCounter; } set { m_NSpawnCounter = value; } }
-
-
-        public IEnumerator StartDelayTimer()
-        {
-            m_CanSpawn = false;
-            m_NSpawnCounter = 0;
-            yield return new WaitForSeconds(Delay);
-            m_CanSpawn = true;
-        }
-
-        public IEnumerator StartSpawnTimer()
-        {
-            ErrorHandler.Log("Start Spawn timer : " + CharacterName, ELogTag.Spawns);
-
-            m_CanSpawn = false;
-            yield return new WaitForSeconds(SpawnInterval);
-            m_CanSpawn = true;
-
-            ErrorHandler.Log("Ended Spawn timer : " + CharacterName, ELogTag.Spawns);
-        }
-    }
+    
 
     [CreateAssetMenu(fileName = "Spawner", menuName = "Game/Spells/Spawner")]
     public class SpawnerData : SpellData
@@ -74,18 +18,29 @@ namespace Data
 
         public override ESpellType SpellType => ESpellType.Spawner;
 
+        // ===========================================================================
+        // Serialized Data
         [Header("SpawnerData")]
         [SerializeField] protected bool                 m_IsUnique;
         [SerializeField] protected bool                 m_DestroySpawnsOnEnd;
-        [SerializeField] protected SMultiSpellTarget    m_SpawnTarget;
+        [SerializeField] protected SMultiSpellSpawn     m_SpawnTarget;
         [SerializeField] protected int                  m_NSpawns = -1;
+        [SerializeField] protected SWaveGroup           m_Waves;
+        [SerializeField] protected List<GameObject>     m_WavesGraphics;
+
+        // DEPRECATED
         [SerializeField] protected List<SSpawnElement>  m_SpawnElements;
-        
-        public int NSpawns                              => m_NSpawns;
+
+        // ===========================================================================
+        // Public Accessors
+        public int NWaves                               => m_Waves.WaveSpawns.Count;
         public bool IsUnique                            => m_IsUnique;
         public bool DestroySpawnsOnEnd                  => m_DestroySpawnsOnEnd;
-        public SMultiSpellTarget SpawnTarget            => m_SpawnTarget;
-        public List<SSpawnElement> SpawnElements        => m_SpawnElements;
+        public SMultiSpellSpawn SpawnTarget             => m_SpawnTarget;
+        public SWaveGroup Waves                         => m_Waves;
+
+        // DEPRECATED
+        public List<SSpawnElement> SpawnElements;
 
         #endregion
 
@@ -101,7 +56,35 @@ namespace Data
         #endregion
 
 
+        #region Waves Management
+
+        public void SetSpawnElements(List<SSpawnElement> spawnElements)
+        {
+            m_SpawnElements = spawnElements;
+        }
+
+        public void SetWaves(SWaveGroup waves)
+        {
+            m_Waves = waves;
+        }
+
+        public GameObject GetWavesGraphicsAtIndex(int index)
+        {
+            if (index < 0 || m_WavesGraphics.Count <= index)
+                return null;
+
+            return m_WavesGraphics[index];
+        }
+
+        #endregion
+
+
         #region Infos
+
+        public SpawnerData Clone(int level)
+        {
+            return base.Clone(level) as SpawnerData;
+        }
 
         public override Dictionary<string, object> GetInfo()
         {

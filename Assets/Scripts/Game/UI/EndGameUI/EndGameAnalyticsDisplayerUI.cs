@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Game;
 using Enums;
+using MyBox;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -119,14 +120,12 @@ namespace Game.UI.EndGameUI
 
             foreach (EHitType hitType in m_HitTypeDisplayOrder)
             {
-                int directValue = m_SpellHitSummary.GetCategoryValue(hitType, EHitCategory.Direct);
-                int tickValue = m_SpellHitSummary.GetCategoryValue(hitType, EHitCategory.Tick);
-                int total = directValue + tickValue;
+                var values = m_SpellHitSummary.GetCategoryValuesSplitted(hitType);
 
-                if (total == 0) continue;
+                if (values.IsNullOrEmpty()) continue;
 
                 var analyticDisplay = Instantiate(m_AnalyticsDisplayUIPrefab, m_SummaryContainer.transform);
-                analyticDisplay.InitializeSplit(hitType, directValue, tickValue, m_MaxValue, expectedHeight: 65);
+                analyticDisplay.InitializeSplit(hitType, values, m_MaxValue, expectedHeight: 65);
             }
 
             foreach (var item in m_SpecialValues)

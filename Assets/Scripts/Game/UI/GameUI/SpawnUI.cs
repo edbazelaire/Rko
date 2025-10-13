@@ -1,6 +1,4 @@
-﻿using Game.Spells;
-using NUnit.Framework.Internal;
-using Tools;
+﻿using Tools;
 using UnityEngine;
 
 public class SpawnUI : MonoBehaviour
@@ -63,13 +61,22 @@ public class SpawnUI : MonoBehaviour
         if (!m_Initialized)
             return;
 
-        float above = Mathf.Max(minAbove, aboveHeadFactor * m_Scale * m_Target.transform.localScale.y);
+        // Height of collider in world units
+        float worldHeight = m_Size.y * m_Target.transform.lossyScale.y;
 
-        // Use collider center.x so an offset collider still anchors correctly
-        Vector3 desired = new Vector3(transform.position.x, m_Scale + above, transform.position.z);
+        // Offset au-dessus de la tête
+        float above = Mathf.Max(minAbove, aboveHeadFactor * worldHeight);
+
+        // Position finale : au-dessus de la tête
+        Vector3 desired = m_Target.position + new Vector3(0f, worldHeight / 2f + above, 0f);
+
+        // Clamp uniquement sur l'axe Y
         desired.y = Mathf.Clamp(desired.y, worldYClamp.x, worldYClamp.y);
+
         transform.position = desired;
 
+        // Toujours face à la caméra (ou fixe dans ton cas)
         transform.rotation = Quaternion.identity;
     }
+
 }

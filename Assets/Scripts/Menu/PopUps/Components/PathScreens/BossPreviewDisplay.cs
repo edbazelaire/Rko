@@ -13,6 +13,7 @@ namespace Menu.PopUps
         // ============================================================
         // Data
         EBoss m_Boss;
+        ESkin m_Skin;
         int m_Level;
 
         // ============================================================
@@ -34,9 +35,10 @@ namespace Menu.PopUps
             m_Button                    = Finder.FindComponent<Button>(gameObject, "ButtonFront");
         }
 
-        public virtual void Initialize(EBoss boss, int level)
+        public virtual void Initialize(EBoss boss, ESkin skin, int level)
         {
             m_Boss = boss;
+            m_Skin = skin;
             m_Level = level;
 
             base.Initialize();
@@ -47,27 +49,7 @@ namespace Menu.PopUps
             base.SetUpUI();
 
             UIHelper.CleanContent(m_CharacterPreviewContainer);
-            CoroutineManager.DelayMethod(() => UIHelper.SpawnCharacter(m_Boss.ToString(), m_CharacterPreviewContainer));
-        }
-
-        #endregion
-
-
-        #region GUI Manipulators
-
-        #endregion
-
-
-        #region Listeners
-
-        protected override void RegisterListeners()
-        {
-            base.RegisterListeners();
-        }
-
-        protected override void UnRegisterListeners()
-        {
-            base.UnRegisterListeners();
+            CoroutineManager.DelayMethod(() => UIHelper.SpawnCharacter(m_Boss.ToString(), m_Skin, m_CharacterPreviewContainer));
         }
 
         #endregion

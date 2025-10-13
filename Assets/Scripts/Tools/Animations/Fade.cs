@@ -14,6 +14,7 @@ namespace Tools.Animations
         List<(Image Image, float BaseOpacity)>          m_Images;
         List<(RawImage Image, float BaseOpacity)>       m_RawImages;
         List<(SpriteRenderer Image, float BaseOpacity)> m_Sprites;
+        List<ParticleSystem>                            m_ParticleSystems;
         List<TMP_Text>                                  m_Texts;
 
         [SerializeField] float m_StartScale      = 1f;
@@ -92,10 +93,10 @@ namespace Tools.Animations
 
         private void FindSubImages(float? forcedBasedOpacity = null)
         {
-            // add texts
+            // add Texts
             m_Texts = Finder.FindComponents<TMP_Text>(gameObject);
 
-            // add images
+            // add Images
             m_Images = new();
             Image[] images = Finder.FindComponents<Image>(gameObject).ToArray();
             foreach (Image image in images)
@@ -111,13 +112,16 @@ namespace Tools.Animations
                 m_RawImages.Add((image, forcedBasedOpacity ?? image.color.a));
             }
 
-            // add sprites
+            // add Sprites
             m_Sprites = new();
             var sprites = Finder.FindComponents<SpriteRenderer>(gameObject);
             foreach (SpriteRenderer spriteR in sprites)
             {
                 m_Sprites.Add((spriteR, forcedBasedOpacity ?? spriteR.color.a));
             }
+
+            // add ParticleSystems
+            m_ParticleSystems = Finder.FindComponents<ParticleSystem>(gameObject);
         }
 
         /// <summary>
@@ -165,6 +169,19 @@ namespace Tools.Animations
             {
                 group.alpha = opacity;
             }
+
+            //// Reduce color opacity of each ParticleSystems
+            //foreach (var ps in m_ParticleSystems)
+            //{
+            //    var main = ps.main; // copy struct
+            //    var startColor = main.startColor;
+
+            //    // Multiply current color alpha by desired opacity
+            //    Color color = startColor.color;
+            //    color.a = opacity;
+
+            //    main.startColor = color; // assign back
+            //}
         }
 
         #endregion

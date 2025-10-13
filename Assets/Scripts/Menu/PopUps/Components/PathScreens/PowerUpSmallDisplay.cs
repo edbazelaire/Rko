@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Managers;
 using Data;
 using Data.DataStructures.PowerEffects;
 using Enums;
@@ -170,7 +171,7 @@ namespace Menu.PopUps
             // Do not have a PowerUp BUT SHOULD -> Display the Selection Screen
             if (m_IsMissingData)
             {
-                Main.SetPopUp(EPopUpState.PowerUpSelectionScreen, m_Index);
+                ScreenManager.PowerUpSelectionScreen(ProgressionCloudData.CurrentArena.ArenaType, m_Index);
                 return;
             }
 

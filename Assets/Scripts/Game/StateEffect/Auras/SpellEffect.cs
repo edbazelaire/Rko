@@ -1,6 +1,8 @@
-﻿using Data;
+﻿using Assets.Scripts.Data.DataStructures;
+using Data;
 using Data.DataStructures.SpellSubStructures;
 using Enums;
+using Google.Apis.Sheets.v4.Data;
 using MyBox;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +14,8 @@ namespace Game.Spells
     [CreateAssetMenu(fileName = "SpellEffect", menuName = "Game/StateEffects/Aura/SpellEffect")]
     public class SpellEffect : StateEffect
     {
+        #region Members
+
         /// <summary> List of effects that are applied at the root SpellData (in the SpellHandler) </summary>
         List<ESpellProperty> PRE_APPLIED_EFFECTS = new List<ESpellProperty>() {
             ESpellProperty.Charges,
@@ -20,6 +24,7 @@ namespace Game.Spells
         };
 
         [Header("Spell Effects")]
+        [SerializeField] protected int                      m_Frequency = 1;
         [SerializeField] protected List<string>             m_AllowedSpells;
         [SerializeField] protected ESpellEffectType         m_SpellEffectType;
         [SerializeField] protected List<ESpellType>         m_AllowedSpellTypes;
@@ -27,12 +32,20 @@ namespace Game.Spells
         [SerializeField] protected List<SStateEffectData>   m_AllyStateEffects;
         [SerializeField] protected List<SStateEffectData>   m_EnemyStateEffects;
         [SerializeField] protected List<SOverridingData>    m_SpellOverridingData;
+        [SerializeField] protected List<SpellPrefabSpawn>   m_SpellGFXOverrides;
 
+        public int                      Frequency           => m_Frequency;
         public ESpellEffectType         SpellEffectType     => m_SpellEffectType;
         public List<ESpellType>         AllowedSpellTypes   => m_AllowedSpellTypes;
         public List<SpellData>          OnHits              => m_OnHits;
         public List<SStateEffectData>   AllyStateEffects    => m_AllyStateEffects;
         public List<SStateEffectData>   EnemyStateEffects   => m_EnemyStateEffects;
+
+        // =======================================================================================
+        // Local Data
+        int m_FrequencyCounter = 0;
+
+        #endregion
 
 
         #region Apply Effect
@@ -47,6 +60,9 @@ namespace Game.Spells
             if (!IsAllowed(spellData, isAutoAttack))
                 return;
 
+            if (!CheckFrequency())
+                return;
+
             spellData.OnHit.AddRange(OnHits);
             spellData.AllyStateEffects.AddRange(AllyStateEffects);
             spellData.EnemyStateEffects.AddRange(EnemyStateEffects);
@@ -57,6 +73,12 @@ namespace Game.Spells
                 List<SOverridingData> overridingData = m_SpellOverridingData.Where(temp => !PRE_APPLIED_EFFECTS.Contains(temp.Property)).ToList();
                 spellData.AddOverridingData(overridingData, m_Level);
             }
+
+            // override data of the spell
+            ApplySpellDataOverrides(ref spellData);
+
+            // override GFX of the spell
+            ApplySpellGFXOverrides(ref spellData);
         }
 
         bool IsAllowed(SpellData spellData, bool isAutoAttack)
@@ -75,6 +97,50 @@ namespace Game.Spells
 
             return true;
         }
+
+        bool CheckFrequency()
+        {
+            if (m_Frequency <= 1)
+                return true;
+
+            m_FrequencyCounter++;
+            if (m_FrequencyCounter < m_Frequency)
+                return false;
+
+            m_FrequencyCounter = 0;
+            return true;
+        }
+
+        /// <summary>
+        /// Override the Data of the spell
+        /// </summary>
+        /// <param name="spellData"></param>
+        protected virtual void ApplySpellDataOverrides(ref SpellData spellData)
+        {
+            if (m_SpellOverridingData.IsNullOrEmpty())
+                return;
+
+            List<SOverridingData> overridingData = m_SpellOverridingData.Where(temp => !PRE_APPLIED_EFFECTS.Contains(temp.Property)).ToList();
+            spellData.AddOverridingData(overridingData, m_Level);
+        }
+           
+        /// <summary>
+        /// Add / Replace GFXs of the spell
+        /// </summary>
+        /// <param name="spellData"></param>
+        protected virtual void ApplySpellGFXOverrides(ref SpellData spellData)
+        {
+            if (m_SpellGFXOverrides.IsNullOrEmpty())
+                return;
+
+            spellData.SpellEventActions.AddRange(m_SpellGFXOverrides);
+        }
+
+        #endregion
+
+
+        #region Checkers
+
 
         #endregion
 
@@ -138,6 +204,13 @@ namespace Game.Spells
 
 
         #region Description
+
+        public override string GetDescription()
+        {
+            string description = base.GetDescription();
+            description = description.Replace("[Frequency]", m_Frequency.ToString());
+            return description;
+        }
 
         protected override void ReplaceSubStateEffects(ref string description)
         {

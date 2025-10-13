@@ -20,10 +20,11 @@ MonoBehaviour:
   Graphics: {fileID: 0}
   SpellEventActions: []
   OnHit: []
+  PassiveEffects: []
   SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
-  CastSoundFX: {fileID: 8300000, guid: d74cdc367be2a7443bd88db75229243c, type: 3}
+  CastSoundFX: {fileID: 8300000, guid: b52b866ea6d7a754d9853becffdeec01, type: 3}
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
@@ -59,6 +60,7 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
+    m_Targets: 
   m_SpellsScalingLevel:
   - Property: 4
     Value: 0.1
@@ -78,5 +80,6 @@ MonoBehaviour:
   PersistanceAfterEnd: 0
   Animation: 9
   IsCancellable: 0
+  IsInterruptable: 1
   AnimationTimer: 0.7
   m_Cooldown: 45

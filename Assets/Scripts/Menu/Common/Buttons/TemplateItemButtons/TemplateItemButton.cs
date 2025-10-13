@@ -1,5 +1,4 @@
 ﻿using Assets.Scripts.Managers.Sound;
-using System;
 using TMPro;
 using Tools;
 using UnityEngine;

@@ -23,6 +23,10 @@ namespace Game.Spells
         float m_CollisionCheckRefreshTimer;
         /// <summary> dictionary of players touched by the spell linked to their tick timer (before re-appliance) </summary>
         Dictionary<ulong, float> m_PlayersAffected;
+        /// <summary> list of players in the zone </summary>
+        List<Controller> m_PlayersInZone;
+        /// <summary> calculates number of players in zone right now (for OnTrigger event purpuses) </summary>
+        protected int m_NPlayersInZone => m_PlayersInZone.Count();
 
         #endregion
 
@@ -38,6 +42,7 @@ namespace Game.Spells
         public override void Initialize(ulong clientId, Vector3 target, SpellData spellData)
         {
             m_PlayersAffected = new Dictionary<ulong, float>();
+            m_PlayersInZone = new();
             m_CollisionCheckRefreshTimer = 0;
 
             base.Initialize(clientId, target, spellData);
@@ -104,6 +109,24 @@ namespace Game.Spells
             yield return null;
         }
 
+        protected override void End()
+        {
+            if (m_IsOver)
+                return;
+
+            base.End();
+
+            if (m_SpellData.PersistentStateEffects == null)
+                return;
+
+            var controllers = m_PlayersInZone.ToArray();
+            foreach (Controller controller in controllers)
+            {
+                if (controller != null && GameManager.IsGameRunning)
+                    RemovePersistentStateEffects(controller);
+            }
+        }
+
         #endregion
 
 
@@ -120,6 +143,9 @@ namespace Game.Spells
             base.Update();
 
             if (!IsServer)
+                return;
+
+            if (m_IsOver)
                 return;
 
             // increase size if needs to
@@ -143,6 +169,9 @@ namespace Game.Spells
             if (!IsServer)
                 return;
 
+            if (m_IsOver)
+                return;
+
             // Check if collider belongs to expected layers
             if ((TargetHelper.ALL_LAYER_MASK & (1 << collider.gameObject.layer)) == 0)
                 return;
@@ -162,6 +191,9 @@ namespace Game.Spells
 
         protected void OnTriggerExit2D(Collider2D collider)
         {
+            if (m_IsOver)
+                return;
+
             // Check if collider belongs to expected layers
             if ((TargetHelper.ALL_LAYER_MASK & (1 << collider.gameObject.layer)) == 0)
                 return;
@@ -246,15 +278,15 @@ namespace Game.Spells
             OnHitTickPlayer(controller);
         }
 
-        protected virtual void OnHitTickPlayer(Controller controller)
+        protected virtual bool OnHitTickPlayer(Controller controller)
         {
              // not alive : skip
             if (!controller.Life.IsAlive)
-                return;
+                return false;
 
             // apply effects on ally or enemy : if none, skip
             if (!CheckHitEnemyTick(controller) && !CheckHitAllyTick(controller))
-                return;
+                return false;
 
             // call spell event that spell has touched something
             CallSpellEvent(ESpellEvent.OnHit, controller);
@@ -266,6 +298,8 @@ namespace Game.Spells
             // add player to affected players
             if (m_SpellData.DurationTick > 0)
                 m_PlayersAffected.Add(controller.PlayerId, m_SpellData.DurationTick);
+
+            return true;
         }
 
         /// <summary>
@@ -292,7 +326,7 @@ namespace Game.Spells
             damage = m_Caster.StateHandler.ApplyBonusInt(damage, EStateEffectProperty.TickDamage, controller, specialCondition: m_SpellData.Name);
 
             // get final damage after shields and resistances
-            int finalDamage = controller.Life.Hit(damage, m_Caster.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
+            int finalDamage = controller.Life.Hit(damage, m_Caster.PlayerId, m_SpellData.Parent, EDamageCategory.Magical, EHitCategory.Dot);
             if (finalDamage > 0 && m_Caster.ClientAnalytics != null)
                 m_Caster.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Damage, finalDamage);
 
@@ -376,6 +410,17 @@ namespace Game.Spells
 
         void ApplyPersistentStateEffects(Controller controller)
         {
+            // check if already affected by this zone
+            if (m_PlayersInZone.Contains(controller))
+                return;
+
+            // onlyc call "trigger" event for first activation
+            if (m_NPlayersInZone == 0)
+                CallSpellEvent(ESpellEvent.OnTriggerEnter, controller);
+
+            // add the controller to the list of current controllers
+            m_PlayersInZone.Add(controller);
+
             if (m_SpellData.PersistentStateEffects == null)
                 return;
             
@@ -384,6 +429,18 @@ namespace Game.Spells
 
         void RemovePersistentStateEffects(Controller controller)
         {
+            // check if affected by this zone
+            if (! m_PlayersInZone.Contains(controller))
+                return;
+
+            // remove from list of players
+            m_PlayersInZone.Remove(controller);
+
+            // reduce number of players trigerring the zone
+            if (m_NPlayersInZone == 0)
+                CallSpellEvent(ESpellEvent.OnTriggerExit, controller);
+
+            // check if has persistant state effects
             if (m_SpellData.PersistentStateEffects == null)
                 return;
 

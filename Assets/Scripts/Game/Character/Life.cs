@@ -16,9 +16,9 @@ public class Life : NetworkBehaviour
     // ===================================================================================
     // EVENTS
     /// <summary> thrown when the character dies </summary>
-    public Action                               DiedEvent;
+    public Action                               OnDeathEvent;
     public Action<int, ulong>                   OnHealedEvent;
-    public Action<int, ulong, EHitCategory>   OnHittedEvent;
+    public Action<int, ulong, EHitCategory>     OnHittedEvent;
 
     // ===================================================================================
     // NETWORK VARIABLES
@@ -31,6 +31,7 @@ public class Life : NetworkBehaviour
     /// <summary> Controller of the Owner</summary>
     Controller                      m_Controller;
     int                             m_Shield =  0;
+    bool                            m_IsOver = false;
 
     // ===================================================================================
     // PUBLIC ACCESSORS 
@@ -61,11 +62,9 @@ public class Life : NetworkBehaviour
 
     public void Initialize(int hp, int shield)
     {
-        if (!IsServer)
-            return;
+        m_IsOver = false;
 
-        m_MaxHp.Value = hp;
-        m_Hp.Value = hp;
+        SetHp(hp, hp);
         m_Shield = shield;
 
         RecalculateShield();
@@ -78,14 +77,27 @@ public class Life : NetworkBehaviour
 
     public bool Kill(bool ignoreDeathEffects = false)
     {
+        if (m_IsOver)
+            return true;
+
         if (!ignoreDeathEffects && m_Controller.TriggerEffectHandler.OnDeathEffect())
         {
             return false;
         }
 
-        DiedEvent?.Invoke();
+        m_IsOver = true;
+
+        OnDeathEvent?.Invoke();
         Controller.OnDeathEvent?.Invoke(m_Controller);
         return true;
+    }
+
+    public void SetHp(int hp, int? maxHp = null)
+    {
+        if (maxHp.HasValue)
+            m_MaxHp.Value = maxHp.Value;
+
+        m_Hp.Value = Math.Min(hp, m_MaxHp.Value);
     }
 
     /// <summary>
@@ -102,7 +114,7 @@ public class Life : NetworkBehaviour
     /// Apply damage to the character
     /// </summary>
     /// <param name="damage"> amount of damages </param>
-    public int Hit(int damage, ulong casterId, string source, EHitCategory spellCategory, bool ignoreRes = false)
+    public int Hit(int damage, ulong casterId, string source, EDamageCategory damageCategory, EHitCategory hitCategory, bool ignoreRes = false)
     {
         // only server can apply damages
         if (! IsServer || ! IsAlive)
@@ -120,7 +132,7 @@ public class Life : NetworkBehaviour
 
         // calculate damages after resistance
         int baseDamage = damage;
-        damage = ignoreRes ? damage : m_Controller.StateHandler.ApplyResistance(damage, spellCategory);
+        damage = ignoreRes ? damage : m_Controller.StateHandler.ApplyResistance(damage, damageCategory, hitCategory);
         if (baseDamage > damage)
             GameAnalyticsManager.Instance.AddSpecialValue(m_Controller.PlayerId, ESpecialValue.DamageReduction, baseDamage - damage);
 
@@ -129,9 +141,9 @@ public class Life : NetworkBehaviour
             return 0;
 
         // -- call event that the player received damage
-        OnHittedEvent?.Invoke(damage, casterId, spellCategory);
+        OnHittedEvent?.Invoke(damage, casterId, hitCategory);
         // -- call analytics & damage display
-        GameAnalyticsManager.Instance.OnSpellHit(casterId, m_Controller.PlayerId, source, damage, EHitType.Damage, spellCategory);
+        GameAnalyticsManager.Instance.OnSpellHit(casterId, m_Controller.PlayerId, source, damage, EHitType.Damage, hitCategory);
 
         // calculate damages after shield
         var damages = HitShield(damage);

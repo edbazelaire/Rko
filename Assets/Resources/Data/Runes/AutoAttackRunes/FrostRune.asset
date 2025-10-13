@@ -16,7 +16,6 @@ MonoBehaviour:
   m_Description: 
   m_DescriptionVariables: []
   m_SpellElements: 02000000
-  Description: 
   m_MinorPower:
     Description: All slows are {0} more efficients
     m_DescriptionVariables:
@@ -53,30 +52,17 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []
   m_PrimalPower:
     Description: IceBreak effect is dealing +[BonusDamage.IceBreak] damage
     m_DescriptionVariables: []
     m_BonusLevel: 0
-    m_TriggerEffects:
-    - SpellDataName: _FrostRunePrimal
-      OverridingData: []
-      Level: 0
-      Target: 50
-      SpellActivationEvent: 1
-      ActivationTreshold: 0
-      SpellDeactivationEvent: 0
-      DeactivationTreshold: 0
-      StateEffectEvent: 1
-      StateEffectName: IceBreak
-      NStateEffectActivationThreshold: 0
-      Delay: 0
-      Duration: 0
-      NActivations: 0
-      Cooldown: 0
+    m_TriggerEffects: []
     m_BonusStats:
     - StateEffectProperty: 7
-      BaseValue: 50
+      BaseValue: 80
       BonusValue: 0
       ScalingFactor: 0.1
       SpecialConditions:

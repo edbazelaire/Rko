@@ -19,6 +19,7 @@ namespace Data
         #region Common
         public string GetID();
         public string GetName();
+        public string GetPrettyName();
         public float RequestedValue => Current == null ? 0 : Current.MaxValue;
         public virtual bool IsUnlockable => Current != null && GetCount() >= RequestedValue && IsMasteryUnlocked();
         public int CurrentIndex => ProfileCloudData.GetAchievementThresholdIndex(GetID());
@@ -97,6 +98,7 @@ namespace Data
         #region Members
 
         [Header("Info")]
+        [SerializeField] string m_PrettyName;
         [SerializeField] string m_Description;
         [SerializeField] bool m_ResetCount = false;
 
@@ -113,7 +115,7 @@ namespace Data
         // ===========================================================================================
         // Dependent values
         #region Common
-        public virtual string ID            => IsCharacterMastery ? m_Character.ToString() + "_" + Name : Name;
+        public virtual string ID            => IsCharacterMastery ? m_Character.ToString() + "_" + GetName() : GetName();
         public string Name                  => name;
         public float RequestedValue         => Current == null ? 0 : Current.MaxValue;
         public virtual bool IsUnlockable    => Current != null && GetCount() >= RequestedValue && IsMasteryUnlocked();
@@ -155,24 +157,24 @@ namespace Data
 
         #region Count Management
 
-        public virtual void Increase(float count = 1)
+        public virtual void Increase(float count = 1, bool save = false)
         {
-            UpdateCount(GetCount() + count);
+            UpdateCount(GetCount() + count, save: save);
         }
 
-        public virtual void IncreaseAtIndex(int index, float count = 1)
+        public virtual void IncreaseAtIndex(int index, float count = 1, bool save = false)
         {
-            UpdateCountAtIndex(index, GetCountAtIndex(index) + count);
+            UpdateCountAtIndex(index, GetCountAtIndex(index) + count, save: save);
         }
 
-        public virtual void UpdateCount(float count)
+        public virtual void UpdateCount(float count, bool save = false)
         {
-            ProfileCloudData.UpdateAchievementCount(ID, count);
+            ProfileCloudData.UpdateAchievementCount(ID, count, index: null, save: save);
         }
 
-        public virtual void UpdateCountAtIndex(int index, float count)
+        public virtual void UpdateCountAtIndex(int index, float count, bool save = false)
         {
-            ProfileCloudData.UpdateAchievementCount(ID, count, index);
+            ProfileCloudData.UpdateAchievementCount(ID, count, index, save: save);
         }
 
         #endregion
@@ -314,7 +316,16 @@ namespace Data
 
     public string GetName()
     {
-        return name;
+        string myName = name;
+        if (myName.EndsWith("(Clone)"))
+            myName = myName[..^"(Clone)".Length];
+
+        return myName;
+    }
+
+    public string GetPrettyName()
+    {
+        return m_PrettyName.IsNullOrEmpty() ? GetName() : m_PrettyName;
     }
 
     public ECharacter GetCharacter()

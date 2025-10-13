@@ -18,10 +18,10 @@ MonoBehaviour:
   m_SpellElements: 
   m_AutoAttack: Slicide
   m_SpecialAbility: SlIceBreaker
-  m_Ultimate: PoisonDarts
+  m_Ultimate: XStrike
   Size: 3.3
   BaseSpeed: 1
-  BaseHealth: 2300
+  BaseHealth: 2200
   MaxEnergy: 100
   BaseEnergy: 10
   PassiveEnergyGain: 5
@@ -44,6 +44,18 @@ MonoBehaviour:
     BaseValue: 0.2
     BonusValue: 0
     ScalingFactor: 0
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 16
+    BaseValue: 0.2
+    BonusValue: 0
+    ScalingFactor: 0.1
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 5
+    BaseValue: 10
+    BonusValue: 0
+    ScalingFactor: 0.12
     SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers: []

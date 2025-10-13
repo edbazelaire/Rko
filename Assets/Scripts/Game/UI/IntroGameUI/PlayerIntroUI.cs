@@ -47,7 +47,7 @@ namespace Game.UI
             m_ProfileDisplayUI.Initialize(playerData.ProfileData);
 
             // init character and spell level
-            UIHelper.SpawnCharacter(playerData.BuildData.Character.ToString(), m_CharacterContainer, "Overlay");
+            UIHelper.SpawnCharacter(playerData.BuildData.Character.ToString(), playerData.Skin, m_CharacterContainer, "Overlay");
             m_Level.text = "Level " + playerData.BuildData.CharacterLevel;
 
             // init runes

@@ -5,10 +5,14 @@ namespace AI
 {
     public class Selector : Node
     {
-        protected bool m_IsRandom = false;
+        /// <summary> save node currently running, to jump right into it </summary>
+        protected bool m_SaveCurrentNode    = false;
+        /// <summary> randomize nodes order </summary>
+        protected bool m_IsRandom       = false;
 
-        public Selector(List<Node> nodes, bool random = false, Func<float> weight = null) : base(nodes, weight)
+        public Selector(List<Node> nodes, bool saveCurrentNode = false, bool random = false, Func<float> weight = null) : base(nodes, weight)
         {
+            m_SaveCurrentNode = saveCurrentNode;
             m_IsRandom = random;
         }
 
@@ -17,6 +21,29 @@ namespace AI
             base.Evaluate();
          
             bool done = false;
+
+            // Check Node saved as "Running Node"
+            if (m_CurrentNode != null)
+            {
+                switch (m_CurrentNode.Evaluate())
+                {
+                    case NodeState.FAILURE:
+                        m_CurrentNode = null;
+                        break;
+
+                    case NodeState.RUNNING:
+                        m_State = NodeState.RUNNING;
+                        return m_State;
+
+                    case NodeState.SUCCESS:
+                        m_State = NodeState.RUNNING;
+                        m_CurrentNode = null;
+                        return m_State;
+                }
+                
+            }
+
+            // otherwise - check all child nodes
             foreach (Node node in (m_IsRandom ? m_Children.ShuffleClone() : m_Children))
             {
                 // current child node not activated ? - skip
@@ -37,6 +64,8 @@ namespace AI
 
                     case NodeState.RUNNING:
                         m_State = NodeState.RUNNING;
+                        if (m_SaveCurrentNode)
+                            m_CurrentNode = node;
                         done = true;
                         break;
 

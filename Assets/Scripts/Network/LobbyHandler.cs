@@ -657,16 +657,16 @@ namespace Network
                     if (IsTuto)
                     {
                         return new SPlayerData(
-                            ECharacter.Kahnan.ToString(),
-                            1,
-                            ECharacter.Kahnan.ToString(),
-                            default,
-                            new int[] { 1, 1, 1 },
-                            new ESpell[] { ESpell.FireBarrage, ESpell.FireBomb },
-                            new int[] { 1, 1 },
-                            new SProfileCurrentData(accountLevel: 1, gamerTag: ECharacter.Kahnan.ToString()).AsNetworkSerializable(),
-                            isPlayer: false,
-                            botData: new SBotData(EArenaDifficulty.Normal.ToString(), 1f, 1f)
+                            playerName:     ECharacter.Kahnan.ToString(),
+                            characterLevel: 1,
+                            character:      ECharacter.Kahnan.ToString(),
+                            runes:          default,
+                            runeLevels:     new int[] { 1, 1, 1 },
+                            spells:         new ESpell[] { ESpell.FireBarrage, ESpell.FireBomb },
+                            spellLevels:    new int[] { 1, 1 },
+                            profileData:    new SProfileCurrentData(accountLevel: 1, gamerTag: ECharacter.Kahnan.ToString()).AsNetworkSerializable(),
+                            isPlayer:       false,
+                            botData:        new SBotData(EArenaDifficulty.Normal.ToString(), 1f, 1f)
                         );
                     }
 

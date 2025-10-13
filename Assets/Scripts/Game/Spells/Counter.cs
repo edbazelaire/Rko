@@ -1,10 +1,7 @@
 ﻿using Assets.Scripts.Game;
 using Data;
 using Enums;
-using Game.Loaders;
-using Game.UI;
 using System;
-using System.Linq;
 using Tools;
 using UnityEngine;
 
@@ -61,6 +58,14 @@ namespace Game.Spells
 
             // set shield at the end (the "counter" needs to be added in the list of counters before Shield recalculation)
             SetShield(m_SpellData.Shield);
+        }
+
+        /// <summary>
+        /// Allow an external controller to end the counter
+        /// </summary>
+        public void EndCounter()
+        {
+            End();
         }
 
         protected override void End()
@@ -188,7 +193,7 @@ namespace Game.Spells
                 case ECounterType.Block:
                     if (m_SpellData.Shield > 0)
                     {
-                        HitShield(enemySpell.GetBoostedDamage(m_Caster) + enemySpell.GetBoostedExecutionDamage(m_Caster));
+                        HitShield(enemySpell.GetBoostedDamage(m_Caster, EDamageCategory.Physical, EHitCategory.Direct) + enemySpell.GetBoostedExecutionDamage(m_Caster));
                     }
 
                     enemySpell.CallSpellEvent(ESpellEvent.OnHit, m_Caster);
@@ -359,7 +364,7 @@ namespace Game.Spells
 
         #region Listeners
 
-        void OnPreSpellEvent(string spellNamen, ESpellEvent spellEvent)
+        void OnPreSpellEvent(string spellName, ESpellEvent spellEvent)
         {
             if (spellEvent == ESpellEvent.OnStartCast && m_SpellData.IsCanceledOnCast)
             {

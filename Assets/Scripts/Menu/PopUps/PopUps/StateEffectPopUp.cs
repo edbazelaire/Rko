@@ -19,6 +19,7 @@ namespace Menu.PopUps
         // =============================================================================
         // Data
         StateEffect m_StateEffect;
+        bool m_DisplayNextLevel;
 
         // =============================================================================
         // GameObjects & Components
@@ -31,11 +32,13 @@ namespace Menu.PopUps
 
         #region Init & End
 
-        public void Initialize(SStateEffectData stateEffectData, int level)
+        public void Initialize(SStateEffectData stateEffectData, int level, int? nStacksInDescription = null, bool displayNextLevel = true)
         {
             m_StateEffect = SpellLoader.GetStateEffect(stateEffectData.StateEffect.ToString(), level);
             m_StateEffect.OverrideStateEffectData(stateEffectData.OverridingProperties);
-            m_StateEffect.SetStacks(m_StateEffect.NStacksInDescription);
+            m_StateEffect.SetStacks(nStacksInDescription.HasValue && nStacksInDescription.Value > 0 ? nStacksInDescription.Value : m_StateEffect.NStacksInDescription);
+
+            m_DisplayNextLevel = displayNextLevel;
 
             base.Initialize();
         }
@@ -83,7 +86,7 @@ namespace Menu.PopUps
 
             m_PropertiesContainer.gameObject.SetActive(true);
             Dictionary<string, object> nextLevelInfos = new ();
-            if (m_StateEffect.Level < 14)
+            if (m_DisplayNextLevel && m_StateEffect.Level < 14)
             {
                 var stateEffect = m_StateEffect.Clone(m_StateEffect.Level + 1);
                 nextLevelInfos = stateEffect.GetInfos();
@@ -94,7 +97,7 @@ namespace Menu.PopUps
             {
                 var infoRow = Instantiate(templateInfoRow, m_PropertiesContainer.transform).GetComponent<SpellInfoRowUI>();
                 m_StateEffect.IsScalingProperty(item.Key, out EScalingDirection scaling);
-                infoRow.Initialize(item.Key, item.Value, nextLevelInfos[item.Key], scaling);
+                infoRow.Initialize(item.Key, item.Value, nextLevelInfos.ContainsKey(item.Key) ? nextLevelInfos[item.Key] : null, scaling);
             }
 
             if (m_StateEffect.IsTrueDamage)

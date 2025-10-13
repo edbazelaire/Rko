@@ -28,6 +28,7 @@ namespace Menu.PopUps
         List<PowerUpSmallDisplay>   m_PowerUpsSmallDisplayers;
         Button                      m_DisplayButton;
         Button                      m_AbandonButton;
+        Button                      m_RefreshPowerUpsButton;
         Button                      m_RefreshLifeButton;
         GameObject                  m_LossesContainer;
 
@@ -46,6 +47,7 @@ namespace Menu.PopUps
             m_PowerUpsSmallDisplayers   = Finder.FindComponents<PowerUpSmallDisplay>(gameObject);
             m_DisplayButton             = Finder.FindComponent<Button>(gameObject, "DisplayButton");
             m_AbandonButton             = Finder.FindComponent<Button>(gameObject, "AbandonButton");
+            m_RefreshPowerUpsButton     = Finder.FindComponent<Button>(gameObject, "RefreshPowerUpsButton");
             m_RefreshLifeButton         = Finder.FindComponent<Button>(gameObject, "RefreshLifeButton");
             m_LossesContainer           = Finder.Find(gameObject, "LossesContainer");
 
@@ -62,6 +64,7 @@ namespace Menu.PopUps
             base.SetUpUI();
 
             m_RefreshLifeButton.gameObject.SetActive(ProfileCloudData.IsAdmin);
+            m_RefreshPowerUpsButton.gameObject.SetActive(ProfileCloudData.IsAdmin);
 
             m_IsActive = true;
             RefreshUI();
@@ -182,6 +185,7 @@ namespace Menu.PopUps
 
             m_DisplayButton.onClick.AddListener(OnDisplayButtonClicked);
             m_RefreshLifeButton.onClick.AddListener(OnRefreshLifeButtonClicked);
+            m_RefreshPowerUpsButton.onClick.AddListener(OnRefreshPowerUpsButtonClicked);
             ProgressionCloudData.CurrentArenaDataChangedEvent += RefreshUI;
         }
 
@@ -191,6 +195,7 @@ namespace Menu.PopUps
 
             m_DisplayButton.onClick.RemoveListener(OnDisplayButtonClicked);
             m_RefreshLifeButton.onClick.RemoveListener(OnRefreshLifeButtonClicked);
+            m_RefreshPowerUpsButton.onClick.RemoveListener(OnRefreshPowerUpsButtonClicked);
             ProgressionCloudData.CurrentArenaDataChangedEvent -= RefreshUI;
         }
 
@@ -205,6 +210,14 @@ namespace Menu.PopUps
         void OnRefreshLifeButtonClicked()
         {
             ProgressionCloudData.AddArenaLoss(-3);
+        }
+
+        /// <summary>
+        /// [CHEAT BUTTON]
+        /// </summary>
+        void OnRefreshPowerUpsButtonClicked()
+        {
+            ProgressionCloudData.ResetArenaPowerUps();
         }
 
         #endregion

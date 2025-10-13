@@ -243,21 +243,23 @@ namespace Managers
     {
         public FixedString64Bytes           PlayerName;
         public SBuildData                   BuildData;
+        public ESkin                        Skin;
         public SProfileDataNetwork          ProfileData;
         public bool                         IsPlayer;
         public STriggerEffect[]             TriggerEffects; 
-        public FixedString128Bytes[]        PowerUps; 
+        public FixedString512Bytes[]        PowerUps; 
         public SCharacterStatScaling[]      BonusStats; 
         public SBotData                     BotData; 
 
-        public SPlayerData(FixedString64Bytes playerName, int characterLevel, string character, ERune[] runes = default, int[] runeLevels = default, ESpell[] spells = default, int[] spellLevels = default, SProfileDataNetwork profileData = default, bool isPlayer = false, STriggerEffect[] triggerEffects = default, FixedString128Bytes[] powerUps = default, SCharacterStatScaling[] bonusStats = default, SBotData botData = default)
+        public SPlayerData(FixedString64Bytes playerName, int characterLevel, string character, ESkin skin = ESkin.None, ERune[] runes = default, int[] runeLevels = default, ESpell[] spells = default, int[] spellLevels = default, SProfileDataNetwork profileData = default, bool isPlayer = false, STriggerEffect[] triggerEffects = default, FixedString512Bytes[] powerUps = default, SCharacterStatScaling[] bonusStats = default, SBotData botData = default)
         {
             PlayerName      = playerName;
             BuildData       = new SBuildData(characterLevel, character, runes, runeLevels, spells, spellLevels);
+            Skin            = skin;
             ProfileData     = profileData;
             IsPlayer        = isPlayer;
             TriggerEffects  = triggerEffects    != default ? triggerEffects : new STriggerEffect[0];
-            PowerUps        = powerUps          != default ? powerUps       : new FixedString128Bytes[0];
+            PowerUps        = powerUps          != default ? powerUps       : new FixedString512Bytes[0];
             BonusStats      = bonusStats        != default ? bonusStats     : new SCharacterStatScaling[0];
             BotData         = botData;
         }
@@ -269,13 +271,13 @@ namespace Managers
 
         public void SetPowerUps(List<string> powerUps)
         {
-            PowerUps = new FixedString128Bytes[powerUps.Count];
+            PowerUps = new FixedString512Bytes[powerUps.Count];
 
             // Iterate through the List<string> and convert each element to FixedString32Bytes
             for (int i = 0; i < powerUps.Count; i++)
             {
                 // Convert each string to FixedString128Bytes
-                PowerUps[i] = new FixedString128Bytes(powerUps[i]);  // Automatically truncates if string is longer than 32 bytes
+                PowerUps[i] = new FixedString512Bytes(powerUps[i]);  // Automatically truncates if string is longer than 32 bytes
             }
         }
 
@@ -284,6 +286,7 @@ namespace Managers
             // direct serialization
             serializer.SerializeValue(ref PlayerName);
             serializer.SerializeValue(ref IsPlayer);
+            serializer.SerializeValue(ref Skin);
 
             // Sub - serialization
             BuildData.NetworkSerialize(serializer);
@@ -295,20 +298,28 @@ namespace Managers
             serializer.SerializeValue(ref length);
             if (serializer.IsReader)
             {
+                // (Re)creation of the array
                 TriggerEffects = new STriggerEffect[length];
+
+                for (int i = 0; i < TriggerEffects.Length; i++)
+                {
+                    if (TriggerEffects[i] == null)
+                        TriggerEffects[i] = new STriggerEffect();
+                }
             }
             for (int i = 0; i < length; i++)
             {
                 TriggerEffects[i].NetworkSerialize(serializer);
             }
 
-            // -- Power Ups
-            length = PowerUps != null ? PowerUps.Length : 0;
+            // -- PowerUps --
+            length = PowerUps?.Length ?? 0;
             serializer.SerializeValue(ref length);
             if (serializer.IsReader)
             {
-                PowerUps = new FixedString128Bytes[length];
+                PowerUps = new FixedString512Bytes[length];
             }
+
             for (int i = 0; i < length; i++)
             {
                 serializer.SerializeValue(ref PowerUps[i]);

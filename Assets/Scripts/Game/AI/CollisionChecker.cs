@@ -124,6 +124,17 @@ namespace Game.AI
 
         #region Filter Colliders
 
+        public static List<ELayer> GetObstacleLayers(bool ignoreInvisibleWalls = false, bool ignoreStructures = false)
+        {
+            var layers = OBSTACLES_LAYERS;
+            if (ignoreInvisibleWalls)
+                layers.Remove(ELayer.InvisibleWall);
+            if (ignoreStructures)
+                layers.Remove(ELayer.Structure);
+
+            return layers;
+        }
+
         public static List<Spell> FilterSpells(Collider2D[] colliders, ESpellType spellType, int? ofTeam = null)
         {
             List<Spell> spells = new List<Spell>();

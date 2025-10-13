@@ -9,15 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bdf9fa99f588d38479137fd3d7b8d353, type: 3}
+  m_Script: {fileID: 11500000, guid: f6ebcf55210ce0345967256f47f2c998, type: 3}
   m_Name: IceBreak
   m_EditorClassIdentifier: 
-  m_Description: Consume [Frozen] to inflict an extra {0} damages
-  m_DescriptionVariables: 0b000000
+  m_Description: Consume [Frozen] and [Frostbite] to inflict an extra [Damage] damage.
+  m_DescriptionVariables: 
   m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 0
-  m_VisualEffects: []
   m_GfxEffects:
   - Prefab: {fileID: 1364846237022580, guid: b7cc9b248528c8044b25f9538cc72b06, type: 3}
     MaterialEffect: {fileID: 0}
@@ -34,6 +33,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 0
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -41,17 +41,20 @@ MonoBehaviour:
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 8300000, guid: e3abed086c6be224a83488520f98f6af, type: 3}
   m_PermanantSoundFX: {fileID: 0}
-  m_ConsumeState: 2
+  m_ConsumeState: 0
   m_DefaultState: 6
   m_IsInstantanious: 1
   m_IsConsumedOnEnd: 0
-  m_IsTrueDamage: 1
+  m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
   m_EndWithShield: 0
+  m_EndAt0Stacks: 1
   m_RefreshShield: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: 0
-  m_MaxStacks: 1
+  m_StartingStacks: 1
+  m_MaxStacks: 3
   m_StackDecay: -1
   m_StartsActivated: 1
   m_StateEffectTriggers: []
@@ -69,7 +72,3 @@ MonoBehaviour:
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel: []
   m_StateEffectScalingStacks: []
-  m_Damage: 0
-  m_EndDamage: 0
-  m_Heal: 0
-  m_EndHeal: 0

@@ -1,5 +1,7 @@
 ﻿using Assets.Scripts.Game;
 using Enums;
+using MyBox;
+using TMPro;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,6 +26,8 @@ namespace Game.UI.EndGameUI
         // ====================================================================================
         // GameObjects & Components
         Image m_Icon;
+        TMP_Text m_EffectName;
+        TMP_Text m_EffectCounter;
         GameObject m_AnalyticsContainer;
 
         #endregion
@@ -35,8 +39,10 @@ namespace Game.UI.EndGameUI
         {
             base.FindComponents();
 
-            m_Icon = Finder.FindComponent<Image>(gameObject, "Icon");
-            m_AnalyticsContainer = Finder.Find(gameObject, "AnalyticsContainer");
+            m_EffectName            = Finder.FindComponent<TMP_Text>(gameObject, "EffectName");
+            m_Icon                  = Finder.FindComponent<Image>(gameObject, "Icon");
+            m_EffectCounter         = Finder.FindComponent<TMP_Text>(gameObject, "EffectCounter");
+            m_AnalyticsContainer    = Finder.Find(gameObject, "AnalyticsContainer");
         }
 
         /// <summary>
@@ -55,6 +61,8 @@ namespace Game.UI.EndGameUI
             base.SetUpUI();
 
             SetupIcon();
+            SetupName();
+            SetupCounter();
             DisplayAnalytics();
         }
 
@@ -66,6 +74,16 @@ namespace Game.UI.EndGameUI
         void SetupIcon()
         {
             m_Icon.sprite = AssetLoader.LoadIcon(m_SpellHitTypeData.SpellName);
+        }
+
+        void SetupName()
+        {
+            m_EffectName.text = TextHandler.Split(m_SpellHitTypeData.SpellName);
+        }
+
+        void SetupCounter()
+        {
+            m_EffectCounter.text = m_SpellHitTypeData.Counter.ToString();
         }
 
         /// <summary>
@@ -81,16 +99,14 @@ namespace Game.UI.EndGameUI
             foreach (EHitType hitType in m_HitTypeDisplayOrder)
             {
                 // Compute values
-                int directValue = m_SpellHitTypeData.GetCategoryValue(hitType, EHitCategory.Direct);
-                int tickValue = m_SpellHitTypeData.GetCategoryValue(hitType, EHitCategory.Tick);
-                int total = directValue + tickValue;
+                var values = m_SpellHitTypeData.GetCategoryValuesSplitted(hitType);
 
-                if (total == 0)
+                if (values.IsNullOrEmpty())
                     continue;
 
                 // Instantiate UI element
                 AnalyticDisplayUI analyticDisplayUI = Instantiate(template, m_AnalyticsContainer.transform);
-                analyticDisplayUI.InitializeSplit(hitType, directValue, tickValue, m_MaxValue);
+                analyticDisplayUI.InitializeSplit(hitType, values, m_MaxValue);
             }
         }
 

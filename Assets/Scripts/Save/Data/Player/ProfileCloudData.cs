@@ -839,15 +839,15 @@ namespace Save
                 Instance.SaveValue(KEY_ACHIEVEMENTS);
         }
 
-        public static void UpdateAchievementCount(string achievementId, float count, int? index = null)
+        public static void UpdateAchievementCount(string achievementId, float count, int? index = null, bool save = true)
         {
             var achInfo = GetAchievementInfo(achievementId);
             if (index == null)
                 achInfo.Count = count;
             else
                 achInfo.SetCountAtIndex(index.Value, count);
-            SetAchievementInfo(achInfo, true);
 
+            SetAchievementInfo(achInfo, save);
             AchievementChangedEvent?.Invoke(achievementId);
         }
 
@@ -855,12 +855,15 @@ namespace Save
         {
             ErrorHandler.Log("CompleteAchievement : " + achievementId, ELogTag.Achievements);
             var achievementInfo = GetAchievementInfo(achievementId);
-            achievementInfo.Index++;
 
             // if count needs to be reset between indexes, get count at new current index
             if (resetCount)
-                achievementInfo.Count = achievementInfo.GetCountAtIndex(achievementInfo.Index);
+                achievementInfo.Count = achievementInfo.GetCountAtIndex(achievementInfo.Index + 1);
 
+            // increase index
+            achievementInfo.Index++;
+
+            // save changes
             SetAchievementInfo(achievementInfo, true);
 
             AchievementCompletedEvent?.Invoke(achievementId);

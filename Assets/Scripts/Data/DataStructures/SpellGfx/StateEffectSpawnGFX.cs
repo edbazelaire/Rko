@@ -20,11 +20,12 @@ namespace Assets.Scripts.Data.DataStructures
             ESpawnLocation spawnLocation, 
             EBodyPart bodyPart, 
             bool isFollowing, 
+            bool isReplacingGFX, 
             Vector2 offset, 
             EAnimation animation, 
             List<EStateEffect> stateEffects = null, 
             float size = 0, 
-            int orderInLayer = 0) : base(prefab, materialEffect, soundFX, gfxLifetime, spawnTarget, spawnLocation, bodyPart, isFollowing, offset, animation, stateEffects, size, orderInLayer)
+            int orderInLayer = 0) : base(prefab, materialEffect, soundFX, gfxLifetime, spawnTarget, spawnLocation, bodyPart, isFollowing, isReplacingGFX, offset, animation, stateEffects, size, orderInLayer)
         {
         }
 

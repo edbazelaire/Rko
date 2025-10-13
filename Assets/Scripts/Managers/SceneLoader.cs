@@ -19,9 +19,11 @@ public class SceneLoader : MonoBehaviour
 
     static SceneLoader s_Instance;
 
-    [SerializeField] LoadingScreen m_LoadingScreen;
+    [SerializeField] LoadingScreen m_DefaultLoadingScreen;
     [SerializeField] GameManager m_GameManager;
 
+    LoadingScreen m_SpecialLoadingScreen = null;
+    LoadingScreen m_LoadingScreen => m_SpecialLoadingScreen == null ? m_DefaultLoadingScreen : m_SpecialLoadingScreen;
     string m_SceneLoading = "";
     public string SceneLoading => m_SceneLoading;
     public bool IsLoading => m_SceneLoading != "";
@@ -63,6 +65,7 @@ public class SceneLoader : MonoBehaviour
 
         Main.SetState(EAppState.LoadingScreen);
 
+        SetLoadingScreen(sceneName);
         if (m_LoadingScreen == null)
             ErrorHandler.FatalError("Loading screen not set");
 
@@ -147,6 +150,34 @@ public class SceneLoader : MonoBehaviour
 
         // send event that scene was loaded 
         SceneLoadedEvent?.Invoke(true);
+    }
+
+    #endregion
+
+
+    #region Helpers
+
+    void SetLoadingScreen(string sceneName)
+    {
+        if (m_SpecialLoadingScreen != null)
+            Destroy(m_SpecialLoadingScreen);
+
+        switch (sceneName)
+        {
+            case "Arena":
+                if (AssetLoader.TryLoadLoadingScreen(LobbyHandler.Instance.ArenaType.ToString(), out LoadingScreen screen))
+                {
+                    m_SpecialLoadingScreen = GameObject.Instantiate(screen, m_DefaultLoadingScreen.transform.parent);
+                    return;
+                }
+                ErrorHandler.Warning("Unable to find loading screen for arena : " + LobbyHandler.Instance.ArenaType);
+                break;
+
+            default:
+                break;
+        }
+
+        m_SpecialLoadingScreen = null;
     }
 
     #endregion

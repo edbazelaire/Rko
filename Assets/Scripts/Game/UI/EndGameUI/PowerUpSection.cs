@@ -29,10 +29,12 @@ namespace Game.UI.EndGameUI
         List<PowerUpItem> m_PowerUpItems = new();
         ERuneActivation m_RuneActivation;
         List<string> m_UsedPowerUpData;
-        int m_Refreshes = 1;
 
         /// <summary> index of the arena power up to replace in cloud data </summary>
         int m_CurrentArenaPowerUpIndex;
+
+        public ERuneActivation RuneActivation => m_RuneActivation;
+        int m_Refreshes => ProgressionCloudData.CurrentArena.RefreshTokens;
 
         #endregion
 
@@ -72,14 +74,17 @@ namespace Game.UI.EndGameUI
             RefreshPowerUps();
         }
 
-        void RefreshPowerUps()
+        public void RefreshPowerUps(ERuneActivation? runeActivation = null)
         {
             // clean potential previous content
             UIHelper.CleanContent(m_PowerUpContainer);
             m_PowerUpItems.Clear();
 
             // select a random rune activation (= rarety of the PowerUps)
-            SelectRuneActivation();
+            if (runeActivation == null)
+                SelectRuneActivation();
+            else
+                m_RuneActivation = runeActivation.Value;
 
             // get name of Used Power Ups
             m_UsedPowerUpData = ProgressionCloudData.CurrentArena.GetActivePowerUps()
@@ -107,8 +112,13 @@ namespace Game.UI.EndGameUI
                 // instantiate the PowerUpItem with the provided data
                 var powerUpItem = Instantiate(template, m_PowerUpContainer.transform);
                 powerUpItem.Initialize(powerUpData, withRefreshButton: true);
+
                 powerUpItem.Button.onClick.AddListener(OnClickPowerUpCallback(i));
+                powerUpItem.ValidationButton.onClick.AddListener(OnValidatePowerUpCallback(i));
                 powerUpItem.RefreshButton.onClick.AddListener(OnClickRefreshCallback(i));
+
+                // -- display the number of available refreshes
+                powerUpItem.UpdateRefreshCounter(m_Refreshes);
 
                 // add to list of current items
                 m_PowerUpItems.Add(powerUpItem);
@@ -120,18 +130,19 @@ namespace Game.UI.EndGameUI
 
         void ConsumeRefresh()
         {
-            m_Refreshes -= 1;
-
-            if (m_Refreshes > 0)
-                return;
+            ProgressionCloudData.AddCurrentArenaRefreshToken(-1);
 
             if (m_Refreshes < 0)
                 ErrorHandler.Warning("Refreshes (" + m_Refreshes + ") are < 0, this should never happen");
 
+            UpdateRefreshCounters();
+        }
+
+        void UpdateRefreshCounters()
+        {
             for (int i = 0; i < m_PowerUpItems.Count; i++)
             {
-                // no more refreshes : remove all refresh buttons
-                m_PowerUpItems[i].RefreshButton.gameObject.SetActive(false);
+                m_PowerUpItems[i].UpdateRefreshCounter(m_Refreshes);
             }
         }
 
@@ -275,6 +286,33 @@ namespace Game.UI.EndGameUI
         }
 
         UnityEngine.Events.UnityAction OnClickPowerUpCallback(int index)
+        {
+            return () =>
+            {
+                bool isSelected = m_PowerUpItems[index].IsSelected;
+                for (int i = 0; i < m_PowerUpItems.Count; i++)
+                {
+                    // WAS SELECTED : deselect all
+                    if (isSelected)
+                    {
+                        m_PowerUpItems[i].SetSelected(ESelectionMod.None);
+                        continue;
+                    }
+
+                    // WAS NOT SELECTED : select it and set all others to not selected
+                    if (i == index)
+                    {
+                        m_PowerUpItems[i].SetSelected(ESelectionMod.Selected);
+                    } else
+                    {
+                        m_PowerUpItems[i].SetSelected(ESelectionMod.NotSelected);
+                    }
+                }
+            };
+            
+        }
+
+        UnityEngine.Events.UnityAction OnValidatePowerUpCallback(int index)
         {
             return () =>
             {

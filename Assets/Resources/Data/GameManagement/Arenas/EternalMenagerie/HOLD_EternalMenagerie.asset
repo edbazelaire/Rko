@@ -1,0 +1,428 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9daef013e5e5281409e5995f44de4a10, type: 3}
+  m_Name: HOLD_EternalMenagerie
+  m_EditorClassIdentifier: 
+  m_NLifes: 1
+  m_ArenaLevelData:
+  - RewardsData:
+      Currencies: []
+      Chests: 00000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+    TriggerEffects: []
+    m_PowerUps: []
+    StageData:
+    - m_Boss: 10
+      m_BonusLevel: 0
+      m_ExtraLifes: 0
+      m_Spells: fc2a0000fd2a0000
+      m_TriggerEffects: []
+      m_BonusStats: []
+  m_SpawnerData: {fileID: 11400000, guid: 1468560059c9d6248b4d0ec02738295a, type: 2}
+  m_WaveGroups:
+  - WaveSpawns:
+    - m_WaveDuration: 60
+      m_MaxDeath: 20
+      m_Delay: 0
+      m_SpawnGroups:
+      - SpawnElements:
+        - CharacterName: Voidgazer
+          m_MaxSpawns: 1
+          m_NSpawns: 1
+          m_SpawnProbability: 1
+          m_BonusLevel: 0
+          m_SpawnInterval: 0
+          m_Delay: 0
+          m_Duration: -1
+          m_RecalculatePosition: 1
+          m_SpawnPosition:
+            m_SpellTargetX:
+              m_Dimension: 1
+              m_MultiSpellTarget: 0
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+            m_SpellTargetY:
+              m_Dimension: 2
+              m_MultiSpellTarget: 1
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 1.5
+                Max: 0
+        - CharacterName: Levrak
+          m_MaxSpawns: 1
+          m_NSpawns: 1
+          m_SpawnProbability: 1
+          m_BonusLevel: 0
+          m_SpawnInterval: 0
+          m_Delay: 0
+          m_Duration: -1
+          m_RecalculatePosition: 1
+          m_SpawnPosition:
+            m_SpellTargetX:
+              m_Dimension: 1
+              m_MultiSpellTarget: 0
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+            m_SpellTargetY:
+              m_Dimension: 2
+              m_MultiSpellTarget: 1
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 1.5
+                Max: 0
+        - CharacterName: Noctrelle
+          m_MaxSpawns: 4
+          m_NSpawns: 1
+          m_SpawnProbability: 1
+          m_BonusLevel: 0
+          m_SpawnInterval: 1
+          m_Delay: 0
+          m_Duration: -1
+          m_RecalculatePosition: 1
+          m_SpawnPosition:
+            m_SpellTargetX:
+              m_Dimension: 1
+              m_MultiSpellTarget: 2
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+            m_SpellTargetY:
+              m_Dimension: 2
+              m_MultiSpellTarget: 1
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 2
+                Max: 2.5
+        - CharacterName: ChemicalSlime
+          m_MaxSpawns: 5
+          m_NSpawns: 1
+          m_SpawnProbability: 1
+          m_BonusLevel: 0
+          m_SpawnInterval: 0.5
+          m_Delay: 0
+          m_Duration: -1
+          m_RecalculatePosition: 0
+          m_SpawnPosition:
+            m_SpellTargetX:
+              m_Dimension: 0
+              m_MultiSpellTarget: 0
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+            m_SpellTargetY:
+              m_Dimension: 0
+              m_MultiSpellTarget: 0
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+        - CharacterName: Molken
+          m_MaxSpawns: 5
+          m_NSpawns: 1
+          m_SpawnProbability: 1
+          m_BonusLevel: 0
+          m_SpawnInterval: 0.8
+          m_Delay: 0
+          m_Duration: -1
+          m_RecalculatePosition: 0
+          m_SpawnPosition:
+            m_SpellTargetX:
+              m_Dimension: 0
+              m_MultiSpellTarget: 0
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+            m_SpellTargetY:
+              m_Dimension: 0
+              m_MultiSpellTarget: 0
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+        - CharacterName: ChemicalSlime
+          m_MaxSpawns: -1
+          m_NSpawns: 2
+          m_SpawnProbability: 1
+          m_BonusLevel: 0
+          m_SpawnInterval: 30
+          m_Delay: 10
+          m_Duration: -1
+          m_RecalculatePosition: 0
+          m_SpawnPosition:
+            m_SpellTargetX:
+              m_Dimension: 0
+              m_MultiSpellTarget: 0
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+            m_SpellTargetY:
+              m_Dimension: 0
+              m_MultiSpellTarget: 0
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+        - CharacterName: Molken
+          m_MaxSpawns: -1
+          m_NSpawns: 1
+          m_SpawnProbability: 1
+          m_BonusLevel: 0
+          m_SpawnInterval: 15
+          m_Delay: 5
+          m_Duration: -1
+          m_RecalculatePosition: 0
+          m_SpawnPosition:
+            m_SpellTargetX:
+              m_Dimension: 0
+              m_MultiSpellTarget: 0
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+            m_SpellTargetY:
+              m_Dimension: 0
+              m_MultiSpellTarget: 0
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+        - CharacterName: Noctrelle
+          m_MaxSpawns: -1
+          m_NSpawns: 1
+          m_SpawnProbability: 1
+          m_BonusLevel: 0
+          m_SpawnInterval: 5
+          m_Delay: 3
+          m_Duration: -1
+          m_RecalculatePosition: 1
+          m_SpawnPosition:
+            m_SpellTargetX:
+              m_Dimension: 1
+              m_MultiSpellTarget: 2
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+            m_SpellTargetY:
+              m_Dimension: 2
+              m_MultiSpellTarget: 1
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 2
+                Max: 2.5
+    - m_WaveDuration: -1
+      m_MaxDeath: -1
+      m_Delay: 0
+      m_SpawnGroups:
+      - SpawnElements:
+        - CharacterName: Noctrelle
+          m_MaxSpawns: 8
+          m_NSpawns: 1
+          m_SpawnProbability: 1
+          m_BonusLevel: 0
+          m_SpawnInterval: 1
+          m_Delay: 0
+          m_Duration: -1
+          m_RecalculatePosition: 1
+          m_SpawnPosition:
+            m_SpellTargetX:
+              m_Dimension: 1
+              m_MultiSpellTarget: 2
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+            m_SpellTargetY:
+              m_Dimension: 2
+              m_MultiSpellTarget: 1
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 2.5
+                Max: 0
+        - CharacterName: Fiorana
+          m_MaxSpawns: 3
+          m_NSpawns: 1
+          m_SpawnProbability: 1
+          m_BonusLevel: 0
+          m_SpawnInterval: 0.5
+          m_Delay: 0
+          m_Duration: -1
+          m_RecalculatePosition: 0
+          m_SpawnPosition:
+            m_SpellTargetX:
+              m_Dimension: 0
+              m_MultiSpellTarget: 0
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+            m_SpellTargetY:
+              m_Dimension: 0
+              m_MultiSpellTarget: 0
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+        - CharacterName: ChemicalSlime
+          m_MaxSpawns: 5
+          m_NSpawns: 1
+          m_SpawnProbability: 1
+          m_BonusLevel: 0
+          m_SpawnInterval: 0.5
+          m_Delay: 0
+          m_Duration: -1
+          m_RecalculatePosition: 0
+          m_SpawnPosition:
+            m_SpellTargetX:
+              m_Dimension: 0
+              m_MultiSpellTarget: 0
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+            m_SpellTargetY:
+              m_Dimension: 0
+              m_MultiSpellTarget: 0
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+        - CharacterName: Molken
+          m_MaxSpawns: 2
+          m_NSpawns: 1
+          m_SpawnProbability: 1
+          m_BonusLevel: 0
+          m_SpawnInterval: 0.8
+          m_Delay: 0
+          m_Duration: -1
+          m_RecalculatePosition: 0
+          m_SpawnPosition:
+            m_SpellTargetX:
+              m_Dimension: 0
+              m_MultiSpellTarget: 0
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+            m_SpellTargetY:
+              m_Dimension: 0
+              m_MultiSpellTarget: 0
+              m_ZoneSize: 0
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0

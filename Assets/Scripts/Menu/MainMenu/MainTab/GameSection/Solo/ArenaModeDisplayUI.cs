@@ -98,7 +98,7 @@ namespace Menu.MainMenu.MainTab
                 if (ProgressionCloudData.HasArenaInProgress)
                     ProgressionCloudData.ResetCurrentArena();
                 else
-                    PlayerPrefsHandler.SetArenaType(EArenaType.FrostArena);
+                    PlayerPrefsHandler.SetArenaType(PlayerPrefsHandler.DEFAULT_ARENA_TYPE);
 
                 m_ArenaType = PlayerPrefsHandler.GetArenaType();
                 var arenaDifficulty = PlayerPrefsHandler.GetArenaDifficulty(m_ArenaType);
@@ -273,7 +273,6 @@ namespace Menu.MainMenu.MainTab
             base.RegisterListeners();
 
             ProgressionCloudData.CurrentArenaDataChangedEvent += OnCurrentArenaDataChanged;
-            PlayerPrefsHandler.ArenaExtraDifficultyChanged += OnArenaExtraDifficultyChanged;
             PlayerPrefsHandler.ArenaModsChangedEvent += OnArenaModsChanged;
             m_ArenaTypeDropdown.onValueChanged.AddListener(OnArenaTypeValueChanged);
             m_ArenaDifficultyDropdown.onValueChanged.AddListener(OnArenaDifficultyValueChanged);
@@ -287,7 +286,6 @@ namespace Menu.MainMenu.MainTab
             base.UnRegisterListeners();
 
             ProgressionCloudData.CurrentArenaDataChangedEvent -= OnCurrentArenaDataChanged;
-            PlayerPrefsHandler.ArenaExtraDifficultyChanged -= OnArenaExtraDifficultyChanged;
             PlayerPrefsHandler.ArenaModsChangedEvent -= OnArenaModsChanged;
             m_ArenaTypeDropdown.onValueChanged.RemoveAllListeners();
             m_ArenaDifficultyDropdown.onValueChanged.RemoveAllListeners();
@@ -319,13 +317,14 @@ namespace Menu.MainMenu.MainTab
             RefreshUI();
         }
 
-        void OnArenaExtraDifficultyChanged()
+        void OnArenaModsChanged() 
         {
-            // update the arena difficulty data
-            SetArenaDifficulty(m_ArenaDifficulty.Difficulty, PlayerPrefsHandler.GetArenaExtraDifficulty(m_ArenaType, m_ArenaDifficulty.Difficulty));
-        }
+            var difficulty = PlayerPrefsHandler.GetArenaDifficulty(m_ArenaType);
+            m_ArenaDifficulty = new SArenaDifficulty(difficulty, PlayerPrefsHandler.GetArenaExtraDifficulty(m_ArenaType, difficulty));
+            m_ArenaData = AssetLoader.LoadArenaData(m_ArenaType, m_ArenaDifficulty);
 
-        void OnArenaModsChanged() { }
+            m_ArenaButton.RefreshDifficulty(m_ArenaDifficulty);
+        }
 
         void OnCurrentArenaDataChanged()
         {
@@ -342,6 +341,7 @@ namespace Menu.MainMenu.MainTab
 
             SoundFXManager.PlayOnce(SoundFXManager.ClickButtonSoundFX);
 
+            PlayerPrefsHandler.SetArenaType(arenaType);
             SetArenaType(arenaType);
         }
 

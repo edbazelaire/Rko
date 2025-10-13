@@ -1,11 +1,11 @@
-﻿using Assets.Scripts.Game.Loaders.Filters;
-using Data;
+﻿using Data;
+using Data.GameManagement;
 using Enums;
 using Game;
 using Game.Loaders;
-using Game.UI.EndGameUI;
 using Managers;
 using MyBox;
+using Save;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,12 +40,22 @@ namespace Assets.Scripts.Game
     public struct SSpellHitTypeData : INetworkSerializable
     {
         public string SpellName;
+        public int Counter;
         public List<SHitDetailValue> HitDetails;
 
         public SSpellHitTypeData(string spellName)
         {
             SpellName = spellName;
+            Counter = 0;
             HitDetails = new List<SHitDetailValue>();
+        }
+
+        /// <summary>
+        /// Increase counter
+        /// </summary>
+        public void IncreaseCounter(int counter = 1)
+        {
+            Counter += counter;
         }
 
         /// <summary>
@@ -90,6 +100,29 @@ namespace Assets.Scripts.Game
             if (HitDetails.IsNullOrEmpty())
                 return 0;
             return HitDetails.Where(h => h.HitType == hitType && h.Category == category).Sum(h => h.Value);
+        }
+
+        /// <summary>
+        /// Get all values of the requested type of hit, but split with each value/color for each category
+        /// </summary>
+        /// <param name="hitType"></param>
+        /// <returns></returns>
+        public List<(int, Color)> GetCategoryValuesSplitted(EHitType hitType)
+        {
+            List<(int, Color)> list = new();
+            if (HitDetails.IsNullOrEmpty())
+                return list;
+
+            var hits = HitDetails.Where(h => h.HitType == hitType);
+            if (hits.IsNullOrEmpty())
+                return list;
+
+            foreach (var hitDetail in hits)
+            {
+                list.Add((hitDetail.Value, PlayerSettings.GetHitTypeColor(hitType, hitDetail.Category)));
+            }
+
+            return list;
         }
 
         /// <summary>
@@ -199,16 +232,35 @@ namespace Assets.Scripts.Game
         #endregion
 
 
-        #region Damage Collection
+        #region Data Collection
+
+        public void IncreaseCounter(ulong casterId, string spellName, int counter = 1)
+        {
+            if (!m_PlayersDataDamage.ContainsKey(casterId))
+                InitializePlayerData(casterId);
+
+            // Find or create data for this spell
+            var spellDataIndex = m_PlayersDataDamage[casterId].FindIndex(spellData => spellData.SpellName == spellName);
+
+            SSpellHitTypeData spellHitTypeData;
+            if (spellDataIndex >= 0)
+            {
+                spellHitTypeData = m_PlayersDataDamage[casterId][spellDataIndex];
+                spellHitTypeData.IncreaseCounter(counter);
+                m_PlayersDataDamage[casterId][spellDataIndex] = spellHitTypeData;
+            }
+            else
+            {
+                spellHitTypeData = new SSpellHitTypeData(spellName);
+                spellHitTypeData.IncreaseCounter(counter);
+                m_PlayersDataDamage[casterId].Add(spellHitTypeData);
+            }
+        }
 
         public void OnSpellHit(ulong casterId, ulong targetId, string spellName, int qty, EHitType hitType, EHitCategory category)
         {
             if (!m_PlayersDataDamage.ContainsKey(casterId))
                 InitializePlayerData(casterId);
-
-            // casting category for "end" result
-            if (category == EHitCategory.Aoe)
-                category = EHitCategory.Direct;
 
             // Find or create data for this spell
             var spellDataIndex = m_PlayersDataDamage[casterId].FindIndex(spellData => spellData.SpellName == spellName);
@@ -240,12 +292,6 @@ namespace Assets.Scripts.Game
             if (PlayerPrefs.GetInt("DisplayDamage", 1) == 1)
             {
                 HitDisplayUI.Instance?.DisplayHit(targetClientId, amount, hitType, spellCategory);
-            }
-
-            // Send to client analytics
-            if (caster != null && caster.ClientAnalytics != null)
-            {
-                caster.ClientAnalytics.SendSpellData(spellName, hitType, amount);
             }
         }
         
@@ -299,6 +345,13 @@ namespace Assets.Scripts.Game
         private void SendPlayerData(SSpellHitTypeData[] playerData, ulong playerId, ulong myPlayerId)
         {
             GameUIManager.EndGameUI.EndGameAnalyticsUI.UpdateAnalytics(playerData.ToList(), index: playerId == myPlayerId ? 0 : 1);
+
+            // TODO : OLD analytics method was copy/paste here - adapt to send game analytics AT THE END of the game
+            // Send to client analytics
+            //if (caster != null && caster.ClientAnalytics != null)
+            //{
+            //    caster.ClientAnalytics.SendSpellData(spellName, hitType, amount);
+            //}
         }
 
         [ClientRpc]
@@ -328,40 +381,66 @@ namespace Assets.Scripts.Game
                 return;
             }
 
-            CalculateEndGameAchievements(character);
-            CalculatePropertyAchievements(character);
-            CalculateArenaAchievements(character);
+            bool save = CalculateEndGameAchievements(character);
+            save |= CalculatePropertyAchievements(character);
+            save |= CalculateArenaAchievements(character);
+
+            // save all achievements at once (if any has been incremented)
+            if (save)
+                ProfileCloudData.Instance.SaveValue(ProfileCloudData.KEY_ACHIEVEMENTS);
         }
 
-        void CalculateEndGameAchievements(ECharacter character)
+        bool CalculateEndGameAchievements(ECharacter character)
         {
+            bool test = false;
             foreach (var achievement in AchievementLoader.Get<EndGameAchievementData>(character))
             {
-                achievement.Check(EndGameUI.GameMode, EndGameUI.GameResult == EGameResult.Win);
+                test |= achievement.Check(EndGameUI.GameMode, EndGameUI.GameResult == EGameResult.Win, save: false);
             }
+
+            return test;
         }
 
-        void CalculatePropertyAchievements(ECharacter character)
+        bool CalculatePropertyAchievements(ECharacter character)
         {
             var endGameAnalytics = GameUIManager.EndGameUI.EndGameAnalyticsUI.GetDisplayer(0);
             if (endGameAnalytics == null)
-                return;
+                return false;
 
+            bool test = false;
             foreach (var achievement in AchievementLoader.Get<PropertyAchievementData>(character))
             {
-                achievement.Check(endGameAnalytics.SpellHitSummary, endGameAnalytics.SpecialValues, endGameAnalytics.SpellHitTypeDatas);
+                test |= achievement.Check(endGameAnalytics.SpellHitSummary, endGameAnalytics.SpecialValues, endGameAnalytics.SpellHitTypeDatas, save: false);
             }
+
+            return test;
         }
 
-        void CalculateArenaAchievements(ECharacter character)
+        bool CalculateArenaAchievements(ECharacter character)
         {
             if (EndGameUI.GameMode != EGameMode.Arena)
-                return;
+                return false;
 
+            if (EndGameUI.GameResult != EGameResult.Win)
+                return false;
+
+            if (!ProgressionCloudData.CurrentArena.IsLastBoss())
+                return false;
+
+            bool test = false;
             foreach (ArenaAchievementData achievement in AchievementLoader.Get<ArenaAchievementData>(character))
             {
-                achievement.Check();
+                test |= achievement.Check(
+                    gameMode:           EndGameUI.GameMode, 
+                    gameResult:         EndGameUI.GameResult, 
+                    arenaType:          ProgressionCloudData.CurrentArena.ArenaType, 
+                    arenaDifficulty:    ProgressionCloudData.CurrentArena.GetArenaDifficulty(), 
+                    arenaMods:          ProgressionCloudData.CurrentArena.GetArenaMods(),
+                    save:               false
+                );
             }
+
+            return test;
         }
 
         #endregion

@@ -1,6 +1,7 @@
 ﻿using Analytics.Events;
 using Assets;
 using Assets.Scripts.Game;
+using Assets.Scripts.Managers;
 using Assets.Scripts.Tools;
 using Data.GameManagement;
 using Enums;
@@ -11,6 +12,7 @@ using Managers;
 using Menu.Common.Rewards;
 using Network;
 using Save;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -249,8 +251,9 @@ public class EndGameUI : MObject
 
     void DisplayArenaPowerUps()
     {
-        m_PowerUpSection.OnEndEvent += NextState;
-        m_PowerUpSection.Activate(true);
+        var screen = ScreenManager.PowerUpSelectionScreen(ProgressionCloudData.CurrentArena.ArenaType, ProgressionCloudData.CurrentArena.Level - 1);
+
+        screen.OnExitEvent += NextState;
     }
 
     #endregion
@@ -351,43 +354,35 @@ public class EndGameUI : MObject
         }
 
         // ----------------------------------------------------------------------------
-        // Orb Power  
+        // ARENA wins
         if (LobbyHandler.Instance.GameMode == EGameMode.Arena && m_GameResult == EGameResult.Win)
         {
-            // setup quantity of power orb collected
-            SPowerOrb currentPowerOrb = ProgressionCloudData.CurrentArena.GetPowerOrb();
-            int orbPower = m_ArenaData.CalculateOrbPowerReward(m_CurrentLevel, m_CurrentStage);
-            m_OrbPowerRewardDisplay.SetActive(true);
-            m_OrbPowerRewardQty.text = string.Format(GOLD_FORMAT, orbPower);
-
-            // init image
-            m_PowerOrbContainer.Initialize(currentPowerOrb.Clone(), activateIdle: false);
-
-            // check if a bonus star has been provided
-            if (m_IsBossFight && currentPowerOrb.TryUpgradeRarety())
-                StartCoroutine(DisplayOrbUpgrade());
-
-            // update to cloud
-            ProgressionCloudData.AddCurrentArenaPowerOrbReward(orbPower, currentPowerOrb.Rarety);
-        }
-
-        // ----------------------------------------------------------------------------
-        // Refresh Token
-        if (LobbyHandler.Instance.GameMode == EGameMode.Arena && m_GameResult == EGameResult.Win)
-        {
-            if (ProgressionCloudData.CurrentArena.HasMod(EArenaMod.Random))
-            {
-                // display refresh
-                m_RefreshTokenDisplay.SetActive(true);
-
-                // update to cloud
-                ProgressionCloudData.AddCurrentArenaRefreshToken(1);
-            }
+            HandlePowerOrbDisplay();
+            HandleRefreshTokens();
         }
 
         StartCoroutine(RewardsAnimation());
 
         ErrorHandler.Log("HandleReward() : end", ELogTag.Rewards);
+    }
+
+    void HandlePowerOrbDisplay()
+    {
+        // setup quantity of power orb collected
+        SPowerOrb currentPowerOrb = ProgressionCloudData.CurrentArena.GetPowerOrb();
+        int orbPower = m_ArenaData.CalculateOrbPowerReward(m_CurrentLevel, m_CurrentStage);
+        m_OrbPowerRewardDisplay.SetActive(true);
+        m_OrbPowerRewardQty.text = string.Format(GOLD_FORMAT, orbPower);
+
+        // init image
+        m_PowerOrbContainer.Initialize(currentPowerOrb.Clone(), activateIdle: false);
+
+        // check if a bonus star has been provided
+        if (m_IsBossFight && currentPowerOrb.TryUpgradeRarety())
+            StartCoroutine(DisplayOrbUpgrade());
+
+        // update to cloud
+        ProgressionCloudData.AddCurrentArenaPowerOrbReward(orbPower, currentPowerOrb.Rarety);
     }
 
     IEnumerator DisplayOrbUpgrade()
@@ -397,6 +392,32 @@ public class EndGameUI : MObject
         m_PowerOrbContainer.PowerOrbData.UpgradeRarety();
         m_PowerOrbContainer.RefreshUI();
         m_PowerOrbContainer.PowerOrbUI.PlayUpgradeAnimation();
+    }
+
+    void HandleRefreshTokens()
+    {
+        // Arena is Over - exit
+        if (ProgressionCloudData.CurrentArena.IsOver())
+            return;
+
+        // Random mod gets +1 extra refresh token on each fight
+        if (ProgressionCloudData.CurrentArena.HasMod(EArenaMod.Random))
+        {
+            // display refresh
+            m_RefreshTokenDisplay.SetActive(true);
+
+            // update to cloud
+            ProgressionCloudData.AddCurrentArenaRefreshToken(1);
+        }
+
+        if (m_IsBossFight)
+        {
+            // display refresh
+            m_RefreshTokenDisplay.SetActive(true);
+
+            // update to cloud
+            ProgressionCloudData.AddCurrentArenaRefreshToken(1);
+        }
     }
 
     float CalculateCurrencyMultiplicator()

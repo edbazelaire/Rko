@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9d516b3dac707b40872f083050bc425, type: 3}
   m_Name: DamageDelt
   m_EditorClassIdentifier: 
+  m_PrettyName: 
   m_Description: Deal [TresholdValue] damage with Alexander
+  m_ResetCount: 0
   m_Character: 1
   m_MasteryThresholds: 0300000006000000
   AchievementSubData:
@@ -88,7 +90,7 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
-  - MaxValue: 1500000
+  - MaxValue: 2500000
     Rewards:
       Currencies: []
       Chests: 

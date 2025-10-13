@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56b41aca370c9c94b9847be98bc4e21f, type: 3}
   m_Name: _FallingOrbs
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: Each {0} seconds, {1} orbs fall from the sky. \n\nYou must catch
     them before the hit the GROUND, otherwise, the enemy gains 1 stack and heals
     for [SubSpellData.Heal] hp\nEach stack grants extra damage, auto attack speed
@@ -27,25 +27,46 @@ MonoBehaviour:
   Graphics: {fileID: 0}
   SpellEventActions: []
   OnHit: []
+  PassiveEffects: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 0}
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
   OnEndSoundFX: {fileID: 0}
-  SpellTarget: 6
+  SpellTarget: 9
   m_ClampTargetPos: 1
   TargetOffset:
     X: 0
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
+  m_MaxHit: 1
+  m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 1
   m_ExecutionDamage: 0
+  m_Damages:
+  - m_BaseValue: 1
+    m_DamageCategory: 2
+    m_HitCategory: 1
+    m_SpellPropertyScaling:
+      Property: 0
+      Value: 0
+      ScalingType: 0
+      RoundingType: 0
+      ScalingTresholds: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -56,28 +77,72 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
+    m_Targets: 
   m_SpellsScalingLevel:
   - Property: 6
     Value: 0.1
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
   - Property: 9
     Value: -0.05
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
   m_Size: 1
   TriggerPlayer: 1
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
   EnemyStateEffects: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 0
   IsCancellable: 0
+  IsInterruptable: 1
   AnimationTimer: 0
   m_Cooldown: 0
   SubSpellData: {fileID: 11400000, guid: a98791e548644094f963323cf947b452, type: 2}
-  MultiProjectileType: 2
+  m_UseAutoAttack: 0
+  m_OverridingSubData: []
+  MultiProjectileType: 0
   SubSpellSpawn:
     m_SpellTargetX:
       m_Dimension: 1
       m_MultiSpellTarget: 0
       m_ZoneSize: -1
+      m_NBreakPointMargin:
+        Min: 0
+        Max: 0
       m_NBreakPoints: 1
       m_OffsetMinMax:
         Min: 0
@@ -86,7 +151,33 @@ MonoBehaviour:
       m_Dimension: 2
       m_MultiSpellTarget: 0
       m_ZoneSize: -1
+      m_NBreakPointMargin:
+        Min: 0
+        Max: 0
       m_NBreakPoints: 1
+      m_OffsetMinMax:
+        Min: 0
+        Max: 0
+  SubSpellTarget:
+    m_SpellTargetX:
+      m_Dimension: 1
+      m_MultiSpellTarget: 1
+      m_ZoneSize: -1
+      m_NBreakPointMargin:
+        Min: 0
+        Max: 0
+      m_NBreakPoints: 0
+      m_OffsetMinMax:
+        Min: 0.5
+        Max: 0
+    m_SpellTargetY:
+      m_Dimension: 2
+      m_MultiSpellTarget: 0
+      m_ZoneSize: -1
+      m_NBreakPointMargin:
+        Min: 0
+        Max: 0
+      m_NBreakPoints: 0
       m_OffsetMinMax:
         Min: 0
         Max: 0
@@ -98,9 +189,11 @@ MonoBehaviour:
   m_IsBlocking: 0
   m_NProjectiles: 2
   m_NBreakPoints: 0
-  m_ProjectileZoneSize: -1
+  m_ProjectileZoneSize: 0
   m_DelayBetweenLaunches: 3
   m_NWaves: 99999
   m_DelayBetweenWaves: 12
+  OnCastWaveAnimation: 0
+  OnCastProjectileAnimation: 0
   OnCastWaveSoundFX: {fileID: 0}
   OnCastProjectileSoundFX: {fileID: 0}

@@ -12,7 +12,7 @@ public class TaskDodge : TaskMove
 
     #region Init & End
 
-    public TaskDodge(Controller controller, bool checkZones = true, Func<float> weight = null) : base(controller, true, true, weight) { }
+    public TaskDodge(Controller controller, bool checkZones = true, Func<float> weight = null) : base(controller, checkZones, true, false, weight) { }
 
     #endregion
 

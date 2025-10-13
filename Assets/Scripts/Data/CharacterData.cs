@@ -74,7 +74,8 @@ namespace Data
         public ESpell AutoAttack            => ParseSpell(m_AutoAttack);
         public ESpell SpecialAbility        => ParseSpell(m_SpecialAbility);
         public ESpell Ultimate              => ParseSpell(m_Ultimate);
-        public int MaxHealth                => (int)Math.Round(BaseHealth * Math.Pow(1 + HealthScaleFactor, m_Level - 1)) + (int)GetValue(EStateEffectProperty.Hp, "");
+        public int MaxHealth                => (int)Math.Round(BaseHealth * Math.Pow(1 + HealthScaleFactor, m_Level - 1)) + (int)GetValue(EStateEffectProperty.Hp);
+        public float FinaleSize             => Mathf.Max(Size + GetValue(EStateEffectProperty.Size), 0);
         public float Speed                  => BaseSpeed;
         public List<SPowerEffect> SpecialPowers => m_SpecialPowers;
 
@@ -83,13 +84,15 @@ namespace Data
 
         #region Instantiation
 
-        public GameObject InstantiateCharacterPreview(GameObject parent)
+        public GameObject InstantiateCharacterPreview(GameObject parent, ESkin skin = ESkin.None)
         {
             if (parent == null || parent.IsDestroyed())
                 return null;
 
-            var go = GameObject.Instantiate(AssetLoader.LoadCharacterPreview(Name), parent.transform);
-            return go;
+            if (skin != ESkin.None)
+                return GameObject.Instantiate(AssetLoader.LoadCharacterPreview(skin.ToString()), parent.transform);
+
+            return GameObject.Instantiate(AssetLoader.LoadCharacterPreview(Name), parent.transform);
         }
 
         ESpell ParseSpell(string spellName)
@@ -127,9 +130,17 @@ namespace Data
             }
         }
 
-        public void AddBonusStat(EStateEffectProperty property, float value, List<string> specialConditions)
+        /// <summary>
+        /// Add bonus stats to the character as SCharacterStatScaling
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="value"></param>
+        /// <param name="damageCategories"></param>
+        /// <param name="hitCategories"></param>
+        /// <param name="specialConditions"></param>
+        public void AddBonusStat(EStateEffectProperty property, float value, List<EDamageCategory> damageCategories = default, List<EHitCategory> hitCategories = default, List<string> specialConditions = default)
         {
-            AddBonusStats(new List<SCharacterStatScaling>() { new SCharacterStatScaling(property, 0f, value, 0f, specialConditions) });
+            AddBonusStats(new List<SCharacterStatScaling>() { new SCharacterStatScaling(property, 0f, value, 0f, damageCategories: damageCategories, hitCategories: hitCategories, specialConditions: specialConditions) });
         }
 
         /// <summary>
@@ -159,10 +170,10 @@ namespace Data
 
         #region Scaling & Stats Accessors
 
-        public float GetValue(EStateEffectProperty property, string specialCondition, Controller caster = null, Controller targetController = null)
+        public float GetValue(EStateEffectProperty property, EDamageCategory? damageCategory = null, EHitCategory? hitCategory = null, string specialCondition = "", Controller caster = null, Controller targetController = null)
         {
             float value = 0f;
-            var characterStatScalingData = GetCharacterScalingData(property, specialCondition);
+            var characterStatScalingData = GetCharacterScalingData(property, damageCategory, hitCategory, specialCondition);
             foreach (SCharacterStatScaling characterStatScaling in characterStatScalingData)
             {
                 value += characterStatScaling.GetValue(m_Level, caster, targetController);
@@ -172,14 +183,18 @@ namespace Data
       
         }
 
-        public int GetInt(EStateEffectProperty property, string specialCondition, Controller caster = null, Controller targetController = null)
+        public int GetInt(EStateEffectProperty property, EDamageCategory? damageCategory = null, EHitCategory? hitCategory = null, string specialCondition = "", Controller caster = null, Controller targetController = null)
         {
-            return (int)Math.Round(GetValue(property, specialCondition, caster, targetController));
+            return (int)Math.Round(GetValue(property, damageCategory, hitCategory, specialCondition, caster, targetController));
         }
 
-        List<SCharacterStatScaling> GetCharacterScalingData(EStateEffectProperty property, string specialCondition)
+        List<SCharacterStatScaling> GetCharacterScalingData(EStateEffectProperty property, EDamageCategory? damageCategory = null, EHitCategory? hitCategory = null, string specialCondition = "")
         {
-            return CharacterStatScaling.Where(t => t.StateEffectProperty == property && t.HasSpecialCondition(specialCondition)).ToList();
+            return CharacterStatScaling.Where(
+                t => t.StateEffectProperty == property 
+                && t.HasDamageCategory(damageCategory)
+                && t.HasHitCategory(hitCategory)
+                && t.HasSpecialCondition(specialCondition)).ToList();
         }
 
         #endregion

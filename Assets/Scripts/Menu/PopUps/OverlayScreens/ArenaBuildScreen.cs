@@ -103,7 +103,7 @@ namespace Menu.PopUps.OverlayScreens
 
         void SetupCharacter()
         {
-            CoroutineManager.DelayMethod(() => UIHelper.SpawnCharacter(ProgressionCloudData.CurrentArena.BuildData.Character, m_CharacterSection, padding: new Vector2(0.1f, 0)));
+            CoroutineManager.DelayMethod(() => UIHelper.SpawnCharacter(ProgressionCloudData.CurrentArena.BuildData.Character, ESkin.None, m_CharacterSection, padding: new Vector2(0.1f, 0)));
         }
 
         void SetupSpells()

@@ -41,7 +41,6 @@ namespace Game.Spells
         // ===================================================================================
         // Local Members
         Coroutine       m_Coroutine;
-        float           m_DurationTimer;
         int             m_ActivationCounter;
 
         #endregion
@@ -92,7 +91,6 @@ namespace Game.Spells
             if (m_SpellData.Duration <= 0)
                 return;
 
-            m_DurationTimer -= Time.deltaTime;
             if (m_DurationTimer < 0)
                 SetState(EMineState.End);
         }

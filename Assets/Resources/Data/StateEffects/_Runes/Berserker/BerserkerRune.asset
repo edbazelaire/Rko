@@ -17,9 +17,9 @@ MonoBehaviour:
     of the boosts is multiplied by the percentage of missing health (0% effectiveness
     at full health)
   m_DescriptionVariables: 08000000030000001000000009000000
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 1
-  m_VisualEffects: []
   m_GfxEffects:
   - Prefab: {fileID: 8992406793559661190, guid: 0a4d304b385159340bf3a0d4e7535924, type: 3}
     MaterialEffect: {fileID: 0}
@@ -36,6 +36,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 0
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 1}
     Animation: 0
     SpellAnimation: 
@@ -55,6 +56,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 1
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -67,11 +69,14 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
   m_EndWithShield: 0
+  m_EndAt0Stacks: 1
   m_RefreshShield: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: -1
+  m_StartingStacks: 1
   m_MaxStacks: 1
   m_StackDecay: -1
   m_StartsActivated: 1
@@ -83,14 +88,14 @@ MonoBehaviour:
     LevelScalingFactor: 0
     StackScalingFactor: 1
     SpecialConditions: []
-  - StateEffectProperty: 8
-    BaseValue: 0.1
-    LevelScalingFactor: 0.1
+  - StateEffectProperty: 9
+    BaseValue: 0.25
+    LevelScalingFactor: 0
     StackScalingFactor: 1
     SpecialConditions: []
-  - StateEffectProperty: 9
-    BaseValue: 0.2
-    LevelScalingFactor: 0.06
+  - StateEffectProperty: 8
+    BaseValue: 0.1
+    LevelScalingFactor: 0.05
     StackScalingFactor: 1
     SpecialConditions: []
   - StateEffectProperty: 16

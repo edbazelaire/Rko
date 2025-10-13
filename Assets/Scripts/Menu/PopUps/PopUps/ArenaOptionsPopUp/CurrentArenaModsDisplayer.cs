@@ -2,6 +2,7 @@
 using Tools;
 using Enums;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 namespace Menu.PopUps
 {
@@ -48,6 +49,9 @@ namespace Menu.PopUps
                 ArenaModButtonUI template = Instantiate(m_Template, m_Container.transform);
                 template.Initialize(arenaMod);
             }
+
+            // force rebuild layout to make sure it's clean
+            LayoutRebuilder.ForceRebuildLayoutImmediate(m_Container.GetComponent<RectTransform>());
         }
 
         #endregion

@@ -51,6 +51,10 @@ namespace Assets
         [SerializeField] string             m_AuthId = "";
         [SerializeField] bool               m_ForceIsNewPlayer;
         [SerializeField] bool               m_StopPreventiveLoss;
+        [SerializeField] bool               m_InfinitRefreshes;
+        [SerializeField] bool               m_SkipWaves;
+        [SerializeField] bool               m_SkipBossAnimations;
+        [SerializeField] bool               m_DeactivateEnemy;
         [SerializeField] bool               m_SkipWaitingRanked;
         [SerializeField] bool               m_InfinitGiftCodes;
         [SerializeField] List<ELogTag>      m_LogTags;
@@ -96,7 +100,7 @@ namespace Assets
         public static bool              ActivateSaveOnClose     => Instance.m_ActivateSaveOnClose;
         public static bool              ForceIsNewPlayer        => Instance.m_ForceIsNewPlayer;
         //public static bool              IsNewPlayer             => ForceIsNewPlayer || ! ProfileCloudData.TutoDone;
-        public static bool              IsNewPlayer             => false;
+        public static bool IsNewPlayer => false;
         public static List<ELogTag>     LogTags                 => s_Instance != null ? Instance.m_LogTags : new List<ELogTag>();
         public static bool StopPreventiveLoss
         {
@@ -109,7 +113,60 @@ namespace Assets
                 return false;
 #endif
             }
+        }   
+        
+        public static bool InfinitRefreshes
+        {
+            get
+            {
+#if UNITY_EDITOR
+                // only works in EDITOR mode
+                return Instance.m_InfinitRefreshes;
+#else
+                return false;
+#endif
+            }
         }
+        
+        public static bool SkipWaves
+        {
+            get
+            {
+#if UNITY_EDITOR
+                // only works in EDITOR mode
+                return Instance.m_SkipWaves;
+#else
+                return false;
+#endif
+            }
+        }
+        
+        public static bool SkipBossAnimations
+        {
+            get
+            {
+#if UNITY_EDITOR
+                // only works in EDITOR mode
+                return Instance.m_SkipBossAnimations;
+#else
+                return false;
+#endif
+            }
+        }
+        
+        public static bool DeactivateEnemy
+        {
+            get
+            {
+#if UNITY_EDITOR
+                // only works in EDITOR mode
+                return Instance.m_DeactivateEnemy;
+#else
+                return false;
+#endif
+            }
+        }
+
         public static bool InfinitGiftCodes
         {
             get
@@ -507,11 +564,6 @@ namespace Assets
         {
             Debug.LogWarning(message);
             SetPopUp(EPopUpState.MessagePopUp, message);
-        }
-
-        public static void StateEffectPopUp(SStateEffectData stateEffectData, int level)
-        {
-            SetPopUp(EPopUpState.StateEffectPopUp, stateEffectData, level);
         }
 
         #endregion

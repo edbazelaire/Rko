@@ -2,6 +2,8 @@
 using Enums;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Tools;
 using UnityEngine;
@@ -17,10 +19,10 @@ namespace Game.UI.EndGameUI
     {
         float m_AnimationDuration = 1f;
 
-        TMP_Text m_Name;
-        ExtansibleFillbar m_Fillbar;
-        TMP_Text m_Value;
-        LayoutElement m_LayoutElement;
+        TMP_Text            m_Name;
+        ExtansibleFillbar   m_Fillbar;
+        TMP_Text            m_Value;
+        LayoutElement       m_LayoutElement;
 
         protected override void FindComponents()
         {
@@ -54,7 +56,7 @@ namespace Game.UI.EndGameUI
                 StartCoroutine(PlayValueAnimation(0, value));
             }
 
-            m_Fillbar.Initialize(value, maxValue, color, withAnimation);
+            m_Fillbar.Initialize(new() { (value, color) }, maxValue, withAnimation);
         }
 
         /// <summary>
@@ -79,30 +81,27 @@ namespace Game.UI.EndGameUI
                 StartCoroutine(PlayValueAnimation(0, value));
             }
 
-            m_Fillbar.Initialize(value, maxValue, color, withAnimation);
+            m_Fillbar.Initialize(new() { (value, color) }, maxValue, withAnimation);
         }
 
         /// <summary>
         /// Initialize with split values (Direct vs Tick).
         /// </summary>
-        public void InitializeSplit(EHitType hitType, int directValue, int tickValue, int maxValue, int expectedHeight = 35, bool withAnimation = true)
+        public void InitializeSplit(EHitType hitType, List<(int, Color)> values, int maxValue, int expectedHeight = 35, bool withAnimation = true)
         {
             base.Initialize();
 
             m_LayoutElement.preferredHeight = expectedHeight;
 
-            int total = directValue + tickValue;
-
-            var colorDirect = PlayerSettings.GetHitTypeColor(hitType, EHitCategory.Direct);
-            var colorTick = PlayerSettings.GetHitTypeColor(hitType, EHitCategory.Tick);
+            int total = values.Sum(t => t.Item1);
 
             m_Name.text = hitType.ToString();
-            m_Name.color = colorDirect;
-            m_Value.color = colorDirect;
+            m_Name.color = PlayerSettings.GetHitTypeColor(hitType, EHitCategory.Direct);
+            m_Value.color = PlayerSettings.GetHitTypeColor(hitType, EHitCategory.Direct);
             m_Value.text = total.ToString();
 
             // Custom fillbar mode to show split
-            m_Fillbar.InitializeSplit(directValue, tickValue, maxValue, colorDirect, colorTick, withAnimation);
+            m_Fillbar.Initialize(values, maxValue, withAnimation);
         }
 
         public IEnumerator PlayValueAnimation(int fromValue, int toValue)

@@ -33,7 +33,7 @@ namespace Data
         /// <param name="spellHitSummary"></param>
         /// <param name="specialValues"></param>
         /// <param name="spellHitTypeDatas"></param>
-        public virtual void Check(SSpellHitTypeData spellHitSummary, Dictionary<ESpecialValue, float> specialValues, List<SSpellHitTypeData> spellHitTypeDatas)
+        public virtual bool Check(SSpellHitTypeData spellHitSummary, Dictionary<ESpecialValue, float> specialValues, List<SSpellHitTypeData> spellHitTypeDatas, bool save = false)
         {
             int value = 0;
             if (m_SpecialConditions == null || m_SpecialConditions.Count == 0)
@@ -51,10 +51,11 @@ namespace Data
             if (value < 0)
             {
                 ErrorHandler.Warning("Found value (" + value + ") < 0");
-                return;
+                return false;
             }
 
-            Increase(value);
+            Increase(value, save: save);
+            return true;
         }
 
         /// <summary>
@@ -73,21 +74,24 @@ namespace Data
                     return spellHitSummary.GetTotal(EHitType.Damage);
 
                 case EStateEffectProperty.TickDamage:
-                    return spellHitSummary.GetCategoryValue(EHitType.Damage, EHitCategory.Tick);
+                    return spellHitSummary.GetCategoryValue(EHitType.Damage, EHitCategory.Dot);
+
+                case EStateEffectProperty.ExecutionDamage:
+                    return spellHitSummary.GetCategoryValue(EHitType.Damage, EHitCategory.Execution);
 
                 // HEALING -------------------------------------------------
                 case EStateEffectProperty.Heal:
                     return spellHitSummary.GetTotal(EHitType.Heal);
 
                 case EStateEffectProperty.TickHeal:
-                    return spellHitSummary.GetCategoryValue(EHitType.Heal, EHitCategory.Tick);
+                    return spellHitSummary.GetCategoryValue(EHitType.Heal, EHitCategory.Dot);
 
                 // SHIELD -------------------------------------------------
                 case EStateEffectProperty.Shield:
                     return spellHitSummary.GetTotal(EHitType.Shield);
 
                 case EStateEffectProperty.TickShield:
-                    return spellHitSummary.GetCategoryValue(EHitType.Shield, EHitCategory.Tick);
+                    return spellHitSummary.GetCategoryValue(EHitType.Shield, EHitCategory.Dot);
 
                 // -----------------------------------------------------------
                 // SPECIAL VALUES

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.Spells
 {
-    [CreateAssetMenu(fileName = "InfectionEffect", menuName = "Game/StateEffects/ConditionalEffects/InfectionEffect")]
+    [CreateAssetMenu(fileName = "Infection", menuName = "Game/StateEffects/ConditionalEffects/Infection")]
     public class Infection : StateEffect
     {
         protected override bool CheckBeforeGraphicInit()

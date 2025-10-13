@@ -1,4 +1,5 @@
 ﻿using Data.DataStructures.CharacterSubStructures;
+using Data.DataStructures.SpellSubStructures;
 using Enums;
 using Game.Loaders;
 using System;

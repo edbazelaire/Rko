@@ -20,6 +20,16 @@ public class CheckDodge : BaseChecker
     public CheckDodge(Controller controller, float activeDuration = 0f) : base(controller) 
     { 
         m_ActivationDuration = activeDuration;
+
+        if (m_ImmediatThreatTrigger == null)
+        {
+            ErrorHandler.Warning("Using CheckDodge() without a component : m_ImmediatThreatTrigger");
+        }
+
+        if (m_ProjectileTrigger == null)
+        {
+            ErrorHandler.Warning("Using CheckDodge() without a component : m_ProjectileTrigger");
+        }
     }
 
     #endregion
@@ -33,7 +43,7 @@ public class CheckDodge : BaseChecker
             return m_State;
 
         // checks if is on a spell preview
-        if (m_ImmediatThreatTrigger.CheckTriggerSpellSpawn())
+        if (m_ImmediatThreatTrigger != null && m_ImmediatThreatTrigger.CheckTriggerSpellSpawn())
         {
             ErrorHandler.Log("CheckDodge : CheckTriggerSpellSpawn() SUCCESS", ELogTag.AICheckers);
             SetNodeState(NodeState.SUCCESS);
@@ -41,7 +51,7 @@ public class CheckDodge : BaseChecker
         }
 
         // checks that is not in the trajectory of projectile
-        if (m_ProjectileTrigger.IsTriggered)
+        if (m_ProjectileTrigger != null && m_ProjectileTrigger.IsTriggered)
         {
             foreach (var projectile in m_ProjectileTrigger.Projectiles)
             {

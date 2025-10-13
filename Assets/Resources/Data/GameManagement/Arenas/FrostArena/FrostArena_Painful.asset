@@ -61,9 +61,9 @@ MonoBehaviour:
       Cooldown: 8
       RepeatWhenCooldownOver: 0
     m_PowerUps:
-    - ShieldRune - Primal
-    - AncientAegisRune - Primal
-    - BerserkerRune - Major
+    - ShieldRune - Minor
+    - AncientAegisRune - Major
+    - BerserkerRune - Minor
     StageData:
     - m_Boss: 1001
       m_BonusLevel: 0
@@ -128,22 +128,6 @@ MonoBehaviour:
       OverridingData: []
       Level: 0
       Target: 0
-      SpellActivationEvent: 1
-      ActivationTreshold: 0
-      SpellDeactivationEvent: 0
-      DeactivationTreshold: 0
-      StateEffectEvent: 0
-      StateEffectName: 
-      NStateEffectActivationThreshold: 0
-      Delay: 25
-      Duration: 0
-      NActivations: 0
-      Cooldown: 0
-      RepeatWhenCooldownOver: 0
-    - SpellDataName: _VenomSpikes
-      OverridingData: []
-      Level: 0
-      Target: 0
       SpellActivationEvent: 3
       ActivationTreshold: 0.5
       SpellDeactivationEvent: 0
@@ -153,22 +137,21 @@ MonoBehaviour:
       NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
-      NActivations: 0
+      NActivations: 1
       Cooldown: 0
       RepeatWhenCooldownOver: 0
     m_PowerUps:
-    - PoisonRune - Major
-    - ToxicWaterRune - Primal
-    - ParasiteRune - Major
+    - ToxicWaterRune - Minor
+    - ParasiteRune - Minor
     StageData:
     - m_Boss: 1002
       m_BonusLevel: 0
-      m_Spells: 1a0000001d0000003000000028000000
+      m_Spells: 1a0000001d00000030000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1002
       m_BonusLevel: 1
-      m_Spells: 1a000000300000001d0000002800000049000000
+      m_Spells: 1a000000300000001d000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1
@@ -207,10 +190,9 @@ MonoBehaviour:
       Cooldown: 0
       RepeatWhenCooldownOver: 0
     m_PowerUps:
-    - HealRune - Primal
-    - CurseRune - Major
-    - SoulSiffonRune - Major
-    - ShardcurseRune - Primal
+    - CurseRune - Minor
+    - SoulSiffonRune - Minor
+    - ShardcurseRune - Major
     StageData:
     - m_Boss: 1003
       m_BonusLevel: 0
@@ -243,6 +225,7 @@ MonoBehaviour:
         Title: 11
         Avatar: 11
         Border: 0
+        Emot: 0
         Badge: 0
         League: 0
       Boosts: []
@@ -263,26 +246,10 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
       RepeatWhenCooldownOver: 0
-    - SpellDataName: _ArcticEruption
-      OverridingData: []
-      Level: 0
-      Target: 0
-      SpellActivationEvent: 1
-      ActivationTreshold: 0
-      SpellDeactivationEvent: 0
-      DeactivationTreshold: 0
-      StateEffectEvent: 0
-      StateEffectName: 
-      NStateEffectActivationThreshold: 0
-      Delay: 8
-      Duration: 0
-      NActivations: 0
-      Cooldown: 0
-      RepeatWhenCooldownOver: 0
     m_PowerUps:
     - ShieldRune - Minor
     - FrostRune - Primal
-    - ThermalShockRune - Major
+    - ThermalShockRune - Minor
     StageData:
     - m_Boss: 1004
       m_BonusLevel: 0
@@ -291,7 +258,7 @@ MonoBehaviour:
       m_BonusStats: []
     - m_Boss: 1004
       m_BonusLevel: 1
-      m_Spells: 1c000000110000004c00000021000000
+      m_Spells: 1c000000110000004c000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 3

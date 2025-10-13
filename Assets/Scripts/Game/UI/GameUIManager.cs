@@ -123,12 +123,6 @@ public class GameUIManager : MonoBehaviour
         m_BTDebugger.gameObject.SetActive(false);
         m_PlayerUIs = new Dictionary<ulong, PlayerUI> { };
 
-        // display or not the Timer
-        if (LobbyHandler.Instance.GameMode != EGameMode.Ranked)
-            Destroy(m_GameTimerUI.gameObject);
-        else
-            m_GameTimerUI.Initialize();
-
         LoadArena();
 
         m_Initialized = true;

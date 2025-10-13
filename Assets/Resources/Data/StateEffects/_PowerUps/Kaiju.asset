@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66c690c033cc5494bbb1e53e2fc68b55, type: 3}
+  m_Name: Kaiju
+  m_EditorClassIdentifier: 
+  m_Description: Converts [HpToSizeConversion] of your Max HP into character Size.\nConverts
+    [SizeToDamageConversion] of your character's Size into perenctage Bonus Damage
+    and percentage Bonus Heal.\n\nEvery [Tick] seconds, deals [TickDamageHpPerc]
+    of your Max Hp to enemies around you.\n\nOn reaching a Size of [SizeThreshold],
+    becomes [Uncontrollable] - making your character immuned to CC.
+  m_DescriptionVariables: 
+  m_NStacksInDescription: 1
+  m_StateEffectType: 0
+  m_IsDisplayed: 0
+  m_GfxEffects: []
+  m_Animation: 0
+  m_OnApplySoundFX: {fileID: 0}
+  m_PermanantSoundFX: {fileID: 0}
+  m_ConsumeState: 0
+  m_DefaultState: 0
+  m_IsInstantanious: 0
+  m_IsConsumedOnEnd: 0
+  m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
+  m_EndWithShield: 0
+  m_EndAt0Stacks: 1
+  m_RefreshShield: 1
+  m_Priority: 0
+  m_Delay: 0
+  m_Duration: -1
+  m_StartingStacks: 1
+  m_MaxStacks: 1
+  m_StackDecay: 0
+  m_StartsActivated: 1
+  m_StateEffectTriggers: []
+  m_StateEffectActivations: []
+  m_BonusStats:
+  - StateEffectProperty: 29
+    BaseValue: 0
+    LevelScalingFactor: 0
+    StackScalingFactor: 0
+    SpecialConditions: []
+  - StateEffectProperty: 8
+    BaseValue: 0
+    LevelScalingFactor: 0
+    StackScalingFactor: 0
+    SpecialConditions: []
+  - StateEffectProperty: 107
+    BaseValue: 0
+    LevelScalingFactor: 0
+    StackScalingFactor: 0
+    SpecialConditions: []
+  m_StatConversions: []
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
+  m_OnStartStateEffect: []
+  m_OnEndStateEffect: []
+  m_StateEffectScalingLevel: []
+  m_StateEffectScalingStacks: []
+  m_SizeThreshold: 4
+  m_HpToSizeConversion: 0.0001
+  m_SizeToDamageConversion: 0.35
+  m_Tick: 1
+  m_TickDamageHpPerc: 0.02

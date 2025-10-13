@@ -19,6 +19,8 @@ using Save.Data.Progression.Structs;
 using Data.DataStructures.PowerEffects;
 using static UnityEditor.U2D.ScriptablePacker;
 using UnityEngine.Rendering;
+using Data.DataStructures.StateEffectSubStructures;
+using Data.DataStructures.CharacterSubStructures;
 
 namespace Assets.Scripts.Managers
 {
@@ -84,6 +86,10 @@ namespace Assets.Scripts.Managers
                     obj.GetComponent<QuickMessagePopUp>().Initialize(message: (string)args[0], duration: args.Count() > 1 ? (float)args[1] : 3f);
                     break;
 
+                case EPopUpState.QuickRewardMessagePopUp:
+                    obj.GetComponent<QuickRewardMessagePopUp>().Initialize(message: (string)args[0], rewardsData: (SRewardsData)args[1], duration: args.Count() > 2 ? (float)args[2] : 3f);
+                    break;
+
                 case EPopUpState.MessagePopUp:
                     obj.GetComponent<MessagePopUp>().Initialize(message: (string)args[0], title: args.Count() > 1 ? (string)args[1] : "", onValidate: args.Count() > 2 ? (Action)args[2] : null, onCancel: args.Count() > 3 ? (Action)args[3] : null);
                     break;
@@ -121,6 +127,10 @@ namespace Assets.Scripts.Managers
                     obj.GetComponent<ArenaPathScreen>().Initialize((EArenaType)args[0], (SArenaDifficulty)args[1]);
                     break;
 
+                case EPopUpState.EternalMenageriePathScreen:
+                    obj.GetComponent<EternalMenageriePathScreen>().Initialize(EArenaType.EternalMenagerie, (SArenaDifficulty)args[0]);
+                    break;
+
                 case EPopUpState.LevelUpScreen:
                     obj.GetComponent<LevelUpScreen>().Initialize(currentXp: (int)args[0], maxXp: (int)args[1], bonusXp: (int)args[2]);
                     break;
@@ -148,11 +158,11 @@ namespace Assets.Scripts.Managers
                     break;
 
                 case EPopUpState.BossInfoPopUp:
-                    obj.GetComponent<BossInfoPopUp>().Initialize((string)args[0], (int)args[1], args.Count() >= 3 ? (List<string>)args[2] : new List<string>());
+                    obj.GetComponent<BossInfoPopUp>().Initialize((string)args[0], (ESkin)args[1], (int)args[2], args.Count() > 3 ? (List<string>)args[3] : new List<string>(), args.Count() > 4 ? (List<SCharacterStatScaling>)args[4] : new List<SCharacterStatScaling>());
                     break;
 
                 case EPopUpState.StateEffectPopUp:
-                    obj.GetComponent<StateEffectPopUp>().Initialize((SStateEffectData)args[0], (int)args[1]);
+                    obj.GetComponent<StateEffectPopUp>().Initialize((SStateEffectData)args[0], (int)args[1], args.Count() > 2 ? (int)args[2] : null, args.Count() > 3 ? (bool)args[3] : true);
                     break;
 
                 case EPopUpState.TriggerEffectPopUp:
@@ -213,6 +223,11 @@ namespace Assets.Scripts.Managers
             SetPopUp(EPopUpState.QuickMessagePopUp, message, duration);
         }
 
+        public static void QuickRewardMessage(string message, SRewardsData rewardsData, float duration = 3f)
+        {
+            SetPopUp(EPopUpState.QuickRewardMessagePopUp, message, rewardsData, duration);
+        }
+
         #endregion
 
 
@@ -262,6 +277,39 @@ namespace Assets.Scripts.Managers
                 popup = Main.Instantiate(AssetLoader.Load<CharacterInfoPopUp>("CharacterInfoPopUp", AssetLoader.c_PopUpsPath));
                 popup.Initialize(collectableData, infoOnly);
             }
+        }
+
+        public static void StateEffectPopUp(SStateEffectData stateEffectData, int level, int stacksInDescription = 0, bool displayNextLevel = true)
+        {
+            SetPopUp(EPopUpState.StateEffectPopUp, stateEffectData, level, stacksInDescription, displayNextLevel);
+        }
+
+        #endregion
+
+
+        #region Arena Screens
+
+        public static PowerUpSelectionScreen PowerUpSelectionScreen(EArenaType arenaType, int index)
+        {
+            PowerUpSelectionScreen screen;
+            switch (arenaType)
+            {
+                case EArenaType.EternalMenagerie:
+                    screen = AssetLoader.Load<PowerUpSelectionScreen_EM>("PowerUpSelectionScreen_EM", AssetLoader.c_OverlayPath);
+                    if (screen == null)
+                    {
+                        ErrorHandler.Error("Unable to screen PowerUpSelectionScreen_EM for arena " + arenaType.ToString());
+                        break;
+                    }
+                    screen = Main.Instantiate(screen);
+                    screen.Initialize(index);
+                    return screen;
+            }
+
+            screen = Main.Instantiate(AssetLoader.Load<PowerUpSelectionScreen>("PowerUpSelectionScreen", AssetLoader.c_OverlayPath));
+            screen.Initialize(index);
+
+            return screen;
         }
 
         #endregion

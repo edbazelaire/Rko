@@ -1,0 +1,175 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a178992957160843aa4203f2044f4b8, type: 3}
+  m_Name: Brainrot
+  m_EditorClassIdentifier: 
+  m_Rarety: 0
+  m_Description: 
+  m_DescriptionVariables: []
+  m_SpellElements: 
+  Linked: 0
+  Graphics: {fileID: 0}
+  SpellEventActions:
+  - Prefab: {fileID: 147226, guid: 56b36c9bb03994843815f8ae3629eb9a, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 100
+      m_EndSpellPart: 300
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 0
+    BodyPart: 7
+    IsFollowing: 1
+    IsReplacingGFX: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
+  - Prefab: {fileID: 6568525604674795387, guid: 86fc2c25630f0ef49941cce884fc7871, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 400
+      m_EndSpellPart: 1000
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 3
+    SpawnLocation: 1
+    BodyPart: 0
+    IsFollowing: 1
+    IsReplacingGFX: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
+  OnHit: []
+  PassiveEffects: []
+  SpellEventEffects: []
+  OnHitSpellSpawn: 1
+  AnimationSoundFX: {fileID: 0}
+  CastSoundFX: {fileID: 0}
+  PermanantSoundFX: {fileID: 0}
+  OnHitSoundFX: {fileID: 0}
+  OnEndSoundFX: {fileID: 0}
+  SpellTarget: 6
+  m_ClampTargetPos: 1
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 100
+  ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
+  m_SpellRequirements: []
+  MaxHit: 1
+  m_Charges: 1
+  EnergyGain: 0
+  EnergyCost: 100
+  m_Damage: 0
+  m_ExecutionDamage: 0
+  m_Heal: 0
+  m_Shield: 0
+  m_LifeSteal: 1
+  Distance: -1
+  OverrideOnHitProperties: 
+  m_Duration: 4
+  Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
+    m_Targets: 
+  m_SpellsScalingLevel:
+  - Property: 14
+    Value: 0.12
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
+  OverridesSpawnPosition: 1
+  m_SpawnPosition:
+    SpawnTarget: 1
+    SpawnLocation: 0
+    BodyPart: 7
+    IsFollowing: 1
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
+  m_Size: 3
+  TriggerPlayer: 1
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 1
+  MChanneling:
+    IsCancellable: 0
+    IsInterruptable: 0
+    m_ForcedMovementSpeed: 0
+    Animation: 0
+  EnemyStateEffects:
+  - StateEffect: 13
+    Stacks: 3
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
+  - StateEffect: 31
+    Stacks: 2
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
+  AllyStateEffects: []
+  StateEffectStackFactor: 0
+  PersistanceAfterEnd: 0
+  Animation: -1
+  IsCancellable: 0
+  IsInterruptable: 1
+  AnimationTimer: 2
+  m_Cooldown: 0
+  m_SpellSpawn: 1
+  DurationTick: 0.5
+  m_TickDamage: 80
+  m_TickHeal: 0
+  m_TickShield: 0
+  m_TickEnergy: 0
+  m_ZoneForce:
+    m_Speed: 0
+    m_Duration: 0
+    m_Targets: 
+  GrowSizeFactor: 0
+  MaxSizeAt: 1
+  PersistentStateEffects: []
+  m_RaySizePerc: 1
+  m_Speed: 1
+  m_MaxLength: -1
+  m_TargetToFollow: 6
+  m_FollowingSpeed: 0.4

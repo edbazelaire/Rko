@@ -9,62 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 47479451774634f41bf6a5cb0514ad38, type: 3}
+  m_Script: {fileID: 11500000, guid: ae354b3668cdd774ca39fa75fe4e38f7, type: 3}
   m_Name: AleaJactaEst
   m_EditorClassIdentifier: 
+  m_PrettyName: 
   m_Description: 
   m_ResetCount: 1
   m_Character: -1
-  m_MasteryThresholds: 0300000006000000
+  m_MasteryThresholds: 
   AchievementSubData:
-  - MaxValue: 5
-    Rewards:
-      Currencies: []
-      Chests: 
-      Collectables: []
-      AchievementRewards:
-      - AchievementReward: 2
-        Title: 0
-        Avatar: 501
-        Border: 0
-        Emot: 0
-        Badge: 0
-        League: 0
-      Boosts: []
-    ArenaType: 0
-    ArenaDifficulty: 0
-    ArenaMods: 
-    ArenaExtraDifficulty: 0
   - MaxValue: 10
-    Rewards:
-      Currencies: []
-      Chests: 00000000
-      Collectables: []
-      AchievementRewards: []
-      Boosts: []
-    ArenaType: 0
-    ArenaDifficulty: 0
-    ArenaMods: 
-    ArenaExtraDifficulty: 0
-  - MaxValue: 20
-    Rewards:
-      Currencies: []
-      Chests: 
-      Collectables: []
-      AchievementRewards:
-      - AchievementReward: 4
-        Title: 1015
-        Avatar: 13
-        Border: 0
-        Emot: 0
-        Badge: 10000
-        League: 3
-      Boosts: []
-    ArenaType: 0
-    ArenaDifficulty: 0
-    ArenaMods: 
-    ArenaExtraDifficulty: 0
-  - MaxValue: 35
     Rewards:
       Currencies: []
       Chests: 
@@ -75,30 +29,52 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
     ArenaType: 0
-    ArenaDifficulty: 0
+    ArenaDifficulty: 4
     ArenaMods: 
-    ArenaExtraDifficulty: 0
-  - MaxValue: 50
+  - MaxValue: 25
     Rewards:
       Currencies: []
       Chests: 
       Collectables: []
       AchievementRewards:
-      - AchievementReward: 1
-        Title: 0
-        Avatar: 0
-        Border: 203
+      - AchievementReward: 4
+        Title: 901
+        Avatar: 13
+        Border: 0
         Emot: 0
-        Badge: 10002
-        League: 0
+        Badge: 10000
+        League: 3
       Boosts: []
     ArenaType: 0
-    ArenaDifficulty: 0
+    ArenaDifficulty: 4
     ArenaMods: 
-    ArenaExtraDifficulty: 0
-  m_ArenaType: 1
-  m_ArenaDifficulty: 0
-  m_ArenaMods: 
-  m_MinExtraDifficulty: 0
-  ArenaMods: 01000000
-  MinExtraDifficulty: 0
+  - MaxValue: 50
+    Rewards:
+      Currencies: []
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 5
+    ArenaMods: 
+  - MaxValue: 100
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 4
+        Title: 903
+        Avatar: 13
+        Border: 0
+        Emot: 0
+        Badge: 10000
+        League: 3
+      Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 6
+    ArenaMods: 
+  m_ArenaType: 0
+  m_ArenaDifficulty: 4
+  m_ArenaMods: 01000000

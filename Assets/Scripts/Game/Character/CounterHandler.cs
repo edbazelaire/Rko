@@ -154,6 +154,8 @@ namespace Game.Character
 
         public void RemoveCounter(Counter counter)
         {
+            Debug.Log("RemoveCounter() : " + counter.name);
+
             if (!IsServer)
                 return;
 
@@ -190,6 +192,28 @@ namespace Game.Character
                 }
             }
         }
+
+        public void EndCounter(ESpell spell)
+        {
+            Debug.Log("RemoveCounter() : " + spell);
+
+            if (!IsServer)
+                return;
+
+            // find index
+            for (int i = 0; i < m_Counters.Count; i++)
+            {
+                if (m_Counters[i].SpellData.Spell == spell)
+                {
+                    m_Counters[i].EndCounter();
+                    return;
+                }
+            }
+
+            // remove at index if found
+            ErrorHandler.Error("Unable to find counter " + spell + " in list of counters");
+        }
+
 
         #endregion
 

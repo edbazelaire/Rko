@@ -451,7 +451,7 @@ namespace Menu.Common.Buttons
 
         protected virtual void OnClickLocked() 
         {
-            OpenInfoPopUp(0);
+            OpenInfoPopUp(1, asIconOnly: true);
         }
 
         protected virtual void OnPurchased(bool success)

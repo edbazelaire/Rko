@@ -19,6 +19,8 @@ MonoBehaviour:
       Color: {r: 1, g: 0, b: 0, a: 1}
     - DamageType: 3
       Color: {r: 1, g: 0.5274616, b: 0, a: 1}
+    - DamageType: 4
+      Color: {r: 0.4339623, g: 0, b: 0, a: 1}
   - HitType: 1
     Colors:
     - DamageType: 1
@@ -27,9 +29,9 @@ MonoBehaviour:
       Color: {r: 0.07035796, g: 0.5377358, b: 0, a: 1}
   - HitType: 2
     Colors:
-    - DamageType: 0
+    - DamageType: 1
       Color: {r: 0.81755173, g: 0.990566, b: 0.126157, a: 1}
-    - DamageType: 0
+    - DamageType: 3
       Color: {r: 0.45995235, g: 0.5754717, b: 0.008143453, a: 1}
   - HitType: 3
     Colors:

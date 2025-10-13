@@ -11,7 +11,7 @@ namespace Data
     public class MineData : SpellData
     { 
         public override ESpellType SpellType        => ESpellType.Mine;
-        public override EHitCategory SpellCategory  => EHitCategory.Aoe;
+        //public override EHitCategory SpellCategory  => EHitCategory.Aoe;
 
 
         [Header("MineData")]

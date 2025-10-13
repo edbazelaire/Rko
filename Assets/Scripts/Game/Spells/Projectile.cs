@@ -68,6 +68,10 @@ namespace Game.Spells
         /// </summary>
         void FixedUpdate()
         {
+            // spell is on ending phase - stop checking collisons
+            if (m_IsOver)
+                return;
+
             // Position actuelle
             Vector2 currentPosition = m_RigidBody.position;
 
@@ -96,6 +100,10 @@ namespace Game.Spells
         /// <param name="collision"></param>
         protected virtual void OnTriggerEnter2D(Collider2D collision)
         {
+            // spell is on ending phase - stop checking collisons
+            if (m_IsOver)
+                return;    
+
             // only server can check for collision
             if (!IsServer)
                 return;
@@ -215,13 +223,8 @@ namespace Game.Spells
 
         protected override void SetTarget(Vector3 target)
         {
-            // TODO : remove (TRUE) when IsAutoTarget is implemented
             // add a small adjustement to X to avoid targetting the enemy's feets (only for autotarget aiming the ground)
-            if ((true || m_SpellData.IsAutoTarget) && target.y == 0)
-            {
-                // add X offset depending on the type of projectile
-                target.x += CalculateTargetOffsetX();
-            }
+            target.x += CalculateTargetOffsetX();
 
             // set value of the target
             base.SetTarget(target);

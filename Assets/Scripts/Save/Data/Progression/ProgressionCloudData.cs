@@ -318,7 +318,7 @@ namespace Save
 
                 // ADD stage
                 else
-                    UpdateCurrentArena(stage: CurrentArena.Stage + 1);
+                    UpdateCurrentArena(stage: CurrentArena.Stage + 1, enemyLostLifes: 0);
             }
 
             // SAVE
@@ -329,6 +329,11 @@ namespace Save
         public static void AddArenaLoss(int nLoss = 1, bool save = true)
         {
             UpdateCurrentArena(losses: Math.Clamp(CurrentArena.Losses + nLoss, 0, CurrentArena.GetMaxLosses()), erosion: 0f, save: save);
+        }
+
+        public static void RemoveCurrentEnemyLife(int nLifes = 1)
+        {
+            UpdateCurrentArena(enemyLostLifes: CurrentArena.CurrentEnemyLifesLost + nLifes);
         }
 
         public static void AddCurrentArenaPowerUp(string powerUpName, bool save = true)
@@ -369,6 +374,23 @@ namespace Save
             var currentArena = CurrentArena;
             currentArena.ArenaMods = arenaMods;
 
+            Instance.m_Data[KEY_CURRENT_ARENA] = currentArena;
+
+            // fire event that current arena data have been changed
+            CurrentArenaDataChangedEvent?.Invoke();
+
+            if (save)
+                Instance.SaveValue(KEY_CURRENT_ARENA);
+        }
+
+        /// <summary>
+        /// Reset all current arena power ups
+        /// </summary>
+        /// <param name="save"></param>
+        public static void ResetArenaPowerUps(bool save = true)
+        {
+            var currentArena = CurrentArena;
+            currentArena.PowerUps = default;
             Instance.m_Data[KEY_CURRENT_ARENA] = currentArena;
 
             // fire event that current arena data have been changed
@@ -423,7 +445,7 @@ namespace Save
                     UnlockNextArenaDifficulty(CurrentArena.ArenaType, save: true);
             } 
 
-            UpdateCurrentArena(stage: 0, level: CurrentArena.Level + 1, save: save);
+            UpdateCurrentArena(stage: 0, level: CurrentArena.Level + 1, enemyLostLifes: 0, save: save);
         }
 
         /// <summary>
@@ -501,7 +523,8 @@ namespace Save
                 arenaMods:          arenaMods,
                 buildData:          buildData,
                 maxLifes:           CalculateArenaMaxLifes(arenaMods),
-                rewardRarety:       CalculateArenaRarety(arenaMods)
+                rewardRarety:       CalculateArenaRarety(arenaMods),
+                refreshTokens:      CalculateRefreshTokens(arenaMods)
             ));
 
             CurrentArenaDataChangedEvent?.Invoke();
@@ -530,7 +553,7 @@ namespace Save
             CurrentArenaDataChangedEvent?.Invoke();
         }
 
-        public static void UpdateCurrentArena(int? level = null, int? stage = null, int? losses = null, float? erosion = null, bool save = true)
+        public static void UpdateCurrentArena(int? level = null, int? stage = null, int? losses = null, int? enemyLostLifes = null, float? erosion = null, bool save = true)
         {
             var currentArena = CurrentArena;
             if (level.HasValue)
@@ -539,11 +562,23 @@ namespace Save
                 currentArena.Stage = stage.Value;
             if (losses.HasValue)
                 currentArena.Losses = losses.Value > currentArena.GetMaxLosses() ? currentArena.GetMaxLosses() : losses.Value;
+            if (enemyLostLifes.HasValue)
+                currentArena.CurrentEnemyLifesLost = enemyLostLifes.Value;
             if (erosion.HasValue)
                 currentArena.Erosion = erosion.Value;
 
             // check that provided values are consistant 
             currentArena.CheckArenaData();
+
+            // save
+            Instance.SetData(KEY_CURRENT_ARENA, currentArena, save);
+            CurrentArenaDataChangedEvent?.Invoke();
+        }
+
+        public static void SetArenaMetaData(string key, string value, bool save = true)
+        {
+            var currentArena = CurrentArena;
+            currentArena.SetMetaData(key, value);
 
             // save
             Instance.SetData(KEY_CURRENT_ARENA, currentArena, save);
@@ -590,6 +625,18 @@ namespace Save
             if (arenaMods == null)
                 return CurrentArena.HasMod(EArenaMod.NoDeath) ? 1 : 3;
             return arenaMods.Contains(EArenaMod.NoDeath) ? 1 : 3;
+        }
+
+        public static int CalculateRefreshTokens(List<EArenaMod> arenaMods)
+        {
+            if (Main.InfinitRefreshes)
+                return 99;
+
+            int refreshTokens = ArenaManagementData.NStartRefreshes;
+            if (arenaMods.Contains(EArenaMod.Random))
+                refreshTokens += ArenaManagementData.NStartRefreshes_BonusRandom;
+
+            return refreshTokens;
         }
 
         #endregion
@@ -795,7 +842,7 @@ namespace Save
             }
 
             if (save)
-                Instance.SaveValue(KEY_UNLOCKED_ARENAS);
+                Instance.SaveValue(KEY_UNLOCKED_ARENA_REWARDS);
         }
 
         #endregion

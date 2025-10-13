@@ -11,7 +11,8 @@
         AchievementRewardScreen     = 4,
         LevelUpScreen               = 5,
         LobbyScreen                 = 6,
-        ArenaPathScreen             = 7,
+        ArenaPathScreen             = 7,   
+        EternalMenageriePathScreen  = 38,   // <-->
         LeaguesPathScreen           = 8,
         ArenaBuildScreen            = 9,
         ArenaBuildConstructorScreen = 10,
@@ -31,6 +32,7 @@
 
         // -- message PopUps
         QuickMessagePopUp           = 21,
+        QuickRewardMessagePopUp     = 37,   
         MessagePopUp                = 22,
         ConfirmPopUp                = 23,
         PseudoPopUp                 = 24,
@@ -39,7 +41,7 @@
         ConfirmBuyItemPopUp         = 27,
         ConfirmBuyBundlePopUp       = 28,
         ConfirmWatchAdPopUp         = 33,
-        ConfirmUpgradeMasteryPopUp  = 36,       // <-->
+        ConfirmUpgradeMasteryPopUp  = 36,       
 
         // -- options popup
         ArenaOptionsPopUp           = 34,     
@@ -101,7 +103,8 @@
         None = -1,
 
         //FireArena = 0,
-        FrostArena = 1,
+        FrostArena          = 1,
+        EternalMenagerie    = 2,
     }
 
     public enum EArenaDifficulty
@@ -111,11 +114,10 @@
         Hard,
         Painful,
         Brutal,
+        Torment,
+        Infernal,
         //Savage,
         //Relentless,
-        //HardCore,
-        //Torment,
-        //Infernal,
         //Nightmare,
         //Cataclysmic,
         //Hell,
@@ -127,6 +129,7 @@
 
         Random      = 1,
         NoDeath     = 2,
+        HardCore    = 3,
     }
 
     public enum EBlessing
@@ -156,6 +159,17 @@
 
     }
 
+    public enum ESkin
+    {
+        None = 0,
+
+        // BOSS ====================================================
+        Zorg_II     = 10001,
+        Zorg_III    = 10002,
+        Zorg_IV     = 10003,
+        Zorg_V      = 10004,
+    }
+
     public enum ECharacter
     {
         None = -1,
@@ -175,12 +189,14 @@
     {
         None        = -1,
 
+        // Frost Arena
         IceGolem    = 0,
         MaiHau      = 1,
         Atassut     = 2,
         Sikunik     = 3,
         Fenris      = 4,
 
+        // Eternal Menagerie
         Zorg        = 10,
 
         // ======================================================================
@@ -202,6 +218,13 @@
         ChemicalSlime   = 4,
         Molken          = 5,
         ChaosTurtle     = 6,
+        DoomCrystal     = 7,
+        Fiorana         = 8,
+        Noctrelle       = 9,
+        Levrak          = 10,
+        Voidgazer       = 11,
+        Boomcrust       = 12,
+        Toxstinger      = 13,
     }
 
     public enum ESpell
@@ -255,7 +278,7 @@
         //EmperorOfFlames     = 45,
         ExperimentalVial    = 46,
         //Vortex              = 47,
-        Shardrot            = 48,
+        ShardrotIceLance    = 48,
         SoulFreeze          = 49,
         DarkVeil            = 50,
         IceField            = 51,
@@ -277,7 +300,7 @@
         Orblivion           = 67,
         Hellnova            = 68,
         //Lavachunk           = 69,
-        //VolcanicMeditation  = 70,
+        IceBeam             = 70,
         Molken              = 71,
         HollowDagger        = 72,
         TrueshotBarrage     = 73,
@@ -328,17 +351,23 @@
         // ======================================================================
         // BOSSES ABILITIES
         // -- IceGolem
-        IceRock = 10001,
+        IceRock             = 10001,
         Carapice            = 10002,
         IceRockNRoll        = 10003,
         CryoPunch           = 10004,
         FrostfistRain       = 10005,
+        GroundBreaker       = 10006,
+
         // -- MaiHau
         Slicide             = 10101,
         SlIceBreaker        = 10102,
-        PoisonDarts         = 10103,
+        XStrike             = 10107,
+        RazorTempest        = 10103,
         Crosslice           = 10104,
         ExtraClaws          = 10105,
+        FuryBond            = 10106,
+        PoisonDarts         = 10108,
+
         // -- Atassut
         ChaosOrb            = 10201,
         Scythefall          = 10202,
@@ -346,16 +375,31 @@
         ShadowVeil          = 10204,
         AstralIcefall       = 10205,
         DarkstarDescent     = 10206,
+        DoomCrystals         = 10207,
+
         // -- Sikunik
         BlueMeteor          = 10301,
         DragonicRest        = 10302,
         Soaring             = 10303,
         AzureDeflagration   = 10304,
         AzurePowerOrbs      = 10305,
+        Eruptions           = 10306,
+        Rainballs           = 10307,
+        Disintegrate        = 10308,
+
         // -- Fenris
         IceClaws            = 10401,
         PackHunt            = 10402,
         FrostfangStrike     = 10403,
+
+        // -- Zorg
+        UnstableOrb         = 11001,
+        MadnessWhispers     = 11002,
+        //Tormentations       = 11003,
+        Tormentations       = 11004,
+        PandemoniumNova     = 11005,
+        ImminentDoom        = 11006,
+        AbyssalStrike       = 11007,
 
         // -- Lunassian
         LeatherSkin         = 100002,
@@ -371,10 +415,21 @@
 
         // ======================================================================
         // SPAWN ABILITIES
-        ChemicalSlimeAttack = 1000001,
-        Sparks              = 1000002,   // Molken (aa)
-        Wazaaah             = 1000003,   // Molken (ult)
-        Tchaos              = 1000004,   // Chaos Turtle (ult)
+        ChemicalSlimeAttack = 1000001,  // ChemicalSlime (aa)
+        Sparks              = 1000002,  // Molken (aa)
+        Wazaaah             = 1000003,  // Molken (ult)
+        Tchaos              = 1000004,  // Chaos Turtle (ult)
+        Beamanco            = 1000005,  // Doomcrystal (aa)
+        SoulShards          = 1000006,  // Leverak  (aa)
+        Netherglacier       = 1000007,  // Leverak  (sa)
+        GlacialBreath       = 1000008,  // Leverak  (ult)
+        AbyssalStare        = 1000009,  // Voidgazer (aa)
+        Brainrot            = 1000010,  // Voidgazer (ult)
+        Boomer              = 1000011,  // Boomcrust (aa)
+        BoomBlast           = 1000012,  // Boomcrust (ult)
+        Sting               = 1000013,  // Toxstinger (aa)
+        ToxicBramble        = 1000014,  // Forana (aa)
+        RottenScent         = 1000015,  // Forana (ult)
     }
 
     public enum ESpellType
@@ -393,6 +448,7 @@
         MultiSpell          = 9,
         Mine                = 10,
         Spawner             = 11,
+        Beam                = 12,
     }
 
     public enum ESpellElement
@@ -418,14 +474,25 @@
         Shield,
     }
 
+    public enum EDamageCategory
+    {
+        Physical = 1,
+        Magical  = 2,
+    }
+
     public enum EHitCategory
     {
-        None,
+        Direct      = 1,
+        Dot         = 2,
+        Execution   = 3,
+        TrueDamage  = 4,
+        Piercing    = 5,
+    }
 
+    public enum ESpellCategory
+    {
         Direct,
         Aoe,
-        Tick,
-        Execution,
     }
 
     public enum ESpellSelectionState
@@ -449,9 +516,9 @@
     {
         None,
 
-        Minor,
-        Major,
-        Primal
+        Minor   = 1,
+        Major   = 2,
+        Primal  = 3
     }
 
     public enum ECollectableType
@@ -497,6 +564,7 @@
         EmperorOfFlames         = 28,
         ChaosTurtle             = 29,
         LethalityRune           = 30,
+        IgnitedWeapon           = 31,
     }
 
     public enum EEffectType
@@ -587,8 +655,10 @@
         OnCast          = 300,
         OnSpawn         = 400,
         OnActivation    = 450,
+        OnTriggerEnter  = 475,
         OnHit           = 500,
 
+        OnTriggerExit   = 875,
         OnDeactivation  = 900,
         OnEnd           = 1000,
 
@@ -708,6 +778,7 @@
         Dash,
         Teleport,
         Charge,
+        QuickJump,
     }
 
     public enum ESpellEffectType
@@ -779,42 +850,50 @@
         // default effects
         None                = 0,
         Stun                = 1,
-        Frozen              = 2,
+        Slow                = 7,
+        Silence             = 14,
+        Airborne            = 23,
+        Grounded            = 30,
+        Jump                = 11,
         Invulnerable        = 3,
         Uncontrollable      = 10,
         Enraged             = 21,
         Invisible           = 4,
+        UnTargettable       = 20,
+        Vanish              = 25,
         Taunt               = 28,   
-        Unstopable          = 29,  
-        Grounded            = 30,   // <----->
-
-        // knockback effects
+        Unstopable          = 29,   
         Knockback           = 5,
 
-        // slow effects
+        // Frost
         Frost               = 6,
-        Slow                = 7,
-
-        // tick effects
-        Burn                = 8,
-        Poison              = 9,
-
-        Jump                = 11,
-        IronSkin            = 12,
-        Cursed              = 13,
-        Silence             = 14,
-        Scorched            = 15,
+        Frozen              = 2,
+        Frostbite           = 34,   // <----->
         IceBreak            = 16,
-        Infected            = 17,
-        Malediction         = 18,
-        VoidPact            = 19,               // CHANGE THAT NAME !!! EFFECT REPLACING AUTO ATTACK IN "CORRUPTED"
-        UnTargettable       = 20,
+
+        // Burn
+        Burn                = 8,
         Combustion          = 22,
-        Airborne            = 23,
+        Scorched            = 15,
+
+        // Poison
+        Poison              = 9,
+        Infected            = 17,
         Infection           = 24,
-        Vanish              = 25,
+        Rotten              = 32,       
+
+        // Cursed
+        Cursed              = 13,
+        CorruptedPower      = 31,
+        Malediction         = 18,
+
+        // ======================================================================
+        // SPELL EFFECTS
+        IronSkin            = 12,
+        VoidPact            = 19,               // CHANGE THAT NAME !!! EFFECT REPLACING AUTO ATTACK IN "CORRUPTED"
         Cleanse             = 26,
         RestlessBlade       = 27,   
+        Purity              = 33,       
 
         // ======================================================================
         // Special Effects (boss)
@@ -838,6 +917,8 @@
         // Special Effects (spawns)
         ChaosTurtleDiet     = 30001,
         BornedToBurn        = 30002,
+        SoulFeast           = 30003,
+        AbyssalPower        = 30004,
 
         // ======================================================================
         // Special Effects (animation)
@@ -881,6 +962,7 @@
     {
         None = 0,
 
+        SpellTarget             = 26,   
         Heal                    = 1,
         Damage                  = 2,
         Cooldown                = 3,
@@ -897,13 +979,29 @@
         TickDamage              = 14,
         TickHeal                = 15,
         TickShield              = 16,
-        TickEnergy              = 23,   // <--->
+        TickEnergy              = 23,   
         Shield                  = 17,
         Delay                   = 18,
         ExecutionDamage         = 19,
         Charges                 = 20,
         Trajectory              = 21,
         AnimationTimer          = 22,
+        Speed                   = 24,   
+        MaxHit                  = 25,   
+
+        // -- MFollowing
+        IsFollowing                         = 27,   
+        MFollowing_TargetToFollow           = 28,
+        MFollowing_TargetOffset             = 29,   
+        MFollowing_FollowingSpeed           = 30,  
+
+        // -- MSpawnPosition
+        OverridesSpawnPosition               = 31,
+        MSpawnPosition_SpawnTarget          = 32,
+        MSpawnPosition_SpawnLocation        = 33,
+        MSpawnPosition_BodyPart             = 34,
+        MSpawnPosition_IsFollowing          = 35,
+        MSpawnPosition_Offset               = 36,   // <--->
     }
 
     public enum EStateEffectProperty
@@ -911,11 +1009,13 @@
         None = 0,
 
         Level                   = 24,   
+        Size                    = 29,     
         Duration                = 1,
         MaxStacks               = 2,
         SpeedBonus              = 3,
         Shield                  = 4,
         BonusShieldPerc         = 21,
+        Resistance              = 30,   // <---->
         ResistanceFix           = 5,
         ResistancePerc          = 6,
         ResistanceTick          = 26,   
@@ -924,7 +1024,7 @@
         BonusDamagePerc         = 8,
         BonusExecutionDamage    = 22,
         BonusExecutionDamagePerc = 23,
-        Lethality               = 28,   // <---->
+        Lethality               = 28, 
         BonusLifeSteal          = 9,
         MissingLifeFactor       = 10,
         Damage                  = 11,
@@ -1044,7 +1144,6 @@
         Quests              = 113,      // quests state effects changes
         SpellGFX            = 108,      // spell graphics playing
         StateEffectGFX      = 109,      // spell graphics playing
-        BonusStats          = 110,      // track increased statistiques
         Movement            = 111,      // display movement variables and inputs
         Forces              = 112,      // display FORCES adding / removing
 
@@ -1059,6 +1158,7 @@
         AITaskAutoAttack    = 207,
         AITaskUseSpell      = 208,
         AIBtState           = 209,
+        AITree              = 210,
 
         // CloudData
         CloudData           = 300,
@@ -1073,9 +1173,17 @@
         Projectiles         = 501,  
         Aoe                 = 502,  
         Buff                = 503,      
-        Spawns              = 504,  
-        MultiSpells         = 505,  
+        Spawns              = 504,
+        SpawnWaves          = 505,  
+        MultiSpells         = 506,
 
+        // Bonus Stats
+        BonusStats              = 600,
+        BonusDamage             = 601,
+        BonusTickDamage         = 602,
+        BonusExecutionDamage    = 603,
+        BonusHeal               = 604,
+        BonusTickHeal           = 605,
     }
 
     public enum ERewardType
@@ -1275,9 +1383,23 @@
         Alpha_Tester        = 11,
         The_Shadow          = 12,
         Le_Charclo          = 22,
-        The_Lootless        = 23,       
+        The_Lootless        = 23,      
+        // -- Alexander
         The_Barrel          = 23,       
-        ProtectorOfMaedonis = 24,       // <-->
+        ProtectorOfMaedonis = 24,
+        Brutalexander       = 25,
+        // -- Subrog
+        Moon_Shadow         = 26,
+        Eclipse_Assassin    = 27,
+        Sneaky_Conquest     = 28,     
+        // -- Marcus
+        Frozenblade         = 29,
+        The_Northen_General = 30,        
+        //SomethingSomething  = 31,  
+        // -- Strug
+        The_Hollow          = 32,
+        Vengefull_Spirit    = 33,        
+        //SomethingSomething  = 34,       // <--->  
 
         // [Wins] Achievement ======================================================
         The_Unbeatable      = 13,
@@ -1301,18 +1423,21 @@
         Worldbreaker        = 17,
         Walking_Cataclysm   = 18,
 
-
         /************************************
          *              ARENAS              *
          ************************************/
+        // Common Arena Achievements ==============================================
+        TheDicey                = 901,
+        Immortal                = 902,
+        RandomGuy               = 903,
+
         // Frost Arena ======================================================
-        Winter_Soldier          = 1001,
+        Winter_Soldier = 1001,
         The_Iceborned           = 1002,
         Arctic_Vanquisher       = 1003,
         Glacial_Conqueror       = 1004,
         Eternal_Winter_King     = 1005,
         // --
-        TheDicey                = 1015,
         Legend_Of_The_North     = 1016,
 
         // Fire Arena ======================================================
@@ -1344,28 +1469,33 @@
         DemonicChibi    = 103,
         FireChibi       = 104,
         FirstWinChibi   = 106,
-        ChibiMarcus     = 107,
+        //ChibiMarcus = 107,
+
 
         // ======================================================================================
         // Frost Arena
-        Snowman         = 10,
+        Snowman = 10,
         FrostMaster     = 11,
         ChibiFrostDemon = 105,
         QuiProQuo       = 501, 
         IceGolem        = 502,
         FrozenLand      = 503,
-        NiceGolem       = 504,  // unused ATM
+        NiceGolem       = 504, 
 
         // ======================================================================================
         Alexander       = 1000,
         YoungAlexander  = 1001,
         Marcus          = 1010,
+        ChibiMarcus     = 1011,
+        GeneralMarcus   = 1012,
         Kahnan          = 1030,
         Srug            = 1040, 
         ChibiSrug       = 1041,
         Nagini          = 1050,
         Chibini         = 1051,
         Subrog          = 1060,
+        ChibiSubrog     = 1061,
+        EclipseAssassin = 1062,
         NeedleJack      = 1070,
         Bulgor          = 1080,
         HappyBulgor     = 1081,
@@ -1391,7 +1521,7 @@
         //LeagueLegend    = 80,
 
         // Special ranking border
-        Rank1 = 1001,
+        Rank1 = 91,
 
         // Others
         Sakura          = 101,
@@ -1407,9 +1537,20 @@
         Domination      = 111, 
 
         // Arena
-        Fire = 201,
-        Frost = 202,
-        IceTouch = 203
+        Fire            = 201,
+        Frost           = 202,
+        IceTouch        = 203,
+
+        // Characters
+        Alexander       = 1001,
+        //Srug            = 1002,
+        Marcus          = 1003,
+        //Nagini          = 1004,
+        Subrog          = 1005,
+        //NeedleJack      = 1006,
+        //Iztac           = 1007,
+        //Bulgor          = 1008,
+        //Kahnan          = 1009,
     }
 
     public enum EBadge
@@ -1444,16 +1585,22 @@
 
         // Characters Achievements
         BattleAxe       = 2001,
+        EclipseBlade    = 2002,
+        IceLance        = 2003,
 
         // Arena Frost
         SeedOfChance    = 10000,
         UncertainShot   = 10001,
         MasterOfChaos   = 10002,        
-        RandomEntity    = 10003,        // TODO (icon not made)  ----------------------------------
-        Undying         = 10004,      
+        RandomEntity    = 10003,            // TODO (icon not made)  ----------------------------------
+        Undying         = 10004,            // TODO (icon not made)  ----------------------------------
         ItSnowProblem   = 10005,
         FrozenBlade     = 10006,
         LegendOfTheNorth = 10007,
+        Spicy           = 10008,
+        FrozenSkull     = 10009,
+        FrozenHeart     = 10010,
+        HiceBreaker     = 10011,
     }
 
     public enum EAchievementReward
@@ -1487,7 +1634,7 @@
         // ====================================================
         // Alexander
         Pokerface           = 5,
-        Trollexander         = 7,
+        Trollexander        = 7,
         Hey                 = 17,
         BigMuscles          = 15,
         CuteAlexander       = 16,
@@ -1496,7 +1643,7 @@
         RedBarrel           = 23,
         Hilexander          = 24,
         Sadlexander         = 25,
-        BigPunch            = 26,   // <-->
+        BigPunch            = 26,   
 
         // ====================================================
         // Kahanan
@@ -1505,12 +1652,42 @@
         // ====================================================
         // Marcus
         Omg                 = 3,
-        Yada                = 19,
+        Yada                = 19, 
+        Hilarious           = 36,
+        PissedOfMarcus      = 37,
+        Duuuude             = 38,
+        CheckThisOut        = 39,
+        Looser              = 40,
+        Markiss             = 41,
+        NiceOne             = 42,       // <---->
+
+        // ====================================================
+        // Subrog
+        DeathSentence       = 27,   
+        HiThere             = 28,   
+        NotFair             = 29,   
+        ServesYouRight      = 30,   
+        Subdead             = 31,   
+        Sublove             = 32,   
+        Subrage             = 33,   
+        UhOh                = 34,         
+        InnocentFace        = 35,
+
+        // ====================================================
+        // Srug
+        AngrySpirit         = 101,
+        ChillSpirit         = 102,
+        LoveSpirit          = 103,
+        LaughingSpirit      = 104,
+        CantWatch           = 105,
+        SoWonderful         = 106,
+        Bwaalwaala          = 107,
+        Whut                = 108,
+        HighSpirit          = 109,
 
         // ====================================================
         // Bulgor
-        OhLord              = 14,
-
+        OhLord = 14,
     }
 
     public enum EBoost

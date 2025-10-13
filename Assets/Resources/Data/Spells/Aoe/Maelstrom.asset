@@ -15,8 +15,8 @@ MonoBehaviour:
   m_Rarety: 3
   m_Description: 'Summons a roaming ice tornado that deals {0} damage every {1} seconds
     for {2} seconds, applying [Frost] to enemies.\nWhen it ends, it explodes, dealing
-    {3} damage and applying [Frozen].\n\n<i>Redirectable: the spell can be redirected
-    after being spawned</i>'
+    {3} damage and applying [Frozen] and [Frostbite].\n\n<i>Redirectable: the spell
+    can be redirected after being spawned</i>'
   m_DescriptionVariables:
   - Name: TickDamage
     WithIcon: 1
@@ -45,6 +45,7 @@ MonoBehaviour:
     SpawnLocation: 2
     BodyPart: 0
     IsFollowing: 0
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -77,7 +78,7 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0.8
   m_SpellRequirements: []
-  MaxHit: 0
+  m_MaxHit: -1
   m_Charges: 1
   EnergyGain: 3
   EnergyCost: 0
@@ -93,6 +94,7 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
+    m_Targets: 
   m_SpellsScalingLevel:
   - Property: 14
     Value: 0.1
@@ -104,10 +106,43 @@ MonoBehaviour:
     ScalingType: 1
     RoundingType: 0
     ScalingTresholds: []
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
   m_Size: 3
   TriggerPlayer: 1
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
   EnemyStateEffects:
   - StateEffect: 6
+    Stacks: 1
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
+  - StateEffect: 34
     Stacks: 1
     BonusStacksPerLevel: 0
     OverridingProperties: []
@@ -116,17 +151,19 @@ MonoBehaviour:
   PersistanceAfterEnd: 0
   Animation: 6
   IsCancellable: 0
+  IsInterruptable: 1
   AnimationTimer: 1
   m_Cooldown: 34
   m_SpellSpawn: 1
-  DurationTick: 0.5
-  m_TickDamage: 30
+  DurationTick: 2.5
+  m_TickDamage: 80
   m_TickHeal: 0
   m_TickShield: 0
   m_TickEnergy: 0
   m_ZoneForce:
     m_Speed: 0
     m_Duration: 0
+    m_Targets: 
   GrowSizeFactor: 0
   MaxSizeAt: 1
   PersistentStateEffects: []

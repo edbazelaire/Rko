@@ -45,18 +45,16 @@ MonoBehaviour:
     BaseValue: 10
     BonusValue: 0
     ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
-  - StateEffectProperty: 8
-    BaseValue: -0.1
-    BonusValue: 0
-    ScalingFactor: 0
-    SpecialConditions: []
-    StateEffectStackFactors: []
-  - StateEffectProperty: 26
-    BaseValue: 10
+  - StateEffectProperty: 30
+    BaseValue: 25
     BonusValue: 0.1
     ScalingFactor: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers:
@@ -79,4 +77,6 @@ MonoBehaviour:
       Duration: -1
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []

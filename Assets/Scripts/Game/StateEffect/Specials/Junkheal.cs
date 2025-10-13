@@ -15,7 +15,8 @@ namespace Game.Spells
                 damage:         (int)Math.Round(0.5f * heal), 
                 casterId:       m_Controller.PlayerId, 
                 source:         StateEffectName, 
-                spellCategory:  EHitCategory.Tick, 
+                damageCategory: EDamageCategory.Magical, 
+                hitCategory:    EHitCategory.Dot, 
                 ignoreRes:      true
             );
 

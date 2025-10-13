@@ -135,7 +135,7 @@ namespace Menu.Common.Buttons
         {
             if (! m_AchievementData.IsUnlockable)
             {
-                ScreenManager.QuickMessage(m_AchievementData.GetDescription(), duration: 5f);
+                ScreenManager.QuickRewardMessage(m_AchievementData.GetDescription(), m_AchievementData.GetCurrent().Rewards, duration: 5f);
                 return;
             }
 

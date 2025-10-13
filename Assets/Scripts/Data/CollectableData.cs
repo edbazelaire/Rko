@@ -1,4 +1,5 @@
-﻿using Enums;
+﻿using Data.DataStructures.SpellSubStructures;
+using Enums;
 using System;
 using System.Collections.Generic;
 using Tools;
@@ -141,7 +142,9 @@ namespace Data
                 values.Add(ConvertDescriptionVariable(descriptionVariable, infos));
             }
 
-            return string.Format(TextHandler.ReplaceProperties(TextHandler.ReplaceStateEffectTokens(m_Description), infos, this), values.ToArray());
+            string description = string.Format(TextHandler.ReplaceProperties(TextHandler.ReplaceStateEffectTokens(m_Description), infos, this), values.ToArray());
+            description = TextHandler.ReplaceKeyWords(description);
+            return description;
         }
 
         /// <summary>

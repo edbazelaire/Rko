@@ -955,7 +955,7 @@ namespace Game.Loaders
                 return false;
 
             // FILTER : not in not allowed spells
-            if (notAllowedFilter != null && notAllowedFilter.Contains(runePower.Name))
+            if (notAllowedFilter != null && notAllowedFilter.Any(t => t.StartsWith(runePower.BaseName)))
                 return false;
 
             // FILTER : name contains string

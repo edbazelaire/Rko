@@ -4,8 +4,6 @@ using Enums;
 using Save;
 using System.Collections;
 using TMPro;
-using Tools;
-using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -41,7 +39,7 @@ public class FloatingTextUI : MonoBehaviour
         transform.localScale = Vector3.one * Mathf.Lerp(1 / TextScaleFactor, TextScaleFactor, normalized * 2f);
 
         // 🪄 Choose animation depending on category
-        if (spellCategory == EHitCategory.Tick)
+        if (spellCategory == EHitCategory.Dot)
             StartCoroutine(FloatCurve());
         else
             StartCoroutine(FloatUp());

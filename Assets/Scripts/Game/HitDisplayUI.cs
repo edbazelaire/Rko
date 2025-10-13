@@ -18,7 +18,7 @@ namespace Assets.Scripts.Game
         public EHitType HitType;
         public EHitCategory DamageType;
 
-        public HitDisplayData(int damage, EHitType hitType, Enums.EHitCategory damageType)
+        public HitDisplayData(int damage, EHitType hitType, EHitCategory damageType)
         {
             Damage = damage;
             HitType = hitType;
@@ -76,7 +76,7 @@ namespace Assets.Scripts.Game
 
             HitDisplayData data = new(value, hitType, damageType);
 
-            if (damageType == EHitCategory.Tick)
+            if (damageType == EHitCategory.Dot)
             {
                 // Queue for ticks
                 if (!m_TickQueues.ContainsKey(clientId))
@@ -153,7 +153,7 @@ namespace Assets.Scripts.Game
 
                 if (tickTimer >= m_TickBatchDelay)
                 {
-                    ShowDamage(clientId, new HitDisplayData(tickAccumulator, data.HitType, EHitCategory.Tick));
+                    ShowDamage(clientId, new HitDisplayData(tickAccumulator, data.HitType, EHitCategory.Dot));
                     tickAccumulator = 0;
                     tickTimer = 0f;
                 }
@@ -164,7 +164,7 @@ namespace Assets.Scripts.Game
             // Flush remaining ticks
             if (tickAccumulator > 0)
             {
-                ShowDamage(clientId, new HitDisplayData(tickAccumulator, EHitType.Damage, EHitCategory.Tick));
+                ShowDamage(clientId, new HitDisplayData(tickAccumulator, EHitType.Damage, EHitCategory.Dot));
             }
 
             m_ActiveTickDisplays.Remove(clientId);

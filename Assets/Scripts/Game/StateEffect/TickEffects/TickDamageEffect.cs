@@ -2,6 +2,8 @@
 using Data;
 using Enums;
 using Game.Character;
+using Game.UI;
+using System;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
@@ -19,6 +21,7 @@ namespace Game.Spells
         [SerializeField] protected int                      m_TickHeal;
         [SerializeField] protected int                      m_TickShield;
         [SerializeField] protected int                      m_TickEnergy;
+        [SerializeField] protected List<SStateEffectData>   m_TickEffects;
         [SerializeField] protected List<SpellRequirements>  m_TickSpellRequirements;
 
         private float m_TickTimer;
@@ -96,17 +99,17 @@ namespace Game.Spells
             int damages = GetInt(EStateEffectProperty.TickDamage);
             if (damages > 0)
             {
-                if (m_Controller.CounterHandler.CheckCounters(damages, m_Caster, spellCategory: EHitCategory.Tick))
+                if (m_Controller.CounterHandler.CheckCounters(damages, m_Caster, spellCategory: EHitCategory.Dot))
                     return;
 
                 ErrorHandler.Log($"{name} : {damages} DAMAGES", ELogTag.StateEffects);
-                damages = m_Controller.Life.Hit(damages, m_Caster.PlayerId, m_Parent, EHitCategory.Tick, m_IsTrueDamage);
+                damages = m_Controller.Life.Hit(damages, m_Caster.PlayerId, m_Parent, EDamageCategory.Magical, EHitCategory.Dot, m_IsTrueDamage);
 
                 int lifesteal = (int)Mathf.Round(damages * FinalTickLifeSteal);
                 if (lifesteal > 0)
                 {
                     ErrorHandler.Log($"{name} : {lifesteal} LIFESTEAL", ELogTag.StateEffects);
-                    m_Caster.Life.Heal(lifesteal, m_Caster.PlayerId, m_Parent, EHitCategory.Tick);
+                    m_Caster.Life.Heal(lifesteal, m_Caster.PlayerId, m_Parent, EHitCategory.Dot);
                 }
             }
 
@@ -115,15 +118,37 @@ namespace Game.Spells
             if (heal > 0)
             {
                 ErrorHandler.Log($"{name} : {heal} HEALS", ELogTag.StateEffects);
-                m_Controller.Life.Heal(heal, m_Caster.PlayerId, m_Parent, EHitCategory.Tick);
+                m_Controller.Life.Heal(heal, m_Caster.PlayerId, m_Parent, EHitCategory.Dot);
             }
 
             // add bonus tick shield
-            m_Controller.Life.AddShield(GetInt(EStateEffectProperty.TickShield), m_Caster.PlayerId, m_Parent, EHitCategory.Tick);
+            m_Controller.Life.AddShield(GetInt(EStateEffectProperty.TickShield), m_Caster.PlayerId, m_Parent, EHitCategory.Dot);
 
             // add bonus tick energy
             if (!m_Controller.CharacterData.IsStructure)
-                m_Caster.EnergyHandler.AddEnergy(GetInt(EStateEffectProperty.TickEnergy));
+                m_Controller.EnergyHandler.AddEnergy(GetInt(EStateEffectProperty.TickEnergy));
+
+            // apply OnTick effects
+            ApplyOnTickEffects();
+        }
+
+        void ApplyOnTickEffects()
+        {
+            if (!m_Controller.Life.IsAlive)
+                return;
+
+            if (m_Controller.StateHandler == null)
+                return;
+
+            foreach (var effect in m_TickEffects)
+            {
+                m_Controller.StateHandler.AddStateEffect(
+                    effect: effect.StateEffect, 
+                    caster: m_Caster.IsSpawn ? m_Caster.SpawnOwner : m_Caster, 
+                    origin: m_Parent, 
+                    stacks: (int)Math.Round(m_Stacks * (effect.Stacks + Math.Floor(m_Level * effect.BonusStacksPerLevel)))
+                );
+            }
         }
 
         #endregion

@@ -1,4 +1,5 @@
 using Assets;
+using Assets.Scripts.Managers;
 using Enums;
 using Menu.Common.Notifications;
 using Save;
@@ -48,6 +49,11 @@ public class ArenaButton : MObject
 
     #region Manipulators
 
+    public void RefreshDifficulty(SArenaDifficulty arenaDifficulty)
+    {
+        m_ArenaDifficulty = arenaDifficulty;
+    }
+
     void CheckNotificationActivation()
     {
         if (NotificationCloudData.HasRewardsForArenaType(m_ArenaType))
@@ -89,7 +95,16 @@ public class ArenaButton : MObject
 
     void OnArenaButtonClicked()
     {
-        Main.SetPopUp(EPopUpState.ArenaPathScreen, m_ArenaType, m_ArenaDifficulty);
+        switch (m_ArenaType)
+        {
+            case EArenaType.EternalMenagerie:
+                ScreenManager.SetPopUp(EPopUpState.EternalMenageriePathScreen, m_ArenaDifficulty);
+                break;
+
+            default:
+                ScreenManager.SetPopUp(EPopUpState.ArenaPathScreen, m_ArenaType, m_ArenaDifficulty);
+                break;
+        }
     }
 
     #endregion

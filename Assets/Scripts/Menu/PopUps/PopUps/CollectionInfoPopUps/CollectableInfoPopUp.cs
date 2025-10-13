@@ -230,12 +230,15 @@ namespace Menu.PopUps
             UIHelper.CleanContent(container);
             m_InfoRows = new();
 
+            // setup data (preprocess if data needs manipulation before display)
+            data = PreprocessData(data);
+            var infos = data.GetInfo();
+
             // -- get new data if spell is updatable
             Dictionary<string, object> newDataInfos = null;
             if (!m_IsMaxedLevel)
                 newDataInfos = data.Clone(m_Level + 1, true).GetInfo();
 
-            var infos = data.GetInfo();
             foreach (var item in infos)
             {
                 // check if key should be ignored
@@ -253,7 +256,28 @@ namespace Menu.PopUps
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="newDataValue"></param>
-        protected virtual void SetUpInfoRow(GameObject container, string key, object value, object newDataValue = null, EScalingDirection scaling = EScalingDirection.None)
+        protected virtual void SetUpInfoRow(GameObject container, string key, object value, object newDataValue = null, EScalingDirection scaling = EScalingDirection.None, string title = "")
+        {
+            // check if key is a special case
+            if (HandleSpecialCases(container, key, value, newDataValue, scaling))
+                return;
+
+            // spawn a spellRowInfo from prefab and init with spell data
+            SpellInfoRowUI spellRowInfo = Instantiate(m_InfoPrefab, container.transform).GetComponent<SpellInfoRowUI>();
+            spellRowInfo.Initialize(key, value, newDataValue, scaling);
+            m_InfoRows.Add(key, spellRowInfo);
+        }
+
+        /// <summary>
+        /// Handle keys that requires a special behavior
+        /// </summary>
+        /// <param name="container"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="newDataValue"></param>
+        /// <param name="scaling"></param>
+        /// <returns></returns>
+        protected virtual bool HandleSpecialCases(GameObject container, string key, object value, object newDataValue = null, EScalingDirection scaling = EScalingDirection.None)
         {
             if (key == "SpellRequirements")
             {
@@ -265,18 +289,41 @@ namespace Menu.PopUps
                 else
                     ErrorHandler.Warning("SpellRequirements was provided for " + m_CollectableName + " but unable to parse the value as SpellRequirements");
 
-                return;
+                return true;
             }
 
+            // Keys to ignore
             if (key == "MaxThresholdIndex")
             {
-                return;
+                return true;
             }
 
-            // spawn a spellRowInfo from prefab and init with spell data
-            SpellInfoRowUI spellRowInfo = Instantiate(m_InfoPrefab, container.transform).GetComponent<SpellInfoRowUI>();
-            spellRowInfo.Initialize(key, value, newDataValue, scaling);
-            m_InfoRows.Add(key, spellRowInfo);
+            // Damages
+            if (key == "Damages")
+            {
+                if (value is List<SDamage> damages)
+                {
+                    for (int i = 0; i < damages.Count; i++)
+                    {
+                        SetUpInfoRow(
+                           m_InfosContent,
+                           damages[i].PropertyName(),
+                           damages[i].Get(m_Level),
+                           m_Level < CollectablesManagementData.GetMaxLevel(m_Collectable) ? damages[i].Get(m_Level + 1) : null,
+                           damages[i].ScalingDirection,
+                           title: damages[i].GetPrettyName()
+                       );
+                    }
+                }
+                else
+                {
+                    ErrorHandler.Warning("List of damages was provided for " + m_CollectableName + " but unable to parse the value as SDamage");
+                }
+
+                return true;
+            }
+
+            return false;
         }
 
         void SetupSpellRequirementsInfoRows(List<SpellRequirements> allSpellRequirements, List<SpellRequirements> newAllSpellRequirements = null)
@@ -396,6 +443,11 @@ namespace Menu.PopUps
         protected virtual void LoadTemplateItem()
         {
             m_TemplateItemUI = AssetLoader.LoadTemplateItem(m_Collectable);
+        }
+
+        protected virtual CollectableData PreprocessData(CollectableData data)
+        {
+            return data;
         }
 
         #endregion

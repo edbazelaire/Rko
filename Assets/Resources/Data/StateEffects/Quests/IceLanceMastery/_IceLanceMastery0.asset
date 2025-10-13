@@ -17,7 +17,6 @@ MonoBehaviour:
   m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 0
-  m_VisualEffects: []
   m_GfxEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
@@ -27,11 +26,14 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
   m_EndWithShield: 0
+  m_EndAt0Stacks: 1
   m_RefreshShield: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: -1
+  m_StartingStacks: 1
   m_MaxStacks: 10
   m_StackDecay: -1
   m_StartsActivated: 1
@@ -45,9 +47,11 @@ MonoBehaviour:
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel: []
   m_StateEffectScalingStacks: []
+  m_Frequency: 1
   m_AllowedSpells:
   - IceLance
   - MarcusIceLance
+  - ShardrotIceLance
   m_SpellEffectType: 0
   m_AllowedSpellTypes: 
   m_OnHits: []
@@ -63,3 +67,4 @@ MonoBehaviour:
       ScalingType: 0
       RoundingType: 0
       ScalingTresholds: []
+  m_SpellGFXOverrides: []

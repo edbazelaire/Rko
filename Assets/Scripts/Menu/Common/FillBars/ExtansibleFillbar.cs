@@ -1,230 +1,113 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// A UI component that displays a horizontal fill bar.
-/// Supports both:
-/// - Single mode (classic bar with one value)
-/// - Split mode (Direct + Tick stacked inside the same container)
-/// </summary>
 public class ExtansibleFillbar : MObject
 {
-    #region Members
-
     [SerializeField]
     float m_AnimationDuration = 1.0f;
 
-    // ===================================================================================
-    // Data
     protected Coroutine m_Animation;
     protected int m_MaxValue = 1;
-    protected int m_CurrentValue = 0;
 
-    // ===================================================================================
-    // GameObject & Components
+    // Container
     protected GameObject m_Container;
-    protected Image m_Bar;            // Main bar (used for Direct or single mode)
     protected RectTransform m_ContainerRect;
-    protected RectTransform m_BarRect;
 
-    // --- New for Split Mode ---
-    protected Image m_BarTick;        // Secondary bar for Tick values
-    protected RectTransform m_BarTickRect;
+    // Liste dynamique de barres
+    protected List<Image> m_Bars = new List<Image>();
+    protected List<RectTransform> m_BarRects = new List<RectTransform>();
 
-    #endregion
-
-    #region Init & End
+    // Prefab de barre (à assigner dans l’inspecteur)
+    [SerializeField] protected GameObject m_BarPrefab;
 
     protected override void FindComponents()
     {
         base.FindComponents();
-
         m_Container = Finder.Find(gameObject, "Container");
         m_ContainerRect = Finder.FindComponent<RectTransform>(m_Container);
-        m_Bar = Finder.FindComponent<Image>(gameObject, "Bar");
-        m_BarRect = Finder.FindComponent<RectTransform>(m_Bar.gameObject);
-
-        m_BarTick = Finder.FindComponent<Image>(gameObject, "BarTick");
-        m_BarTickRect = Finder.FindComponent<RectTransform>(m_BarTick.gameObject);
-    }
-
-    public virtual void Initialize(int currentValue, int maxValue, Color? color = null, bool withAnimation = false)
-    {
-        base.Initialize();
-
-        if (color.HasValue)
-            SetColor(color.Value);
-
-        m_BarTick.gameObject.SetActive(false);
-
-        // delay the refresh by one to avoid conflicts with bar
-        UpdateValue(currentValue, maxValue > 0 ? maxValue : currentValue, withAnimation);
     }
 
     /// <summary>
-    /// Initialize in split mode (Direct + Tick values).
+    /// Initialise avec une liste de valeurs/couleurs
     /// </summary>
-    public virtual void InitializeSplit(int firstValue, int secondValue, int maxValue, Color colorDirect, Color colorTick, bool withAnimation = false)
+    public virtual void Initialize(List<(int value, Color color)> values, int maxValue, bool withAnimation = false)
     {
         base.Initialize();
 
         m_MaxValue = Mathf.Max(1, maxValue);
 
-        // Ensure both bars exist
-        if (m_Bar == null || m_BarTick == null)
-        {
-            ErrorHandler.Warning("ExtansibleFillbar.InitializeSplit called but 'BarTick' is missing in prefab.");
-            return;
-        }
+        // Clear anciennes barres
+        foreach (var bar in m_Bars)
+            Destroy(bar.gameObject);
 
-        // Set colors
-        m_Bar.color = colorDirect;
-        m_BarTick.color = colorTick;
+        // clean content before displaying
+        UIHelper.CleanContent(m_Container);
+        m_Bars.Clear();
+        m_BarRects.Clear();
+
+        // Crée une barre par entrée
+        for (int i = values.Count - 1; i >= 0; i--)
+        {
+            var bar = Instantiate(m_BarPrefab, m_Container.transform).GetComponent<Image>();
+            bar.color = values[i].color;
+            bar.gameObject.SetActive(true);
+
+            m_Bars.Add(bar);
+            m_BarRects.Add(bar.rectTransform);
+        }
 
         if (withAnimation)
         {
             if (m_Animation != null)
                 StopCoroutine(m_Animation);
-            m_Animation = StartCoroutine(UpdateSplitAnimationCoroutine(firstValue, secondValue));
+            m_Animation = StartCoroutine(UpdateListAnimationCoroutine(values));
         }
         else
         {
-            UpdateSplitBarSize(firstValue, secondValue);
+            UpdateListBarSize(values);
         }
     }
 
-    protected override void SetUpUI()
+    void UpdateListBarSize(List<(int value, Color color)> values)
     {
-        base.SetUpUI();
-    }
-
-    #endregion
-
-    #region GUI Manipulators
-
-    public virtual void SetColor(Color color)
-    {
-        m_Bar.color = color;
-    }
-
-    public virtual void UpdateValue(int value, int? maxValue = null, bool withAnimation = false)
-    {
-        m_CurrentValue = value;
-        if (maxValue.HasValue)
+        int cumulative = 0;
+        for (int i = 0; i < values.Count; i++)
         {
-            m_MaxValue = maxValue.Value;
+            int reversedIndex = values.Count - 1 - i;   // bars are set in reversed order 
+            cumulative += values[i].value;
+            float fill = Mathf.Clamp01((float)cumulative / m_MaxValue);
+
+            m_BarRects[reversedIndex].sizeDelta = new Vector2(m_ContainerRect.rect.width * fill, m_BarRects[reversedIndex].sizeDelta.y);
         }
+    }
 
-        if (withAnimation)
+    IEnumerator UpdateListAnimationCoroutine(List<(int value, Color color)> targetValues)
+    {
+        // On part de 0
+        float elapsedTime = 0f;
+        List<int> startValues = new List<int>(new int[targetValues.Count]);
+
+        while (elapsedTime < m_AnimationDuration)
         {
-            if (m_Animation != null)
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsedTime / m_AnimationDuration);
+
+            List<(int, Color)> interpolated = new List<(int, Color)>();
+            for (int i = 0; i < targetValues.Count; i++)
             {
-                StopCoroutine(m_Animation);
+                int current = Mathf.RoundToInt(Mathf.Lerp(startValues[i], targetValues[i].value, t));
+                interpolated.Add((current, targetValues[i].color));
             }
-            m_Animation = StartCoroutine(UpdateValueAnimationCoroutine(value));
-        }
-        else
-        {
-            UpdateBarSize();
-        }
-    }
 
-    void UpdateBarSize()
-    {
-        float fillPercentage = Mathf.Clamp01((float)m_CurrentValue / m_MaxValue);
-        m_BarRect.sizeDelta = new Vector2(m_ContainerRect.rect.width * fillPercentage, m_BarRect.sizeDelta.y);
-    }
-
-    void UpdateSplitBarSize(int directValue, int tickValue)
-    {
-        float directFill = Mathf.Clamp01((float)directValue / m_MaxValue);
-        float tickFill = Mathf.Clamp01((float)(directValue + tickValue) / m_MaxValue);
-
-        // Direct is the base bar
-        if (directValue <= 0)
-        {
-            m_Bar.gameObject.SetActive(false);
-        }
-        else
-        {
-            m_Bar.gameObject.SetActive(true);
-            m_BarRect.sizeDelta = new Vector2(m_ContainerRect.rect.width * directFill, m_BarRect.sizeDelta.y);
-        }
-
-        // Tick overlays on top (wider than direct)
-        if (tickValue <= 0)
-        {
-            m_BarTick.gameObject.SetActive(false);
-        }
-        else
-        {
-            m_BarTick.gameObject.SetActive(true);
-            m_BarTickRect.sizeDelta = new Vector2(m_ContainerRect.rect.width * tickFill, m_BarTickRect.sizeDelta.y);
-        }
-    }
-
-    #endregion
-
-    #region Animation
-
-    IEnumerator UpdateValueAnimationCoroutine(int targetValue)
-    {
-        float startValue = m_CurrentValue;
-        float elapsedTime = 0f;
-
-        while (elapsedTime < m_AnimationDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / m_AnimationDuration);
-            int interpolatedValue = Mathf.RoundToInt(Mathf.Lerp(startValue, targetValue, t));
-
-            m_CurrentValue = interpolatedValue;
-            UpdateBarSize();
+            UpdateListBarSize(interpolated);
             yield return null;
         }
 
-        m_CurrentValue = targetValue;
-        UpdateBarSize();
+        UpdateListBarSize(targetValues);
         m_Animation = null;
     }
-
-    IEnumerator UpdateSplitAnimationCoroutine(int targetDirect, int targetTick)
-    {
-        int startDirect = 0;
-        int startTick = 0;
-        float elapsedTime = 0f;
-
-        while (elapsedTime < m_AnimationDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / m_AnimationDuration);
-
-            int currentDirect = Mathf.RoundToInt(Mathf.Lerp(startDirect, targetDirect, t));
-            int currentTick = Mathf.RoundToInt(Mathf.Lerp(startTick, targetTick, t));
-
-            UpdateSplitBarSize(currentDirect, currentTick);
-            yield return null;
-        }
-
-        UpdateSplitBarSize(targetDirect, targetTick);
-        m_Animation = null;
-    }
-
-    #endregion
-
-    #region Listeners
-
-    protected override void RegisterListeners()
-    {
-        base.RegisterListeners();
-    }
-
-    protected override void UnRegisterListeners()
-    {
-        base.UnRegisterListeners();
-    }
-
-    #endregion
 }

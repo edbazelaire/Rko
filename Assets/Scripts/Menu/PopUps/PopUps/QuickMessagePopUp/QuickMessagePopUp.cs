@@ -21,8 +21,8 @@ namespace Menu.PopUps
         protected Image         m_Background;
 
         // Data
-        string m_Message;
-        float m_Duration;
+        protected string m_Message;
+        protected float m_Duration;
 
         #endregion
 

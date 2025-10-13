@@ -8,6 +8,7 @@ using TMPro;
 using Tools;
 using Unity.Collections;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,8 +22,6 @@ namespace Game.UI
 
         string[] IGNORED_STATE_EFFECTS = { 
             EStateEffect.None.ToString(), 
-            EStateEffect.Invulnerable.ToString(), 
-            EStateEffect.Uncontrollable.ToString(), 
             EStateEffect.UnTargettable.ToString(), 
             EStateEffect.Jump.ToString(),
             EStateEffect.BlockCast.ToString(),
@@ -212,7 +211,7 @@ namespace Game.UI
 
         void OnShieldChanged(int _, int newValue)
         {
-            if (!isActiveAndEnabled)
+            if (gameObject.IsDestroyed() || !isActiveAndEnabled)
                 return;
 
             m_ShieldBar.OnValueChanged(0, newValue);
@@ -220,7 +219,7 @@ namespace Game.UI
 
         void OnHoldingStateEffectsChanged(NetworkListEvent<FixedString64Bytes> changeEvent)
         {
-            if (!isActiveAndEnabled)
+            if (gameObject.IsDestroyed() || !isActiveAndEnabled)
                 return;
 
             foreach (string stateEffect in m_StateEffectsUI.Keys)
@@ -232,7 +231,7 @@ namespace Game.UI
         void OnQuestTreshold(string stateEffectName, int index)
         {
             // CHECK : UI is enabled
-            if (!isActiveAndEnabled)
+            if (gameObject.IsDestroyed() || !isActiveAndEnabled)
                 return;
 
             // CHECK : is in our list of effects

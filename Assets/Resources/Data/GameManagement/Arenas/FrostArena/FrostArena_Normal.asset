@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7d51f633e46b344920f012b0e1eca8, type: 3}
   m_Name: FrostArena_Normal
   m_EditorClassIdentifier: 
-  m_BotPerfLevelCeiling: 10
+  m_NLifes: 1
   m_ArenaLevelData:
   - RewardsData:
       Currencies:
@@ -26,8 +26,10 @@ MonoBehaviour:
         CollectableName: ShieldRune
         Qty: 1
       AchievementRewards: []
+      Boosts: []
     TriggerEffects:
     - SpellDataName: _FrostBites
+      OverridingData: []
       Level: 0
       Target: 0
       SpellActivationEvent: 1
@@ -36,10 +38,12 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 10
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
     m_PowerUps:
     - ShieldRune - Minor
     StageData:
@@ -58,6 +62,7 @@ MonoBehaviour:
       m_Spells: 
       m_TriggerEffects:
       - SpellDataName: Melting
+        OverridingData: []
         Level: 0
         Target: 0
         SpellActivationEvent: 4
@@ -66,10 +71,12 @@ MonoBehaviour:
         DeactivationTreshold: 1
         StateEffectEvent: 0
         StateEffectName: 
+        NStateEffectActivationThreshold: 0
         Delay: 0
         Duration: 0
         NActivations: 0
         Cooldown: 0
+        RepeatWhenCooldownOver: 0
       m_BonusStats: []
   - RewardsData:
       Currencies:
@@ -85,10 +92,13 @@ MonoBehaviour:
         Title: 0
         Avatar: 105
         Border: 0
+        Emot: 0
         Badge: 0
         League: 0
+      Boosts: []
     TriggerEffects:
     - SpellDataName: _GasLeak
+      OverridingData: []
       Level: 1
       Target: 0
       SpellActivationEvent: 1
@@ -97,10 +107,12 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 5
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
     m_PowerUps:
     - ShieldRune - Minor
     StageData:

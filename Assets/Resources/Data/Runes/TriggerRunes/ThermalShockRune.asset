@@ -16,13 +16,13 @@ MonoBehaviour:
   m_Description: 
   m_DescriptionVariables: []
   m_SpellElements: 0200000001000000
-  Description: 
   m_MinorPower:
-    Description: 'On applying [IceBreak] effect, also applies [Burn]'
+    Description: 'On applying [Frozen] or [Frostbite] effect, also applies [Burn]'
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: Burn
+      OverridingData: []
       Level: 0
       Target: 50
       SpellActivationEvent: 1
@@ -30,19 +30,23 @@ MonoBehaviour:
       SpellDeactivationEvent: 0
       DeactivationTreshold: 0
       StateEffectEvent: 1
-      StateEffectName: IceBreak
+      StateEffectName: Frozen,Frostbite
       NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: -1
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []
   m_MajorPower:
-    Description: 'On applying [Scorched] effect, also applies [IceBreak]'
+    Description: 'On applyipng [Frozen] or [Frostbite] effect, also applies [Burn].\nOn
+      consuming [Burn] effect, also applies [IceBreak]'
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
-    - SpellDataName: IceBreak
+    - SpellDataName: Burn
+      OverridingData: []
       Level: 0
       Target: 50
       SpellActivationEvent: 1
@@ -50,20 +54,41 @@ MonoBehaviour:
       SpellDeactivationEvent: 0
       DeactivationTreshold: 0
       StateEffectEvent: 1
-      StateEffectName: Scorched
+      StateEffectName: Frozen,Frostbite
       NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: -1
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    - SpellDataName: IceBreak
+      OverridingData: []
+      Level: 0
+      Target: 50
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 3
+      StateEffectName: Burn
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: -1
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []
   m_PrimalPower:
-    Description: 'On applying [Scorched] effect, also applies [IceBreak] and on applying
-      [IceBreak] also applies [Scorched] '
+    Description: 'On applyipng [Frozen] or [Frostbite] effect, also applies [Burn].\nOn
+      consuming [Burn] effect, also applies [IceBreak].\nOn applying [IceBreak] also
+      applies [Scorched] '
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
-    - SpellDataName: IceBreak
+    - SpellDataName: Burn
+      OverridingData: []
       Level: 0
       Target: 50
       SpellActivationEvent: 1
@@ -71,13 +96,33 @@ MonoBehaviour:
       SpellDeactivationEvent: 0
       DeactivationTreshold: 0
       StateEffectEvent: 1
-      StateEffectName: Scorched
+      StateEffectName: Frozen,Frostbite
       NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
       NActivations: -1
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    - SpellDataName: IceBreak
+      OverridingData: []
+      Level: 0
+      Target: 50
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 3
+      StateEffectName: Burn
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: -1
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     - SpellDataName: Scorched
+      OverridingData: []
       Level: 0
       Target: 50
       SpellActivationEvent: 1
@@ -91,5 +136,7 @@ MonoBehaviour:
       Duration: 0
       NActivations: -1
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []
   m_TriggerEffects: []

@@ -5,6 +5,7 @@ using Tools;
 using UnityEditor;
 using UnityEngine;
 using MyBox;
+using UnityEditor.Rendering.PostProcessing;
 
 namespace Data.DataStructures.SpellSubStructures
 {
@@ -103,6 +104,27 @@ namespace Data.DataStructures.SpellSubStructures
             }
 
             return value;
+        }
+
+        public EScalingDirection GetScalingDirection()
+        {
+            if (Value > 0)
+            {
+                return EScalingDirection.Up;
+            }
+
+            if (Value < 0)
+            {
+                return EScalingDirection.Down;
+            }
+
+            // -- getting the scaling direction of a threshold value can be challenging : lets assume that all thresholds are "UP"
+            if (ScalingTresholds.Count > 0)
+            {
+                return EScalingDirection.Up;
+            }
+
+            return EScalingDirection.None;
         }
     }
 }

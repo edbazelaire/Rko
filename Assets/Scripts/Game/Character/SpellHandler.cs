@@ -74,6 +74,8 @@ namespace Game.Character
         Dictionary<ESpell, List<SpellData>> m_OverridingSpellData;
         /// <summary> is the player currently casting a spell ? </summary>
         bool                                m_IsCasting;
+        /// <summary> spell currently channeled by the player </summary>
+        Spell                               m_ChannelingSpell;
         /// <summary> list of all spell data linked to spellID <summary>
         List<SpellData>                     m_SpellsData;
         /// <summary> list of cooldowns that links spellID to its cooldown <summary>
@@ -85,30 +87,30 @@ namespace Game.Character
         /// <summary> time before the animation ends </summary>
         float                               m_AnimationTimer;
         /// <summary> is current spell casted can be cancelled ? </summary>
-        bool                                m_IsCurrentSpellCancellable    = true;
-
-        /// <summary> base spawn position of the spell </summary>
-        Transform m_SpellSpawn => m_Controller.GFXHandler.GetBodyPart(EBodyPart.SpellSpawn).transform;
-        string m_SelectedSpell => m_SelectedSpellData != null ? m_SelectedSpellData.Name : ESpell.None.ToString();
-        public float CurrentCastSpeedFactor => GetCastSpeed(m_SelectedSpell.ToString());
-
+        bool                                m_IsCurrentSpellCancellable         = true;
+        /// <summary> is current spell casted can be interrupted ? </summary>
+        bool                                m_IsCurrentSpellInterruptable       = false;
 
         // ===================================================================================
         // PUBLIC ACCESSORS
-        public NetworkVariable<int>         SelectedSpellIndexNet   => m_SelectedSpellIndexNet;
-        public NetworkList<int>             NChargesNet             => m_NChargesNet;
-        public NetworkList<int>             SpellLevelsNet          => m_SpellLevelsNet;
-        public List<SpellData>              SpellsData              => m_SpellsData;
-        public bool                         IsCasting               => m_IsCasting;
-        public bool                         IsCastingUncancellable  => m_IsCasting && ! m_IsCurrentSpellCancellable;
-        public float                        AnimationTimer          => m_AnimationTimer;
-        public string                       SelectedSpell           => m_SelectedSpell;
-        public ESpell                       AutoAttack              => m_AutoAttack.Value;
-        public ESpell                       SpecialAbility          => m_SpecialAbility.Value;
-        public ESpell                       Ultimate                => m_Ultimate.Value;
-        public Transform                    SpellSpawn              => m_SpellSpawn;
-        public Vector3                      TargetPos               => m_TargetPos.Value;   
-        public Vector3                      RelocationTargetPos     => m_RelocationTargetPos;
+        public NetworkVariable<int>         SelectedSpellIndexNet       => m_SelectedSpellIndexNet;
+        public NetworkList<int>             NChargesNet                 => m_NChargesNet;
+        public NetworkList<int>             SpellLevelsNet              => m_SpellLevelsNet;
+        public List<SpellData>              SpellsData                  => m_SpellsData;
+        public bool                         IsCasting                   => m_IsCasting;
+        public bool                         IsCastingUncancellable      => m_IsCasting && ! m_IsCurrentSpellCancellable;
+        public bool                         IsCastingNotInterruptable   => m_IsCasting && ! m_IsCurrentSpellInterruptable;
+        public float                        AnimationTimer              => m_AnimationTimer;
+        public string                       SelectedSpell               => m_SelectedSpell;
+        public ESpell                       AutoAttack                  => m_AutoAttack.Value;
+        public ESpell                       SpecialAbility              => m_SpecialAbility.Value;
+        public ESpell                       Ultimate                    => m_Ultimate.Value;
+        public Transform                    SpellSpawn                  => m_SpellSpawn;
+        public Vector3                      TargetPos                   => m_TargetPos.Value;   
+        public Vector3                      RelocationTargetPos         => m_RelocationTargetPos;
+        Transform                           m_SpellSpawn                => m_Controller.GFXHandler.TryGetBodyPart(EBodyPart.SpellSpawn, out GameObject spellSpawn) ? spellSpawn.transform : transform;
+        string                              m_SelectedSpell             => m_SelectedSpellData != null ? m_SelectedSpellData.Name : ESpell.None.ToString();
+        public float                        CurrentCastSpeedFactor      => GetCastSpeed(m_SelectedSpellData);
 
         #endregion
 
@@ -459,6 +461,7 @@ namespace Game.Character
         /// <returns></returns>
         public bool CanCast(SpellData spellData, out string reason)
         {
+            // check that spell respect conditions to be selected
             if (! CanSelect(spellData, out reason))
             {
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
@@ -466,6 +469,22 @@ namespace Game.Character
                 return false;
             }
 
+            // check conditions to start a new cast are valid (not doing an action or states blocking new casts)
+            if (! CanStartNewCast(spellData, out reason))
+                return false;
+
+            // check "continue" conditions that would cancel a spell from beeing channeled (stun, silence, target missing, ...)
+            return CanContinueCast(spellData, out reason);
+        }
+
+        /// <summary>
+        /// Check conditions to start a new cast are valid (not doing an action or states blocking new casts)
+        /// </summary>
+        /// <param name="spellData"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        public bool CanStartNewCast(SpellData spellData, out string reason)
+        {
             // check : cast is not forced blocked
             if (m_CastBlocked.Value)
             {
@@ -493,6 +512,27 @@ namespace Game.Character
                 return false;
             }
 
+            // check : is casting an other spell
+            if (IsCastingUncancellable)
+            {
+                reason = "Spell cast (" + spellData.Name + ") BLOCKED : is casting another non cancellable spell";
+                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
+                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
+                return false;
+            }
+
+            reason = "";
+            return true;
+        }
+
+        /// <summary>
+        /// Check "continue" conditions that would cancel a spell from beeing channeled (stun, silence, target missing, ...)
+        /// </summary>
+        /// <param name="spellData"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        public bool CanContinueCast(SpellData spellData, out string reason)
+        {
             // check state effect blocking the cast
             if (!m_Controller.StateHandler.CanCast)
             {
@@ -506,23 +546,6 @@ namespace Game.Character
             if (m_Controller.StateHandler.HasState(EStateEffect.SpecialAnimation) || m_Controller.StateHandler.HasState(EStateEffect.Vanish))
             {
                 reason = "Spell cast (" + spellData.Name + ") BLOCKED : Has state 'SpecialAnimation'";
-                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
-                return false;
-            }
-
-            // check : is casting an other spell
-            if (m_IsCasting && ! m_IsCurrentSpellCancellable)
-            {
-                reason = "Spell cast (" + spellData.Name + ") BLOCKED : is casting another non cancellable spell";
-                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
-                return false;
-            }
-
-            if (m_CastCoroutine != null && ! m_IsCurrentSpellCancellable)
-            {
-                reason = "Spell cast (" + spellData.Name + ") BLOCKED : Coroutine not over";
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
                     ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
@@ -567,7 +590,8 @@ namespace Game.Character
             if (spellData.SpellTarget != ESpellTarget.FirstEnemy)
                 return true;
 
-            return ! GameManager.Instance.GetFirstEnemy(m_Controller.Team).StateHandler.IsUnTargetable;
+            var controller = GameManager.Instance.GetFirstEnemy(m_Controller.Team);
+            return controller != null && !controller.StateHandler.IsUnTargetable;
         }
 
         public bool CheckSpellRequirements(SpellData spellData)
@@ -672,6 +696,7 @@ namespace Game.Character
 
             // SETUP : casting data
             m_IsCurrentSpellCancellable = spellData.IsCancellable;
+            m_IsCurrentSpellInterruptable = spellData.IsInterruptable;
             m_IsCasting = true;
 
             // cancel current movement
@@ -787,14 +812,126 @@ namespace Game.Character
             m_AnimationTimer = 0f;
 
             // stop casting
-            m_IsCasting = false;
-            m_IsCurrentSpellCancellable = true;
+            m_IsCasting                     = false;
+            m_IsCurrentSpellCancellable     = true;
+            m_IsCurrentSpellInterruptable   = false;
 
             // cancel cast animation
             m_Controller.AnimationHandler.CancelCastAnimationClientRpc();
 
             // reset Coroutine
             m_CastCoroutine = null;
+        }
+
+        #endregion
+
+
+        #region Channeling
+
+        public bool TryStartChanneling(Spell spell)
+        {
+            ErrorHandler.Log("TryStartChanneling() : " + spell.name, ELogTag.SpellHandler);
+
+            if (spell == null)
+            {
+                ErrorHandler.Error("Trying to channel a spell that is null");
+                return false;
+            }
+
+            if (! CanContinueCast(spell.SpellData, out _))
+                return false;
+
+            StartCoroutine(Channel(spell));
+            return true;
+        }
+
+        public void StopChanneling()
+        {
+            ErrorHandler.Log("StopChanneling() : " + m_ChannelingSpell ?? m_ChannelingSpell.name, ELogTag.SpellHandler);
+
+            // cancel cast values shared by the Channeling method
+            CancelCast();
+
+            // reset final speed factor from channeling speed
+            m_Controller.Movement.SetFinalSpeedFactor(1f);
+            m_Controller.Movement.ForceBlockMovement(false);
+
+            if (m_ChannelingSpell != null)
+            {
+                m_ChannelingSpell.TryEnd();
+                m_ChannelingSpell = null;
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Cast the given spell
+        /// </summary>
+        /// <param name="spell"></param>
+        /// <returns></returns>
+        IEnumerator Channel(Spell spell)
+        {
+            m_ChannelingSpell = spell;
+
+            ErrorHandler.Log("Channel : " + m_ChannelingSpell.SpellData.Name, ELogTag.SpellHandler);
+
+            // only owner can ask for cast
+            if (!IsServer)
+                yield break;
+
+            var channelModule = m_ChannelingSpell.SpellData.MChanneling;
+
+            // SETUP : casting data
+            m_IsCurrentSpellCancellable     = channelModule.IsCancellable;
+            m_IsCurrentSpellInterruptable   = channelModule.IsInterruptable;
+            m_IsCasting                     = true;
+
+            // Handle channel movement speed
+            if (channelModule.ForcedMovementSpeed != 1)
+            {
+                if (channelModule.ForcedMovementSpeed == 0)
+                {
+                    if (channelModule.IsCancellable)
+                    {
+                        m_Controller.Movement.CancelMovement(true);
+                    } else
+                    {
+                        m_Controller.Movement.ForceBlockMovement(true);
+                    }
+                } 
+                else
+                {
+                    m_Controller.Movement.SetFinalSpeedFactor(m_ChannelingSpell.SpellData.MChanneling.ForcedMovementSpeed);
+                }
+            }
+
+            // call for the spell animation
+            if (channelModule.Animation != EAnimation.None)
+            {
+                // special animation for the spell
+                if (channelModule.Animation == EAnimation.Self)
+                    m_Controller.AnimationHandler.PlayAnimationClientRPC(m_ChannelingSpell.SpellData.Name, m_ChannelingSpell.SpellData.Duration);
+
+                // classic anmiation
+                else
+                    m_Controller.AnimationHandler.PlayAnimationClientRPC(m_ChannelingSpell.SpellData.MChanneling.Animation, m_ChannelingSpell.SpellData.Duration);
+            }
+
+            // wait for animation to finish (if not already)
+            while (m_ChannelingSpell != null && ! m_ChannelingSpell.IsOver && m_ChannelingSpell.SpellData != null)
+            {
+                // if player is moving, cancel the spell
+                if ((channelModule.IsCancellable && channelModule.ForcedMovementSpeed == 0 && m_Controller.Movement.IsMoving) || ! CanContinueCast(m_ChannelingSpell.SpellData, out _))
+                {
+                    // reset Animator
+                    StopChanneling();
+                    yield break;
+                }
+
+                yield return null;
+            }
+
+            StopChanneling();
         }
 
         #endregion
@@ -1046,9 +1183,9 @@ namespace Game.Character
 
         #region Target Management
 
-        public float GetCastSpeed(string spell)
+        public float GetCastSpeed(SpellData spellData)
         {
-            return Mathf.Max(0.01f, spell == AutoAttack.ToString() ? Settings.AutoAttackSpeedFactor * m_Controller.StateHandler.GetFloat(EStateEffectProperty.AttackSpeed) : Settings.CastSpeedFactor * m_Controller.StateHandler.GetFloat(EStateEffectProperty.CastSpeed));
+            return Mathf.Max(0.01f, IsAutoAttack(spellData) ? Settings.AutoAttackSpeedFactor * m_Controller.StateHandler.GetFloat(EStateEffectProperty.AttackSpeed) : Settings.CastSpeedFactor * m_Controller.StateHandler.GetFloat(EStateEffectProperty.CastSpeed));
         }
 
         public float CalculateCooldown(float baseCooldown)

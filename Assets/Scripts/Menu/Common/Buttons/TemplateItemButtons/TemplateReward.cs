@@ -104,6 +104,27 @@ namespace Menu.Common
                 m_Icon.gameObject.SetActive(false);
             }
 
+            // BOOSTS
+            else if (reward.RewardType == typeof(EBoost))
+            {
+                if (!Enum.TryParse(reward.RewardName, out EBoost boost))
+                    return;
+
+                // load boost template
+                var template = Instantiate(AssetLoader.LoadBoostTemplate(boost), m_Icon.transform);
+
+                // SPECIAL BOOSTS
+                if (boost == EBoost.ChestSpeedBoost)
+                {
+                    // deactivate qty
+                    m_Qty.gameObject.SetActive(false);
+                    Finder.FindComponent<TMP_Text>(template, "Timer").text = reward.Qty + "H";
+                }
+
+                // deactivate icon
+                m_Icon.enabled = false;
+            }
+
             // OTHERS
             else
                 m_Icon.sprite = AssetLoader.LoadIcon(reward.RewardName, reward.RewardType);

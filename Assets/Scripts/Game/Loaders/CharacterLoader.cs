@@ -22,6 +22,7 @@ namespace Game.Loaders
         public GameObject BotPrefab;
         public GameObject PlayerTutoAIPrefab;
         public GameObject StructurePrefab;
+        public GameObject SpawnPrefab;
 
         CharacterData[] m_CharactersList;
         Dictionary<ECharacter, CharacterData> m_Characters;
@@ -313,11 +314,11 @@ namespace Game.Loaders
                 return Instance.PlayerPrefab;
 
             // TUTORIAL AI
-            else if (isTuto)
+            if (isTuto)
                 return Instance.PlayerTutoAIPrefab;    
 
             // non Player character : BOT
-            else if (Enum.TryParse(characterName, out ECharacter _))
+            if (Enum.TryParse(characterName, out ECharacter _))
                 return Instance.BotPrefab;
 
             // check character data for type 
@@ -325,8 +326,11 @@ namespace Game.Loaders
             // -- STRUCTURE
             if (characterData.IsStructure)
                 return Instance.StructurePrefab;
+            // -- SPAWN
+            if (IsSpawn(characterName))
+                return Instance.SpawnPrefab;
 
-            // -- Mob or Spawn
+            // -- Mob or Boss
             return Instance.PlayerAIPrefab;
         }
 

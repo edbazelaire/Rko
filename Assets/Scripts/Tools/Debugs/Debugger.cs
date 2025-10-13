@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Tools.Debugs;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Tools
@@ -315,6 +316,9 @@ namespace Tools
             if (CheckCurrencyCommand(command))
                 return true;
 
+            if (CheckCurrentBuildCommand(command))
+                return true;
+
             if (GameManager.Exists && GameManager.IsGameRunning)
                 if (GameManager.Instance.CheckSpecialCommands(command))
                     return true;
@@ -525,6 +529,44 @@ namespace Tools
 
             // Add to inventory
             InventoryManager.UpdateCurrency(currency, amount, "DebugTool");
+
+            return true;
+        }
+
+        bool CheckCurrentBuildCommand(string command)
+        {
+            var match = Regex.Match(command, @"^SetCurrentBuild\((\d+)\)$");
+
+            if (!match.Success)
+                return false;
+            
+            int level = int.Parse(match.Groups[1].Value);
+            if (level <= 0 || level > CollectablesManagementData.GetMaxLevel(ECharacter.Alexander))
+            {
+                ErrorHandler.Error("Bad level provided : " + level);
+                return false;
+            }
+
+            List<Enum> collectables = new() { CharacterBuildsCloudData.SelectedCharacter };
+            foreach (var spell in CharacterBuildsCloudData.CurrentBuild.Spells)
+            {
+                collectables.Add(spell);
+            }
+            foreach (var rune in CharacterBuildsCloudData.CurrentBuild.Runes)
+            {
+                collectables.Add(rune);
+            }
+
+            foreach (var collectable in collectables)
+            {
+                var cloudCollectable = InventoryCloudData.Instance.GetCollectable(collectable);
+                cloudCollectable.Level = level;
+                InventoryCloudData.Instance.SetCollectable(cloudCollectable, false);
+            }
+
+            InventoryCloudData.Instance.SaveValue(InventoryCloudData.KEY_CHARACTERS);
+            InventoryCloudData.Instance.SaveValue(InventoryCloudData.KEY_SPELLS);
+            InventoryCloudData.Instance.SaveValue(InventoryCloudData.KEY_RUNES);
 
             return true;
         }

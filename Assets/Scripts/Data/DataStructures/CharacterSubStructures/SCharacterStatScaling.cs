@@ -18,17 +18,21 @@ namespace Data.DataStructures.CharacterSubStructures
         public float                            BaseValue;
         public float                            BonusValue;
         public float                            ScalingFactor;
+        public List<EDamageCategory>            DamageCategories;
+        public List<EHitCategory>               HitCategories;
         public List<string>                     SpecialConditions;
         public List<SStateEffectStackFactor>    StateEffectStackFactors;
 
         public readonly EScalingDirection ScalingDirection => ScalingFactor > 0 ? EScalingDirection.Up : (ScalingFactor < 0 ? EScalingDirection.Down : EScalingDirection.None);
 
-        public SCharacterStatScaling(EStateEffectProperty stateEffectProperty, float baseValue, float bonusValue, float scalingFactor = 0.1f, List<string> specialConditions = null, List<SStateEffectStackFactor> stateEffectStackFactors = default)
+        public SCharacterStatScaling(EStateEffectProperty stateEffectProperty, float baseValue, float bonusValue, float scalingFactor = 0.1f, List<EDamageCategory> damageCategories = default, List<EHitCategory> hitCategories = default, List<string> specialConditions = null, List<SStateEffectStackFactor> stateEffectStackFactors = default)
         {
             StateEffectProperty     = stateEffectProperty;
             BaseValue               = baseValue;
             BonusValue              = bonusValue;
             ScalingFactor           = scalingFactor;
+            DamageCategories        = damageCategories  ?? new List<EDamageCategory>();
+            HitCategories           = hitCategories     ?? new List<EHitCategory>();
             SpecialConditions       = specialConditions ?? new List<string>();
             StateEffectStackFactors = stateEffectStackFactors != default ? stateEffectStackFactors : new List<SStateEffectStackFactor>();
         }
@@ -40,8 +44,42 @@ namespace Data.DataStructures.CharacterSubStructures
             serializer.SerializeValue(ref BonusValue);
             serializer.SerializeValue(ref ScalingFactor);
 
+            // -- Damage Categories
+            int length = DamageCategories != null ? DamageCategories.Count : 0;
+            serializer.SerializeValue(ref length);
+            if (serializer.IsReader)
+            {
+                DamageCategories = new List<EDamageCategory>(length);
+            }
+            for (int i = 0; i < length; i++)
+            {
+                var temp = DamageCategories[i];
+                serializer.SerializeValue(ref temp);
+                if (serializer.IsReader)
+                {
+                    DamageCategories.Add(temp);
+                }
+            }
+
+            // -- Hit Categories
+            length = HitCategories != null ? HitCategories.Count : 0;
+            serializer.SerializeValue(ref length);
+            if (serializer.IsReader)
+            {
+                HitCategories = new List<EHitCategory>(length);
+            }
+            for (int i = 0; i < length; i++)
+            {
+                var temp = HitCategories[i];
+                serializer.SerializeValue(ref temp);
+                if (serializer.IsReader)
+                {
+                    HitCategories.Add(temp);
+                }
+            }
+
             // -- SPECIAL CONDITIONS
-            int length = SpecialConditions != null ? SpecialConditions.Count : 0;
+            length = SpecialConditions != null ? SpecialConditions.Count : 0;
             serializer.SerializeValue(ref length);
             if (serializer.IsReader)
             {
@@ -126,6 +164,32 @@ namespace Data.DataStructures.CharacterSubStructures
             }
 
             return value;
+        }
+
+        public bool HasDamageCategory(EDamageCategory? damageCategory)
+        {
+            // This effect has no specific damage category - return true
+            if (DamageCategories.IsNullOrEmpty())
+                return true;
+
+            // No damage category for the requested value - return true
+            if (damageCategory == null)
+                return true;
+
+            return DamageCategories.Contains(damageCategory.Value);
+        }
+
+        public bool HasHitCategory(EHitCategory? hitCategory)
+        {
+            // This effect has no specific damage category - return true
+            if (HitCategories.IsNullOrEmpty())
+                return true;
+
+            // No damage category for the requested value - return true
+            if (hitCategory == null)
+                return true;
+
+            return HitCategories.Contains(hitCategory.Value);
         }
 
         public bool HasSpecialCondition(string specialCondition)

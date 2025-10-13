@@ -9,15 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bdf9fa99f588d38479137fd3d7b8d353, type: 3}
+  m_Script: {fileID: 11500000, guid: e3568c284519b7947b7bf6f5fe2f6a6d, type: 3}
   m_Name: Frozen
   m_EditorClassIdentifier: 
   m_Description: Consume a [Frost] effect to Freeze the enemy for {0} seconds that
-    can no longer move or cast. When the shield is broken, the Freeze ends
-  m_DescriptionVariables: 01000000
+    can no longer move or cast.\nRefreshes any [Frostbite] effect on the target.\n\nWhen
+    the shield is broken, the Freeze ends.
+  m_DescriptionVariables: 
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
-  m_IsDisplayed: 0
-  m_VisualEffects: []
+  m_IsDisplayed: 1
   m_GfxEffects:
   - Prefab: {fileID: 7758585010674234526, guid: 4097eca5df8a5b1479a81a62b6bc7b03, type: 3}
     MaterialEffect: {fileID: 0}
@@ -34,6 +35,7 @@ MonoBehaviour:
     SpawnLocation: 2
     BodyPart: 0
     IsFollowing: 1
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -46,22 +48,20 @@ MonoBehaviour:
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
   m_EndWithShield: 1
+  m_EndAt0Stacks: 1
   m_RefreshShield: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: 3
+  m_StartingStacks: 1
   m_MaxStacks: 1
   m_StackDecay: -1
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
-  m_BonusStats:
-  - StateEffectProperty: 4
-    BaseValue: 150
-    LevelScalingFactor: 0.1
-    StackScalingFactor: 1
-    SpecialConditions: []
+  m_BonusStats: []
   m_StatConversions: []
   m_SubStateEffects: []
   m_HoldingStateEffects: []
@@ -69,7 +69,3 @@ MonoBehaviour:
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel: []
   m_StateEffectScalingStacks: []
-  m_Damage: 0
-  m_EndDamage: 0
-  m_Heal: 0
-  m_EndHeal: 0

@@ -12,9 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9d516b3dac707b40872f083050bc425, type: 3}
   m_Name: ExecutionDamageDelt
   m_EditorClassIdentifier: 
-  m_Description: Deal [TresholdValue] damage with Alexander
+  m_PrettyName: 
+  m_Description: Deal [TresholdValue] execution damage with Subrog
+  m_ResetCount: 0
+  m_Character: 5
+  m_MasteryThresholds: 0300000006000000
   AchievementSubData:
-  - MaxValue: 5000
+  - MaxValue: 2500
     Rewards:
       Currencies: []
       Chests: 
@@ -22,11 +26,28 @@ MonoBehaviour:
       AchievementRewards:
       - AchievementReward: 2
         Title: 0
-        Avatar: 1000
+        Avatar: 1060
         Border: 0
         Emot: 0
         Badge: 0
         League: 0
+      Boosts: []
+  - MaxValue: 7500
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables:
+      - CollectableType: 3
+        CollectableName: LethalityRune
+        Qty: 5
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 15000
+    Rewards:
+      Currencies: []
+      Chests: 01000000
+      Collectables: []
+      AchievementRewards: []
       Boosts: []
   - MaxValue: 25000
     Rewards:
@@ -36,11 +57,21 @@ MonoBehaviour:
       AchievementRewards:
       - AchievementReward: 5
         Title: 0
-        Avatar: 1000
+        Avatar: 0
         Border: 0
-        Emot: 15
+        Emot: 31
         Badge: 0
         League: 0
+      Boosts: []
+  - MaxValue: 50000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables:
+      - CollectableType: 3
+        CollectableName: LethalityRune
+        Qty: 10
+      AchievementRewards: []
       Boosts: []
   - MaxValue: 100000
     Rewards:
@@ -52,10 +83,37 @@ MonoBehaviour:
   - MaxValue: 250000
     Rewards:
       Currencies: []
-      Chests: 02000000
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 5
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Emot: 34
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 500000
+    Rewards:
+      Currencies: []
+      Chests: 03000000
       Collectables: []
       AchievementRewards: []
       Boosts: []
-  m_Character: 5
+  - MaxValue: 1000000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 1
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 2002
+        League: 0
+      Boosts: []
   m_Property: 25
   m_SpecialConditions: []

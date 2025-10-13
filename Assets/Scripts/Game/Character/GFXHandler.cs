@@ -68,17 +68,17 @@ namespace Game.Character
             m_Rigidbody = Finder.FindComponent<Rigidbody2D>(gameObject);
         }
 
-        public void Initialize(string character)
+        public void Initialize(string character, ESkin skin = ESkin.None)
         {
             CharacterData characterData = CharacterLoader.GetCharacterData(character, destroy: true);
-            m_CharacterPreview = characterData.InstantiateCharacterPreview(gameObject);
+            m_CharacterPreview = characterData.InstantiateCharacterPreview(gameObject, skin);
             m_SpriteRenderers = Finder.FindComponents<SpriteRenderer>(m_CharacterPreview);
 
             FindBodyParts();
             SwapLayerMask(m_CharacterPreview);
             SwapRigidBody(m_CharacterPreview);
             SwapColliders(m_CharacterPreview);
-            SetSize(characterData.Size);
+            SetSize(m_Controller.StateHandler.Size);
 
             m_Colors = new();
             m_Materials = new();
@@ -91,11 +91,13 @@ namespace Game.Character
 
             m_Controller.SpellHandler.OnPreSpellEvent               += OnPreSpellEvent;
             m_Controller.StateHandler.StateEffectEvent              += OnStateEffectEventChanged;
+            m_Controller.StateHandler.SizeBonus.OnValueChanged      += OnSizeEventChanged;
         }
 
         public override void OnDestroy()
         {
             m_Controller.StateHandler.StateEffectEvent              -= OnStateEffectEventChanged;
+            m_Controller.StateHandler.SizeBonus.OnValueChanged      -= OnSizeEventChanged;
         }
 
         #endregion
@@ -539,6 +541,11 @@ namespace Game.Character
             if (spellEvent == ESpellEvent.OnCast && spellData.CastSoundFX != null)
                 SoundFXManager.PlayOnce(spellData.CastSoundFX);
         } 
+
+        void OnSizeEventChanged(float _, float newSize)
+        {
+            SetSize(m_Controller.StateHandler.CharacterData.Size + newSize);
+        }
 
         /// <summary>
         /// When a state effect is added or removed

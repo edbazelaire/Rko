@@ -23,19 +23,20 @@ namespace Data
         /// <summary>
         /// Use end game analytics data (GameAnalyticsManager) to check end game achievements
         /// </summary>
-        /// <param name="spellHitSummary"></param>
-        /// <param name="specialValues"></param>
-        /// <param name="spellHitTypeDatas"></param>
-        public virtual void Check(EGameMode gameMode, bool win)
+        /// <param name="gameMode"></param>
+        /// <param name="win"></param>
+        /// <param name="save"> if the counter increase, save directly to cloud ? (can be deactivated to save all achievements at once)</param>
+        public virtual bool Check(EGameMode gameMode, bool win, bool save = false)
         {
             // CHECK : correct game mode
             if (!m_GameModes.IsNullOrEmpty() && !m_GameModes.Contains(gameMode))
-                return;
+                return false;
 
             if (m_Win && !win)
-                return;
+                return false;
 
-            Increase(1);
+            Increase(1, save);
+            return true;
         }
 
         #endregion
