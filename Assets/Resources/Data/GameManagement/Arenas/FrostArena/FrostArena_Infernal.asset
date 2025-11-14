@@ -15,10 +15,8 @@ MonoBehaviour:
   m_RoundDuration: 0
   m_ArenaLevelData:
   - RewardsData:
-      Currencies:
-      - Currency: 3
-        Qty: 500
-      Chests: 0100000001000000
+      Currencies: []
+      Chests: 01000000
       Collectables: []
       AchievementRewards: []
       Boosts: []
@@ -127,10 +125,8 @@ MonoBehaviour:
   - RewardsData:
       Currencies:
       - Currency: 3
-        Qty: 500
-      - Currency: 0
-        Qty: 3500
-      Chests: 0100000001000000
+        Qty: 450
+      Chests: 01000000
       Collectables: []
       AchievementRewards: []
       Boosts: []
@@ -248,9 +244,11 @@ MonoBehaviour:
       m_BonusStats: []
   - RewardsData:
       Currencies:
+      - Currency: 3
+        Qty: 350
       - Currency: 0
-        Qty: 5000
-      Chests: 02000000
+        Qty: 1500
+      Chests: 01000000
       Collectables: []
       AchievementRewards: []
       Boosts: []
@@ -369,7 +367,7 @@ MonoBehaviour:
       m_BonusStats: []
   - RewardsData:
       Currencies: []
-      Chests: 0100000002000000
+      Chests: 02000000
       Collectables: []
       AchievementRewards: []
       Boosts: []
@@ -490,8 +488,12 @@ MonoBehaviour:
   - RewardsData:
       Currencies:
       - Currency: 3
-        Qty: 1000
-      Chests: 03000000
+        Qty: 800
+      - Currency: 0
+        Qty: 2500
+      - Currency: 1
+        Qty: 80
+      Chests: 02000000
       Collectables: []
       AchievementRewards:
       - AchievementReward: 4

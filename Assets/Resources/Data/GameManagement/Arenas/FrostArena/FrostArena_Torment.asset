@@ -15,16 +15,9 @@ MonoBehaviour:
   m_RoundDuration: 0
   m_ArenaLevelData:
   - RewardsData:
-      Currencies:
-      - Currency: 0
-        Qty: 2500
-      - Currency: 3
-        Qty: 250
+      Currencies: []
       Chests: 01000000
-      Collectables:
-      - CollectableType: 3
-        CollectableName: FrostRune
-        Qty: 1
+      Collectables: []
       AchievementRewards: []
       Boosts: []
     TriggerEffects:
@@ -133,11 +126,11 @@ MonoBehaviour:
       Currencies:
       - Currency: 3
         Qty: 350
-      Chests: 0100000001000000
+      Chests: 01000000
       Collectables:
       - CollectableType: 3
         CollectableName: ToxicWaterRune
-        Qty: 3
+        Qty: 1
       AchievementRewards: []
       Boosts: []
     TriggerEffects:
@@ -222,7 +215,7 @@ MonoBehaviour:
       Currencies:
       - Currency: 3
         Qty: 350
-      Chests: 0100000001000000
+      Chests: 01000000
       Collectables:
       - CollectableType: 3
         CollectableName: ShardcurseRune
@@ -309,8 +302,10 @@ MonoBehaviour:
   - RewardsData:
       Currencies:
       - Currency: 3
-        Qty: 700
-      Chests: 02000000
+        Qty: 500
+      - Currency: 1
+        Qty: 15
+      Chests: 01000000
       Collectables:
       - CollectableType: 3
         CollectableName: ThermalShockRune
@@ -416,8 +411,8 @@ MonoBehaviour:
   - RewardsData:
       Currencies:
       - Currency: 3
-        Qty: 1000
-      Chests: 03000000
+        Qty: 750
+      Chests: 02000000
       Collectables:
       - CollectableType: 3
         CollectableName: FrostbiteRune

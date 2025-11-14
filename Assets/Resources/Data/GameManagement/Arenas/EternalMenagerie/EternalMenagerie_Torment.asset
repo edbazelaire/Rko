@@ -57,8 +57,8 @@ MonoBehaviour:
         StateEffectStackFactors: []
   - RewardsData:
       Currencies:
-      - Currency: 1
-        Qty: 25
+      - Currency: 0
+        Qty: 1100
       Chests: 0d000000
       Collectables: []
       AchievementRewards: []
@@ -281,7 +281,7 @@ MonoBehaviour:
       ConsumeLifeOnActivation: 0
     - SpellDataName: InfinitPower
       OverridingData: []
-      Level: 11
+      Level: 16
       Target: 4
       SpellActivationEvent: 1
       ActivationTreshold: 0
