@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 289d0f05a9c445d4c88756f9ed07e7d8, type: 3}
   m_Name: _MaAfflicted
   m_EditorClassIdentifier: 
-  m_Description: Each stack of [Infected] remove [Overriding.ResistanceTickPerc]
-    of Resistance to Tick Damage
+  m_Description: Each stack of [Infected] removes [Overriding.Resistance]  {{MagicalResistance}}
   m_DescriptionVariables: 
   m_NStacksInDescription: 1
   m_StateEffectType: 0
@@ -56,9 +55,12 @@ MonoBehaviour:
   m_BonusStatsOverride:
   - OverridingType: 1
     BonusStat:
-      StateEffectProperty: 27
-      BaseValue: -0.1
-      LevelScalingFactor: 0
+      StateEffectProperty: 30
+      BaseValue: -5
+      LevelScalingFactor: 0.05
       StackScalingFactor: 1
+      ScalesOnMissingHealth: 0
+      DamageCategories: 02000000
+      HitCategories: 
       SpecialConditions: []
   m_GFXOverrides: []

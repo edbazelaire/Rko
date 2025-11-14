@@ -48,7 +48,7 @@ namespace Game.Spells
                 m_Controller.Life.OnHittedEvent -= OnHit;
         }
 
-        void OnHit(int damage, ulong casterId, EHitCategory spellCategory)
+        void OnHit(int damage, ulong casterId, EDamageCategory damageCategory, EHitCategory spellCategory)
         {
             if (spellCategory != EHitCategory.Direct)
                 return;

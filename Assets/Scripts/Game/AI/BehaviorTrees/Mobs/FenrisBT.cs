@@ -39,9 +39,14 @@ namespace Game.AI.BehaviorTrees
 
                     new Selector(new List<Node>
                     {
-                        new TaskUseSpell(m_Controller, m_Controller.SpellHandler.Ultimate),
-                        new TaskUseSpell(m_Controller, ESpell.PackHunt),
-                        new TaskUseSpell(m_Controller, m_Controller.SpellHandler.AutoAttack),
+                        new Selector(new List<Node>
+                        {
+                            new TaskUseSpell(m_Controller, m_Controller.SpellHandler.Ultimate),
+                            new TaskUseSpell(m_Controller, ESpell.AlphaHowling, delay:25f, spellEvent: ESpellEvent.OnEnd),
+                            new TaskUseSpell(m_Controller, ESpell.FerociousBite, delay:15f),
+                            new TaskUseSpell(m_Controller, m_Controller.SpellHandler.AutoAttack),
+                        }, saveCurrentNode: true),
+
                         new TaskMove(m_Controller, checkZones: false, checkProjectiles: false),
                     }),
                 }),

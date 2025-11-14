@@ -12,13 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2413bf9bea7a81d44a0b645bca9d69f8, type: 3}
   m_Name: Orblivion
   m_EditorClassIdentifier: 
-  m_Rarety: 1
-  m_Description: '[SpellRequirement.0] to throw a volatile orb of fire and void energy
-    at the target.\nExplodes on impact, applying [Combustion] and {0} damage.'
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
-  m_SpellElements: 0100000004000000
+  m_Rarety: 0
+  m_Description: 'Throw a volatile orb of void energy at the target.
+
+    Explodes
+    on impact, dealing [Damage] damage and applying [StateEffect.0.Description].'
+  m_SpellElements: 04000000
   Linked: 0
   Graphics: {fileID: 1258406917094090, guid: f42325a8a8467dd44a09410ea55cfd9a, type: 3}
   SpellEventActions:
@@ -67,28 +66,12 @@ MonoBehaviour:
       EndAt: 0
       Persistance: 0
     Speed: 0
-  m_SpellRequirements:
-  - m_StateEffectRequirements:
-    - m_SpellTarget: 0
-      m_StateEffect: Cursed
-      m_Stacks: 5
-      m_NStacksReductionPerLevel: 0
+  m_SpellRequirements: []
   m_MaxHit: 1
   m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 50
-  m_ExecutionDamage: 0
-  m_Damages:
-  - m_BaseValue: 50
-    m_DamageCategory: 1
-    m_HitCategory: 1
-    m_SpellPropertyScaling:
-      Property: 2
-      Value: 0.1
-      ScalingType: 0
-      RoundingType: 2
-      ScalingTresholds: []
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -101,11 +84,15 @@ MonoBehaviour:
     m_Duration: 0
     m_Targets: 
   m_SpellsScalingLevel:
-  - Property: 2
-    Value: 0.1
-    ScalingType: 0
+  - Property: 20
+    Value: 0
+    ScalingType: 1
     RoundingType: 2
-    ScalingTresholds: []
+    ScalingTresholds:
+    - Level: 9
+      Value: 2
+    - Level: 15
+      Value: 3
   OverridesSpawnPosition: 0
   m_SpawnPosition:
     SpawnTarget: 0
@@ -146,8 +133,9 @@ MonoBehaviour:
   Animation: 2
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.5
-  m_Cooldown: 0
+  m_Cooldown: 10
   Trajectory: 1
   m_TriggerGround: 1
   m_StopOnTargetPos: 0

@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e28aeed435a1ff3489af42321b29362a, type: 3}
   m_Name: Lootless
   m_EditorClassIdentifier: 
-  m_Description: 
+  m_PrettyName: 
+  m_Description: Gain less than 5% of the maximum gold amount a chest can contain.
+  m_ResetCount: 0
   m_Character: -1
   m_MasteryThresholds: 
   AchievementSubData:
@@ -25,7 +27,7 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
-  - MaxValue: 25
+  - MaxValue: 10
     Rewards:
       Currencies: []
       Chests: 
@@ -38,6 +40,13 @@ MonoBehaviour:
         Emot: 8
         Badge: 0
         League: 0
+      Boosts: []
+  - MaxValue: 25
+    Rewards:
+      Currencies: []
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards: []
       Boosts: []
   - MaxValue: 50
     Rewards:

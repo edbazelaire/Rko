@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: _SporeSack
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 'After {0} seconds, explodes in an area of {1}, each dealing {2}
-    damage, also applies [StateEffect.0] and [StateEffect.1]'
+  m_Description: 'After [Delay] seconds, explodes in an area of [Size], each dealing
+    [Damage] damage, also applies [StateEffect.0] and [StateEffect.1]'
   m_DescriptionVariables:
   - Name: Delay
     WithIcon: 0

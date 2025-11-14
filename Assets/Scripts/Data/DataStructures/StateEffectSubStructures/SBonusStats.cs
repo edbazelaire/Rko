@@ -2,6 +2,7 @@
 using Enums;
 using Game.Loaders;
 using MyBox;
+using NUnit.Framework.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,7 @@ namespace Data.DataStructures.StateEffectSubStructures
         public float                    BaseValue;
         public float                    LevelScalingFactor;
         public float                    StackScalingFactor;
+        public bool                     ScalesOnMissingHealth;
         public List<EDamageCategory>    DamageCategories;
         public List<EHitCategory>       HitCategories;
         public List<string>             SpecialConditions;
@@ -44,25 +46,36 @@ namespace Data.DataStructures.StateEffectSubStructures
             }
         }
 
-        public SBonusStats(EStateEffectProperty stateEffectProperty, float baseValue = 0f, float levelScalingFactor = 0.1f, float stackScalingFactor = 0.1f, List<EDamageCategory> damageCategories = default, List<EHitCategory> hitCategories = default, List<string> specialConditions = default)
+        public SBonusStats(EStateEffectProperty stateEffectProperty, float baseValue = 0f, float levelScalingFactor = 0.1f, float stackScalingFactor = 0.1f, bool scalesOnMissingHealth = false, List<EDamageCategory> damageCategories = default, List<EHitCategory> hitCategories = default, List<string> specialConditions = default)
         {
-            StateEffectProperty = stateEffectProperty;
-            BaseValue           = baseValue;
-            LevelScalingFactor  = levelScalingFactor;
-            StackScalingFactor  = stackScalingFactor;
-            DamageCategories    = damageCategories  ?? new();
-            HitCategories       = hitCategories     ?? new();
-            SpecialConditions   = specialConditions ?? new();
+            StateEffectProperty     = stateEffectProperty;
+            BaseValue               = baseValue;
+            LevelScalingFactor      = levelScalingFactor;
+            StackScalingFactor      = stackScalingFactor;
+            ScalesOnMissingHealth   = scalesOnMissingHealth;
+            DamageCategories        = damageCategories  ?? new();
+            HitCategories           = hitCategories     ?? new();
+            SpecialConditions       = specialConditions ?? new();
         }
 
-        public float Get(int level, int stacks, EDamageCategory? damageCategory = null, EHitCategory? hitCategory = null, string specialCondition = "")
+        public float Get(int level, int stacks, Controller targetController = null, EDamageCategory? damageCategory = null, EHitCategory? hitCategory = null, string specialCondition = "")
         {
-            if (!CheckConditions(damageCategory, hitCategory, specialCondition))
+            if (! CheckConditions(damageCategory, hitCategory, specialCondition))
             {
                 return 0f;
             }
 
-            return BaseValue * Mathf.Pow(1 + LevelScalingFactor, level - 1) * (StackScalingFactor == 0 ? 1 : stacks * StackScalingFactor);
+            return BaseValue
+                * Mathf.Pow(1 + LevelScalingFactor, level - 1)
+                * (StackScalingFactor > 0 ? stacks * StackScalingFactor : 1)
+                * (ScalesOnMissingHealth && targetController != null ? 1 - targetController.Life.PercHp : 1);
+        }
+
+        public float ForceGet(int level, int stacks)
+        {
+            return BaseValue 
+                * Mathf.Pow(1 + LevelScalingFactor, level - 1) 
+                * (StackScalingFactor == 0 ? 1 : stacks * StackScalingFactor);
         }
 
         public bool CheckConditions(EDamageCategory? damageCategory, EHitCategory? hitCategory, string specialCondition)
@@ -151,9 +164,27 @@ namespace Data.DataStructures.StateEffectSubStructures
 
         #region Info & Description
 
+        public string GetKeyName()
+        {
+            return PropertyHandler.FormatSpecialPropertyName(
+                StateEffectProperty.ToString(),
+                damageCategory:     DamageCategories.IsNullOrEmpty() ?  null : DamageCategories[0],
+                hitCategory:        HitCategories.IsNullOrEmpty() ?     null : HitCategories[0],
+                specialCondition:   SpecialConditions.IsNullOrEmpty() ? ""  : SpecialConditions[0]
+            );
+        }
+
         public string GetPrettyName()
         {
-            string prettyName = "";
+            // CHECK : is special case
+            string prettyName = StateEffectProperty.ToString();
+            if (PropertyHandler.ConvertSpecialPropertyName(ref prettyName))
+                return prettyName;
+
+            if (StateEffectProperty == EStateEffectProperty.SpeedBonus)
+                return "Movement Speed";
+
+            prettyName = "";
             if (!DamageCategories.IsNullOrEmpty() && DamageCategories.Count == 1)
                 prettyName += DamageCategories[0].ToString();
 
@@ -179,6 +210,14 @@ namespace Data.DataStructures.StateEffectSubStructures
             }
 
             return prettyName;
+        }
+
+        public string GetPropertyName()
+        {
+            if (PropertyHandler.TryExtractSpecialPropertyInfo(GetKeyName(), out string iconName, out string prettyName))
+                return iconName;
+
+            return StateEffectProperty.ToString();
         }
 
         #endregion

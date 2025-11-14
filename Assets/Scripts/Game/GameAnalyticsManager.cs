@@ -277,16 +277,14 @@ namespace Assets.Scripts.Game
             }
 
             // Send hit info to UI
-            DisplaySpellHitClientRPC(casterId, targetId, spellName, (ushort)qty, (byte)hitType, (byte)category);
+            DisplaySpellHitClientRPC(targetId, (ushort)qty, (byte)hitType, (byte)category);
         }
 
         [ClientRpc]
-        public void DisplaySpellHitClientRPC(ulong casterClientId, ulong targetClientId, string spellName, ushort amount, byte hitTypeByte, byte spellCategoryByte)
+        public void DisplaySpellHitClientRPC(ulong targetClientId, ushort amount, byte hitTypeByte, byte spellCategoryByte)
         {
-            var caster = GameManager.Instance.GetPlayer(casterClientId);
-
-            EHitType hitType = (EHitType)hitTypeByte;
-            EHitCategory spellCategory = (EHitCategory)spellCategoryByte;
+            EHitType hitType                    = (EHitType)hitTypeByte;
+            EHitCategory spellCategory          = (EHitCategory)spellCategoryByte;
 
             // Floating damage text
             if (PlayerPrefs.GetInt("DisplayDamage", 1) == 1)
@@ -345,13 +343,6 @@ namespace Assets.Scripts.Game
         private void SendPlayerData(SSpellHitTypeData[] playerData, ulong playerId, ulong myPlayerId)
         {
             GameUIManager.EndGameUI.EndGameAnalyticsUI.UpdateAnalytics(playerData.ToList(), index: playerId == myPlayerId ? 0 : 1);
-
-            // TODO : OLD analytics method was copy/paste here - adapt to send game analytics AT THE END of the game
-            // Send to client analytics
-            //if (caster != null && caster.ClientAnalytics != null)
-            //{
-            //    caster.ClientAnalytics.SendSpellData(spellName, hitType, amount);
-            //}
         }
 
         [ClientRpc]
@@ -383,6 +374,7 @@ namespace Assets.Scripts.Game
 
             bool save = CalculateEndGameAchievements(character);
             save |= CalculatePropertyAchievements(character);
+            save |= CalculateSpellCounterAchievements(character);
             save |= CalculateArenaAchievements(character);
 
             // save all achievements at once (if any has been incremented)
@@ -411,6 +403,21 @@ namespace Assets.Scripts.Game
             foreach (var achievement in AchievementLoader.Get<PropertyAchievementData>(character))
             {
                 test |= achievement.Check(endGameAnalytics.SpellHitSummary, endGameAnalytics.SpecialValues, endGameAnalytics.SpellHitTypeDatas, save: false);
+            }
+
+            return test;
+        }
+
+        bool CalculateSpellCounterAchievements(ECharacter character)
+        {
+            var endGameAnalytics = GameUIManager.EndGameUI.EndGameAnalyticsUI.GetDisplayer(0);
+            if (endGameAnalytics == null)
+                return false;
+
+            bool test = false;
+            foreach (var achievement in AchievementLoader.Get<SpellCounterAchievementData>(character))
+            {
+                test |= achievement.Check(endGameAnalytics.SpellHitTypeDatas, save: false);
             }
 
             return test;

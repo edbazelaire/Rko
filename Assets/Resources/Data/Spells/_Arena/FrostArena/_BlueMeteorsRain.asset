@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: _BlueMeteorsRain
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: Each {0} seconds, {1} orbs fall from the sky. If they hit the GROUND,
-    the caster gains 1 [AzurePowerOrb] stack and heals for [SubSpellData.Heal] hp
+  m_Description: Each [DelayBetweenWaves] seconds, [NProjectiles] orbs fall from
+    the sky. If they hit the GROUND, the caster gains 1 [AzurePowerOrb] stack and
+    heals for [SubSpellData.Heal] hp
   m_DescriptionVariables:
   - Name: DelayBetweenWaves
     WithIcon: 1

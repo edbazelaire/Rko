@@ -33,6 +33,9 @@ namespace Game.Loaders
             m_Achievements = new List<IAchievement>();
             foreach (var asset in loadedAssets)
             {
+                if (asset.name.StartsWith("_"))
+                    continue;
+
                 var clone = Object.Instantiate(asset);
 
                 if (clone is ArenaAchievementData arenaData)
@@ -63,7 +66,12 @@ namespace Game.Loaders
 
         public static IAchievement Get (EAchievement achievement) 
         {
-            return m_Achievements.FilterByName(achievement.ToString());
+            return Get(achievement.ToString());
+        }
+
+        public static IAchievement Get (string achievement, ECharacter character = ECharacter.None) 
+        {
+            return m_Achievements.FilterByCharacter(character).FilterByName(achievement);
         }
 
         #endregion

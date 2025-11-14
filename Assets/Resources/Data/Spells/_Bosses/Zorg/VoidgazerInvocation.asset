@@ -1,0 +1,178 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8d2bcd733533b8499b0cb4a21b59b82, type: 3}
+  m_Name: VoidgazerInvocation
+  m_EditorClassIdentifier: 
+  m_Rarety: 1
+  m_Description: Invoke a Voidgazer
+  m_SpellElements: 0300000001000000
+  Linked: 1
+  Graphics: {fileID: 0}
+  SpellEventActions: []
+  OnHit: []
+  PassiveEffects: []
+  SpellEventEffects: []
+  OnHitSpellSpawn: 1
+  AnimationSoundFX: {fileID: 0}
+  CastSoundFX: {fileID: 0}
+  PermanantSoundFX: {fileID: 0}
+  OnHitSoundFX: {fileID: 0}
+  OnEndSoundFX: {fileID: 0}
+  SpellTarget: 5
+  m_ClampTargetPos: 1
+  TargetOffset:
+    X: -1
+    Y: 0
+  LockTarget: 400
+  ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
+  m_SpellRequirements:
+  - m_StateEffectRequirements:
+    - m_SpellTarget: 6
+      m_StateEffect: Cursed
+      m_Stacks: 50
+      m_NStacksReductionPerLevel: 0
+  m_MaxHit: 1
+  m_Charges: 1
+  EnergyGain: 0
+  EnergyCost: 0
+  m_Damages: []
+  m_Heal: 0
+  m_Shield: 0
+  m_LifeSteal: 0
+  Distance: -1
+  OverrideOnHitProperties: 
+  m_Duration: -1
+  Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
+    m_Targets: 
+  m_SpellsScalingLevel:
+  - Property: 3
+    Value: -5
+    ScalingType: 1
+    RoundingType: 2
+    ScalingTresholds: []
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
+  m_Size: 1
+  TriggerPlayer: 0
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
+  EnemyStateEffects: []
+  AllyStateEffects: []
+  StateEffectStackFactor: 0
+  PersistanceAfterEnd: 0
+  Animation: 6
+  IsCancellable: 0
+  IsInterruptable: 0
+  IgnoreCC: 0
+  AnimationTimer: 1.5
+  m_Cooldown: 180
+  m_IsUnique: 0
+  m_DestroySpawnsOnEnd: 0
+  m_SpawnTarget:
+    m_SpellTargetX:
+      m_Dimension: 1
+      m_MultiSpellTarget: 0
+      m_ZoneSize: -1
+      m_NBreakPointMargin:
+        Min: 0
+        Max: 0
+      m_NBreakPoints: 0
+      m_OffsetMinMax:
+        Min: 0
+        Max: 0
+    m_SpellTargetY:
+      m_Dimension: 2
+      m_MultiSpellTarget: 0
+      m_ZoneSize: -1
+      m_NBreakPointMargin:
+        Min: 0
+        Max: 0
+      m_NBreakPoints: 0
+      m_OffsetMinMax:
+        Min: 0
+        Max: 0
+  IsWaveSpawn: 0
+  m_NSpawns: 1
+  m_SpawnElements:
+  - CharacterName: Voidgazer
+    m_MaxSpawns: 1
+    m_NSpawns: 1
+    m_SpawnProbability: 1
+    m_BonusLevel: 0
+    m_SpawnInterval: 0
+    m_Delay: 0
+    m_Duration: -1
+    m_RecalculatePosition: 1
+    m_SpawnPosition:
+      m_SpellTargetX:
+        m_Dimension: 0
+        m_MultiSpellTarget: 0
+        m_ZoneSize: 0
+        m_NBreakPointMargin:
+          Min: 0
+          Max: 0
+        m_NBreakPoints: 0
+        m_OffsetMinMax:
+          Min: 0
+          Max: 0
+      m_SpellTargetY:
+        m_Dimension: 2
+        m_MultiSpellTarget: 1
+        m_ZoneSize: 0
+        m_NBreakPointMargin:
+          Min: 0
+          Max: 0
+        m_NBreakPoints: 0
+        m_OffsetMinMax:
+          Min: 2
+          Max: 0
+  m_Waves:
+    WaveSpawns: []
+  m_WavesGraphics: []

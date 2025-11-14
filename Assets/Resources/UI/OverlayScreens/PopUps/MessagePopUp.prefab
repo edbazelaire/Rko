@@ -144,7 +144,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6405185369920070288
 RectTransform:
   m_ObjectHideFlags: 0
@@ -361,7 +361,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -0.000061035156}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &8823904771423641970
@@ -457,7 +457,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 25, y: 0, z: 25, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -524,7 +524,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.003921569}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -554,7 +554,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Content: {fileID: 7398289560333795000}
-  m_Horizontal: 1
+  m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 1
   m_Elasticity: 0.1
@@ -579,6 +579,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 569013156782730255, guid: b540a06041e04f346856f797b58fc1ac, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 569013156782730255, guid: b540a06041e04f346856f797b58fc1ac, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -631,6 +635,14 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.4056604
       objectReference: {fileID: 0}
+    - target: {fileID: 1794235245560817232, guid: b540a06041e04f346856f797b58fc1ac, type: 3}
+      propertyPath: m_Padding.m_Top
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 1794235245560817232, guid: b540a06041e04f346856f797b58fc1ac, type: 3}
+      propertyPath: m_Padding.m_Bottom
+      value: 150
+      objectReference: {fileID: 0}
     - target: {fileID: 2238700682460818137, guid: b540a06041e04f346856f797b58fc1ac, type: 3}
       propertyPath: m_Type
       value: 1
@@ -657,7 +669,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2555077526267365462, guid: b540a06041e04f346856f797b58fc1ac, type: 3}
       propertyPath: m_Spacing
-      value: 40
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 2555077526267365462, guid: b540a06041e04f346856f797b58fc1ac, type: 3}
       propertyPath: m_Padding.m_Top
@@ -757,15 +769,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5141128537227951536, guid: b540a06041e04f346856f797b58fc1ac, type: 3}
       propertyPath: m_Padding.m_Top
-      value: 40
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 5141128537227951536, guid: b540a06041e04f346856f797b58fc1ac, type: 3}
       propertyPath: m_Padding.m_Bottom
-      value: 40
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 5141128537227951536, guid: b540a06041e04f346856f797b58fc1ac, type: 3}
+      propertyPath: m_ChildForceExpandWidth
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5172249527573667240, guid: b540a06041e04f346856f797b58fc1ac, type: 3}
       propertyPath: m_fontSize
-      value: 71.95
+      value: 86.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 5172249527573667240, guid: b540a06041e04f346856f797b58fc1ac, type: 3}
+      propertyPath: m_fontSizeMax
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 5529344234866400586, guid: b540a06041e04f346856f797b58fc1ac, type: 3}
       propertyPath: m_Enabled
@@ -959,6 +979,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2780310df92e34143bd070a7ebff961f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_IsBlockingQuickClose: 0
 --- !u!1 &1840557830478847923 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9008247843101753668, guid: b540a06041e04f346856f797b58fc1ac, type: 3}

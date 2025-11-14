@@ -15,7 +15,6 @@ MonoBehaviour:
   m_Rarety: 0
   m_Description: 'Delivers a crushing blow imbued with glacial power, dealing [Damage]
     damage and applying [Stun] and [IceBreak]'
-  m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 2272309172655654138, guid: 38681e4b53a79684b88492cde7d9ccd8, type: 3}
@@ -109,8 +108,6 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 15
   EnergyCost: 0
-  m_Damage: 100
-  m_ExecutionDamage: 0
   m_Damages:
   - m_BaseValue: 100
     m_DamageCategory: 1
@@ -121,6 +118,7 @@ MonoBehaviour:
       ScalingType: 0
       RoundingType: 2
       ScalingTresholds: []
+    m_DamageModifiers: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -155,7 +153,7 @@ MonoBehaviour:
     m_TargetToFollow: 0
     m_TargetOffset: {x: 0, y: 0}
     m_FollowingSpeed: -1
-  m_Size: 0.4
+  m_Size: 2.2
   TriggerPlayer: 1
   HasSolidBody: 0
   MSolidBody:
@@ -193,6 +191,7 @@ MonoBehaviour:
   Animation: 1
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 1
   m_Cooldown: 60
   Trajectory: 2

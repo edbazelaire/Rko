@@ -26,14 +26,14 @@ namespace Game.AI.BehaviorTrees
                     }),
                 }),
 
-                // CHECK : Infected
+                // CHECK : Poison
                 new Sequence(new List<Node> {
                     // check if has required state effects to use his special ability
                     new CheckHasState(m_Controller, EStateEffect.Poison.ToString(), nStacks: 5, target: ESpellTarget.FirstEnemy),
 
                     new Selector(new List<Node> {
                         new TaskUseSpell(m_Controller, ESpell.SlIceBreaker),
-                        new TaskUseSpell(m_Controller, ESpell.FuryBond),
+                        new TaskUseSpell(m_Controller, ESpell.FuryBond, globalCooldown: 10f),
                     }),
                 }),
 
@@ -41,13 +41,13 @@ namespace Game.AI.BehaviorTrees
                 new TaskAttack(m_Controller, allowedSpellCategories: new List<ESpellTypeCategory> { ESpellTypeCategory.Ultimate }),
                 
                 // EXTRA SPELLS
-                new TaskUseSpell(m_Controller, ESpell.RazorTempest,  delay: 5f),
-                new TaskUseSpell(m_Controller, ESpell.PoisonDarts,  delay: 10f),
-                new TaskUseSpell(m_Controller, ESpell.Crosslice,    delay: 15f),
+                new TaskUseSpell(m_Controller, ESpell.RazorTempest,  delay: 5f, globalCooldown: 5f),
+                new TaskUseSpell(m_Controller, ESpell.PoisonDarts,  delay: 10f, globalCooldown: 3f),
+                new TaskUseSpell(m_Controller, ESpell.Crosslice,    delay: 15f, globalCooldown: 3f),
                 new TaskUseSpell(m_Controller, ESpell.ExtraClaws,   delay: 20f),
 
                 // AUTO ATTACK
-                new TaskUseSpell(m_Controller, m_Controller.SpellHandler.AutoAttack),
+                new TaskUseSpell(m_Controller, m_Controller.SpellHandler.AutoAttack, ignoreGlobalCooldown: true),
 
                 // MOVE
                 new TaskMove(m_Controller, checkZones: false, checkProjectiles: false),

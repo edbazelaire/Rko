@@ -28,66 +28,6 @@ using UnityEngine.Serialization;
 
 namespace Data
 {
-    [Serializable]
-    public class SDamage
-    {
-        [SerializeField, Tooltip("Base damage value")]
-        protected float m_BaseValue;
-
-        [SerializeField, Tooltip("Category of Damage")]
-        protected EDamageCategory m_DamageCategory = EDamageCategory.Physical;
-
-        [SerializeField, Tooltip("Types of Damage : Execution, Dot, ...")]
-        protected EHitCategory m_HitCategory = EHitCategory.Direct;
-
-        [SerializeField]
-        protected SSpellPropertyScaling m_SpellPropertyScaling = new SSpellPropertyScaling(ESpellProperty.Damage, 0.1f, EScalingType.Exponential, ERoundingType.Round);
-
-        public EDamageCategory          DamageCategory          => m_DamageCategory;
-        public EHitCategory             HitCategory             => m_HitCategory;
-        public SSpellPropertyScaling    SpellPropertyScaling    => m_SpellPropertyScaling;
-        public EScalingDirection        ScalingDirection        => SpellPropertyScaling.GetScalingDirection();
-
-
-        #region Init
-
-        public SDamage(float baseValue = 0, EDamageCategory damageCategory = EDamageCategory.Magical, EHitCategory hitCategory = EHitCategory.Direct, SSpellPropertyScaling spellPropertyScaling = default)
-        {
-            m_BaseValue             = baseValue;
-            m_DamageCategory        = damageCategory;
-            m_HitCategory           = hitCategory;
-            m_SpellPropertyScaling  = spellPropertyScaling;
-        }
-
-        #endregion
-
-
-        #region Accessors
-
-        public int Get(int level)
-        {
-            return (int)m_SpellPropertyScaling.Get(m_BaseValue, level);
-        }
-
-        public string PropertyName()
-        {
-            if (m_HitCategory == EHitCategory.Direct)
-                return $"{m_DamageCategory}Damage";
-
-            return $"{m_HitCategory}Damage";
-        }
-
-        public string GetPrettyName()
-        {
-            string name = $"{m_DamageCategory} Damage";
-            if (m_HitCategory != EHitCategory.Direct)
-                name += $" ({m_HitCategory})";
-            return name;
-        }
-
-        #endregion
-    }
-
     [CreateAssetMenu(fileName = "Spell", menuName = "Game/Spells/Default")]
     public class SpellData : CollectableData
     {
@@ -155,14 +95,6 @@ namespace Data
         public int EnergyGain = 10;
         [Tooltip("Request amount on energy to be able to cast this spell")]
         public int EnergyCost = 0;
-
-        // ====================================================================================================
-        // TODO : REMOVE
-        [SerializeField, Tooltip("Damage of the spell")]
-        public int m_Damage = 0;
-        [SerializeField, Tooltip("Execution damage of the spell (growing with missing life)")]
-        public int m_ExecutionDamage = 0;
-        // ====================================================================================================
 
         [SerializeField, Tooltip("All Damage applied by the effect")]
         protected List<SDamage> m_Damages;
@@ -234,6 +166,8 @@ namespace Data
         public bool IsCancellable = false;
         [Description("Can the animation be interrupted by the enemy ?")]
         public bool IsInterruptable = true;
+        [Description("Can the spell be casted through CC ?")]
+        public bool IgnoreCC = false;
         [Description("Time for the animation to take from start to begin (in seconds)")]
         public float AnimationTimer;
         [Description("Cooldown to be able to re-use that ability")]
@@ -271,9 +205,6 @@ namespace Data
         public virtual int MaxHit               => (int)GetScaledValue(ESpellProperty.MaxHit, m_MaxHit);
         public virtual int Charges              => (int)GetScaledValue(ESpellProperty.Charges, m_Charges);
         public virtual float Cooldown           => GetScaledValue(ESpellProperty.Cooldown, m_Cooldown);
-        public virtual int Damage               => (int)GetScaledValue(ESpellProperty.Damage, m_Damage);
-        public virtual int ExecutionDamage      => (int)GetScaledValue(ESpellProperty.ExecutionDamage, m_ExecutionDamage);
-
         public virtual List<SDamage> Damages    => m_Damages;
         public virtual int Heal                 => (int)GetScaledValue(ESpellProperty.Heal, m_Heal);
         public virtual int Shield               => (int)GetScaledValue(ESpellProperty.Shield, m_Shield);
@@ -347,14 +278,15 @@ namespace Data
             if (recalculateRotation)
                 RecalculateRotation(ref rotation);
 
+            // remove all CC if is UnstoppableCast
+            ApplyIgnoreCC(GameManager.Instance.GetPlayer(clientId));
+
             // instantiate the prefab of the spell
             Transform parent = FindParent(clientId);
-            GameObject spellGO = GameManager.Instance.IsOfflineMode
-                ? PoolManager.Pool(GetSpellPrefabOffline(), position, rotation, parent, checkSpawnLogic: true)
-                : PoolManager.Pool(GetSpellPrefab(), clientId, position, rotation, parent).gameObject;
+            GameObject spellGO = PoolManager.Pool(GetSpellPrefab(), clientId, position, rotation, parent);
 
             // initialize the spell
-            var spell = Finder.FindComponent<Spell>(spellGO.gameObject);
+            var spell = Finder.FindComponent<Spell>(spellGO);
             spell.Initialize(clientId, target, this);
 
             // backpropagate the spell intialization to the client (for the preview)
@@ -369,7 +301,7 @@ namespace Data
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="clientId"></param>
+        /// <param name="clientId"></param>q
         /// <param name="position"></param>
         /// <param name="rotation"></param>
         public void SpawnOnHitPrefab(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default)
@@ -409,6 +341,14 @@ namespace Data
 
             // call graphics event
             controller.SpellHandler.CallSpellEvent(spellData.Name, ESpellEvent.OnStartCast, level: m_Level, targetPosition: targetPos);
+        }
+
+        void ApplyIgnoreCC(Controller caster)
+        {
+            if (!IgnoreCC)
+                return;
+
+            caster.StateHandler.RemoveAllCC();
         }
 
         #endregion
@@ -536,7 +476,7 @@ namespace Data
                 return false;
 
             // is starting
-            if (checkStart && SpellRelocation.Lifetime.StartSpellPart == spellEvent)
+            if (checkStart && SpellRelocation.Lifetime.StartSpellPart != ESpellEvent.None && SpellRelocation.Lifetime.StartSpellPart == spellEvent)
                 return true;
 
             // spell has "End" event and current event is this event or higher
@@ -975,6 +915,9 @@ namespace Data
             infosDict.Add("Type", GetTypeInfo());
             infosDict.Add("Target", GetTargetTypeInfo());
 
+            if (IgnoreCC)
+                infosDict.Add("IgnoreCC", Cooldown);
+
             if (Cooldown > 0)
                 infosDict.Add("Cooldown", Cooldown);
             if (Charges > 1 || IsScalingProperty(ESpellProperty.Charges.ToString(), out EScalingDirection _))
@@ -986,11 +929,9 @@ namespace Data
 
             if (! Damages.IsNullOrEmpty())
                 infosDict.Add("Damages", Damages);
-            else if (Damage > 0)
-                infosDict.Add("Damage", Damage);
+            if (LifeSteal > 0)
+                infosDict.Add("LifeSteal", LifeSteal);
 
-            if (ExecutionDamage > 0)
-                infosDict.Add("ExecutionDamage", ExecutionDamage);
             if (Heal > 0)
                 infosDict.Add("Heal", Heal);
             if (Shield > 0)
@@ -1081,7 +1022,7 @@ namespace Data
             if (OnHit.Count > 0)
             {
                 if (OnHit.Count > 1)
-                    ErrorHandler.Warning("OnHit.Count > 1 : this case is not handled in infos description");
+                    ErrorHandler.Warning("OnHit.Count > 1 in "+Name+" : this case is not handled in infos description");
 
                 OnHit[0].AddAsSubSpellInfos(ref infosDict);
                 return;
@@ -1090,7 +1031,7 @@ namespace Data
             if (SpellEventEffects.Count > 0)
             {
                 if (SpellEventEffects.Count > 1)
-                    ErrorHandler.Warning("SpellEventEffects.Count > 1 : this case is not handled in infos description");
+                    ErrorHandler.Warning("SpellEventEffects.Count > 1 in "+Name+" : this case is not handled in infos description");
 
                 var effect = SpellEventEffects[0].EffectName;
                 if (SpellLoader.IsSpell(effect))
@@ -1108,7 +1049,7 @@ namespace Data
         public void AddAsSubSpellInfos(ref Dictionary<string, object> infosDict)
         {
             string[] keysToIgnore = new string[] { "Type", "Target", "Cooldown", "CastDuration", "Distance", "EnergyCost", "Delay", "Charges" };        // keys to ignore as overwrite  
-            string[] keysToAdd = new string[] { "Damage", "Heal", "Shield", "TickDamage", "TickHeal", "Effects" };                                // keys that are not overritten but additionned 
+            string[] keysToAdd = new string[] { "Damages", "PhysicalDamage", "MagicalDamage", "ExecutionDamage", "Heal", "Shield", "DotDamage", "DotHeal", "Effects" };                                // keys that are not overritten but additionned 
 
             var subSpellInfos = GetInfo();
             foreach (var info in subSpellInfos)
@@ -1121,15 +1062,27 @@ namespace Data
                 if (OverrideOnHitProperties.Any(property => property.ToString().Equals(info.Key, StringComparison.OrdinalIgnoreCase)))
                     continue;
 
-                if (keysToAdd.Contains(info.Key) && infosDict.ContainsKey(info.Key))
+                if (keysToAdd.Contains(info.Key))
                 {
                     if (info.Key == "Effects")
                     {
+                        if (!infosDict.ContainsKey(info.Key))
+                            infosDict[info.Key] = new List<SStateEffectData>();
                         ((List<SStateEffectData>)infosDict[info.Key]).AddRange((List<SStateEffectData>)info.Value);
                         continue;
                     }
 
-                    if (!float.TryParse(infosDict[info.Key].ToString(), out float baseValue))
+                    if (info.Key == "Damages")
+                    {
+                        if (!infosDict.ContainsKey(info.Key))
+                            infosDict[info.Key] = new List<SDamage>();
+                        ((List<SDamage>)infosDict[info.Key]).AddRange((List<SDamage>)info.Value);
+                        continue;
+                    }
+
+                    // DEFAULT BEHAVIOR : must be a float
+                    float baseValue = 0f;
+                    if (infosDict.ContainsKey(info.Key) && !float.TryParse(infosDict[info.Key].ToString(), out baseValue))
                     {
                         ErrorHandler.Error("Unable to parse " + info.Key + " with value " + infosDict[info.Key] + " in base spell of " + Spell);
                         continue;
@@ -1349,6 +1302,16 @@ namespace Data
             switch (overridingData.Property)
             {
                 // -----------------------------------------------------------------------
+                // Damage
+                case ESpellProperty.Damage:
+                    OverrideDamage(overridingData);
+                    return true;
+
+                case ESpellProperty.ExecutionDamage:
+                    OverrideDamage(overridingData);
+                    return true;
+
+                // -----------------------------------------------------------------------
                 // Target & Position
                 case ESpellProperty.SpellTarget:
                     if (! Enum.TryParse(overridingData.Value, out ESpellTarget spellTarget))
@@ -1421,6 +1384,46 @@ namespace Data
 
             return false;
         }
+
+        void OverrideDamage(SOverridingData overridingData)
+        {
+            if (Damages.IsNullOrEmpty())
+            {
+                ErrorHandler.Warning("Trying to override damage but spell " + Name + " has no damage");
+                return;
+            }
+
+            switch (overridingData.Property)
+            {
+                case ESpellProperty.Damage:
+                    for (int i = 0; i < Damages.Count(); i++)
+                    {
+                        Damages[i].AddBonusValue(overridingData.Get(Damages[i].BaseValue, m_Level));
+                    }
+                    break;
+
+                case ESpellProperty.ExecutionDamage:
+                    // no execution damage : add it
+                    if (! Damages.Any(t => t.HitCategory == EHitCategory.Execution))
+                    {
+                        Damages.Add(new SDamage(overridingData.Get(0, m_Level), EDamageCategory.Physical, EHitCategory.Execution));
+                        return;
+                    }
+
+                    // execution damage exists : override the base value
+                    for (int i = 0; i < Damages.Count(); i++)
+                    {
+                        if (Damages[i].HitCategory == EHitCategory.Execution)
+                            Damages[i].AddBonusValue(overridingData.Get(Damages[i].BaseValue, m_Level));
+                    }
+                    break;
+
+                default:
+                    ErrorHandler.Warning("Trying to override damage but property is : " + overridingData.Property);
+                    return;
+            }
+        }
+
         #endregion
 
 
@@ -1443,6 +1446,5 @@ namespace Data
         }
 
         #endregion
-
     }
 }

@@ -20,10 +20,11 @@ namespace Tools.Animations
 
         // ========================================================================================================
         // Internal Data
-        protected bool      m_IsOver    = false;
-        protected string    m_Id        = "";
-        protected float     m_Timer     = 0f;
-        protected Coroutine m_Coroutine = null;
+        protected bool      m_IsOver        = false;
+        protected bool      m_EndWhenOver   = true;
+        protected string    m_Id            = "";
+        protected float     m_Timer         = 0f;
+        protected Coroutine m_Coroutine     = null;
 
         // ========================================================================================================
         // Dependent Properties
@@ -100,7 +101,9 @@ namespace Tools.Animations
             m_IsOver = true;
             OnAnimationEnded?.Invoke();
             Deactivate();
-            Destroy(this);
+
+            if (m_EndWhenOver)
+                Destroy(this);
         }
 
         protected virtual void OnDestroy()
@@ -117,6 +120,7 @@ namespace Tools.Animations
 
         protected virtual IEnumerator Play()
         {
+            m_IsOver = false;
             m_Timer = 0;
 
             while (m_IsInfinit || m_Timer <= m_Duration)

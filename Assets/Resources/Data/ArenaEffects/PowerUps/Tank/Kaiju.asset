@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 
   m_MinorPower:
     Description: 'Gain +[Hp] hp.\n[TriggerEffect.0]'
@@ -40,9 +39,11 @@ MonoBehaviour:
       ConsumeLifeOnActivation: 0
     m_BonusStats:
     - StateEffectProperty: 111
-      BaseValue: 100
+      BaseValue: 350
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     BonusPowerOrb: 0
@@ -71,9 +72,11 @@ MonoBehaviour:
       ConsumeLifeOnActivation: 0
     m_BonusStats:
     - StateEffectProperty: 111
-      BaseValue: 550
+      BaseValue: 850
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     BonusPowerOrb: 0
@@ -102,9 +105,11 @@ MonoBehaviour:
       ConsumeLifeOnActivation: 0
     m_BonusStats:
     - StateEffectProperty: 111
-      BaseValue: 1200
+      BaseValue: 2000
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     BonusPowerOrb: 0

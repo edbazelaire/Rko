@@ -20,6 +20,7 @@ namespace Menu.PopUps
         // GameObjects & Components
         protected GameObject        m_RewardsSection;
         protected RewardsDisplayer  m_RewardsDisplayer;
+        protected TMP_Text          m_RewardTitle;
 
         // Data
         SRewardsData m_RewardsData;
@@ -35,7 +36,7 @@ namespace Menu.PopUps
 
             m_RewardsSection    = Finder.Find(gameObject, "RewardsSection");
             m_RewardsDisplayer  = Finder.FindComponent<RewardsDisplayer>(m_RewardsSection);
-
+            m_RewardTitle       = Finder.FindComponent<TMP_Text>(gameObject, "RewardTitle");
         }
 
         public virtual void Initialize(string message, SRewardsData rewardsData, float duration = 3f)
@@ -49,8 +50,8 @@ namespace Menu.PopUps
         {
             base.OnPrefabLoaded();
 
-            //CoroutineManager.DelayMethod(() => m_MessageText.text = m_Message);
             m_RewardsDisplayer.Initialize(m_RewardsData);
+            m_RewardTitle.text = m_RewardsData.Rewards[0].GetPrettyName();
         }
 
         protected override void OnInitializationCompleted()

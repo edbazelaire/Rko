@@ -163,7 +163,7 @@ namespace Menu.PopUps
 
         protected void RefreshMasteryDisplay()
         {
-            if (m_InfoOnly || !CharacterLoader.IsCharacter(m_CharacterData.Character.ToString()))
+            if (m_InfoOnly || !m_IsUnlocked || !CharacterLoader.IsCharacter(m_CharacterData.Character.ToString()))
             {
                 DeactivateMastery();
                 return;

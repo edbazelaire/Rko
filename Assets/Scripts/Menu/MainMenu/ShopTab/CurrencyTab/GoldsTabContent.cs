@@ -14,6 +14,7 @@ namespace Menu.MainMenu
             base.Initialize(tabButton, activationSoundFX);
 
             m_Scroller.Initialize(new List<SShopData>[] { 
+                ShopManagementData.KeysShopData, 
                 ShopManagementData.GoldsShopData, 
                 ShopManagementData.XpShopData,
                 ShopManagementData.GemsShopData.GetRange(0, 1)

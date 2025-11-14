@@ -4,10 +4,7 @@ using Game.UI;
 using Menu.Common.Buttons;
 using Save;
 using Tools;
-using Unity.Services.Lobbies.Models;
-using UnityEditor.PackageManager;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Menu.PopUps.Components.ProfilePopUp
 {

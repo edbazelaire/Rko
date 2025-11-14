@@ -25,7 +25,9 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
   m_EndWithShield: 0
   m_EndAt0Stacks: 0
   m_RefreshShield: 1
@@ -33,11 +35,12 @@ MonoBehaviour:
   m_Delay: 0
   m_Duration: 0
   m_StartingStacks: 0
-  m_MaxStacks: 99999
+  m_MaxStacks: -1
   m_StackDecay: 0
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats: []
   m_StatConversions: []
   m_SubStateEffects: []

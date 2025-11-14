@@ -13,14 +13,11 @@ MonoBehaviour:
   m_Name: _VenomSpike
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: A venomous spike erupts from the ground, inflicting {0} damage,
-    4 stacks of [Infection] and applying Airborne for 2 second.
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
+  m_Description: inflicting [Damage] damage, 4 stacks of [Infected] and applying
+    [Airborne] for 1 second.
   m_SpellElements: 
   Linked: 1
-  Graphics: {fileID: 0}
+  Graphics: {fileID: 2780083512170360810, guid: dc9d78f2f8a8c624c997c9a21f0aec31, type: 3}
   SpellEventActions:
   - Prefab: {fileID: 2780083512170360810, guid: 99682c47f1e2d6a4d8f8b5188780ecbf, type: 3}
     MaterialEffect: {fileID: 0}
@@ -111,15 +108,13 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 15
   EnergyCost: 0
-  m_Damage: 100
-  m_ExecutionDamage: 0
   m_Damages:
-  - m_BaseValue: 100
-    m_DamageCategory: 2
+  - m_BaseValue: 80
+    m_DamageCategory: 1
     m_HitCategory: 1
     m_SpellPropertyScaling:
       Property: 2
-      Value: 0.15
+      Value: 0.12
       ScalingType: 0
       RoundingType: 0
       ScalingTresholds: []
@@ -179,8 +174,8 @@ MonoBehaviour:
     BonusStacksPerLevel: 0
     OverridingProperties:
     - StateEffectProperty: 1
-      Value: 2
-  - StateEffect: 24
+      Value: 1
+  - StateEffect: 17
     Stacks: 4
     BonusStacksPerLevel: 0
     OverridingProperties: []
@@ -190,6 +185,7 @@ MonoBehaviour:
   Animation: 6
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0
   m_Cooldown: 0
   m_SpellSpawn: 1

@@ -14,11 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 
   m_MinorPower:
     Description: 'Gain +[Hp] hp.\n[TriggerEffect.0] '
-    m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: _MiTitanicStrength
@@ -40,16 +38,17 @@ MonoBehaviour:
       ConsumeLifeOnActivation: 0
     m_BonusStats:
     - StateEffectProperty: 111
-      BaseValue: 150
+      BaseValue: 250
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     BonusPowerOrb: 0
     BonusRewardsRarety: 0
   m_MajorPower:
     Description: 'Gain +[Hp] hp.\n[TriggerEffect.0] '
-    m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: _MaTitanicStrength
@@ -71,16 +70,17 @@ MonoBehaviour:
       ConsumeLifeOnActivation: 0
     m_BonusStats:
     - StateEffectProperty: 111
-      BaseValue: 650
+      BaseValue: 450
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     BonusPowerOrb: 0
     BonusRewardsRarety: 0
   m_PrimalPower:
     Description: 'Gain +[Hp] hp.\n[TriggerEffect.0] '
-    m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: _PrTitanicStrength
@@ -102,9 +102,11 @@ MonoBehaviour:
       ConsumeLifeOnActivation: 0
     m_BonusStats:
     - StateEffectProperty: 111
-      BaseValue: 1000
+      BaseValue: 650
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     BonusPowerOrb: 0

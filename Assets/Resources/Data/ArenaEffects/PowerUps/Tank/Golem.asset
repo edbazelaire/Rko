@@ -14,80 +14,78 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 
   m_MinorPower:
-    Description: Gain +[ResistanceFix] resistance and +[ResistanceTick] resistance
-      to Dots
+    Description: Gain +[ResistanceFix] Resistance Fix.\nGain +[Resistance] Physical
+      and Magical Resistance.
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
     - StateEffectProperty: 5
-      BaseValue: 15
+      BaseValue: 10
       BonusValue: 0
-      ScalingFactor: 0.1
+      ScalingFactor: 0.05
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
-    - StateEffectProperty: 26
+    - StateEffectProperty: 30
       BaseValue: 15
       BonusValue: 0
-      ScalingFactor: 0.1
+      ScalingFactor: 0.05
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     BonusPowerOrb: 0
     BonusRewardsRarety: 0
   m_MajorPower:
-    Description: Gain +[ResistanceFix] resistance and +[ResistanceTick] resistance
-      to Dots
+    Description: Gain +[ResistanceFix] Resistance Fix.\nGain +[Resistance] Physical
+      and Magical Resistance.
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
     - StateEffectProperty: 5
-      BaseValue: 30
+      BaseValue: 20
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
-    - StateEffectProperty: 26
+    - StateEffectProperty: 30
       BaseValue: 30
       BonusValue: 0
-      ScalingFactor: 0.1
+      ScalingFactor: 0.12
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     BonusPowerOrb: 0
     BonusRewardsRarety: 0
   m_PrimalPower:
-    Description: Gain +[ResistanceFix] resistance +[ResistanceTick]  resistance to
-      Dots.\nAlso gain [ResistancePerc] damage reduction and [ResistancePerc] damage
-      reduction to Dots
+    Description: Gain +[ResistanceFix] Resistance Fix.\nGain +[Resistance] Physical
+      and Magical Resistance.
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
     - StateEffectProperty: 5
+      BaseValue: 35
+      BonusValue: 0
+      ScalingFactor: 0.05
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+    - StateEffectProperty: 30
       BaseValue: 50
       BonusValue: 0
-      ScalingFactor: 0.1
-      SpecialConditions: []
-      StateEffectStackFactors: []
-    - StateEffectProperty: 26
-      BaseValue: 50
-      BonusValue: 0
-      ScalingFactor: 0.1
-      SpecialConditions: []
-      StateEffectStackFactors: []
-    - StateEffectProperty: 6
-      BaseValue: 0.25
-      BonusValue: 0
-      ScalingFactor: 0
-      SpecialConditions: []
-      StateEffectStackFactors: []
-    - StateEffectProperty: 27
-      BaseValue: 0.25
-      BonusValue: 0
-      ScalingFactor: 0
+      ScalingFactor: 0.05
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     BonusPowerOrb: 0

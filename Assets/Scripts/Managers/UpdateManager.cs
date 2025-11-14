@@ -97,6 +97,9 @@ namespace Assets.Scripts.Managers
             if (CurrentVersion.CompareTo(new Version("0.3.8")) == -1)
                 test = UpdateVersion_0_3_8();
 
+            if (CurrentVersion.CompareTo(new Version("0.4.0")) == -1)
+                test = UpdateVersion_0_4_0();
+
             // if does not trigger any version until now, update to current version
             if (CurrentVersion.CompareTo(GameVersion) == -1)
                 SetVersion(Application.version);
@@ -558,7 +561,162 @@ namespace Assets.Scripts.Managers
             return SetVersion("0.3.8");
         }
 
-        
+
+        #endregion
+
+
+        #region v0.4.0
+
+        static bool UpdateVersion_0_4_0()
+        {
+            // check if the version should be updated
+            if (GameVersion.CompareTo(new Version("0.4.0")) == -1)
+                return true;
+
+            // transfer old achievements to new ones
+            UpdateAchievements();
+            // update Runes values
+            RefundRunes();
+            // Give Keys to Alpha Players
+            GiveKeys();
+
+            return SetVersion("0.4.0");
+        }
+
+        static void UpdateAchievements()
+        {
+            // Update Played Games
+            IAchievement achievement = AchievementLoader.Get("PlayedGames");
+            achievement.UpdateCount(StatCloudData.GetAnalyticsCount(
+                EAnalytics.GameEnded, 
+                new List<SAnalyticsFilter>() {}
+            ));
+
+            // Update Win RANKED Games
+            achievement = AchievementLoader.Get("WinArenaGames");
+            achievement.UpdateCount(StatCloudData.GetAnalyticsCount(
+                EAnalytics.GameEnded,
+                new List<SAnalyticsFilter>() {
+                    new SAnalyticsFilter(EAnalyticsParam.Win, "True", EComparator.Equal),
+                    new SAnalyticsFilter(EAnalyticsParam.GameMode, "Arena", EComparator.Equal),
+                }
+            ));
+
+            // Update Win RANKED Games
+            achievement = AchievementLoader.Get("WinRankedGames");
+            achievement.UpdateCount(StatCloudData.GetAnalyticsCount(
+                EAnalytics.GameEnded,
+                new List<SAnalyticsFilter>() {
+                    new SAnalyticsFilter(EAnalyticsParam.Win, "True", EComparator.Equal),
+                    new SAnalyticsFilter(EAnalyticsParam.GameMode, "Ranked", EComparator.Equal),
+                }
+            ));
+
+            // Update Win RANKED Games
+            achievement = AchievementLoader.Get("Damage");
+            achievement.UpdateCount(StatCloudData.GetAnalyticsCount(
+                EAnalytics.InGame,
+                new List<SAnalyticsFilter>() {
+                    new SAnalyticsFilter(EAnalyticsParam.HitType, "Damage", EComparator.Equal),
+                }
+            ));
+
+            // Update Win RANKED Games
+            achievement = AchievementLoader.Get("Heal");
+            achievement.UpdateCount(StatCloudData.GetAnalyticsCount(
+                EAnalytics.InGame,
+                new List<SAnalyticsFilter>() {
+                new SAnalyticsFilter(EAnalyticsParam.HitType, "Heal", EComparator.Equal),
+                }
+            ));
+
+            // Update Win RANKED Games
+            achievement = AchievementLoader.Get("GoldCollected");
+            achievement.UpdateCount(StatCloudData.GetAnalyticsCount(
+                EAnalytics.CurrencyChanged,
+                new List<SAnalyticsFilter>() { 
+                    new SAnalyticsFilter(EAnalyticsParam.Currency, "Gold", EComparator.Equal)
+                }
+            ));
+        }
+
+        static void RefundRunes()
+        {
+            int[] OldCosts = 
+            {
+                0, // index 0 unused
+                1, 2, 4, 8, 12, 20, 35, 50, 75, 100, 150, 200, 250, 350
+            };
+
+            int[] NewCosts =
+            {
+                0, // index 0 unused
+                1, 2, 3, 4, 6, 8, 10, 12, 16, 20, 25, 30, 40, 50
+            };
+
+            // Returns total spent to go from (fromLevel+1) to targetLevel
+            static int SumRange(int[] costs, int fromLevel, int targetLevel)
+            {
+                int sum = 0;
+                for (int lvl = fromLevel + 1; lvl <= targetLevel; lvl++)
+                    sum += costs[lvl];
+                return sum;
+            }
+
+            var rewards = new SRewardsData();
+            rewards.SetDefaultData();
+
+            foreach (ERune rune in Enum.GetValues(typeof(ERune)))
+            {
+                var collectableCloudData = InventoryCloudData.Instance.GetCollectable(rune);
+                int level = collectableCloudData.Level;
+                int startLevel = CollectablesManagementData.GetStartLevel(rune);
+
+                if (level <= startLevel)
+                    continue;
+
+                // Total réellement payé selon l'ancienne table
+                int oldSpent = SumRange(OldCosts, 1, level - startLevel);
+
+                // Total qui aurait dû être payé selon la nouvelle table
+                int newSpent = SumRange(NewCosts, 1, level - startLevel);
+
+                int refund = oldSpent - newSpent;
+                if (refund <= 0)
+                    continue;
+
+                rewards.Collectables.Add(new SCollectableReward(ECollectableType.Rune, collectableCloudData.CollectableName, refund));
+                InventoryCloudData.Instance.SetCollectable(collectableCloudData, save: false);
+            }
+
+            // save at the end of the changes
+            InventoryCloudData.Instance.SaveValue(InventoryCloudData.KEY_RUNES);
+
+            if (rewards.Count == 0)
+                return;
+
+            NotificationCloudData.AddMessage(new SMessage()
+            {
+                Title = "Runes UPDATE",
+                Content = "The number of Runes required for each level up was WAY too high.\nValues were lowered - and all spent Runes were refunded.",
+                RewardsData = rewards
+            });
+        }
+
+        static void GiveKeys()
+        {
+            var rewards = new SRewardsData();
+            rewards.SetDefaultData();
+            rewards.Currencies.Add(new SCurrencyReward(ECurrency.Keys, 25));
+
+            NotificationCloudData.AddMessage(new SMessage()
+            {
+                Title = "Arena Keys",
+                Content = "Arena now requires Keys to be played. They can either be bought in the shop or collected in the Daily Rewards\nHere is a bunch of keys to avoid this new change from slowing down your progression.",
+                RewardsData = rewards
+            });
+        }
+
         #endregion
 
 

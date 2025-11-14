@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
   m_Name: ElderLunassian
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
+  m_SpellElements: 
   m_AutoAttack: GlacialOrb
   m_SpecialAbility: IceField
   m_Ultimate: FerociousBite
@@ -23,30 +23,64 @@ MonoBehaviour:
   BaseHealth: 2000
   MaxEnergy: 100
   BaseEnergy: 10
+  PassiveEnergyGain: 1
   IsStructure: 0
-  HealthScaleFactor: 0.12
+  HealthScaleFactor: 0.15
   CharacterStatScaling:
   - StateEffectProperty: 5
-    BaseValue: 30
+    BaseValue: 45
     BonusValue: 0
     ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
     StateEffectStackFactors: []
-  - StateEffectProperty: 11
-    BaseValue: 20
+  - StateEffectProperty: 30
+    BaseValue: 50
     BonusValue: 0
     ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 16
+    BaseValue: 0.1
+    BonusValue: 0
+    ScalingFactor: 0.05
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
     StateEffectStackFactors: []
   - StateEffectProperty: 3
     BaseValue: 0.15
     BonusValue: 0
-    ScalingFactor: 0.1
+    ScalingFactor: 0.05
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 55
+    BonusValue: 0
+    ScalingFactor: 0.12
+    DamageCategories: 01000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 35
+    BonusValue: 0
+    ScalingFactor: 0.12
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers:
   - Description: 
-    m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: Unyelding
+      OverridingData: []
       Level: 0
       Target: 4
       SpellActivationEvent: 1
@@ -55,8 +89,11 @@ MonoBehaviour:
       DeactivationTreshold: 0
       StateEffectEvent: 0
       StateEffectName: 
+      NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: -1
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []

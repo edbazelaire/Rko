@@ -25,6 +25,7 @@ namespace Save.Data.Progression.Structs
 
         public int              Level;
         public int              Stage;
+        public ECharacter       SelectedCharacter;
         public SBuildData       BuildData;
         public int              MaxLifes;
         public int              Losses;
@@ -38,7 +39,7 @@ namespace Save.Data.Progression.Structs
 
         public Dictionary<string, string> MetaData;
 
-        private bool            m_IsOver;
+        bool                    m_IsOver;
 
         public readonly EArenaDifficulty GetArenaDifficulty()   => SArenaDifficulty.Difficulty;
         public readonly int GetExtraDifficulty()                => SArenaDifficulty.Level;
@@ -46,6 +47,8 @@ namespace Save.Data.Progression.Structs
         public readonly bool InProgress()                       => ArenaType != EArenaType.None;
         public readonly int GetMaxLosses()                      => ArenaMods.Contains(EArenaMod.NoDeath) ? 1 : ArenaData.MAX_LOSSES;
         public readonly bool IsOver()                           => m_IsOver || Losses >= GetMaxLosses() || Level > AssetLoader.LoadArenaData(ArenaType, SArenaDifficulty).MaxLevel;
+        public readonly ECharacter GetCharacter()               => BuildData.Character.IsNullOrEmpty() ? SelectedCharacter : Enum.Parse<ECharacter>(BuildData.Character);
+        public readonly int GetCharacterLevel()                 => (SelectedCharacter != ECharacter.None && BuildData.Character.IsNullOrEmpty()) ? InventoryCloudData.Instance.GetCollectable(SelectedCharacter).Level : ProfileCloudData.AccountLevel;
         public readonly bool HasBuildData()                     => ! BuildData.Character.IsNullOrEmpty();
         public bool IsBoss()
         {
@@ -108,7 +111,8 @@ namespace Save.Data.Progression.Structs
             EArenaType arenaType, 
             SArenaDifficulty arenaDifficulty    = default, 
             int level                           = 0, 
-            int stage                           = 0, 
+            int stage                           = 0,
+            ECharacter character                = ECharacter.None,
             SBuildData buildData                = default, 
             List<EArenaMod> arenaMods           = null, 
             int maxLifes                        = 3, 
@@ -133,6 +137,7 @@ namespace Save.Data.Progression.Structs
             SArenaDifficulty        = arenaDifficulty;
             Level                   = level;
             Stage                   = stage;
+            SelectedCharacter       = character;
             BuildData               = buildData;
             MaxLifes                = maxLifes;
             Losses                  = losses;
@@ -287,6 +292,11 @@ namespace Save.Data.Progression.Structs
             MetaData = new();
         }
 
+        public bool HasMetaData(string key)
+        {
+            return MetaData.ContainsKey(key);
+        }
+
         public void SetMetaData(string key, string value)
         {
             if (MetaData == null)
@@ -294,7 +304,7 @@ namespace Save.Data.Progression.Structs
 
             CheckMetadata(key, ref value);
 
-            if (! MetaData.ContainsKey(key))
+            if (! HasMetaData(key))
                 MetaData.Add(key, value);
             else
                 MetaData[key] = value;
@@ -302,7 +312,7 @@ namespace Save.Data.Progression.Structs
 
         public T GetMetaData<T>(string key)
         {
-            if (MetaData == null || !MetaData.ContainsKey(key))
+            if (MetaData == null || ! HasMetaData(key))
                 return default;
 
             string raw = MetaData[key];

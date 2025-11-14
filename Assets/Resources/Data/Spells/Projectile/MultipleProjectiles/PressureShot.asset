@@ -13,11 +13,8 @@ MonoBehaviour:
   m_Name: PressureShot
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: "Using your character\u2019s AutoAttack as a projectile, fire {0}
+  m_Description: "Using your character\u2019s AutoAttack as a projectile, fire [NProjectiles]
     shots in diagonal angle. Each shot is dealing 80% of projectile initial damage."
-  m_DescriptionVariables:
-  - Name: NProjectiles
-    WithIcon: 1
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
@@ -47,12 +44,11 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
+  m_MaxHit: 1
   m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 0
-  m_ExecutionDamage: 0
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -75,14 +71,10 @@ MonoBehaviour:
     ScalingType: 1
     RoundingType: 2
     ScalingTresholds:
-    - Level: 6
-      Value: 2
     - Level: 9
+      Value: 2
+    - Level: 15
       Value: 3
-    - Level: 12
-      Value: 4
-    - Level: 14
-      Value: 5
   OverridesSpawnPosition: 0
   m_SpawnPosition:
     SpawnTarget: 0
@@ -106,6 +98,8 @@ MonoBehaviour:
       BaseValue: 1
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
   IsChanneling: 0
@@ -121,7 +115,8 @@ MonoBehaviour:
   Animation: 2
   IsCancellable: 0
   IsInterruptable: 1
-  AnimationTimer: 0.3
+  IgnoreCC: 0
+  AnimationTimer: 0.5
   m_Cooldown: 23.5
   SubSpellData: {fileID: 0}
   m_UseAutoAttack: 1

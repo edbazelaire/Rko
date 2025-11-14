@@ -14,11 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 
   m_AutoAttack: FrostCursedOrb
   m_SpecialAbility: DarkEnergyField
-  m_Ultimate: MoonSilence
+  m_Ultimate: NightRift
   Size: 1.9
   BaseSpeed: 0.5
   BaseHealth: 2200
@@ -28,10 +27,40 @@ MonoBehaviour:
   IsStructure: 0
   HealthScaleFactor: 0.12
   CharacterStatScaling:
-  - StateEffectProperty: 11
-    BaseValue: 30
+  - StateEffectProperty: 30
+    BaseValue: 40
     BonusValue: 0
     ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 5
+    BaseValue: 20
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 35
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors:
+    - Target: 4
+      StateEffect: 13
+      BaseValue: 1
+      LevelFactor: 0.5
+  - StateEffectProperty: 22
+    BaseValue: 20
+    BonusValue: 0
+    ScalingFactor: 0.15
+    DamageCategories: 01000000
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors:
     - Target: 4
@@ -42,18 +71,8 @@ MonoBehaviour:
     BaseValue: 0.3
     BonusValue: 0
     ScalingFactor: 0.05
-    SpecialConditions: []
-    StateEffectStackFactors: []
-  - StateEffectProperty: 5
-    BaseValue: 20
-    BonusValue: 0
-    ScalingFactor: 0.1
-    SpecialConditions: []
-    StateEffectStackFactors: []
-  - StateEffectProperty: 26
-    BaseValue: 25
-    BonusValue: 0
-    ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers: []

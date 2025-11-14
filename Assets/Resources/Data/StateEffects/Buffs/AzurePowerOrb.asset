@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bec91e441d966e438d35c0133adae84, type: 3}
   m_Name: AzurePowerOrb
   m_EditorClassIdentifier: 
-  m_Description: 
+  m_Description: "\t- Heal [Heal] hp.\n\t- Increase <i>Damage</i> by [BonusDamagePerc]\n\t-
+    Increase {{AttackSpeed}} by [AttackSpeed].\n\t- Reduces {{Cooldown}} by [CooldownReductionPerc]"
   m_DescriptionVariables: 
   m_NStacksInDescription: 1
   m_StateEffectType: 0
@@ -25,10 +26,13 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
   m_EndWithShield: 0
   m_EndAt0Stacks: 1
   m_RefreshShield: 1
+  m_RefreshDuration: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: -1
@@ -38,21 +42,35 @@ MonoBehaviour:
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats:
+  - StateEffectProperty: 104
+    BaseValue: 200
+    LevelScalingFactor: 0.12
+    StackScalingFactor: 0
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
   - StateEffectProperty: 8
     BaseValue: 0.05
     LevelScalingFactor: 0
     StackScalingFactor: 1
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
   - StateEffectProperty: 20
     BaseValue: 0.05
     LevelScalingFactor: 0
     StackScalingFactor: 1
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
   - StateEffectProperty: 16
     BaseValue: 0.1
     LevelScalingFactor: 0
     StackScalingFactor: 1
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects: []

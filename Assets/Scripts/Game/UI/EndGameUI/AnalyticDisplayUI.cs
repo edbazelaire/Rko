@@ -43,7 +43,7 @@ namespace Game.UI.EndGameUI
 
             var color = PlayerSettings.GetHitTypeColor(hitType, EHitCategory.Direct);
 
-            m_Name.text = hitType.ToString();
+            m_Name.text = TextHandler.Split(hitType.ToString());
             m_Name.color = color;
             m_Value.color = color;
 
@@ -95,7 +95,7 @@ namespace Game.UI.EndGameUI
 
             int total = values.Sum(t => t.Item1);
 
-            m_Name.text = hitType.ToString();
+            m_Name.text = TextHandler.SplitCamelCase(hitType.ToString());
             m_Name.color = PlayerSettings.GetHitTypeColor(hitType, EHitCategory.Direct);
             m_Value.color = PlayerSettings.GetHitTypeColor(hitType, EHitCategory.Direct);
             m_Value.text = total.ToString();

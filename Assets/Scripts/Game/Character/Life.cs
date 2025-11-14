@@ -1,5 +1,6 @@
 using Assets.Scripts.Game;
 using Enums;
+using Game;
 using Game.StateEffects.Interfaces;
 using System;
 using Tools;
@@ -16,9 +17,9 @@ public class Life : NetworkBehaviour
     // ===================================================================================
     // EVENTS
     /// <summary> thrown when the character dies </summary>
-    public Action                               OnDeathEvent;
-    public Action<int, ulong>                   OnHealedEvent;
-    public Action<int, ulong, EHitCategory>     OnHittedEvent;
+    public Action                                               OnDeathEvent;
+    public Action<int, ulong>                                   OnHealedEvent;
+    public Action<int, ulong, EDamageCategory, EHitCategory>    OnHittedEvent;
 
     // ===================================================================================
     // NETWORK VARIABLES
@@ -75,9 +76,9 @@ public class Life : NetworkBehaviour
 
     #region Public Manipulator
 
-    public bool Kill(bool ignoreDeathEffects = false)
+    public bool Kill(bool ignoreDeathEffects = false, bool force = false)
     {
-        if (m_IsOver)
+        if (m_IsOver && !force)
             return true;
 
         if (!ignoreDeathEffects && m_Controller.TriggerEffectHandler.OnDeathEffect())
@@ -132,7 +133,9 @@ public class Life : NetworkBehaviour
 
         // calculate damages after resistance
         int baseDamage = damage;
+
         damage = ignoreRes ? damage : m_Controller.StateHandler.ApplyResistance(damage, damageCategory, hitCategory);
+
         if (baseDamage > damage)
             GameAnalyticsManager.Instance.AddSpecialValue(m_Controller.PlayerId, ESpecialValue.DamageReduction, baseDamage - damage);
 
@@ -141,9 +144,10 @@ public class Life : NetworkBehaviour
             return 0;
 
         // -- call event that the player received damage
-        OnHittedEvent?.Invoke(damage, casterId, hitCategory);
+        OnHittedEvent?.Invoke(damage, casterId, damageCategory, hitCategory);
         // -- call analytics & damage display
-        GameAnalyticsManager.Instance.OnSpellHit(casterId, m_Controller.PlayerId, source, damage, EHitType.Damage, hitCategory);
+        if (casterId != GameManager.DEBUG_ID)
+            GameAnalyticsManager.Instance.OnSpellHit(GameManager.Instance.GetPlayer(casterId).AnalyticsId, m_Controller.PlayerId, source, damage, damageCategory == EDamageCategory.Physical ? EHitType.PhysicalDamage : EHitType.MagicalDamage, hitCategory);
 
         // calculate damages after shield
         var damages = HitShield(damage);
@@ -202,7 +206,7 @@ public class Life : NetworkBehaviour
             return 0;
 
         m_Hp.Value += heal;
-        GameAnalyticsManager.Instance.OnSpellHit(casterId, m_Controller.PlayerId, source, heal, EHitType.Heal, spellCategory);
+        GameAnalyticsManager.Instance.OnSpellHit(GameManager.Instance.GetPlayer(casterId).AnalyticsId, m_Controller.PlayerId, source, heal, EHitType.Heal, spellCategory);
         OnHealedEvent?.Invoke(heal, casterId);
 
         return heal;
@@ -214,7 +218,7 @@ public class Life : NetworkBehaviour
             return 0;
 
         m_Shield += shield;
-        GameAnalyticsManager.Instance.OnSpellHit(casterId, m_Controller.PlayerId, source, shield, EHitType.Shield, spellCategory);
+        GameAnalyticsManager.Instance.OnSpellHit(GameManager.Instance.GetPlayer(casterId).AnalyticsId, m_Controller.PlayerId, source, shield, EHitType.Shield, spellCategory);
 
         RecalculateShield();
 

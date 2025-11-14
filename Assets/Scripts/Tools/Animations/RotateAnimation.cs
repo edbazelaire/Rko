@@ -38,12 +38,11 @@ namespace Tools.Animations
         protected override IEnumerator AnimationFrame()
         {
             // interpolate position
-            transform.rotation = Quaternion.Euler(Vector3.Lerp(m_BaseRotation, m_Rotation, GetProgress()));
+            transform.rotation = Quaternion.Euler(Vector3.LerpUnclamped(m_BaseRotation, m_Rotation, GetProgress()));
 
             m_Timer += Time.deltaTime;
             yield return null;
         }
-
 
         #endregion
     }

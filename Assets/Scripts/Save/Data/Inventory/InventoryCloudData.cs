@@ -185,6 +185,7 @@ namespace Save
         // -- Keys
         public const string KEY_GOLD        = "Gold";
         public const string KEY_GEMS        = "Gems";
+        public const string KEY_KEYS        = "Keys";
         public const string KEY_TOTAL_XP    = "TotalXp";
         public const string KEY_XP          = "Xp";
         public const string KEY_SPELLS      = "Spells";
@@ -217,6 +218,7 @@ namespace Save
             { KEY_GOLD,         0                                   },
             { KEY_GEMS,         0                                   },
             { KEY_XP,           0                                   },
+            { KEY_KEYS,         0                                   },
             { KEY_TOTAL_XP,     0                                   },
             { KEY_CHARACTERS,   new List<SCollectableCloudData>()   },
             { KEY_SPELLS,       new List<SCollectableCloudData>()   },
@@ -230,8 +232,6 @@ namespace Save
 
         public override void SetData(string key, object value, bool save = true)
         {
-            object previousValue = m_Data[key];
-
             base.SetData(key, value, save);
 
             if (Enum.TryParse(key, out ECurrency currency))
@@ -383,6 +383,16 @@ namespace Save
             SetData(currency.ToString(), GetCurrency(currency) + value);
         }
 
+        public void SpendCurrency(ECurrency currency, int value)
+        {
+            if (value <= 0)
+            {
+                ErrorHandler.Warning("Trying to spend currency ("+currency+") with value (" + value + ") <= 0");
+            }
+
+            AddCurrency(currency, -value);
+        }
+
         #endregion
 
 
@@ -430,6 +440,11 @@ namespace Save
                 case KEY_GEMS:
                     m_Data[KEY_GEMS] = 0;
                     CurrencyChangedEvent?.Invoke(ECurrency.Gems, 0);
+                    break;
+
+                case KEY_KEYS:
+                    m_Data[KEY_KEYS] = 0;
+                    CurrencyChangedEvent?.Invoke(ECurrency.Keys, 0);
                     break;
 
                 case KEY_XP:
@@ -540,6 +555,12 @@ namespace Save
             {
                 ErrorHandler.Error("Gems (" + (int)m_Data[KEY_GEMS] + ") < 0 : reseting back to 0");
                 Reset(KEY_GEMS);
+            }
+
+            if ((int)m_Data[KEY_KEYS] < 0)
+            {
+                ErrorHandler.Error("Keys (" + (int)m_Data[KEY_KEYS] + ") < 0 : reseting back to 0");
+                Reset(KEY_KEYS);
             }
 
             if ((int)m_Data[KEY_XP] < 0)

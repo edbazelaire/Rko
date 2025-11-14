@@ -12,14 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7d51f633e46b344920f012b0e1eca8, type: 3}
   m_Name: FrostArena_Normal
   m_EditorClassIdentifier: 
-  m_NLifes: 1
+  m_RoundDuration: 0
   m_ArenaLevelData:
   - RewardsData:
       Currencies:
       - Currency: 0
-        Qty: 1000
-      - Currency: 3
-        Qty: 80
+        Qty: 250
       Chests: 
       Collectables:
       - CollectableType: 3
@@ -44,21 +42,28 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_PowerUps:
     - ShieldRune - Minor
     StageData:
     - m_Boss: 1001
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 1500000004000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1001
+      m_Skin: 0
       m_BonusLevel: 1
+      m_ExtraLifes: 0
       m_Spells: 1500000004000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 0
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 
       m_TriggerEffects:
       - SpellDataName: Melting
@@ -77,6 +82,7 @@ MonoBehaviour:
         NActivations: 0
         Cooldown: 0
         RepeatWhenCooldownOver: 0
+        ConsumeLifeOnActivation: 0
       m_BonusStats: []
   - RewardsData:
       Currencies:
@@ -113,26 +119,35 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_PowerUps:
     - ShieldRune - Minor
     StageData:
     - m_Boss: 1002
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 1a00000004000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1002
+      m_Skin: 0
       m_BonusLevel: 1
+      m_ExtraLifes: 0
       m_Spells: 1a00000004000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1002
+      m_Skin: 0
       m_BonusLevel: 2
+      m_ExtraLifes: 0
       m_Spells: 1a00000004000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 
       m_TriggerEffects: []
       m_BonusStats: []

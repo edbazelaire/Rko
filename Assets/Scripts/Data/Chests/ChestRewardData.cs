@@ -335,7 +335,6 @@ namespace Data
             var rewards = new Dictionary<ERarety, SReward>();
             for (int i = 0; i < qty; i++)
             {
-                var randValue = UnityEngine.Random.Range(0f, 100f);
                 bool success = false;
                 do
                 {
@@ -367,7 +366,7 @@ namespace Data
                             runeData = SpellLoader.GetRandomRune(
                                 raretyFilter: new List<ERarety>() { rarety },
                                 elementsFilter: SpellElements.ToList(),
-                                unlocked: false                         // allow not unlocked only
+                                unlocked: null                          // allow not unlocked only
                             );
                         }
 
@@ -376,7 +375,7 @@ namespace Data
                         {
                             runeData = SpellLoader.GetRandomRune(
                                 raretyFilter: new List<ERarety>() { rarety },
-                                unlocked: false                         // allow not unlocked only
+                                unlocked: null                        
                             );
                         }
 

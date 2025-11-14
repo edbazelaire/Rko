@@ -4,6 +4,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.ParticleSystem;
 
 namespace Tools.Animations
 {
@@ -17,17 +18,17 @@ namespace Tools.Animations
         List<ParticleSystem>                            m_ParticleSystems;
         List<TMP_Text>                                  m_Texts;
 
-        [SerializeField] float m_StartScale      = 1f;
-        [SerializeField] float m_EndScale        = 1f;
-        [SerializeField] float m_StartOpacity    = 1f;
-        [SerializeField] float m_EndOpacity      = 1f;
+        [SerializeField] float m_StartScale         = 1f;
+        [SerializeField] float m_EndScale           = 1f;
+        [SerializeField] float m_StartOpacity       = 1f;
+        [SerializeField] float m_EndOpacity         = 1f;
 
         #endregion
 
 
         #region Init & End
 
-        public void Initialize(string id = "", float duration = 1f, float startScale = 1f, float endScale = 1f, float startOpacity = 1f, float endOpacity = 1f, float? forcedBaseOpacity = null)
+        public void Initialize(string id = "", float duration = 1f, float startScale = 1f, float endScale = 1f, float startOpacity = 1f, float endOpacity = 1f, float? forcedBaseOpacity = null, bool endWhenOver = true)
         {
             if (duration <= 0f)
             {
@@ -41,13 +42,18 @@ namespace Tools.Animations
             FindSubImages(forcedBaseOpacity);
 
             // init animation variables
+            m_EndWhenOver   = endWhenOver;
             m_StartScale    = startScale;
             m_EndScale      = endScale;
             m_StartOpacity  = startOpacity;
             m_EndOpacity    = endOpacity;
 
+            // remove particles if needed
+            HandleParticlesSystems();
+
             // Set initial values immediately on initialization
             transform.localScale = Vector3.one * m_StartScale;
+
             SetOpacity(m_StartOpacity);
 
             if (gameObject.activeInHierarchy)
@@ -67,6 +73,18 @@ namespace Tools.Animations
 
         #region Animation
 
+        public void FadeBack(bool endWhenOver = true)
+        {
+            m_EndWhenOver = endWhenOver;
+
+            // Reverse Fade start/end properties
+            (m_EndOpacity, m_StartOpacity) = (m_StartOpacity, m_EndOpacity);
+            (m_EndScale, m_StartScale) = (m_StartScale, m_EndScale);
+
+            // play the animation again
+            StartCoroutine(Play());
+        }
+
         protected override IEnumerator AnimationFrame()
         {
             if (!gameObject.activeInHierarchy || gameObject.IsDestroyed())
@@ -85,11 +103,23 @@ namespace Tools.Animations
             yield return null;
         }
 
-
         #endregion
 
 
         #region Helpers
+
+        void HandleParticlesSystems()
+        {
+            if (m_StartOpacity < m_EndOpacity)
+                return;
+
+            var particles = Finder.FindComponents<ParticleSystem>(gameObject);
+            foreach (var ps in particles)
+            {
+                if (ps != null)
+                    Destroy(ps.gameObject);
+            }
+        }
 
         private void FindSubImages(float? forcedBasedOpacity = null)
         {
@@ -119,9 +149,6 @@ namespace Tools.Animations
             {
                 m_Sprites.Add((spriteR, forcedBasedOpacity ?? spriteR.color.a));
             }
-
-            // add ParticleSystems
-            m_ParticleSystems = Finder.FindComponents<ParticleSystem>(gameObject);
         }
 
         /// <summary>
@@ -169,19 +196,6 @@ namespace Tools.Animations
             {
                 group.alpha = opacity;
             }
-
-            //// Reduce color opacity of each ParticleSystems
-            //foreach (var ps in m_ParticleSystems)
-            //{
-            //    var main = ps.main; // copy struct
-            //    var startColor = main.startColor;
-
-            //    // Multiply current color alpha by desired opacity
-            //    Color color = startColor.color;
-            //    color.a = opacity;
-
-            //    main.startColor = color; // assign back
-            //}
         }
 
         #endregion

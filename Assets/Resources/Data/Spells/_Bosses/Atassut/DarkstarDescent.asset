@@ -13,25 +13,27 @@ MonoBehaviour:
   m_Name: DarkstarDescent
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: An gigantic orb of dark moon energy crashes from above, dealing
-    [Damage] damage and applying [Cursed] and [Frozen].
-  m_DescriptionVariables: []
+  m_Description: 'An gigantic orb of dark moon energy crashes from above, dealing
+    [Damage] damage (increased by 1% for each stacks of [Cursed] on the target).
+
+    Applies
+    10 stacks of [Cursed] and [Frozen].'
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 8073250784623665408, guid: 96bb8ab99014dc14b9455ea4d5b6a19d, type: 3}
   SpellEventActions:
-  - Prefab: {fileID: 2910976597878939058, guid: 6004c88444bcc9b48ad4d76700f22980, type: 3}
+  - Prefab: {fileID: 610942752557020422, guid: 59d35a747608905438c0906f044394c1, type: 3}
     MaterialEffect: {fileID: 0}
     SoundFX: []
     GFXLifetime:
-      m_StartSpellPart: 1000
-      m_EndSpellPart: 0
+      m_StartSpellPart: 100
+      m_EndSpellPart: 400
       StartAt: 0
       EndAt: 0
-      Persistance: 1.2
-    Size: 0
+      Persistance: 0
+    Size: 2
     OrderInLayer: 0
-    SpawnTarget: 3
+    SpawnTarget: 4
     SpawnLocation: 2
     BodyPart: 0
     IsFollowing: 0
@@ -40,7 +42,28 @@ MonoBehaviour:
     Animation: 0
     SpellAnimation: 
     StateEffects: 
-  OnHit: []
+  - Prefab: {fileID: 8073250784623665408, guid: ce66887fdf43185448a0e45b4d0388f0, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 100
+      m_EndSpellPart: 400
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 0
+    BodyPart: 7
+    IsFollowing: 1
+    IsReplacingGFX: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
+  OnHit:
+  - {fileID: 11400000, guid: 5c48fb9541a015e4791999ea7e2984eb, type: 2}
   PassiveEffects: []
   SpellEventEffects: []
   OnHitSpellSpawn: 1
@@ -54,7 +77,7 @@ MonoBehaviour:
   TargetOffset:
     X: 0
     Y: 0
-  LockTarget: 300
+  LockTarget: 100
   ApplyIfNotHitting: 0
   SpellRelocation:
     Lifetime:
@@ -67,20 +90,9 @@ MonoBehaviour:
   m_SpellRequirements: []
   m_MaxHit: 1
   m_Charges: 1
-  EnergyGain: 10
+  EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 80
-  m_ExecutionDamage: 0
-  m_Damages:
-  - m_BaseValue: 80
-    m_DamageCategory: 1
-    m_HitCategory: 1
-    m_SpellPropertyScaling:
-      Property: 2
-      Value: 0.1
-      ScalingType: 0
-      RoundingType: 0
-      ScalingTresholds: []
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -99,8 +111,8 @@ MonoBehaviour:
     RoundingType: 0
     ScalingTresholds: []
   - Property: 3
-    Value: -0.05
-    ScalingType: 0
+    Value: -0.5
+    ScalingType: 1
     RoundingType: 0
     ScalingTresholds: []
   OverridesSpawnPosition: 0
@@ -130,31 +142,24 @@ MonoBehaviour:
       HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
-  IsChanneling: 0
+  IsChanneling: 1
   MChanneling:
-    IsCancellable: 1
-    IsInterruptable: 1
+    IsCancellable: 0
+    IsInterruptable: 0
     m_ForcedMovementSpeed: 0
     Animation: 0
-  EnemyStateEffects:
-  - StateEffect: 13
-    Stacks: 10
-    BonusStacksPerLevel: 0
-    OverridingProperties: []
-  - StateEffect: 2
-    Stacks: 1
-    BonusStacksPerLevel: 0
-    OverridingProperties: []
+  EnemyStateEffects: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
-  Animation: 2
+  Animation: 19
   IsCancellable: 0
-  IsInterruptable: 1
-  AnimationTimer: 0.7
-  m_Cooldown: 20
+  IsInterruptable: 0
+  IgnoreCC: 0
+  AnimationTimer: 1.5
+  m_Cooldown: 30
   Trajectory: 3
   m_TriggerGround: 1
   m_StopOnTargetPos: 0
-  m_Speed: 5
+  m_Speed: 10
   m_YSpawnPos: 0

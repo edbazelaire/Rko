@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BlizzardMastery
   m_EditorClassIdentifier: 
   m_Description: 'Everytime a Blizzard is casted, gain 1 stack. For each stack, increase
-    the Blizzard''s damage by [BonusTickDamage.Blizzard]'
+    the Blizzard''s damage by [BonusDamage.Blizzard]'
   m_DescriptionVariables: 
   m_NStacksInDescription: 1
   m_StateEffectType: 0
@@ -46,10 +46,13 @@ MonoBehaviour:
     SpellName: Blizzard
     Stacks: 1
   m_BonusStats:
-  - StateEffectProperty: 100
-    BaseValue: 20
+  - StateEffectProperty: 7
+    BaseValue: 10
     LevelScalingFactor: 0.1
     StackScalingFactor: 1
+    ScalesOnMissingHealth: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions:
     - Blizzard
   m_StatConversions: []
@@ -69,4 +72,5 @@ MonoBehaviour:
       Effect: _BlizzardMastery
       BonusLevel: 0
       IsDeactivable: 0
+      ReactivatedEveryStacks: 0
     BonusStats: []

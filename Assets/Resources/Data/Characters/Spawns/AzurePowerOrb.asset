@@ -9,12 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
+  m_Script: {fileID: 11500000, guid: fddbcff511bf8f6468f46e05e8811cf7, type: 3}
   m_Name: AzurePowerOrb
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 
   m_AutoAttack: 
   m_SpecialAbility: 
@@ -29,3 +28,10 @@ MonoBehaviour:
   HealthScaleFactor: 0.12
   CharacterStatScaling: []
   m_SpecialPowers: []
+  m_SpawnOffsetX:
+    Min: 0
+    Max: 0
+  m_SpawnOffsetY:
+    Min: 0
+    Max: 0
+  m_PopUpOffset: {x: 0, y: 0}

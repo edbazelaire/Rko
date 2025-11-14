@@ -12,19 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9daef013e5e5281409e5995f44de4a10, type: 3}
   m_Name: EternalMenagerie_Brutal
   m_EditorClassIdentifier: 
-  m_NLifes: 1
   m_RoundDuration: 240
   m_ArenaLevelData:
   - RewardsData:
       Currencies: []
-      Chests: 00000000
+      Chests: 01000000
       Collectables: []
       AchievementRewards: []
       Boosts: []
     TriggerEffects:
     - SpellDataName: _DropOfLight
       OverridingData: []
-      Level: 0
+      Level: 14
       Target: 0
       SpellActivationEvent: 1
       ActivationTreshold: 0
@@ -52,10 +51,14 @@ MonoBehaviour:
         BaseValue: 80000
         BonusValue: 0
         ScalingFactor: 0
+        DamageCategories: 
+        HitCategories: 
         SpecialConditions: []
         StateEffectStackFactors: []
   - RewardsData:
-      Currencies: []
+      Currencies:
+      - Currency: 3
+        Qty: 500
       Chests: 01000000
       Collectables: []
       AchievementRewards: []
@@ -63,7 +66,7 @@ MonoBehaviour:
     TriggerEffects:
     - SpellDataName: _DropOfLight
       OverridingData: []
-      Level: 0
+      Level: 14
       Target: 0
       SpellActivationEvent: 1
       ActivationTreshold: 0
@@ -91,28 +94,30 @@ MonoBehaviour:
         BaseValue: 80000
         BonusValue: 0
         ScalingFactor: 0
+        DamageCategories: 
+        HitCategories: 
         SpecialConditions: []
         StateEffectStackFactors: []
       - StateEffectProperty: 8
         BaseValue: 0.1
         BonusValue: 0
         ScalingFactor: 0
+        DamageCategories: 
+        HitCategories: 
         SpecialConditions: []
         StateEffectStackFactors: []
       - StateEffectProperty: 6
         BaseValue: 0.1
         BonusValue: 0
         ScalingFactor: 0
-        SpecialConditions: []
-        StateEffectStackFactors: []
-      - StateEffectProperty: 27
-        BaseValue: 0.1
-        BonusValue: 0
-        ScalingFactor: 0
+        DamageCategories: 
+        HitCategories: 
         SpecialConditions: []
         StateEffectStackFactors: []
   - RewardsData:
-      Currencies: []
+      Currencies:
+      - Currency: 0
+        Qty: 1500
       Chests: 01000000
       Collectables: []
       AchievementRewards: []
@@ -120,7 +125,7 @@ MonoBehaviour:
     TriggerEffects:
     - SpellDataName: _DropOfLight
       OverridingData: []
-      Level: 0
+      Level: 14
       Target: 1
       SpellActivationEvent: 1
       ActivationTreshold: 0
@@ -148,36 +153,48 @@ MonoBehaviour:
         BaseValue: 80000
         BonusValue: 0
         ScalingFactor: 0
+        DamageCategories: 
+        HitCategories: 
         SpecialConditions: []
         StateEffectStackFactors: []
       - StateEffectProperty: 8
         BaseValue: 0.2
         BonusValue: 0
         ScalingFactor: 0
+        DamageCategories: 
+        HitCategories: 
         SpecialConditions: []
         StateEffectStackFactors: []
       - StateEffectProperty: 6
         BaseValue: 0.2
         BonusValue: 0
         ScalingFactor: 0
-        SpecialConditions: []
-        StateEffectStackFactors: []
-      - StateEffectProperty: 27
-        BaseValue: 0.2
-        BonusValue: 0
-        ScalingFactor: 0
+        DamageCategories: 
+        HitCategories: 
         SpecialConditions: []
         StateEffectStackFactors: []
   - RewardsData:
-      Currencies: []
-      Chests: 01000000
-      Collectables: []
-      AchievementRewards: []
+      Currencies:
+      - Currency: 3
+        Qty: 500
+      Chests: 0d000000
+      Collectables:
+      - CollectableType: 3
+        CollectableName: CorruptedFlame
+        Qty: 3
+      AchievementRewards:
+      - AchievementReward: 2
+        Title: 0
+        Avatar: 606
+        Border: 0
+        Emot: 0
+        Badge: 0
+        League: 0
       Boosts: []
     TriggerEffects:
     - SpellDataName: _DropOfLight
       OverridingData: []
-      Level: 0
+      Level: 14
       Target: 1
       SpellActivationEvent: 1
       ActivationTreshold: 0
@@ -202,39 +219,50 @@ MonoBehaviour:
       m_TriggerEffects: []
       m_BonusStats:
       - StateEffectProperty: 111
-        BaseValue: 60000
+        BaseValue: 80000
         BonusValue: 0
         ScalingFactor: 0
+        DamageCategories: 
+        HitCategories: 
         SpecialConditions: []
         StateEffectStackFactors: []
       - StateEffectProperty: 8
         BaseValue: 0.3
         BonusValue: 0
         ScalingFactor: 0
+        DamageCategories: 
+        HitCategories: 
         SpecialConditions: []
         StateEffectStackFactors: []
       - StateEffectProperty: 6
         BaseValue: 0.3
         BonusValue: 0
         ScalingFactor: 0
-        SpecialConditions: []
-        StateEffectStackFactors: []
-      - StateEffectProperty: 27
-        BaseValue: 0.3
-        BonusValue: 0
-        ScalingFactor: 0
+        DamageCategories: 
+        HitCategories: 
         SpecialConditions: []
         StateEffectStackFactors: []
   - RewardsData:
-      Currencies: []
-      Chests: 01000000
+      Currencies:
+      - Currency: 0
+        Qty: 3500
+      - Currency: 3
+        Qty: 1000
+      Chests: 02000000
       Collectables: []
-      AchievementRewards: []
+      AchievementRewards:
+      - AchievementReward: 3
+        Title: 0
+        Avatar: 0
+        Border: 204
+        Emot: 0
+        Badge: 0
+        League: 0
       Boosts: []
     TriggerEffects:
     - SpellDataName: _DropOfLight
       OverridingData: []
-      Level: 0
+      Level: 14
       Target: 1
       SpellActivationEvent: 1
       ActivationTreshold: 0
@@ -246,6 +274,23 @@ MonoBehaviour:
       Delay: 10
       Duration: 0
       NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    - SpellDataName: InfinitPower
+      OverridingData: []
+      Level: 11
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 120
+      Duration: 0
+      NActivations: 1
       Cooldown: 0
       RepeatWhenCooldownOver: 0
       ConsumeLifeOnActivation: 0
@@ -262,24 +307,24 @@ MonoBehaviour:
         BaseValue: 80000
         BonusValue: 0
         ScalingFactor: 0
+        DamageCategories: 
+        HitCategories: 
         SpecialConditions: []
         StateEffectStackFactors: []
       - StateEffectProperty: 8
         BaseValue: 0.4
         BonusValue: 0
         ScalingFactor: 0
+        DamageCategories: 
+        HitCategories: 
         SpecialConditions: []
         StateEffectStackFactors: []
       - StateEffectProperty: 6
         BaseValue: 0.4
         BonusValue: 0
         ScalingFactor: 0
-        SpecialConditions: []
-        StateEffectStackFactors: []
-      - StateEffectProperty: 27
-        BaseValue: 0.4
-        BonusValue: 0
-        ScalingFactor: 0
+        DamageCategories: 
+        HitCategories: 
         SpecialConditions: []
         StateEffectStackFactors: []
   m_SpawnerData: {fileID: 11400000, guid: 1468560059c9d6248b4d0ec02738295a, type: 2}
@@ -354,8 +399,8 @@ MonoBehaviour:
               m_OffsetMinMax:
                 Min: 0
                 Max: 0
-    - m_WaveDuration: 120
-      m_MaxDeath: 6
+    - m_WaveDuration: -1
+      m_MaxDeath: -1
       m_Delay: 0
       m_SpawnGroups:
       - SpawnElements:
@@ -365,70 +410,6 @@ MonoBehaviour:
           m_SpawnProbability: 1
           m_BonusLevel: 0
           m_SpawnInterval: 0.25
-          m_Delay: 0
-          m_Duration: -1
-          m_RecalculatePosition: 0
-          m_SpawnPosition:
-            m_SpellTargetX:
-              m_Dimension: 0
-              m_MultiSpellTarget: 0
-              m_ZoneSize: 0
-              m_NBreakPointMargin:
-                Min: 0
-                Max: 0
-              m_NBreakPoints: 0
-              m_OffsetMinMax:
-                Min: 0
-                Max: 0
-            m_SpellTargetY:
-              m_Dimension: 0
-              m_MultiSpellTarget: 0
-              m_ZoneSize: 0
-              m_NBreakPointMargin:
-                Min: 0
-                Max: 0
-              m_NBreakPoints: 0
-              m_OffsetMinMax:
-                Min: 0
-                Max: 0
-        - CharacterName: Fiorana
-          m_MaxSpawns: -1
-          m_NSpawns: 1
-          m_SpawnProbability: 1
-          m_BonusLevel: 0
-          m_SpawnInterval: 45
-          m_Delay: 45
-          m_Duration: -1
-          m_RecalculatePosition: 0
-          m_SpawnPosition:
-            m_SpellTargetX:
-              m_Dimension: 0
-              m_MultiSpellTarget: 0
-              m_ZoneSize: 0
-              m_NBreakPointMargin:
-                Min: 0
-                Max: 0
-              m_NBreakPoints: 0
-              m_OffsetMinMax:
-                Min: 0
-                Max: 0
-            m_SpellTargetY:
-              m_Dimension: 0
-              m_MultiSpellTarget: 0
-              m_ZoneSize: 0
-              m_NBreakPointMargin:
-                Min: 0
-                Max: 0
-              m_NBreakPoints: 0
-              m_OffsetMinMax:
-                Min: 0
-                Max: 0
-        - CharacterName: ChemicalSlime
-          m_MaxSpawns: -1
-          m_NSpawns: 1
-          m_SpawnProbability: 1
-          m_BonusLevel: 0
-          m_SpawnInterval: 20
           m_Delay: 0
           m_Duration: -1
           m_RecalculatePosition: 0
@@ -1100,7 +1081,7 @@ MonoBehaviour:
           m_NSpawns: 1
           m_SpawnProbability: 1
           m_BonusLevel: 0
-          m_SpawnInterval: 30
+          m_SpawnInterval: 0.2
           m_Delay: 0
           m_Duration: -1
           m_RecalculatePosition: 0

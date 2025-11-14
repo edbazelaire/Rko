@@ -13,13 +13,8 @@ MonoBehaviour:
   m_Name: Leaner
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: "Cooked dirty, dropped fast. Deals {0} damage (+{1} execution) and
-    hits with 3 [Infected] stacks. Don\u2019t ask what\u2019s in it."
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
-  - Name: ExecutionDamage
-    WithIcon: 0
+  m_Description: "Cooked dirty, dropped fast. Deals [Damage] damage and applies 3
+    [Infected] stacks. Don\u2019t ask what\u2019s in it."
   m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 6310744135911870057, guid: f084b54ad5f91bf47bedb7805240fe2e, type: 3}
@@ -95,27 +90,17 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 18
   EnergyCost: 0
-  m_Damage: 100
-  m_ExecutionDamage: 50
   m_Damages:
-  - m_BaseValue: 100
-    m_DamageCategory: 1
-    m_HitCategory: 1
-    m_SpellPropertyScaling:
-      Property: 2
-      Value: 0.1
-      ScalingType: 0
-      RoundingType: 0
-      ScalingTresholds: []
-  - m_BaseValue: 50
+  - m_BaseValue: 150
     m_DamageCategory: 1
     m_HitCategory: 3
     m_SpellPropertyScaling:
       Property: 0
-      Value: 0
+      Value: 0.1
       ScalingType: 0
       RoundingType: 0
       ScalingTresholds: []
+    m_DamageModifiers: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -177,6 +162,7 @@ MonoBehaviour:
   Animation: 16
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.5
   m_Cooldown: 15
   Trajectory: 3

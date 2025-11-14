@@ -57,7 +57,16 @@ namespace Game.StateEffects.Quests
 
         public override string GetDescription()
         {
-            var description = base.GetDescription();
+            string description;
+            if (ProgressionCloudData.HasArenaInProgress && ProgressionCloudData.CurrentArena.HasMetaData(StateEffectName))
+            {
+                description = $"Current Stacks : {ProgressionCloudData.CurrentArena.GetMetaData<int>(StateEffectName):0}";
+            } else
+            {
+                description = TextHandler.ReplaceKeyWords("{ArenaQuest}");
+            }
+
+            description += "\n\n" + base.GetDescription();
             return description;
         }
 

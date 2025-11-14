@@ -1,5 +1,6 @@
 ﻿using Enums;
 using System;
+using Tools;
 
 
 namespace Inventory
@@ -29,6 +30,20 @@ namespace Inventory
         public void AddQty(int qty)
         {
             Qty += qty;
+        }
+
+        public string GetPrettyName()
+        {
+            if (RewardType == typeof(EChest))
+            {
+                if (RewardName == EChest.Abyssforged.ToString()
+                    || RewardName == EChest.GlacialCrystal.ToString())
+                    return TextHandler.Split(RewardName);
+
+                return TextHandler.Split(RewardName) + " Chest";
+            }
+
+            return TextHandler.Split(RewardName);
         }
     }
 }

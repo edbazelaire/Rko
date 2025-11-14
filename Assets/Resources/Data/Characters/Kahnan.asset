@@ -29,7 +29,6 @@ MonoBehaviour:
     a true, powerful ruler. Kahnan\u2019s resolve is unyielding; he will scorch every
     obstacle in his path, be it demon or human, to see his mission fulfilled and
     the true king restored."
-  m_DescriptionVariables: []
   m_SpellElements: 01000000
   m_AutoAttack: Fireball
   m_SpecialAbility: IgnitionVeil
@@ -39,31 +38,40 @@ MonoBehaviour:
   BaseHealth: 1100
   MaxEnergy: 100
   BaseEnergy: 10
+  PassiveEnergyGain: 1
   IsStructure: 0
   HealthScaleFactor: 0.1
   CharacterStatScaling:
-  - StateEffectProperty: 8
-    BaseValue: 0.1
-    BonusValue: 0
-    ScalingFactor: 0.02
-    SpecialConditions: []
-    StateEffectStackFactors: []
-  - StateEffectProperty: 17
-    BaseValue: 0.1
-    BonusValue: 0
-    ScalingFactor: 0.02
-    SpecialConditions: []
-    StateEffectStackFactors: []
   - StateEffectProperty: 4
     BaseValue: 700
     BonusValue: 0
     ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
-  - StateEffectProperty: 101
-    BaseValue: 0.1
+  - StateEffectProperty: 30
+    BaseValue: 10
     BonusValue: 0
-    ScalingFactor: 0
+    ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 40
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 20
+    BaseValue: 10
+    BonusValue: 0
+    ScalingFactor: 0.05
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers: []

@@ -18,11 +18,8 @@ namespace Data.DataStructures.PowerEffects
 
         // ==========================================================================================
         // Serialized Fields
-        [Description("Description informations of the Rune")]
+        [Description("Description informations of the Rune"), TextArea(minLines: 0, maxLines: 5)]
         public string Description;
-
-        [SerializeField]
-        List<SDescriptionVariable> m_DescriptionVariables;
 
         [SerializeField, Tooltip("When set : gain the effects of the base effect with a BonusLevel")]
         int m_BonusLevel;
@@ -84,18 +81,6 @@ namespace Data.DataStructures.PowerEffects
                 effect.Level = m_Level;
                 m_TriggerEffects[i] = effect;
             }
-        }
-
-        #endregion
-
-
-        #region Debug
-
-        public List<SDescriptionVariable> DescriptionVariables => m_DescriptionVariables;
-
-        public void SetDescriptionVariables(List<SDescriptionVariable> descriptionVariables)
-        {
-            m_DescriptionVariables = descriptionVariables;
         }
 
         #endregion
@@ -198,56 +183,14 @@ namespace Data.DataStructures.PowerEffects
         {
             List<string> values = new List<string>();
 
-            foreach (SDescriptionVariable descriptionVariable in m_DescriptionVariables)
-            {
-                // State Effect    --------------------------------------------------------------
-                if (Enum.TryParse(descriptionVariable.Name, out EStateEffect _))
-                {
-                    values.Add(TextHandler.FormatStateEffectIcon(descriptionVariable.Name, descriptionVariable.WithIcon));
-                }
-
-                // Level            --------------------------------------------------------------
-                else if (descriptionVariable.Name.Trim() == "Level")
-                {
-                    values.Add($"<b>{m_Level}</b>");
-                }
-
-                // Property         --------------------------------------------------------------
-                else if (Enum.TryParse(descriptionVariable.Name, out EStateEffectProperty property))
-                {
-                    if (!TryGetCharacterStat(property, out SCharacterStatScaling characterStat))
-                    {
-                        ErrorHandler.Error("Unable to find property " + property + " in RUNE " + this);
-                        values.Add("<b>UNDEFINED</b>");
-                        continue;
-                    }
-
-                    // check scaling
-                    EScalingDirection scaling = EScalingDirection.None;
-                    if (characterStat.ScalingFactor > 0)
-                        scaling = EScalingDirection.Up;
-                    else if (characterStat.ScalingFactor < 0)
-                        scaling = EScalingDirection.Down;
-
-                    // add value to list of values
-                    values.Add($"<b>{TextHandler.FormatScaling(TextHandler.FormatPropertyValue(characterStat.GetDefaultValue(Level), descriptionVariable.Name), scaling)}</b>");
-                }
-
-                // UNDEFINED        --------------------------------------------------------------
-                else
-                {
-                    ErrorHandler.Error("Unable to find property " + descriptionVariable.Name + " in info dict of spell " + this);
-                    values.Add("<b>UNDEFINED</b>");
-                }
-            }
-
             string description = string.Format(Description, values.ToArray());
 
             if (description == "" && m_TriggerEffects.Count > 0)
                 description = "[TriggerEffect.0]";
 
             description = TextHandler.ReplaceStateEffectTokens(TextHandler.ReplaceTriggerEffectTokens(description, m_TriggerEffects));
-            return TextHandler.ReplaceCharacterStat(description, m_BonusStats, m_Level);
+            description = TextHandler.ReplaceKeyWords(description);
+            return TextHandler.ReplaceCharacterStat(description, m_BonusStats, m_Level - m_BonusLevel);
         }
 
         /// <summary>

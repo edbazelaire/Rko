@@ -12,14 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7d51f633e46b344920f012b0e1eca8, type: 3}
   m_Name: FrostArena_Hard
   m_EditorClassIdentifier: 
-  m_NLifes: 1
+  m_RoundDuration: 0
   m_ArenaLevelData:
   - RewardsData:
       Currencies:
       - Currency: 0
-        Qty: 1500
-      - Currency: 3
-        Qty: 120
+        Qty: 350
       Chests: 
       Collectables:
       - CollectableType: 3
@@ -44,22 +42,29 @@ MonoBehaviour:
       NActivations: -1
       Cooldown: 0
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_PowerUps:
     - ShieldRune - Minor
     - AncientAegisRune - Minor
     StageData:
     - m_Boss: 1001
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 02000000040000001e000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1001
+      m_Skin: 0
       m_BonusLevel: 1
+      m_ExtraLifes: 0
       m_Spells: 020000001d0000001e0000000a000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 0
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 14270000
       m_TriggerEffects:
       - SpellDataName: Melting
@@ -78,17 +83,16 @@ MonoBehaviour:
         NActivations: 0
         Cooldown: 0
         RepeatWhenCooldownOver: 0
+        ConsumeLifeOnActivation: 0
       m_BonusStats: []
   - RewardsData:
       Currencies:
       - Currency: 3
-        Qty: 120
-      - Currency: 0
-        Qty: 1500
-      Chests: 00000000
+        Qty: 150
+      Chests: 
       Collectables:
       - CollectableType: 3
-        CollectableName: ToxicWaterRune
+        CollectableName: HealRune
         Qty: 1
       AchievementRewards: []
       Boosts: []
@@ -109,41 +113,39 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_PowerUps:
     - PoisonRune - Minor
-    - ParasiteRune - Minor
     StageData:
     - m_Boss: 1002
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 1a000000170000001d000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1002
+      m_Skin: 0
       m_BonusLevel: 1
+      m_ExtraLifes: 0
       m_Spells: 1a000000170000001d00000030000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 78270000
       m_TriggerEffects: []
       m_BonusStats: []
   - RewardsData:
-      Currencies:
-      - Currency: 3
-        Qty: 150
-      - Currency: 0
-        Qty: 2000
-      Chests: 01000000
-      Collectables: []
-      AchievementRewards:
-      - AchievementReward: 4
-        Title: 1001
-        Avatar: 105
-        Border: 0
-        Emot: 0
-        Badge: 0
-        League: 0
+      Currencies: []
+      Chests: 00000000
+      Collectables:
+      - CollectableType: 1
+        CollectableName: Marcus
+        Qty: 1
+      AchievementRewards: []
       Boosts: []
     TriggerEffects:
     - SpellDataName: _VoidMines
@@ -162,26 +164,35 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_PowerUps:
     - HealRune - Minor
     StageData:
     - m_Boss: 1003
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 170000001d000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1003
+      m_Skin: 0
       m_BonusLevel: 1
+      m_ExtraLifes: 0
       m_Spells: 170000001e00000024000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1003
+      m_Skin: 0
       m_BonusLevel: 2
+      m_ExtraLifes: 0
       m_Spells: 17000000240000001d0000004a000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 2
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 
       m_TriggerEffects: []
       m_BonusStats: []

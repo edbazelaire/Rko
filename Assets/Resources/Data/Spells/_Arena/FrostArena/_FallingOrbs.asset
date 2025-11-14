@@ -13,15 +13,9 @@ MonoBehaviour:
   m_Name: _FallingOrbs
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: Each {0} seconds, {1} orbs fall from the sky. \n\nYou must catch
-    them before the hit the GROUND, otherwise, the enemy gains 1 stack and heals
-    for [SubSpellData.Heal] hp\nEach stack grants extra damage, auto attack speed
-    and reduces all cooldowns.
-  m_DescriptionVariables:
-  - Name: DelayBetweenWaves
-    WithIcon: 1
-  - Name: NProjectiles
-    WithIcon: 0
+  m_Description: "Each [DelayBetweenWaves] seconds, [NProjectiles] orbs fall from
+    the sky. \n\nYou must catch them before they hit the GROUND, otherwise, the enemy
+    gains 1 stack of <i>Azure Power Orb</i>\n\n <u>Azure Power Orb</u>\n[SubSpellData.Description]"
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
@@ -55,8 +49,6 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 1
-  m_ExecutionDamage: 0
   m_Damages:
   - m_BaseValue: 1
     m_DamageCategory: 2
@@ -67,6 +59,7 @@ MonoBehaviour:
       ScalingType: 0
       RoundingType: 0
       ScalingTresholds: []
+    m_DamageModifiers: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -81,11 +74,6 @@ MonoBehaviour:
   m_SpellsScalingLevel:
   - Property: 6
     Value: 0.1
-    ScalingType: 0
-    RoundingType: 2
-    ScalingTresholds: []
-  - Property: 9
-    Value: -0.05
     ScalingType: 0
     RoundingType: 2
     ScalingTresholds: []
@@ -129,6 +117,7 @@ MonoBehaviour:
   Animation: 0
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0
   m_Cooldown: 0
   SubSpellData: {fileID: 11400000, guid: a98791e548644094f963323cf947b452, type: 2}
@@ -192,7 +181,7 @@ MonoBehaviour:
   m_ProjectileZoneSize: 0
   m_DelayBetweenLaunches: 3
   m_NWaves: 99999
-  m_DelayBetweenWaves: 12
+  m_DelayBetweenWaves: 10
   OnCastWaveAnimation: 0
   OnCastProjectileAnimation: 0
   OnCastWaveSoundFX: {fileID: 0}

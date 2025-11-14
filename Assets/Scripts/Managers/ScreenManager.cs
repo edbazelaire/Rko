@@ -17,9 +17,6 @@ using MyBox;
 using System.Collections;
 using Save.Data.Progression.Structs;
 using Data.DataStructures.PowerEffects;
-using static UnityEditor.U2D.ScriptablePacker;
-using UnityEngine.Rendering;
-using Data.DataStructures.StateEffectSubStructures;
 using Data.DataStructures.CharacterSubStructures;
 
 namespace Assets.Scripts.Managers
@@ -136,7 +133,7 @@ namespace Assets.Scripts.Managers
                     break;
 
                 case EPopUpState.PowerUpInfoScreen:
-                    obj.GetComponent<PowerUpInfoScreen>().Initialize((SPowerEffect)args[0]);
+                    obj.GetComponent<PowerUpInfoScreen>().Initialize((SPowerEffect)args[0], (int)args[1]);
                     break;
 
                 case EPopUpState.PowerUpSelectionScreen:
@@ -173,6 +170,10 @@ namespace Assets.Scripts.Managers
                     obj.GetComponent<RunePowerPopUp>().Initialize((SRunePower)args[0]);
                     break;
 
+                case EPopUpState.PropertyInfoPopUp:
+                    obj.GetComponent<PropertyInfoPopUp>().Initialize(key: (string)args[0], value: (string)args[1], duration: args.Count() > 2 ? (float)args[2] : -1f);
+                    break;
+
                 // SETTINGS & OPTIONS -------------------------------------------------------
                 case EPopUpState.ArenaOptionsPopUp:
                     obj.GetComponent<ArenaOptionsPopUp>().Initialize();
@@ -188,6 +189,10 @@ namespace Assets.Scripts.Managers
 
                 case EPopUpState.PromoCodePopUp:
                     obj.GetComponent<PromoCodePopUp>().Initialize();
+                    break;
+
+                case EPopUpState.DailyRewardsPopUp:
+                    obj.GetComponent<DailyRewardsPopUp>().Initialize();
                     break;
 
                 default:
@@ -218,6 +223,11 @@ namespace Assets.Scripts.Managers
 
         #region Popup Message
 
+        public static void MessagePopUp(string message, string title = "", Action onValidate = null, Action onCancel = null)
+        {
+            SetPopUp(EPopUpState.MessagePopUp, message, title, onValidate, onCancel);
+        }
+
         public static void QuickMessage(string message, float duration = 3f)
         {
             SetPopUp(EPopUpState.QuickMessagePopUp, message, duration);
@@ -239,6 +249,17 @@ namespace Assets.Scripts.Managers
         /// <param name="priceData"></param>
         /// <param name="rewardsData"></param>
         /// <param name="OnPurchase"></param>
+        public static void ConfirmPopUp(string message, string title = "", Action onValidate = null, Action onCancel = null)
+        {
+            SetPopUp(EPopUpState.ConfirmPopUp, message, title, onValidate, onCancel);
+        }
+
+        /// <summary>
+        /// Confirm purchase of an item or a bundle of items (currency, chests, collectables)
+        /// </summary>
+        /// <param name="priceData"></param>
+        /// <param name="rewardsData"></param>
+        /// <param name="OnPurchase"></param>
         public static void ConfirmWatchAd(Action callback, string title = "", string text = "")
         {
             SetPopUp(EPopUpState.ConfirmBuyBundlePopUp, callback, title, text);
@@ -250,6 +271,21 @@ namespace Assets.Scripts.Managers
         public static void ConfirmUpgradeMastery(Enum collectable, int mastery, SPriceData price)
         {
             SetPopUp(EPopUpState.ConfirmUpgradeMasteryPopUp, collectable, mastery, price);
+        }
+
+        #endregion
+
+
+        #region Rewards
+
+        public static void DisplayRewards(SRewardsData rewardsData, string context, Action OnRewardCollected = null, string title = null)
+        {
+            Main.SetPopUp(EPopUpState.RewardsScreen, rewardsData, context, OnRewardCollected, title);
+        }
+
+        public static void DisplayAchievementRewards(List<SAchievementReward> rewardsData)
+        {
+            Main.SetPopUp(EPopUpState.AchievementRewardScreen, rewardsData);
         }
 
         #endregion
@@ -289,7 +325,7 @@ namespace Assets.Scripts.Managers
 
         #region Arena Screens
 
-        public static PowerUpSelectionScreen PowerUpSelectionScreen(EArenaType arenaType, int index)
+        public static PowerUpSelectionScreen PowerUpSelectionScreen(EArenaType arenaType, int index, ERuneActivation? runeActivation = null)
         {
             PowerUpSelectionScreen screen;
             switch (arenaType)
@@ -302,12 +338,12 @@ namespace Assets.Scripts.Managers
                         break;
                     }
                     screen = Main.Instantiate(screen);
-                    screen.Initialize(index);
+                    screen.Initialize(index, runeActivation);
                     return screen;
             }
 
             screen = Main.Instantiate(AssetLoader.Load<PowerUpSelectionScreen>("PowerUpSelectionScreen", AssetLoader.c_OverlayPath));
-            screen.Initialize(index);
+            screen.Initialize(index, runeActivation);
 
             return screen;
         }

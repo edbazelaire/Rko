@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 
   m_MinorPower:
     Description: 
@@ -37,12 +36,15 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []
     BonusPowerOrb: 0
     BonusRewardsRarety: 0
   m_MajorPower:
-    Description: '[TriggerEffect.0]\n\nGain +[BonusDamagePerc.IceBreak] damage on
-      IceBreak'
+    Description: 'Gain +[BonusDamagePerc.IceBreak] damage on IceBreak
+
+
+      [TriggerEffect.0]'
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
@@ -62,23 +64,30 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats:
     - StateEffectProperty: 8
-      BaseValue: 0.2
+      BaseValue: 0.1
       BonusValue: 0
       ScalingFactor: 0
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions:
       - IceBreak
       StateEffectStackFactors: []
     BonusPowerOrb: 0
     BonusRewardsRarety: 0
   m_PrimalPower:
-    Description: '[TriggerEffect.0]\n\nGain +[BonusDamagePerc.IceBreak] damage on
-      IceBreak.\n\nWhen an [IceBreak] effect is applied, re-apply a [Frost] effect'
+    Description: 'Gain +[BonusDamagePerc.IceBreak] damage on IceBreak
+
+
+      [TriggerEffect.0]
+
+      [TriggerEffect.1]'
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
-    - SpellDataName: _PrPermafrost
+    - SpellDataName: _MaPermafrost
       OverridingData: []
       Level: 0
       Target: 0
@@ -94,6 +103,24 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    - SpellDataName: _PrPermafrost
+      OverridingData: []
+      Level: 0
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 15
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     - SpellDataName: Frost
       OverridingData: []
       Level: 0
@@ -110,11 +137,14 @@ MonoBehaviour:
       NActivations: -1
       Cooldown: 0
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats:
     - StateEffectProperty: 8
       BaseValue: 0.25
       BonusValue: 0
       ScalingFactor: 0
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions:
       - IceBreak
       StateEffectStackFactors: []

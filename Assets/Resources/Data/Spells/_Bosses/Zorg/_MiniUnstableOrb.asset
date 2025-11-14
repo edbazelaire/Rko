@@ -15,7 +15,6 @@ MonoBehaviour:
   m_Rarety: 0
   m_Description: "A volatile sphere of void\u2011frost erupts on contact, dealing
     [Damage] damage and inflicting [Malediction]."
-  m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 1465899634756489508, guid: 02b32b32131dc324ca546a14857e7827, type: 3}
@@ -69,8 +68,6 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 40
-  m_ExecutionDamage: 0
   m_Damages:
   - m_BaseValue: 40
     m_DamageCategory: 1
@@ -81,6 +78,7 @@ MonoBehaviour:
       ScalingType: 0
       RoundingType: 0
       ScalingTresholds: []
+    m_DamageModifiers: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -133,7 +131,7 @@ MonoBehaviour:
     Animation: 0
   EnemyStateEffects:
   - StateEffect: 13
-    Stacks: 4
+    Stacks: 1
     BonusStacksPerLevel: 0.2
     OverridingProperties: []
   AllyStateEffects: []
@@ -142,6 +140,7 @@ MonoBehaviour:
   Animation: 2
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0
   m_Cooldown: 0
   Trajectory: 1

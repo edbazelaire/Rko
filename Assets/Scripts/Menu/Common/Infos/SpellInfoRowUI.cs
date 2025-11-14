@@ -90,7 +90,14 @@ namespace Menu.Common.Infos
                     m_Icon.sprite = AssetLoader.LoadUIElementIcon("TrueDamage");
                     m_NameText.text = TextLocalizer.LocalizeText("Ignore Resistances");
                     m_ValueText.text = "";
-                    m_BonusValue.gameObject.SetActive(false);
+                    m_ValueContainer?.SetActive(false);
+                    return true;
+
+                case "IgnoreCC":
+                    m_Icon.sprite = AssetLoader.LoadUIElementIcon("IgnoreCC");
+                    m_NameText.text = TextLocalizer.LocalizeText("Removes Control Effects");
+                    m_ValueText.text = "";
+                    m_ValueContainer?.SetActive(false);
                     return true;
             }
 
@@ -101,14 +108,15 @@ namespace Menu.Common.Infos
         {
             base.SetUpIcon();
 
-            if (SpellLoader.IsStateEffect(m_Key))
+            if (SpellLoader.IsStateEffect(m_IconName))
             {
-                m_Icon.sprite = AssetLoader.LoadStateEffectIcon(m_Key);
-                m_NameText.text += " Cost";
+                m_Icon.sprite = AssetLoader.LoadStateEffectIcon(m_IconName);
+                if (SpellLoader.IsStateEffect(m_NameText.text))
+                    m_NameText.text += " Cost";
             }
             else
             {
-                m_Icon.sprite = AssetLoader.LoadUIElementIcon(m_Key);
+                m_Icon.sprite = AssetLoader.LoadUIElementIcon(m_IconName);
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using AI;
 using AI.Checkers;
 using Enums;
+using Game.AI.Tasks.Variables;
 using Game.Character;
 using Game.Spells;
 using System;
@@ -268,6 +269,9 @@ namespace Game.AI
                 case ECastState.StartCast:
                     m_State = NodeState.RUNNING;
                     m_Controller.Movement.SetMovement(0);
+
+                    m_Controller.SpellHandler.OnPreSpellEvent -= AwaitCastEvent;
+                    m_Controller.SpellHandler.OnPreSpellEvent -= CountAttacks;
                     break;
 
                 case ECastState.Casting:
@@ -284,8 +288,10 @@ namespace Game.AI
                     break;
 
                 case ECastState.WaitingCallback:
-                    if (m_SpellEventToAwait == ESpellEvent.None)
-                        SetCastState(ECastState.Success);
+                    if (m_SpellEventToAwait != ESpellEvent.None)
+                        break;
+
+                    IncreaseCounter();
                     break;
 
                 case ECastState.Success:
@@ -329,6 +335,9 @@ namespace Game.AI
             if (spellName != m_Spell.ToString() || spellEvent != ESpellEvent.OnCast)
                 return;
 
+            if (m_CastState != ECastState.Casting)
+                return;
+
             ErrorHandler.Log("TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : received cast event - " + spellEvent, ELogTag.AITaskUseSpell);
             SetCastState(ECastState.WaitingCallback);
         }
@@ -338,13 +347,22 @@ namespace Game.AI
             if (spellName != m_Spell.ToString() || spellEvent != m_SpellEventToAwait)
                 return;
 
+            IncreaseCounter();
+        }
+
+        void IncreaseCounter()
+        {
             m_NTimesCounter++;
-            ErrorHandler.Log("      -- TaskUseSpell("+ spellName + ") - "+ spellEvent + " : m_NTimesCounter = " + m_NTimesCounter + " / " + m_NTimes, ELogTag.AITaskUseSpell);
+            ErrorHandler.Log("      -- TaskUseSpell(" + m_Spell + ") - " + m_SpellEventToAwait + " : m_NTimesCounter = " + m_NTimesCounter + " / " + m_NTimes, ELogTag.AITaskUseSpell);
 
             // number of attacks reached 
             if (m_NTimesCounter >= m_NTimes)
             {
                 SetCastState(ECastState.Success);
+            }
+            else
+            {
+                SetCastState(ECastState.StartCast);
             }
         }
 

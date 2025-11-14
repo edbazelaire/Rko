@@ -14,12 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: Leftovers from last night. Whatever is in that needle is dealing
-    {0} damage (+{1} exectution) and applies [Poison] (also, probably Hepatitis)
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
-  - Name: ExecutionDamage
-    WithIcon: 0
+    [Damage] damage (+[ExecutionDamage] exectution) and applies [Poison] (also, probably
+    Hepatitis)
   m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 1923825553450198, guid: d59713c811389e44b9f778f1c64142e9, type: 3}
@@ -117,10 +113,8 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 5
-  m_ExecutionDamage: 50
   m_Damages:
-  - m_BaseValue: 5
+  - m_BaseValue: 25
     m_DamageCategory: 1
     m_HitCategory: 1
     m_SpellPropertyScaling:
@@ -129,15 +123,17 @@ MonoBehaviour:
       ScalingType: 0
       RoundingType: 0
       ScalingTresholds: []
-  - m_BaseValue: 50
+    m_DamageModifiers: []
+  - m_BaseValue: 25
     m_DamageCategory: 1
     m_HitCategory: 3
     m_SpellPropertyScaling:
       Property: 19
-      Value: 0.11
+      Value: 0.1
       ScalingType: 0
       RoundingType: 0
       ScalingTresholds: []
+    m_DamageModifiers: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -204,6 +200,7 @@ MonoBehaviour:
   Animation: 2
   IsCancellable: 1
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.45
   m_Cooldown: 0
   Trajectory: 1

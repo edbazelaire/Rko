@@ -13,19 +13,39 @@ MonoBehaviour:
   m_Name: Zorg
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 
-  m_DescriptionVariables: []
+  m_Description: "Once a devoted naturalist in life, this spirit now roams as an
+    eternal collector in the afterlife. \nHe gathers the creatures, spirits, and
+    souls of the world into his Eternal Menagerie, a mystical cavern as deep and
+    dark as his mind can pitcure it, where he endlessly studies evolution itself.
+    \nIn death, his curiosity has only deepened, and he continues his tireless quest
+    to understand the shifting nature of all living things."
   m_SpellElements: 
   m_AutoAttack: UnstableOrb
   m_SpecialAbility: MadnessWhispers
-  m_Ultimate: 
+  m_Ultimate: DevourerStrike
   Size: 5
   BaseSpeed: 1
   BaseHealth: 3500
-  MaxEnergy: 100
+  MaxEnergy: 150
   BaseEnergy: 0
   PassiveEnergyGain: 0
   IsStructure: 0
-  HealthScaleFactor: 0.12
-  CharacterStatScaling: []
+  HealthScaleFactor: 0.2
+  CharacterStatScaling:
+  - StateEffectProperty: 30
+    BaseValue: 30
+    BonusValue: 0
+    ScalingFactor: 0.12
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 15
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
   m_SpecialPowers: []

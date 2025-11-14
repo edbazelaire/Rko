@@ -41,6 +41,7 @@ namespace Menu.Common.Buttons
         protected bool m_RemoveAllListeners = false;
 
         protected Enum m_Collectable                        => m_CollectableCloudData.GetCollectable();
+        protected ERarety m_Rarety                          => CollectablesManagementData.GetRaretyData(m_Collectable).Rarety;
         public SCollectableCloudData CollectableCloudData   => m_CollectableCloudData;
         public CollectionFillBar CollectionFillBar          => m_CollectionFillBar;
         public CollectablesSubButtons CSubButtons           => m_CSubButtons;
@@ -160,8 +161,8 @@ namespace Menu.Common.Buttons
         {
             base.SetColor(color);
 
-            if (m_MasteryBorder != null)
-                m_MasteryBorder.color = color;
+            //if (m_MasteryBorder != null)
+            //    m_MasteryBorder.color = color;
         }
 
         public virtual void SetUpCollectable(Enum collectable, int level, bool asIconOnly = false)
@@ -204,8 +205,11 @@ namespace Menu.Common.Buttons
                 return;
             }
 
-            m_MasteryBorder.sprite = AssetLoader.LoadMasteryBorder(m_Mastery);
-            m_MasteryBorder.gameObject.SetActive(true);
+            //m_MasteryBorder.sprite = AssetLoader.LoadMasteryBorder(m_Mastery, m_Rarety);
+            //m_MasteryBorder.gameObject.SetActive(true);
+
+            // TODO : REACTIVATE MASTERY BORDERS ???
+            m_MasteryBorder.gameObject.SetActive(false);
         }
 
         /// <summary>
@@ -451,7 +455,7 @@ namespace Menu.Common.Buttons
 
         protected virtual void OnClickLocked() 
         {
-            OpenInfoPopUp(1, asIconOnly: true);
+            OpenInfoPopUp(CollectablesManagementData.GetStartLevel(m_Collectable), asIconOnly: true);
         }
 
         protected virtual void OnPurchased(bool success)

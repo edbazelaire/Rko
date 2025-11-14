@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 4052242029054160489, guid: 91f46ebfd0d4b8c4eb78f648f871533a, type: 3}
@@ -68,20 +67,18 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 25
   EnergyCost: 0
-  m_Damage: 50
-  m_ExecutionDamage: 100
   m_Damages:
   - m_BaseValue: 50
-    m_DamageCategory: 2
+    m_DamageCategory: 1
     m_HitCategory: 1
     m_SpellPropertyScaling:
       Property: 2
-      Value: 0.1
+      Value: 0.12
       ScalingType: 0
       RoundingType: 2
       ScalingTresholds: []
   - m_BaseValue: 100
-    m_DamageCategory: 2
+    m_DamageCategory: 1
     m_HitCategory: 3
     m_SpellPropertyScaling:
       Property: 19
@@ -159,6 +156,7 @@ MonoBehaviour:
   Animation: 0
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0
   m_Cooldown: 0
   m_SpellSpawn: 0

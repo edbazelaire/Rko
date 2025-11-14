@@ -1,8 +1,10 @@
 ﻿using Assets;
+using Assets.Scripts.Managers;
 using Data.GameManagement;
 using Enums;
 using Game;
 using Inventory;
+using Menu.Common.Buttons;
 using Save;
 using System;
 using System.Collections.Generic;
@@ -493,7 +495,7 @@ namespace Tools
         {
             var reward = new SRewardsData();
             reward.Add(ECharacter.Marcus, 1);
-            Main.DisplayRewards(reward, "DebugTool");
+            ScreenManager.DisplayRewards(reward, "DebugTool");
         }
 
         /// <summary>

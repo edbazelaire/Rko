@@ -32,7 +32,12 @@ namespace Game.AI.BehaviorTrees
         public override Node GetDefaultTree()
         {
             return new Selector(new List<Node>
-            {
+            {           
+                // DEBUG               ===================================================
+                //new TaskWait(m_Controller),
+                // DEBUG               ===================================================
+
+
                 // NONE STATE               ===================================================
                 new Sequence(new List<Node> {
                     new CheckBTState(m_Controller, ESikunikState.None.ToString()),
@@ -62,6 +67,9 @@ namespace Game.AI.BehaviorTrees
 
                             new Selector(new List<Node>
                             {
+                                // CHECK : Should start phase 2 ?
+                                CheckStartPhase2(),
+
                                 // CHECK : Ultimate ready ?
                                 new Sequence(new List<Node> {
                                     new CheckCanBeCasted(m_Controller, ESpell.Soaring),
@@ -135,12 +143,11 @@ namespace Game.AI.BehaviorTrees
                         new TaskUseSpell(m_Controller, ESpell.Disintegrate, spellEvent: ESpellEvent.OnEnd, globalCooldown: 2f),
                         new TaskUseSpell(m_Controller, ESpell.Rainballs, globalCooldown: 2f),
                         new TaskUseSpell(m_Controller, ESpell.Eruptions, globalCooldown: 2f),
-                        new TaskUseSpell(m_Controller, ESpell.AzureDeflagration),
+                        new TaskUseSpell(m_Controller, ESpell.AzureDeflagration, globalCooldown: 2f),
                     }, saveCurrentNode: true, random: true),
 
                     new TaskUseSpell(m_Controller, m_Controller.SpellHandler.AutoAttack, ignoreGlobalCooldown: true),
                     new TaskWait(m_Controller),
-
                 }),
 
                 new TaskWait(m_Controller),
@@ -166,18 +173,17 @@ namespace Game.AI.BehaviorTrees
 
                         // CHECK : Should set next state or next phase ?
                         new Selector(new List<Node> {
-                            new Sequence(new List<Node> {
-                                new CheckProperty(m_Controller, EStateEffectProperty.Hp, 0.5f, isPerc: true, relation: "<="),
-                                new SetPhase(m_Controller, 2),
-                            }),
+                            // check - should start phase 2 ?
+                            CheckStartPhase2(),
 
+                            // otherwise - go back to sleep
                             new SetState(m_Controller, ESikunikState.CastingSleep.ToString())
                         }),
                     }),
 
                     // SELECT : one of the spells
                     new Selector(new List<Node> {
-                        new TaskUseSpell(m_Controller, ESpell.AzureDeflagration),
+                        new TaskUseSpell(m_Controller, ESpell.AzureDeflagration, globalCooldown: 2f),
                         new TaskUseSpell(m_Controller, ESpell.Disintegrate, spellEvent: ESpellEvent.OnEnd, globalCooldown: 2f),
                         new TaskUseSpell(m_Controller, ESpell.Eruptions, globalCooldown: 2f),
                     }, saveCurrentNode: true, random: true),
@@ -201,6 +207,20 @@ namespace Game.AI.BehaviorTrees
 
             ErrorHandler.Warning("Unhanlded case : " + m_ArenaDifficulty);
             return 0f;
+        }
+
+        Node CheckStartPhase2()
+        {
+            return new Sequence(new List<Node> {
+                new Selector(new List<Node>
+                {
+                    // HP : <= 50%
+                    new CheckProperty(m_Controller, EStateEffectProperty.Hp, 0.5f, isPerc: true, relation: "<="),
+                    // Timer : 240 sec
+                    new CheckTimer(m_Controller, "Phase2", 240),                
+                }),
+                new SetPhase(m_Controller, 2)
+            });
         }
 
         #endregion

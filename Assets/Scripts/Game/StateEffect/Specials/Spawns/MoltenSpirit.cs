@@ -1,4 +1,6 @@
 ﻿using System;
+using Tools;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Game.Spells
@@ -35,6 +37,17 @@ namespace Game.Spells
         private void OnHealedEvent(int heal, ulong casterId)
         {
             Refresh(stacks: Math.Min((int)Mathf.Round(heal * m_HealConversionFactor), m_MaxStacks), level: m_Level);
+        }
+
+        #endregion
+
+
+        #region Description
+
+        public override string GetDescription()
+        {
+            string description = base.GetDescription();
+            return description.Replace("[HealConversionFactor]", (100*m_HealConversionFactor).ToString("F2") + "%");
         }
 
         #endregion

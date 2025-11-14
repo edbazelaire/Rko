@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Fireball
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: Shoots a Fireball dealing {0} Damages and applying {1}
+  m_Description: 'Shoots a Fireball dealing [Damage] Damages and applying [Burn]'
   m_DescriptionVariables:
   - Name: Damage
     WithIcon: 1
@@ -95,8 +95,17 @@ MonoBehaviour:
   m_Damage: 35
   m_ExecutionDamage: 0
   m_Damages:
-  - m_BaseValue: 35
+  - m_BaseValue: 10
     m_DamageCategory: 1
+    m_HitCategory: 1
+    m_SpellPropertyScaling:
+      Property: 2
+      Value: 0.1
+      ScalingType: 0
+      RoundingType: 0
+      ScalingTresholds: []
+  - m_BaseValue: 25
+    m_DamageCategory: 2
     m_HitCategory: 1
     m_SpellPropertyScaling:
       Property: 2

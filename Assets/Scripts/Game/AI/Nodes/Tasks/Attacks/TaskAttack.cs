@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using AI;
 using Data;
+using Data.DataStructures.SpellSubStructures;
 using Enums;
 using Game;
 using Game.Character;
 using Game.Loaders;
 using MyBox;
 using Tools;
+using Unity.Loading;
 using UnityEngine;
 
 public enum ESpellTypeCategory
@@ -56,7 +58,7 @@ public class TaskAttack : BaseTask
         m_SpellCategories[ESpellTypeCategory.Heal]                  = IsAllowed(ESpellTypeCategory.Heal)                ? FilterSpellsByProperty(ESpellProperty.Heal)       : new List<ESpell>() { };
         m_SpellCategories[ESpellTypeCategory.Buff]                  = IsAllowed(ESpellTypeCategory.Buff)                ? FilterSpellsByType(ESpellType.Buff)               : new List<ESpell>() { };
         m_SpellCategories[ESpellTypeCategory.ConsumeStateEffect]    = IsAllowed(ESpellTypeCategory.ConsumeStateEffect)  ? FilterSpellsWithConsumeStateEffect()              : new List<ESpell>() { };
-        m_SpellCategories[ESpellTypeCategory.Damage]                = IsAllowed(ESpellTypeCategory.Damage)              ? FilterSpellsByProperty(ESpellProperty.Damage)    : new List<ESpell>() { };
+        m_SpellCategories[ESpellTypeCategory.Damage]                = IsAllowed(ESpellTypeCategory.Damage)              ? FilterSpellsByProperty(ESpellProperty.Damage)     : new List<ESpell>() { };
         m_SpellCategories[ESpellTypeCategory.AutoAttack]            = IsAllowed(ESpellTypeCategory.AutoAttack)          ? new List<ESpell>() { m_SpellHandler.AutoAttack }  : new List<ESpell>() { };
     }
 
@@ -361,21 +363,32 @@ public class TaskAttack : BaseTask
             }
 
             // check has property expected and that property has a value
-            if (!spellInfos.ContainsKey(property.ToString()) || !float.TryParse(spellInfos[property.ToString()].ToString(), out value))
-                continue;
+            if (spellInfos.ContainsKey(property.ToString()))
+            {
+                if (property == ESpellProperty.Damage)
+                {
+                    if (spellInfos[ESpellProperty.Damage.ToString()] is not List<SDamage> allDamage || allDamage.IsNullOrEmpty())
+                        continue;
+
+                    value = allDamage.Sum(t => t.Get(m_Controller.CharacterLevel, null, null));
+                }
+
+                if (!float.TryParse(spellInfos[property.ToString()].ToString(), out value))
+                    continue;
+            }
 
             // filter by damages
             if (value > 0)
+            {
+                int j = 0;
+                for (j = 0; j < spells.Count; j++)
                 {
-                    int j = 0;
-                    for (j = 0; j < spells.Count; j++)
-                    {
-                        if (spells[j].Value < value)
-                            break;
-                    }
-
-                    spells.Insert(j, (spell, value));
+                    if (spells[j].Value < value)
+                        break;
                 }
+
+                spells.Insert(j, (spell, value));
+            }
         }
 
         return spells.Select(t => t.Spell).ToList();
@@ -423,18 +436,23 @@ public class TaskAttack : BaseTask
     {
         // check if has any state that consumes the state effect
         var stateEffects = new List<EStateEffect>();
-        foreach (var stateEffectData in spellData.EnemyStateEffects)
+        var infos = spellData.GetInfo();
+        if (! infos.ContainsKey("Effects"))
+            return stateEffects;
+
+        foreach (var stateEffectData in infos["Effects"] as List<SStateEffectData>)
         {
             var consumState = SpellLoader.GetStateEffect(stateEffectData.StateEffect.ToString()).ConsumeState;
             if (consumState != EStateEffect.None)
             {
                 stateEffects.Add(consumState);
             }
-        }
 
-        foreach (SpellData onHit in spellData.OnHit)
-        {
-            stateEffects.Concat(GetConsumeStateEffects(onHit));
+            if (stateEffectData.StateEffect == EStateEffect.IceBreak)
+            {
+                stateEffects.Add(EStateEffect.Frozen);
+                stateEffects.Add(EStateEffect.Frostbite);
+            }
         }
 
         return stateEffects;

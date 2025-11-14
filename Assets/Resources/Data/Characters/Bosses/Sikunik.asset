@@ -13,15 +13,17 @@ MonoBehaviour:
   m_Name: Sikunik
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 
-  m_DescriptionVariables: []
+  m_Description: "An ancient azure-flame dragon lies in a deep, timeless slumber.
+    \nIts frozen flames, cold as glacial winds, shimmer with an otherworldly blue
+    light. \nWoe to anyone who wakes this dragon, for to rouse it is to unleash its
+    chilling wrath upon the world."
   m_SpellElements: 
   m_AutoAttack: BlueMeteor
   m_SpecialAbility: DragonicRest
   m_Ultimate: Soaring
   Size: 4
   BaseSpeed: 1
-  BaseHealth: 3500
+  BaseHealth: 3600
   MaxEnergy: 100
   BaseEnergy: 0
   PassiveEnergyGain: 1
@@ -29,21 +31,43 @@ MonoBehaviour:
   HealthScaleFactor: 0.15
   CharacterStatScaling:
   - StateEffectProperty: 4
-    BaseValue: 750
+    BaseValue: 1000
     BonusValue: 0
     ScalingFactor: 0.15
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
   - StateEffectProperty: 5
     BaseValue: 30
     BonusValue: 0
-    ScalingFactor: 0.12
+    ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
-  - StateEffectProperty: 26
-    BaseValue: 25
+  - StateEffectProperty: 30
+    BaseValue: 35
+    BonusValue: 0
+    ScalingFactor: 0.13
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 107
+    BaseValue: 0.5
     BonusValue: 0
     ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 8
+    BaseValue: 0.1
+    BonusValue: 0
+    ScalingFactor: 0.15
+    DamageCategories: 02000000
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers: []

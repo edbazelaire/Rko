@@ -12,33 +12,59 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
   m_Name: AshhowlLunassian
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
+  m_SpellElements: 
   m_AutoAttack: FrostFireOrb
   m_SpecialAbility: FireBomb
   m_Ultimate: Howling
   Size: 1.75
   BaseSpeed: 0.5
-  BaseHealth: 1850
+  BaseHealth: 2200
   MaxEnergy: 100
   BaseEnergy: 0
+  PassiveEnergyGain: 1
   IsStructure: 0
-  HealthScaleFactor: 0.12
+  HealthScaleFactor: 0.14
   CharacterStatScaling:
-  - StateEffectProperty: 8
+  - StateEffectProperty: 30
+    BaseValue: 50
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 40
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 01000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 40
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 107
     BaseValue: 0.1
     BonusValue: 0
-    ScalingFactor: 0.12
+    ScalingFactor: 0.15
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
     StateEffectStackFactors: []
   - StateEffectProperty: 3
     BaseValue: 0.1
     BonusValue: 0
     ScalingFactor: 0.1
-    StateEffectStackFactors: []
-  - StateEffectProperty: 5
-    BaseValue: 10
-    BonusValue: 0
-    ScalingFactor: 0.15
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers: []

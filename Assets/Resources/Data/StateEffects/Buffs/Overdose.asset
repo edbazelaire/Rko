@@ -12,11 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3afb6c196390e944c8b6a72ff8fccec4, type: 3}
   m_Name: Overdose
   m_EditorClassIdentifier: 
-  m_Description: 
+  m_Description: 'Consume [Poison] and [Infected] stacks on the enemies.
+
+    Each
+    stack of [Poison] grants +1 stack of <I>Overdose</i> and [Infected] grants +3.
+
+
+    Increase
+    NeedleJack''s {{ExecutionDamage}} by [BonusDamage.Execution] and his speed by
+    [SpeedBonus] for each stacks.
+
+    Also increase {{DotDamage}} by [BonusDamagePerc.Dot]
+
+    A
+    stack is removed each [Duration] seconds.'
   m_DescriptionVariables: 
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 1
-  m_VisualEffects: []
   m_GfxEffects:
   - Prefab: {fileID: 1923825553450198, guid: c4edd677b1162524994a73a128303bb1, type: 3}
     MaterialEffect: {fileID: 0}
@@ -33,6 +46,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 5
     IsFollowing: 1
+    IsReplacingGFX: 0
     Offset: {x: -0.1, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -52,6 +66,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 5
     IsFollowing: 1
+    IsReplacingGFX: 0
     Offset: {x: -0.1, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -63,27 +78,48 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
+  m_EndWithShield: 0
+  m_EndAt0Stacks: 1
+  m_RefreshShield: 1
+  m_RefreshDuration: 1
   m_Priority: 0
+  m_Delay: 0
   m_Duration: 3
+  m_StartingStacks: 1
   m_MaxStacks: 25
   m_StackDecay: -1
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats:
-  - StateEffectProperty: 101
-    BaseValue: 0.05
-    LevelScalingFactor: 0
-    StackScalingFactor: 1
   - StateEffectProperty: 3
     BaseValue: 0.01
     LevelScalingFactor: 0.05
     StackScalingFactor: 1
-  - StateEffectProperty: 22
-    BaseValue: 5
+    ScalesOnMissingHealth: 0
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+  - StateEffectProperty: 8
+    BaseValue: 0.05
+    LevelScalingFactor: 0
+    StackScalingFactor: 1
+    ScalesOnMissingHealth: 0
+    DamageCategories: 
+    HitCategories: 02000000
+    SpecialConditions: []
+  - StateEffectProperty: 7
+    BaseValue: 3
     LevelScalingFactor: 0.1
     StackScalingFactor: 1
+    ScalesOnMissingHealth: 0
+    DamageCategories: 
+    HitCategories: 03000000
+    SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects: []
   m_HoldingStateEffects: []

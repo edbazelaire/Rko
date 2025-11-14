@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 0}
@@ -64,12 +63,11 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
+  m_MaxHit: 1
   m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 0
-  m_ExecutionDamage: 0
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -83,11 +81,6 @@ MonoBehaviour:
     m_Targets: 
   m_SpellsScalingLevel:
   - Property: 2
-    Value: 0.1
-    ScalingType: 0
-    RoundingType: 2
-    ScalingTresholds: []
-  - Property: 1
     Value: 0.1
     ScalingType: 0
     RoundingType: 2
@@ -115,6 +108,8 @@ MonoBehaviour:
       BaseValue: 1
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
   IsChanneling: 0
@@ -130,8 +125,9 @@ MonoBehaviour:
   Animation: 2
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 1
-  m_Cooldown: 10
+  m_Cooldown: 8
   SubSpellData: {fileID: 11400000, guid: 4db7da086d6ad4c48967434d89239fe6, type: 2}
   m_UseAutoAttack: 0
   m_OverridingSubData: []

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 1
   m_Description: Creates a wall of shadow slowing the enemies that passes throught
-    it. Applies 5 stacks of [Cursed] and [Frost].\nThe wall last for {0} seconds
+    it. Applies 5 stacks of [Cursed] and [Frost].\nThe wall last for [Duration] seconds
     or until destruction
   m_DescriptionVariables:
   - Name: Duration
@@ -26,6 +26,7 @@ MonoBehaviour:
   Graphics: {fileID: 0}
   SpellEventActions: []
   OnHit: []
+  PassiveEffects: []
   SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -49,12 +50,13 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
+  m_MaxHit: 1
   m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
   m_ExecutionDamage: 0
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -65,6 +67,7 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
+    m_Targets: 
   m_SpellsScalingLevel:
   - Property: 4
     Value: 0.25
@@ -76,34 +79,108 @@ MonoBehaviour:
     ScalingType: 1
     RoundingType: 2
     ScalingTresholds: []
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
   m_Size: 1
   TriggerPlayer: 1
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
   EnemyStateEffects: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 0
   IsCancellable: 0
+  IsInterruptable: 1
   AnimationTimer: 0.7
   m_Cooldown: 45
   m_IsUnique: 1
   m_DestroySpawnsOnEnd: 1
   m_SpawnTarget:
-    m_MultiProjectileSpawn: 0
-    m_ZoneSize: 0
-    m_NBreakPoints: 0
-    m_OffsetMin:
-      X: 0
-      Y: 0
-    m_OffsetMax:
-      X: 0
-      Y: 0
+    m_SpellTargetX:
+      m_Dimension: 1
+      m_MultiSpellTarget: 0
+      m_ZoneSize: -1
+      m_NBreakPointMargin:
+        Min: 0
+        Max: 0
+      m_NBreakPoints: 0
+      m_OffsetMinMax:
+        Min: 0
+        Max: 0
+    m_SpellTargetY:
+      m_Dimension: 2
+      m_MultiSpellTarget: 0
+      m_ZoneSize: -1
+      m_NBreakPointMargin:
+        Min: 0
+        Max: 0
+      m_NBreakPoints: 0
+      m_OffsetMinMax:
+        Min: 0
+        Max: 0
   m_NSpawns: 1
+  m_Waves:
+    WaveSpawns: []
+  m_WavesGraphics: []
   m_SpawnElements:
   - CharacterName: DarkVeil
     m_MaxSpawns: -1
+    m_NSpawns: 1
     m_SpawnProbability: 1
     m_BonusLevel: 0
     m_SpawnInterval: 0
     m_Delay: 0
     m_Duration: -1
+    m_RecalculatePosition: 0
+    m_SpawnPosition:
+      m_SpellTargetX:
+        m_Dimension: 1
+        m_MultiSpellTarget: 0
+        m_ZoneSize: -1
+        m_NBreakPointMargin:
+          Min: 0
+          Max: 0
+        m_NBreakPoints: 0
+        m_OffsetMinMax:
+          Min: 0
+          Max: 0
+      m_SpellTargetY:
+        m_Dimension: 2
+        m_MultiSpellTarget: 0
+        m_ZoneSize: -1
+        m_NBreakPointMargin:
+          Min: 0
+          Max: 0
+        m_NBreakPoints: 0
+        m_OffsetMinMax:
+          Min: 0
+          Max: 0
+  SpawnElements: []

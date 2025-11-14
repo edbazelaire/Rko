@@ -15,7 +15,9 @@ namespace Game.UI.GameUI
         TMP_Text m_Text;
 
         float m_Timer;
+        bool m_IsOverTimer;
         public float Timer => m_Timer;
+        public bool IsOverTimer => m_IsOverTimer;
 
         #endregion
 
@@ -32,10 +34,11 @@ namespace Game.UI.GameUI
         public virtual void Initialize(int gameDuration)
         {
             m_GameDuration = gameDuration;
+            m_IsOverTimer = false;
 
             base.Initialize();
 
-            if (m_GameDuration < 0)
+            if (m_GameDuration <= 0)
             {
                 gameObject.SetActive(false);
             }
@@ -56,7 +59,7 @@ namespace Game.UI.GameUI
 
         private void Update()
         {
-            if (!GameManager.Exists || !GameManager.IsGameRunning || m_Timer == 0)
+            if (!GameManager.Exists || !GameManager.IsGameRunning || m_Timer <= 0)
                 return;
 
             m_Timer -= Time.deltaTime;
@@ -70,7 +73,9 @@ namespace Game.UI.GameUI
                 return;
 
             if (m_Timer <= 0)
+            {
                 GameManager.TimerEndedEvent?.Invoke();
+            }
         }
 
         void RefreshTimer()
@@ -79,6 +84,23 @@ namespace Game.UI.GameUI
             int seconds = (int)m_Timer - minutes * 60;
             string adj = seconds < 10 ? "0" : "";
             m_Text.text = $"{minutes}:{adj}{seconds}";
+        }
+
+        #endregion
+
+
+        #region Start Timer
+
+        public void StartOverTime(float timer)
+        {
+            if (timer <= 0)
+                return;
+
+            m_IsOverTimer = true;
+
+            m_Timer = timer;
+            m_Text.color = Color.red;
+            m_Text.text = timer.ToString();
         }
 
         #endregion

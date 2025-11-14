@@ -1,7 +1,6 @@
 ﻿using Enums;
 using Game.Loaders;
 using Game.StateEffects.Quests;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -26,6 +25,7 @@ namespace Game.UI
             EStateEffect.Jump.ToString(),
             EStateEffect.BlockCast.ToString(),
             EStateEffect.BlockMovement.ToString(),
+            EStateEffect.BlockEnergyGain.ToString(),
             EStateEffect.SpecialAnimation.ToString(),
             EStateEffect.Vanish.ToString(),
         };
@@ -115,7 +115,7 @@ namespace Game.UI
 
         #region State Displayer
 
-        void OnStateEffectEvent(EStateEffectEvent stateEffectEvent, string state, int stacks, int maxStacks, float duration)
+        void OnStateEffectEvent(EStateEffectEvent stateEffectEvent, string state, int stacks, int maxStacks, float duration, float timer)
         {
             if (!isActiveAndEnabled)
                 return;
@@ -132,16 +132,16 @@ namespace Game.UI
             {
                 case EStateEffectEvent.OnApplied:
                 case EStateEffectEvent.OnActivated:
-                    AddState(state, stacks, maxStacks, duration, stateEffectData.StartingStacks);
+                    AddState(state, stacks, maxStacks, duration, timer, stateEffectData.StartingStacks);
                     break;
 
                 case EStateEffectEvent.OnRefreshed:
-                    UpdateStacks(state, stacks, maxStacks, duration, stateEffectData.StartingStacks);
+                    UpdateStacks(state, stacks, maxStacks, duration, timer, stateEffectData.StartingStacks);
                     break;
 
                 case EStateEffectEvent.OnRemoved:
                 case EStateEffectEvent.OnConsumed:
-                    UpdateStacks(state, -stacks, maxStacks, duration, stateEffectData.StartingStacks);
+                    UpdateStacks(state, -stacks, maxStacks, duration, timer, stateEffectData.StartingStacks);
                     break;
 
                 case EStateEffectEvent.OnDeactivated:
@@ -161,13 +161,13 @@ namespace Game.UI
             }
         }
 
-        void AddState(string stateEffect, int stacks, int maxStacks, float duration, int startingStacks)
+        void AddState(string stateEffect, int stacks, int maxStacks, float duration, float timer, int startingStacks)
         {
             // if already in existing state, refresh it
             if (m_StateEffectsUI.ContainsKey(stateEffect))
             {
                 // initialize the state (or refresh it)
-                m_StateEffectsUI[stateEffect].Refresh(duration, stacks, maxStacks);
+                m_StateEffectsUI[stateEffect].Refresh(duration, timer, stacks, maxStacks);
                 return;
             }
 
@@ -178,16 +178,16 @@ namespace Game.UI
             m_StateEffectsUI[stateEffect].Initialize(stateEffect, stacks, maxStacks, duration, startingStacks);
         }
 
-        void UpdateStacks(string stateEffect, int stacks, int maxStacks, float duration, int startingStacks)
+        void UpdateStacks(string stateEffect, int stacks, int maxStacks, float duration, float timer, int startingStacks)
         {
             if (! m_StateEffectsUI.ContainsKey(stateEffect))
             {
                 ErrorHandler.Warning($"UpdateStacks ({stacks}) of {stateEffect} but this state effect UI was not found");
-                AddState(stateEffect, stacks, maxStacks, duration, startingStacks);
+                AddState(stateEffect, stacks, maxStacks, duration, timer, startingStacks);
                 return;
             }
 
-            m_StateEffectsUI[stateEffect].AddStacks(stacks, maxStacks, duration);
+            m_StateEffectsUI[stateEffect].AddStacks(stacks, maxStacks, duration, timer);
         }
 
         void RemoveState(string stateEffect)

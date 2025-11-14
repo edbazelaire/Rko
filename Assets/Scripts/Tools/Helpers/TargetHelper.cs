@@ -11,8 +11,10 @@ namespace Tools.Helpers
     {
         #region Members
 
-        public static int ALL_LAYER_MASK    = LayerMask.GetMask(ETargetLayer.Player.ToString(), ETargetLayer.Structure.ToString());
-        public static int PLAYER_LAYER_MASK = LayerMask.GetMask(ETargetLayer.Player.ToString());
+        public static int DEFAULT_LAYER_MASK    = LayerMask.GetMask(ETargetLayer.Player.ToString(), ETargetLayer.Structure.ToString());
+        public static int ALL_LAYER_MASK        = LayerMask.GetMask(ETargetLayer.Player.ToString(), ETargetLayer.Structure.ToString(), ETargetLayer.Counter.ToString());
+        public static int PLAYER_LAYER_MASK     = LayerMask.GetMask(ETargetLayer.Player.ToString());
+        public static int COUNTER_LAYER_MASK    = LayerMask.GetMask(ETargetLayer.Counter.ToString());
 
         #endregion
 

@@ -34,9 +34,9 @@ namespace Game.Spells
 
         #region Activation / Deactivation
 
-        public override void Activate()
+        protected override void OnActivated()
         {
-            base.Activate();
+            base.OnActivated();
 
             m_IsThresholReached = false;
             RecalculateDamage();
@@ -71,7 +71,7 @@ namespace Game.Spells
         protected virtual void CheckCollisions()
         {
             // setup layer filter 
-            var filter = Physics2DQueries.BuildFilter(TargetHelper.ALL_LAYER_MASK);
+            var filter = Physics2DQueries.BuildFilter(TargetHelper.DEFAULT_LAYER_MASK);
 
             // Check for collisions within a circle with variableRadius radius
             Collider2D[] hits = new Collider2D[32];
@@ -132,39 +132,43 @@ namespace Game.Spells
 
         void RecalculateSize()
         {
-            var bonusStats = m_BonusStats.FirstOrDefault(t => t.StateEffectProperty == EStateEffectProperty.Size);
-            if (bonusStats == default)
+            var bonusStat = m_BonusStats.FirstOrDefault(t => t.StateEffectProperty == EStateEffectProperty.Size);
+            if (bonusStat == default)
             {
                 ErrorHandler.Warning("Unable to find the bonus stats for Size in " + name);
                 return;
             }
 
-            bonusStats.BaseValue = m_HpToSizeConversion * m_Controller.Life.MaxHp.Value;
+            bonusStat.BaseValue = m_HpToSizeConversion * m_Controller.Life.MaxHp.Value;
+            ErrorHandler.Log($"{StateEffectName} - {bonusStat.GetKeyName()} : {bonusStat.Get(m_Level, m_Stacks):F2}", ELogTag.StatConversion);
+
             m_Controller.StateHandler.RecalculateBonus();
         }
 
         void RecalculateDamage()
         {
-            var bonusStats = m_BonusStats.FirstOrDefault(t => t.StateEffectProperty == EStateEffectProperty.BonusDamagePerc);
-            if (bonusStats == default)
+            var bonusStat = m_BonusStats.FirstOrDefault(t => t.StateEffectProperty == EStateEffectProperty.Power);
+            if (bonusStat == default)
             {
                 ErrorHandler.Warning("Unable to find the bonus stats for BonusDamagePerc in " + name);
                 return;
             }
 
-            bonusStats.BaseValue = m_SizeToDamageConversion * m_Controller.StateHandler.Size;
+            bonusStat.BaseValue = 100 * m_SizeToDamageConversion * m_Controller.StateHandler.Size;
+            ErrorHandler.Log($"{StateEffectName} - {bonusStat.GetKeyName()} : {bonusStat.Get(m_Level, m_Stacks):F2}", ELogTag.StatConversion);
         }
 
         void RecalculateHeal()
         {
-            var bonusStats = m_BonusStats.FirstOrDefault(t => t.StateEffectProperty == EStateEffectProperty.BonusHealPerc);
-            if (bonusStats == default)
+            var bonusStat = m_BonusStats.FirstOrDefault(t => t.StateEffectProperty == EStateEffectProperty.BonusHealPerc);
+            if (bonusStat == default)
             {
                 ErrorHandler.Warning("Unable to find the bonus stats for BonusHealPerc in " + name);
                 return;
             }
 
-            bonusStats.BaseValue = m_SizeToDamageConversion * m_Controller.StateHandler.Size;
+            bonusStat.BaseValue = m_SizeToDamageConversion * m_Controller.StateHandler.Size;
+            ErrorHandler.Log($"{StateEffectName} - {bonusStat.GetKeyName()} : {bonusStat.Get(m_Level, m_Stacks):F2}", ELogTag.StatConversion);
         }
 
         void CheckSizeThreshold()
@@ -228,10 +232,14 @@ namespace Game.Spells
 
         public override string GetDescription()
         {
+            var power = m_BonusStats.FirstOrDefault(t => t.StateEffectProperty == EStateEffectProperty.Power);
+            power.BaseValue = m_SizeToDamageConversion * 100;
+
             string description = base.GetDescription();
             description = description.Replace("[SizeThreshold]", m_SizeThreshold.ToString());
             description = description.Replace("[HpToSizeConversion]", (m_HpToSizeConversion * 100).ToString("F2") + "%");
             description = description.Replace("[SizeToDamageConversion]", Math.Round(m_SizeToDamageConversion * 100).ToString() + "%");
+            description = description.Replace("[BonusPower]", power.Get(m_Level, 1).ToString());
             description = description.Replace("[TickDamageHpPerc]", Math.Round(m_TickDamageHpPerc * 100).ToString() + "%");
             return description;
         }

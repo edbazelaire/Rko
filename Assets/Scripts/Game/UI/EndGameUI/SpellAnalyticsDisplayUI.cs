@@ -16,7 +16,7 @@ namespace Game.UI.EndGameUI
     public class SpellAnalyticsDisplayUI : MObject
     {
         #region Members
-        EHitType[] m_HitTypeDisplayOrder => new EHitType[3] { EHitType.Damage, EHitType.Heal, EHitType.Shield };
+        EHitType[] m_HitTypeDisplayOrder => new EHitType[4] { EHitType.PhysicalDamage, EHitType.MagicalDamage, EHitType.Heal, EHitType.Shield };
 
         // ====================================================================================
         // Data

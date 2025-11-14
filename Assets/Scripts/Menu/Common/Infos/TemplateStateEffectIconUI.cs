@@ -92,10 +92,10 @@ namespace Menu.Common.Infos
 
         protected virtual void DisplayStacks()
         {
-            if (m_StateEffectData.GetStacks() > 1)
+            if (m_StateEffectData.GetStacks(m_Level) > 1)
             {
                 m_StateEffectTextContainer.gameObject.SetActive(true);
-                m_StateEffectText.text = m_StateEffectData.GetStacks().ToString();
+                m_StateEffectText.text = m_StateEffectData.GetStacks(m_Level).ToString();
             }
             else
             {

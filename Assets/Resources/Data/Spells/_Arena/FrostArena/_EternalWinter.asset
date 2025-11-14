@@ -13,10 +13,7 @@ MonoBehaviour:
   m_Name: _EternalWinter
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: On death, resurrect your character with {0} hp
-  m_DescriptionVariables:
-  - Name: Heal
-    WithIcon: 1
+  m_Description: On death, resurrect your character with [Heal] hp
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
@@ -36,6 +33,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 5
     IsFollowing: 0
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 8
     SpellAnimation: 
@@ -55,6 +53,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 0
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -84,13 +83,12 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
+  m_MaxHit: 1
   m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 0
-  m_ExecutionDamage: 0
-  m_Heal: 500
+  m_Damages: []
+  m_Heal: 1200
   m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
@@ -103,12 +101,43 @@ MonoBehaviour:
     m_Targets: 
   m_SpellsScalingLevel:
   - Property: 1
-    Value: 0.15
+    Value: 0.16
     ScalingType: 0
     RoundingType: 0
     ScalingTresholds: []
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
   m_Size: 1
   TriggerPlayer: 1
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
   EnemyStateEffects: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
@@ -116,6 +145,7 @@ MonoBehaviour:
   Animation: 0
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0
   m_Cooldown: 0
   IsAttachedToTarget: 0

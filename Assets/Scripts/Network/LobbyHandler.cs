@@ -254,8 +254,19 @@ namespace Network
                         if (GameMode == EGameMode.Arena)
                         {
                             playerData.SetPowerUps(ProgressionCloudData.CurrentArena.GetActivePowerUps());
+
                             // if a specific build data was locked for this run, use it. Otherwise, use current selected build
-                            playerData.SetBuild(ProgressionCloudData.CurrentArena.HasBuildData() ? ProgressionCloudData.CurrentArena.BuildData : CharacterBuildsCloudData.CurrentBuild);
+                            SBuildData build = default;
+                            if(ProgressionCloudData.CurrentArena.HasBuildData())
+                            {
+                                build = ProgressionCloudData.CurrentArena.BuildData;
+                                build.CharacterLevel = ProgressionCloudData.CurrentArena.GetCharacterLevel();
+                            } else
+                            {
+                                build = CharacterBuildsCloudData.GetCharacterCurrentBuild(ProgressionCloudData.CurrentArena.GetCharacter());
+                            }
+
+                            playerData.SetBuild(build);
                         }
 
                         // send self data to the GameManager

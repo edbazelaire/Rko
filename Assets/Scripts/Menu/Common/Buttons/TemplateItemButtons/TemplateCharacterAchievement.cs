@@ -3,6 +3,7 @@ using Menu.Common.Buttons;
 using Save;
 using TMPro;
 using Tools;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -27,11 +28,6 @@ namespace Menu.Common.Buttons
             m_MasteryText = Finder.FindComponent<TMP_Text>(m_Lock, "MasteryText");
         }
 
-        public override void Initialize()
-        {
-            base.Initialize();
-        }
-
         protected override void SetUpUI()
         {
             base.SetUpUI();
@@ -43,6 +39,18 @@ namespace Menu.Common.Buttons
 
         #region GUI Manipulators
 
+        protected override void RefreshUI()
+        {
+            if (this.IsDestroyed())
+            {
+                ErrorHandler.Error("Trying to RefreshUI() of TemplateAchievementButton but button is destroyed");
+                return;
+            }
+
+            base.RefreshUI();
+            RefreshLock();
+        }
+
         void RefreshLock()
         {
             if (m_AchievementData.IsMasteryUnlocked())
@@ -53,21 +61,6 @@ namespace Menu.Common.Buttons
 
             m_Lock.SetActive(true);
             m_MasteryText.text = "Mastery " + TextHandler.ToRoman(InventoryCloudData.Instance.GetCollectable(m_AchievementData.Character).Mastery + 1);
-        }
-
-        #endregion
-
-
-        #region Listeners
-
-        protected override void RegisterListeners()
-        {
-            base.RegisterListeners();
-        }
-
-        protected override void UnRegisterListeners()
-        {
-            base.UnRegisterListeners();
         }
 
         #endregion

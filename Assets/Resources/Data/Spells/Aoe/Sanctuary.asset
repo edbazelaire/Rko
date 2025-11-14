@@ -13,15 +13,8 @@ MonoBehaviour:
   m_Name: Sanctuary
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: Conjures a protective zone that restores {0} health every {1} seconds
-    for {2} seconds.
-  m_DescriptionVariables:
-  - Name: TickHeal
-    WithIcon: 1
-  - Name: DurationTick
-    WithIcon: 0
-  - Name: Duration
-    WithIcon: 1
+  m_Description: Conjures a protective zone that restores [TickHeal] health every
+    [DurationTick] seconds for [Duration] seconds.
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 8179447634951739534, guid: a98bb070248f37942b1ca92fd54510d9, type: 3}
@@ -55,8 +48,7 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 3
   EnergyCost: 0
-  m_Damage: 0
-  m_ExecutionDamage: 0
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -97,6 +89,8 @@ MonoBehaviour:
       BaseValue: 1
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
   IsChanneling: 0
@@ -112,14 +106,15 @@ MonoBehaviour:
   Animation: 9
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.2
   m_Cooldown: 20
   m_SpellSpawn: 1
   DurationTick: 0.5
-  m_TickDamage: 0
-  m_TickHeal: 35
-  m_TickShield: 0
-  m_TickEnergy: 0
+  m_DotDamage: 0
+  m_DotHeal: 35
+  m_DotShield: 0
+  m_DotEnergy: 0
   m_ZoneForce:
     m_Speed: 0
     m_Duration: 0

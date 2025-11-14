@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 1
   m_Description: Hurls a blade of frozen silence that pierces the target, dealing
-    {0} execution damage and applying [IceBreak].
+    [Damage] damage and applying [IceBreak].
   m_DescriptionVariables:
   - Name: ExecutionDamage
     WithIcon: 1
@@ -94,6 +94,15 @@ MonoBehaviour:
   m_Damage: 0
   m_ExecutionDamage: 175
   m_Damages:
+  - m_BaseValue: 50
+    m_DamageCategory: 2
+    m_HitCategory: 1
+    m_SpellPropertyScaling:
+      Property: 0
+      Value: 0.1
+      ScalingType: 0
+      RoundingType: 2
+      ScalingTresholds: []
   - m_BaseValue: 175
     m_DamageCategory: 1
     m_HitCategory: 3

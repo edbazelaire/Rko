@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: ExtraClaws
   m_EditorClassIdentifier: 
   m_Rarety: 1
-  m_Description: Gain extra projectiles on auto attack for [Duration] seconds
-  m_DescriptionVariables: []
+  m_Description: Gain one extra projectile on auto attack for [Duration] seconds
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
@@ -44,12 +43,11 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
+  m_MaxHit: 1
   m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 0
-  m_ExecutionDamage: 0
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -72,8 +70,39 @@ MonoBehaviour:
     ScalingType: 0
     RoundingType: 2
     ScalingTresholds: []
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
   m_Size: 1
   TriggerPlayer: 1
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
   EnemyStateEffects: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
@@ -81,5 +110,6 @@ MonoBehaviour:
   Animation: 9
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.7
-  m_Cooldown: 45
+  m_Cooldown: 60

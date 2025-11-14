@@ -119,7 +119,7 @@ namespace Save
         public static bool ApplyPreventiveLoss(EGameMode gameMode)
         {
             // debug tool
-            if (Main.StopPreventiveLoss)
+            if (Main.CheatMode)
                 return false;
 
             switch (gameMode)
@@ -151,8 +151,11 @@ namespace Save
 
         public static void UpdateLeagueValue(bool up, int nTimes = 1, bool save = true)
         {
-            var leagueCloudData = LeagueCloudData;
+            if (LeagueCloudData.CurrentLeague == LeagueDataConfig.MaxLeague)
+                return;
 
+            var leagueCloudData = LeagueCloudData;
+            
             // Check that nTimes is only 1 or 2, other cases should not occure
             if (nTimes != 1 && nTimes != 2)
             {
@@ -283,16 +286,7 @@ namespace Save
             if (!UnlockedArenas.ContainsKey(arenaType))
                 return false;
 
-            // not unlocked difficulty
-            if (UnlockedArenas[arenaType] < arenaDifficulty)
-                return false;
-
-            // is below max unlocked difficulty
-            if (UnlockedArenas[arenaType] > arenaDifficulty)
-                return true;
-
-            // check is last arena and all reward of that arena has been collected
-            return arenaDifficulty == ProgressionCloudData.MaxArenaDifficulty && UnlockedArenaRewards.ContainsKey(arenaType) && UnlockedArenaRewards[arenaType] >= new SArenaPosition(arenaDifficulty, 4, 2);
+            return UnlockedArenas[arenaType] > arenaDifficulty;
         }
 
         public static SArenaPosition GetUnlockedArenaReward(EArenaType arenaType)
@@ -422,8 +416,6 @@ namespace Save
                 return;
             }
 
-            Debug.Log("SETTING PowerUp (" + powerUpName + ") at index " + index);
-
             currentArena.PowerUps[index] = powerUpName;
             Instance.m_Data[KEY_CURRENT_ARENA] = currentArena;
 
@@ -455,14 +447,20 @@ namespace Save
         /// <param name="save"></param>
         public static void UnlockNextArenaDifficulty(EArenaType arenaType, bool save = true)
         {
+            bool wasLastDifficulty = UnlockedArenas[arenaType] == MaxArenaDifficulty;
+
             // unlock next difficulty
             UnlockedArenas[arenaType]++;
 
-            // notify the player
-            NotificationCloudData.AddUnlockedArena(arenaType);
+            // set new difficulty as current difficulty (if not last difficulty)
+            if (! wasLastDifficulty)
+            {
+                // notify the player
+                NotificationCloudData.AddUnlockedArena(arenaType);
 
-            // set unlocked arena as currently selected difficulty
-            PlayerPrefsHandler.SetArenaDifficulty(arenaType, UnlockedArenas[arenaType]);
+                // set unlocked arena as currently selected difficulty
+                PlayerPrefsHandler.SetArenaDifficulty(arenaType, UnlockedArenas[arenaType]);
+            }
 
             if (save)
                 Instance.SaveValue(KEY_UNLOCKED_ARENAS);
@@ -515,12 +513,13 @@ namespace Save
         /// </summary>
         /// <param name="arenaType"></param>
         /// <param name="arenaDifficulty"></param>
-        public static void CreateNewCurrentArena(EArenaType arenaType, SArenaDifficulty arenaDifficulty, List<EArenaMod> arenaMods, SBuildData buildData)
+        public static void CreateNewCurrentArena(EArenaType arenaType, SArenaDifficulty arenaDifficulty, List<EArenaMod> arenaMods, ECharacter character, SBuildData buildData)
         {
             Instance.SetData(KEY_CURRENT_ARENA, new SCurrentArenaCloudData(
                 arenaType,
                 arenaDifficulty:    arenaDifficulty,
                 arenaMods:          arenaMods,
+                character:          character,
                 buildData:          buildData,
                 maxLifes:           CalculateArenaMaxLifes(arenaMods),
                 rewardRarety:       CalculateArenaRarety(arenaMods),
@@ -629,7 +628,7 @@ namespace Save
 
         public static int CalculateRefreshTokens(List<EArenaMod> arenaMods)
         {
-            if (Main.InfinitRefreshes)
+            if (Main.CheatMode)
                 return 99;
 
             int refreshTokens = ArenaManagementData.NStartRefreshes;
@@ -792,10 +791,10 @@ namespace Save
                     save = true;
                 }
                 
-                if (UnlockedArenas[arenaType] > MaxArenaDifficulty)
+                if (UnlockedArenas[arenaType] > MaxArenaDifficulty + 1)
                 {
                     ErrorHandler.Error($"UnlockedArenas {arenaType} data : has difficulty ({UnlockedArenas[arenaType]}) > MaxArenaDifficulty " + MaxArenaDifficulty);
-                    UnlockedArenas[arenaType] = MaxArenaDifficulty;
+                    UnlockedArenas[arenaType] = MaxArenaDifficulty + 1;
                     save = true;
                 }
             }

@@ -105,6 +105,7 @@ namespace Tools
         public const string c_SpritesPath                   = "Sprites/";
         
         // -- UI
+        public const string c_EndGameSprites                = c_SpritesPath + "EndGame/";
         public const string c_UISpritesPath                 = c_SpritesPath + "UI/";
         public const string c_ButtonsPath                   = c_UISpritesPath + "Buttons/";
         public const string c_CardsPath                     = c_ButtonsPath + "Cards/";
@@ -112,7 +113,6 @@ namespace Tools
         public const string c_TutoUIPath                    = c_UISpritesPath + "Tuto/";
         public const string c_OtherUIPath                   = c_UISpritesPath + "Other/";
         public const string c_CaptionsPath                  = c_TutoUIPath + "Captions/";
-        public const string c_EmotsSpritePath               = c_SpritesPath + "Emots/";
         
         // -- Backgrounds
         public const string c_BackgroundsImagePath         = c_SpritesPath + "Backgrounds/";
@@ -126,7 +126,8 @@ namespace Tools
         public const string c_AvatarsPath                   = c_ProfilePath + "Avatars/";
         public const string c_BordersPath                   = c_ProfilePath + "Borders/";
         public const string c_BadgesPath                    = c_ProfilePath + "Badges/";
-        
+        public const string c_EmotsSpritePath               = c_ProfilePath + "Emots/";
+
         // -- Icons
         public const string c_IconPath                      = c_SpritesPath + "Icons/";
         public const string c_IconCharactersPath            = c_IconPath + "Characters/";
@@ -354,6 +355,16 @@ namespace Tools
             return Load<TemplateShopItemUI>(c_TemplatesShopPath + c_TemplatePrefix + name + "Item");
         }
 
+        public static T LoadCurrencyTemplateItem<T>(ECurrency currency) where T : TemplateShopItemUI
+        {
+            T template = Load<T>(c_TemplatesShopPath + "Currency/TemplateShopItem_" + currency.ToString(), false);
+            if (template != null)
+                return template;
+
+            ErrorHandler.Warning("Unable to find template for currency : " +  currency + " - loading default");
+            return Load<T>(c_TemplatesShopPath + "Currency/TemplateShopItem_Currency");
+        }
+
         public static T LoadShopTemplateItem<T>(string name = "") where T : TemplateShopItemUI
         {
             var allTemplates = LoadAll<T>(c_TemplatesShopPath);
@@ -384,6 +395,16 @@ namespace Tools
 
             return allTemplates[0];
         }
+
+        public static T LoadChestTemplateItem<T>(EChest chest) where T : TemplateShopItemUI
+        {
+            T template = Load<T>(c_TemplatesShopPath + "Chests/TemplateShopItem_" + chest.ToString(), false);
+            if (template != null)
+                return template;
+
+            return Load<T>(c_TemplatesShopPath + "Chests/TemplateShopItem_Chest");
+        }
+
 
         public static AchievementRewardUI LoadAchievementRewardTemplate(EAchievementReward achievementReward)
         {
@@ -649,7 +670,7 @@ namespace Tools
             return Load<Sprite>(c_CardsPath + "PowerUpCards/PowerUpBorder_" + runeActivation.ToString());
         }
 
-        public static Sprite LoadMasteryBorder(int mastery)
+        public static Sprite LoadMasteryBorder(int mastery, ERarety rarety)
         {
             if (mastery <= 0)
             {
@@ -657,7 +678,8 @@ namespace Tools
                 return null;
             }
 
-            return Load<Sprite>(c_CardsPath + "MasteryBorders/MasteryBorder_" + mastery.ToString());
+            //return Load<Sprite>(c_CardsPath + "MasteryBorders/MasteryBorder_" + mastery.ToString());
+            return Load<Sprite>(c_CardsPath + "MasteryBorders/CardMastery_" + rarety.ToString() + "_" + mastery.ToString());
         }
 
         #endregion

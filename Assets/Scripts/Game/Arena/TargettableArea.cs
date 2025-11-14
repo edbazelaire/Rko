@@ -5,7 +5,7 @@ using System;
 namespace Game.Arena
 {
     [RequireComponent(typeof(BoxCollider2D))] // Required for World Space Canvas
-    public class TargettableArea : MObject, IPointerDownHandler, IDragHandler
+    public class TargettableArea : MObject
     {
         #region Members
 
@@ -25,31 +25,6 @@ namespace Game.Arena
         {
             base.FindComponents();
             m_RectTransform = GetComponent<RectTransform>();
-        }
-
-        #endregion
-
-
-        #region Input Handling
-
-        public void OnPointerDown(PointerEventData eventData)
-        {
-            SendClickPosition(eventData);
-        }
-
-        public void OnDrag(PointerEventData eventData)
-        {
-            SendClickPosition(eventData);
-        }
-
-        private void SendClickPosition(PointerEventData eventData)
-        {
-            Vector2 localPoint;
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(m_RectTransform, eventData.position, eventData.pressEventCamera, out localPoint))
-            {
-                float normalizedX = transform.position.x - localPoint.x;
-                ClickedEvent?.Invoke(normalizedX);
-            }
         }
 
         #endregion

@@ -13,10 +13,7 @@ MonoBehaviour:
   m_Name: _MultiComets
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 'Deals {0} damage and applying [EnemyStateEffect.0] and [EnemyStateEffect.1]'
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
+  m_Description: 'Deals [Damage] damage and applying [EnemyStateEffect.0] and [EnemyStateEffect.1]'
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 6631489239233227332, guid: 51d6d62dbf340c44e8509011ca22e292, type: 3}
@@ -70,10 +67,17 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 5
   EnergyCost: 0
-  m_Damage: 30
-  m_ExecutionDamage: 0
   m_Damages:
-  - m_BaseValue: 30
+  - m_BaseValue: 25
+    m_DamageCategory: 2
+    m_HitCategory: 1
+    m_SpellPropertyScaling:
+      Property: 2
+      Value: 0.1
+      ScalingType: 0
+      RoundingType: 0
+      ScalingTresholds: []
+  - m_BaseValue: 10
     m_DamageCategory: 1
     m_HitCategory: 1
     m_SpellPropertyScaling:

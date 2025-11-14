@@ -25,6 +25,7 @@ namespace Menu.MainMenu
         GameObject              m_CharacterPreviewContainer;
         Button                  m_CharacterPreviewButton;
         CharacterInfoButton     m_CharacterInfoButton;
+        Button                  m_CharacterLockedButton;
         TMP_Text                m_CharacterName; 
         CollectionFillBar       m_XpBar;
         TMP_Text                m_CharacterLevelText;
@@ -43,10 +44,10 @@ namespace Menu.MainMenu
         TemplateSpellItemUI     m_AutoAttackButton;
 
         // Local Data
-        bool                    m_CheckGameMode;
+        bool                    m_CheckGameMod;
         ECharacter              m_Character;
 
-        bool m_IsArenaMod => m_CheckGameMode && PlayerPrefsHandler.GetGameMode() == EGameMode.Arena && ProgressionCloudData.HasArenaInProgress;
+        bool m_IsArenaMod => m_CheckGameMod && PlayerPrefsHandler.GetGameMode() == EGameMode.Arena && ProgressionCloudData.HasArenaInProgress;
 
         public Button CharacterPreviewButton => m_CharacterPreviewButton;
 
@@ -57,20 +58,23 @@ namespace Menu.MainMenu
 
         public void Initialize(bool checkGameMod = false)
         {
-            m_CheckGameMode = checkGameMod;
-            m_Character = m_IsArenaMod && ProgressionCloudData.CurrentArena.HasBuildData() ? Enum.Parse<ECharacter>(ProgressionCloudData.CurrentArena.BuildData.Character) : CharacterBuildsCloudData.SelectedCharacter;
+            m_CheckGameMod = checkGameMod;
 
             m_CharacterPreviewContainer         = Finder.Find(gameObject, "CharacterPreviewContainer");
             m_CharacterPreviewButton            = Finder.FindComponent<Button>(m_CharacterPreviewContainer);
+            m_CharacterLockedButton             = Finder.FindComponent<Button>(gameObject, "CharacterLockedButton");
             m_CharacterInfoButton               = Finder.FindComponent<CharacterInfoButton>(gameObject, "CharacterInfoButton");
             m_CharacterName                     = Finder.FindComponent<TMP_Text>(gameObject, "CharacterName");
             m_XpBar                             = Finder.FindComponent<CollectionFillBar>(gameObject, "CharacterExperienceFillbar");
             m_CharacterLevelText                = Finder.FindComponent<TMP_Text>(m_XpBar.gameObject, "LevelValue");
 
+            // refresh the character that needs to be displayed
+            RefreshCharacter();
+
             // init xp bar with current character cloud data
             m_XpBar.Initialize(InventoryCloudData.Instance.GetCollectable(m_Character));
             // init CharacterInfoButton with current character cloud data
-            m_CharacterInfoButton.Initialize(m_Character, allowsUpgrade: !m_IsArenaMod);
+            m_CharacterInfoButton.Initialize(m_Character, allowsUpgrade: ! (m_IsArenaMod && ProgressionCloudData.HasArenaInProgress && ProgressionCloudData.CurrentArena.HasBuildData()));
 
             // specials components 
             SetUpCharacterSpells();
@@ -78,6 +82,7 @@ namespace Menu.MainMenu
 
             // register listeners
             m_CharacterInfoButton.Button.onClick.AddListener(OnCharacterInfoButtonClicked);
+            m_CharacterLockedButton.onClick.AddListener(OnCharacterLockedButtonClicked);
             CharacterBuildsCloudData.SelectedCharacterChangedEvent  += OnSelectedCharacterChanged;
             CharacterBuildsCloudData.CurrentBuildIndexChangedEvent  += OnCurrentRuneChanged;
             CharacterBuildsCloudData.CurrentRuneChangedEvent        += OnCurrentRuneChanged;
@@ -231,15 +236,15 @@ namespace Menu.MainMenu
 
         void RefreshCharacter()
         {
-            m_Character = CharacterBuildsCloudData.SelectedCharacter;
-            if (m_IsArenaMod && ! ProgressionCloudData.CurrentArena.BuildData.Character.IsNullOrEmpty())
+            if (! m_CheckGameMod || ! m_IsArenaMod || ! ProgressionCloudData.HasArenaInProgress || ProgressionCloudData.CurrentArena.GetCharacter() == ECharacter.None)
             {
-                if (!Enum.TryParse(ProgressionCloudData.CurrentArena.BuildData.Character, out m_Character))
-                {
-                    ErrorHandler.Error("Unable to parse current arena character into ECharacter : " + ProgressionCloudData.CurrentArena.BuildData.Character);
-                    m_Character = CharacterBuildsCloudData.SelectedCharacter;
-                }
+                m_Character = CharacterBuildsCloudData.SelectedCharacter;
+                m_CharacterLockedButton.gameObject.SetActive(false);
+                return;
             }
+
+            m_Character = ProgressionCloudData.CurrentArena.GetCharacter();
+            m_CharacterLockedButton.gameObject.SetActive(true);
         }
 
         public void LockRuneButtons(List<ERuneActivation> runesToLock)
@@ -374,11 +379,20 @@ namespace Menu.MainMenu
         {
             ScreenManager.CollectableInfoPopUp(
                 CharacterLoader.GetCharacterData(
-                    m_Character, 
-                    level: m_IsArenaMod ? ProfileCloudData.AccountLevel : InventoryCloudData.Instance.GetCollectable(m_Character).Level
-                ), 
-                infoOnly: m_IsArenaMod
+                    m_Character,
+                    level: m_IsArenaMod && ProgressionCloudData.HasArenaInProgress 
+                        ? ProgressionCloudData.CurrentArena.GetCharacterLevel() 
+                        : InventoryCloudData.Instance.GetCollectable(m_Character).Level
+                ),
+                infoOnly: m_IsArenaMod 
+                    && ProgressionCloudData.HasArenaInProgress 
+                    && ProgressionCloudData.CurrentArena.HasBuildData()
             );
+        }
+
+        void OnCharacterLockedButtonClicked()
+        {
+            ScreenManager.QuickMessage("You can not change Character until the end of the Arena");
         }
 
         #endregion

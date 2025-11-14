@@ -25,6 +25,7 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
   m_IgnoresBoosts: 0
   m_EndWithShield: 0
@@ -39,14 +40,25 @@ MonoBehaviour:
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats: []
   m_StatConversions:
-  - ExpectedStat: 16
+  - ExpectedStat: 0
+    ToStat:
+      StateEffectProperty: 16
+      BaseValue: 0
+      LevelScalingFactor: 0
+      StackScalingFactor: 1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
     OriginalStatScaling:
       StateEffectProperty: 3
       BaseValue: 1
       LevelScalingFactor: 0
-      StackScalingFactor: 0
+      StackScalingFactor: 1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
   m_SubStateEffects: []
   m_HoldingStateEffects: []

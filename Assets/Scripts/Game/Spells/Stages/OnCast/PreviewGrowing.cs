@@ -1,6 +1,4 @@
-﻿using Game.SpellGFXs;
-using System.Collections;
-using Tools;
+﻿using Tools;
 using UnityEngine;
 
 namespace Game.Spells

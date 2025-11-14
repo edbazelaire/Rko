@@ -29,7 +29,7 @@ namespace Menu.MainMenu.ShopTab
         {
             base.FindComponents();
 
-            m_TemplateDailyOffer = AssetLoader.LoadShopTemplateItem<TemplateCardShopItemUI>();
+            m_TemplateDailyOffer = AssetLoader.LoadShopTemplateItem<TemplateCardShopItemUI>("TemplateShopCardItem");
             m_DailySection = Finder.Find(gameObject, "DailySection");
 
             m_TemplateBundleItemUI = AssetLoader.LoadShopTemplateItem<TemplateBundleItemUI>("TemplateSpecialBundleItem");

@@ -32,6 +32,7 @@ MonoBehaviour:
   m_EndWithShield: 0
   m_EndAt0Stacks: 1
   m_RefreshShield: 1
+  m_RefreshDuration: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: -1
@@ -52,7 +53,7 @@ MonoBehaviour:
   m_StateEffectScalingStacks: []
   m_Frequency: 1
   m_AllowedSpells:
-  - PlagueArrow
+  - PlagueArrows
   m_SpellEffectType: 1
   m_AllowedSpellTypes: 
   m_OnHits: []
@@ -70,7 +71,7 @@ MonoBehaviour:
       ScalingTresholds: []
   - Property: 19
     OverridingType: 1
-    Value: 100
+    Value: 150
     SpellPropertyScaling:
       Property: 0
       Value: 0.1

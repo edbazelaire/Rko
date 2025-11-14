@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: SmokeBomb
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 'Creates a smoke area of size {0} for {1} seconds making your character
-    {2} while in it, and therefore untargettable. '
+  m_Description: 'Creates a smoke area of size [Size] for [Duration] seconds making
+    your character [Invisible] while in it, and therefore untargettable. '
   m_DescriptionVariables:
   - Name: Size
     WithIcon: 0
@@ -57,6 +57,7 @@ MonoBehaviour:
   EnergyCost: 0
   m_Damage: 0
   m_ExecutionDamage: 0
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -102,6 +103,8 @@ MonoBehaviour:
       BaseValue: 1
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
   IsChanneling: 0

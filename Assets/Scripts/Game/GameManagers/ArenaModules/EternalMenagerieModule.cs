@@ -9,6 +9,7 @@ using Save;
 using System;
 using System.Collections;
 using Tools;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -24,8 +25,11 @@ namespace Game.GameManagers.ArenaModules
     {
         #region Members
 
+        const float OVERTIME = 45f;
+
         bool m_Abort = false;
 
+        Controller      m_PlayerController;
         Controller      m_BossController;
         SpawnerData     m_SpawnerData;
         bool            m_TimerEnded                = false;
@@ -53,6 +57,8 @@ namespace Game.GameManagers.ArenaModules
 
         protected override void OnDestroy()
         {
+            base.OnDestroy();
+
             if (!GameManager.IsGameOver)
                 ErrorHandler.Error("This module has beed destroyed before the end of the Game");
         }
@@ -69,7 +75,7 @@ namespace Game.GameManagers.ArenaModules
             m_IsValid = false;
 
             // get Boss controller
-            FindBoss();
+            FindCharacters();
 
             if (m_Abort)
                 return;
@@ -84,22 +90,43 @@ namespace Game.GameManagers.ArenaModules
             StartCoroutine(PreparePortal());
         }
 
-        void FindBoss()
+        /// <summary>
+        /// Find the Player and the Boss
+        /// </summary>
+        void FindCharacters()
         {
             if (m_Abort)
                 return;
 
+            m_PlayerController = null;
             m_BossController = null;
             foreach (Controller controller in GameManager.Instance.Controllers.Values)
             {
-                if (!CharacterLoader.IsBoss(controller.Character))
-                    continue;
+                // Find : PLAYER
+                if (controller.PlayerId == 0)
+                {
+                    if (m_PlayerController != null)
+                        ErrorHandler.Warning("Found multiple PLAYER controllers : " + controller.name + " and " + m_PlayerController.name);
+                    m_PlayerController = controller;
+                }
 
-                m_BossController = controller;
-                break;
+                // Find : BOSS
+                if (CharacterLoader.IsBoss(controller.Character))
+                {
+                    if (m_BossController != null)
+                        ErrorHandler.Warning("Found multiple BOSS controllers : " + controller.name + " and " + m_BossController.name);
+                    m_BossController = controller;
+                }
             }
 
             if (m_BossController == null)
+            {
+                GameManager.ExitWithError("Unable to find BOSS Controller during Intro");
+                m_Abort = true;
+                return;
+            }
+
+            if (m_PlayerController == null)
             {
                 GameManager.ExitWithError("Unable to find BOSS Controller during Intro");
                 m_Abort = true;
@@ -188,7 +215,7 @@ namespace Game.GameManagers.ArenaModules
         IEnumerator StartBossPhase()
         {
             // if timer already ended - WIN
-            if (m_TimerEnded)
+            if (IsTimerOver(timeMarge: 10f))
             {
                 GameManager.Instance.GameOver(0);
                 yield break;
@@ -246,7 +273,37 @@ namespace Game.GameManagers.ArenaModules
         #endregion
 
 
+        #region Over Time
+
+        IEnumerator StartOverTime()
+        {
+            GameUIManager.GameTimerUI.StartOverTime(OVERTIME);
+
+            while (GameManager.IsGameRunning)
+            {
+                if (m_PlayerController == null || !m_PlayerController.Life.IsAlive)
+                {
+                    ErrorHandler.Warning("Player Controller not accessible");
+                    yield break;
+                }
+
+                m_PlayerController.StateHandler.AddStateEffect(EStateEffect.CorruptedPower, m_BossController, "OverTime", stacks: 1, level: 1, force: true);
+                yield return new WaitForSeconds(1f);
+            }
+        }
+
+        #endregion
+
+
         #region Timer Events
+
+        public bool IsTimerOver(float timeMarge = 0f)
+        {
+            if (m_ArenaData.IsLastBoss(m_ArenaData.CurrentLevel, m_ArenaData.CurrentStage))
+                return false;
+
+            return m_TimerEnded || timeMarge > GameUIManager.GameTimerUI.Timer;
+        }
 
         public override void SetUpTimer()
         {
@@ -262,15 +319,27 @@ namespace Game.GameManagers.ArenaModules
 
         protected override void OnTimerEnd()
         {
-            // hide the Timer UI
-            GameUIManager.GameTimerUI.gameObject.SetActive(false);
+            m_TimerEnded = true;
 
-            // boss not spawned yet - let the player finish the spawns
-            if (!m_BossPhaseStarted)
+            // timer ended during OVER TIME - LOSS
+            if (GameUIManager.GameTimerUI.IsOverTimer)
+            {
+                GameUIManager.GameTimerUI.gameObject.SetActive(false);
+                GameManager.Instance.GameOver(1);
                 return;
+            }
 
-            // TIMER ENDED while Boss is active - this is a WIN
-            GameManager.Instance.GameOver(0);
+            // boss spawned - VICTORY
+            if (m_BossPhaseStarted)
+            {
+                GameUIManager.GameTimerUI.gameObject.SetActive(false);
+                GameManager.Instance.GameOver(0);
+                return;
+            }
+
+            // start the overtime effect
+            StartCoroutine(StartOverTime());
+            return;
         }
 
         #endregion
@@ -377,12 +446,19 @@ namespace Game.GameManagers.ArenaModules
         void OnSpellEnded(ESpellEvent spellEvent)
         {
             // await at least "OnEnd" event
-            if (spellEvent < ESpellEvent.OnEnd)
+            if (spellEvent != ESpellEvent.OnEnd)
                 return;
 
             // Boss phase already started ? - exit
             if (m_BossPhaseStarted)
                 return;
+
+            // OverTime ? - win
+            if (GameUIManager.GameTimerUI.IsOverTimer)
+            {
+                GameManager.Instance.GameOver(0);
+                return;
+            }
 
             StartCoroutine(StartBossPhase());
         }

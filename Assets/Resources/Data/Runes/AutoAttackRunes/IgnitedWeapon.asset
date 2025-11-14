@@ -14,11 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 1
   m_Description: 
-  m_DescriptionVariables: []
-  m_SpellElements: 
+  m_SpellElements: 01000000
   m_MinorPower:
     Description: '[TriggerEffect.0]'
-    m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: _MiIgnitedWeapon
@@ -41,7 +39,6 @@ MonoBehaviour:
     m_BonusStats: []
   m_MajorPower:
     Description: '[TriggerEffect.0]\n[TriggerEffect.1]'
-    m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: _MiIgnitedWeapon
@@ -81,7 +78,6 @@ MonoBehaviour:
     m_BonusStats: []
   m_PrimalPower:
     Description: '[TriggerEffect.0]\n[TriggerEffect.1]\n[TriggerEffect.2]'
-    m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: _MiIgnitedWeapon

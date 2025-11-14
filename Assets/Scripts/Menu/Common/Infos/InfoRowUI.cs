@@ -1,5 +1,9 @@
-﻿using TMPro;
+﻿using Assets.Scripts.Managers;
+using Enums;
+using JetBrains.Annotations;
+using TMPro;
 using Tools;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Menu.Common.Infos
@@ -8,12 +12,15 @@ namespace Menu.Common.Infos
     {
         #region Members
 
-        protected Image     m_Icon;
-        protected TMP_Text  m_NameText;
-        protected TMP_Text  m_ValueText;
+        protected Image         m_Icon;
+        protected Button        m_Button;
+        protected TMP_Text      m_NameText;
+        protected GameObject    m_ValueContainer;
+        protected TMP_Text      m_ValueText;
 
-        protected string m_Name;
         protected string m_Key;
+        protected string m_Name;
+        protected string m_IconName;
         protected object m_Value;
 
         #endregion
@@ -25,26 +32,31 @@ namespace Menu.Common.Infos
         {
             var iconContainer = Finder.Find(gameObject, "IconContainer");
             m_Icon = Finder.FindComponent<Image>(iconContainer, "Icon");
+            m_Button = Finder.FindComponent<Button>(gameObject);
             m_NameText = Finder.FindComponent<TMP_Text>(gameObject, "Name");
+            m_ValueContainer = Finder.Find(gameObject, "ValueContainer", false);
             m_ValueText = Finder.FindComponent<TMP_Text>(gameObject, "Value", false);
         }
 
         public virtual void Initialize(string key, object value, string title = "")
         {
+            m_Key       = key; 
+            m_Name      = key; 
+            m_IconName  = key;
+            m_Value     = value;
+
             // Title provided - force as name
             if (title != "")
+            {
                 m_Name = title;
+            }
 
             // Special PropertyName - set as name
-            else if (TextHandler.IsSpecialPropertyName(key, out string propertyName, out string specialCondition))
-                m_Name = propertyName;
-
-            // No specific value - use key as name
-            else
-                m_Name = key;
-
-            m_Key = key;
-            m_Value = value;
+            else if (PropertyHandler.TryExtractSpecialPropertyInfo(key, out string iconName, out string prettyName))
+            {
+                m_Name = prettyName;
+                m_IconName = iconName;
+            }
 
             base.Initialize();
         }
@@ -54,7 +66,6 @@ namespace Menu.Common.Infos
             base.SetUpUI();
 
             // setup name and color of the info row title
-            
             Refresh();
         }
 
@@ -100,9 +111,28 @@ namespace Menu.Common.Infos
         #endregion
 
 
-        #region Format
+        #region Listeners
 
+        protected override void RegisterListeners()
+        {
+            base.RegisterListeners();
 
+            m_Button.onClick.AddListener(OnClick);
+        }
+
+        protected override void UnRegisterListeners()
+        {
+            base.UnRegisterListeners();
+
+            m_Button.onClick.RemoveAllListeners();
+        }
+
+        protected virtual void OnClick()
+        {
+            if (m_Value == null)
+                return;
+            ScreenManager.SetPopUp(EPopUpState.PropertyInfoPopUp, m_Key, m_Value.ToString());
+        }
 
         #endregion
     }

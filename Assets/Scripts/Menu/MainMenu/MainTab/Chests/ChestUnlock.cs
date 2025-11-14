@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Managers;
 using Assets.Scripts.Menu.MainMenu.MainTab.Chests;
 using Data.GameManagement;
 using Enums;
@@ -210,7 +211,7 @@ namespace Menu
         void UnlockChest()
         {
             // display rewards
-            Main.DisplayRewards(CreateRewardsData(), ERewardContext.EndGameChest.ToString());
+            ScreenManager.DisplayRewards(CreateRewardsData(), ERewardContext.EndGameChest.ToString());
 
             // remove chest in inventory
             InventoryManager.RemoveChestAtIndex(m_Index);

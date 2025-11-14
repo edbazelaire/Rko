@@ -33,6 +33,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 2
     IsFollowing: 1
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -52,6 +53,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 1
     IsFollowing: 1
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -63,19 +65,23 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
   m_EndWithShield: 0
   m_EndAt0Stacks: 1
   m_RefreshShield: 1
+  m_RefreshDuration: 1
   m_Priority: 0
   m_Delay: 0
-  m_Duration: 4
+  m_Duration: 3
   m_StartingStacks: 1
   m_MaxStacks: 1
   m_StackDecay: -1
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats: []
   m_StatConversions: []
   m_SubStateEffects: []
@@ -86,6 +92,7 @@ MonoBehaviour:
   - StateEffectProperty: 1
     ScalingFactor: 0.05
   m_StateEffectScalingStacks: []
+  m_Frequency: 1
   m_AllowedSpells: []
   m_SpellEffectType: 0
   m_AllowedSpellTypes: 
@@ -93,4 +100,5 @@ MonoBehaviour:
   m_AllyStateEffects: []
   m_EnemyStateEffects: []
   m_SpellOverridingData: []
+  m_SpellGFXOverrides: []
   m_ReplacementData: {fileID: 0}

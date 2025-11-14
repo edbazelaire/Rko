@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Data.DataStructures.SpellRequirement;
 using Assets.Scripts.Managers.Sound;
 using Data;
+using Data.DataStructures.SpellSubStructures;
 using Data.GameManagement;
 using Enums;
 using Game.Loaders;
@@ -265,6 +266,10 @@ namespace Menu.PopUps
             // spawn a spellRowInfo from prefab and init with spell data
             SpellInfoRowUI spellRowInfo = Instantiate(m_InfoPrefab, container.transform).GetComponent<SpellInfoRowUI>();
             spellRowInfo.Initialize(key, value, newDataValue, scaling);
+            while (m_InfoRows.ContainsKey(key))
+            {
+                key = "_" + key;
+            }            
             m_InfoRows.Add(key, spellRowInfo);
         }
 
@@ -308,8 +313,8 @@ namespace Menu.PopUps
                         SetUpInfoRow(
                            m_InfosContent,
                            damages[i].PropertyName(),
-                           damages[i].Get(m_Level),
-                           m_Level < CollectablesManagementData.GetMaxLevel(m_Collectable) ? damages[i].Get(m_Level + 1) : null,
+                           damages[i].Get(m_Level, null, null),
+                           m_Level < CollectablesManagementData.GetMaxLevel(m_Collectable) ? damages[i].Get(m_Level + 1, null, null) : null,
                            damages[i].ScalingDirection,
                            title: damages[i].GetPrettyName()
                        );
@@ -319,6 +324,28 @@ namespace Menu.PopUps
                 {
                     ErrorHandler.Warning("List of damages was provided for " + m_CollectableName + " but unable to parse the value as SDamage");
                 }
+
+                return true;
+            }
+
+            // Resistance : resistance with no specific value -> split in Magical/Physical for better understanding
+            if (key == "Resistance")
+            {
+                SetUpInfoRow(
+                    m_InfosContent,
+                    PropertyHandler.FormatSpecialPropertyName(key, EDamageCategory.Physical),
+                    value,
+                    newDataValue,
+                    scaling
+                );
+
+                SetUpInfoRow(
+                    m_InfosContent,
+                    PropertyHandler.FormatSpecialPropertyName(key, EDamageCategory.Magical),
+                    value,
+                    newDataValue,
+                    scaling
+                );
 
                 return true;
             }

@@ -14,85 +14,111 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 
   m_MinorPower:
-    Description: 'Gain +[BonusDamage] damage, +[Hp] hp and increase your size by
-      [Size]'
-    m_DescriptionVariables: []
+    Description: '+[Power.Physical] {{PhysicalPower}}
+
+      +[Hp] {{Hp}}
+
+      +[Size]
+      {{Size}}'
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
-    - StateEffectProperty: 7
-      BaseValue: 35
+    - StateEffectProperty: 22
+      BaseValue: 18
       BonusValue: 0
-      ScalingFactor: 0.1
+      ScalingFactor: 0.05
+      DamageCategories: 01000000
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     - StateEffectProperty: 111
       BaseValue: 350
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     - StateEffectProperty: 29
       BaseValue: 0.4
       BonusValue: 0
       ScalingFactor: 0
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     BonusPowerOrb: 0
     BonusRewardsRarety: 0
   m_MajorPower:
-    Description: 'Gain +[BonusDamage] damage, +[Hp] hp and increase your size by
-      [Size]'
-    m_DescriptionVariables: []
+    Description: '+[Power.Physical] {{PhysicalPower}}
+
+      +[Hp] {{Hp}}
+
+      +[Size]
+      {{Size}}'
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
-    - StateEffectProperty: 7
-      BaseValue: 70
+    - StateEffectProperty: 22
+      BaseValue: 35
       BonusValue: 0
-      ScalingFactor: 0.1
+      ScalingFactor: 0.05
+      DamageCategories: 01000000
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     - StateEffectProperty: 111
-      BaseValue: 1000
+      BaseValue: 650
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     - StateEffectProperty: 29
       BaseValue: 0.8
       BonusValue: 0
       ScalingFactor: 0
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     BonusPowerOrb: 0
     BonusRewardsRarety: 0
   m_PrimalPower:
-    Description: 'Gain +[BonusDamage] damage, +[Hp] hp and increase your size by
-      [Size]'
-    m_DescriptionVariables: []
+    Description: '+[Power.Physical] {{PhysicalPower}}
+
+      +[Hp] {{Hp}}
+
+      +[Size]
+      {{Size}}'
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
-    - StateEffectProperty: 7
-      BaseValue: 120
+    - StateEffectProperty: 22
+      BaseValue: 70
       BonusValue: 0
-      ScalingFactor: 0.1
+      ScalingFactor: 0.05
+      DamageCategories: 01000000
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     - StateEffectProperty: 111
-      BaseValue: 2100
+      BaseValue: 1200
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     - StateEffectProperty: 29
       BaseValue: 1.2
       BonusValue: 0
       ScalingFactor: 0
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     BonusPowerOrb: 0

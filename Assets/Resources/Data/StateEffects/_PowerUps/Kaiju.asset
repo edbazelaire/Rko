@@ -12,11 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66c690c033cc5494bbb1e53e2fc68b55, type: 3}
   m_Name: Kaiju
   m_EditorClassIdentifier: 
-  m_Description: Converts [HpToSizeConversion] of your Max HP into character Size.\nConverts
-    [SizeToDamageConversion] of your character's Size into perenctage Bonus Damage
-    and percentage Bonus Heal.\n\nEvery [Tick] seconds, deals [TickDamageHpPerc]
-    of your Max Hp to enemies around you.\n\nOn reaching a Size of [SizeThreshold],
-    becomes [Uncontrollable] - making your character immuned to CC.
+  m_Description: 'Converts [HpToSizeConversion] of your Max HP into character Size.
+
+    Converts
+    your character''s Size into [BonusPower] {{MagicalPower}} and [SizeToDamageConversion]
+    Bonus Heal percent.
+
+
+    Every [Tick] seconds, deals [TickDamageHpPerc] of your
+    Max Hp to enemies around you.
+
+
+    On reaching a Size of [SizeThreshold], becomes
+    [Uncontrollable] - making your character immuned to CC.'
   m_DescriptionVariables: 
   m_NStacksInDescription: 1
   m_StateEffectType: 0
@@ -29,11 +37,13 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
   m_IgnoresBoosts: 0
   m_EndWithShield: 0
   m_EndAt0Stacks: 1
   m_RefreshShield: 1
+  m_RefreshDuration: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: -1
@@ -43,21 +53,31 @@ MonoBehaviour:
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats:
   - StateEffectProperty: 29
     BaseValue: 0
     LevelScalingFactor: 0
     StackScalingFactor: 0
+    ScalesOnMissingHealth: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
-  - StateEffectProperty: 8
+  - StateEffectProperty: 22
     BaseValue: 0
-    LevelScalingFactor: 0
+    LevelScalingFactor: 0.1
     StackScalingFactor: 0
+    ScalesOnMissingHealth: 0
+    DamageCategories: 02000000
+    HitCategories: 
     SpecialConditions: []
   - StateEffectProperty: 107
     BaseValue: 0
     LevelScalingFactor: 0
     StackScalingFactor: 0
+    ScalesOnMissingHealth: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects: []

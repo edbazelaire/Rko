@@ -13,8 +13,14 @@ MonoBehaviour:
   m_Name: MaiHau
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 
-  m_DescriptionVariables: []
+  m_Description: "Mayo, the Ice Claw, is an insect-like creature born in the heart
+    of the frozen wastelands.\nOnce the loyal familiar of a powerful mage, it was
+    summoned to guard those desolate, icy domains. Over years of servitude, its body
+    was painfully reforged\u2014hardened by frost and magic alike.\nThough its master
+    never returned from a long journey begun decades ago, Mayo still keeps watch.
+    Unyielding and tireless, it guards the frozen realm with the same unwavering
+    loyalty as the day it was created\u2014forever bound to a promise long forgotten
+    by all but itself."
   m_SpellElements: 
   m_AutoAttack: Slicide
   m_SpecialAbility: SlIceBreaker
@@ -24,38 +30,48 @@ MonoBehaviour:
   BaseHealth: 2200
   MaxEnergy: 100
   BaseEnergy: 10
-  PassiveEnergyGain: 5
+  PassiveEnergyGain: 19
   IsStructure: 0
-  HealthScaleFactor: 0.12
+  HealthScaleFactor: 0.13
   CharacterStatScaling:
-  - StateEffectProperty: 27
-    BaseValue: 0.5
+  - StateEffectProperty: 30
+    BaseValue: 18
     BonusValue: 0
-    ScalingFactor: 0
+    ScalingFactor: 0.12
+    DamageCategories: 01000000
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
-  - StateEffectProperty: 101
+  - StateEffectProperty: 30
+    BaseValue: 25
+    BonusValue: 0
+    ScalingFactor: 0.12
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 30
+    BonusValue: 0
+    ScalingFactor: 0.12
+    DamageCategories: 01000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 8
     BaseValue: 0.15
     BonusValue: 0
     ScalingFactor: 0
-    SpecialConditions: []
-    StateEffectStackFactors: []
-  - StateEffectProperty: 119
-    BaseValue: 0.2
-    BonusValue: 0
-    ScalingFactor: 0
+    DamageCategories: 
+    HitCategories: 02000000
     SpecialConditions: []
     StateEffectStackFactors: []
   - StateEffectProperty: 16
-    BaseValue: 0.2
+    BaseValue: 0.1
     BonusValue: 0
     ScalingFactor: 0.1
-    SpecialConditions: []
-    StateEffectStackFactors: []
-  - StateEffectProperty: 5
-    BaseValue: 10
-    BonusValue: 0
-    ScalingFactor: 0.12
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers: []

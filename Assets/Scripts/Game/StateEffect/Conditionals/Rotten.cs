@@ -1,8 +1,7 @@
 ﻿using Data;
 using Enums;
 using System;
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
-using UnityEditor.Build;
+using Tools;
 using UnityEngine;
 
 namespace Game.Spells
@@ -25,16 +24,15 @@ namespace Game.Spells
         {
             // calculate how many stacks can be applied from CURSED
             int cursedStacks = targetController.StateHandler.GetStacks(EStateEffect.Cursed);
-            int stacksFromCursed = Math.Min(cursedStacks % m_NCursedStacks, stacks);
+            int stacksFromCursed = Math.Min(cursedStacks / m_NCursedStacks, stacks);
             targetController.StateHandler.RemoveStateEffect(EStateEffect.Cursed, consume: true, maxStacks: stacksFromCursed * m_NCursedStacks);
 
             // calculate how many stacks can be applied from POISON
             int stacksFromPoison = 0;
-            if (stacks - stacksFromCursed > 0)
+            if (m_NPoisonStacks > 0 && stacks - stacksFromCursed > 0)
             {
-                stacksFromPoison = Math.Min(cursedStacks % m_NPoisonStacks, stacks - stacksFromCursed);
+                stacksFromPoison = Math.Min(cursedStacks / m_NPoisonStacks, stacks - stacksFromCursed);
                 targetController.StateHandler.RemoveStateEffect(EStateEffect.Cursed, consume: true, maxStacks: stacksFromPoison * m_NPoisonStacks);
-
             }
 
             return stacksFromCursed + stacksFromPoison;
@@ -44,7 +42,21 @@ namespace Game.Spells
         {
             base.OnStart();
 
-            m_Controller.StateHandler.AddStateEffect(new SStateEffectData(EStateEffect.Infected, m_Stacks), m_Caster, m_Level, m_Origin);
+            m_Controller.StateHandler.AddStateEffect(new SStateEffectData(EStateEffect.Infected, m_Stacks), m_Caster, m_Level, m_Origin, force: true);
         }
+
+
+
+        #region Description
+
+        public override string GetDescription()
+        {
+            string description = base.GetDescription();
+            description = description.Replace("[NCursedStacks]", TextHandler.FormatScaling(m_NCursedStacks.ToString(), EScalingDirection.None));
+            description = description.Replace("[NPoisonStacks]", TextHandler.FormatScaling(m_NPoisonStacks.ToString(), EScalingDirection.None));
+            return description;
+        }
+
+        #endregion
     }
 }

@@ -13,15 +13,8 @@ MonoBehaviour:
   m_Name: Meteor
   m_EditorClassIdentifier: 
   m_Rarety: 2
-  m_Description: A huge meteor falling from the sky dealing {0} damage and applying
-    {1} in an area of {2}
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
-  - Name: Scorched
-    WithIcon: 1
-  - Name: Size
-    WithIcon: 0
+  m_Description: 'A huge meteor falling from the sky dealing [Damage] damage and
+    applying [Scorched] in an area of [Size]'
   m_SpellElements: 01000000
   Linked: 0
   Graphics: {fileID: 8073250784623665408, guid: 2b184465c434d1549ba65c362b97bbf1, type: 3}
@@ -116,11 +109,9 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 80
-  m_ExecutionDamage: 0
   m_Damages:
   - m_BaseValue: 80
-    m_DamageCategory: 1
+    m_DamageCategory: 2
     m_HitCategory: 1
     m_SpellPropertyScaling:
       Property: 2
@@ -128,6 +119,7 @@ MonoBehaviour:
       ScalingType: 0
       RoundingType: 2
       ScalingTresholds: []
+    m_DamageModifiers: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -141,7 +133,7 @@ MonoBehaviour:
     m_Targets: 
   m_SpellsScalingLevel:
   - Property: 2
-    Value: 0.11
+    Value: 0.1
     ScalingType: 0
     RoundingType: 2
     ScalingTresholds: []
@@ -190,6 +182,7 @@ MonoBehaviour:
   Animation: 6
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.8
   m_Cooldown: 32
   Trajectory: 4

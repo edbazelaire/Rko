@@ -1,17 +1,9 @@
 ﻿using Enums;
-using UnityEngine.UI;
 
 namespace Menu.MainMenu
 {
     public class AchievementRewardTabButton : TabButton
     {
-        #region Members
-
-        public Button Button => m_Button;
-
-        #endregion
-
-
         #region Init & End
 
         protected override void FindComponents()

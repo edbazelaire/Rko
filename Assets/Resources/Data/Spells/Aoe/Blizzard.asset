@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Blizzard
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 'Summons a freezing storm for {0} seconds.\nDeals {1} damage every
-    {2} seconds while applying [EnemyStateEffect.0]'
+  m_Description: 'Summons a freezing storm for [Duration] seconds.\nDeals [TickDamage]
+    damage every [DurationTick] seconds while applying [EnemyStateEffect.0]'
   m_DescriptionVariables:
   - Name: Duration
     WithIcon: 1
@@ -57,6 +57,7 @@ MonoBehaviour:
   EnergyCost: 0
   m_Damage: 0
   m_ExecutionDamage: 0
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -102,6 +103,8 @@ MonoBehaviour:
       BaseValue: 1
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
   IsChanneling: 0
@@ -125,7 +128,7 @@ MonoBehaviour:
   m_Cooldown: 15
   m_SpellSpawn: 1
   DurationTick: 1
-  m_TickDamage: 70
+  m_TickDamage: 50
   m_TickHeal: 0
   m_TickShield: 0
   m_TickEnergy: 0

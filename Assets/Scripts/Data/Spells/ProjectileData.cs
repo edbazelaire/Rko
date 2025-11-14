@@ -175,6 +175,10 @@ namespace Data
                     Trajectory = trajectory;
                     return true;
 
+                case ESpellProperty.Speed:
+                    m_Speed = overridingData.Get(m_Speed, Level);
+                    return true;
+
                 default:
                     return base.CheckSpecialOverridingData(overridingData);
             }

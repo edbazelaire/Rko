@@ -2,7 +2,9 @@
 using Data;
 using Data.GameManagement;
 using Enums;
+using Inventory;
 using MyBox;
+using Save.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,6 +62,7 @@ namespace Save
         // CONSTANTS
         public const string KEY_TIME_DATA       = "TimeData";
         public const string KEY_BOOSTS          = "Boosts";
+        public const string KEY_DAILY_REWARDS   = "DailyRewards";
 
         public const string DAILY_SHOP_ID       = "DailyShopOffer_";
         public const string SPECIAL_OFFER_ID    = "SpecialOffer_";
@@ -69,6 +72,7 @@ namespace Save
         public static Action<string>        TimeDataChangedEvent;
         /// <summary> event fired when a boost has been added or removed. string : name of the boost | bool : added ? (false = removed) </summary>
         public static Action<string, bool>  BoostChangedEvent;
+        public static Action                DailyRewardCollected;
 
         // ===============================================================================================
         // DATA
@@ -76,12 +80,15 @@ namespace Save
         protected override Dictionary<string, object> m_Data { get; set; } = new Dictionary<string, object>() {
             { KEY_TIME_DATA,            new List<STimeData>() },
             { KEY_BOOSTS,               new List<STimeData>() },
+            { KEY_DAILY_REWARDS,        new SDailyRewardsData() { Rewards = new List<SRewardsData>(), WeekEndAt = 0, Streak = 0 } },
         };
 
         // ===============================================================================================
         // DEPENDENT STATIC ACCESSORS
-        public static List<STimeData> TimeData     => Instance.m_Data[KEY_TIME_DATA] as List<STimeData>;
-        public static List<STimeData> Boosts       => Instance.m_Data[KEY_BOOSTS] as List<STimeData>;
+        public static List<STimeData> TimeData          => Instance.m_Data[KEY_TIME_DATA] as List<STimeData>;
+        public static List<STimeData> Boosts            => Instance.m_Data[KEY_BOOSTS] as List<STimeData>;
+        public static SDailyRewardsData DailyRewards    => (SDailyRewardsData)Instance.m_Data[KEY_DAILY_REWARDS];
+        public static bool IsWeekCollected              => DailyRewards.CurrentIndex >= 5;
 
         #endregion
 
@@ -97,6 +104,9 @@ namespace Save
         {
             if (m_Data[item.Key].GetType() == typeof(List<STimeData>))
                 return item.Value.GetAs<List<STimeData>>();
+
+            if (m_Data[item.Key].GetType() == typeof(SDailyRewardsData))
+                return item.Value.GetAs<SDailyRewardsData>();
 
             return base.Convert(item);
         }
@@ -337,6 +347,148 @@ namespace Save
         #endregion
 
 
+        #region Daily Rewards
+
+        static SDailyRewardsData GetWeeklyRewardsData()
+        {
+            return DailyRewards;
+        }
+
+        static void SetWeeklyRewardsData(SDailyRewardsData data, bool save = true)
+        {
+            Instance.m_Data[KEY_DAILY_REWARDS] = data;
+            if (save)
+                Instance.SaveValue(KEY_DAILY_REWARDS);
+        }
+
+        public static void ResetWeek(bool save = true)
+        {
+            Debug.LogWarning("ResetWeek()");
+            int streak = DailyRewards.Streak;
+
+            var newData = new SDailyRewardsData
+            {
+                Rewards = DailyRewardsTable.GenerateWeeklyReward(streak),
+                WeekEndAt = Instance.GetNextWeekTimestamp(),
+                Streak = streak,
+                CurrentIndex = 0,
+                NextCollectAt = 0
+            };
+
+            SetWeeklyRewardsData(newData, save);
+        }
+
+        public static SRewardsData? CollectCurrentReward(bool save = true)
+        {
+            var data = DailyRewards;
+
+            if (!data.CanCollect())
+                return null;
+
+            int idx = data.CurrentIndex;
+            if (idx < 0 || idx >= data.Rewards.Count)
+                return null;
+
+            var reward = data.Rewards[idx];
+
+            // advance index
+            data.CurrentIndex++;
+
+            // daily timer until end of the day
+            if (data.CurrentIndex < 5)
+                data.NextCollectAt = Instance.GetNextDayTimestamp();
+
+            // finished all week ?
+            if (data.CurrentIndex >= 5)
+            {
+                data.Streak++;
+            }
+
+            SetWeeklyRewardsData(data, save);
+            DailyRewardCollected?.Invoke();
+
+            return reward;
+        }
+
+
+        /// <summary>Ensures daily rewards are valid for the current week.</summary>
+        bool CheckDailyRewards()
+        {
+            var data = GetWeeklyRewardsData();
+
+            if (data.Rewards == null || data.Rewards.Count != 5 || data.IsExpired())
+            {
+                ResetWeek(save: false);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>Index of the current reward (first non collected), or -1 if all collected or week expired.</summary>
+        public static int GetCurrentIndex()
+        {
+            var data = DailyRewards;
+
+            if (data.IsExpired())
+                ResetWeek(save: false);
+
+            return data.CurrentIndex;
+        }
+
+        public static bool IsCollected(int index)
+        {
+            var data = GetWeeklyRewardsData();
+
+            if (data.Rewards == null || index < 0 || index >= data.Rewards.Count)
+                return false;
+
+            return data.CurrentIndex > index;
+        }
+
+
+        public static int TimeBeforeResetWeek()
+        {
+            var data = GetWeeklyRewardsData();
+            return data.TimeBeforeReset();
+        }
+
+        public static SRewardsData? GetRewardAtIndex(int index)
+        {
+            var data = GetWeeklyRewardsData();
+
+            if (data.Rewards == null || index < 0 || index >= data.Rewards.Count)
+                return null;
+
+            return data.Rewards[index];
+        }
+
+        /// <summary>Returns current reward or null if none.</summary>
+        public static SRewardsData? GetCurrentReward()
+        {
+            int idx = GetCurrentIndex();
+            if (idx < 0)
+                return null;
+
+            return GetRewardAtIndex(idx);
+        }
+
+        public static int GetStreak()
+        {
+            return GetWeeklyRewardsData().Streak;
+        }
+
+        public static void ResetStreak(bool save = true)
+        {
+            var data = GetWeeklyRewardsData();
+            data.Streak = 0;
+            SetWeeklyRewardsData(data, save);
+        }
+
+        #endregion
+
+
+
         #region Time Management
 
         public int GetNextDayTimestamp()
@@ -349,6 +501,20 @@ namespace Save
 
             // Convert to Unix timestamp (seconds since the epoch)
             return (int)((DateTimeOffset)startOfNextDay).ToUnixTimeSeconds();
+        }
+
+        public int GetNextWeekTimestamp()
+        {
+            // local time (region-dependent)
+            DateTime now = DateTime.Now;
+
+            // days until next Monday
+            int daysUntilMonday = ((int)DayOfWeek.Monday - (int)now.DayOfWeek + 7) % 7;
+            if (daysUntilMonday == 0)
+                daysUntilMonday = 7; // if today is Monday, next week is next Monday
+
+            DateTime nextMonday = now.Date.AddDays(daysUntilMonday);
+            return (int)((DateTimeOffset)nextMonday).ToUnixTimeSeconds();
         }
 
         public int GetTimestampIn(int nSeconds)
@@ -406,7 +572,7 @@ namespace Save
             if (r <= 0.5)
                 return ERarety.Common;
 
-            if (r >= 0.9)
+            if (r >= 0.98)
                 return ERarety.Epic;
 
             return ERarety.Rare;
@@ -431,6 +597,10 @@ namespace Save
                 case KEY_BOOSTS:
                     m_Data[key] = new List<STimeData>();
                     CheckBoosts();
+                    break;
+
+                case KEY_DAILY_REWARDS:
+                    ResetWeek();
                     break;
             }
 
@@ -540,6 +710,10 @@ namespace Save
 
                 case KEY_BOOSTS:
                     CheckBoosts();
+                    break;
+
+                case KEY_DAILY_REWARDS:
+                    CheckDailyRewards();
                     break;
             }
         }

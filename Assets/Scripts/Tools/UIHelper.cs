@@ -2,6 +2,7 @@
 using Assets.Scripts.Managers.Sound;
 using Assets.Scripts.Menu.MainMenu.MainTab.Chests;
 using Data;
+using Data.Characters;
 using Enums;
 using Game.Loaders;
 using System;
@@ -285,11 +286,13 @@ namespace Tools
             CleanContent(parent);
 
             // get selected character preview
-            var characterPreview = CharacterLoader.GetCharacterData(character, destroy: true).InstantiateCharacterPreview(parent, skin);
+            var characterData = CharacterLoader.GetCharacterData(character, destroy: true);
+            var characterPreview = characterData.InstantiateCharacterPreview(parent, skin);
+            Animator animator = null;
 
             // display character preview
             AdjustScale(ref characterPreview, parent);
-            
+
             // remove offset
             var characterContainer = Finder.Find(characterPreview, "CharacterContainer", false);
             if (characterContainer == null)
@@ -304,10 +307,22 @@ namespace Tools
             var basePos = characterContainer.transform.localPosition;
             basePos.x = padding.x;
             basePos.y += padding.y;
+            if (characterData is SpawnData spawnData)
+            {
+                animator = Finder.FindComponent<Animator>(characterPreview, throwError: false);
+                if (animator)
+                    animator.gameObject.SetActive(false);
+
+                characterContainer.transform.localScale *= spawnData.PopUpScale != 0 ? spawnData.PopUpScale : 1;
+                basePos += spawnData.PopUpOffset;
+            }
             characterContainer.transform.localPosition = basePos;
 
             // adjust ordering of the character preview to be above canvas
             AdjustLayout(ref characterPreview, characterContainer.transform, layerName);
+
+            if (animator)
+                animator.gameObject.SetActive(true);
         }
 
         public static GameObject SpawnItem(GameObject go, GameObject parent, bool cleanParent = true, bool adjustLayout = true, bool adjustScale = true)
@@ -342,7 +357,7 @@ namespace Tools
             if (interraclable)
             {
                 Button button = template.AddComponent<Button>();
-                button.onClick.AddListener(() => ScreenManager.SetPopUp(EPopUpState.BossInfoPopUp, ESkin.None, characterData.Name, characterData.Level));
+                button.onClick.AddListener(() => ScreenManager.SetPopUp(EPopUpState.BossInfoPopUp, characterData.Name, ESkin.None, characterData.Level));
             }
 
             return template;

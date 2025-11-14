@@ -107,11 +107,13 @@ namespace Game.Spells
         protected virtual void CreateCollisionCircleOnPosition(Vector3 position)
         {
             // setup layer filter 
-            var filter = Physics2DQueries.BuildFilter(TargetHelper.ALL_LAYER_MASK);
+            var filter = Physics2DQueries.BuildFilter(TargetHelper.DEFAULT_LAYER_MASK);
 
             // Check for collisions within a circle with variableRadius radius
             Collider2D[] hits = new Collider2D[32];
-            int count = m_Collider.Overlap(filter, hits);
+            int count = Physics2DQueries.OverlapAtPosition(m_Collider, position, m_SpellData.Size, filter, hits);
+
+            ErrorHandler.Log($"AOE at {position} hit {count} colliders.", ELogTag.Aoe);
 
             // Gat all controllers touched by the 2D collision circle
             var hitControllers = new List<Controller>();
@@ -121,6 +123,7 @@ namespace Game.Spells
                     continue;
 
                 hitControllers.Add(controller);
+                ErrorHandler.Log($" → Hit {hits[i].name}", ELogTag.Aoe);
             }
 
             // if "ApplyIfNotHitting" : set hitControllers to be the list of ALL controllers NOT HIT
@@ -175,10 +178,8 @@ namespace Game.Spells
             if (m_SpellData.SpellSpawn == ESpellSpawn.Ground)
                 target.y = m_SpellData.TargetOffset.Y;
 
-            if (!m_SpellData.OverridesSpawnPosition)
+            if (! m_SpellData.OverridesSpawnPosition)
                 transform.position = target;
-
-            //transform.position = target;
 
             base.SetTarget(target);
         }
@@ -194,5 +195,6 @@ namespace Game.Spells
         }
 
         #endregion
+
     }
 }

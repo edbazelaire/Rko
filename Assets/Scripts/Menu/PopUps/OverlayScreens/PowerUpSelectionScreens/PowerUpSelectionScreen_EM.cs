@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Data.GameManagement;
+﻿using Assets;
+using Assets.Scripts.Data.GameManagement;
 using Enums;
 using Game.GameManagers.ArenaModules;
 using Game.UI.EndGameUI;
@@ -18,9 +19,9 @@ namespace Menu.PopUps.OverlayScreens
         Button m_DowngradeButton;
         Button m_UpgradeButton;
 
-        int m_CurrentStacks => ProgressionCloudData.CurrentArena.GetMetaData<int>(EArenaMetadataKeys.CorruptionStacks.ToString());
-        int m_DowngradeStacks => (int)ArenaManagementData.EternalMenagerieUpgradeCosts[(int)m_PowerUpSection.RuneActivation - 1].x;
-        int m_UpgradeStacks => (int)ArenaManagementData.EternalMenagerieUpgradeCosts[(int)m_PowerUpSection.RuneActivation - 1].y;
+        int m_CurrentStacks     => ProgressionCloudData.CurrentArena.GetMetaData<int>(EArenaMetadataKeys.CorruptionStacks.ToString());
+        int m_DowngradeStacks   => (int)ArenaManagementData.EternalMenagerieUpgradeCosts[(int)m_PowerUpSection.RuneActivation - 1].x;
+        int m_UpgradeStacks     => (int)ArenaManagementData.EternalMenagerieUpgradeCosts[(int)m_PowerUpSection.RuneActivation - 1].y;
 
         #endregion
 
@@ -48,7 +49,7 @@ namespace Menu.PopUps.OverlayScreens
                 text.text = string.Format(text.text, (m_PowerUpSection.RuneActivation - 1).ToString(), m_DowngradeStacks.ToString());
             }
 
-            if (m_PowerUpSection.RuneActivation == ERuneActivation.Primal || m_CurrentStacks + m_UpgradeStacks > 100)
+            if (m_PowerUpSection.RuneActivation == ERuneActivation.Primal || (m_CurrentStacks + m_UpgradeStacks > 100 && ! Main.CheatMode))
             {
                 m_UpgradeButton.gameObject.SetActive(false);
             } else
@@ -102,7 +103,8 @@ namespace Menu.PopUps.OverlayScreens
             m_UpgradeButton.gameObject.SetActive(false);
 
             // pay the price in "CorruptedPower"
-            ProgressionCloudData.SetArenaMetaData(EArenaMetadataKeys.CorruptionStacks.ToString(), (m_CurrentStacks + m_UpgradeStacks).ToString());
+            if (!Main.CheatMode)
+                ProgressionCloudData.SetArenaMetaData(EArenaMetadataKeys.CorruptionStacks.ToString(), (m_CurrentStacks + m_UpgradeStacks).ToString());
 
             // refresh the data
             m_PowerUpSection.RefreshPowerUps(m_PowerUpSection.RuneActivation + 1);

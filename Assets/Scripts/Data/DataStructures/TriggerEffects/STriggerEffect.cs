@@ -115,10 +115,10 @@ namespace Data.DataStructures
             if (m_IsActivated)
                 return;
 
-            Debug.Log("Activate Effect : " + SpellDataName);
-
             if (! IsActivable())
                 return;
+
+            Debug.Log("Activate Effect : " + SpellDataName);
 
             if (controller == null)
             {
@@ -152,7 +152,7 @@ namespace Data.DataStructures
             } 
             else
             {
-                StateEffect.StateEffectEvent += OnStateEffectEvent;
+                StateEffect.StateEffectStaticEvent += OnStateEffectEvent;
             }
 
             // activate duration coroutine
@@ -245,7 +245,7 @@ namespace Data.DataStructures
 
             Debug.Log("Deactivate Effect : " + SpellDataName);
 
-            StateEffect.StateEffectEvent -= OnStateEffectEvent;
+            StateEffect.StateEffectStaticEvent -= OnStateEffectEvent;
 
             m_IsActivated = false;
 

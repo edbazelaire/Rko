@@ -11,8 +11,7 @@ namespace Game.Spells
         JumpData    m_SpellData => m_BaseSpellData as JumpData;
         float       m_CharacterOffsetY;
 
-        public override float Speed => m_SpellData.Speed * Mathf.Max(0.2f, m_Caster.Movement.RawSpeed);
-
+        public override float Speed => m_SpellData.Speed * Mathf.Max(0.2f, m_Caster.Movement.CalculateRawSpeed());
 
         #endregion
 
@@ -115,7 +114,7 @@ namespace Game.Spells
                 return;
 
             Vector3 pos = transform.position;
-            pos.y += m_CharacterOffsetY;
+            //pos.y += m_CharacterOffsetY;
             m_Caster.transform.position = pos;
         }
 

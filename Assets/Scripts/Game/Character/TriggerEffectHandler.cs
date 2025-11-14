@@ -43,7 +43,10 @@ namespace Game.Character
             if (!IsServer || m_TriggerEffects == null)
                 return;
 
-            foreach(var triggerEffect in m_TriggerEffects)
+            // END all trigger effects (clone list to avoid modifications during loop)
+            STriggerEffect[] triggerEffects = new STriggerEffect[m_TriggerEffects.Count];
+            m_TriggerEffects.CopyTo(triggerEffects);
+            foreach(var triggerEffect in triggerEffects)
             {
                 if(triggerEffect.IsActivated)
                     triggerEffect.End();

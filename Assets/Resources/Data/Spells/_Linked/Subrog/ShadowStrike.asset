@@ -13,13 +13,8 @@ MonoBehaviour:
   m_Name: ShadowStrike
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: A shadow spike erupts from the ground, inflicting {0} damage (+
-    {1} execution) and applying Airborne for 1 second.
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
-  - Name: ExecutionDamage
-    WithIcon: 1
+  m_Description: A shadow spike erupts from the ground, inflicting [Damage] damage
+    and applies Airborne for 1 second.
   m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 7762457196687597496, guid: da12beff7b44f7b4284b7ebca593a29c, type: 3}
@@ -73,11 +68,9 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 15
   EnergyCost: 0
-  m_Damage: 120
-  m_ExecutionDamage: 120
   m_Damages:
-  - m_BaseValue: 120
-    m_DamageCategory: 2
+  - m_BaseValue: 100
+    m_DamageCategory: 1
     m_HitCategory: 1
     m_SpellPropertyScaling:
       Property: 2
@@ -85,8 +78,9 @@ MonoBehaviour:
       ScalingType: 0
       RoundingType: 0
       ScalingTresholds: []
-  - m_BaseValue: 120
-    m_DamageCategory: 2
+    m_DamageModifiers: []
+  - m_BaseValue: 200
+    m_DamageCategory: 1
     m_HitCategory: 3
     m_SpellPropertyScaling:
       Property: 19
@@ -94,6 +88,7 @@ MonoBehaviour:
       ScalingType: 0
       RoundingType: 0
       ScalingTresholds: []
+    m_DamageModifiers: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -176,6 +171,7 @@ MonoBehaviour:
   Animation: 6
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.2
   m_Cooldown: 25
   m_SpellSpawn: 1

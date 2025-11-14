@@ -25,10 +25,13 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
   m_EndWithShield: 0
   m_EndAt0Stacks: 1
   m_RefreshShield: 1
+  m_RefreshDuration: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: 0
@@ -38,6 +41,7 @@ MonoBehaviour:
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats: []
   m_StatConversions: []
   m_SubStateEffects: []
@@ -47,6 +51,6 @@ MonoBehaviour:
   m_StateEffectScalingLevel: []
   m_StateEffectScalingStacks: []
   m_HealConversion:
-    m_BaseValue: 0.1
+    m_BaseValue: 0.2
     m_ScalingPerc: 0
-    m_ScalingFix: 0.02
+    m_ScalingFix: 0.04

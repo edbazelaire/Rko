@@ -1,4 +1,5 @@
-﻿using Game.UI.EndGameUI;
+﻿using Enums;
+using Game.UI.EndGameUI;
 using Tools;
 
 
@@ -10,6 +11,7 @@ namespace Menu.PopUps.OverlayScreens
 
         protected PowerUpSection m_PowerUpSection;
         int m_Index;
+        ERuneActivation? m_RuneActivation = null;
 
         public PowerUpSection PowerUpSection => m_PowerUpSection;
 
@@ -25,9 +27,10 @@ namespace Menu.PopUps.OverlayScreens
             m_PowerUpSection = Finder.FindComponent<PowerUpSection>(gameObject);
         }
 
-        public void Initialize(int index = -1)
+        public void Initialize(int index = -1, ERuneActivation? runeActivation = null)
         {
             m_Index = index;
+            m_RuneActivation = runeActivation;
             base.Initialize();
         }
 
@@ -35,7 +38,7 @@ namespace Menu.PopUps.OverlayScreens
         {
             base.OnPrefabLoaded();
 
-            m_PowerUpSection.Initialize(m_Index);
+            m_PowerUpSection.Initialize(m_Index, m_RuneActivation);
             m_PowerUpSection.Activate(true);
         }
 

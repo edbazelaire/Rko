@@ -26,13 +26,16 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
   m_EndWithShield: 0
   m_EndAt0Stacks: 0
   m_RefreshShield: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: 0
+  m_StartingStacks: 1
   m_MaxStacks: -1
   m_StackDecay: -1
   m_StartsActivated: 1
@@ -41,11 +44,15 @@ MonoBehaviour:
   - StateEffectEvent: 3
     StateEffectName: Burn
     Stacks: 1
+  m_SpellActivations: []
   m_BonusStats:
   - StateEffectProperty: 7
     BaseValue: 5
     LevelScalingFactor: 0.1
     StackScalingFactor: 1
+    ScalesOnMissingHealth: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions:
     - Burn
   m_StatConversions: []
@@ -58,19 +65,21 @@ MonoBehaviour:
   m_IsCumulativeEffects: 1
   m_ResetsOnMaxStacks: 0
   m_QuestThresholds:
-  - RequiredStacks: 6
-    ReplacementIcon: {fileID: 21300000, guid: 513fca82b49eca64f97247b379176ed4, type: 3}
+  - RequiredStacks: 12
+    ReplacementIcon: {fileID: 0}
     ActivableEffects:
     - Target: 4
       Effect: Ma_EmperorOfFlames
       BonusLevel: 0
       IsDeactivable: 0
+      ReactivatedEveryStacks: 15
     BonusStats: []
-  - RequiredStacks: 12
-    ReplacementIcon: {fileID: 21300000, guid: 0e8b1b23635b86249b604b8a1f66b878, type: 3}
+  - RequiredStacks: 18
+    ReplacementIcon: {fileID: 21300000, guid: 513fca82b49eca64f97247b379176ed4, type: 3}
     ActivableEffects:
     - Target: 4
       Effect: Pr_EmperorOfFlames
       BonusLevel: 0
       IsDeactivable: 0
+      ReactivatedEveryStacks: 0
     BonusStats: []

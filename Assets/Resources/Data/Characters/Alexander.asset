@@ -27,14 +27,13 @@ MonoBehaviour:
     protect at any cost. Noble in spirit, unwavering in resolve, Alexander rules
     with the strength of a king and the compassion of a guardian, driven by the hope
     of forging a lasting peace for Maedonis."
-  m_DescriptionVariables: []
   m_SpellElements: 00000000
   m_AutoAttack: AxeThrow
   m_SpecialAbility: ThickSkin
   m_Ultimate: Erasement
   Size: 1.3
   BaseSpeed: 0.9
-  BaseHealth: 2000
+  BaseHealth: 2200
   MaxEnergy: 100
   BaseEnergy: 10
   PassiveEnergyGain: 1
@@ -42,7 +41,7 @@ MonoBehaviour:
   HealthScaleFactor: 0.1
   CharacterStatScaling:
   - StateEffectProperty: 5
-    BaseValue: 10
+    BaseValue: 12
     BonusValue: 0
     ScalingFactor: 0.1
     DamageCategories: 
@@ -50,16 +49,23 @@ MonoBehaviour:
     SpecialConditions: []
     StateEffectStackFactors: []
   - StateEffectProperty: 30
+    BaseValue: 35
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 01000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 30
     BaseValue: 25
-    BonusValue: 0.1
-    ScalingFactor: 0
-    DamageCategories: 
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 02000000
     HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers:
   - Description: 
-    m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: HeavyHitter

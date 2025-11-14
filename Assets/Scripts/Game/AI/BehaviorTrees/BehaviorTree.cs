@@ -1,3 +1,4 @@
+using Assets;
 using Enums;
 using Game;
 using Game.AI.BehaviorTrees;
@@ -108,7 +109,7 @@ namespace AI
 
         protected virtual void Update()
         {
-            if (!m_IsActivated || !m_Controller.IsServer)
+            if (!m_IsActivated || !m_Controller.IsServer || Main.DeactivateEnemy)
                 return;
 
             // update all timers

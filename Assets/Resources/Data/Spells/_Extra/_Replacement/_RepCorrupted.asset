@@ -14,9 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 'Replace your AutoAttack with a new projectile that explodes, [SubSpellData.Description]'
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 179796, guid: 96db9f59e0051f24ab7a2843ba7a6cb7, type: 3}
@@ -51,18 +48,7 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 100
-  m_ExecutionDamage: 0
-  m_Damages:
-  - m_BaseValue: 100
-    m_DamageCategory: 1
-    m_HitCategory: 1
-    m_SpellPropertyScaling:
-      Property: 2
-      Value: 0.1
-      ScalingType: 0
-      RoundingType: 2
-      ScalingTresholds: []
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -125,6 +111,7 @@ MonoBehaviour:
   Animation: 2
   IsCancellable: 1
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.5
   m_Cooldown: 0
   Trajectory: 1

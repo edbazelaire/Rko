@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: UnstableOrb
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: "A volatile sphere of void\u2011frost erupts on contact, dealing
-    [Damage] damage and inflicting [Malediction]."
-  m_DescriptionVariables: []
+  m_Description: A volatile sphere of conflicting energies erupts on contact, dealing
+    [Damage] {PhysicalDamage} and applying [EnemyStateEffect.0].
   m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 1465899634756489508, guid: 02b32b32131dc324ca546a14857e7827, type: 3}
@@ -90,8 +89,6 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 15
   EnergyCost: 0
-  m_Damage: 80
-  m_ExecutionDamage: 0
   m_Damages:
   - m_BaseValue: 80
     m_DamageCategory: 1
@@ -102,6 +99,7 @@ MonoBehaviour:
       ScalingType: 0
       RoundingType: 0
       ScalingTresholds: []
+    m_DamageModifiers: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -154,8 +152,8 @@ MonoBehaviour:
     Animation: 0
   EnemyStateEffects:
   - StateEffect: 13
-    Stacks: 7
-    BonusStacksPerLevel: 0.5
+    Stacks: 4
+    BonusStacksPerLevel: 0.25
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
@@ -163,6 +161,7 @@ MonoBehaviour:
   Animation: 2
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 1.5
   m_Cooldown: 2
   Trajectory: 1

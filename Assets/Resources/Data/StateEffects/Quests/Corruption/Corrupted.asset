@@ -15,9 +15,9 @@ MonoBehaviour:
   m_Description: 'Become the incarnation of Corruption : gain {0} shield. Increase
     your attack speed by {1} and add {2} life steal.\n\n[StateEffect.0.EffectDescription]'
   m_DescriptionVariables: 040000001000000009000000
+  m_NStacksInDescription: 1
   m_StateEffectType: 1
   m_IsDisplayed: 0
-  m_VisualEffects: []
   m_GfxEffects:
   - Prefab: {fileID: 2750916684303480959, guid: 81e3e6d277729ef4bae7709f2d1aad17, type: 3}
     MaterialEffect: {fileID: 0}
@@ -34,6 +34,7 @@ MonoBehaviour:
     SpawnLocation: 2
     BodyPart: 0
     IsFollowing: 1
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -53,6 +54,7 @@ MonoBehaviour:
     SpawnLocation: 2
     BodyPart: 0
     IsFollowing: 0
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -72,6 +74,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 6
     IsFollowing: 1
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0.1}
     Animation: 0
     SpellAnimation: 
@@ -91,6 +94,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 0
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -102,28 +106,45 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
+  m_EndWithShield: 0
+  m_EndAt0Stacks: 1
+  m_RefreshShield: 1
+  m_RefreshDuration: 1
   m_Priority: 0
   m_Delay: 1.5
   m_Duration: -1
+  m_StartingStacks: 1
   m_MaxStacks: 1
   m_StackDecay: 0
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats:
   - StateEffectProperty: 4
-    BaseValue: 500
+    BaseValue: 800
     LevelScalingFactor: 0.1
     StackScalingFactor: 1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
   - StateEffectProperty: 16
-    BaseValue: 0.25
+    BaseValue: 0.15
     LevelScalingFactor: 0.05
     StackScalingFactor: 1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
   - StateEffectProperty: 9
-    BaseValue: 0.2
+    BaseValue: 0.08
     LevelScalingFactor: 0.05
     StackScalingFactor: 1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects:
   - StateEffect: 19

@@ -9,12 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
+  m_Script: {fileID: 11500000, guid: fddbcff511bf8f6468f46e05e8811cf7, type: 3}
   m_Name: Levrak
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 
-  m_DescriptionVariables: []
+  m_Description: 'A Levrak is a ghost of past wars and a wandering sentinel, with
+    no other purpuse than blind destruction.
+
+    Once an ancient weapon crafted
+    from thousands of spirits, some were never deactivated and now roams endlessly
+    through the icy wastes.'
   m_SpellElements: 
   m_AutoAttack: SoulShards
   m_SpecialAbility: Netherglacier
@@ -26,30 +30,38 @@ MonoBehaviour:
   BaseEnergy: 0
   PassiveEnergyGain: 0
   IsStructure: 0
-  HealthScaleFactor: 0.12
+  HealthScaleFactor: 0.1
   CharacterStatScaling:
   - StateEffectProperty: 5
-    BaseValue: 20
+    BaseValue: 12
     BonusValue: 0
     ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 01000000
     SpecialConditions: []
     StateEffectStackFactors: []
-  - StateEffectProperty: 27
-    BaseValue: 0.2
+  - StateEffectProperty: 30
+    BaseValue: 50
     BonusValue: 0
-    ScalingFactor: 0
+    ScalingFactor: 0.051
+    DamageCategories: 01000000
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
-  - StateEffectProperty: 26
-    BaseValue: 15
+  - StateEffectProperty: 30
+    BaseValue: 30
     BonusValue: 0
-    ScalingFactor: 0.1
+    ScalingFactor: 0.05
+    DamageCategories: 02000000
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
   - StateEffectProperty: 4
     BaseValue: 1000
     BonusValue: 0
     ScalingFactor: 0.12
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers:
@@ -75,3 +87,11 @@ MonoBehaviour:
       RepeatWhenCooldownOver: 0
       ConsumeLifeOnActivation: 0
     m_BonusStats: []
+  m_SpawnOffsetX:
+    Min: 0
+    Max: 0
+  m_SpawnOffsetY:
+    Min: 0
+    Max: 0
+  PopUpOffset: {x: 0, y: -100, z: 0}
+  PopUpScale: 0.9

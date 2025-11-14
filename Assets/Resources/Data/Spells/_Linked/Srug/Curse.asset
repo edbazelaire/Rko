@@ -13,12 +13,8 @@ MonoBehaviour:
   m_Name: Curse
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: Shoots a ball of void energy, dealing {0} Damages and applying {1}
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
-  - Name: Cursed
-    WithIcon: 1
+  m_Description: 'Shoots a ball of void energy, dealing [Damage] Damages and applying
+    [Cursed]'
   m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 2910976597878939058, guid: b31ba57748e748d4d98b43494ab559b1, type: 3}
@@ -92,11 +88,9 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 30
-  m_ExecutionDamage: 0
   m_Damages:
   - m_BaseValue: 30
-    m_DamageCategory: 1
+    m_DamageCategory: 2
     m_HitCategory: 1
     m_SpellPropertyScaling:
       Property: 2
@@ -104,6 +98,7 @@ MonoBehaviour:
       ScalingType: 0
       RoundingType: 0
       ScalingTresholds: []
+    m_DamageModifiers: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -165,6 +160,7 @@ MonoBehaviour:
   Animation: 2
   IsCancellable: 1
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.55
   m_Cooldown: 0
   Trajectory: 1

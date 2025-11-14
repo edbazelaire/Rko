@@ -87,7 +87,6 @@ namespace Data.GameManagement
         // ===============================================================================================
         // DATA
         [Header("Arena Data")]
-        [SerializeField] int m_NLifes = 1;
         [SerializeField] int m_RoundDuration = 0;
         [SerializeField] List<SArenaLevelData> m_ArenaLevelData;
 
@@ -281,7 +280,7 @@ namespace Data.GameManagement
 
             return (int)Math.Round(
                 baseValue                                                                           // base power level from current arena level
-                * Math.Pow(1 + ArenaManagementData.BonusArenaDifficulty, (int)ArenaDifficulty)      // power level increase from arena difficulty (normal, hard, brutal, ...)
+                * Math.Pow(1 + arenaConfigData.BonusArenaDifficulty, (int)ArenaDifficulty)      // power level increase from arena difficulty (normal, hard, brutal, ...)
                 * ProgressionCloudData.CurrentArena.GetBonusPowerOrb()                              // percentage of bonus reward
             );
         }

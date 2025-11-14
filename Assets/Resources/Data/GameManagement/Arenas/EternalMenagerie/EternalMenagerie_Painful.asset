@@ -12,19 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9daef013e5e5281409e5995f44de4a10, type: 3}
   m_Name: EternalMenagerie_Painful
   m_EditorClassIdentifier: 
-  m_NLifes: 1
   m_RoundDuration: 240
   m_ArenaLevelData:
   - RewardsData:
       Currencies: []
-      Chests: 00000000
+      Chests: 01000000
       Collectables: []
       AchievementRewards: []
       Boosts: []
     TriggerEffects:
     - SpellDataName: _DropOfLight
       OverridingData: []
-      Level: 0
+      Level: 12
       Target: 1
       SpellActivationEvent: 1
       ActivationTreshold: 0
@@ -52,18 +51,23 @@ MonoBehaviour:
         BaseValue: 40000
         BonusValue: 0
         ScalingFactor: 0
+        DamageCategories: 
+        HitCategories: 
         SpecialConditions: []
         StateEffectStackFactors: []
   - RewardsData:
       Currencies: []
       Chests: 01000000
-      Collectables: []
+      Collectables:
+      - CollectableType: 2
+        CollectableName: Torment
+        Qty: 1
       AchievementRewards: []
       Boosts: []
     TriggerEffects:
     - SpellDataName: _DropOfLight
       OverridingData: []
-      Level: 0
+      Level: 12
       Target: 1
       SpellActivationEvent: 1
       ActivationTreshold: 0
@@ -91,18 +95,22 @@ MonoBehaviour:
         BaseValue: 40000
         BonusValue: 0
         ScalingFactor: 0
+        DamageCategories: 
+        HitCategories: 
         SpecialConditions: []
         StateEffectStackFactors: []
   - RewardsData:
-      Currencies: []
-      Chests: 01000000
+      Currencies:
+      - Currency: 3
+        Qty: 750
+      Chests: 0d000000
       Collectables: []
       AchievementRewards: []
       Boosts: []
     TriggerEffects:
     - SpellDataName: _DropOfLight
       OverridingData: []
-      Level: 0
+      Level: 12
       Target: 1
       SpellActivationEvent: 1
       ActivationTreshold: 0
@@ -130,18 +138,31 @@ MonoBehaviour:
         BaseValue: 40000
         BonusValue: 0
         ScalingFactor: 0
+        DamageCategories: 
+        HitCategories: 
         SpecialConditions: []
         StateEffectStackFactors: []
   - RewardsData:
-      Currencies: []
-      Chests: 01000000
+      Currencies:
+      - Currency: 0
+        Qty: 3500
+      - Currency: 3
+        Qty: 1000
+      Chests: 02000000
       Collectables: []
-      AchievementRewards: []
+      AchievementRewards:
+      - AchievementReward: 2
+        Title: 0
+        Avatar: 604
+        Border: 0
+        Emot: 0
+        Badge: 0
+        League: 0
       Boosts: []
     TriggerEffects:
     - SpellDataName: _DropOfLight
       OverridingData: []
-      Level: 0
+      Level: 12
       Target: 1
       SpellActivationEvent: 1
       ActivationTreshold: 0
@@ -169,6 +190,8 @@ MonoBehaviour:
         BaseValue: 40000
         BonusValue: 0
         ScalingFactor: 0
+        DamageCategories: 
+        HitCategories: 
         SpecialConditions: []
         StateEffectStackFactors: []
   m_SpawnerData: {fileID: 11400000, guid: 1468560059c9d6248b4d0ec02738295a, type: 2}

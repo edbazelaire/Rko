@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bec91e441d966e438d35c0133adae84, type: 3}
   m_Name: Purity
   m_EditorClassIdentifier: 
-  m_Description: Cleanse 2 stacks of [CorruptedPower]. Restore [Heal] hp for each
-    stacks removed.
+  m_Description: 'Removes a stack of [CorruptedPower]'
   m_DescriptionVariables: 
   m_NStacksInDescription: 1
   m_StateEffectType: 0
@@ -26,6 +25,7 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 1
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
   m_IgnoresBoosts: 0
   m_EndWithShield: 0
@@ -41,12 +41,7 @@ MonoBehaviour:
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
   m_SpellActivations: []
-  m_BonusStats:
-  - StateEffectProperty: 104
-    BaseValue: 50
-    LevelScalingFactor: 0.1
-    StackScalingFactor: 1
-    SpecialConditions: []
+  m_BonusStats: []
   m_StatConversions: []
   m_SubStateEffects: []
   m_HoldingStateEffects: []

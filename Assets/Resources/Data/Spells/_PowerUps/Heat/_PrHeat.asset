@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: Heat the entire field dealing [TickDamage] damage and applying [Burn]
-    every {0} seconds
+    every [DurationTick] seconds
   m_DescriptionVariables:
   - Name: DurationTick
     WithIcon: 1
@@ -73,6 +73,7 @@ MonoBehaviour:
   EnergyCost: 0
   m_Damage: 0
   m_ExecutionDamage: 0
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -113,6 +114,8 @@ MonoBehaviour:
       BaseValue: 1
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
   IsChanneling: 0

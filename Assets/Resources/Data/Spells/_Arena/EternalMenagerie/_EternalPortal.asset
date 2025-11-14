@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
@@ -44,12 +43,11 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
+  m_MaxHit: 1
   m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 0
-  m_ExecutionDamage: 0
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -72,6 +70,18 @@ MonoBehaviour:
     ScalingType: 0
     RoundingType: 2
     ScalingTresholds: []
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
   m_Size: 9
   TriggerPlayer: 1
   HasSolidBody: 0
@@ -83,6 +93,8 @@ MonoBehaviour:
       BaseValue: 1
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
   IsChanneling: 0
@@ -91,11 +103,6 @@ MonoBehaviour:
     IsInterruptable: 1
     m_ForcedMovementSpeed: 0
     Animation: 0
-  IsFollowing: 0
-  MFollowing:
-    m_TargetToFollow: 0
-    m_TargetOffset: {x: 0, y: 0}
-    m_FollowingSpeed: -1
   EnemyStateEffects: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
@@ -103,6 +110,7 @@ MonoBehaviour:
   Animation: 0
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0
   m_Cooldown: 0
   m_IsUnique: 1
@@ -130,12 +138,13 @@ MonoBehaviour:
       m_OffsetMinMax:
         Min: 0
         Max: 0
+  IsWaveSpawn: 1
   m_NSpawns: -1
+  m_SpawnElements: []
   m_Waves:
     WaveSpawns: []
   m_WavesGraphics:
   - {fileID: 113850, guid: 63f4bb1c7f4d6124d8496ad0b193b8cc, type: 3}
   - {fileID: 152368, guid: 365d49e321fa2bf4998c838aef563efd, type: 3}
   - {fileID: 1923825553450198, guid: 88aec6a308a986b4e8b463a1b00d9744, type: 3}
-  m_SpawnElements: []
-  SpawnElements: []
+  - {fileID: 1626871848755204, guid: 0505a7c1c11a2214cb8817c13430a760, type: 3}

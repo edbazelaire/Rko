@@ -14,12 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: Channel the duality of light and shadow with each strike to inflict
-    {0} damage (+ {1} execution)
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
-  - Name: ExecutionDamage
-    WithIcon: 0
+    [Damage] damage.
   m_SpellElements: 00000000
   Linked: 1
   Graphics: {fileID: 2551266922917926074, guid: 03542376fa4f05e48b74725bdc40c3e9, type: 3}
@@ -93,10 +88,8 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 0
-  m_ExecutionDamage: 0
   m_Damages:
-  - m_BaseValue: 70
+  - m_BaseValue: 60
     m_DamageCategory: 1
     m_HitCategory: 1
     m_SpellPropertyScaling:
@@ -105,7 +98,8 @@ MonoBehaviour:
       ScalingType: 0
       RoundingType: 2
       ScalingTresholds: []
-  - m_BaseValue: 50
+    m_DamageModifiers: []
+  - m_BaseValue: 60
     m_DamageCategory: 1
     m_HitCategory: 3
     m_SpellPropertyScaling:
@@ -114,6 +108,7 @@ MonoBehaviour:
       ScalingType: 0
       RoundingType: 2
       ScalingTresholds: []
+    m_DamageModifiers: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -176,6 +171,7 @@ MonoBehaviour:
   Animation: 2
   IsCancellable: 1
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.5
   m_Cooldown: 0
   Trajectory: 1

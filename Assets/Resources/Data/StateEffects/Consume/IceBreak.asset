@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6ebcf55210ce0345967256f47f2c998, type: 3}
   m_Name: IceBreak
   m_EditorClassIdentifier: 
-  m_Description: Consume [Frozen] and [Frostbite] to inflict an extra [Damage] damage.
+  m_Description: Consume [Frozen] and/or [Frostbite] to inflict an extra [Damage]
+    damage.
   m_DescriptionVariables: 
   m_NStacksInDescription: 1
   m_StateEffectType: 0
@@ -45,6 +46,7 @@ MonoBehaviour:
   m_DefaultState: 6
   m_IsInstantanious: 1
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
   m_IgnoresBoosts: 0
   m_EndWithShield: 0
@@ -54,16 +56,28 @@ MonoBehaviour:
   m_Delay: 0
   m_Duration: 0
   m_StartingStacks: 1
-  m_MaxStacks: 3
+  m_MaxStacks: -1
   m_StackDecay: -1
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats:
   - StateEffectProperty: 11
-    BaseValue: 150
+    BaseValue: 110
     LevelScalingFactor: 0.1
-    StackScalingFactor: 0
+    StackScalingFactor: 1
+    ScalesOnMissingHealth: 0
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
+  - StateEffectProperty: 11
+    BaseValue: 70
+    LevelScalingFactor: 0.1
+    StackScalingFactor: 1
+    ScalesOnMissingHealth: 0
+    DamageCategories: 01000000
+    HitCategories: 
     SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects: []

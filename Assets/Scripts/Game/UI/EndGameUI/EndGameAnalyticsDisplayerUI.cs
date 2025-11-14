@@ -17,8 +17,9 @@ namespace Game.UI.EndGameUI
     {
         #region Members
 
-        EHitType m_OrderSpellsBy => EHitType.Damage;
-        EHitType[] m_HitTypeDisplayOrder => new EHitType[3] { EHitType.Damage, EHitType.Heal, EHitType.Shield };
+        List<EHitType> m_OrderSpellsBy;
+        List<EHitType> m_DefaultOrderSpellsBy => new() { EHitType.PhysicalDamage, EHitType.MagicalDamage };
+        EHitType[] m_HitTypeDisplayOrder => new EHitType[4] { EHitType.PhysicalDamage, EHitType.MagicalDamage, EHitType.Heal, EHitType.Shield };
 
         SSpellHitTypeData                   m_SpellHitSummary;
         Dictionary<ESpecialValue, float>    m_SpecialValues         = new();
@@ -43,6 +44,7 @@ namespace Game.UI.EndGameUI
         {
             base.Initialize();
 
+            m_OrderSpellsBy = m_DefaultOrderSpellsBy;
             m_SpellHitTypeDatas = spellHitTypeDatas;
 
             // calculate contextual values
@@ -195,13 +197,28 @@ namespace Game.UI.EndGameUI
             }
         }
 
-        void OrderSpellAnalyticsBy(EHitType hitType, bool desc = true)
+        void OrderSpellAnalyticsBy(List<EHitType> hitTypes, bool desc = true)
         {
+            if (m_SpellHitTypeDatas == null || m_SpellHitTypeDatas.Count == 0)
+                return;
+
+            if (hitTypes == null || hitTypes.Count == 0)
+                hitTypes = m_DefaultOrderSpellsBy;
+
             m_SpellHitTypeDatas.Sort((a, b) =>
             {
-                int aValue = a.GetTotal(hitType);
-                int bValue = b.GetTotal(hitType);
-                return desc ? bValue.CompareTo(aValue) : aValue.CompareTo(bValue);
+                // Compute total sum for all given hit types
+                int aSum = 0;
+                int bSum = 0;
+
+                foreach (var type in hitTypes)
+                {
+                    aSum += a.GetTotal(type);
+                    bSum += b.GetTotal(type);
+                }
+
+                // Compare according to order (desc/asc)
+                return desc ? bSum.CompareTo(aSum) : aSum.CompareTo(bSum);
             });
         }
 

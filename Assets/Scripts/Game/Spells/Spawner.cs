@@ -3,12 +3,8 @@ using Assets.Scripts.Managers.Sound;
 using Data;
 using Data.DataStructures.SpellSubStructures.Spawns;
 using Enums;
-using Game.Loaders;
-using Managers;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing.Drawing2D;
 using Tools;
 using Unity.Netcode;
 using Unity.VisualScripting;
@@ -29,9 +25,9 @@ namespace Game.Spells
 
         // ===========================================================================
         // Dependent Members
-        SWaveSpawn m_CurrentWave => m_SpellData.Waves.GetWaveAtIndex(m_CurrentWaveIndex);
-        SWaveSpawn m_PreviousWave => m_CurrentWaveIndex > 0 ? m_SpellData.Waves.GetWaveAtIndex(m_CurrentWaveIndex - 1) : null;
-        bool HasNextWave => m_SpellData.NWaves > m_CurrentWaveIndex + 1;
+        SWaveSpawn m_CurrentWave    => m_SpellData.Waves.GetWaveAtIndex(m_CurrentWaveIndex);
+        SWaveSpawn m_PreviousWave   => m_CurrentWaveIndex > 0 ? m_SpellData.Waves.GetWaveAtIndex(m_CurrentWaveIndex - 1) : null;
+        bool HasNextWave            => m_SpellData.NWaves > m_CurrentWaveIndex + 1;
 
         #endregion
 
@@ -51,12 +47,15 @@ namespace Game.Spells
             if (!IsServer)
                 return;
 
-            // initialize spawners delays
-            m_CurrentWaveIndex = 0;
-            StartCurrentWave();
-
-            // setup radius and timer
-            m_DurationTimer     = m_SpellData.Duration;
+            if (m_SpellData.IsWaveSpawn)
+            {
+                StartWaveSpawns();
+            } 
+            // otherwise - spawn elements and end the spell
+            else
+            {
+                StartInstantSpawn();
+            }
         }
 
         /// <summary>
@@ -98,7 +97,58 @@ namespace Game.Spells
         #endregion
 
 
-        #region Spawn
+        #region Instant Spawn
+
+        void StartInstantSpawn()
+        {
+            if (m_SpellData.NSpawns > 0)
+            {
+                for (int i = 0; i < m_SpellData.NSpawns; i++)
+                {
+                    float proba = Random.Range(0f, 1f);
+                    float currentProba = 0f;
+                    var spawnElements = m_SpellData.SpawnElements.ShuffleClone();
+                    for (int j = 0; j < spawnElements.Count; j++)
+                    {
+                        currentProba += spawnElements[j].SpawnProbability;
+
+                        if (!spawnElements[j].HasSpawnLeft)
+                            continue;
+
+                        if (currentProba < proba)
+                            continue;
+
+                        spawnElements[j].Spawn(this);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                foreach (var spawnElement in m_SpellData.SpawnElements)
+                {
+                    spawnElement.Spawn(this);
+                }
+            }
+
+
+            End();
+        }
+
+        #endregion
+
+
+        #region Wave Spawn
+
+        void StartWaveSpawns()
+        {
+            // initialize spawners delays
+            m_CurrentWaveIndex = 0;
+            StartCurrentWave();
+
+            // setup radius and timer
+            m_DurationTimer = m_SpellData.Duration;
+        }
 
         void StartCurrentWave()
         {
@@ -115,7 +165,7 @@ namespace Game.Spells
                 SpawnWaveGraphicsClientRPC();
 
             List<Controller> previousSpawns = m_PreviousWave != null ? m_PreviousWave.Spawns : new();
-            StartCoroutine(m_CurrentWave.StartDelayTimer(previousSpawns));
+            StartCoroutine(m_CurrentWave.StartDelayTimer(previousSpawns, isLastWave: !HasNextWave));
         }
 
         [ClientRpc]

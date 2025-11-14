@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: _Geysers
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 'Every {0} seconds, [Projectiles] [SubSpellData.Description]'
+  m_Description: 'Every [DelayBetweenWaves] seconds, [Projectiles] [SubSpellData.Description]'
   m_DescriptionVariables:
   - Name: DelayBetweenWaves
     WithIcon: 0
@@ -46,12 +46,13 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
+  m_MaxHit: 1
   m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 0
   m_ExecutionDamage: 0
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -85,6 +86,18 @@ MonoBehaviour:
       Value: 4
     - Level: 16
       Value: 5
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
   m_Size: 1
   TriggerPlayer: 1
   HasSolidBody: 0
@@ -96,6 +109,8 @@ MonoBehaviour:
       BaseValue: 1
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
   IsChanneling: 0

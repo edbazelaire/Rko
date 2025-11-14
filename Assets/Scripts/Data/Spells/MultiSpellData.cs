@@ -11,6 +11,7 @@ using System;
 using System.Linq;
 using Assets.Scripts.Data.DataStructures.SpellSubStructures;
 using Data.DataStructures.SpellSubStructures;
+using Assets.Scripts.Game;
 
 namespace Data
 {
@@ -90,7 +91,8 @@ namespace Data
         public override void Cast(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default, bool recalculateTarget = true, bool recalculatePosition = true, bool recalculateRotation = true)
         {
             // init sub spell data
-            m_FinalSubSpellData = GetSubSpellData(GameManager.Instance.GetPlayer(clientId));
+            var caster = GameManager.Instance.GetPlayer(clientId);
+            m_FinalSubSpellData = GetSubSpellData(caster);
 
             // error - exit
             if (m_FinalSubSpellData == null)
@@ -114,6 +116,7 @@ namespace Data
                 return;
             }
 
+            GameAnalyticsManager.Instance.IncreaseCounter(caster.AnalyticsId, Parent);
             GameManager.Instance.GetPlayer(clientId).StartCoroutine(CastMultipleWaves(clientId, target, position, rotation));
         }
 
@@ -427,7 +430,7 @@ namespace Data
             string description = base.GetDescription();
             if (SubSpellData != null)
                 description = TextHandler.ReplaceSubSpellData(description, SubSpellData.Clone(m_Level, true));
-            description = description.Replace("[DelayBetweenWaves]", DelayBetweenWaves.ToString());
+            description = description.Replace("[DelayBetweenWaves]", DelayBetweenWaves.ToString("F2"));
             return description;
         }
 

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d847f30e614ace7449ca37cdbe6c9f47, type: 3}
   m_Name: AbyssalPower
   m_EditorClassIdentifier: 
-  m_Description: For every [CorruptedPower] stacks on the enemy, heal for [TickHeal]
-    and gain [TickEnergy] energy every [Tick] seconds
+  m_Description: For every [CorruptedPower] stacks on the enemy, heal for [DotHeal]
+    and gain [DotEnergy] energy every [Tick] seconds
   m_DescriptionVariables: 
   m_NStacksInDescription: 1
   m_StateEffectType: 0
@@ -26,10 +26,13 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
   m_EndWithShield: 0
   m_EndAt0Stacks: 1
   m_RefreshShield: 1
+  m_RefreshDuration: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: 0
@@ -39,16 +42,23 @@ MonoBehaviour:
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats:
   - StateEffectProperty: 14
     BaseValue: 1
     LevelScalingFactor: 0.1
     StackScalingFactor: 1
+    ScalesOnMissingHealth: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
   - StateEffectProperty: 115
     BaseValue: 0.2
     LevelScalingFactor: 0
     StackScalingFactor: 1
+    ScalesOnMissingHealth: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects: []
@@ -62,9 +72,9 @@ MonoBehaviour:
   m_Heal: 0
   m_EndHeal: 0
   m_Tick: 3
-  m_TickDamage: 0
-  m_TickHeal: 0
-  m_TickShield: 0
-  m_TickEnergy: 0
+  m_DotDamage: 0
+  m_DotHeal: 0
+  m_DotShield: 0
+  m_DotEnergy: 0
   m_TickEffects: []
   m_TickSpellRequirements: []

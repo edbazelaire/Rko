@@ -1,6 +1,7 @@
 ﻿using AI;
 using Enums;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace Game.AI.BehaviorTrees
 {
@@ -23,7 +24,14 @@ namespace Game.AI.BehaviorTrees
                     new TaskUseSpell(m_Controller, ESpell.Netherglacier),
                 }),
 
+                //new Sequence(new List<Node>()
+                //{
+                //    new CheckObstacles(m_Controller, distance: 2.5f, checkLeft: true, checkRight: false, reversed: true),
+                //    new TaskUseSpell(m_Controller, m_Controller.SpellHandler.AutoAttack),
+                //}),
+                
                 new TaskUseSpell(m_Controller, m_Controller.SpellHandler.AutoAttack, delay: 5),
+
                 new TaskMove(m_Controller, checkZones: false, checkProjectiles: false, ignoreInvisibleWalls: true),
                 new TaskWait(m_Controller),
             });

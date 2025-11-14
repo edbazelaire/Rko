@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Data.DataStructures.Common;
 using Enums;
+using Save;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,8 @@ namespace Assets.Scripts.Data.GameManagement
         public EArenaType Arena;
         [Tooltip("Base level for this Arena")]
         public int BaseLevel = 1;
+        [Tooltip("Base level for this Arena")]
+        public int UnlockedLevel = 1;
 
         [Header("Orb Power Reward")]
         [SerializeField, Tooltip("Quantity of power dropped by a MOB depending on level")]
@@ -55,12 +58,11 @@ namespace Assets.Scripts.Data.GameManagement
         SScalingStat m_CompletionDrop = new SScalingStat(25f, 0.2f);
         [SerializeField, Tooltip("Quantity of power increased at each Arena Difficulty")]
         float m_BonusArenaDifficulty = 0.35f;
-        [SerializeField, Tooltip("Quantity of power increased for each extra arena difficulty level (+, ++, ...)")]
-        float m_BonusArenaDifficultyLevel = 0f;
 
         public SScalingStat MobPowerDrop        => m_MobPowerDrop;
         public SScalingStat BossPowerDrop       => m_BossPowerDrop;
         public SScalingStat CompletionPowerDrop => m_CompletionDrop;
+        public float BonusArenaDifficulty       => m_BonusArenaDifficulty;
 
     }
 
@@ -92,8 +94,6 @@ namespace Assets.Scripts.Data.GameManagement
         SScalingStat m_BossPowerDrop = new SScalingStat(350f, 0.35f);
         [SerializeField, Tooltip("Quantity of power dropped at the END of the Arena depending on level")]
         SScalingStat m_CompletionDrop = new SScalingStat(25f, 0.2f);
-        [SerializeField, Tooltip("Quantity of power increased at each Arena Difficulty")]
-        float m_BonusArenaDifficulty = 0.35f;
         [SerializeField, Tooltip("Quantity of power increased for each extra arena difficulty level (+, ++, ...)")]
         float m_BonusArenaDifficultyLevel = 0f;
 
@@ -111,7 +111,6 @@ namespace Assets.Scripts.Data.GameManagement
         public static SScalingStat MobPowerDrop                 => Instance.m_MobPowerDrop;
         public static SScalingStat BossPowerDrop                => Instance.m_BossPowerDrop;
         public static SScalingStat CompletionPowerDrop          => Instance.m_CompletionDrop;
-        public static float BonusArenaDifficulty                => Instance.m_BonusArenaDifficulty;
         public static float BonusArenaDifficultyLevel           => Instance.m_BonusArenaDifficultyLevel;
 
         #endregion
@@ -125,6 +124,16 @@ namespace Assets.Scripts.Data.GameManagement
                 ErrorHandler.Warning("No special config was found for Arena : " + arena);
 
             return Instance.m_SpecialConfigs.Where(t => t.Arena == arena).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Is ACCOUNT level > required to arena min level ?
+        /// </summary>
+        /// <param name="arena"></param>
+        /// <returns></returns>
+        public static bool IsArenaUnlocked(EArenaType arena)
+        {
+            return GetArenaSpecialConfig(arena).UnlockedLevel <= ProfileCloudData.AccountLevel;
         }
 
         #endregion

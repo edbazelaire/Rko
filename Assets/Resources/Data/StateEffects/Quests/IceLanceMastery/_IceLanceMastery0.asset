@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37a2110fb8b24914fb18b6f82bc81e62, type: 3}
   m_Name: _IceLanceMastery0
   m_EditorClassIdentifier: 
-  m_Description: Your <b>Ice Lance</b> spell gains 1 extra charge
+  m_Description: Your <b>Ice Lance</b> spell gains [Overriding.Charges] extra charge
   m_DescriptionVariables: 
   m_NStacksInDescription: 1
   m_StateEffectType: 0
@@ -25,6 +25,7 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
   m_IgnoresBoosts: 0
   m_EndWithShield: 0
@@ -39,6 +40,7 @@ MonoBehaviour:
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats: []
   m_StatConversions: []
   m_SubStateEffects: []

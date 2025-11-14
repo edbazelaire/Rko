@@ -199,66 +199,66 @@ MonoBehaviour:
   - RequiredGold: 150000
     RequiredQty: 7500
   RuneLevelData:
-  - RequiredGold: 50
+  - RequiredGold: 25
     RequiredQty: 1
   - RequiredGold: 100
-    RequiredQty: 1
+    RequiredQty: 2
   - RequiredGold: 250
-    RequiredQty: 1
+    RequiredQty: 3
   - RequiredGold: 1000
-    RequiredQty: 2
-  - RequiredGold: 2500
-    RequiredQty: 2
-  - RequiredGold: 5000
-    RequiredQty: 3
-  - RequiredGold: 10000
-    RequiredQty: 3
-  - RequiredGold: 20000
     RequiredQty: 4
-  - RequiredGold: 35000
-    RequiredQty: 5
-  - RequiredGold: 50000
+  - RequiredGold: 2500
     RequiredQty: 6
-  - RequiredGold: 75000
-    RequiredQty: 7
-  - RequiredGold: 100000
+  - RequiredGold: 5000
     RequiredQty: 8
-  - RequiredGold: 150000
-    RequiredQty: 9
-  - RequiredGold: 200000
+  - RequiredGold: 10000
     RequiredQty: 10
+  - RequiredGold: 20000
+    RequiredQty: 12
+  - RequiredGold: 35000
+    RequiredQty: 16
+  - RequiredGold: 50000
+    RequiredQty: 20
+  - RequiredGold: 75000
+    RequiredQty: 25
+  - RequiredGold: 100000
+    RequiredQty: 30
+  - RequiredGold: 150000
+    RequiredQty: 40
+  - RequiredGold: 200000
+    RequiredQty: 50
   MasteryUpgradeData:
   - Rarety: 0
     MasteryCosts:
-    - Price: 250
+    - Price: 350
       Currency: 1
-    - Price: 550
-      Currency: 1
-    - Price: 1000
-      Currency: 1
-  - Rarety: 1
-    MasteryCosts:
-    - Price: 450
-      Currency: 1
-    - Price: 750
-      Currency: 1
-    - Price: 1250
-      Currency: 1
-  - Rarety: 2
-    MasteryCosts:
-    - Price: 550
-      Currency: 1
-    - Price: 1050
+    - Price: 850
       Currency: 1
     - Price: 1650
       Currency: 1
+  - Rarety: 1
+    MasteryCosts:
+    - Price: 550
+      Currency: 1
+    - Price: 1250
+      Currency: 1
+    - Price: 2150
+      Currency: 1
+  - Rarety: 2
+    MasteryCosts:
+    - Price: 950
+      Currency: 1
+    - Price: 1850
+      Currency: 1
+    - Price: 2750
+      Currency: 1
   - Rarety: 3
     MasteryCosts:
-    - Price: 750
+    - Price: 1450
       Currency: 1
-    - Price: 1550
+    - Price: 2750
       Currency: 1
-    - Price: 2250
+    - Price: 3850
       Currency: 1
   MasteryPriceReductions:
   - Collectable: 1

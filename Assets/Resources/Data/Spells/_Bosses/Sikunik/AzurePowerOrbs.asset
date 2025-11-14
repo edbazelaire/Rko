@@ -15,7 +15,6 @@ MonoBehaviour:
   m_Rarety: 0
   m_Description: Summons swirling orbs of condensed azure energy, pulsing with latent
     power.
-  m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
@@ -45,12 +44,11 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
+  m_MaxHit: 1
   m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 0
-  m_ExecutionDamage: 0
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -63,8 +61,33 @@ MonoBehaviour:
     m_Duration: 0
     m_Targets: 
   m_SpellsScalingLevel: []
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
   m_Size: 3
   TriggerPlayer: 0
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
   IsChanneling: 0
   MChanneling:
     IsCancellable: 1
@@ -105,12 +128,46 @@ MonoBehaviour:
       m_OffsetMinMax:
         Min: 0.25
         Max: 0
+  IsWaveSpawn: 1
   m_NSpawns: 8
-  m_SpawnElements:
-  - CharacterName: AzurePowerOrb
-    m_MaxSpawns: -1
-    m_SpawnProbability: 1
-    m_BonusLevel: 0
-    m_SpawnInterval: 1.5
-    m_Delay: 0
-    m_Duration: -1
+  m_SpawnElements: []
+  m_Waves:
+    WaveSpawns:
+    - m_WaveDuration: -1
+      m_MaxDeath: -1
+      m_Delay: 0
+      m_SpawnGroups:
+      - SpawnElements:
+        - CharacterName: AzurePowerOrb
+          m_MaxSpawns: -1
+          m_NSpawns: 1
+          m_SpawnProbability: 1
+          m_BonusLevel: 0
+          m_SpawnInterval: 1.5
+          m_Delay: 0
+          m_Duration: -1
+          m_RecalculatePosition: 0
+          m_SpawnPosition:
+            m_SpellTargetX:
+              m_Dimension: 1
+              m_MultiSpellTarget: 0
+              m_ZoneSize: -1
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+            m_SpellTargetY:
+              m_Dimension: 2
+              m_MultiSpellTarget: 0
+              m_ZoneSize: -1
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+  m_WavesGraphics: []

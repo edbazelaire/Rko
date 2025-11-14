@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: _MiPermafrost
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: Applies [Frozen] effect every [Tick] seconds.
-  m_DescriptionVariables: []
+  m_Description: Applies [Frostbite] effect every [Tick] seconds.
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
@@ -68,8 +67,7 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 0
-  m_ExecutionDamage: 0
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -115,6 +113,8 @@ MonoBehaviour:
       BaseValue: 1
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
   IsChanneling: 0
@@ -124,7 +124,7 @@ MonoBehaviour:
     m_ForcedMovementSpeed: 0
     Animation: 0
   EnemyStateEffects:
-  - StateEffect: 2
+  - StateEffect: 34
     Stacks: 1
     BonusStacksPerLevel: 0
     OverridingProperties: []
@@ -134,14 +134,15 @@ MonoBehaviour:
   Animation: 0
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0
   m_Cooldown: 0
   m_SpellSpawn: 1
-  DurationTick: 12
-  m_TickDamage: 0
-  m_TickHeal: 0
-  m_TickShield: 0
-  m_TickEnergy: 0
+  DurationTick: 20
+  m_DotDamage: 0
+  m_DotHeal: 0
+  m_DotShield: 0
+  m_DotEnergy: 0
   m_ZoneForce:
     m_Speed: 0
     m_Duration: 0

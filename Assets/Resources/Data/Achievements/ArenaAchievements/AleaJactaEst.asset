@@ -20,12 +20,11 @@ MonoBehaviour:
   AchievementSubData:
   - MaxValue: 10
     Rewards:
-      Currencies: []
+      Currencies:
+      - Currency: 1
+        Qty: 25
       Chests: 
-      Collectables:
-      - CollectableType: 2
-        CollectableName: Maelstrom
-        Qty: 1
+      Collectables: []
       AchievementRewards: []
       Boosts: []
     ArenaType: 0
@@ -75,6 +74,6 @@ MonoBehaviour:
     ArenaType: 0
     ArenaDifficulty: 6
     ArenaMods: 
-  m_ArenaType: 0
+  m_ArenaType: -1
   m_ArenaDifficulty: 4
   m_ArenaMods: 01000000

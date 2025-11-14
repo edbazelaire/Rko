@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: PoisonDart
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: Shoot a dart covered in poison in a straight line, applying {0}
-    damage (+{1} execution) and [EnemyStateEffect.0] on hitted enemy
+  m_Description: Shoot a dart covered in poison in a straight line, applying [Damage]
+    damage and [EnemyStateEffect.0] on hitted enemy
   m_DescriptionVariables:
   - Name: Damage
     WithIcon: 1
@@ -76,7 +76,7 @@ MonoBehaviour:
   EnergyGain: 5
   EnergyCost: 0
   m_Damage: 20
-  m_ExecutionDamage: 30
+  m_ExecutionDamage: 50
   m_Damages:
   - m_BaseValue: 20
     m_DamageCategory: 1
@@ -87,7 +87,7 @@ MonoBehaviour:
       ScalingType: 0
       RoundingType: 0
       ScalingTresholds: []
-  - m_BaseValue: 30
+  - m_BaseValue: 50
     m_DamageCategory: 1
     m_HitCategory: 3
     m_SpellPropertyScaling:

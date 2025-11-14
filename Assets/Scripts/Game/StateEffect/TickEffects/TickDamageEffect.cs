@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Spells
 {
@@ -17,16 +18,20 @@ namespace Game.Spells
 
         [Header("Tick")]
         [SerializeField] protected float                    m_Tick;
-        [SerializeField] protected int                      m_TickDamage;
-        [SerializeField] protected int                      m_TickHeal;
-        [SerializeField] protected int                      m_TickShield;
-        [SerializeField] protected int                      m_TickEnergy;
+        [FormerlySerializedAs("m_TickDamage")]
+        [SerializeField] protected int                      m_DotDamage;
+        [FormerlySerializedAs("m_TickHeal")]
+        [SerializeField] protected int                      m_DotHeal;
+        [FormerlySerializedAs("m_TickShield")]
+        [SerializeField] protected int                      m_DotShield;
+        [FormerlySerializedAs("m_TickEnergy")]
+        [SerializeField] protected int                      m_DotEnergy;
         [SerializeField] protected List<SStateEffectData>   m_TickEffects;
         [SerializeField] protected List<SpellRequirements>  m_TickSpellRequirements;
 
         private float m_TickTimer;
 
-        protected float FinalTickLifeSteal => GetFloat(EStateEffectProperty.LifeSteal, specialCondition: StateEffectName) + Mathf.Max(0f, m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusTickLifeSteal, m_Controller, specialCondition: StateEffectName) - 1);
+        protected float FinalTickLifeSteal => GetFloat(EStateEffectProperty.LifeSteal, specialCondition: StateEffectName) + Mathf.Max(0f, m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal, m_Controller, hitCategory: EHitCategory.Dot, specialCondition: StateEffectName) - 1);
 
         #endregion
 
@@ -96,12 +101,9 @@ namespace Game.Spells
             CallStateEffectEvent(EStateEffectEvent.OnTick, m_Stacks, m_Controller.PlayerId, m_Caster.PlayerId);
 
             // CHECK : DAMAGES
-            int damages = GetInt(EStateEffectProperty.TickDamage);
+            int damages = GetInt(EStateEffectProperty.DotDamage);
             if (damages > 0)
             {
-                if (m_Controller.CounterHandler.CheckCounters(damages, m_Caster, spellCategory: EHitCategory.Dot))
-                    return;
-
                 ErrorHandler.Log($"{name} : {damages} DAMAGES", ELogTag.StateEffects);
                 damages = m_Controller.Life.Hit(damages, m_Caster.PlayerId, m_Parent, EDamageCategory.Magical, EHitCategory.Dot, m_IsTrueDamage);
 
@@ -114,7 +116,7 @@ namespace Game.Spells
             }
 
             // CHECK : HEAL
-            int heal = GetInt(EStateEffectProperty.TickHeal);
+            int heal = GetInt(EStateEffectProperty.DotHeal);
             if (heal > 0)
             {
                 ErrorHandler.Log($"{name} : {heal} HEALS", ELogTag.StateEffects);
@@ -122,11 +124,11 @@ namespace Game.Spells
             }
 
             // add bonus tick shield
-            m_Controller.Life.AddShield(GetInt(EStateEffectProperty.TickShield), m_Caster.PlayerId, m_Parent, EHitCategory.Dot);
+            m_Controller.Life.AddShield(GetInt(EStateEffectProperty.DotShield), m_Caster.PlayerId, m_Parent, EHitCategory.Dot);
 
             // add bonus tick energy
             if (!m_Controller.CharacterData.IsStructure)
-                m_Controller.EnergyHandler.AddEnergy(GetInt(EStateEffectProperty.TickEnergy));
+                m_Controller.EnergyHandler.AddEnergy(GetInt(EStateEffectProperty.DotEnergy));
 
             // apply OnTick effects
             ApplyOnTickEffects();

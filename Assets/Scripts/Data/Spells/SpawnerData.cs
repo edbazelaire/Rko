@@ -24,12 +24,19 @@ namespace Data
         [SerializeField] protected bool                 m_IsUnique;
         [SerializeField] protected bool                 m_DestroySpawnsOnEnd;
         [SerializeField] protected SMultiSpellSpawn     m_SpawnTarget;
-        [SerializeField] protected int                  m_NSpawns = -1;
-        [SerializeField] protected SWaveGroup           m_Waves;
-        [SerializeField] protected List<GameObject>     m_WavesGraphics;
 
-        // DEPRECATED
-        [SerializeField] protected List<SSpawnElement>  m_SpawnElements;
+        // Spawn Management
+        public bool IsWaveSpawn = false;
+        // -- Simple Spawn
+        [SerializeField, ConditionalField("IsWaveSpawn", true)] 
+        protected int m_NSpawns = -1;
+        [SerializeField, ConditionalField("IsWaveSpawn", true)]
+        protected List<SSpawnElement> m_SpawnElements;
+        // -- Waves
+        [SerializeField, ConditionalField("IsWaveSpawn")] 
+        protected SWaveGroup           m_Waves;
+        [SerializeField, ConditionalField("IsWaveSpawn")] 
+        protected List<GameObject>     m_WavesGraphics;
 
         // ===========================================================================
         // Public Accessors
@@ -38,9 +45,8 @@ namespace Data
         public bool DestroySpawnsOnEnd                  => m_DestroySpawnsOnEnd;
         public SMultiSpellSpawn SpawnTarget             => m_SpawnTarget;
         public SWaveGroup Waves                         => m_Waves;
-
-        // DEPRECATED
-        public List<SSpawnElement> SpawnElements;
+        public int NSpawns                              => (int)GetScaledValue(ESpellProperty.NSpawns, m_NSpawns);
+        public List<SSpawnElement> SpawnElements        => IsWaveSpawn ? new() : m_SpawnElements;
 
         #endregion
 
@@ -93,6 +99,11 @@ namespace Data
             if (! m_SpawnElements.IsNullOrEmpty())
             {
                 infos["Spawns"] = GetSpawnsCharacterData();
+            }
+
+            if (NSpawns > 1)
+            {
+                infos["Invocations"] = NSpawns;
             }
 
             return infos;

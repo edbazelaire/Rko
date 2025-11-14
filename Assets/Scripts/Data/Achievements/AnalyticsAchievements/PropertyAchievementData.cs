@@ -17,10 +17,16 @@ namespace Data
         [SerializeField]
         protected EStateEffectProperty m_Property;
         [SerializeField]
+        protected List<EDamageCategory> m_DamageCategories;
+        [SerializeField]
+        protected List<EHitCategory> m_HitCategories;
+        [SerializeField]
         protected List<string> m_SpecialConditions;
 
-        public EStateEffectProperty Property => m_Property;
-        public List<string> SpecialConditions => m_SpecialConditions;
+        public EStateEffectProperty     Property            => m_Property;
+        public List<EDamageCategory>    DamageCategories    => m_DamageCategories;
+        public List<EHitCategory>       HitCategories       => m_HitCategories;
+        public List<string>             SpecialConditions   => m_SpecialConditions;
 
         #endregion
 
@@ -38,7 +44,7 @@ namespace Data
             int value = 0;
             if (m_SpecialConditions == null || m_SpecialConditions.Count == 0)
             {
-                value += GetProperty(m_Property, spellHitSummary, specialValues);
+                value += GetProperty(m_Property, m_DamageCategories, m_HitCategories, spellHitSummary, specialValues);
             }
             else
             {
@@ -47,6 +53,10 @@ namespace Data
                     value += GetPropertySpecialCondition(m_Property, specialCondition, spellHitTypeDatas);
                 }
             }
+
+            // no value to increment - no need to trigger save
+            if (value == 0)
+                return false;
 
             if (value < 0)
             {
@@ -65,46 +75,57 @@ namespace Data
         /// <param name="spellHitSummary"></param>
         /// <param name="specialValues"></param>
         /// <returns></returns>
-        int GetProperty(EStateEffectProperty property, SSpellHitTypeData spellHitSummary, Dictionary<ESpecialValue, float> specialValues)
+        int GetProperty(EStateEffectProperty property, List<EDamageCategory> damageCategories, List<EHitCategory> hitCategories, SSpellHitTypeData spellHitSummary, Dictionary<ESpecialValue, float> specialValues)
         {
-            switch (property)
+            // -----------------------------------------------------------
+            // SPECIAL VALUES
+            // -----------------------------------------------------------
+            if (property == EStateEffectProperty.Resistance)
             {
-                // DAMAGE -------------------------------------------------
-                case EStateEffectProperty.Damage:
-                    return spellHitSummary.GetTotal(EHitType.Damage);
-
-                case EStateEffectProperty.TickDamage:
-                    return spellHitSummary.GetCategoryValue(EHitType.Damage, EHitCategory.Dot);
-
-                case EStateEffectProperty.ExecutionDamage:
-                    return spellHitSummary.GetCategoryValue(EHitType.Damage, EHitCategory.Execution);
-
-                // HEALING -------------------------------------------------
-                case EStateEffectProperty.Heal:
-                    return spellHitSummary.GetTotal(EHitType.Heal);
-
-                case EStateEffectProperty.TickHeal:
-                    return spellHitSummary.GetCategoryValue(EHitType.Heal, EHitCategory.Dot);
-
-                // SHIELD -------------------------------------------------
-                case EStateEffectProperty.Shield:
-                    return spellHitSummary.GetTotal(EHitType.Shield);
-
-                case EStateEffectProperty.TickShield:
-                    return spellHitSummary.GetCategoryValue(EHitType.Shield, EHitCategory.Dot);
-
-                // -----------------------------------------------------------
-                // SPECIAL VALUES
-                // -----------------------------------------------------------
-                case EStateEffectProperty.ResistanceFix:
-                    if (specialValues.IsNullOrEmpty() || ! specialValues.ContainsKey(ESpecialValue.DamageReduction))
-                        return 0;
-                    return (int)Math.Round(specialValues[ESpecialValue.DamageReduction]);
-
-                default:
-                    ErrorHandler.Warning("Unhandled case : " + m_Property);
+                if (specialValues.IsNullOrEmpty() || !specialValues.ContainsKey(ESpecialValue.DamageReduction))
                     return 0;
+                return (int)Math.Round(specialValues[ESpecialValue.DamageReduction]);
             }
+
+            // -----------------------------------------------------------
+            // PROPERTIES 
+            // -----------------------------------------------------------
+            if (hitCategories.IsNullOrEmpty())
+                hitCategories = Enum.GetValues(typeof(EHitCategory)).Cast<EHitCategory>().ToList();
+
+            int value = 0;
+            foreach (EHitCategory hitCategory in hitCategories)
+            {
+                switch (property)
+                {
+                    // DAMAGE -------------------------------------------------
+                    case EStateEffectProperty.Damage:
+                        if (damageCategories.IsNullOrEmpty())
+                            damageCategories = Enum.GetValues(typeof(EDamageCategory)).Cast<EDamageCategory>().ToList();
+                        foreach (EDamageCategory damageCategory in damageCategories)
+                        {
+                            var hitType = damageCategory == EDamageCategory.Physical ? EHitType.PhysicalDamage : EHitType.MagicalDamage;
+                            value += spellHitSummary.GetCategoryValue(hitType, hitCategory);
+                        }
+                        break;
+
+                    // HEALING -------------------------------------------------
+                    case EStateEffectProperty.Heal:
+                        value += spellHitSummary.GetCategoryValue(EHitType.Heal, hitCategory);
+                        break;
+
+                    // SHIELD -------------------------------------------------
+                    case EStateEffectProperty.Shield:
+                        value += spellHitSummary.GetCategoryValue(EHitType.Shield, hitCategory);
+                        break;
+
+                    default:
+                        ErrorHandler.Warning("Unhandled case : " + m_Property);
+                        return 0;
+                }
+            }
+
+            return value;
         }
 
         /// <summary>
@@ -125,7 +146,7 @@ namespace Data
                 ErrorHandler.Warning("Found multiple spellHitData with SpellName : " + specialCondition);
             }
 
-            return GetProperty(property, spellHitData[0], null);
+            return GetProperty(property, m_DamageCategories, m_HitCategories, spellHitData[0], null);
         }
 
         #endregion

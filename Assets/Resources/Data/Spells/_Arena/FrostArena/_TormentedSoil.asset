@@ -14,10 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: The air is getting corrupted, applying [EnemyStateEffect.0] each
-    {0} second
-  m_DescriptionVariables:
-  - Name: DurationTick
-    WithIcon: 0
+    [DurationTick] second
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
@@ -71,8 +68,7 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 0
-  m_ExecutionDamage: 0
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -84,17 +80,7 @@ MonoBehaviour:
     m_Speed: 0
     m_Duration: 0
     m_Targets: 
-  m_SpellsScalingLevel:
-  - Property: 2
-    Value: 0.1
-    ScalingType: 0
-    RoundingType: 2
-    ScalingTresholds: []
-  - Property: 3
-    Value: 0.05
-    ScalingType: 0
-    RoundingType: 2
-    ScalingTresholds: []
+  m_SpellsScalingLevel: []
   OverridesSpawnPosition: 0
   m_SpawnPosition:
     SpawnTarget: 0
@@ -118,6 +104,8 @@ MonoBehaviour:
       BaseValue: 1
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
   IsChanneling: 0
@@ -137,14 +125,15 @@ MonoBehaviour:
   Animation: 0
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0
   m_Cooldown: 0
   m_SpellSpawn: 1
-  DurationTick: 5
-  m_TickDamage: 0
-  m_TickHeal: 0
-  m_TickShield: 0
-  m_TickEnergy: 0
+  DurationTick: 3
+  m_DotDamage: 0
+  m_DotHeal: 0
+  m_DotShield: 0
+  m_DotEnergy: 0
   m_ZoneForce:
     m_Speed: 0
     m_Duration: 0

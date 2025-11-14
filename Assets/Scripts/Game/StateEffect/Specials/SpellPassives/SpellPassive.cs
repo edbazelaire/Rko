@@ -21,7 +21,7 @@ namespace Game.Spells
 
         protected virtual void ApplyEffect(ESpell spell, int stacks)
         {
-            if (! m_Controller.SpellHandler.Spells.Contains(spell))
+            if (! m_Controller.SpellHandler.Spells.Contains(spell) || m_CooldownReduction <= 0)
                 return;
             m_Controller.SpellHandler.ReduceCooldown(spell, stacks * m_CooldownReduction);
         }

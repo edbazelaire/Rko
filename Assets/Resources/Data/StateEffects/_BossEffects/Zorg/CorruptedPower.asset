@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea8328bdbe40b584daa6549887933f55, type: 3}
   m_Name: CorruptedPower
   m_EditorClassIdentifier: 
-  m_Description: An ancient power is flowing in you, increasing your damage by [BonusDamagePerc]
-    and your tick damage by [BonusTickDamagePerc], but leaves you in a weakened state,
-    increasing the damage taken by [ResistancePerc] and reducing your healings by
-    [BonusHealPerc].\nYou also take [TickDamage] damage every [Tick] seconds, as
-    well as 20% of your current stacks as [Cursed] stacks
+  m_Description: 'An ancient power is flowing in you, increasing your damage by [BonusDamagePerc],
+    but leaves you in a weakened state, increasing the damage taken by [ResistancePerc]
+    and reducing your healings by [BonusHealPerc] per stack on you.
+
+    You also
+    take [DotDamage] damage every [Tick] seconds, and 20% of your current stacks
+    as [Cursed] stacks'
   m_DescriptionVariables: 
   m_NStacksInDescription: 1
   m_StateEffectType: 0
@@ -29,7 +31,9 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 1
+  m_IgnoresBoosts: 0
   m_EndWithShield: 0
   m_EndAt0Stacks: 1
   m_RefreshShield: 0
@@ -42,31 +46,39 @@ MonoBehaviour:
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats:
   - StateEffectProperty: 13
-    BaseValue: 1
-    LevelScalingFactor: 0.1
+    BaseValue: 0.5
+    LevelScalingFactor: 0.05
     StackScalingFactor: 1
+    ScalesOnMissingHealth: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
   - StateEffectProperty: 8
     BaseValue: 0.01
     LevelScalingFactor: 0
     StackScalingFactor: 1
-    SpecialConditions: []
-  - StateEffectProperty: 101
-    BaseValue: 0.01
-    LevelScalingFactor: 0
-    StackScalingFactor: 1
+    ScalesOnMissingHealth: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
   - StateEffectProperty: 107
     BaseValue: -0.01
     LevelScalingFactor: 0
     StackScalingFactor: 1
+    ScalesOnMissingHealth: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
   - StateEffectProperty: 6
     BaseValue: -0.01
     LevelScalingFactor: 0
     StackScalingFactor: 1
+    ScalesOnMissingHealth: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects: []
@@ -80,10 +92,10 @@ MonoBehaviour:
   m_Heal: 0
   m_EndHeal: 0
   m_Tick: 5
-  m_TickDamage: 0
-  m_TickHeal: 0
-  m_TickShield: 0
-  m_TickEnergy: 0
+  m_DotDamage: 0
+  m_DotHeal: 0
+  m_DotShield: 0
+  m_DotEnergy: 0
   m_TickEffects:
   - StateEffect: 13
     Stacks: 0.1

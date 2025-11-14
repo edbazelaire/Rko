@@ -552,7 +552,7 @@ namespace Game.Character
         /// </summary>
         /// <param name="oldValue"></param>
         /// <param name="newValue"></param>
-        void OnStateEffectEventChanged(EStateEffectEvent stateEffectEvent, string stateEffect, int stacks, int maxStacks, float duration)
+        void OnStateEffectEventChanged(EStateEffectEvent stateEffectEvent, string stateEffect, int stacks, int maxStacks, float duration, float timer)
         {
             // ---------------------------------------------------------------------------------------
             // SPECIAL EFFECTS

@@ -160,24 +160,40 @@ public class SceneLoader : MonoBehaviour
     void SetLoadingScreen(string sceneName)
     {
         if (m_SpecialLoadingScreen != null)
+        {
             Destroy(m_SpecialLoadingScreen);
+            m_SpecialLoadingScreen = null;
+        }
 
         switch (sceneName)
         {
             case "Arena":
-                if (AssetLoader.TryLoadLoadingScreen(LobbyHandler.Instance.ArenaType.ToString(), out LoadingScreen screen))
+                if (LobbyHandler.Instance.GameMode == EGameMode.Arena)
                 {
-                    m_SpecialLoadingScreen = GameObject.Instantiate(screen, m_DefaultLoadingScreen.transform.parent);
-                    return;
+                    if (AssetLoader.TryLoadLoadingScreen(LobbyHandler.Instance.ArenaType.ToString(), out LoadingScreen screen))
+                    {
+                        m_SpecialLoadingScreen = GameObject.Instantiate(screen, m_DefaultLoadingScreen.transform.parent);
+                        return;
+                    }
+                    ErrorHandler.Warning("Unable to find loading screen for arena : " + LobbyHandler.Instance.ArenaType);
                 }
-                ErrorHandler.Warning("Unable to find loading screen for arena : " + LobbyHandler.Instance.ArenaType);
+
+                else if (LobbyHandler.Instance.GameMode == EGameMode.Ranked)
+                {
+                    // TODO : Ranked loading screen
+                }
+
+                else if (LobbyHandler.Instance.GameMode == EGameMode.Training)
+                {
+                    // TODO : Training loading screen
+                }
+
                 break;
 
             default:
+                m_SpecialLoadingScreen = null;
                 break;
         }
-
-        m_SpecialLoadingScreen = null;
     }
 
     #endregion

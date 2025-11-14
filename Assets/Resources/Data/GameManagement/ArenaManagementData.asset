@@ -31,40 +31,44 @@ MonoBehaviour:
   - {x: 0, y: 20}
   - {x: 20, y: 45}
   - {x: 45, y: 0}
+  m_NStartRefreshes: 4
+  m_NStartRefreshes_BonusRandom: 3
+  m_NRefreshesOnBoss: 1
   m_NCorruptionStacksLossOnDeath: 20
+  m_NCorruptionStacksLossOnWin: 10
   m_SpecialConfigs:
   - Arena: 1
     BaseLevel: 1
+    UnlockedLevel: 1
     m_MobPowerDrop:
       m_BaseValue: 25
-      m_ScalingPerc: 0.2
+      m_ScalingPerc: 0.1
       m_ScalingFix: 0
     m_BossPowerDrop:
-      m_BaseValue: 350
-      m_ScalingPerc: 0.35
+      m_BaseValue: 200
+      m_ScalingPerc: 0.1
       m_ScalingFix: 0
     m_CompletionDrop:
-      m_BaseValue: 0
+      m_BaseValue: 400
       m_ScalingPerc: 0
       m_ScalingFix: 0
     m_BonusArenaDifficulty: 0.4
-    m_BonusArenaDifficultyLevel: 0
   - Arena: 2
     BaseLevel: 6
+    UnlockedLevel: 6
     m_MobPowerDrop:
       m_BaseValue: 0
       m_ScalingPerc: 0
       m_ScalingFix: 0
     m_BossPowerDrop:
-      m_BaseValue: 100
-      m_ScalingPerc: 0.2
+      m_BaseValue: 250
+      m_ScalingPerc: 0.1
       m_ScalingFix: 0
     m_CompletionDrop:
-      m_BaseValue: 750
-      m_ScalingPerc: 0.2
+      m_BaseValue: 800
+      m_ScalingPerc: 0
       m_ScalingFix: 0
-    m_BonusArenaDifficulty: 0.4
-    m_BonusArenaDifficultyLevel: 0
+    m_BonusArenaDifficulty: 0.45
   m_MobPowerDrop:
     m_BaseValue: 25
     m_ScalingPerc: 0.2
@@ -77,5 +81,4 @@ MonoBehaviour:
     m_BaseValue: 25
     m_ScalingPerc: 0.2
     m_ScalingFix: 0
-  m_BonusArenaDifficulty: 0.4
   m_BonusArenaDifficultyLevel: 0

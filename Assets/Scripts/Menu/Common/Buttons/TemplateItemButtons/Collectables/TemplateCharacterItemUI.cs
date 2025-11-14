@@ -33,14 +33,13 @@ namespace Menu.Common.Buttons
         public override void Initialize(Enum collectable, int level = 0, int mastery = 0, bool asIconOnly = false, bool removeListeners = false)
         {
             base.Initialize(collectable, level, mastery, asIconOnly, removeListeners);
-
-            m_PriceDisplay.Initialize(ShopManagementData.GetPrice(m_Character));
         }
 
         public override void SetAsIconOnly(bool activate = false)
         {
             base.SetAsIconOnly(activate);
 
+            m_PriceDisplay.Initialize(ShopManagementData.GetPrice(m_Character));
             m_PriceDisplay.gameObject.SetActive(! activate);
         }
 
@@ -64,6 +63,11 @@ namespace Menu.Common.Buttons
         protected void OnSelectedCharacterChanged()
         {
             SetSelected(m_Character == CharacterBuildsCloudData.SelectedCharacter);
+        }
+
+        protected override void OnClickLocked()
+        {
+            OpenInfoPopUp(CollectablesManagementData.GetStartLevel(m_Collectable), asIconOnly: false);
         }
 
         #endregion

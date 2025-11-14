@@ -39,7 +39,7 @@ namespace Game.Spells
                 return;
 
             m_Controller.EnergyHandler.AddEnergy((int)Math.Round(controller.Life.MaxHp.Value * m_HpToEnergyConversion));
-            AddShield((int)Math.Round(controller.Life.MaxHp.Value * m_HpToShieldConversion));
+            m_Controller.Life.AddShield((int)Math.Round(controller.Life.MaxHp.Value * m_HpToShieldConversion), m_Caster.PlayerId, StateEffectName, EHitCategory.Direct);
         }
 
         #endregion
@@ -50,7 +50,7 @@ namespace Game.Spells
         public override string GetDescription()
         {
             var description = base.GetDescription();
-            description = description.Replace("[HealToEnergyConversion]", (m_HpToEnergyConversion * 100) + "%" );
+            description = description.Replace("[HpToEnergyConversion]", (m_HpToEnergyConversion * 100) + "%" );
             description = description.Replace("[HpToShieldConversion]", (m_HpToShieldConversion * 100) + "%" );
             return description;
         }

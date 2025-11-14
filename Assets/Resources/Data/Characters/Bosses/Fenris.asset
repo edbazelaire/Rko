@@ -13,30 +13,51 @@ MonoBehaviour:
   m_Name: Fenris
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 
-  m_DescriptionVariables: []
+  m_Description: "Leader of the Lunacians, he stands as the alpha of a pack of wolves
+    that roams the frozen lands.\nSince he rose to power a century ago\u2014by murdering
+    any other alpha who dared stand in his way\u2014his rule has never been put in
+    jeopardy.\nHe is the embodiment of Lunacian wild and untamed brutality, a force
+    of nature that no other Lunacian would dare challenge.\nUnder his rule, the frozen
+    lands are both his hunting ground and his kingdom."
   m_SpellElements: 
   m_AutoAttack: IceClaws
-  m_SpecialAbility: PackHunt
-  m_Ultimate: FrostfangStrike
+  m_SpecialAbility: AlphaHowling
+  m_Ultimate: PackHunt
   Size: 3
   BaseSpeed: 1.2
-  BaseHealth: 3500
-  MaxEnergy: 100
-  BaseEnergy: 50
+  BaseHealth: 4000
+  MaxEnergy: 150
+  BaseEnergy: 150
   PassiveEnergyGain: 1
   IsStructure: 0
-  HealthScaleFactor: 0.12
+  HealthScaleFactor: 0.15
   CharacterStatScaling:
-  - StateEffectProperty: 5
-    BaseValue: 30
+  - StateEffectProperty: 30
+    BaseValue: 55
     BonusValue: 0
-    ScalingFactor: 0.1
+    ScalingFactor: 0.15
+    DamageCategories: 01000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 30
+    BaseValue: 45
+    BonusValue: 0
+    ScalingFactor: 0.15
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 60
+    BonusValue: 0
+    ScalingFactor: 0.15
+    DamageCategories: 01000000
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers:
   - Description: 
-    m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: AlphaFrenzyStack
@@ -54,6 +75,8 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     - SpellDataName: BloodLust
       OverridingData: []
       Level: 0
@@ -69,6 +92,8 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     - SpellDataName: Unyelding
       OverridingData: []
       Level: 0
@@ -84,4 +109,6 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []

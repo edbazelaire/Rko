@@ -13,13 +13,16 @@ MonoBehaviour:
   m_Name: IceBeam
   m_EditorClassIdentifier: 
   m_Rarety: 3
-  m_Description: 
-  m_DescriptionVariables: []
+  m_Description: 'A powerfull Beam that destroys everything in its path.
+
+    Deals
+    [DotDamage] magical damage every [Tick] seconds, while applying [StateEffect.0.Description]
+    and [StateEffect.1.Description] '
   m_SpellElements: 0200000004000000
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions:
-  - Prefab: {fileID: 119840, guid: 1b887704514468845b23a6a490a9b1eb, type: 3}
+  - Prefab: {fileID: 119840, guid: 0c03f2675efa9654286829f482aae636, type: 3}
     MaterialEffect: {fileID: 0}
     SoundFX: []
     GFXLifetime:
@@ -84,12 +87,11 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  m_MaxHit: 1
+  m_MaxHit: -1
   m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 0
-  m_ExecutionDamage: 0
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -107,16 +109,21 @@ MonoBehaviour:
     ScalingType: 0
     RoundingType: 2
     ScalingTresholds: []
+  - Property: 3
+    Value: -1
+    ScalingType: 1
+    RoundingType: 2
+    ScalingTresholds: []
   OverridesSpawnPosition: 1
   m_SpawnPosition:
     SpawnTarget: 1
-    SpawnLocation: 3
+    SpawnLocation: 0
     BodyPart: 0
-    IsFollowing: 1
-    Offset: {x: 0, y: -1}
-  IsFollowing: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 2.5}
+  IsFollowing: 1
   MFollowing:
-    m_TargetToFollow: 0
+    m_TargetToFollow: 4
     m_TargetOffset: {x: 0, y: 0}
     m_FollowingSpeed: -1
   m_Size: 2
@@ -130,6 +137,8 @@ MonoBehaviour:
       BaseValue: 1
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
   IsChanneling: 1
@@ -145,7 +154,7 @@ MonoBehaviour:
     OverridingProperties: []
   - StateEffect: 13
     Stacks: 2
-    BonusStacksPerLevel: 0.5
+    BonusStacksPerLevel: 0.25
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
@@ -153,14 +162,15 @@ MonoBehaviour:
   Animation: 6
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.5
-  m_Cooldown: 1
+  m_Cooldown: 30
   m_SpellSpawn: 1
   DurationTick: 0.5
-  m_TickDamage: 50
-  m_TickHeal: 0
-  m_TickShield: 0
-  m_TickEnergy: 0
+  m_DotDamage: 50
+  m_DotHeal: 0
+  m_DotShield: 0
+  m_DotEnergy: 0
   m_ZoneForce:
     m_Speed: 0
     m_Duration: 0
@@ -171,5 +181,5 @@ MonoBehaviour:
   m_RaySizePerc: 1
   m_Speed: 1
   m_MaxLength: -1
-  m_TargetToFollow: 0
+  m_TargetToFollow: 102
   m_FollowingSpeed: -1

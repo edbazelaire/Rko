@@ -15,7 +15,6 @@ MonoBehaviour:
   m_Rarety: 0
   m_Description: Slashes through enemies in a blur, dealing [Damage] damage and applying
     [Frost] and [Poison].
-  m_DescriptionVariables: []
   m_SpellElements: 0200000003000000
   Linked: 1
   Graphics: {fileID: 1923825553450198, guid: b1a124fee389c864cb8a58e2572a93ba, type: 3}
@@ -111,8 +110,6 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 50
-  m_ExecutionDamage: 50
   m_Damages:
   - m_BaseValue: 50
     m_DamageCategory: 1
@@ -202,8 +199,9 @@ MonoBehaviour:
   Animation: 2
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 1.5
-  m_Cooldown: 0.25
+  m_Cooldown: 0.4
   Trajectory: 1
   m_TriggerGround: 1
   m_StopOnTargetPos: 0

@@ -35,10 +35,11 @@ namespace Game
 
         public const string TIME_WRAPPER_ID = "Game";
 
-        public const int BOT_CLIENT_ID = 100;
-        public const int SPAWN_CLIENT_ID = 1000;
-        public const int N_LOADING_STEPS = 3;
-        public const int DEFAULT_PVP_LEVEL = 9;
+        public const int BOT_CLIENT_ID      = 100;
+        public const int SPAWN_CLIENT_ID    = 1000;
+        public const int DEBUG_ID           = 999;
+        public const int N_LOADING_STEPS    = 3;
+        public const int DEFAULT_PVP_LEVEL  = 9;
 
         // ===================================================================================
         // ACTIONS
@@ -246,7 +247,7 @@ namespace Game
 
             // unregister from each events
             m_State.OnValueChanged -= OnStateValueChanged;
-            StateEffect.StateEffectEvent = null;    // reset all registeries to the StateEffect static event
+            StateEffect.StateEffectStaticEvent = null;    // reset all registeries to the StateEffect static event
             Spell.OnSpellSpawn = null;              // reset all registeries to the Spell static event
 
             // cancel methods in TimeWrapper
@@ -641,6 +642,12 @@ namespace Game
 
         public void GameOver(int team)
         {
+            if (m_State.Value == EGameState.GameOver)
+            {
+                ErrorHandler.Warning("Trying to set GameOver whil game is already OVER");
+                return;
+            }
+
             // save the winning team
             WinningTeam = team;
 
@@ -1009,10 +1016,19 @@ namespace Game
                 return;
             }
 
+            // same state applied twice
+            if (m_State.Value == state)
+            {
+                ErrorHandler.Warning("Same state (" + state + ") re-applied");
+                return;
+            }
+
             PlayStateMusicClientRPC(state);
 
+            m_State.Value = state;
+
             // fire event that game has started if state becomes GameRunning
-            if (state == EGameState.GameRunning && m_State.Value != EGameState.GameRunning)
+            if (m_State.Value == EGameState.GameRunning)
             {
                 // fire event that game has started (for Server)
                 GameStartedEvent?.Invoke();
@@ -1020,8 +1036,6 @@ namespace Game
                 // fire event that game has started (for Clients)
                 GameStartedEventClientRPC();
             }
-
-            m_State.Value = state;
         }
 
         [ClientRpc]
@@ -1251,7 +1265,7 @@ namespace Game
         [Command(KeyCode.M)]
         public void HitSelf()
         {
-            Owner.Life.Hit(500, 999, "Debug", EDamageCategory.Physical, EHitCategory.Direct, true);
+            Owner.Life.Hit(500, DEBUG_ID, "Debug", EDamageCategory.Physical, EHitCategory.Direct, true);
         }
 
         [Command(KeyCode.L)]
@@ -1288,6 +1302,28 @@ namespace Game
         {
             var controller = GetPlayer(Owner.PlayerId);
             controller.AutoAttackHandler.Activate(! controller.AutoAttackHandler.isActiveAndEnabled);
+        }
+
+        [Command(KeyCode.Keypad9)]
+        public void AutoAttackOnce()
+        {
+            var controller = GetPlayer(Owner.PlayerId);
+            controller.AutoAttackHandler.Activate(false);
+            controller.AutoAttackHandler.Activate(true);
+
+            void WaitForOneAttack(string spellName, ESpellEvent spellEvent)
+            {
+                if (spellName != controller.SpellHandler.AutoAttack.ToString())
+                    return;
+
+                if (spellEvent < ESpellEvent.OnCast)
+                    return;
+
+                controller.AutoAttackHandler.Activate(false);
+                controller.SpellHandler.OnPreSpellEvent -= WaitForOneAttack;
+            }
+
+            controller.SpellHandler.OnPreSpellEvent += WaitForOneAttack;
         }
 
         [Command(KeyCode.I)]
@@ -1350,15 +1386,16 @@ namespace Game
         ///     
         /// - {StateEffect} : (string)  name of a EStateEffect
         /// - {Target}      : (string)  "e" for enemy, "s" for self
+        /// - {Stacks}      : (int)     number of stacks to add
         /// - {Level}       : (int)     level of the effect
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
         public bool CheckAddStateEffect(string command)
         {
-            // Regex : nom de l’effet, puis options -t et -l
+            // Regex 
             Regex regex = new Regex(
-                @"^(?<effect>\w+)(?:\s+-t\s+(?<target>[se]))?(?:\s+-l\s+(?<level>\d+))?",
+                @"^(?<effect>\w+)(?:\s+-t\s+(?<target>[se]))?(?:\s+-s\s+(?<stacks>\d+))?(?:\s+-l\s+(?<level>\d+))?",
                 RegexOptions.IgnoreCase
             );
 
@@ -1368,7 +1405,8 @@ namespace Game
                 return false;
             }
 
-            // Nom de l’effet
+            // ------------------------------------------------------------------------
+            // Effect
             string effectName = match.Groups["effect"].Value;
 
             if (!Enum.TryParse(effectName, true, out EStateEffect effect))
@@ -1376,6 +1414,7 @@ namespace Game
                 return false;
             }
 
+            // ------------------------------------------------------------------------
             // Target
             EStateEffectTarget target = EStateEffectTarget.Self;
             if (match.Groups["target"].Success)
@@ -1383,13 +1422,22 @@ namespace Game
                 target = match.Groups["target"].Value.ToLower() == "e"
                     ? EStateEffectTarget.Enemy
                     : EStateEffectTarget.Self;
-            }
-
-            // get target controller
+            }     
+            
+            // -- get target controller
             Controller targetController = TargetHelper.GetTargetController(Owner.PlayerId, target);
             if (targetController == null)
                 return false;
 
+            // ------------------------------------------------------------------------
+            // Stacks
+            int stacks = 1;
+            if (match.Groups["level"].Success)
+            {
+                stacks = int.Parse(match.Groups["level"].Value);
+            }
+
+            // ------------------------------------------------------------------------
             // Level
             int level = 0;
             if (match.Groups["level"].Success)
@@ -1397,7 +1445,8 @@ namespace Game
                 level = int.Parse(match.Groups["level"].Value);
             }
 
-            targetController.StateHandler.AddStateEffect(SpellLoader.GetStateEffect(effect.ToString(), level), Owner);
+            // APPLY the effect
+            targetController.StateHandler.AddStateEffect(effect, Owner, level: level, origin: "DEBUG", stacks: stacks); ;
             return true;
         }
 

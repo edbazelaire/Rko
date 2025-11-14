@@ -15,7 +15,6 @@ MonoBehaviour:
   m_Rarety: 0
   m_Description: A brutal lunge that sinks frozen fangs into the prey, dealing [Damage]
     and applying [Stun].
-  m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
@@ -68,9 +67,7 @@ MonoBehaviour:
   m_MaxHit: 1
   m_Charges: 1
   EnergyGain: 0
-  EnergyCost: 100
-  m_Damage: 80
-  m_ExecutionDamage: 0
+  EnergyCost: 0
   m_Damages:
   - m_BaseValue: 80
     m_DamageCategory: 1
@@ -149,8 +146,9 @@ MonoBehaviour:
   Animation: 17
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 3
-  m_Cooldown: 0
+  m_Cooldown: 60
   Trajectory: 2
   m_TriggerGround: 0
   m_StopOnTargetPos: 0

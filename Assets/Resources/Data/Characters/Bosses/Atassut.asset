@@ -13,31 +13,76 @@ MonoBehaviour:
   m_Name: Atassut
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 
-  m_DescriptionVariables: []
+  m_Description: "An ethereal spirit, lingering on this plane of existence, draws
+    its sustenance from the life energy of those nearby. \nShe is a vessel of the
+    moon, a lunar princess who, just like the others, never fully became the moon\u2019s
+    incarnation. \nTherefore, she remains trapped, on a never ending torment between
+    life and death."
   m_SpellElements: 
   m_AutoAttack: ChaosOrb
   m_SpecialAbility: Scythefall
   m_Ultimate: Umbracryx
   Size: 3
   BaseSpeed: 1.5
-  BaseHealth: 2000
-  MaxEnergy: 500
-  BaseEnergy: 500
+  BaseHealth: 2100
+  MaxEnergy: 100
+  BaseEnergy: 100
   PassiveEnergyGain: 1
   IsStructure: 0
-  HealthScaleFactor: 0.12
+  HealthScaleFactor: 0.15
   CharacterStatScaling:
-  - StateEffectProperty: 26
-    BaseValue: 20
+  - StateEffectProperty: 30
+    BaseValue: 35
     BonusValue: 0
     ScalingFactor: 0.12
+    DamageCategories: 01000000
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
-  - StateEffectProperty: 5
-    BaseValue: 20
+  - StateEffectProperty: 30
+    BaseValue: 35
     BonusValue: 0
     ScalingFactor: 0.12
+    DamageCategories: 02000000
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
-  m_SpecialPowers: []
+  - StateEffectProperty: 107
+    BaseValue: 0.2
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 8
+    BaseValue: 0.1
+    BonusValue: 0
+    ScalingFactor: 0.15
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  m_SpecialPowers:
+  - Description: 
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: EternalSpirit
+      OverridingData: []
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    m_BonusStats: []

@@ -12,13 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2413bf9bea7a81d44a0b645bca9d69f8, type: 3}
   m_Name: IceField
   m_EditorClassIdentifier: 
-  m_Rarety: 1
-  m_Description: Throw a ball of ice that deals {0} damage and applies [Frozen] effect.\nOn
-    exploding, creates a field of ice that applies [Frost] effect and slows target
-    inside.
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
+  m_Rarety: 0
+  m_Description: Throw a ball of ice that deals [Damage] damage and applies [Frozen]
+    effect.\nOn exploding, creates a field of ice that applies [Frost] effect and
+    slows target inside.
   m_SpellElements: 02000000
   Linked: 0
   Graphics: {fileID: 1258406917094090, guid: c9912e8e829585c4bb31e695c8fa32aa, type: 3}
@@ -73,11 +70,9 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 50
-  m_ExecutionDamage: 0
   m_Damages:
   - m_BaseValue: 50
-    m_DamageCategory: 1
+    m_DamageCategory: 2
     m_HitCategory: 1
     m_SpellPropertyScaling:
       Property: 2
@@ -85,6 +80,7 @@ MonoBehaviour:
       ScalingType: 0
       RoundingType: 2
       ScalingTresholds: []
+    m_DamageModifiers: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -146,6 +142,7 @@ MonoBehaviour:
   Animation: 2
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.5
   m_Cooldown: 15
   Trajectory: 1

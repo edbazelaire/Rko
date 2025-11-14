@@ -31,6 +31,7 @@ MonoBehaviour:
   m_EndWithShield: 0
   m_EndAt0Stacks: 1
   m_RefreshShield: 1
+  m_RefreshDuration: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: 0
@@ -43,12 +44,12 @@ MonoBehaviour:
   m_SpellActivations: []
   m_BonusStats: []
   m_StatConversions:
-  - ExpectedStat: 7
-    ToStat:
-      StateEffectProperty: 7
+  - ToStat:
+      StateEffectProperty: 22
       BaseValue: 0
       LevelScalingFactor: 0
       StackScalingFactor: 0
+      ScalesOnMissingHealth: 0
       DamageCategories: 01000000
       HitCategories: 
       SpecialConditions: []
@@ -57,6 +58,7 @@ MonoBehaviour:
       BaseValue: 0.5
       LevelScalingFactor: 0
       StackScalingFactor: 1
+      ScalesOnMissingHealth: 0
       DamageCategories: 01000000
       HitCategories: 
       SpecialConditions: []

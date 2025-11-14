@@ -37,6 +37,8 @@ namespace Data.DataStructures.StateEffectSubStructures
             foreach (var activableEffect in ActivableEffects)
             {
                 description += "\n<i>" + SpellLoader.GetDescription(activableEffect.Effect, activableEffect.Level) + "</i>";
+                if (activableEffect.ReactivatedEveryStacks > 0)
+                    description += "\nThis effect is reactivated every " + activableEffect.ReactivatedEveryStacks + " stacks";
             }
 
             if (BonusStats.Count() > 0)
@@ -48,12 +50,12 @@ namespace Data.DataStructures.StateEffectSubStructures
                 foreach (var effect in BonusStats)
                 {
                     string effectValue = TextHandler.FormatPropertyIcon(
-                        effect.StateEffectProperty.ToString(),
+                        effect.GetPropertyName(),
                         effect.Get(m_Level, 1),
                         withPropertyName: false,
                         scaling: effect.ScalingDirection
                     );
-                    description += $"\n     • {TextHandler.FormatPropertyName(effect.StateEffectProperty.ToString())} : {effectValue}";
+                    description += $"\n     • {TextHandler.FormatPropertyName(effect.GetPrettyName())} : {effectValue}";
                 }
             }
 

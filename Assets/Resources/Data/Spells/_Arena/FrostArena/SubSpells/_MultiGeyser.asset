@@ -15,8 +15,7 @@ MonoBehaviour:
   m_Rarety: 0
   m_Description: Geysers are erupting from the ground, dealing instantly [Damage]
     damage. The Geyser last for [Duration] seconds, dealing [TickDamage] every seconds
-    while also [EnemyStateEffect.1] and [Frozen].
-  m_DescriptionVariables: []
+    while also [EnemyStateEffect.1] and [Frostbite].
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 119840, guid: 9d1f6781216d90e40a9a7dcea4577769, type: 3}
@@ -70,18 +69,17 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 5
   EnergyCost: 0
-  m_Damage: 50
-  m_ExecutionDamage: 0
   m_Damages:
   - m_BaseValue: 50
     m_DamageCategory: 2
     m_HitCategory: 1
     m_SpellPropertyScaling:
       Property: 2
-      Value: 0.1
+      Value: 0.12
       ScalingType: 0
       RoundingType: 0
       ScalingTresholds: []
+    m_DamageModifiers: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -94,13 +92,8 @@ MonoBehaviour:
     m_Duration: 0
     m_Targets: 
   m_SpellsScalingLevel:
-  - Property: 2
-    Value: 0.1
-    ScalingType: 0
-    RoundingType: 0
-    ScalingTresholds: []
   - Property: 14
-    Value: 0.1
+    Value: 0.12
     ScalingType: 0
     RoundingType: 0
     ScalingTresholds: []
@@ -138,7 +131,7 @@ MonoBehaviour:
     m_ForcedMovementSpeed: 0
     Animation: 0
   EnemyStateEffects:
-  - StateEffect: 2
+  - StateEffect: 34
     Stacks: 1
     BonusStacksPerLevel: 0
     OverridingProperties: []
@@ -152,14 +145,15 @@ MonoBehaviour:
   Animation: 0
   IsCancellable: 0
   IsInterruptable: 0
+  IgnoreCC: 0
   AnimationTimer: 0
   m_Cooldown: 0
   m_SpellSpawn: 1
   DurationTick: 1
-  m_TickDamage: 25
-  m_TickHeal: 0
-  m_TickShield: 0
-  m_TickEnergy: 0
+  m_DotDamage: 25
+  m_DotHeal: 0
+  m_DotShield: 0
+  m_DotEnergy: 0
   m_ZoneForce:
     m_Speed: 0
     m_Duration: 0

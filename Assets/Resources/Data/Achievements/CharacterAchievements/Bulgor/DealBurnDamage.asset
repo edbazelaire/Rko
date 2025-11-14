@@ -12,9 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9d516b3dac707b40872f083050bc425, type: 3}
   m_Name: DealBurnDamage
   m_EditorClassIdentifier: 
+  m_PrettyName: 
   m_Description: Deal [TresholdValue] burn damage with Bulgor.
+  m_ResetCount: 0
+  m_Character: 8
+  m_MasteryThresholds: 0300000006000000
   AchievementSubData:
-  - MaxValue: 2500
+  - MaxValue: 10000
+    Rewards:
+      Currencies: []
+      Chests: 01000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 25000
+    Rewards:
+      Currencies:
+      - Currency: 0
+        Qty: 2000
+      Chests: 
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 50000
     Rewards:
       Currencies: []
       Chests: 
@@ -22,13 +42,34 @@ MonoBehaviour:
       AchievementRewards:
       - AchievementReward: 5
         Title: 0
-        Avatar: 1000
+        Avatar: 0
         Border: 0
-        Emot: 17
+        Emot: 301
         Badge: 0
         League: 0
       Boosts: []
-  - MaxValue: 10000
+  - MaxValue: 150000
+    Rewards:
+      Currencies: []
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 350000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 5
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Emot: 305
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 500000
     Rewards:
       Currencies: []
       Chests: 
@@ -36,13 +77,44 @@ MonoBehaviour:
       AchievementRewards:
       - AchievementReward: 2
         Title: 0
-        Avatar: 1001
+        Avatar: 1081
         Border: 0
         Emot: 0
         Badge: 0
         League: 0
       Boosts: []
-  m_Character: 8
+  - MaxValue: 1500000
+    Rewards:
+      Currencies:
+      - Currency: 0
+        Qty: 10000
+      Chests: 
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 2500000
+    Rewards:
+      Currencies: []
+      Chests: 03000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 5000000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 4
+        Title: 38
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 2001
+        League: 0
+      Boosts: []
   m_Property: 11
+  m_DamageCategories: 
+  m_HitCategories: 
   m_SpecialConditions:
   - Burn

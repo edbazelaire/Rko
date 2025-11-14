@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Maelstrom
   m_EditorClassIdentifier: 
   m_Rarety: 3
-  m_Description: 'Summons a roaming ice tornado that deals {0} damage every {1} seconds
-    for {2} seconds, applying [Frost] to enemies.\nWhen it ends, it explodes, dealing
-    {3} damage and applying [Frozen] and [Frostbite].\n\n<i>Redirectable: the spell
-    can be redirected after being spawned</i>'
+  m_Description: 'Summons a roaming ice tornado that deals [TickDamage] damage every
+    [DurationTick] seconds for [Duration] seconds, applying [Frost] to enemies.\nWhen
+    it ends, it explodes, dealing [Damage] damage and applying [Frozen] and [Frostbite].\n\n<i>Redirectable:
+    the spell can be redirected after being spawned</i>'
   m_DescriptionVariables:
   - Name: TickDamage
     WithIcon: 1
@@ -84,6 +84,7 @@ MonoBehaviour:
   EnergyCost: 0
   m_Damage: 0
   m_ExecutionDamage: 0
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -129,6 +130,8 @@ MonoBehaviour:
       BaseValue: 1
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
   IsChanneling: 0

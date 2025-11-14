@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 
   m_MinorPower:
     Description: 
@@ -46,7 +45,7 @@ MonoBehaviour:
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
-    - SpellDataName: _MiShealding
+    - SpellDataName: _MaShealding
       OverridingData: []
       Level: 0
       Target: 4
@@ -93,6 +92,8 @@ MonoBehaviour:
       BaseValue: 0.25
       BonusValue: 0
       ScalingFactor: 0
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     BonusPowerOrb: 0

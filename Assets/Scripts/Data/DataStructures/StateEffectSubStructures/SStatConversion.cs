@@ -1,6 +1,7 @@
 ﻿using Enums;
 using Game.Spells;
 using System;
+using Tools;
 
 
 namespace Data.DataStructures.StateEffectSubStructures
@@ -11,28 +12,38 @@ namespace Data.DataStructures.StateEffectSubStructures
     [Serializable]
     public struct SStatConversion
     {
-        // TODO : REMOVE    ==================================
-        public EStateEffectProperty ExpectedStat;
-        // TODO : REMOVE    ==================================
-
         public SBonusStats ToStat;
         public SBonusStats OriginalStatScaling;
 
-        public readonly bool HasStat(EStateEffectProperty stateEffectProperty, EDamageCategory? damageCategory = null, EHitCategory? hitCategory = null, string specialConditions = "") => ToStat.StateEffectProperty == stateEffectProperty && ToStat.CheckConditions(damageCategory, hitCategory, specialConditions);
+        public readonly bool HasStat(EStateEffectProperty stateEffectProperty, EDamageCategory? damageCategory = null, EHitCategory? hitCategory = null, string specialCondition = "") => ToStat.StateEffectProperty == stateEffectProperty && ToStat.CheckConditions(damageCategory, hitCategory, specialCondition);
         public readonly float Get(Controller controller, int level, int stacks)
         {
             var baseValue = controller.StateHandler.GetFloat(
                 OriginalStatScaling.StateEffectProperty,
                 damageCategory:     OriginalStatScaling.DamageCategories.Count != 1 ?   null : OriginalStatScaling.DamageCategories[0], 
                 hitCategory:        OriginalStatScaling.HitCategories.Count != 1 ?      null : OriginalStatScaling.HitCategories[0], 
-                ignoreConversion: true);
+                ignoreConversion: false);
 
-            return baseValue * OriginalStatScaling.Get(level, stacks);
+            float finalValue = baseValue * OriginalStatScaling.Get(level, stacks);
+            if (ToStat.BaseValue != 0)
+                finalValue *= ToStat.Get(level, stacks);
+
+            ErrorHandler.Log($"         - Stat Conversion : {OriginalStatScaling.StateEffectProperty} ({baseValue}) --> {ToStat.StateEffectProperty} ({finalValue})", ELogTag.StatConversion);
+
+            return finalValue;
         }
 
         public string GetDescription(int level, int stacks)
         {
-            return $"Convert {Math.Round(OriginalStatScaling.Get(level, stacks) * 100)}% of your {OriginalStatScaling.GetPrettyName()} into {ToStat.GetPrettyName()}";
+            string originalConversionString = $"your {OriginalStatScaling.GetPrettyName()}{TextHandler.FormatIcon(OriginalStatScaling.GetPropertyName())}";
+            if (OriginalStatScaling.BaseValue != 1)
+                originalConversionString = $"{Math.Round(OriginalStatScaling.Get(level, stacks) * 100)}% of " + originalConversionString;
+
+            string toConversion = ToStat.GetPrettyName() + TextHandler.FormatIcon(ToStat.GetPropertyName());
+            if (ToStat.BaseValue != 0)
+                toConversion = TextHandler.FormatPropertyValue(ToStat.Get(level, stacks), ToStat.GetPropertyName(), ToStat.ScalingDirection) + " " + toConversion;
+
+            return $"Convert {originalConversionString} into {toConversion}";
         }
     }
 }

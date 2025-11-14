@@ -6,7 +6,9 @@ namespace Assets.Scripts.Game.Pool
 {
     public abstract class PooledNetworkBehaviour : NetworkBehaviour, IPoolLifecycle
     {
-        public new bool IsServer => (GameManager.Exists && GameManager.Instance.IsOfflineMode) || base.IsServer;
+        public new bool IsServer    => (GameManager.Exists && GameManager.Instance.IsOfflineMode) || base.IsServer;
+        public new bool IsHost      => (GameManager.Exists && GameManager.Instance.IsOfflineMode) || base.IsHost;
+        public new bool IsClient    => (GameManager.Exists && GameManager.Instance.IsOfflineMode) ? false : base.IsClient;
 
         public virtual void OnSpawned() { }
         public virtual void OnDespawned() { }

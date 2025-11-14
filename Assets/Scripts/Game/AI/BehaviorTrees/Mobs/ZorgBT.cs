@@ -26,19 +26,21 @@ namespace Game.AI.BehaviorTrees
 
                 new Selector(new List<Node>
                 {
-                    // Madness Whispers : at least 20 Cursed stacks
-                    new Sequence(new List<Node>()
-                    {
-                        new CheckHasState(m_Controller, EStateEffect.Cursed.ToString(), nStacks: 20, target: ESpellTarget.FirstEnemy),
-                        new TaskUseSpell(m_Controller, ESpell.MadnessWhispers, spellEvent: ESpellEvent.OnEnd, globalCooldown: 2f),
-                    }, saveCurrentNode: true),
+                    // Ultimate
+                    new TaskUseSpell(m_Controller, m_Controller.SpellHandler.Ultimate, spellEvent: ESpellEvent.OnEnd, globalCooldown: 2f),
+
+                    // Madness Whispers
+                    new TaskUseSpell(m_Controller, ESpell.MadnessWhispers, spellEvent: ESpellEvent.OnEnd, globalCooldown: 2f, delay: 5f),
 
                     new Selector(new()
                     {
-                        new TaskUseSpell(m_Controller, ESpell.AbyssalStrike, globalCooldown: 1f),
-                        new TaskUseSpell(m_Controller, ESpell.ImminentDoom, globalCooldown: 3f),
-                        new TaskUseSpell(m_Controller, ESpell.PandemoniumNova, globalCooldown: 3f),
-                        new TaskUseSpell(m_Controller, ESpell.Tormentations, globalCooldown: 5f),
+                        new TaskUseSpell(m_Controller, ESpell.VoidgazerInvocation,  globalCooldown: 1f, delay: 15f),
+                        new TaskUseSpell(m_Controller, ESpell.AbyssalStrike,        globalCooldown: 1f),
+                        new TaskUseSpell(m_Controller, ESpell.EternalDespair,       globalCooldown: 1f, delay: 20f),
+                        new TaskUseSpell(m_Controller, ESpell.ImminentDoom,         globalCooldown: 3f),
+                        new TaskUseSpell(m_Controller, ESpell.PandemoniumNova,      globalCooldown: 3f),
+                        new TaskUseSpell(m_Controller, ESpell.Tormentations,        globalCooldown: 5f),
+                        new TaskUseSpell(m_Controller, ESpell.EternalDespair,       globalCooldown: 2f, delay: 5f),
                     }, saveCurrentNode: true, random: true),
                     
                     // AutoAttack

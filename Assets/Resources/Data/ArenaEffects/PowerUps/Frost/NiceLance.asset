@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 
   m_MinorPower:
     Description: 
@@ -42,7 +41,10 @@ MonoBehaviour:
     BonusPowerOrb: 0
     BonusRewardsRarety: 0
   m_MajorPower:
-    Description: '[TriggerEffect.0]\n\nIncrease your IceLance damage by +[BonusDamage.IceLance]'
+    Description: '[TriggerEffect.0]
+
+
+      Increase your IceLance damage by +[BonusDamage.IceLance]'
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
@@ -65,16 +67,27 @@ MonoBehaviour:
       ConsumeLifeOnActivation: 0
     m_BonusStats:
     - StateEffectProperty: 7
-      BaseValue: 70
-      BonusValue: 0.1
-      ScalingFactor: 0
+      BaseValue: 40
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 02000000
+      HitCategories: 
       SpecialConditions:
       - IceLance
+      - MarcusIceLance
+      - ShardrotIceLance
+      - GreatIceLance
       StateEffectStackFactors: []
     BonusPowerOrb: 0
     BonusRewardsRarety: 0
   m_PrimalPower:
-    Description: 'Gain +[BonusDamage.IceLance] damage on every IceLance spell.\n\n[TriggerEffect.0]\n\n[TriggerEffect.1]'
+    Description: 'Gain +[BonusDamage.IceLance] damage on every IceLance spell.
+
+
+      [TriggerEffect.0]
+
+
+      [TriggerEffect.1]'
     m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
@@ -114,11 +127,16 @@ MonoBehaviour:
       ConsumeLifeOnActivation: 0
     m_BonusStats:
     - StateEffectProperty: 7
-      BaseValue: 70
-      BonusValue: 0.1
-      ScalingFactor: 0
+      BaseValue: 45
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 02000000
+      HitCategories: 
       SpecialConditions:
       - IceLance
+      - MarcusIceLance
+      - ShardrotIceLance
+      - GreatIceLance
       StateEffectStackFactors: []
     BonusPowerOrb: 0
     BonusRewardsRarety: 0

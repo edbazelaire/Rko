@@ -69,9 +69,9 @@ namespace Data
             m_Level = level;
         }
 
-        public int GetStacks()
+        public int GetStacks(int level)
         {
-            return (int)Math.Round(Stacks + Math.Floor(m_Level * BonusStacksPerLevel));
+            return (int)Math.Round(Stacks + Math.Floor(level * BonusStacksPerLevel));
         }
 
         public string Description
@@ -85,7 +85,7 @@ namespace Data
                 else if (BonusStacksPerLevel < 0)
                     scaling = EScalingDirection.Down;
 
-                var stacks = GetStacks();
+                var stacks = GetStacks(m_Level);
                 if (stacks <= 0 && scaling != EScalingDirection.Up)
                     return "";
 

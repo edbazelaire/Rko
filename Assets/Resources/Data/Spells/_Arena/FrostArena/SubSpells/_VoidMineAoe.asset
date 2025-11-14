@@ -13,10 +13,7 @@ MonoBehaviour:
   m_Name: _VoidMineAoe
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: '{0} damage, applying [StateEffect.0] and [StateEffect.1]'
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 0
+  m_Description: '[Damage] damage, applying [StateEffect.0] and [StateEffect.1]'
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 1341525123640686, guid: 1c0a8c2df06e3e84facc8591b69424fc, type: 3}
@@ -50,8 +47,6 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 50
-  m_ExecutionDamage: 0
   m_Damages:
   - m_BaseValue: 50
     m_DamageCategory: 2
@@ -62,6 +57,7 @@ MonoBehaviour:
       ScalingType: 0
       RoundingType: 2
       ScalingTresholds: []
+    m_DamageModifiers: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -118,7 +114,7 @@ MonoBehaviour:
     m_ForcedMovementSpeed: 0
     Animation: 0
   EnemyStateEffects:
-  - StateEffect: 2
+  - StateEffect: 34
     Stacks: 1
     BonusStacksPerLevel: 0
     OverridingProperties: []
@@ -132,6 +128,7 @@ MonoBehaviour:
   Animation: 0
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0
   m_Cooldown: 0
   m_SpellSpawn: 2

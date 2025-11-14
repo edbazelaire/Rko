@@ -7,6 +7,7 @@ using UnityEngine;
 using Unity.Collections;
 using MyBox;
 using Data.DataStructures.StateEffectSubStructures;
+using Tools;
 
 
 namespace Data.DataStructures.CharacterSubStructures
@@ -24,6 +25,16 @@ namespace Data.DataStructures.CharacterSubStructures
         public List<SStateEffectStackFactor>    StateEffectStackFactors;
 
         public readonly EScalingDirection ScalingDirection => ScalingFactor > 0 ? EScalingDirection.Up : (ScalingFactor < 0 ? EScalingDirection.Down : EScalingDirection.None);
+      
+        public string GetKeyName()
+        {
+            return PropertyHandler.FormatSpecialPropertyName(
+                StateEffectProperty.ToString(), 
+                damageCategory :    DamageCategories.IsNullOrEmpty()    ? null : DamageCategories[0],
+                hitCategory:        HitCategories.IsNullOrEmpty()       ? null : HitCategories[0],
+                specialCondition:   SpecialConditions.IsNullOrEmpty()   ? "" : SpecialConditions[0]
+            );
+        }
 
         public SCharacterStatScaling(EStateEffectProperty stateEffectProperty, float baseValue, float bonusValue, float scalingFactor = 0.1f, List<EDamageCategory> damageCategories = default, List<EHitCategory> hitCategories = default, List<string> specialConditions = null, List<SStateEffectStackFactor> stateEffectStackFactors = default)
         {
@@ -154,7 +165,7 @@ namespace Data.DataStructures.CharacterSubStructures
 
         float GetStateEffectStackBonus(int level, Controller controller, Controller targetController)
         {
-            if (controller == null || StateEffectStackFactors == null)
+            if (StateEffectStackFactors == null)
                 return 0.0f;
 
             float value = 0.0f;

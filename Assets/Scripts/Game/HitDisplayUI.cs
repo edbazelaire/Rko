@@ -58,7 +58,7 @@ namespace Assets.Scripts.Game
         /// Entry point to request the display of a hit.
         /// Chooses the correct queue based on spell category.
         /// </summary>
-        public void DisplayHit(ulong clientId, int value, EHitType hitType, EHitCategory damageType)
+        public void DisplayHit(ulong clientId, int value, EHitType hitType, EHitCategory hitCategory)
         {
             if (value <= 0)
             {
@@ -67,16 +67,16 @@ namespace Assets.Scripts.Game
             }
 
             // ✅ Check player settings
-            if (! PlayerSettings.IsDisplayed(hitType, damageType))
+            if (! PlayerSettings.IsDisplayed(hitType, hitCategory))
                 return;
 
             // Do not display hits on spawn objects
             if (GameManager.Instance.IsSpawnId(clientId))
                 return;
 
-            HitDisplayData data = new(value, hitType, damageType);
+            HitDisplayData data = new(value, hitType, hitCategory);
 
-            if (damageType == EHitCategory.Dot)
+            if (hitCategory == EHitCategory.Dot)
             {
                 // Queue for ticks
                 if (!m_TickQueues.ContainsKey(clientId))
@@ -164,7 +164,7 @@ namespace Assets.Scripts.Game
             // Flush remaining ticks
             if (tickAccumulator > 0)
             {
-                ShowDamage(clientId, new HitDisplayData(tickAccumulator, EHitType.Damage, EHitCategory.Dot));
+                ShowDamage(clientId, new HitDisplayData(tickAccumulator, EHitType.PhysicalDamage, EHitCategory.Dot));
             }
 
             m_ActiveTickDisplays.Remove(clientId);

@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad3fa5d04e54308448f06e140795d4d7, type: 3}
   m_Name: WinArenaGames
   m_EditorClassIdentifier: 
+  m_PrettyName: 
   m_Description: Win [TresholdValue] Arena games
+  m_ResetCount: 0
   m_Character: 1
   m_MasteryThresholds: 0300000006000000
   AchievementSubData:
@@ -23,7 +25,7 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
-  - MaxValue: 75
+  - MaxValue: 50
     Rewards:
       Currencies: []
       Chests: 
@@ -37,12 +39,77 @@ MonoBehaviour:
         Badge: 0
         League: 0
       Boosts: []
+  - MaxValue: 75
+    Rewards:
+      Currencies: []
+      Chests: 01000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 100
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards: []
+      Boosts:
+      - Boost: 1
+        Duration: 96
   - MaxValue: 150
     Rewards:
       Currencies: []
       Chests: 02000000
       Collectables: []
       AchievementRewards: []
+      Boosts: []
+  - MaxValue: 250
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 2
+        Title: 0
+        Avatar: 1001
+        Border: 0
+        Emot: 19
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 350
+    Rewards:
+      Currencies: []
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 500
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 5
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Emot: 26
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 1000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 2
+        Title: 0
+        Avatar: 1002
+        Border: 0
+        Emot: 0
+        Badge: 0
+        League: 0
       Boosts: []
   m_GameModes: 00000000
   m_Win: 1

@@ -1,4 +1,5 @@
 ﻿using Enums;
+using Tools;
 using UnityEngine;
 
 namespace Game.Spells
@@ -27,7 +28,8 @@ namespace Game.Spells
                 if (! m_Controller.StateHandler.HasState(state))
                     continue;
 
-                m_Controller.StateHandler.RemoveStateEffect(state, consume: false, m_Stacks);
+                int removedStacks = m_Controller.StateHandler.RemoveStateEffect(state, consume: false, m_Stacks);
+                ErrorHandler.Log("Cleansing " + removedStacks + " stacks of " + state, ELogTag.StateEffects);
             }
 
             base.OnStart();

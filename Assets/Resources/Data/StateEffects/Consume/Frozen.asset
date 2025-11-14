@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3568c284519b7947b7bf6f5fe2f6a6d, type: 3}
   m_Name: Frozen
   m_EditorClassIdentifier: 
-  m_Description: Consume a [Frost] effect to Freeze the enemy for {0} seconds that
-    can no longer move or cast.\nRefreshes any [Frostbite] effect on the target.\n\nWhen
+  m_Description: Consume a [Frost] effect to Freeze the enemy for [Duration] seconds
+    that can no longer move or cast.\nRefreshes any [Frostbite] effect on the target.\n\nWhen
     the shield is broken, the Freeze ends.
   m_DescriptionVariables: 
   m_NStacksInDescription: 1
@@ -47,6 +47,7 @@ MonoBehaviour:
   m_DefaultState: 6
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
   m_IgnoresBoosts: 0
   m_EndWithShield: 1
@@ -61,6 +62,7 @@ MonoBehaviour:
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats: []
   m_StatConversions: []
   m_SubStateEffects: []

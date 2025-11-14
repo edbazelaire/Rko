@@ -7,12 +7,6 @@ namespace Game.Spells
     {
         protected override bool CheckBeforeGraphicInit()
         {
-            // if player is casting, improve the duration
-            if (m_Controller.SpellHandler.IsCasting)
-            {
-                m_Duration *= 2f;
-            }
-
             return base.CheckBeforeGraphicInit();
         }
     }

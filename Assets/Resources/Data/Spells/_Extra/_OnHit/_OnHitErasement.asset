@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 150222, guid: 44f40a08278d2704d86e189b67164324, type: 3}
@@ -44,15 +43,13 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  m_MaxHit: 0
+  m_MaxHit: -1
   m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 250
-  m_ExecutionDamage: 0
   m_Damages:
   - m_BaseValue: 250
-    m_DamageCategory: 2
+    m_DamageCategory: 1
     m_HitCategory: 1
     m_SpellPropertyScaling:
       Property: 2
@@ -71,12 +68,7 @@ MonoBehaviour:
     m_Speed: 0
     m_Duration: 0
     m_Targets: 
-  m_SpellsScalingLevel:
-  - Property: 2
-    Value: 0.1
-    ScalingType: 0
-    RoundingType: 0
-    ScalingTresholds: []
+  m_SpellsScalingLevel: []
   OverridesSpawnPosition: 0
   m_SpawnPosition:
     SpawnTarget: 0
@@ -89,7 +81,7 @@ MonoBehaviour:
     m_TargetToFollow: 0
     m_TargetOffset: {x: 0, y: 0}
     m_FollowingSpeed: -1
-  m_Size: 6
+  m_Size: 10
   TriggerPlayer: 1
   HasSolidBody: 0
   MSolidBody:
@@ -123,6 +115,7 @@ MonoBehaviour:
   Animation: 0
   IsCancellable: 1
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0
   m_Cooldown: 0
   m_SpellSpawn: 1

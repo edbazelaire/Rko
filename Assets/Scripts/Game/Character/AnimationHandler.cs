@@ -6,6 +6,7 @@ using Tools;
 using Tools.Animations;
 using Unity.Collections;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Game.Character
@@ -185,7 +186,7 @@ namespace Game.Character
             m_Animator.SetFloat("CastSpeed", 1f);
 
             // Reset the trigger to avoid it staying "active"
-            CoroutineManager.DelayMethod(() => m_Animator.ResetTrigger(EAnimation.CancelCast.ToString()));
+            CoroutineManager.DelayMethod(() => { if (!this.IsDestroyed()) m_Animator.ResetTrigger(EAnimation.CancelCast.ToString()); });
         }
 
         #endregion
@@ -266,7 +267,7 @@ namespace Game.Character
         /// </summary>
         /// <param name="oldValue"></param>
         /// <param name="newValue"></param>
-        void OnStateEffectListChanged(EStateEffectEvent stateEffectEvent, string stateEffect, int stacks, int maxStacks, float duration)
+        void OnStateEffectListChanged(EStateEffectEvent stateEffectEvent, string stateEffect, int stacks, int maxStacks, float duration, float timer)
         {
             ErrorHandler.Log(stateEffect + " " + stateEffect, ELogTag.Animation);
 

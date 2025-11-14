@@ -12,19 +12,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9daef013e5e5281409e5995f44de4a10, type: 3}
   m_Name: EternalMenagerie_Easy
   m_EditorClassIdentifier: 
-  m_NLifes: 1
   m_RoundDuration: 240
   m_ArenaLevelData:
   - RewardsData:
       Currencies: []
-      Chests: 00000000
+      Chests: 01000000
       Collectables: []
-      AchievementRewards: []
+      AchievementRewards:
+      - AchievementReward: 3
+        Title: 0
+        Avatar: 0
+        Border: 205
+        Emot: 0
+        Badge: 0
+        League: 0
       Boosts: []
     TriggerEffects: []
     m_PowerUps: []
     StageData:
     - m_Boss: 10
+      m_Skin: 0
       m_BonusLevel: 0
       m_ExtraLifes: 0
       m_Spells: 

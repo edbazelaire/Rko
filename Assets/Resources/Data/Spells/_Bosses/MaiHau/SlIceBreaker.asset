@@ -15,7 +15,6 @@ MonoBehaviour:
   m_Rarety: 0
   m_Description: Delivers a crushing icy strike that deals [Damage] damage and inflicts
     [Infected] and [IceBreak].
-  m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 4052242029054160489, guid: 2af84947a8911404c9eebd7a74da6909, type: 3}
@@ -129,10 +128,17 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 25
   EnergyCost: 0
-  m_Damage: 100
-  m_ExecutionDamage: 0
   m_Damages:
-  - m_BaseValue: 100
+  - m_BaseValue: 70
+    m_DamageCategory: 1
+    m_HitCategory: 1
+    m_SpellPropertyScaling:
+      Property: 2
+      Value: 0.12
+      ScalingType: 0
+      RoundingType: 0
+      ScalingTresholds: []
+  - m_BaseValue: 30
     m_DamageCategory: 2
     m_HitCategory: 1
     m_SpellPropertyScaling:
@@ -211,6 +217,7 @@ MonoBehaviour:
   Animation: 6
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 1.2
   m_Cooldown: 15
   m_SpellSpawn: 1

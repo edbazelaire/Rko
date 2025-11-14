@@ -84,7 +84,13 @@ namespace Data.GameManagement
         public List<SBoostReward>           Boosts;
 
         public readonly bool IsEmpty => Count == 0;
-        public readonly int Count => Currencies.Count + Chests.Count + Collectables.Count + AchievementRewards.Count;
+        public readonly int Count => 
+            (Currencies != null             ? Currencies.Count          : 0)
+            + (Chests != null               ? Chests.Count              : 0)
+            + (PowerOrbs != null            ? PowerOrbs.Count           : 0)
+            + (Collectables != null         ? Collectables.Count        : 0)
+            + (AchievementRewards != null   ? AchievementRewards.Count  : 0)
+            + (Boosts != null               ? Boosts.Count              : 0);
 
         public SRewardsData(List<SCurrencyReward> currencyRewards       = null,
                             List<EChest> chests                         = null,
@@ -512,6 +518,9 @@ namespace Data.GameManagement
         [Description("list of each gems offers in the shop")]
         [SerializeField] private List<SShopData> m_GemsShopData;
 
+        [Description("list of each KEYS offers in the shop")]
+        [SerializeField] private List<SShopData> m_KeysShopData;
+
         [Description("list of each XP offers in the shop")]
         [SerializeField] private List<SShopData> m_XpShopData;
 
@@ -530,6 +539,7 @@ namespace Data.GameManagement
         public static List<SShopData> GoldsShopData         => Instance.m_GoldsShopData;
         public static List<SShopData> XpShopData            => Instance.m_XpShopData;
         public static List<SShopData> GemsShopData          => Instance.m_GemsShopData;
+        public static List<SShopData> KeysShopData          => Instance.m_KeysShopData;
 
         #endregion
 

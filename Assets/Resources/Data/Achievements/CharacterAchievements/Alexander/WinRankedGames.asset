@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad3fa5d04e54308448f06e140795d4d7, type: 3}
   m_Name: WinRankedGames
   m_EditorClassIdentifier: 
+  m_PrettyName: 
   m_Description: Win [TresholdValue] Ranked games
+  m_ResetCount: 0
   m_Character: 1
   m_MasteryThresholds: 0300000006000000
   AchievementSubData:
@@ -50,6 +52,76 @@ MonoBehaviour:
         Avatar: 0
         Border: 0
         Emot: 5
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 100
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 5
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Emot: 25
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 150
+    Rewards:
+      Currencies: []
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 200
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 5
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Emot: 7
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 250
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 5
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Emot: 16
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 350
+    Rewards:
+      Currencies: []
+      Chests: 03000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 500
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 3
+        Title: 0
+        Avatar: 0
+        Border: 1001
+        Emot: 42
         Badge: 0
         League: 0
       Boosts: []

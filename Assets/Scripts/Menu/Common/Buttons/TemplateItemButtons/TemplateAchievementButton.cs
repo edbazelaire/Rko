@@ -6,6 +6,8 @@ using Save;
 using System;
 using TMPro;
 using Tools;
+using Unity.VisualScripting;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Menu.Common.Buttons
@@ -75,7 +77,7 @@ namespace Menu.Common.Buttons
 
         #region GUI Manipulators
 
-        void RefreshUI()
+        protected virtual void RefreshUI()
         {
             RefreshReward();
             m_CurrentIndexText.text = (m_AchievementData.CurrentIndex + 1).ToString();

@@ -12,7 +12,6 @@ using Managers;
 using Menu.Common.Rewards;
 using Network;
 using Save;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,7 +54,7 @@ public class EndGameUI : MObject
     EndGameAnalyticsUI  m_EndGameAnalyticsUI;
     GameObject          m_RewardsSection;
     GameObject          m_Background;
-    TMP_Text            m_TitleText;
+    Image               m_EndGameIcon;
     GameObject          m_RewardsContent;
     PowerUpSection      m_PowerUpSection;
     GameObject          m_XpRewardDisplay;
@@ -86,7 +85,7 @@ public class EndGameUI : MObject
     {
         m_Background                = Finder.Find(gameObject, "Background");
         m_Fireworks                 = Finder.Find(gameObject, "Fireworks");
-        m_TitleText                 = Finder.FindComponent<TMP_Text>(gameObject, "TitleText");
+        m_EndGameIcon               = Finder.FindComponent<Image>(gameObject, "EndGameIcon");
 
         m_EndGameAnalyticsUI        = Finder.FindComponent<EndGameAnalyticsUI>(gameObject, "EndGameAnalyticsUI");
         m_PowerUpSection            = Finder.FindComponent<PowerUpSection>(gameObject, "PowerUpSection");
@@ -252,7 +251,6 @@ public class EndGameUI : MObject
     void DisplayArenaPowerUps()
     {
         var screen = ScreenManager.PowerUpSelectionScreen(ProgressionCloudData.CurrentArena.ArenaType, ProgressionCloudData.CurrentArena.Level - 1);
-
         screen.OnExitEvent += NextState;
     }
 
@@ -454,7 +452,7 @@ public class EndGameUI : MObject
                         break;
 
                     case EGameResult.Loss:
-                        if (!preventiveLossApplied && !Main.StopPreventiveLoss)
+                        if (!preventiveLossApplied && !Main.CheatMode)
                             ProgressionCloudData.AddArenaLoss();
                         break;
 
@@ -481,7 +479,7 @@ public class EndGameUI : MObject
 
                     case EGameResult.Loss:
                         // if preventive loss was NOT applied : apply loss
-                        if (!preventiveLossApplied && !Main.StopPreventiveLoss)
+                        if (!preventiveLossApplied && !Main.CheatMode)
                             ProgressionCloudData.UpdateLeagueValue(false, nTimes: 1);
                         break;
 
@@ -570,9 +568,10 @@ public class EndGameUI : MObject
     IEnumerator IntroAnimation()
     {
         // Deactivate all components visual animated components
-        m_TitleText.gameObject.SetActive(false);
+        m_EndGameIcon.gameObject.SetActive(false);
         m_RewardsContent.SetActive(false);
         m_LeaveButton.gameObject.SetActive(false);
+        m_DetailsButton.gameObject.SetActive(false);
         m_Fireworks.SetActive(false);
 
         // FADE IN : Background
@@ -580,31 +579,22 @@ public class EndGameUI : MObject
         fadeIn.Initialize(duration: 0.4f, startOpacity:0.5f);
         yield return new WaitUntil(() => fadeIn.IsOver);
 
-        // Move : Title
-        m_TitleText.gameObject.SetActive(true);
-        var moveTitle = m_TitleText.gameObject.AddComponent<MoveAnimation>();
-        var pos = m_TitleText.gameObject.transform.position;
-        pos.y += 250;
-        moveTitle.Initialize(duration: 0.5f, startPos: pos);
+        // ZOOM IN : Icon
+        m_EndGameIcon.gameObject.SetActive(true);
+        var zoomIn = m_EndGameIcon.gameObject.AddComponent<Fade>();
+        zoomIn.Initialize(duration: 0.5f, startScale: 0.7f);
 
         // FIREWORKS particles (on win only)
         if (m_GameResult == EGameResult.Win)
             m_Fireworks.SetActive(true);
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1.5f);
 
         NextState();
     }
 
     IEnumerator RewardsAnimation()
     {
-        var fadeIn = m_Background.AddComponent<Fade>();
-
-        // BOUNCE : Rewards
-        m_RewardsContent.SetActive(true);
-        fadeIn = m_RewardsContent.AddComponent<Fade>();
-        fadeIn.Initialize(duration: 0.5f, startScale: 0.5f);
-
         // FadeIn : Button
         m_LeaveButton.gameObject.SetActive(true);
         var fadeInButton = m_LeaveButton.gameObject.AddComponent<Fade>();
@@ -615,7 +605,14 @@ public class EndGameUI : MObject
         fadeInButton = m_DetailsButton.gameObject.AddComponent<Fade>();
         fadeInButton.Initialize(duration: 0.5f, startOpacity: 0f);
 
-        yield return new WaitUntil(() => fadeIn.IsOver);
+        // GROW : Rewards section
+        m_RewardsSection.SetActive(true);
+        var growAnim = m_RewardsSection.AddComponent<GrowAnimation>();
+        growAnim.Initialize(duration: 1.5f, startWidth: 0f, endWidth: 25000, checkLayout: true);
+
+        yield return new WaitUntil(() => growAnim.IsOver);
+
+        m_RewardsContent.SetActive(true);
     }
 
     #endregion
@@ -628,18 +625,15 @@ public class EndGameUI : MObject
         switch (m_GameResult)
         {
             case EGameResult.Win:
-                m_TitleText.text = "Victory";
-                m_TitleText.color = Color.green;
+                m_EndGameIcon.sprite = AssetLoader.Load<Sprite>("VictoryIcon", AssetLoader.c_EndGameSprites);
                 break;
 
             case EGameResult.Loss:
-                m_TitleText.text = "Defeat";
-                m_TitleText.color = Color.red;
+                m_EndGameIcon.sprite = AssetLoader.Load<Sprite>("DefeatIcon", AssetLoader.c_EndGameSprites);
                 break;
 
             case EGameResult.Draw:
-                m_TitleText.text = "Draw";
-                m_TitleText.color = Color.grey;
+                m_EndGameIcon.sprite = AssetLoader.Load<Sprite>("DrawIcon", AssetLoader.c_EndGameSprites);
                 break;
 
             default:

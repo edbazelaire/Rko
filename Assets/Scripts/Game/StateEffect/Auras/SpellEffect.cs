@@ -4,6 +4,7 @@ using Data.DataStructures.SpellSubStructures;
 using Enums;
 using Google.Apis.Sheets.v4.Data;
 using MyBox;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
@@ -24,7 +25,8 @@ namespace Game.Spells
         };
 
         [Header("Spell Effects")]
-        [SerializeField] protected int                      m_Frequency = 1;
+        [SerializeField] protected int                      m_Frequency             = 1;
+        [SerializeField] protected float                    m_FrequencyLevelScaling = 0;
         [SerializeField] protected List<string>             m_AllowedSpells;
         [SerializeField] protected ESpellEffectType         m_SpellEffectType;
         [SerializeField] protected List<ESpellType>         m_AllowedSpellTypes;
@@ -34,7 +36,7 @@ namespace Game.Spells
         [SerializeField] protected List<SOverridingData>    m_SpellOverridingData;
         [SerializeField] protected List<SpellPrefabSpawn>   m_SpellGFXOverrides;
 
-        public int                      Frequency           => m_Frequency;
+        public int                      Frequency           => Math.Max((int)Math.Round(m_Frequency + m_FrequencyLevelScaling * m_Level), 1);
         public ESpellEffectType         SpellEffectType     => m_SpellEffectType;
         public List<ESpellType>         AllowedSpellTypes   => m_AllowedSpellTypes;
         public List<SpellData>          OnHits              => m_OnHits;
@@ -67,13 +69,6 @@ namespace Game.Spells
             spellData.AllyStateEffects.AddRange(AllyStateEffects);
             spellData.EnemyStateEffects.AddRange(EnemyStateEffects);
 
-            // apply overrides 
-            if (! m_SpellOverridingData.IsNullOrEmpty())
-            {
-                List<SOverridingData> overridingData = m_SpellOverridingData.Where(temp => !PRE_APPLIED_EFFECTS.Contains(temp.Property)).ToList();
-                spellData.AddOverridingData(overridingData, m_Level);
-            }
-
             // override data of the spell
             ApplySpellDataOverrides(ref spellData);
 
@@ -93,6 +88,10 @@ namespace Game.Spells
 
             // CHECK : is spell
             if (m_SpellEffectType == ESpellEffectType.Spells && isAutoAttack)
+                return false;
+
+            // CHECK : spell type
+            if (!m_AllowedSpellTypes.IsNullOrEmpty() && !m_AllowedSpellTypes.Contains(spellData.SpellType))
                 return false;
 
             return true;
@@ -208,7 +207,12 @@ namespace Game.Spells
         public override string GetDescription()
         {
             string description = base.GetDescription();
-            description = description.Replace("[Frequency]", m_Frequency.ToString());
+            description = description.Replace("[Frequency]", TextHandler.FormatScaling(Frequency.ToString(), m_FrequencyLevelScaling > 0 ? EScalingDirection.Up : (m_FrequencyLevelScaling < 0 ? EScalingDirection.Down : EScalingDirection.None)));
+            description = TextHandler.ReplaceSpellOverrides(description, m_SpellOverridingData, m_Level);
+           
+            var stateEffects = m_EnemyStateEffects;
+            stateEffects.AddRange(m_AllyStateEffects);
+            description = TextHandler.ReplaceSubStateEffects(description, stateEffects);
             return description;
         }
 

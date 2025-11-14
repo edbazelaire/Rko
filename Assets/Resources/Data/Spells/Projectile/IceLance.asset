@@ -15,9 +15,6 @@ MonoBehaviour:
   m_Rarety: 1
   m_Description: 'Throw an ice lance in a straight line to your enemy dealing [Damage]
     damage to your target and applying [IceBreak]'
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
   m_SpellElements: 02000000
   Linked: 0
   Graphics: {fileID: 6310744135911870057, guid: f0c38580e3e6e8e47bba9dc2913a2803, type: 3}
@@ -69,12 +66,10 @@ MonoBehaviour:
   m_SpellRequirements: []
   m_MaxHit: 1
   m_Charges: 1
-  EnergyGain: 10
+  EnergyGain: 5
   EnergyCost: 0
-  m_Damage: 40
-  m_ExecutionDamage: 0
   m_Damages:
-  - m_BaseValue: 40
+  - m_BaseValue: 45
     m_DamageCategory: 1
     m_HitCategory: 1
     m_SpellPropertyScaling:
@@ -83,6 +78,7 @@ MonoBehaviour:
       ScalingType: 0
       RoundingType: 2
       ScalingTresholds: []
+    m_DamageModifiers: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -156,6 +152,7 @@ MonoBehaviour:
   Animation: 1
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.2
   m_Cooldown: 10
   Trajectory: 2

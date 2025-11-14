@@ -54,7 +54,7 @@ namespace Menu.Common.Infos
                 return;
             }
 
-            m_FillImage.fillAmount = m_StateEffectData.GetStacks() / m_MaxStacks;
+            m_FillImage.fillAmount = m_StateEffectData.GetStacks(m_Level) / m_MaxStacks;
         }
 
         #endregion
@@ -64,7 +64,7 @@ namespace Menu.Common.Infos
 
         protected override void OnClick()
         {
-            ScreenManager.StateEffectPopUp(m_StateEffectData, m_Level, m_StateEffectData.GetStacks(), m_DisplayNextLevel);
+            ScreenManager.StateEffectPopUp(m_StateEffectData, m_Level, m_StateEffectData.GetStacks(m_Level), m_DisplayNextLevel);
         }
 
         #endregion

@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 
   m_MinorPower:
     Description: 
@@ -22,7 +21,9 @@ MonoBehaviour:
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: ICastFireball
-      OverridingData: []
+      OverridingData:
+      - StateEffectProperty: 120
+        Value: 1
       Level: 0
       Target: 4
       SpellActivationEvent: 1
@@ -67,7 +68,7 @@ MonoBehaviour:
     BonusPowerOrb: 0
     BonusRewardsRarety: 0
   m_PrimalPower:
-    Description: 'Increase Damage of Fireball and Meteor by [BonusDamagePerc.Fireball]\n\n[TriggerEffect?0]'
+    Description: 'Increase Damage of Fireball and Meteor by [BonusDamagePerc.Fireball]\n\n[TriggerEffect.0]'
     m_DescriptionVariables: []
     m_BonusLevel: 12
     m_TriggerEffects:
@@ -90,12 +91,15 @@ MonoBehaviour:
       ConsumeLifeOnActivation: 0
     m_BonusStats:
     - StateEffectProperty: 8
-      BaseValue: 0.5
+      BaseValue: 0.2
       BonusValue: 0
       ScalingFactor: 0
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions:
       - Fireball
       - Meteor
+      - FireBomb
       StateEffectStackFactors: []
     BonusPowerOrb: 0
     BonusRewardsRarety: 0

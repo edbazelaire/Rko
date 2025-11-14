@@ -60,7 +60,7 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
         {
             foreach (var requirement in Requirements)
             {
-                if (! requirement.CheckRequirement(requirement.CalculateTarget(caster, targetController)))
+                if (! requirement.CheckRequirement(requirement.CalculateTargets(caster, targetController)))
                     return false;
             }
 
@@ -76,7 +76,7 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
         {
             foreach (var requirement in Requirements)
             {
-                if (! requirement.TryApplyRequirements(requirement.CalculateTarget(caster, targetController)))
+                if (! requirement.TryApplyRequirements(requirement.CalculateTargets(caster, targetController)))
                     return false;
             }
 

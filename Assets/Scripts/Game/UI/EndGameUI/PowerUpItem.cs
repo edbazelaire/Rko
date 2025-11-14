@@ -1,4 +1,5 @@
-﻿using Data;
+﻿using Assets.Scripts.Managers;
+using Data;
 using Data.DataStructures.PowerEffects;
 using Enums;
 using Save;
@@ -24,6 +25,7 @@ namespace Game.UI.EndGameUI
 
         SPowerEffect    m_PowerUpData;
 
+        GameObject      m_Content;
         TMP_Text        m_Title;
         TMP_Text        m_Description;
         Image           m_Icon;
@@ -35,12 +37,14 @@ namespace Game.UI.EndGameUI
         Image           m_Border;
         GameObject      m_Selected;
         GameObject      m_LockOverlay;
+        Canvas          m_GlowCanvas;
 
         ESelectionMod m_SelectionMod;
         Color m_OriginalBorderColor;
         int m_NRefreshes;
 
         public SPowerEffect PowerUpData => m_PowerUpData;
+        public GameObject Content       => m_Content;
         public Button Button            => m_Button;
         public Button RefreshButton     => m_RefreshButton;
         public Button ValidationButton  => m_ValidationButton;
@@ -56,6 +60,7 @@ namespace Game.UI.EndGameUI
         {
             base.FindComponents();
 
+            m_Content           = Finder.Find(gameObject, "Content");
             m_Title             = Finder.FindComponent<TMP_Text>(gameObject, "Title");
             m_Description       = Finder.FindComponent<TMP_Text>(gameObject, "Description");
             m_Icon              = Finder.FindComponent<Image>(gameObject, "Icon");
@@ -67,6 +72,7 @@ namespace Game.UI.EndGameUI
             m_RefreshCtr        = Finder.FindComponent<TMP_Text>(m_RefreshButton.gameObject, "RefreshCtr");
             m_Border            = Finder.FindComponent<Image>(gameObject, "Border");
             m_Selected          = Finder.Find(gameObject, "Selected");
+            m_GlowCanvas        = Finder.FindComponent<Canvas>(m_Selected);
 
             m_OriginalBorderColor = m_Border.color;
         }
@@ -81,6 +87,10 @@ namespace Game.UI.EndGameUI
             m_ValidationButton.gameObject.SetActive(false);
             m_Selected.SetActive(false);
             m_LockOverlay.SetActive(false);
+
+            // update glow canvas order
+            m_GlowCanvas.sortingLayerName   = ScreenManager.CurrentScreen.Canvas.sortingLayerName;
+            m_GlowCanvas.sortingOrder       += ScreenManager.CurrentScreen.Canvas.sortingOrder;
         }
 
         protected override void SetUpUI()

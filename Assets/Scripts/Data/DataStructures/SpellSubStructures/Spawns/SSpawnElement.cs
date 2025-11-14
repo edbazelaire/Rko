@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Data.DataStructures.SpellSubStructures;
+using Data.Characters;
 using Enums;
 using Game;
 using Game.Loaders;
@@ -185,9 +186,10 @@ namespace Data.DataStructures.SpellSubStructures.Spawns
         {
             ErrorHandler.Log("Spawning [" + NSpawnCounter + "] : " + CharacterName, ELogTag.Spawns);
 
+            var offset = (CharacterLoader.GetCharacterData(CharacterName) is SpawnData data) ? data.GetSpawnOffset() : Vector3.zero;
             var position = m_RecalculatePosition ? 
                 m_SpawnPosition.Recalculate(spell.transform.position, NSpawnCounter, spell.Caster.Team, MaxSpawns)
-                : spell.CalculateSpawnPosition(NSpawnCounter, MaxSpawns);
+                : spell.CalculateSpawnPosition(NSpawnCounter, MaxSpawns) + offset;
 
             // create an AI prefab and spawn it
             var prefab = CharacterLoader.GetPrefab(CharacterName, false);
@@ -197,7 +199,7 @@ namespace Data.DataStructures.SpellSubStructures.Spawns
             }
 
             var spawnPrefab = GameObject.Instantiate(
-                CharacterLoader.GetPrefab(CharacterName, false),
+                prefab,
                 position,
                 Quaternion.Euler(0f, 0f, 0f)
             );

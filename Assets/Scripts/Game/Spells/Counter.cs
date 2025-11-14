@@ -16,8 +16,9 @@ namespace Game.Spells
         CounterData m_SpellData => m_BaseSpellData as CounterData;
         public new CounterData SpellData => m_SpellData;
 
-        int m_Shield;
-        float m_CounterTimer;
+        int         m_Shield;
+        float       m_CounterTimer;
+        StateEffect m_LinkedStateEffect;
 
         public int Shield => m_Shield;
 
@@ -45,6 +46,12 @@ namespace Game.Spells
 
             // apply self state effects
             ApplyStateEffects(m_Caster, m_SpellData.AllyStateEffects);
+
+            // apply linked effect
+            ApplyLinkedEffect();
+
+            // update size
+            ApplySizeScale();
 
             // TODO : BETTER - if spell is not impacting player by blocking movement or cast, and is not Trigger by player, do not add to list of Counters
             if (! m_SpellData.IsLinkedCounter)
@@ -88,8 +95,14 @@ namespace Game.Spells
                     if (!m_Caster.StateHandler.HasState(effect.StateEffect))
                         continue;
 
-                    m_Caster.StateHandler.RemoveStateEffect(effect.StateEffect, true, effect.GetStacks());
+                    m_Caster.StateHandler.RemoveStateEffect(effect.StateEffect, true, effect.GetStacks(m_SpellData.Level));
                 }
+            }
+
+            // cancel linked state effect
+            if (m_SpellData.HasLinkedStateEffect && m_LinkedStateEffect != null)
+            {
+                m_Caster.StateHandler.RemoveStateEffect(m_LinkedStateEffect.StateEffectName, false);
             }
 
             // at the end - recalculate shield if has one
@@ -163,11 +176,58 @@ namespace Game.Spells
         #endregion
 
 
+        #region Init Methods
+
+        void ApplySizeScale()
+        {
+            if (!m_SpellData.ScalesWithCharacterSize)
+                return;
+
+            transform.localScale *= m_Caster.StateHandler.Size;
+        }
+
+        #endregion
+
+
+        #region Linked Effect
+
+        void ApplyLinkedEffect()
+        {
+            if (! m_SpellData.HasLinkedStateEffect)
+                return;
+
+            m_Caster.StateHandler.AddStateEffect(m_SpellData.LinkedStateEffect, m_Caster, m_SpellData.Level, m_SpellData.Name);
+            m_LinkedStateEffect = m_Caster.StateHandler.GetStateEffect(m_SpellData.LinkedStateEffect.StateEffect.ToString());
+
+            if (m_LinkedStateEffect == null)
+            {
+                End();
+                return;
+            }
+
+            m_LinkedStateEffect.StateEffectEvent += OnLinkedStateEffectEvent;
+        }
+
+        void OnLinkedStateEffectEvent(EStateEffectEvent stateEffectEvent, int stacks, ulong casterId, ulong targetId, string origin)
+        {
+            if (stateEffectEvent == EStateEffectEvent.OnEnd)
+                End();
+        }
+
+        #endregion
+
+
         #region Counter Proc 
 
-        public bool CanBeProc(Enums.EHitCategory damageType)
+        public bool CanBeProc(ESpellType spellType)
         {
-            return m_SpellData.DamageTypeActivation.Contains(damageType);
+            if (m_SpellData.SpellTypeActivation.Count == 0)
+                return true;
+
+            if (spellType == ESpellType.MultiProjectiles)
+                spellType = ESpellType.Projectile;
+
+            return m_SpellData.SpellTypeActivation.Contains(spellType);
         }
 
         public bool ProcCounter(Spell enemySpell)
@@ -175,9 +235,25 @@ namespace Game.Spells
             if (!IsServer)
                 return false;
 
-            // check if type of spell can proc counter
-            if (! CanBeProc(enemySpell.SpellData.SpellCategory))
+            if (enemySpell.Team == m_Caster.Team)
                 return false;
+
+            // check if type of spell can proc counter
+            if (! CanBeProc(enemySpell.SpellData.SpellType))
+                return false;
+
+            // check if has a linked state effect to hit first
+            if (m_LinkedStateEffect != null && m_LinkedStateEffect.RemainingShield > 0)
+            {
+                if (enemySpell is Zone zoneSpell)
+                    zoneSpell.TryHitController(m_Caster, ignoreEffects: true);
+                else
+                {
+                    m_LinkedStateEffect.HitShield(enemySpell.GetBoostedDamage(m_Caster));
+                    enemySpell.AddHittedPlayer(m_Caster.PlayerId);
+                    m_Caster.StateHandler.RecalculateBonus();
+                }
+            }
 
             var targetPosition = enemySpell.Caster.transform.position;
             targetPosition.y = 0;
@@ -193,7 +269,7 @@ namespace Game.Spells
                 case ECounterType.Block:
                     if (m_SpellData.Shield > 0)
                     {
-                        HitShield(enemySpell.GetBoostedDamage(m_Caster, EDamageCategory.Physical, EHitCategory.Direct) + enemySpell.GetBoostedExecutionDamage(m_Caster));
+                        HitShield(enemySpell.GetBoostedDamage(m_Caster));
                     }
 
                     enemySpell.CallSpellEvent(ESpellEvent.OnHit, m_Caster);
@@ -225,22 +301,32 @@ namespace Game.Spells
             // Converts spell incoming damages into someting else
             ProcDamageConversionEffects(enemySpell);
 
-            // Destroy the spell
-            if (m_SpellData.IsDestroyingSpell)
-                enemySpell.Terminate();
+            // CHECK : OnHit / Destroy
+            if (! enemySpell.IsOver)
+            {
+                // Destroy the spell
+                if (m_SpellData.IsDestroyingSpell)
+                {
+                    enemySpell.SpawnOnHitPrefab();
+                    enemySpell.Terminate();
+                } 
+                else if (! m_SpellData.HasLinkedStateEffect)
+                {
+                    if (! m_SpellData.PreventsDamage)
+                        enemySpell.HitEnemy(m_Caster);
+                    enemySpell.AddHittedPlayer(m_Caster.PlayerId);
+                }
+            }
 
             // Call "OnHit" event for the Counter
             CallSpellEvent(ESpellEvent.OnHit);
-            
-            // Check MaxHit
-            m_HittedPlayerId.Add(0);
-            if (m_SpellData.MaxHit > 0 && m_HittedPlayerId.Count >= m_SpellData.MaxHit)
-                End();
-
             return true;
         }
 
-        public bool ProcCounter(int damages, Controller caster, EHitCategory damageType)
+        /// <summary>
+        /// TODO : REMOVE ????  =====================================
+        /// </summary>
+        public bool ProcCounter(int damages, Controller caster, ESpellType spellType)
         {
             if (!IsServer)
                 return false;
@@ -249,7 +335,7 @@ namespace Game.Spells
                 return false;
 
             // check if type of spell can proc counter
-            if (! CanBeProc(damageType))
+            if (! CanBeProc(spellType))
                 return false;
 
             // if caster is null (dead spawn, for exemple) get first available enemy
@@ -348,7 +434,7 @@ namespace Game.Spells
 
             shield = m_Caster.StateHandler.ApplyBonusShield(shield, m_Caster);
 
-            GameAnalyticsManager.Instance.OnSpellHit(m_Caster.PlayerId, m_Caster.PlayerId, m_SpellData.Name, shield, EHitType.Shield, EHitCategory.Direct);
+            GameAnalyticsManager.Instance.OnSpellHit(m_Caster.AnalyticsId, m_Caster.PlayerId, m_SpellData.Name, shield, EHitType.Shield, EHitCategory.Direct);
 
             m_Shield = shield;
             m_Caster.Life.RecalculateShield();

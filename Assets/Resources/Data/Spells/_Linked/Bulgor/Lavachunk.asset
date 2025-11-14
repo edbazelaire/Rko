@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Lavachunk
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 'Hurls a chunk of volcanic rock at the target, dealing {0} damage
-    and applying [Burn].       '
+  m_Description: 'Hurls a chunk of volcanic rock at the target, dealing [Damage]
+    damage and applying [Burn].       '
   m_DescriptionVariables:
   - Name: Damage
     WithIcon: 1
@@ -94,8 +94,17 @@ MonoBehaviour:
   m_Damage: 60
   m_ExecutionDamage: 0
   m_Damages:
-  - m_BaseValue: 60
+  - m_BaseValue: 40
     m_DamageCategory: 1
+    m_HitCategory: 1
+    m_SpellPropertyScaling:
+      Property: 2
+      Value: 0.1
+      ScalingType: 0
+      RoundingType: 0
+      ScalingTresholds: []
+  - m_BaseValue: 40
+    m_DamageCategory: 2
     m_HitCategory: 1
     m_SpellPropertyScaling:
       Property: 2

@@ -1,0 +1,117 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f76340b3e7c71c048bac1f79c6d71276, type: 3}
+  m_Name: GolemicStrength
+  m_EditorClassIdentifier: 
+  m_Rarety: 0
+  m_Description: 
+  m_SpellElements: 
+  m_MinorPower:
+    Description: 'Gain +[Resistance] Physical and Magical Resistance.\n\n[TriggerEffect.0]'
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: _MiGolemicStrength
+      OverridingData: []
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    m_BonusStats:
+    - StateEffectProperty: 30
+      BaseValue: 10
+      BonusValue: 0
+      ScalingFactor: 0.05
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+    BonusPowerOrb: 0
+    BonusRewardsRarety: 0
+  m_MajorPower:
+    Description: 'Gain +[Resistance] Physical and Magical Resistance.\n\n[TriggerEffect.0]'
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: _MaGolemicStrength
+      OverridingData: []
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    m_BonusStats:
+    - StateEffectProperty: 30
+      BaseValue: 20
+      BonusValue: 0
+      ScalingFactor: 0.05
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+    BonusPowerOrb: 0
+    BonusRewardsRarety: 0
+  m_PrimalPower:
+    Description: 'Gain +[Resistance] Physical and Magical Resistance.\n\n[TriggerEffect.0]'
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: _PrGolemicStrength
+      OverridingData: []
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    m_BonusStats:
+    - StateEffectProperty: 30
+      BaseValue: 35
+      BonusValue: 0
+      ScalingFactor: 0.05
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+    BonusPowerOrb: 0
+    BonusRewardsRarety: 0
+  PowerUpTags: 

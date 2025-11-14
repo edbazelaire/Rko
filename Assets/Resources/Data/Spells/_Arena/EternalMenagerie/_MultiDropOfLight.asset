@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: _MultiDropOfLight
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 'applies [EnemyStateEffect.0]\n\nPurity : [EnemyStateEffect.0.EffectDescription]'
-  m_DescriptionVariables: []
+  m_Description: 'restoring [Heal] hp and applying [EnemyStateEffect.0]
+
+
+    Purity
+    : [EnemyStateEffect.0.EffectDescription]'
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 184882, guid: 75131f28a9989d944b6b594a775f55fb, type: 3}
@@ -64,13 +67,12 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
+  m_MaxHit: 1
   m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 0
-  m_ExecutionDamage: 0
-  m_Heal: 0
+  m_Damages: []
+  m_Heal: 100
   m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
@@ -110,6 +112,8 @@ MonoBehaviour:
       BaseValue: 1
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
   IsChanneling: 0
@@ -121,7 +125,7 @@ MonoBehaviour:
   EnemyStateEffects:
   - StateEffect: 33
     Stacks: 2
-    BonusStacksPerLevel: 0
+    BonusStacksPerLevel: 0.1
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
@@ -129,6 +133,7 @@ MonoBehaviour:
   Animation: 0
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0
   m_Cooldown: 0
   Trajectory: 0

@@ -12,47 +12,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a402882a257d18548a281b17574b3711, type: 3}
   m_Name: VampiricRune
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 00000000
-  Description: 
   m_MinorPower:
-    Description: Gain {0} Life Steal
-    m_DescriptionVariables:
-    - Name: BonusLifeSteal
-      WithIcon: 1
+    Description: Gain [BonusLifeSteal.Physical] {{Lifesteal}} on {{PhysicalDamage}}
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
     - StateEffectProperty: 9
-      BaseValue: 0.02
+      BaseValue: 0.03
       BonusValue: 0
       ScalingFactor: 0.05
+      DamageCategories: 01000000
+      HitCategories: 
+      SpecialConditions: []
       StateEffectStackFactors: []
   m_MajorPower:
-    Description: Gain {0} Life Steal
-    m_DescriptionVariables:
-    - Name: BonusLifeSteal
-      WithIcon: 1
+    Description: Gain [BonusLifeSteal.Physical] {{Lifesteal}} on {{PhysicalDamage}}
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
     - StateEffectProperty: 9
-      BaseValue: 0.05
+      BaseValue: 0.06
       BonusValue: 0
       ScalingFactor: 0.05
+      DamageCategories: 01000000
+      HitCategories: 
+      SpecialConditions: []
       StateEffectStackFactors: []
   m_PrimalPower:
-    Description: Gain {0} Life Steal
-    m_DescriptionVariables:
-    - Name: BonusLifeSteal
-      WithIcon: 1
+    Description: Gain [BonusLifeSteal.Physical] {{Lifesteal}} on {{PhysicalDamage}}
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
     - StateEffectProperty: 9
-      BaseValue: 0.1
+      BaseValue: 0.12
       BonusValue: 0
       ScalingFactor: 0.05
+      DamageCategories: 01000000
+      HitCategories: 
+      SpecialConditions: []
       StateEffectStackFactors: []

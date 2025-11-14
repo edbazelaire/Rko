@@ -14,13 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: '[SpellRequirement.0] to channels a rising core of burning void
-    that explodes in a wide area of size {0}, applying [Combustion] and {1} damage.\n\nRedirectable:
-    the spell can be redirected during cast.'
-  m_DescriptionVariables:
-  - Name: Size
-    WithIcon: 0
-  - Name: Damage
-    WithIcon: 1
+    that explodes in a wide area of size [Size], applying [Combustion] and [Damage]
+    damage.\n\nRedirectable: the spell can be redirected during cast.'
+  m_DescriptionVariables: []
   m_SpellElements: 0100000004000000
   Linked: 0
   Graphics: {fileID: 1707519472764412, guid: 851891d578e49ea4f8f66374d9f9197e, type: 3}
@@ -81,7 +77,7 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 15
   EnergyCost: 0
-  m_Damage: 60
+  m_Damage: 0
   m_ExecutionDamage: 0
   m_Damages:
   - m_BaseValue: 60

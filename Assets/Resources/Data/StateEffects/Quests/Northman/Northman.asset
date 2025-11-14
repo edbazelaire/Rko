@@ -1,0 +1,131 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2f7cf99ca9cfff48ba99e6ee5168909, type: 3}
+  m_Name: Northman
+  m_EditorClassIdentifier: 
+  m_Description: 'Each time you applie [IceBreak] this effect gains a stack.
+
+    Gain
+    +[Hp] {{Hp}} for each stack.'
+  m_DescriptionVariables: 
+  m_NStacksInDescription: 1
+  m_StateEffectType: 0
+  m_IsDisplayed: 1
+  m_GfxEffects: []
+  m_Animation: 0
+  m_OnApplySoundFX: {fileID: 0}
+  m_PermanantSoundFX: {fileID: 0}
+  m_ConsumeState: 0
+  m_DefaultState: 0
+  m_IsInstantanious: 0
+  m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
+  m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
+  m_EndWithShield: 0
+  m_EndAt0Stacks: 0
+  m_RefreshShield: 1
+  m_Priority: 0
+  m_Delay: 0
+  m_Duration: -1
+  m_StartingStacks: 0
+  m_MaxStacks: -1
+  m_StackDecay: 0
+  m_StartsActivated: 1
+  m_StateEffectTriggers: []
+  m_StateEffectActivations:
+  - StateEffectEvent: 1
+    StateEffectName: IceBreak
+    Stacks: 1
+  m_SpellActivations: []
+  m_BonusStats:
+  - StateEffectProperty: 111
+    BaseValue: 30
+    LevelScalingFactor: 0.12
+    StackScalingFactor: 1
+    ScalesOnMissingHealth: 0
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+  m_StatConversions: []
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
+  m_OnStartStateEffect: []
+  m_OnEndStateEffect: []
+  m_StateEffectScalingLevel: []
+  m_StateEffectScalingStacks: []
+  m_IsCumulativeEffects: 1
+  m_ResetsOnMaxStacks: 0
+  m_QuestThresholds:
+  - RequiredStacks: 5
+    ReplacementIcon: {fileID: 0}
+    ActivableEffects:
+    - Target: 4
+      Effect: _Northman_0
+      BonusLevel: 0
+      IsDeactivable: 0
+      ReactivatedEveryStacks: 0
+    BonusStats: []
+  - RequiredStacks: 9
+    ReplacementIcon: {fileID: 0}
+    ActivableEffects: []
+    BonusStats:
+    - StateEffectProperty: 4
+      BaseValue: 150
+      LevelScalingFactor: 0.1
+      StackScalingFactor: 0
+      ScalesOnMissingHealth: 0
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+    - StateEffectProperty: 30
+      BaseValue: 25
+      LevelScalingFactor: 0.05
+      StackScalingFactor: 0
+      ScalesOnMissingHealth: 0
+      DamageCategories: 01000000
+      HitCategories: 
+      SpecialConditions: []
+    - StateEffectProperty: 30
+      BaseValue: 15
+      LevelScalingFactor: 0.05
+      StackScalingFactor: 0
+      ScalesOnMissingHealth: 0
+      DamageCategories: 02000000
+      HitCategories: 
+      SpecialConditions: []
+  - RequiredStacks: 15
+    ReplacementIcon: {fileID: 0}
+    ActivableEffects:
+    - Target: 4
+      Effect: _Northman_1
+      BonusLevel: 0
+      IsDeactivable: 0
+      ReactivatedEveryStacks: 0
+    BonusStats:
+    - StateEffectProperty: 4
+      BaseValue: 350
+      LevelScalingFactor: 0.1
+      StackScalingFactor: 0
+      ScalesOnMissingHealth: 0
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+  - RequiredStacks: 18
+    ReplacementIcon: {fileID: 0}
+    ActivableEffects:
+    - Target: 4
+      Effect: LastResort
+      BonusLevel: 0
+      IsDeactivable: 0
+      ReactivatedEveryStacks: 12
+    BonusStats: []

@@ -14,37 +14,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 
   m_MinorPower:
-    Description: Gain +[BonusExecutionDamagePerc] bonus execution damage
-    m_DescriptionVariables: []
+    Description: Gain +[BonusDamagePerc.Execution] {{ExecutionDamage}}
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
-    - StateEffectProperty: 23
+    - StateEffectProperty: 8
       BaseValue: 0.5
       BonusValue: 0
       ScalingFactor: 0
       DamageCategories: 
-      HitCategories: 
+      HitCategories: 03000000
       SpecialConditions: []
       StateEffectStackFactors: []
     BonusPowerOrb: 0
     BonusRewardsRarety: 0
   m_MajorPower:
-    Description: Gain +[BonusExecutionDamagePerc] bonus execution damage and [Lethality]
+    Description: Gain +[BonusDamagePerc.Execution] {{ExecutionDamage}} and [Lethality]
       lethality
-    m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
-    - StateEffectProperty: 23
+    - StateEffectProperty: 8
       BaseValue: 0.5
       BonusValue: 0
       ScalingFactor: 0
       DamageCategories: 
-      HitCategories: 
+      HitCategories: 03000000
       SpecialConditions: []
       StateEffectStackFactors: []
     - StateEffectProperty: 28
@@ -58,18 +55,17 @@ MonoBehaviour:
     BonusPowerOrb: 0
     BonusRewardsRarety: 0
   m_PrimalPower:
-    Description: Gain +[BonusExecutionDamagePerc] bonus execution damage and [Lethality]
+    Description: Gain +[BonusDamagePerc.Execution] {{ExecutionDamage}} and [Lethality]
       lethality
-    m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
-    - StateEffectProperty: 23
+    - StateEffectProperty: 8
       BaseValue: 0.6
       BonusValue: 0
       ScalingFactor: 0
       DamageCategories: 
-      HitCategories: 
+      HitCategories: 03000000
       SpecialConditions: []
       StateEffectStackFactors: []
     - StateEffectProperty: 28

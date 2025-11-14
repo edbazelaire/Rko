@@ -1,0 +1,97 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
+  m_Name: Lionel
+  m_EditorClassIdentifier: 
+  m_Rarety: 1
+  m_Description: "Lionel, 12th prince of the Empire, stands as a radiant prodigy
+    forged in a dynasty where only excellence is permitted to survive. Raised among
+    brothers who shine like polished steel, he learned from childhood that greatness
+    is not bestowed by birthright\u2014it is seized, honed, and earned. And Lionel
+    has vowed, silently yet fiercely, to rise above them all.\n\nBlessed by the Holy
+    Sun Church, he kneels as often as he fights. His armor, emblazoned with golden
+    crosses, gleams like dawn within cathedral halls, and the devout revere him as
+    the living ideal of their faith. The Saint Seat itself entrusted him with Judgement
+    Bringer, a sacred blade said to channel the Sun God\u2019s flame. In Lionel\u2019s
+    hands, its crimson edge ignites with righteous fire, turning his disciplined
+    swordsmanship into a blazing spectacle that once shook even the grand arena of
+    the capital\u2014where he earned fame despite his youth.\n\nOutwardly, he is
+    cherished by nobles and celebrated by common folk, though he rarely walks among
+    them. His reputation\u2014untarnished, immaculate\u2014is the kind of legend
+    that precedes the man. Yet within him burns a desire far more human, far more
+    dangerous: the yearning to prove himself worthy of the throne, to carve a legacy
+    so brilliant that history itself will bow before it. He never voices that ambition,
+    but it shapes every dawn he greets with relentless training, every prayer he
+    whispers beneath stained-glass light, every oath he swears in the Sun God\u2019s
+    name.\n\nResolute, pious, and unwaveringly just, Lionel stands on the cusp of
+    legend\u2014not for what he has accomplished, but for the greatness he is determined
+    to seize. And should the Empire one day tremble, it may well be the fire in his
+    heart, rather than the sun in the sky, that lights the path forward."
+  m_SpellElements: 02000000
+  m_AutoAttack: FireStrike
+  m_SpecialAbility: FalconEstoc
+  m_Ultimate: IgnitedSpirit
+  Size: 1.2
+  BaseSpeed: 1
+  BaseHealth: 1800
+  MaxEnergy: 100
+  BaseEnergy: 10
+  PassiveEnergyGain: 1
+  IsStructure: 0
+  HealthScaleFactor: 0.1
+  CharacterStatScaling:
+  - StateEffectProperty: 30
+    BaseValue: 17
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 35
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 01000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 20
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  m_SpecialPowers:
+  - Description: 
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: JudgementBringer
+      OverridingData: []
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    m_BonusStats: []

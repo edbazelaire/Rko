@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
@@ -84,12 +83,10 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  m_MaxHit: 1
+  m_MaxHit: -1
   m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 100
-  m_ExecutionDamage: 0
   m_Damages:
   - m_BaseValue: 100
     m_DamageCategory: 2
@@ -152,21 +149,22 @@ MonoBehaviour:
     Animation: 0
   EnemyStateEffects:
   - StateEffect: 13
-    Stacks: 15
-    BonusStacksPerLevel: 0
+    Stacks: 0
+    BonusStacksPerLevel: 2
     OverridingProperties: []
   - StateEffect: 1
     Stacks: 1
     BonusStacksPerLevel: 0
     OverridingProperties:
     - StateEffectProperty: 1
-      Value: 2
+      Value: 1.5
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 1.5
   Animation: 0
   IsCancellable: 0
   IsInterruptable: 0
+  IgnoreCC: 0
   AnimationTimer: 0
   m_Cooldown: 0
   m_SpellSpawn: 2

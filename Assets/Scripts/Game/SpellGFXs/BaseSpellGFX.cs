@@ -10,7 +10,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Tools;
 using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 
@@ -63,9 +62,6 @@ namespace Game.SpellGFXs
             m_PrefabSpawn       = prefabSpawn;
             m_BodyPart          = prefabSpawn.BodyPart;
 
-            if (prefabSpawn.Prefab != null && ArenaManager.IsInVoid(transform.position.x) && prefabSpawn.SpawnTarget != ESpawnTarget.MapCenter)
-                ErrorHandler.Warning("Spell GFX spawned in void : " + m_Name + " - " + prefabSpawn.Prefab.name);
-
             // caclulate duration
             CalculateDuration(forcedDuration);
 
@@ -79,7 +75,8 @@ namespace Game.SpellGFXs
             transform.localScale = Vector3.one * (prefabSpawn.Size > 0 ? prefabSpawn.Size : (spellData != null ? spellData.Size : 1));
 
             // adjust rotation depending on team
-            transform.rotation = Quaternion.Euler(0f, controller.Team == 0 ? 0f : 180f, 0f); 
+            if (! prefabSpawn.IsFollowing)
+                transform.rotation = Quaternion.Euler(0f, controller.Team == 0 ? 0f : 180f, 0f);
 
             // adjuste order and size of the elements
             AdjustOrderInLayer(prefabSpawn.OrderInLayer);

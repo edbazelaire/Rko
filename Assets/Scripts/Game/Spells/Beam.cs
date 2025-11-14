@@ -1,4 +1,5 @@
 ﻿using Data;
+using Data.GameManagement;
 using Tools;
 using Tools.Helpers;
 using UnityEngine;
@@ -117,7 +118,7 @@ namespace Game.Spells
                 // get colliders in the Raycast
                 RaycastHit2D[] hits = Physics2D.CircleCastAll(
                     m_Origin,
-                    m_SpellData.RaySize * 0.5f,   // circle size projecting
+                    m_SpellData.RaySize * Settings.SpellSizeFactor,               // circle size projecting
                     dir,
                     m_CurrentLength,
                     TargetHelper.ALL_LAYER_MASK
@@ -127,6 +128,13 @@ namespace Game.Spells
                 foreach (var h in hits)
                 {
                     if (!h.collider) continue;
+
+                    // CHECK : Counters
+                    if (CheckHitCounter(h))
+                    {
+                        m_CollisionPoint = h.point;
+                        break;
+                    }
 
                     var controller = Finder.FindComponent<Controller>(h.collider.gameObject);
 
@@ -143,6 +151,18 @@ namespace Game.Spells
             }
 
             base.CreateCollisionCircleOnPosition(m_CollisionPoint);
+        }
+
+        bool CheckHitCounter(RaycastHit2D hit)
+        {
+            var counter = hit.collider.gameObject.GetComponent<Counter>();
+            if (counter == null || counter.Caster.Team == m_Caster.Team)
+                return false;
+
+            if (! counter.ProcCounter(this))
+                return false;
+
+            return true;
         }
 
         #endregion

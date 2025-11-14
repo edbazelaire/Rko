@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 
   m_MinorPower:
     Description: 
@@ -37,6 +36,7 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []
     BonusPowerOrb: 0
     BonusRewardsRarety: 0
@@ -61,13 +61,14 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []
     BonusPowerOrb: 0
     BonusRewardsRarety: 0
   m_PrimalPower:
     Description: '[TriggerEffect.0]\n\nGain [BonusHealPerc] heal effectiveness.'
     m_DescriptionVariables: []
-    m_BonusLevel: 40
+    m_BonusLevel: 35
     m_TriggerEffects:
     - SpellDataName: _ToughLove
       OverridingData: []
@@ -85,11 +86,14 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats:
     - StateEffectProperty: 107
       BaseValue: 0.25
       BonusValue: 0
       ScalingFactor: 0
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
     BonusPowerOrb: 0

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: _EffectBattleScars
   m_EditorClassIdentifier: 
   m_Description: Gain [Hp] max health.\nWhen the game starts, receive [Damage] damage.\nGain
-    a passive healing of [TickHeal] every [Tick] seconds.
+    a passive healing of [DotHeal] every [Tick] seconds.
   m_DescriptionVariables: 
   m_NStacksInDescription: 1
   m_StateEffectType: 0
@@ -26,6 +26,7 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 1
   m_IgnoresBoosts: 1
   m_EndWithShield: 0
@@ -40,21 +41,28 @@ MonoBehaviour:
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats:
   - StateEffectProperty: 111
     BaseValue: 350
     LevelScalingFactor: 0.1
     StackScalingFactor: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
   - StateEffectProperty: 11
     BaseValue: 500
     LevelScalingFactor: 0.1
     StackScalingFactor: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
   - StateEffectProperty: 14
     BaseValue: 15
     LevelScalingFactor: 0.1
     StackScalingFactor: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects: []
@@ -68,9 +76,9 @@ MonoBehaviour:
   m_Heal: 0
   m_EndHeal: 0
   m_Tick: 3
-  m_TickDamage: 0
-  m_TickHeal: 0
-  m_TickShield: 0
-  m_TickEnergy: 0
+  m_DotDamage: 0
+  m_DotHeal: 0
+  m_DotShield: 0
+  m_DotEnergy: 0
   m_TickEffects: []
   m_TickSpellRequirements: []

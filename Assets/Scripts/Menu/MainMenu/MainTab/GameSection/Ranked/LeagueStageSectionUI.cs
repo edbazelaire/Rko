@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Data.GameManagement;
 using Enums;
 using Save;
 using Tools;
@@ -21,6 +22,9 @@ namespace Menu.MainMenu.MainTab
             m_League = league;
 
             base.Initialize(level, ProgressionCloudData.CurrentLeagueLevel, ProgressionCloudData.CurrentLeagueStage, Main.LeagueDataConfig.GetLeagueLevelData(league, level).NStages);
+        
+            if (m_League == LeagueDataConfig.MaxLeague)
+                m_PathDisplayContainer.gameObject.SetActive(false);
         }
 
         #endregion
@@ -53,6 +57,8 @@ namespace Menu.MainMenu.MainTab
 
         protected override string GetLevelString()
         {
+            if (m_League == LeagueDataConfig.MaxLeague)
+                return m_League.ToString();
             return m_League.ToString() + " " + TextHandler.ToRoman(Main.LeagueDataConfig.GetLeagueData(m_League).LevelData.Count - m_Level);
         }
 

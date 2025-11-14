@@ -9,7 +9,6 @@ using Enums;
 using Game;
 using Game.Character;
 using Game.Loaders;
-using Game.UI;
 using Managers;
 using MyBox;
 using Save;
@@ -78,6 +77,7 @@ public class Controller : NetworkBehaviour
     public virtual int      Team                => m_Team.Value;
     public bool             IsPlayer            => m_IsPlayer.Value;
     public ulong            PlayerId            => m_PlayerId.Value;
+    public ulong            AnalyticsId         => IsSpawn ? SpawnOwner.PlayerId : PlayerId;
     public bool             IsSpawn             => (int)PlayerId >= GameManager.SPAWN_CLIENT_ID;
     public Controller       SpawnOwner          => m_SpawnOwner;
     public bool             GameRunning         => m_GameRunning;
@@ -151,6 +151,7 @@ public class Controller : NetworkBehaviour
         if (Life.Hp.Value <= 0)
         {
             ErrorHandler.Warning($"Found SPAWN ({m_Character.Value}) with no HP but not destroyed");
+            m_Life.Kill(ignoreDeathEffects: true, force: true);
             Destroy(gameObject);
         }
     }
@@ -550,7 +551,7 @@ public class Controller : NetworkBehaviour
             return;
 
         // when game starts, activate behavior tree
-        if (! IsPlayer && m_BehaviorTree != null && ! Main.DeactivateEnemy)
+        if (! IsPlayer && m_BehaviorTree != null)
         {
             m_BehaviorTree.Activate(true);
         }
@@ -583,6 +584,9 @@ public class Controller : NetworkBehaviour
     /// </summary>
     void OnDied()
     {
+        if (m_SpellHandler.IsCasting)
+            m_SpellHandler.CancelCast();
+
         if (IsSpawn)
         {
             Debug.Log("OnDied() : " + m_Character.Value);

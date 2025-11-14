@@ -14,32 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 3
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 0200000004000000
   Linked: 1
   Graphics: {fileID: 0}
   SpellEventActions:
-  - Prefab: {fileID: 119840, guid: 1b887704514468845b23a6a490a9b1eb, type: 3}
-    MaterialEffect: {fileID: 0}
-    SoundFX: []
-    GFXLifetime:
-      m_StartSpellPart: 100
-      m_EndSpellPart: 400
-      StartAt: 0
-      EndAt: 0
-      Persistance: 0
-    Size: 0
-    OrderInLayer: 0
-    SpawnTarget: 4
-    SpawnLocation: 2
-    BodyPart: 0
-    IsFollowing: 0
-    IsReplacingGFX: 0
-    Offset: {x: 0, y: 0}
-    Animation: 0
-    SpellAnimation: 
-    StateEffects: 
-  - Prefab: {fileID: 6568525604674795387, guid: 01374f0b2da409e46b7d9b81364ac74a, type: 3}
+  - Prefab: {fileID: 6568525604674795387, guid: 169ca696203da8747b2e4b613d605417, type: 3}
     MaterialEffect: {fileID: 0}
     SoundFX: []
     GFXLifetime:
@@ -84,12 +63,11 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
+  m_MaxHit: -1
   m_Charges: 1
   EnergyGain: 0
-  EnergyCost: 100
-  m_Damage: 0
-  m_ExecutionDamage: 0
+  EnergyCost: 500
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -112,7 +90,7 @@ MonoBehaviour:
     SpawnTarget: 1
     SpawnLocation: 0
     BodyPart: 7
-    IsFollowing: 1
+    IsFollowing: 0
     Offset: {x: 0, y: 0}
   IsFollowing: 0
   MFollowing:
@@ -130,13 +108,15 @@ MonoBehaviour:
       BaseValue: 1
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
       StateEffectStackFactors: []
   IsChanneling: 1
   MChanneling:
     IsCancellable: 0
     IsInterruptable: 1
-    m_ForcedMovementSpeed: 0.35
+    m_ForcedMovementSpeed: 0
     Animation: 0
   EnemyStateEffects:
   - StateEffect: 16
@@ -153,14 +133,15 @@ MonoBehaviour:
   Animation: 6
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.5
   m_Cooldown: 1
   m_SpellSpawn: 1
   DurationTick: 0.5
-  m_TickDamage: 30
-  m_TickHeal: 0
-  m_TickShield: 0
-  m_TickEnergy: 0
+  m_DotDamage: 30
+  m_DotHeal: 0
+  m_DotShield: 0
+  m_DotEnergy: 0
   m_ZoneForce:
     m_Speed: 0
     m_Duration: 0

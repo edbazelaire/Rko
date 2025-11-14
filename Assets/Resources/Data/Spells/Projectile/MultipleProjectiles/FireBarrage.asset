@@ -13,13 +13,8 @@ MonoBehaviour:
   m_Name: FireBarrage
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 'Shoots {0} fireballs at once spreading on the enemy''s area, each
-    dealing {1} damage and applying [EnemyStateEffect.0]'
-  m_DescriptionVariables:
-  - Name: Projectiles
-    WithIcon: 1
-  - Name: Damage
-    WithIcon: 1
+  m_Description: 'Shoots [Projectiles] fireballs at once spreading on the enemy''s
+    area, each dealing [Damage] damage and applying [Burn]'
   m_SpellElements: 01000000
   Linked: 0
   Graphics: {fileID: 7995130027969150761, guid: b1712247fe6bb8f43bc42f653ed748ec, type: 3}
@@ -95,18 +90,7 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 90
-  m_ExecutionDamage: 0
-  m_Damages:
-  - m_BaseValue: 90
-    m_DamageCategory: 1
-    m_HitCategory: 1
-    m_SpellPropertyScaling:
-      Property: 2
-      Value: 0.1
-      ScalingType: 0
-      RoundingType: 2
-      ScalingTresholds: []
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -124,18 +108,20 @@ MonoBehaviour:
     ScalingType: 0
     RoundingType: 2
     ScalingTresholds: []
-  - Property: 3
-    Value: -0.25
-    ScalingType: 1
-    RoundingType: 0
-    ScalingTresholds: []
   - Property: 20
     Value: 0
     ScalingType: 1
     RoundingType: 2
     ScalingTresholds:
-    - Level: 14
+    - Level: 9
       Value: 2
+  - Property: 20
+    Value: 0
+    ScalingType: 1
+    RoundingType: 2
+    ScalingTresholds:
+    - Level: 15
+      Value: 3
   OverridesSpawnPosition: 0
   m_SpawnPosition:
     SpawnTarget: 0
@@ -169,17 +155,14 @@ MonoBehaviour:
     IsInterruptable: 1
     m_ForcedMovementSpeed: 0
     Animation: 0
-  EnemyStateEffects:
-  - StateEffect: 8
-    Stacks: 1
-    BonusStacksPerLevel: 0
-    OverridingProperties: []
+  EnemyStateEffects: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 2
   IsCancellable: 0
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.5
   m_Cooldown: 12
   Trajectory: 1
@@ -187,7 +170,7 @@ MonoBehaviour:
   m_StopOnTargetPos: 0
   m_Speed: 7
   m_YSpawnPos: 0
-  ProjectileData: {fileID: 0}
+  ProjectileData: {fileID: 11400000, guid: 658acb2460eca274ca7050b6e52ad55a, type: 2}
   MultiProjectileType: 1
   m_RecalculatePosition: 1
   m_IsBlocking: 1

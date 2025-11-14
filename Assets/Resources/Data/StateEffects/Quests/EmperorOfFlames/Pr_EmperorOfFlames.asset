@@ -12,13 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bec91e441d966e438d35c0133adae84, type: 3}
   m_Name: Pr_EmperorOfFlames
   m_EditorClassIdentifier: 
-  m_Description: You become the Emperor of Flames, increasing Damage by {0} while
-    reducing spell cooldowns by {1} and cast time by {2} \n\nOnly one buff of type
-    "Incarnation" can be active on your character.
-  m_DescriptionVariables: 080000001400000011000000
+  m_Description: 'You become the Emperor of Flames, increasing {{MagicalPower}} by
+    [Power.Magical] and {{Haste}} by [Haste].
+
+
+    Only one buff of type "Incarnation"
+    can be active on your character.'
+  m_DescriptionVariables: 
+  m_NStacksInDescription: 1
   m_StateEffectType: 1
   m_IsDisplayed: 0
-  m_VisualEffects: []
   m_GfxEffects:
   - Prefab: {fileID: 7582611277444767761, guid: 42c43c58112c98c46ae1cc93470f7e53, type: 3}
     MaterialEffect: {fileID: 0}
@@ -35,6 +38,7 @@ MonoBehaviour:
     SpawnLocation: 2
     BodyPart: 0
     IsFollowing: 0
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -54,6 +58,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 5
     IsFollowing: 1
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -73,6 +78,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 1
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -84,30 +90,39 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
+  m_EndWithShield: 0
+  m_EndAt0Stacks: 1
+  m_RefreshShield: 1
+  m_RefreshDuration: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: -1
+  m_StartingStacks: 1
   m_MaxStacks: 1
   m_StackDecay: -1
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats:
-  - StateEffectProperty: 8
-    BaseValue: 0.1
-    LevelScalingFactor: 0.05
-    StackScalingFactor: 0
-    SpecialConditions: []
-  - StateEffectProperty: 17
-    BaseValue: 0.15
+  - StateEffectProperty: 22
+    BaseValue: 35
     LevelScalingFactor: 0.1
     StackScalingFactor: 0
+    ScalesOnMissingHealth: 0
+    DamageCategories: 02000000
+    HitCategories: 
     SpecialConditions: []
   - StateEffectProperty: 20
-    BaseValue: 0.2
+    BaseValue: 15
     LevelScalingFactor: 0.05
     StackScalingFactor: 0
+    ScalesOnMissingHealth: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects: []

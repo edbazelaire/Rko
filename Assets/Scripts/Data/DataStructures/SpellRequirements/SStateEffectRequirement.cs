@@ -1,5 +1,6 @@
 ﻿using Enums;
 using System;
+using System.Collections.Generic;
 using Tools;
 using UnityEngine;
 
@@ -28,10 +29,20 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
         /// </summary>
         /// <param name="targetController"></param>
         /// <returns></returns>
-        public override bool CheckRequirement(Controller targetController)
+        public override bool CheckRequirement(List<Controller> targetControllers)
         {
-            base.CheckRequirement(targetController);
-            return targetController.StateHandler.GetStacks(m_StateEffect) >= Stacks;
+            if (!base.CheckRequirement(targetControllers))
+                return false;
+
+            int stacksCounter = 0;
+            foreach ( Controller controller in targetControllers )
+            {
+                stacksCounter += controller.StateHandler.GetStacks(m_StateEffect);
+                if (stacksCounter >= Stacks)
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -39,12 +50,24 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
         /// </summary>
         /// <param name="targetController"></param>
         /// <returns></returns>
-        public override bool TryApplyRequirements(Controller targetController)
+        public override bool TryApplyRequirements(List<Controller> targetControllers)
         {
-            if (!base.TryApplyRequirements(targetController))
+            if (!base.TryApplyRequirements(targetControllers))
                 return false;
 
-            targetController.StateHandler.RemoveStateEffect(m_StateEffect, consume: true, maxStacks: Stacks);
+            int remainingStacks = Stacks;
+            foreach (var targetController in targetControllers)
+            {
+                int removedStacks = targetController.StateHandler.RemoveStateEffect(m_StateEffect, consume: true, maxStacks: remainingStacks);
+                remainingStacks -= removedStacks;
+
+                if (remainingStacks < 0) { }
+            }
+
+            // CHECK : are there still stacks to remove ? This should not happen
+            if (remainingStacks > 0)
+                ErrorHandler.Warning("Has stacks remaining : " + remainingStacks);
+
             return true;
         }
 

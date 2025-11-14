@@ -50,7 +50,7 @@ namespace Menu.PopUps
         {
             base.OnPrefabLoaded();
 
-            CoroutineManager.DelayMethod(() => m_MessageText.text = m_Message);
+            CoroutineManager.DelayMethod(() => m_MessageText.text = TextHandler.ReplaceStateEffectTokens(m_Message));
         }
 
         protected override void OnInitializationCompleted()

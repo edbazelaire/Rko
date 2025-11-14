@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6ab67d872e7c3943a3a6bcd90a1d537, type: 3}
   m_Name: SoulFeast
   m_EditorClassIdentifier: 
-  m_Description: Every time an allied Invocation dies, gain [HealToShieldConversion]
-    of the allied health into shield, and [HealToEnergyConversion] as Energy
+  m_Description: Every time an allied Invocation dies, gain [HpToShieldConversion]
+    of the allied health as shield, and [HpToEnergyConversion] as Energy
   m_DescriptionVariables: 
   m_NStacksInDescription: 1
   m_StateEffectType: 0
@@ -26,6 +26,7 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
   m_IgnoresBoosts: 0
   m_EndWithShield: 0
@@ -40,6 +41,7 @@ MonoBehaviour:
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats: []
   m_StatConversions: []
   m_SubStateEffects: []
@@ -48,5 +50,5 @@ MonoBehaviour:
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel: []
   m_StateEffectScalingStacks: []
-  m_HpToEnergyConversion: 0.01
+  m_HpToEnergyConversion: 0.05
   m_HpToShieldConversion: 0.1

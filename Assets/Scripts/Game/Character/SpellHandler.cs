@@ -64,6 +64,10 @@ namespace Game.Character
         Controller                          m_Controller;
         /// <summary> spell data of the currently selected spell </summary>
         SpellData                           m_SelectedSpellData;
+        /// <summary> queue of cooldowns to apply (to avoid overrides) </summary>
+        Queue<Action>                       m_CooldownQueue = new Queue<Action>();
+        /// <summary> is currently processing a cooldown reduction ? </summary>
+        bool                                m_IsProcessingCooldownQueue = false;
         /// <summary> target position requested by the player (if spell is moving) </summary>
         Vector3                             m_RelocationTargetPos;
         /// <summary> list of spell listening to the spell data relocation </summary>
@@ -124,7 +128,6 @@ namespace Game.Character
             m_SpellLevelsNet        = new NetworkList<int>(default);
 
             m_SpellsData            = new List<SpellData>();
-            m_Cooldowns             = new List<float>();
             m_Cooldowns             = new List<float>();
             m_SpellSelectionStates  = new();
         }
@@ -196,9 +199,7 @@ namespace Game.Character
             m_SelectedSpellData = null;
             m_NextSelectedSpell = ESpell.None;
 
-            AddSpellsPassiveEffects();
             RegisterListeners();
-            RegisterListenersClientRPC();
         }
 
         public void Activate(bool activate)
@@ -209,17 +210,6 @@ namespace Game.Character
             }
 
             this.enabled = activate;
-        }
-
-        void AddSpellsPassiveEffects()
-        {
-            foreach(SpellData spellData in m_SpellsData)
-            {
-                foreach(SSpellPassiveEffect effect in spellData.PassiveEffects)
-                {
-                    m_Controller.StateHandler.AddStateEffect(effect.StateEffect.StateEffectName, m_Controller, spellData.Level, spellData.Parent);
-                }
-            }
         }
 
         #endregion
@@ -330,6 +320,15 @@ namespace Game.Character
             if (spellData.EnergyCost > m_Controller.EnergyHandler.Energy.Value)
             {
                 reason = "Spell selection (" + spellData.Name + ") BLOCKED : Not enought energy";
+                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
+                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
+                return false;
+            }
+
+            // CHECK : Jump while Grounded
+            if (spellData.SpellType == ESpellType.Jump &&  m_Controller.StateHandler.IsGrounded)
+            {
+                reason = "Spell selection (" + spellData.Name + ") BLOCKED : Jump cant be casted while GROUNDED";
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
                     ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
@@ -534,7 +533,7 @@ namespace Game.Character
         public bool CanContinueCast(SpellData spellData, out string reason)
         {
             // check state effect blocking the cast
-            if (!m_Controller.StateHandler.CanCast)
+            if (! spellData.IgnoreCC && ! m_Controller.StateHandler.CanCast)
             {
                 reason = "Spell cast (" + spellData.Name + ") BLOCKED : HasStateBlockingCast()";
                 if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
@@ -695,8 +694,8 @@ namespace Game.Character
                 LockTarget(spellData);
 
             // SETUP : casting data
-            m_IsCurrentSpellCancellable = spellData.IsCancellable;
-            m_IsCurrentSpellInterruptable = spellData.IsInterruptable;
+            m_IsCurrentSpellCancellable     = spellData.IsCancellable;
+            m_IsCurrentSpellInterruptable   = spellData.IsInterruptable;
             m_IsCasting = true;
 
             // cancel current movement
@@ -952,6 +951,7 @@ namespace Game.Character
         [ServerRpc]
         void SendTargetAdjustmentServerRpc(float x)
         {
+            ErrorHandler.Log("SendTargetAdjustmentServerRpc() : " + x, ELogTag.SpellRelocation);
             RelocationTargetChangedEvent?.Invoke(x);
         }
 
@@ -1130,33 +1130,44 @@ namespace Game.Character
 
         public void ReduceCooldowns(float cooldownReduction)
         {
-            for (int i = 0; i < m_Cooldowns.Count; i++)
+            EnqueueCooldownAction(() =>
             {
-                if (m_Cooldowns[i] <= 0)
-                    continue;
-
-                // update cooldown server value
-                m_Cooldowns[i] = Mathf.Max(0, m_Cooldowns[i] - cooldownReduction);
-
-                // fire event that cooldown has been updated
-                OnCooldownEvent?.Invoke(Spells[i], m_Cooldowns[i]);
-            }
+                ErrorHandler.Log("Reducing cooldowns by : " + cooldownReduction, ELogTag.CooldownReduction);
+                for (int i = 0; i < m_Cooldowns.Count; i++)
+                {
+                    ReduceCooldownAtIndex(i, cooldownReduction);
+                }
+            });
         }
 
         public void ReduceCooldown(ESpell spell, float cooldownReduction)
         {
-            int i = GetSpellIndex(spell.ToString());
-            if (i < 0)
-                return;
+            EnqueueCooldownAction(() =>
+            {
+                int index = GetSpellIndex(spell.ToString());
+                if (index < 0)
+                    return;
 
-            if (m_Cooldowns[i] <= 0)
+                if (m_Cooldowns[index] <= 0)
+                    return;
+
+                ReduceCooldownAtIndex(index, cooldownReduction);
+            });
+        }
+
+        void ReduceCooldownAtIndex(int index, float cooldownReduction)
+        {
+            if (m_Cooldowns[index] <= 0)
                 return;
 
             // update cooldown server value
-            m_Cooldowns[i] = Mathf.Max(0, m_Cooldowns[i] - cooldownReduction);
+            float baseCooldown = m_Cooldowns[index];
+            m_Cooldowns[index] = Mathf.Max(0, m_Cooldowns[index] - cooldownReduction);
+
+            ErrorHandler.Log($"  + {m_SpellsData[index].Name} : {baseCooldown:0} -> {m_Cooldowns[index]:0}", ELogTag.CooldownReduction);
 
             // fire event that cooldown has been updated
-            OnCooldownEvent?.Invoke(spell, m_Cooldowns[i]);
+            OnCooldownEvent?.Invoke(Spells[index], m_Cooldowns[index]);
         }
 
         public void ResetCooldowns()
@@ -1178,6 +1189,35 @@ namespace Game.Character
             SetCooldown(spell.ToString(), 0f);
         }
 
+        /// <summary>
+        /// Add an action to the Processinc queue
+        /// </summary>
+        void EnqueueCooldownAction(Action action)
+        {
+            m_CooldownQueue.Enqueue(action);
+
+            // Démarre le traitement si pas déjà en cours
+            if (!m_IsProcessingCooldownQueue)
+                StartCoroutine(ProcessCooldownQueue());
+        }
+
+        /// <summary>
+        /// Cooldown Queue processing
+        /// </summary>
+        IEnumerator ProcessCooldownQueue()
+        {
+            m_IsProcessingCooldownQueue = true;
+
+            while (m_CooldownQueue.Count > 0)
+            {
+                var action = m_CooldownQueue.Dequeue();
+                action?.Invoke();
+                yield return null; // attend une frame pour éviter collisions d’événements
+            }
+
+            m_IsProcessingCooldownQueue = false;
+        }
+
         #endregion
 
 
@@ -1190,9 +1230,8 @@ namespace Game.Character
 
         public float CalculateCooldown(float baseCooldown)
         {
-            var cooldownReduction = m_Controller.StateHandler.GetInt(EStateEffectProperty.CooldownReduction);
-            var cooldownPerc = 2 - m_Controller.StateHandler.GetFloat(EStateEffectProperty.CooldownReductionPerc);
-            return Mathf.Max(0f, (baseCooldown - cooldownReduction) * cooldownPerc);
+            float cooldownPerc = 100f / (100f + m_Controller.StateHandler.GetInt(EStateEffectProperty.Haste));
+            return Mathf.Max(0f, baseCooldown * cooldownPerc);
         }
 
         #endregion
@@ -1286,6 +1325,18 @@ namespace Game.Character
             return Spells.IndexOf(spell);
         }
 
+        void AddSpellsPassiveEffects()
+        {
+            foreach (SpellData spellData in m_SpellsData)
+            {
+                foreach (SSpellPassiveEffect effect in spellData.PassiveEffects)
+                {
+                    Debug.Log($"Adding {spellData.Name} Passsive : {effect.StateEffect.StateEffectName}");
+                    m_Controller.StateHandler.AddStateEffect(effect.StateEffect.StateEffectName, m_Controller, spellData.Level, spellData.Parent);
+                }
+            }
+        }
+
         #endregion
 
 
@@ -1293,7 +1344,14 @@ namespace Game.Character
 
         public void RegisterListeners()
         {
+            GameManager.GameStartedEvent += OnGameStarted;
 
+            RegisterListenersClientRPC();
+        }
+
+        public void UnRegisterListeners()
+        {
+            GameManager.GameStartedEvent -= OnGameStarted;
         }
 
         [ClientRpc]
@@ -1305,24 +1363,27 @@ namespace Game.Character
             if (!m_Controller.IsPlayer)
                 return;
 
-            // TODO : Change for ONE big zone for click events ? 
-            // register to the TargettableArea listener
-            ArenaManager.GetTargettableArea(m_Controller.Team, enemyArea: true).ClickedEvent += SendTargetAdjustmentServerRpc;
-            ArenaManager.GetTargettableArea(m_Controller.Team, enemyArea: false).ClickedEvent += SendTargetAdjustmentServerRpc;
+            // register to the ClickableArea
+            ArenaManager.Instance.ClickableArea.ClickedEvent += SendTargetAdjustmentServerRpc;
         }
 
-        public void UnRegisterListeners()
+        void OnGameStarted()
         {
+            if (!IsServer)
+                return;
 
+            AddSpellsPassiveEffects();
         }
 
         void OnRelocationTargetChanged(float x)
         {
+            ErrorHandler.Log("OnRelocationTargetChanged() : " + x, ELogTag.SpellRelocation);
             m_RelocationTargetPos = new Vector3(x, 0f, 0f);
         }
 
         void RegisterSpellRelocation(SpellData spellData)
         {
+            ErrorHandler.Log("RegisterSpellRelocation() : " + spellData.Name, ELogTag.SpellRelocation);
             if (m_RelocationSpellData.Count == 0)
                 RelocationTargetChangedEvent += OnRelocationTargetChanged;
 
@@ -1368,7 +1429,7 @@ namespace Game.Character
             OnPreSpellEvent?.Invoke(spellName, spellEvent);
 
             // CHECK Relocation Spell
-            if (m_SelectedSpellData != null && m_SelectedSpellData.HasSpellRelocationEventAt(spellEvent, checkStart: true, checkEnd: false))
+            if (m_SelectedSpellData != null && spellEvent < ESpellEvent.OnSpawn && m_SelectedSpellData.HasSpellRelocationEventAt(spellEvent, checkStart: true, checkEnd: false))
                 RegisterSpellRelocation(m_SelectedSpellData);
 
             // -- check unregistering

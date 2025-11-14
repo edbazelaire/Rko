@@ -8,9 +8,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1341587335525272382, guid: 3f1062e095e763f448855cd3f0b195e4, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 4307471943917487146, guid: 3f1062e095e763f448855cd3f0b195e4, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 669775397
+      value: 3950647198
       objectReference: {fileID: 0}
     - target: {fileID: 6093574689762572816, guid: 3f1062e095e763f448855cd3f0b195e4, type: 3}
       propertyPath: m_Pivot.x
@@ -95,6 +99,10 @@ PrefabInstance:
     - target: {fileID: 8240067815722378921, guid: 3f1062e095e763f448855cd3f0b195e4, type: 3}
       propertyPath: m_Name
       value: Counter
+      objectReference: {fileID: 0}
+    - target: {fileID: 8240067815722378921, guid: 3f1062e095e763f448855cd3f0b195e4, type: 3}
+      propertyPath: m_Layer
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -58,7 +58,7 @@ namespace Game.Spells
         {
             Collider2D[] colliders = new Collider2D[10];        // Adjust size based on expected objects
             ContactFilter2D filter = new ContactFilter2D();
-            filter.layerMask = TargetHelper.ALL_LAYER_MASK;
+            filter.layerMask = TargetHelper.DEFAULT_LAYER_MASK;
             filter.useTriggers = true;
             filter.useLayerMask = true;
 
@@ -173,7 +173,7 @@ namespace Game.Spells
                 return;
 
             // Check if collider belongs to expected layers
-            if ((TargetHelper.ALL_LAYER_MASK & (1 << collider.gameObject.layer)) == 0)
+            if ((TargetHelper.DEFAULT_LAYER_MASK & (1 << collider.gameObject.layer)) == 0)
                 return;
 
             if (!TryGetController(collider, out Controller controller))
@@ -195,7 +195,7 @@ namespace Game.Spells
                 return;
 
             // Check if collider belongs to expected layers
-            if ((TargetHelper.ALL_LAYER_MASK & (1 << collider.gameObject.layer)) == 0)
+            if ((TargetHelper.DEFAULT_LAYER_MASK & (1 << collider.gameObject.layer)) == 0)
                 return;
 
             if (!TryGetController(collider, out Controller controller))
@@ -270,22 +270,31 @@ namespace Game.Spells
         /// <param name="controller"></param>
         protected override void OnCollisionController(Controller controller)
         {
+            TryHitController(controller);
+        }
+
+        /// <summary>
+        /// Behavior happening when colliding with a controller
+        /// </summary>
+        /// <param name="controller"></param>
+        public void TryHitController(Controller controller, bool ignoreEffects = false)
+        {
             // check that players was not already affected by the AoE too recently
             if (m_PlayersAffected.ContainsKey(controller.PlayerId))
                 return;
 
             // hit the player
-            OnHitTickPlayer(controller);
+            OnHitTickPlayer(controller, ignoreEffects);
         }
 
-        protected virtual bool OnHitTickPlayer(Controller controller)
+        protected virtual bool OnHitTickPlayer(Controller controller, bool ignoreEffects = false)
         {
              // not alive : skip
             if (!controller.Life.IsAlive)
                 return false;
 
             // apply effects on ally or enemy : if none, skip
-            if (!CheckHitEnemyTick(controller) && !CheckHitAllyTick(controller))
+            if (!CheckHitEnemyTick(controller, ignoreEffects) && !CheckHitAllyTick(controller))
                 return false;
 
             // call spell event that spell has touched something
@@ -307,28 +316,28 @@ namespace Game.Spells
         /// </summary>
         /// <param name="controller"> controller of hit target </param>
         /// <returns></returns>
-        protected virtual bool CheckHitEnemyTick(Controller controller)
+        protected virtual bool CheckHitEnemyTick(Controller controller, bool ignoreEffects = false)
         {
             // Target is Ally - return
             if (controller.Team == m_Caster.Team)
                 return false;
 
             // no base Damage, StateEffects or OnHit effects - return
-            if (m_SpellData.TickDamage <= 0 && m_SpellData.EnemyStateEffects.Count == 0 && m_SpellData.OnHit.Count == 0)
+            if (m_SpellData.DotDamage <= 0 && m_SpellData.EnemyStateEffects.Count == 0 && m_SpellData.OnHit.Count == 0)
                 return false;
 
             // add bonus damage from state bonus & boosts 
-            int damage = m_SpellData.TickDamage;
+            int damage = m_SpellData.DotDamage;
             if (m_SpellData.StateEffectStackFactor != EStateEffect.None)
             {
                 damage *= controller.StateHandler.GetStacks(m_SpellData.StateEffectStackFactor);
             }
-            damage = m_Caster.StateHandler.ApplyBonusInt(damage, EStateEffectProperty.TickDamage, controller, specialCondition: m_SpellData.Name);
+            damage = m_Caster.StateHandler.ApplyBonusInt(damage, EStateEffectProperty.DotDamage, controller, specialCondition: m_SpellData.Name);
 
             // get final damage after shields and resistances
             int finalDamage = controller.Life.Hit(damage, m_Caster.PlayerId, m_SpellData.Parent, EDamageCategory.Magical, EHitCategory.Dot);
             if (finalDamage > 0 && m_Caster.ClientAnalytics != null)
-                m_Caster.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.Damage, finalDamage);
+                m_Caster.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.PhysicalDamage, finalDamage);
 
             ErrorHandler.Log(m_SpellData.Name + " : " + finalDamage, ELogTag.Spells);
 
@@ -340,7 +349,8 @@ namespace Game.Spells
             }
 
             // apply state effects specifics to enemies
-            ApplyStateEffects(controller, m_SpellData.EnemyStateEffects);
+            if (!ignoreEffects)
+                ApplyStateEffects(controller, m_SpellData.EnemyStateEffects);
 
             return true;
         }
@@ -355,22 +365,22 @@ namespace Game.Spells
             if (controller.Team != m_Caster.Team)
                 return false;
 
-            if (m_SpellData.TickHeal <= 0 && m_SpellData.TickEnergy == 0 && m_SpellData.AllyStateEffects.Count == 0)
+            if (m_SpellData.DotHeal <= 0 && m_SpellData.DotEnergy == 0 && m_SpellData.AllyStateEffects.Count == 0)
                 return false;
 
             // add bonus heal from state bonus & boosts 
-            int heal = m_SpellData.TickHeal;
+            int heal = m_SpellData.DotHeal;
             if (m_SpellData.StateEffectStackFactor != EStateEffect.None)
             {
                 heal *= controller.StateHandler.GetStacks(m_SpellData.StateEffectStackFactor);
             }
-            heal = m_Caster.StateHandler.ApplyBonusInt(heal, EStateEffectProperty.TickHeal, controller, specialCondition: m_SpellData.Name);
+            heal = m_Caster.StateHandler.ApplyBonusInt(heal, EStateEffectProperty.DotHeal, controller, specialCondition: m_SpellData.Name);
 
             // heal the target for the specified amount
             controller.Life.Heal(heal, m_Caster.PlayerId, m_SpellData.Name, m_SpellData.SpellCategory);
 
             // add energy to the target for the specified amount
-            int energy = m_SpellData.TickEnergy;
+            int energy = m_SpellData.DotEnergy;
             if (m_SpellData.StateEffectStackFactor != EStateEffect.None)
             {
                 energy *= controller.StateHandler.GetStacks(m_SpellData.StateEffectStackFactor);

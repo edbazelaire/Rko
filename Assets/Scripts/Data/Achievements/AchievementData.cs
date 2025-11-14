@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Managers;
 using Data;
 using Data.GameManagement;
 using Enums;
@@ -7,6 +8,7 @@ using Save;
 using System;
 using System.Collections.Generic;
 using Tools;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -130,7 +132,7 @@ namespace Data
         public int CurrentMastery           => InventoryCloudData.Instance.GetCollectable(m_Character).Mastery;
         #endregion
 
-        public virtual float GetCount() => ProfileCloudData.GetAchievementInfo(ID).Count;
+        public virtual float GetCount()     => ProfileCloudData.GetAchievementInfo(ID).Count;
         public virtual float GetCountAtIndex(int index) => ProfileCloudData.GetAchievementInfo(ID).GetCountAtIndex(index);
 
         public T Current
@@ -200,13 +202,13 @@ namespace Data
                     ProfileCloudData.AddAchievementReward(data.AchievementReward, data.Value, false);
                 }
 
-                Main.DisplayAchievementRewards(achievementData.AchivementRewardData);
+                ScreenManager.DisplayAchievementRewards(achievementData.AchivementRewardData);
                 ProfileCloudData.Instance.SaveValue(ProfileCloudData.KEY_ACHIEVEMENT_REWARDS);
             }
 
             // MULTIPLE REWARDS
             else if (!achievementData.Rewards.IsEmpty)
-                Main.DisplayRewards(achievementData.Rewards, ERewardContext.Achievements.ToString());
+                ScreenManager.DisplayRewards(achievementData.Rewards, ERewardContext.Achievements.ToString());
 
             // save that the achievement was completed
             ProfileCloudData.CompleteAchievement(ID, m_ResetCount);
@@ -244,7 +246,7 @@ namespace Data
 
         public virtual string GetDescription()
         {
-            string description = CleanDescription(m_Description);
+            string description = m_Description.Replace("[TresholdValue]", TextHandler.FormatNumericalString((int)TresholdValue));
             if (!IsMasteryUnlocked())
                 description += "\n<color=\"red\">Requires Mastery " + (CurrentMastery + 1).ToString() + " to be unlockable</color>";
             return description;
@@ -252,7 +254,9 @@ namespace Data
 
         public virtual string CleanDescription(string baseDescription)
         {
-            return baseDescription.Replace("[TresholdValue]", TextHandler.FormatNumericalString((int)TresholdValue));
+            string description = baseDescription.Replace("[TresholdValue]", TextHandler.FormatNumericalString((int)TresholdValue));
+            description = TextHandler.ReplaceStateEffectTokens(description);
+            return description;
         }
 
         public SRewardsData GetAllRewardsAtMastery(int mastery)

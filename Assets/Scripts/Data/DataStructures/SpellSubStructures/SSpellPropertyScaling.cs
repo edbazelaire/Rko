@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System;
 using Tools;
-using UnityEditor;
 using UnityEngine;
 using MyBox;
-using UnityEditor.Rendering.PostProcessing;
 
 namespace Data.DataStructures.SpellSubStructures
 {

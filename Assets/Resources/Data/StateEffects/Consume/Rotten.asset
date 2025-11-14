@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3443c738c541fd9449dac6daca7df88a, type: 3}
   m_Name: Rotten
   m_EditorClassIdentifier: 
-  m_Description: 
+  m_Description: 'Consume [NCursedStacks] stacks of [Cursed] to apply a stack of
+    [Infected]'
   m_DescriptionVariables: 
   m_NStacksInDescription: 1
   m_StateEffectType: 0
@@ -25,7 +26,9 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 1
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
   m_EndWithShield: 0
   m_EndAt0Stacks: 1
   m_RefreshShield: 1
@@ -38,6 +41,7 @@ MonoBehaviour:
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats: []
   m_StatConversions: []
   m_SubStateEffects: []
@@ -47,4 +51,4 @@ MonoBehaviour:
   m_StateEffectScalingLevel: []
   m_StateEffectScalingStacks: []
   m_NCursedStacks: 3
-  m_NPoisonStacks: 1
+  m_NPoisonStacks: 0

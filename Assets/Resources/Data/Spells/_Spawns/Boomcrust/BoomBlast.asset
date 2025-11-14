@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: BoomBlast
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 'Charges for {0} seconds to launch a blast of fire in a straight
-    line, dealing {1} damage and applying {2} '
+  m_Description: 'Charges for [CastDuration] seconds to launch a blast of fire in
+    a straight line, dealing [Damage] damage and applying [Scorched] '
   m_DescriptionVariables:
   - Name: CastDuration
     WithIcon: 1

@@ -353,6 +353,28 @@ namespace Save
         #endregion
 
 
+        #region Access Buid
+
+        public static SBuildData GetCharacterCurrentBuild(ECharacter character)
+        {
+            return GetCharacterBuild(character, Builds[character].CurrentBuildIndex);
+        }
+
+        public static SBuildData GetCharacterBuild(ECharacter character, int buildIndex)
+        {
+            return new SBuildData(
+                characterLevel: InventoryCloudData.Instance.GetCollectable(character).Level,
+                character:      character.ToString(),
+                runes:          Builds[character].Runes[buildIndex],
+                runeLevels:     Builds[character].Runes[buildIndex].Select(rune => InventoryCloudData.Instance.GetCollectable(rune).Level).ToArray(),
+                spells:         Builds[character].Builds[buildIndex],
+                spellLevels:    Builds[character].Builds[buildIndex].Select(rune => InventoryCloudData.Instance.GetCollectable(rune).Level).ToArray()
+            );
+        }
+
+        #endregion
+
+
         #region Reset & Unlock
 
         public override void Reset(string key, bool save = true)

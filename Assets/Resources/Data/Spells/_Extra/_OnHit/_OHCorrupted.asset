@@ -13,10 +13,7 @@ MonoBehaviour:
   m_Name: _OHCorrupted
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 'dealing {0} damage and [EnemyStateEffect.0]'
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
+  m_Description: 'dealing [Damage] damage and [EnemyStateEffect.0]'
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 2910976597878939058, guid: 6004c88444bcc9b48ad4d76700f22980, type: 3}
@@ -50,18 +47,17 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 100
-  m_ExecutionDamage: 0
   m_Damages:
-  - m_BaseValue: 100
+  - m_BaseValue: 75
     m_DamageCategory: 2
     m_HitCategory: 1
     m_SpellPropertyScaling:
       Property: 2
-      Value: 0.12
+      Value: 0.1
       ScalingType: 0
       RoundingType: 0
       ScalingTresholds: []
+    m_DamageModifiers: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -114,7 +110,7 @@ MonoBehaviour:
     Animation: 0
   EnemyStateEffects:
   - StateEffect: 13
-    Stacks: 3
+    Stacks: 2
     BonusStacksPerLevel: 0.1
     OverridingProperties: []
   AllyStateEffects: []
@@ -123,6 +119,7 @@ MonoBehaviour:
   Animation: 0
   IsCancellable: 1
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0
   m_Cooldown: 0
   m_SpellSpawn: 0
