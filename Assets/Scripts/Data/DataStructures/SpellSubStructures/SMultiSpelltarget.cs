@@ -19,8 +19,10 @@ namespace Assets.Scripts.Data.DataStructures.SpellSubStructures
         public EMultiSpellZone  m_MultiSpellTarget  = EMultiSpellZone.Random;
         [SerializeField]
         protected float         m_ZoneSize          = -1f;
+        [SerializeField, Tooltip("Breakpoint margin left and right")]
+        protected SMinMaxInt    m_NBreakPointMargin = default;
         [SerializeField]
-        protected int           m_NBreakPoints      = 1;
+        protected int           m_NBreakPoints      = 0;
         [SerializeField]
         protected SMinMax       m_OffsetMinMax;
 
@@ -29,7 +31,7 @@ namespace Assets.Scripts.Data.DataStructures.SpellSubStructures
         public int              NBreakPoints        => m_NBreakPoints;
         public SMinMax          OffsetMinMax        => m_OffsetMinMax;
 
-        public SSpellTargetDim(EDimension dimension = EDimension.X, EMultiSpellZone multiSpellZone = EMultiSpellZone.None, float zoneSize = -1f, int nBreakPoints = 1, SMinMax offsetMinMax = default) 
+        public SSpellTargetDim(EDimension dimension = EDimension.X, EMultiSpellZone multiSpellZone = EMultiSpellZone.None, float zoneSize = -1f, int nBreakPoints = 0, SMinMax offsetMinMax = default) 
         {
             m_Dimension         = dimension;
             m_MultiSpellTarget  = multiSpellZone;
@@ -75,45 +77,51 @@ namespace Assets.Scripts.Data.DataStructures.SpellSubStructures
                 }
             }
 
-            int nBreakPoints = m_NBreakPoints;
-            int breakpointIndex;
-            int direction = (team == 0 || m_Dimension == EDimension.Y) ? 1 : -1;
-            switch (MultiSpellSpawn)
+            if (zoneSize > 0)
             {
-                case EMultiSpellZone.None:
-                    break;
+                int nBreakPoints = m_NBreakPoints + m_NBreakPointMargin.Min + m_NBreakPointMargin.Max;
+                int breakpointIndex;
+                int direction = (team == 0 || m_Dimension == EDimension.Y) ? 1 : -1;
+                switch (MultiSpellSpawn)
+                {
+                    case EMultiSpellZone.None:
+                        break;
 
-                case (EMultiSpellZone.Random):
-                    if (m_NBreakPoints > 0)
-                    {
-                        breakpointIndex = UnityEngine.Random.Range(1, nBreakPoints + 1);
-                        value += (-direction * zoneSize / 2) + breakpointIndex * direction * zoneSize / (nBreakPoints + 1);
-                    }
+                    case (EMultiSpellZone.Random):
+                        if (m_NBreakPoints > 0)
+                        {
+                            breakpointIndex = UnityEngine.Random.Range(m_NBreakPointMargin.Min, nBreakPoints + 1);
+                            value += (-direction * zoneSize / 2) + breakpointIndex * direction * zoneSize / nBreakPoints;
+                        }
 
-                    else
-                    {
-                        value += UnityEngine.Random.Range(-zoneSize / 2, zoneSize / 2);
-                    }
+                        else
+                        {
+                            value += UnityEngine.Random.Range(-zoneSize / 2, zoneSize / 2);
+                        }
 
-                    break;
+                        break;
 
-                case (EMultiSpellZone.Line):
-                    if (m_NBreakPoints <= 0)
-                    {
-                        nBreakPoints = nProjectiles + 1;
-                    }
+                    case (EMultiSpellZone.Line):
+                        if (m_NBreakPoints <= 0)
+                        {
+                            nBreakPoints = nProjectiles - 1 + m_NBreakPointMargin.Min + m_NBreakPointMargin.Max;
+                        }
 
-                    breakpointIndex = (index % nBreakPoints) + 1;
-                    value += (-direction * zoneSize / 2) + breakpointIndex * direction * zoneSize / (nBreakPoints + 1);
+                        breakpointIndex = (index % (1 + nBreakPoints - m_NBreakPointMargin.Max - m_NBreakPointMargin.Min)) + m_NBreakPointMargin.Min;
+                        value += (-direction * zoneSize / 2) + breakpointIndex * direction * zoneSize / nBreakPoints;
 
-                    break;
+                        break;
 
-                default:
-                    ErrorHandler.Warning("Unhandled MultiSpellSpawn : " + MultiSpellSpawn);
-                    break;
+                    default:
+                        ErrorHandler.Warning("Unhandled MultiSpellSpawn : " + MultiSpellSpawn);
+                        break;
+                }
             }
+            
+            var offset = m_OffsetMinMax.Min;
+            if (m_OffsetMinMax.Min < m_OffsetMinMax.Max)
+                offset = UnityEngine.Random.Range(m_OffsetMinMax.Min, m_OffsetMinMax.Max);
 
-            var offset = UnityEngine.Random.Range(m_OffsetMinMax.Min, m_OffsetMinMax.Max > m_OffsetMinMax.Min ? m_OffsetMinMax.Max : m_OffsetMinMax.Min);
             return Mathf.Clamp(value + offset, min, max);
         }
     }
@@ -125,6 +133,8 @@ namespace Assets.Scripts.Data.DataStructures.SpellSubStructures
         protected EMultiSpellZone m_MultiProjectileSpawn = EMultiSpellZone.Random;
         [SerializeField]
         protected float m_ZoneSize = -1f;
+        [SerializeField, Tooltip("Breakpoint margin left and right")]
+        protected SMinMaxInt m_NBreakPointMargin = default;
         [SerializeField]
         protected int m_NBreakPoints = 0;
         [SerializeField]
@@ -153,7 +163,7 @@ namespace Assets.Scripts.Data.DataStructures.SpellSubStructures
             if (zoneSize < 0f)
                 zoneSize = ArenaManager.Instance.TargettableAreaSize;
 
-            int nBreakPoints = m_NBreakPoints;
+            int nBreakPoints = m_NBreakPoints + m_NBreakPointMargin.Min + m_NBreakPointMargin.Max;
             int breakpointIndex;
             switch (MultiSpellSpawn)
             {
@@ -163,7 +173,7 @@ namespace Assets.Scripts.Data.DataStructures.SpellSubStructures
                 case (EMultiSpellZone.Random):
                     if (m_NBreakPoints > 0)
                     {
-                        breakpointIndex = UnityEngine.Random.Range(1, nBreakPoints + 1);
+                        breakpointIndex = UnityEngine.Random.Range(m_NBreakPointMargin.Min, nBreakPoints + 1);
                         target.x += ((team == 0 ? -1 : 1) * zoneSize / 2) + breakpointIndex * (team == 0 ? 1 : -1) * zoneSize / (nBreakPoints + 1);
                     }
 
@@ -177,12 +187,11 @@ namespace Assets.Scripts.Data.DataStructures.SpellSubStructures
                 case (EMultiSpellZone.Line):
                     if (m_NBreakPoints <= 0)
                     {
-                        nBreakPoints = nProjectiles + 1;
+                        nBreakPoints = nProjectiles - 1 + m_NBreakPointMargin.Min + m_NBreakPointMargin.Max;
                     }
 
-                    breakpointIndex = (index % nBreakPoints) + 1;
+                    breakpointIndex = (index % (nBreakPoints - m_NBreakPointMargin.Max - m_NBreakPointMargin.Min)) + m_NBreakPointMargin.Min;
                     target.x += ((team == 0 ? -1 : 1) * zoneSize / 2) + breakpointIndex * (team == 0 ? 1 : -1) * zoneSize / nBreakPoints;
-
                     break;
 
                 default:
@@ -205,6 +214,9 @@ namespace Assets.Scripts.Data.DataStructures.SpellSubStructures
         public SSpellTargetDim m_SpellTargetX = new SSpellTargetDim(EDimension.X, EMultiSpellZone.None);
         [SerializeField]
         public SSpellTargetDim m_SpellTargetY = new SSpellTargetDim(EDimension.Y, EMultiSpellZone.None);
+
+        public bool HasTargetX => m_SpellTargetX != null && m_SpellTargetX.MultiSpellSpawn != EMultiSpellZone.None;
+        public bool HasTargetY => m_SpellTargetY != null && m_SpellTargetY.MultiSpellSpawn != EMultiSpellZone.None;
 
         public virtual Vector3 Recalculate(Vector3 position, int index, int team, int nProjectiles)
         {

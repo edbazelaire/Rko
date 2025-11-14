@@ -245,7 +245,7 @@ namespace Assets.Scripts.Managers
 
         IEnumerator AwaitLoginCouroutine()
         {
-            float timer = 30f;
+            float timer = 60f;
 
             // Wait until SignedIn
             while (!PlayerAccountService.Instance.IsSignedIn)

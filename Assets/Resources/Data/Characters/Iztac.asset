@@ -26,7 +26,6 @@ MonoBehaviour:
     was a singular, unshakable purpose: to serve his new king as a fearsome lieutenant
     in <b>Ryuko</b>\u2019s army.\\n \\n What was once a guardian of the jungle now
     slays the king\u2019s enemies\u2014<i>Aztkal</i> and <i>human</i> alike."
-  m_DescriptionVariables: []
   m_SpellElements: 
   m_AutoAttack: Cryock
   m_SpecialAbility: Shardskin
@@ -40,46 +39,60 @@ MonoBehaviour:
   IsStructure: 0
   HealthScaleFactor: 0.1
   CharacterStatScaling:
-  - StateEffectProperty: 5
-    BaseValue: 8
-    BonusValue: 0
-    ScalingFactor: 0.1
-    SpecialConditions: []
-    StateEffectStackFactors: []
-  - StateEffectProperty: 26
-    BaseValue: 12
-    BonusValue: 0
-    ScalingFactor: 0.1
-    SpecialConditions: []
-    StateEffectStackFactors: []
-  - StateEffectProperty: 7
-    BaseValue: 10
-    BonusValue: 0
-    ScalingFactor: 0.1
-    SpecialConditions: []
-    StateEffectStackFactors: []
   - StateEffectProperty: 4
     BaseValue: 250
     BonusValue: 0
     ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 5
+    BaseValue: 8
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 30
+    BaseValue: 20
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 01000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 30
+    BaseValue: 28
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 25
+    BonusValue: 0
+    ScalingFactor: 0
+    DamageCategories: 01000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 12
+    BonusValue: 0
+    ScalingFactor: 0
+    DamageCategories: 02000000
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
   - StateEffectProperty: 21
     BaseValue: 0.1
     BonusValue: 0
-    ScalingFactor: 0.05
-    SpecialConditions: []
-    StateEffectStackFactors: []
-  - StateEffectProperty: 101
-    BaseValue: 0.05
-    BonusValue: 0
-    ScalingFactor: 0
-    SpecialConditions: []
-    StateEffectStackFactors: []
-  - StateEffectProperty: 107
-    BaseValue: 0.05
-    BonusValue: 0
-    ScalingFactor: 0
+    ScalingFactor: 0.02
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers: []

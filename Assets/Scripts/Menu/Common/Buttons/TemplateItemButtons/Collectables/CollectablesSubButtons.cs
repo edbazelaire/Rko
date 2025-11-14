@@ -126,7 +126,8 @@ namespace Menu.Common.Buttons.TemplateItemButtons.Collectables
 
                 // activate UpgradeButton
                 m_UpgradeButton.gameObject.SetActive(true);
-                int cost = CollectablesManagementData.GetLevelData(m_CollectableItemUI.Collectable, InventoryCloudData.Instance.GetCollectable(m_CollectableItemUI.Collectable).Level).RequiredGold;
+                var cloudData = InventoryCloudData.Instance.GetCollectable(m_CollectableItemUI.Collectable);
+                int cost = CollectablesManagementData.GetLevelData(m_CollectableItemUI.Collectable, cloudData.Level, cloudData.Mastery).RequiredGold;
                 m_UpgradeButtonImage.color = InventoryManager.CanBuy(cost) ? Color.white : new Color(0.7f, 0.7f, 0.7f);
                 m_UpgradeButtonCostText.text = cost.ToString();
             }

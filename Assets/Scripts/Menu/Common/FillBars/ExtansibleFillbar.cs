@@ -1,137 +1,113 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ExtansibleFillbar : MObject
 {
-    #region Members
-
     [SerializeField]
     float m_AnimationDuration = 1.0f;
 
-    // ===================================================================================
-    // Data
-    protected Coroutine         m_Animation;
-    protected int               m_MaxValue      = 1;
-    protected int               m_CurrentValue  = 0;
+    protected Coroutine m_Animation;
+    protected int m_MaxValue = 1;
 
-    // ===================================================================================
-    // GameObject & Components
-    protected GameObject        m_Container;
-    protected Image             m_Bar;
-    protected RectTransform     m_ContainerRect;
-    protected RectTransform     m_BarRect;
+    // Container
+    protected GameObject m_Container;
+    protected RectTransform m_ContainerRect;
 
-    #endregion
+    // Liste dynamique de barres
+    protected List<Image> m_Bars = new List<Image>();
+    protected List<RectTransform> m_BarRects = new List<RectTransform>();
 
-
-    #region Init & End
+    // Prefab de barre (à assigner dans l’inspecteur)
+    [SerializeField] protected GameObject m_BarPrefab;
 
     protected override void FindComponents()
     {
         base.FindComponents();
-
         m_Container = Finder.Find(gameObject, "Container");
-        m_Bar = Finder.FindComponent<Image>(gameObject, "Bar");
         m_ContainerRect = Finder.FindComponent<RectTransform>(m_Container);
-        m_BarRect = Finder.FindComponent<RectTransform>(m_Bar.gameObject);
     }
 
-    public virtual void Initialize(int currentValue, int maxValue, Color? color = null, bool withAnimation = false)
+    /// <summary>
+    /// Initialise avec une liste de valeurs/couleurs
+    /// </summary>
+    public virtual void Initialize(List<(int value, Color color)> values, int maxValue, bool withAnimation = false)
     {
         base.Initialize();
 
-        if (color.HasValue)
-            SetColor(color.Value);
+        m_MaxValue = Mathf.Max(1, maxValue);
 
-        // delay the refresh by one to avoid conflicts with bar
-        UpdateValue(currentValue, maxValue > 0 ? maxValue : currentValue, withAnimation);
-    }
+        // Clear anciennes barres
+        foreach (var bar in m_Bars)
+            Destroy(bar.gameObject);
 
-    protected override void SetUpUI()
-    {
-        base.SetUpUI();
-    }
+        // clean content before displaying
+        UIHelper.CleanContent(m_Container);
+        m_Bars.Clear();
+        m_BarRects.Clear();
 
-    #endregion
-
-
-    #region GUI Manipulators
-
-    public virtual void SetColor(Color color)
-    {
-        m_Bar.color = color;
-    }
-
-    public virtual void UpdateValue(int value, int? maxValue = null, bool withAnimation = false)
-    {
-        m_CurrentValue = value;
-        if (maxValue.HasValue)
+        // Crée une barre par entrée
+        for (int i = values.Count - 1; i >= 0; i--)
         {
-            m_MaxValue = maxValue.Value;
+            var bar = Instantiate(m_BarPrefab, m_Container.transform).GetComponent<Image>();
+            bar.color = values[i].color;
+            bar.gameObject.SetActive(true);
+
+            m_Bars.Add(bar);
+            m_BarRects.Add(bar.rectTransform);
         }
 
         if (withAnimation)
         {
             if (m_Animation != null)
-            {
                 StopCoroutine(m_Animation);
-            }
-            m_Animation = StartCoroutine(UpdateValueAnimationCoroutine(value));
+            m_Animation = StartCoroutine(UpdateListAnimationCoroutine(values));
         }
         else
         {
-            UpdateBarSize();
+            UpdateListBarSize(values);
         }
     }
 
-    void UpdateBarSize()
+    void UpdateListBarSize(List<(int value, Color color)> values)
     {
-        float fillPercentage = Mathf.Clamp01((float)m_CurrentValue / m_MaxValue);
-        m_BarRect.sizeDelta = new Vector2(m_ContainerRect.rect.width * fillPercentage, m_BarRect.sizeDelta.y);
+        int cumulative = 0;
+        for (int i = 0; i < values.Count; i++)
+        {
+            int reversedIndex = values.Count - 1 - i;   // bars are set in reversed order 
+            cumulative += values[i].value;
+            float fill = Mathf.Clamp01((float)cumulative / m_MaxValue);
+
+            m_BarRects[reversedIndex].sizeDelta = new Vector2(m_ContainerRect.rect.width * fill, m_BarRects[reversedIndex].sizeDelta.y);
+        }
     }
 
-    #endregion
-
-
-    #region Animation
-
-    IEnumerator UpdateValueAnimationCoroutine(int targetValue)
+    IEnumerator UpdateListAnimationCoroutine(List<(int value, Color color)> targetValues)
     {
-        float startValue = m_CurrentValue;
+        // On part de 0
         float elapsedTime = 0f;
+        List<int> startValues = new List<int>(new int[targetValues.Count]);
 
         while (elapsedTime < m_AnimationDuration)
         {
             elapsedTime += Time.deltaTime;
             float t = Mathf.Clamp01(elapsedTime / m_AnimationDuration);
-            int interpolatedValue = Mathf.RoundToInt(Mathf.Lerp(startValue, targetValue, t));
 
-            m_CurrentValue = interpolatedValue;
-            UpdateBarSize();
+            List<(int, Color)> interpolated = new List<(int, Color)>();
+            for (int i = 0; i < targetValues.Count; i++)
+            {
+                int current = Mathf.RoundToInt(Mathf.Lerp(startValues[i], targetValues[i].value, t));
+                interpolated.Add((current, targetValues[i].color));
+            }
+
+            UpdateListBarSize(interpolated);
             yield return null;
         }
 
-        m_CurrentValue = targetValue;
-        UpdateBarSize();
+        UpdateListBarSize(targetValues);
         m_Animation = null;
     }
-
-    #endregion
-
-
-    #region Listeners
-
-    protected override void RegisterListeners()
-    {
-        base.RegisterListeners();
-    }
-
-    protected override void UnRegisterListeners()
-    {
-        base.UnRegisterListeners();
-    }
-
-    #endregion
 }

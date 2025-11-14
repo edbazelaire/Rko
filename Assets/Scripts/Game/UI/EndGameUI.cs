@@ -1,6 +1,7 @@
 ﻿using Analytics.Events;
 using Assets;
-using Assets.Scripts.Menu.MainMenu.MainTab.Chests;
+using Assets.Scripts.Game;
+using Assets.Scripts.Managers;
 using Assets.Scripts.Tools;
 using Data.GameManagement;
 using Enums;
@@ -38,9 +39,11 @@ public class EndGameUI : MObject
 
     const string GOLD_FORMAT = "+ {0}";
 
+    // static context
+    static EGameResult m_GameResult;
+
     // Data
     EEndGameState m_State;
-    EGameResult m_GameResult;
     bool m_IsBossFight = false;
     // -- arena
     ArenaData m_ArenaData = null;
@@ -51,7 +54,7 @@ public class EndGameUI : MObject
     EndGameAnalyticsUI  m_EndGameAnalyticsUI;
     GameObject          m_RewardsSection;
     GameObject          m_Background;
-    TMP_Text            m_TitleText;
+    Image               m_EndGameIcon;
     GameObject          m_RewardsContent;
     PowerUpSection      m_PowerUpSection;
     GameObject          m_XpRewardDisplay;
@@ -70,6 +73,8 @@ public class EndGameUI : MObject
     GameObject          m_Fireworks;
 
     public EndGameAnalyticsUI EndGameAnalyticsUI => m_EndGameAnalyticsUI;
+    public static EGameResult GameResult => m_GameResult;
+    public static EGameMode GameMode => LobbyHandler.Instance.GameMode;
 
     #endregion
 
@@ -80,7 +85,7 @@ public class EndGameUI : MObject
     {
         m_Background                = Finder.Find(gameObject, "Background");
         m_Fireworks                 = Finder.Find(gameObject, "Fireworks");
-        m_TitleText                 = Finder.FindComponent<TMP_Text>(gameObject, "TitleText");
+        m_EndGameIcon               = Finder.FindComponent<Image>(gameObject, "EndGameIcon");
 
         m_EndGameAnalyticsUI        = Finder.FindComponent<EndGameAnalyticsUI>(gameObject, "EndGameAnalyticsUI");
         m_PowerUpSection            = Finder.FindComponent<PowerUpSection>(gameObject, "PowerUpSection");
@@ -155,6 +160,7 @@ public class EndGameUI : MObject
         SetUpTitle();
 
         // handle data processing before animation & stuff
+        GameAnalyticsManager.Instance.CalculateAchievements();
         HandleEndGameData();
         HandleProgression(preventiveLossApplied);
 
@@ -244,8 +250,8 @@ public class EndGameUI : MObject
 
     void DisplayArenaPowerUps()
     {
-        m_PowerUpSection.OnEndEvent += NextState;
-        m_PowerUpSection.Activate(true);
+        var screen = ScreenManager.PowerUpSelectionScreen(ProgressionCloudData.CurrentArena.ArenaType, ProgressionCloudData.CurrentArena.Level - 1);
+        screen.OnExitEvent += NextState;
     }
 
     #endregion
@@ -346,43 +352,35 @@ public class EndGameUI : MObject
         }
 
         // ----------------------------------------------------------------------------
-        // Orb Power  
+        // ARENA wins
         if (LobbyHandler.Instance.GameMode == EGameMode.Arena && m_GameResult == EGameResult.Win)
         {
-            // setup quantity of power orb collected
-            SPowerOrb currentPowerOrb = ProgressionCloudData.CurrentArena.GetPowerOrb();
-            int orbPower = m_ArenaData.CalculateOrbPowerReward(m_CurrentLevel, m_CurrentStage);
-            m_OrbPowerRewardDisplay.SetActive(true);
-            m_OrbPowerRewardQty.text = string.Format(GOLD_FORMAT, orbPower);
-
-            // init image
-            m_PowerOrbContainer.Initialize(currentPowerOrb.Clone(), activateIdle: false);
-
-            // check if a bonus star has been provided
-            if (m_IsBossFight && currentPowerOrb.TryUpgradeRarety())
-                StartCoroutine(DisplayOrbUpgrade());
-
-            // update to cloud
-            ProgressionCloudData.AddCurrentArenaPowerOrbReward(orbPower, currentPowerOrb.Rarety);
-        }
-
-        // ----------------------------------------------------------------------------
-        // Refresh Token
-        if (LobbyHandler.Instance.GameMode == EGameMode.Arena && m_GameResult == EGameResult.Win)
-        {
-            if (ProgressionCloudData.CurrentArena.HasMod(EArenaMod.Random))
-            {
-                // display refresh
-                m_RefreshTokenDisplay.SetActive(true);
-
-                // update to cloud
-                ProgressionCloudData.AddCurrentArenaRefreshToken(1);
-            }
+            HandlePowerOrbDisplay();
+            HandleRefreshTokens();
         }
 
         StartCoroutine(RewardsAnimation());
 
         ErrorHandler.Log("HandleReward() : end", ELogTag.Rewards);
+    }
+
+    void HandlePowerOrbDisplay()
+    {
+        // setup quantity of power orb collected
+        SPowerOrb currentPowerOrb = ProgressionCloudData.CurrentArena.GetPowerOrb();
+        int orbPower = m_ArenaData.CalculateOrbPowerReward(m_CurrentLevel, m_CurrentStage);
+        m_OrbPowerRewardDisplay.SetActive(true);
+        m_OrbPowerRewardQty.text = string.Format(GOLD_FORMAT, orbPower);
+
+        // init image
+        m_PowerOrbContainer.Initialize(currentPowerOrb.Clone(), activateIdle: false);
+
+        // check if a bonus star has been provided
+        if (m_IsBossFight && currentPowerOrb.TryUpgradeRarety())
+            StartCoroutine(DisplayOrbUpgrade());
+
+        // update to cloud
+        ProgressionCloudData.AddCurrentArenaPowerOrbReward(orbPower, currentPowerOrb.Rarety);
     }
 
     IEnumerator DisplayOrbUpgrade()
@@ -392,6 +390,32 @@ public class EndGameUI : MObject
         m_PowerOrbContainer.PowerOrbData.UpgradeRarety();
         m_PowerOrbContainer.RefreshUI();
         m_PowerOrbContainer.PowerOrbUI.PlayUpgradeAnimation();
+    }
+
+    void HandleRefreshTokens()
+    {
+        // Arena is Over - exit
+        if (ProgressionCloudData.CurrentArena.IsOver())
+            return;
+
+        // Random mod gets +1 extra refresh token on each fight
+        if (ProgressionCloudData.CurrentArena.HasMod(EArenaMod.Random))
+        {
+            // display refresh
+            m_RefreshTokenDisplay.SetActive(true);
+
+            // update to cloud
+            ProgressionCloudData.AddCurrentArenaRefreshToken(1);
+        }
+
+        if (m_IsBossFight)
+        {
+            // display refresh
+            m_RefreshTokenDisplay.SetActive(true);
+
+            // update to cloud
+            ProgressionCloudData.AddCurrentArenaRefreshToken(1);
+        }
     }
 
     float CalculateCurrencyMultiplicator()
@@ -428,7 +452,7 @@ public class EndGameUI : MObject
                         break;
 
                     case EGameResult.Loss:
-                        if (!preventiveLossApplied && !Main.StopPreventiveLoss)
+                        if (!preventiveLossApplied && !Main.CheatMode)
                             ProgressionCloudData.AddArenaLoss();
                         break;
 
@@ -455,7 +479,7 @@ public class EndGameUI : MObject
 
                     case EGameResult.Loss:
                         // if preventive loss was NOT applied : apply loss
-                        if (!preventiveLossApplied && !Main.StopPreventiveLoss)
+                        if (!preventiveLossApplied && !Main.CheatMode)
                             ProgressionCloudData.UpdateLeagueValue(false, nTimes: 1);
                         break;
 
@@ -544,9 +568,10 @@ public class EndGameUI : MObject
     IEnumerator IntroAnimation()
     {
         // Deactivate all components visual animated components
-        m_TitleText.gameObject.SetActive(false);
+        m_EndGameIcon.gameObject.SetActive(false);
         m_RewardsContent.SetActive(false);
         m_LeaveButton.gameObject.SetActive(false);
+        m_DetailsButton.gameObject.SetActive(false);
         m_Fireworks.SetActive(false);
 
         // FADE IN : Background
@@ -554,31 +579,22 @@ public class EndGameUI : MObject
         fadeIn.Initialize(duration: 0.4f, startOpacity:0.5f);
         yield return new WaitUntil(() => fadeIn.IsOver);
 
-        // Move : Title
-        m_TitleText.gameObject.SetActive(true);
-        var moveTitle = m_TitleText.gameObject.AddComponent<MoveAnimation>();
-        var pos = m_TitleText.gameObject.transform.position;
-        pos.y += 250;
-        moveTitle.Initialize(duration: 0.5f, startPos: pos);
+        // ZOOM IN : Icon
+        m_EndGameIcon.gameObject.SetActive(true);
+        var zoomIn = m_EndGameIcon.gameObject.AddComponent<Fade>();
+        zoomIn.Initialize(duration: 0.5f, startScale: 0.7f);
 
         // FIREWORKS particles (on win only)
         if (m_GameResult == EGameResult.Win)
             m_Fireworks.SetActive(true);
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1.5f);
 
         NextState();
     }
 
     IEnumerator RewardsAnimation()
     {
-        var fadeIn = m_Background.AddComponent<Fade>();
-
-        // BOUNCE : Rewards
-        m_RewardsContent.SetActive(true);
-        fadeIn = m_RewardsContent.AddComponent<Fade>();
-        fadeIn.Initialize(duration: 0.5f, startScale: 0.5f);
-
         // FadeIn : Button
         m_LeaveButton.gameObject.SetActive(true);
         var fadeInButton = m_LeaveButton.gameObject.AddComponent<Fade>();
@@ -589,7 +605,14 @@ public class EndGameUI : MObject
         fadeInButton = m_DetailsButton.gameObject.AddComponent<Fade>();
         fadeInButton.Initialize(duration: 0.5f, startOpacity: 0f);
 
-        yield return new WaitUntil(() => fadeIn.IsOver);
+        // GROW : Rewards section
+        m_RewardsSection.SetActive(true);
+        var growAnim = m_RewardsSection.AddComponent<GrowAnimation>();
+        growAnim.Initialize(duration: 1.5f, startWidth: 0f, endWidth: 25000, checkLayout: true);
+
+        yield return new WaitUntil(() => growAnim.IsOver);
+
+        m_RewardsContent.SetActive(true);
     }
 
     #endregion
@@ -602,18 +625,15 @@ public class EndGameUI : MObject
         switch (m_GameResult)
         {
             case EGameResult.Win:
-                m_TitleText.text = "Victory";
-                m_TitleText.color = Color.green;
+                m_EndGameIcon.sprite = AssetLoader.Load<Sprite>("VictoryIcon", AssetLoader.c_EndGameSprites);
                 break;
 
             case EGameResult.Loss:
-                m_TitleText.text = "Defeat";
-                m_TitleText.color = Color.red;
+                m_EndGameIcon.sprite = AssetLoader.Load<Sprite>("DefeatIcon", AssetLoader.c_EndGameSprites);
                 break;
 
             case EGameResult.Draw:
-                m_TitleText.text = "Draw";
-                m_TitleText.color = Color.grey;
+                m_EndGameIcon.sprite = AssetLoader.Load<Sprite>("DrawIcon", AssetLoader.c_EndGameSprites);
                 break;
 
             default:

@@ -17,6 +17,7 @@ using MyBox;
 using System.Collections;
 using Save.Data.Progression.Structs;
 using Data.DataStructures.PowerEffects;
+using Data.DataStructures.CharacterSubStructures;
 
 namespace Assets.Scripts.Managers
 {
@@ -82,6 +83,10 @@ namespace Assets.Scripts.Managers
                     obj.GetComponent<QuickMessagePopUp>().Initialize(message: (string)args[0], duration: args.Count() > 1 ? (float)args[1] : 3f);
                     break;
 
+                case EPopUpState.QuickRewardMessagePopUp:
+                    obj.GetComponent<QuickRewardMessagePopUp>().Initialize(message: (string)args[0], rewardsData: (SRewardsData)args[1], duration: args.Count() > 2 ? (float)args[2] : 3f);
+                    break;
+
                 case EPopUpState.MessagePopUp:
                     obj.GetComponent<MessagePopUp>().Initialize(message: (string)args[0], title: args.Count() > 1 ? (string)args[1] : "", onValidate: args.Count() > 2 ? (Action)args[2] : null, onCancel: args.Count() > 3 ? (Action)args[3] : null);
                     break;
@@ -102,6 +107,10 @@ namespace Assets.Scripts.Managers
                     obj.GetComponent<ConfirmBuyBundlePopUp>().Initialize((string)args[0], (string)args[1], (SPriceData)args[2], (bool)args[3], (SRewardsData)args[4], (Action)args[5], (Action)args[6]);
                     break;
 
+                case EPopUpState.ConfirmUpgradeMasteryPopUp:
+                    obj.GetComponent<ConfirmUpgradeMasteryPopUp>().Initialize(collectable: (Enum)args[0], mastery: (int)args[1], priceData: (SPriceData)args[2]);
+                    break;
+
                 // SCREENS -------------------------------------------------------
                 case EPopUpState.RewardsScreen:
                     obj.GetComponent<RewardsScreen>().Initialize((SRewardsData)args[0], (string)args[1], args.Length > 2 ? (Action)args[2] : null, args.Length > 3 ? (string)args[3] : null);
@@ -115,12 +124,16 @@ namespace Assets.Scripts.Managers
                     obj.GetComponent<ArenaPathScreen>().Initialize((EArenaType)args[0], (SArenaDifficulty)args[1]);
                     break;
 
+                case EPopUpState.EternalMenageriePathScreen:
+                    obj.GetComponent<EternalMenageriePathScreen>().Initialize(EArenaType.EternalMenagerie, (SArenaDifficulty)args[0]);
+                    break;
+
                 case EPopUpState.LevelUpScreen:
                     obj.GetComponent<LevelUpScreen>().Initialize(currentXp: (int)args[0], maxXp: (int)args[1], bonusXp: (int)args[2]);
                     break;
 
                 case EPopUpState.PowerUpInfoScreen:
-                    obj.GetComponent<PowerUpInfoScreen>().Initialize((SPowerEffect)args[0]);
+                    obj.GetComponent<PowerUpInfoScreen>().Initialize((SPowerEffect)args[0], (int)args[1]);
                     break;
 
                 case EPopUpState.PowerUpSelectionScreen:
@@ -142,11 +155,11 @@ namespace Assets.Scripts.Managers
                     break;
 
                 case EPopUpState.BossInfoPopUp:
-                    obj.GetComponent<BossInfoPopUp>().Initialize((string)args[0], (int)args[1], args.Count() >= 3 ? (List<string>)args[2] : new List<string>());
+                    obj.GetComponent<BossInfoPopUp>().Initialize((string)args[0], (ESkin)args[1], (int)args[2], args.Count() > 3 ? (List<string>)args[3] : new List<string>(), args.Count() > 4 ? (List<SCharacterStatScaling>)args[4] : new List<SCharacterStatScaling>());
                     break;
 
                 case EPopUpState.StateEffectPopUp:
-                    obj.GetComponent<StateEffectPopUp>().Initialize((SStateEffectData)args[0], (int)args[1]);
+                    obj.GetComponent<StateEffectPopUp>().Initialize((SStateEffectData)args[0], (int)args[1], args.Count() > 2 ? (int)args[2] : null, args.Count() > 3 ? (bool)args[3] : true);
                     break;
 
                 case EPopUpState.TriggerEffectPopUp:
@@ -155,6 +168,10 @@ namespace Assets.Scripts.Managers
 
                 case EPopUpState.RunePowerPopUp:
                     obj.GetComponent<RunePowerPopUp>().Initialize((SRunePower)args[0]);
+                    break;
+
+                case EPopUpState.PropertyInfoPopUp:
+                    obj.GetComponent<PropertyInfoPopUp>().Initialize(key: (string)args[0], value: (string)args[1], duration: args.Count() > 2 ? (float)args[2] : -1f);
                     break;
 
                 // SETTINGS & OPTIONS -------------------------------------------------------
@@ -172,6 +189,10 @@ namespace Assets.Scripts.Managers
 
                 case EPopUpState.PromoCodePopUp:
                     obj.GetComponent<PromoCodePopUp>().Initialize();
+                    break;
+
+                case EPopUpState.DailyRewardsPopUp:
+                    obj.GetComponent<DailyRewardsPopUp>().Initialize();
                     break;
 
                 default:
@@ -202,9 +223,19 @@ namespace Assets.Scripts.Managers
 
         #region Popup Message
 
+        public static void MessagePopUp(string message, string title = "", Action onValidate = null, Action onCancel = null)
+        {
+            SetPopUp(EPopUpState.MessagePopUp, message, title, onValidate, onCancel);
+        }
+
         public static void QuickMessage(string message, float duration = 3f)
         {
             SetPopUp(EPopUpState.QuickMessagePopUp, message, duration);
+        }
+
+        public static void QuickRewardMessage(string message, SRewardsData rewardsData, float duration = 3f)
+        {
+            SetPopUp(EPopUpState.QuickRewardMessagePopUp, message, rewardsData, duration);
         }
 
         #endregion
@@ -218,9 +249,43 @@ namespace Assets.Scripts.Managers
         /// <param name="priceData"></param>
         /// <param name="rewardsData"></param>
         /// <param name="OnPurchase"></param>
+        public static void ConfirmPopUp(string message, string title = "", Action onValidate = null, Action onCancel = null)
+        {
+            SetPopUp(EPopUpState.ConfirmPopUp, message, title, onValidate, onCancel);
+        }
+
+        /// <summary>
+        /// Confirm purchase of an item or a bundle of items (currency, chests, collectables)
+        /// </summary>
+        /// <param name="priceData"></param>
+        /// <param name="rewardsData"></param>
+        /// <param name="OnPurchase"></param>
         public static void ConfirmWatchAd(Action callback, string title = "", string text = "")
         {
             SetPopUp(EPopUpState.ConfirmBuyBundlePopUp, callback, title, text);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void ConfirmUpgradeMastery(Enum collectable, int mastery, SPriceData price)
+        {
+            SetPopUp(EPopUpState.ConfirmUpgradeMasteryPopUp, collectable, mastery, price);
+        }
+
+        #endregion
+
+
+        #region Rewards
+
+        public static void DisplayRewards(SRewardsData rewardsData, string context, Action OnRewardCollected = null, string title = null)
+        {
+            Main.SetPopUp(EPopUpState.RewardsScreen, rewardsData, context, OnRewardCollected, title);
+        }
+
+        public static void DisplayAchievementRewards(List<SAchievementReward> rewardsData)
+        {
+            Main.SetPopUp(EPopUpState.AchievementRewardScreen, rewardsData);
         }
 
         #endregion
@@ -248,6 +313,39 @@ namespace Assets.Scripts.Managers
                 popup = Main.Instantiate(AssetLoader.Load<CharacterInfoPopUp>("CharacterInfoPopUp", AssetLoader.c_PopUpsPath));
                 popup.Initialize(collectableData, infoOnly);
             }
+        }
+
+        public static void StateEffectPopUp(SStateEffectData stateEffectData, int level, int stacksInDescription = 0, bool displayNextLevel = true)
+        {
+            SetPopUp(EPopUpState.StateEffectPopUp, stateEffectData, level, stacksInDescription, displayNextLevel);
+        }
+
+        #endregion
+
+
+        #region Arena Screens
+
+        public static PowerUpSelectionScreen PowerUpSelectionScreen(EArenaType arenaType, int index, ERuneActivation? runeActivation = null)
+        {
+            PowerUpSelectionScreen screen;
+            switch (arenaType)
+            {
+                case EArenaType.EternalMenagerie:
+                    screen = AssetLoader.Load<PowerUpSelectionScreen_EM>("PowerUpSelectionScreen_EM", AssetLoader.c_OverlayPath);
+                    if (screen == null)
+                    {
+                        ErrorHandler.Error("Unable to screen PowerUpSelectionScreen_EM for arena " + arenaType.ToString());
+                        break;
+                    }
+                    screen = Main.Instantiate(screen);
+                    screen.Initialize(index, runeActivation);
+                    return screen;
+            }
+
+            screen = Main.Instantiate(AssetLoader.Load<PowerUpSelectionScreen>("PowerUpSelectionScreen", AssetLoader.c_OverlayPath));
+            screen.Initialize(index, runeActivation);
+
+            return screen;
         }
 
         #endregion

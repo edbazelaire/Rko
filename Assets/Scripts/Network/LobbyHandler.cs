@@ -254,8 +254,19 @@ namespace Network
                         if (GameMode == EGameMode.Arena)
                         {
                             playerData.SetPowerUps(ProgressionCloudData.CurrentArena.GetActivePowerUps());
+
                             // if a specific build data was locked for this run, use it. Otherwise, use current selected build
-                            playerData.SetBuild(ProgressionCloudData.CurrentArena.HasBuildData() ? ProgressionCloudData.CurrentArena.BuildData : CharacterBuildsCloudData.CurrentBuild);
+                            SBuildData build = default;
+                            if(ProgressionCloudData.CurrentArena.HasBuildData())
+                            {
+                                build = ProgressionCloudData.CurrentArena.BuildData;
+                                build.CharacterLevel = ProgressionCloudData.CurrentArena.GetCharacterLevel();
+                            } else
+                            {
+                                build = CharacterBuildsCloudData.GetCharacterCurrentBuild(ProgressionCloudData.CurrentArena.GetCharacter());
+                            }
+
+                            playerData.SetBuild(build);
                         }
 
                         // send self data to the GameManager
@@ -657,31 +668,31 @@ namespace Network
                     if (IsTuto)
                     {
                         return new SPlayerData(
-                            ECharacter.Kahnan.ToString(),
-                            1,
-                            ECharacter.Kahnan.ToString(),
-                            default,
-                            new int[] { 1, 1, 1 },
-                            new ESpell[] { ESpell.FireBarrage, ESpell.FireBomb },
-                            new int[] { 1, 1 },
-                            new SProfileCurrentData(accountLevel: 1, gamerTag: ECharacter.Kahnan.ToString()).AsNetworkSerializable(),
-                            isPlayer: false,
-                            botData: new SBotData(EArenaDifficulty.Normal.ToString(), 1f, 1f)
+                            playerName:     ECharacter.Kahnan.ToString(),
+                            characterLevel: 1,
+                            character:      ECharacter.Kahnan.ToString(),
+                            runes:          default,
+                            runeLevels:     new int[] { 1, 1, 1 },
+                            spells:         new ESpell[] { ESpell.FireBarrage, ESpell.FireBomb },
+                            spellLevels:    new int[] { 1, 1 },
+                            profileData:    new SProfileCurrentData(accountLevel: 1, gamerTag: ECharacter.Kahnan.ToString()).AsNetworkSerializable(),
+                            isPlayer:       false,
+                            botData:        new SBotData(EArenaDifficulty.Normal.ToString(), 1f, 1f)
                         );
                     }
 
                     string trainingCharacter = PlayerPrefsHandler.GetString<ECharacter>(EPlayerPref.TrainingCharacter).ToString();
                     return new SPlayerData(
-                        TextHandler.SplitCamelCase(trainingCharacter),
-                        9,
-                        trainingCharacter,
-                        PlayerPrefsHandler.GetTrainingRunes(),
-                        new int[] { 9, 9, 9 },
-                        PlayerPrefsHandler.GetTrainingSpells(),
-                        new int[] { 9, 9, 9, 9 },
-                        new SProfileCurrentData(accountLevel: 9, gamerTag: trainingCharacter.ToString()).AsNetworkSerializable(),
-                        isPlayer: false,
-                        botData: new SBotData(
+                        playerName:         TextHandler.SplitCamelCase(trainingCharacter),
+                        characterLevel:     9,
+                        character:          trainingCharacter,
+                        runes:              PlayerPrefsHandler.GetTrainingRunes(),
+                        runeLevels:         new int[] { 9, 9, 9 },
+                        spells:             PlayerPrefsHandler.GetTrainingSpells(),
+                        spellLevels:        new int[] { 9, 9, 9, 9 },
+                        profileData:        new SProfileCurrentData(accountLevel: 9, gamerTag: trainingCharacter.ToString()).AsNetworkSerializable(),
+                        isPlayer:           false,
+                        botData:            new SBotData(
                             difficulty:         PlayerPrefs.GetString(EPlayerPref.TrainingDifficulty.ToString(), ELeague.Silver.ToString()), 
                             decisionRefresh:    PlayerPrefs.GetFloat(EPlayerPref.TrainingDecisionRefresh.ToString(), 0.05f), 
                             randomness:         PlayerPrefs.GetFloat(EPlayerPref.TrainingRandomness.ToString(), 0f),

@@ -18,14 +18,18 @@ namespace AI
         protected NodeState m_State;
 
         public Node m_Parent;
-        protected bool m_IsActivated = true;
-        protected bool m_IsEvaluated = false;
-        protected List<Node> m_Children = new List<Node>();
-        protected Func<float> m_WeightMethod = null;
+        public Node m_CurrentNode               = null;
+        protected bool m_IsActivated            = true;
+        protected bool m_IsEvaluated            = false;
+        protected List<Node> m_Children         = new List<Node>();
+        protected Func<float> m_WeightMethod    = null;
+        /// <summary> in case of a critical error preventing this to function properly, the Node can be aborted </summary>
+        protected bool m_Abort                  = false;
 
         private Dictionary<string, object> m_DataContext = new Dictionary<string, object>();
 
         public NodeState State          => m_State;
+        public Node RunningNode         => m_CurrentNode;
         public bool IsEvaluated         => m_IsEvaluated;
         public bool IsActivated         => m_IsActivated;
         public List<Node> Children      => m_Children;
@@ -66,6 +70,12 @@ namespace AI
 
             foreach (var child in m_Children)
                 child.Reset();
+        }
+
+        public virtual void Abort()
+        {
+            m_State = NodeState.FAILURE;
+            m_Abort = true;
         }
 
         #region State Management

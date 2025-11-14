@@ -238,7 +238,17 @@ namespace Data
                     continue;
                 }
 
-                rewards.Add(new SReward(typeof(ECurrency), data.Currency.ToString(), UnityEngine.Random.Range(data.Min, data.Max)));
+                // calculate random value of the currency
+                int value = UnityEngine.Random.Range(data.Min, data.Max);
+
+                // CHECK : Achievements
+                if (data.Currency == ECurrency.Gold && value <= 0.05 * data.Max)
+                {
+                    AchievementLoader.Get(EAchievement.Lootless).Increase();
+                }
+
+                // add currency to list of rewards
+                rewards.Add(new SReward(typeof(ECurrency), data.Currency.ToString(), value));
             }
 
             // SPELLS
@@ -325,7 +335,6 @@ namespace Data
             var rewards = new Dictionary<ERarety, SReward>();
             for (int i = 0; i < qty; i++)
             {
-                var randValue = UnityEngine.Random.Range(0f, 100f);
                 bool success = false;
                 do
                 {
@@ -357,7 +366,7 @@ namespace Data
                             runeData = SpellLoader.GetRandomRune(
                                 raretyFilter: new List<ERarety>() { rarety },
                                 elementsFilter: SpellElements.ToList(),
-                                unlocked: false                         // allow not unlocked only
+                                unlocked: null                          // allow not unlocked only
                             );
                         }
 
@@ -366,7 +375,7 @@ namespace Data
                         {
                             runeData = SpellLoader.GetRandomRune(
                                 raretyFilter: new List<ERarety>() { rarety },
-                                unlocked: false                         // allow not unlocked only
+                                unlocked: null                        
                             );
                         }
 

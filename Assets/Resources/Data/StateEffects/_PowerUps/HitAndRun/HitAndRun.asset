@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bec91e441d966e438d35c0133adae84, type: 3}
+  m_Name: HitAndRun
+  m_EditorClassIdentifier: 
+  m_Description: 'Hitting a target with an AutoAttack increases your Movement Speed
+    by [SpeedBonus]
+
+
+    [StatConversion.0]'
+  m_DescriptionVariables: 
+  m_NStacksInDescription: 1
+  m_StateEffectType: 0
+  m_IsDisplayed: 1
+  m_GfxEffects: []
+  m_Animation: 0
+  m_OnApplySoundFX: {fileID: 0}
+  m_PermanantSoundFX: {fileID: 0}
+  m_ConsumeState: 0
+  m_DefaultState: 0
+  m_IsInstantanious: 0
+  m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
+  m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
+  m_EndWithShield: 0
+  m_EndAt0Stacks: 0
+  m_RefreshShield: 0
+  m_RefreshDuration: 1
+  m_Priority: 0
+  m_Delay: 0
+  m_Duration: -1
+  m_StartingStacks: 0
+  m_MaxStacks: -1
+  m_StackDecay: -1
+  m_StartsActivated: 1
+  m_StateEffectTriggers: []
+  m_StateEffectActivations: []
+  m_SpellActivations:
+  - SpellEvent: 500
+    SpellName: AutoAttack
+    Stacks: 1
+  m_BonusStats:
+  - StateEffectProperty: 3
+    BaseValue: 0.02
+    LevelScalingFactor: 0
+    StackScalingFactor: 1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+  m_StatConversions:
+  - ToStat:
+      StateEffectProperty: 7
+      BaseValue: 45
+      LevelScalingFactor: 0.1
+      StackScalingFactor: 0
+      DamageCategories: 01000000
+      HitCategories: 
+      SpecialConditions: []
+    OriginalStatScaling:
+      StateEffectProperty: 3
+      BaseValue: 1
+      LevelScalingFactor: 0
+      StackScalingFactor: 0
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
+  m_OnStartStateEffect: []
+  m_OnEndStateEffect: []
+  m_StateEffectScalingLevel: []
+  m_StateEffectScalingStacks: []

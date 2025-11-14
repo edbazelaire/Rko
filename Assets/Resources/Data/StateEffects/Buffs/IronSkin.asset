@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bec91e441d966e438d35c0133adae84, type: 3}
   m_Name: IronSkin
   m_EditorClassIdentifier: 
-  m_Description: Increases your Resistance by {0} fix and {1} for {2} seconds, but
-    also reduces your Movement Speed by {3}
-  m_DescriptionVariables: 05000000060000000100000003000000
+  m_Description: 'Increases your Resistance by [Resistance.Physical] and [Resistance.Magical]
+    for [Duration] seconds. Also, resuce all incoming damage by [ResistanceFix],
+    but also reduces your Movement Speed by [SpeedBonus]'
+  m_DescriptionVariables: 
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 1
-  m_VisualEffects: []
   m_GfxEffects:
   - Prefab: {fileID: 0}
     MaterialEffect: {fileID: 2100000, guid: 18b3106c5877bbf488e4dac3f271b1cd, type: 2}
@@ -34,6 +35,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 0
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -45,27 +47,56 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
+  m_EndWithShield: 0
+  m_EndAt0Stacks: 1
+  m_RefreshShield: 1
+  m_RefreshDuration: 1
   m_Priority: 0
+  m_Delay: 0
   m_Duration: 8
+  m_StartingStacks: 1
   m_MaxStacks: 1
   m_StackDecay: -1
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats:
   - StateEffectProperty: 3
     BaseValue: -0.3
     LevelScalingFactor: 0
     StackScalingFactor: 1
+    ScalesOnMissingHealth: 0
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
   - StateEffectProperty: 5
-    BaseValue: 30
+    BaseValue: 15
     LevelScalingFactor: 0.1
     StackScalingFactor: 1
-  - StateEffectProperty: 6
-    BaseValue: 0.1
+    ScalesOnMissingHealth: 0
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+  - StateEffectProperty: 30
+    BaseValue: 10
     LevelScalingFactor: 0.1
     StackScalingFactor: 1
+    ScalesOnMissingHealth: 0
+    DamageCategories: 01000000
+    HitCategories: 
+    SpecialConditions: []
+  - StateEffectProperty: 30
+    BaseValue: 10
+    LevelScalingFactor: 0.1
+    StackScalingFactor: 1
+    ScalesOnMissingHealth: 0
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects: []
   m_HoldingStateEffects: []
@@ -73,5 +104,5 @@ MonoBehaviour:
   m_OnEndStateEffect: []
   m_StateEffectScalingLevel:
   - StateEffectProperty: 1
-    ScalingFactor: 0.1
+    ScalingFactor: 0.05
   m_StateEffectScalingStacks: []

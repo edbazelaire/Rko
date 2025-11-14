@@ -27,18 +27,22 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
   m_EndWithShield: 0
   m_EndAt0Stacks: 0
   m_RefreshShield: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: -1
+  m_StartingStacks: 1
   m_MaxStacks: 99
   m_StackDecay: 0
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats:
   - StateEffectProperty: 7
     BaseValue: 25
@@ -61,6 +65,14 @@ MonoBehaviour:
     ActivableEffects:
     - Target: 4
       Effect: _IceLanceMastery0
+      BonusLevel: 0
+      IsDeactivable: 0
+    BonusStats: []
+  - RequiredStacks: 7
+    ReplacementIcon: {fileID: 0}
+    ActivableEffects:
+    - Target: 4
+      Effect: _PrIceLanceMastery
       BonusLevel: 0
       IsDeactivable: 0
     BonusStats: []

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Data
 {
-    [CreateAssetMenu(fileName = "PowerUpData", menuName = "Game/Effects/PowerUpData/Default")]
+    [CreateAssetMenu(fileName = "PowerUpData", menuName = "Game/Effects/PowerUpData")]
     public class PowerUpData : PowerEffectData<SPowerUp>
     {
         #region Members

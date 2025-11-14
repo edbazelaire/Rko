@@ -9,19 +9,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
+  m_Script: {fileID: 11500000, guid: fddbcff511bf8f6468f46e05e8811cf7, type: 3}
   m_Name: ChemicalSlime
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 
-  m_DescriptionVariables: []
+  m_Description: "Born from a mishap in an alchemist\u2019s experiment, the Chemical
+    Slimes first emerged when a potion spilled into a murky swamp. That alchemical
+    accident seeped into the waters, infusing the marsh with strange energies and
+    giving rise to these gelatinous, glimmering beings. Now they dwell quietly in
+    the swamp, a lingering testament to that experiment gone awry."
   m_SpellElements: 
   m_AutoAttack: ChemicalSlimeAttack
   m_SpecialAbility: 
   m_Ultimate: 
   Size: 0.3
   BaseSpeed: 0.5
-  BaseHealth: 150
+  BaseHealth: 80
   MaxEnergy: 0
   BaseEnergy: 0
   PassiveEnergyGain: 0
@@ -29,3 +32,11 @@ MonoBehaviour:
   HealthScaleFactor: 0.1
   CharacterStatScaling: []
   m_SpecialPowers: []
+  m_SpawnOffsetX:
+    Min: 0
+    Max: 0
+  m_SpawnOffsetY:
+    Min: 0
+    Max: 0
+  PopUpOffset: {x: 0, y: 50, z: 0}
+  PopUpScale: 0.9

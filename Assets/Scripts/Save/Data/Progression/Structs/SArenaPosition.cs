@@ -39,7 +39,7 @@ namespace Save.Data.Progression.Structs
         // Overload the "<=" operator
         public static bool operator <=(SArenaPosition lhs, SArenaPosition rhs)
         {
-            return lhs.ArenaDifficulty < rhs.ArenaDifficulty || lhs.ArenaLevel < rhs.ArenaLevel || (lhs.ArenaDifficulty == rhs.ArenaDifficulty && lhs.ArenaLevel == rhs.ArenaLevel && lhs.ArenaStage <= rhs.ArenaStage);
+            return lhs.ArenaDifficulty < rhs.ArenaDifficulty || (lhs.ArenaDifficulty == rhs.ArenaDifficulty && lhs.ArenaLevel < rhs.ArenaLevel) || (lhs.ArenaDifficulty == rhs.ArenaDifficulty && lhs.ArenaLevel == rhs.ArenaLevel && lhs.ArenaStage <= rhs.ArenaStage);
         }
 
         // Overload the ">" operator

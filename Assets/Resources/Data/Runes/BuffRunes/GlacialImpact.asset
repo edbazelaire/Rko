@@ -12,59 +12,57 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a402882a257d18548a281b17574b3711, type: 3}
   m_Name: GlacialImpact
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 02000000
-  Description: 
   m_MinorPower:
-    Description: Gain {0} Damages on target with [Frost] effect
-    m_DescriptionVariables:
-    - Name: BonusDamage
-      WithIcon: 1
+    Description: Gain [Power] increased Power on target with [Frost] effect
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
-    - StateEffectProperty: 7
-      BaseValue: 0
+    - StateEffectProperty: 22
+      BaseValue: 5
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
       StateEffectStackFactors:
       - Target: 2
         StateEffect: 6
-        BaseValue: 4
+        BaseValue: 1
         LevelFactor: 0
   m_MajorPower:
-    Description: Gain {0} Damages on target with [Frost] effect
-    m_DescriptionVariables:
-    - Name: BonusDamage
-      WithIcon: 1
+    Description: Gain [Power] increased Power on target with [Frost] effect
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
-    - StateEffectProperty: 7
-      BaseValue: 0
+    - StateEffectProperty: 22
+      BaseValue: 10
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
       StateEffectStackFactors:
       - Target: 2
         StateEffect: 6
-        BaseValue: 10
+        BaseValue: 1
         LevelFactor: 0
   m_PrimalPower:
-    Description: Gain {0} Damages on target with [Frost] effect
-    m_DescriptionVariables:
-    - Name: BonusDamage
-      WithIcon: 1
+    Description: Gain [Power] increased Power on target with [Frost] effect
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
-    - StateEffectProperty: 7
-      BaseValue: 0
+    - StateEffectProperty: 22
+      BaseValue: 20
       BonusValue: 0
       ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
       StateEffectStackFactors:
       - Target: 2
         StateEffect: 6
-        BaseValue: 22
+        BaseValue: 1
         LevelFactor: 0

@@ -44,12 +44,13 @@ namespace Game.Spells
         {
             base.UnRegisterListeners();
 
-            m_Controller.Life.OnHittedEvent -= OnHit;
+            if (m_Controller != null)
+                m_Controller.Life.OnHittedEvent -= OnHit;
         }
 
-        void OnHit(int damage, ulong casterId, ESpellCategory spellCategory)
+        void OnHit(int damage, ulong casterId, EDamageCategory damageCategory, EHitCategory spellCategory)
         {
-            if (spellCategory != ESpellCategory.Direct)
+            if (spellCategory != EHitCategory.Direct)
                 return;
 
             if (m_Stacks == 0)

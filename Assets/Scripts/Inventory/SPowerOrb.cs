@@ -49,10 +49,10 @@ namespace Inventory
             { "Spell_" + ERarety.Legendary.ToString(),      7500        },
 
             // Runes
-            { "Rune_" + ERarety.Common.ToString(),          150         },
-            { "Rune_" + ERarety.Rare.ToString(),            300         },
-            { "Rune_" + ERarety.Epic.ToString(),            3000        },
-            { "Rune_" + ERarety.Legendary.ToString(),       12000       },
+            { "Rune_" + ERarety.Common.ToString(),          250         },
+            { "Rune_" + ERarety.Rare.ToString(),            750         },
+            { "Rune_" + ERarety.Epic.ToString(),            7500        },
+            { "Rune_" + ERarety.Legendary.ToString(),       35000       },
 
             // Characters
             { "Character_" + ERarety.Common.ToString(),     1000        },

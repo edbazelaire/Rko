@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: IceGolem
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 
-  m_DescriptionVariables: []
+  m_Description: "A fantastical being forged in the heart of frozen mountains. \nA
+    vessel of souls, where mages infuse spirits into massive blocks of ice, sculpting
+    these towering golems from the cold itself, a mystical process, giving life to
+    a devoted guardian."
   m_SpellElements: 
   m_AutoAttack: IceRock
   m_SpecialAbility: Carapice
@@ -24,18 +26,41 @@ MonoBehaviour:
   BaseHealth: 2600
   MaxEnergy: 100
   BaseEnergy: 10
+  PassiveEnergyGain: 1
   IsStructure: 0
   HealthScaleFactor: 0.12
   CharacterStatScaling:
-  - StateEffectProperty: 5
-    BaseValue: 15
-    BonusValue: 0
-    ScalingFactor: 0.12
-    StateEffectStackFactors: []
   - StateEffectProperty: 4
     BaseValue: 1000
     BonusValue: 0
     ScalingFactor: 0.15
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 5
+    BaseValue: 15
+    BonusValue: 0
+    ScalingFactor: 0.12
+    DamageCategories: 01000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 30
+    BaseValue: 25
+    BonusValue: 0
+    ScalingFactor: 0.15
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 25
+    BonusValue: 0
+    ScalingFactor: 0.12
+    DamageCategories: 01000000
+    HitCategories: 
+    SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers:
   - Description: 
@@ -57,4 +82,6 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []

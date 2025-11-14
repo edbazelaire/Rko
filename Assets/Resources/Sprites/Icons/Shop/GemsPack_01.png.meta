@@ -5,6 +5,12 @@ TextureImporter:
   - first:
       213: 2645522274840101781
     second: GemsPack_01_0
+  - first:
+      213: 3142756261069470914
+    second: GemsPack_01_1
+  - first:
+      213: 2218109150826804708
+    second: GemsPack_01_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -129,10 +135,10 @@ TextureImporter:
       name: GemsPack_01_0
       rect:
         serializedVersion: 2
-        x: 282
-        y: 342
-        width: 524
-        height: 415
+        x: 71
+        y: 41
+        width: 368
+        height: 393
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -142,6 +148,48 @@ TextureImporter:
       bones: []
       spriteID: 5934a3d0e78c6b420800000000000000
       internalID: 2645522274840101781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GemsPack_01_1
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 336
+        width: 77
+        height: 113
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2cc3eac1b205d9b20800000000000000
+      internalID: 3142756261069470914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GemsPack_01_2
+      rect:
+        serializedVersion: 2
+        x: 314
+        y: 350
+        width: 94
+        height: 137
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e53318458e48ce10800000000000000
+      internalID: 2218109150826804708
       vertices: []
       indices: 
       edges: []
@@ -158,6 +206,8 @@ TextureImporter:
     secondaryTextures: []
     nameFileIdTable:
       GemsPack_01_0: 2645522274840101781
+      GemsPack_01_1: 3142756261069470914
+      GemsPack_01_2: 2218109150826804708
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

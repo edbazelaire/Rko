@@ -111,6 +111,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 00df8ba98b2f72d489c43cfc32edd848, type: 2}
     - target: {fileID: 3528235069938405983, guid: 97c43495f80a3244fad1301dfafbe252, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3528235069938405983, guid: 97c43495f80a3244fad1301dfafbe252, type: 3}
       propertyPath: m_SortingOrder
       value: 100
       objectReference: {fileID: 0}
@@ -157,6 +161,26 @@ PrefabInstance:
     - target: {fileID: 6810471105834413002, guid: 97c43495f80a3244fad1301dfafbe252, type: 3}
       propertyPath: moveWithTransform
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6810471105834413002, guid: 97c43495f80a3244fad1301dfafbe252, type: 3}
+      propertyPath: SizeModule.enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6810471105834413002, guid: 97c43495f80a3244fad1301dfafbe252, type: 3}
+      propertyPath: ColorModule.enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6810471105834413002, guid: 97c43495f80a3244fad1301dfafbe252, type: 3}
+      propertyPath: ShapeModule.enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6810471105834413002, guid: 97c43495f80a3244fad1301dfafbe252, type: 3}
+      propertyPath: EmissionModule.enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6810471105834413002, guid: 97c43495f80a3244fad1301dfafbe252, type: 3}
+      propertyPath: VelocityModule.enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7115705860714152884, guid: 97c43495f80a3244fad1301dfafbe252, type: 3}
       propertyPath: m_LocalScale.x

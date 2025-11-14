@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
+  m_Name: Oswen
+  m_EditorClassIdentifier: 
+  m_Rarety: 2
+  m_Description: "Born of scale and wisdom, Oswen was once a daughter of the Aztkal\u2019s
+    southern reaches \u2014 a quiet scholar from a humble village hidden among emerald
+    marshes. That peace was shattered when the Savage Horde came howling from the
+    wastes.\n\nThey descended upon her homeland like beasts unleashed from the abyss.
+    The orcish marauders did not merely kill \u2014 they ravaged. They burned homes
+    for amusement, tore limbs from captives to test their strength, and left the
+    corpses to rot beneath the open sky. When the Horde moved on, only ruin and screams
+    remained \u2014 and amid that ruin, one survivor : Oswen\n\nGrief hardened into
+    vengeance, and vengeance into purpose. For years, she hunted the Horde across
+    desolate plains and blood-soaked roads, striking from shadows yet never finding
+    the victory she sought, despite her many tries.\n\nSo she turned to another weapon
+    : the forbidden veins of sorcery \u2014 the dark magic of corruption and decay.
+    In tombs forgotten by even the dead, she mastered the art of blight: crafting
+    diseases that ate flesh from bone, curses that withered crops, and vapors that
+    turned air to poison. Her own blood grew tainted with this craft, her scales
+    darkening to the hue of old iron, her eyes gleaming with the fever of forbidden
+    knowledge.\n\nThrough cunning and patience, Oswen rose among her kin. Her sharp
+    mind earned her a place in the royal court, where wisdom and deceit walk hand
+    in hand. \nAs High Magus and advisor, she wielded influence like a blade \u2014
+    sharp, silent, and deadly. Behind the polished marble of the palace, she continued
+    her secret work: experiments on those who would not be missed, victims of ambition
+    and opportunity alike.\n\nShe seeks no redemption. Only vengeance.\nEach life
+    taken, each body consumed by rot, feeds her growing power \u2014 a power born
+    from pain, honed by hate."
+  m_SpellElements: 04000000
+  m_AutoAttack: InfusedCrystal
+  m_SpecialAbility: DarkManaSpire
+  m_Ultimate: NecroticNova
+  Size: 1.25
+  BaseSpeed: 1
+  BaseHealth: 1700
+  MaxEnergy: 100
+  BaseEnergy: 10
+  PassiveEnergyGain: 1
+  IsStructure: 0
+  HealthScaleFactor: 0.1
+  CharacterStatScaling:
+  - StateEffectProperty: 4
+    BaseValue: 300
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 30
+    BaseValue: 15
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 30
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 8
+    BaseValue: 0.1
+    BonusValue: 0
+    ScalingFactor: 0.05
+    DamageCategories: 
+    HitCategories: 02000000
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  m_SpecialPowers:
+  - Description: 
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: Scavenger
+      OverridingData: []
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    m_BonusStats: []

@@ -19,8 +19,8 @@ namespace AI
         public BaseNode(Controller controller, Func<float> weight = null) : base (null, weight)
         {
             m_Controller = controller;
-            m_ProjectileTrigger = Finder.FindComponent<ProjectileTrigger>(controller.gameObject);
-            m_ImmediatThreatTrigger = Finder.FindComponent<ImmediatThreatTrigger>(controller.gameObject);
+            m_ProjectileTrigger = Finder.FindComponent<ProjectileTrigger>(controller.gameObject,            throwError: false);
+            m_ImmediatThreatTrigger = Finder.FindComponent<ImmediatThreatTrigger>(controller.gameObject,    throwError: false);
         }
 
         #endregion

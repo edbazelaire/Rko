@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a54727096f1b9a14e931ac401f233989, type: 3}
   m_Name: PoisonFury
   m_EditorClassIdentifier: 
-  Rarety: 0
-  m_Description: Shoots {0} Poison Spits each dealing {1} Damages and applying {2}
+  m_Rarety: 0
+  m_Description: 'Shoots [Projectiles] Poison Spits each dealing [Damage] Damages
+    and applying [Poison]'
   m_DescriptionVariables:
   - Name: Projectiles
     WithIcon: 1
@@ -40,11 +41,14 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 7
     IsFollowing: 1
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  PassiveEffects: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 2f5fa469f5b8ed9489b48966de42b93f, type: 3}
@@ -58,12 +62,22 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
-  MaxHit: 0
+  m_MaxHit: 0
+  m_Charges: 1
   EnergyGain: 0
   EnergyCost: 100
   m_Damage: 0
   m_ExecutionDamage: 0
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -74,19 +88,58 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
+    m_Targets: 
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
   - Property: 6
     Value: 0.1
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
   m_Size: 1
   TriggerPlayer: 1
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
   EnemyStateEffects: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 2
   IsCancellable: 0
+  IsInterruptable: 1
   AnimationTimer: 0.4
   m_Cooldown: 0.5
   Trajectory: 1

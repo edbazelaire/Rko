@@ -1,5 +1,4 @@
 ﻿using Enums;
-using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,7 +10,6 @@ namespace Game.Spells
         public static List<string> CC_EFFECTS => new List<string>() { 
             EStateEffect.Silence.ToString(),
             EStateEffect.Stun.ToString(),
-            EStateEffect.Frost.ToString(),
             EStateEffect.Frozen.ToString(),
             EStateEffect.Scorched.ToString(),
         };

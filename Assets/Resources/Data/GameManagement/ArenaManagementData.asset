@@ -12,21 +12,63 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e39ada9443758704e946c1a6a68d07e7, type: 3}
   m_Name: ArenaManagementData
   m_EditorClassIdentifier: 
-  m_NDifficultyLevels: 5
+  m_NDifficultyLevels: 7
   m_MaxLevels: 4
   m_PowerUpDropRates:
-  - Minor: 0.28
-    Major: 0.62
-    Primal: 0.1
   - Minor: 0.35
     Major: 0.45
     Primal: 0.2
-  - Minor: 0.6
+  - Minor: 0.33
+    Major: 0.62
+    Primal: 0.05
+  - Minor: 0.255
     Major: 0.74
-    Primal: 0.2
+    Primal: 0.05
   - Minor: 0
-    Major: 0.75
-    Primal: 0.25
+    Major: 0.9
+    Primal: 0.1
+  m_EternalMenagerieUpgradeCosts:
+  - {x: 0, y: 20}
+  - {x: 20, y: 45}
+  - {x: 45, y: 0}
+  m_NStartRefreshes: 4
+  m_NStartRefreshes_BonusRandom: 3
+  m_NRefreshesOnBoss: 1
+  m_NCorruptionStacksLossOnDeath: 20
+  m_NCorruptionStacksLossOnWin: 10
+  m_SpecialConfigs:
+  - Arena: 1
+    BaseLevel: 1
+    UnlockedLevel: 1
+    m_MobPowerDrop:
+      m_BaseValue: 25
+      m_ScalingPerc: 0.1
+      m_ScalingFix: 0
+    m_BossPowerDrop:
+      m_BaseValue: 200
+      m_ScalingPerc: 0.1
+      m_ScalingFix: 0
+    m_CompletionDrop:
+      m_BaseValue: 400
+      m_ScalingPerc: 0
+      m_ScalingFix: 0
+    m_BonusArenaDifficulty: 0.4
+  - Arena: 2
+    BaseLevel: 6
+    UnlockedLevel: 6
+    m_MobPowerDrop:
+      m_BaseValue: 0
+      m_ScalingPerc: 0
+      m_ScalingFix: 0
+    m_BossPowerDrop:
+      m_BaseValue: 250
+      m_ScalingPerc: 0.1
+      m_ScalingFix: 0
+    m_CompletionDrop:
+      m_BaseValue: 800
+      m_ScalingPerc: 0
+      m_ScalingFix: 0
+    m_BonusArenaDifficulty: 0.45
   m_MobPowerDrop:
     m_BaseValue: 25
     m_ScalingPerc: 0.2
@@ -35,5 +77,8 @@ MonoBehaviour:
     m_BaseValue: 350
     m_ScalingPerc: 0.35
     m_ScalingFix: 0
-  m_BonusArenaDifficulty: 0.5
-  m_BonusArenaDifficultyLevel: 0.15
+  m_CompletionDrop:
+    m_BaseValue: 25
+    m_ScalingPerc: 0.2
+    m_ScalingFix: 0
+  m_BonusArenaDifficultyLevel: 0

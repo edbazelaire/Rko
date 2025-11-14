@@ -12,14 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2413bf9bea7a81d44a0b645bca9d69f8, type: 3}
   m_Name: Leaner
   m_EditorClassIdentifier: 
-  Rarety: 0
-  m_Description: "Cooked dirty, dropped fast. Deals {0} damage (+{1} execution) and
-    hits with 3 [Infected] stacks. Don\u2019t ask what\u2019s in it."
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
-  - Name: ExecutionDamage
-    WithIcon: 0
+  m_Rarety: 0
+  m_Description: "Cooked dirty, dropped fast. Deals [Damage] damage and applies 3
+    [Infected] stacks. Don\u2019t ask what\u2019s in it."
   m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 6310744135911870057, guid: f084b54ad5f91bf47bedb7805240fe2e, type: 3}
@@ -39,6 +34,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 1
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -60,11 +56,14 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 0
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  PassiveEffects: []
+  SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: 2f5fa469f5b8ed9489b48966de42b93f, type: 3}
@@ -78,12 +77,30 @@ MonoBehaviour:
     Y: 0
   LockTarget: 300
   ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
+  m_MaxHit: 1
+  m_Charges: 1
   EnergyGain: 18
   EnergyCost: 0
-  m_Damage: 100
-  m_ExecutionDamage: 50
+  m_Damages:
+  - m_BaseValue: 150
+    m_DamageCategory: 1
+    m_HitCategory: 3
+    m_SpellPropertyScaling:
+      Property: 0
+      Value: 0.1
+      ScalingType: 0
+      RoundingType: 0
+      ScalingTresholds: []
+    m_DamageModifiers: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -94,11 +111,46 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
+    m_Targets: 
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
+    ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
   m_Size: 1
   TriggerPlayer: 1
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
   EnemyStateEffects:
   - StateEffect: 17
     Stacks: 3
@@ -109,6 +161,8 @@ MonoBehaviour:
   PersistanceAfterEnd: 0
   Animation: 16
   IsCancellable: 0
+  IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.5
   m_Cooldown: 15
   Trajectory: 3

@@ -70,7 +70,7 @@ namespace Menu.Common
         public void InitializePercentage(float percentage)
         {
             m_IsPerc = true;
-            Initialize(percentage, 100);
+            Initialize(Mathf.Round(percentage * 100), 100);
         }
 
         protected override void FindComponents()
@@ -201,7 +201,7 @@ namespace Menu.Common
             if (!m_CollectableCloudData.HasValue)
                 return;
 
-            UpdateCollection(m_CollectableCloudData.Value.GetQty(), CollectablesManagementData.GetLevelData(m_CollectableCloudData.Value.GetCollectable(), m_CollectableCloudData.Value.Level).RequiredQty);
+            UpdateCollection(m_CollectableCloudData.Value.GetQty(), CollectablesManagementData.GetLevelData(m_CollectableCloudData.Value.GetCollectable(), m_CollectableCloudData.Value.Level, m_CollectableCloudData.Value.Mastery).RequiredQty);
         }
 
         public void UpdateCollection(float newValue, float? maxCollection = null)

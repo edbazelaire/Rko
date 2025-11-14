@@ -17,7 +17,7 @@ namespace Tools
         ArenaType,
         ArenaDifficulty,
         ArenaMods,
-        ArenaExtraDifficulty,        
+        ArenaExtraDifficulty,
         CurrentGameId,
 
         WarningMessageAccepted,
@@ -312,6 +312,11 @@ namespace Tools
                        .ToList();
         }
 
+        public static bool HasArenaMod(EArenaMod arenaMod, EArenaType arenaType, EArenaDifficulty arenaDifficulty)
+        {
+            return GetArenaMods(arenaType, arenaDifficulty).Contains(arenaMod);
+        }
+
         public static void SetArenaMods(EArenaType arenaType, EArenaDifficulty arenaDifficulty, List<EArenaMod> arenaMods)
         {
             string data = string.Join(",", arenaMods.Select(mod => mod.ToString()));
@@ -322,26 +327,7 @@ namespace Tools
 
         public static int GetArenaExtraDifficulty(EArenaType arenaType, EArenaDifficulty arenaDifficulty)
         {
-            // check : value is 0 - return instantly
-            int extraDifficulty = PlayerPrefs.GetInt(GetArenaExtraDifficultyKey(arenaType, arenaDifficulty), 0);
-            if (extraDifficulty == 0)
-                return extraDifficulty;
-
-            // CHECK : not 0 value - check if this is allowed 
-            if (! ProgressionCloudData.IsCompleted(arenaType, arenaDifficulty))
-            {
-                ErrorHandler.Warning($"Arena {arenaType} at difficulty {arenaDifficulty} is set with value {extraDifficulty} but this difficulty was not completed yet - reseting value");
-                extraDifficulty = 0;
-                PlayerPrefs.SetInt(GetArenaExtraDifficultyKey(arenaType, arenaDifficulty), 0);
-            }
-
-            return extraDifficulty;
-        }
-
-        public static void SetArenaExtraDifficulty(EArenaType arenaType, EArenaDifficulty arenaDifficulty, int extraDifficulty)
-        {
-            PlayerPrefs.SetInt(GetArenaExtraDifficultyKey(arenaType, arenaDifficulty), extraDifficulty);
-            ArenaExtraDifficultyChanged?.Invoke();
+            return HasArenaMod(EArenaMod.HardCore, arenaType, arenaDifficulty) ? 3 : 0;
         }
 
         /// <summary>
@@ -363,7 +349,6 @@ namespace Tools
         {
             foreach (EArenaDifficulty arenaDifficulty in Enum.GetValues(typeof(EArenaDifficulty)))
             {
-                SetArenaExtraDifficulty(arenaType, arenaDifficulty, 0);
                 SetArenaMods(arenaType, arenaDifficulty, new());
             }
         }

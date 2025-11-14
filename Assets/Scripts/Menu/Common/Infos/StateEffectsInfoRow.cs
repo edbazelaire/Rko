@@ -1,4 +1,5 @@
 ﻿using Data;
+using Game.Loaders;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
@@ -10,7 +11,6 @@ namespace Menu.Common.Infos
         #region Members
 
         GameObject      m_InfosContainer;
-        GameObject      m_ValueContainer;
 
         List<TemplateStateEffectIconUI> m_StateEffectIcons;
 
@@ -58,6 +58,9 @@ namespace Menu.Common.Infos
         {
             foreach (CharacterData spawnData in allSpawnsData)
             {
+                if (spawnData.IsStructure)
+                    continue;
+
                 UIHelper.AddSpawnIconDisplayer(spawnData, m_ValueContainer.transform);
             }
         }

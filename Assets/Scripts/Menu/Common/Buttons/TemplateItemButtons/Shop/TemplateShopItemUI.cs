@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Managers;
 using Assets.Scripts.Managers.Sound;
 using Data.GameManagement;
 using Enums;
@@ -6,6 +7,7 @@ using Managers.Monetization.IAP;
 using Menu.Common.Displayers;
 using Save;
 using System;
+using System.Linq;
 using TMPro;
 using Tools;
 using UnityEngine;
@@ -146,18 +148,28 @@ namespace Menu.Common.Buttons
         protected virtual void SetUpShopData(SShopData shopData)
         {
             m_ShopData = shopData;
-            m_Title    = shopData.Name;
+            m_Title    = CleanTitle(shopData.Name);
             SetDefaultData();
         }
 
         protected virtual void SetDefaultData() { }
 
-        protected virtual void SetTitle() 
+        protected virtual void SetTitle()
         {
             if (m_TitleText == null)
                 return;
+            m_TitleText.text = m_Title;
+        }
 
-            m_TitleText.text = TextHandler.Split(m_Title);
+        protected virtual string CleanTitle(string rawTitle) 
+        {
+            string title;
+            if (int.TryParse(rawTitle, out int iValue) && iValue >= 1000)
+                title = TextHandler.FormatNumericalString(iValue);
+            else
+                title = TextHandler.Split(rawTitle);
+
+            return title;
         }
 
         protected virtual void SetIcon()
@@ -284,7 +296,7 @@ namespace Menu.Common.Buttons
                     if (m_TimeData != null && ! TimeCloudData.CollectTimeData(m_TimeData.Value.Name))
                         return;
                     
-                    Main.DisplayRewards(m_ShopData.Rewards, m_Context);
+                    ScreenManager.DisplayRewards(m_ShopData.Rewards, m_Context);
                     break;
                 
                 case false:

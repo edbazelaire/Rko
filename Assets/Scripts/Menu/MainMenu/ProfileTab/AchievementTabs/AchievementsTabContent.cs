@@ -1,4 +1,6 @@
-﻿using Data;
+﻿using Assets.Scripts.Game.Loaders.Filters;
+using Data;
+using Enums;
 using Game.Loaders;
 using Menu.Common.Buttons;
 using Tools;
@@ -22,7 +24,7 @@ namespace Menu.MainMenu.ProfileTab
         protected override void FindComponents()
         {
             m_ScrollerContent = gameObject;
-            m_TemplateAchievementButton = AssetLoader.LoadTemplateItem<TemplateAchievementButton>();
+            m_TemplateAchievementButton = AssetLoader.LoadTemplateItem<TemplateAchievementButton>("Achievement");
         }
 
         protected override void SetUpUI()
@@ -30,10 +32,10 @@ namespace Menu.MainMenu.ProfileTab
             // reset UI
             UIHelper.CleanContent(m_ScrollerContent);
 
-            foreach (AchievementData achievement in AchievementLoader.Achievements)
+            foreach (IAchievement achievement in AchievementLoader.Achievements.FilterByCharacter(ECharacter.None, strict: true))
             {
                 // skip completed achievements 
-                if (! achievement.Current.HasValue)
+                if (achievement.Current == null)
                     continue;
 
                 var go = Instantiate(m_TemplateAchievementButton, m_ScrollerContent.transform);

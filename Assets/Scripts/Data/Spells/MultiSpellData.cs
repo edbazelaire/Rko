@@ -10,15 +10,11 @@ using Data.GameManagement;
 using System;
 using System.Linq;
 using Assets.Scripts.Data.DataStructures.SpellSubStructures;
-using Game.Loaders;
 using Data.DataStructures.SpellSubStructures;
-using MyBox;
-using Google.Apis.Sheets.v4.Data;
+using Assets.Scripts.Game;
 
 namespace Data
 {
-
-
     [CreateAssetMenu(fileName = "MultiSpellData", menuName = "Game/Spells/MultiSpellData")]
     public class MultiSpellData : SpellData
     {
@@ -39,6 +35,8 @@ namespace Data
         public EMultiProjectileType MultiProjectileType;
         [Tooltip("Position of the subspells")]
         public SMultiSpellSpawn SubSpellSpawn;
+        [Tooltip("Target of the subspells")]
+        public SMultiSpellSpawn SubSpellTarget;
         [SerializeField, Tooltip("Min/Max height of spell spawn")]
         protected SMinMax m_YMinMax;
         [SerializeField, Tooltip("Should the subspell recalculate its target on spawn ?")]
@@ -60,10 +58,14 @@ namespace Data
         [SerializeField, Tooltip("Delay between each waves")]
         protected float m_DelayBetweenWaves = 0f;
 
-        [Header("MultiP Extra Sound Effects")]
-        [Description("Sound Effect on each wave casted")]
+        [Header("Extra Sound Effects & Animations")]
+        [Tooltip("Animation on each wave casted")]
+        public EAnimation OnCastWaveAnimation = EAnimation.None;
+        [Tooltip("Animation on each wave projectile")]
+        public EAnimation OnCastProjectileAnimation = EAnimation.None;
+        [Tooltip("Sound Effect on each wave casted")]
         public AudioClip OnCastWaveSoundFX = null;
-        [Description("Sound Effect on each projectile casted")]
+        [Tooltip("Sound Effect on each projectile casted")]
         public AudioClip OnCastProjectileSoundFX = null;
 
         // ============================================================================================
@@ -89,7 +91,8 @@ namespace Data
         public override void Cast(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default, bool recalculateTarget = true, bool recalculatePosition = true, bool recalculateRotation = true)
         {
             // init sub spell data
-            m_FinalSubSpellData = GetSubSpellData(GameManager.Instance.GetPlayer(clientId));
+            var caster = GameManager.Instance.GetPlayer(clientId);
+            m_FinalSubSpellData = GetSubSpellData(caster);
 
             // error - exit
             if (m_FinalSubSpellData == null)
@@ -99,11 +102,11 @@ namespace Data
             if (recalculateTarget)
                 CalculateTarget(ref target, clientId);
 
-            // recalculate target depending on spell type
+            // recalculate position depending on spell type
             if (recalculatePosition)
                 RecalculatePosition(ref position, target, clientId);
 
-            // recalculate target depending on spell type
+            // recalculate rotation
             if (recalculateRotation)
                 RecalculateRotation(ref rotation);
 
@@ -113,6 +116,7 @@ namespace Data
                 return;
             }
 
+            GameAnalyticsManager.Instance.IncreaseCounter(caster.AnalyticsId, Parent);
             GameManager.Instance.GetPlayer(clientId).StartCoroutine(CastMultipleWaves(clientId, target, position, rotation));
         }
 
@@ -144,12 +148,15 @@ namespace Data
                     controller.SpellHandler.CallSpellEvent(Name, ESpellEvent.OnStartCast, m_Level);
                 }
 
+                // =============================================================================
+                // PREPARING NEXT PROJECTILE 
                 var delay = DelayBetweenWaves;
                 while (delay > 0)
                 {
                     if (IsCancellable && ! controller.StateHandler.CanCast && m_IsBlocking)
                     {
                         m_IsCancelled = true;
+                        controller.SpellHandler.CallSpellEvent(Name, ESpellEvent.OnCancelCast, m_Level);
                         break;
                     }
 
@@ -180,6 +187,7 @@ namespace Data
 
             ErrorHandler.Log("MutliSpell ENDED : " + Name + " =============================================================", ELogTag.MultiSpells);
 
+            CallSpellEvent(controller, ESpellEvent.OnEnd, target);
             Destroy(this);
         }
 
@@ -193,26 +201,63 @@ namespace Data
                 GameManager.Instance.PlayCastWaveSoundClientRPC(Name);
 
             // block movement and cast until the end
-            Controller controller = GameManager.Instance.GetPlayer(clientId);
+            Controller caster = GameManager.Instance.GetPlayer(clientId);
+
+            // calculate next projectile target
+            Vector3 projectileTarget = CalculateMultiSpellTarget(target, 0, caster.Team);
 
             for (int i = 0; i < NProjectiles; i++)
             {
                 ErrorHandler.Log("          - " + Name + " Projectile (" + i + " / " + NProjectiles + ")", ELogTag.MultiSpells);
 
                 CastOneProjectile(
-                    controller, 
-                    target:     CalculateMultiSpellTarget(target, i, controller.Team),
-                    position:   SubSpellSpawn.Recalculate(position, i, controller.Team, NProjectiles), 
+                    caster, 
+                    target:     projectileTarget,
+                    position:   SubSpellSpawn.Recalculate(position, i, caster.Team, NProjectiles), 
                     rotation:   rotation
                 );
 
-                var delay = DelayBetweenLaunches;
+                // last projectile ? exit loop
+                if (i + 1 >= NProjectiles)
+                    break;
 
+                // =============================================================================
+                // SPECIAL CASE : Jumps - wait that the player has came back
+                if (m_FinalSubSpellData is JumpData jumpData)
+                {
+                    yield return new WaitUntil(() => caster.StateHandler.HasState(EStateEffect.Jump));
+                    yield return new WaitUntil(() => !caster.StateHandler.HasState(EStateEffect.Jump));
+                }
+
+                // =============================================================================
+                // PREPARING NEXT PROJECTILE 
+                // -- calculate next projectile target
+                projectileTarget = CalculateMultiSpellTarget(target, i+1, caster.Team);
+
+                // -- call event of "StartCast" for next spell
+                if (m_FinalSubSpellData != null)
+                    m_FinalSubSpellData.CallSpellEvent(caster, ESpellEvent.OnStartCast, projectileTarget);
+
+                // -- cast animation if any
+                if (OnCastProjectileAnimation != EAnimation.None)
+                {
+                    // special animation for the spell
+                    if (OnCastProjectileAnimation == EAnimation.Self)
+                        caster.AnimationHandler.PlayAnimationClientRPC(Name, DelayBetweenLaunches);
+
+                    // classic anmiation
+                    else
+                        caster.AnimationHandler.PlayAnimationClientRPC(OnCastProjectileAnimation, DelayBetweenLaunches);
+                }
+
+                // start delay
+                var delay = DelayBetweenLaunches;
                 while (delay > 0)
                 {
-                    if (IsCancellable && ! controller.StateHandler.CanCast && m_IsBlocking)
+                    if (IsCancellable && ! caster.StateHandler.CanCast && m_IsBlocking)
                     {
                         m_IsCancelled = true;
+                        caster.SpellHandler.CallSpellEvent(m_FinalSubSpellData.Name, ESpellEvent.OnCancelCast, m_FinalSubSpellData.Level);
                         yield break;
                     }
 
@@ -227,7 +272,6 @@ namespace Data
             // play wave sound if any
             if (OnCastProjectileSoundFX != null)
                 GameManager.Instance.PlayCastProjectileSoundClientRPC(Name);
-
 
             // cast sup spell with delay
             controller.StartCoroutine(m_FinalSubSpellData.CastDelay(
@@ -249,9 +293,6 @@ namespace Data
         protected override void OnDestroy()
         {
             base.OnDestroy();
-
-            if (SubSpellData != null)
-                Destroy(SubSpellData);
         }
 
         #endregion
@@ -267,14 +308,25 @@ namespace Data
         /// <returns></returns>
         protected Vector3 CalculateMultiSpellTarget(Vector3 target, int i, int team)
         {
+            if (SubSpellTarget.HasTargetX)
+            {
+                target = SubSpellTarget.Recalculate(target, i, team, m_NProjectiles);
+                target.y = UnityEngine.Random.Range(m_YMinMax.Min, m_YMinMax.Max);
+                return target;
+            }
+
+            // ==========================================================================================================
+            // DEPRECATED
+            ErrorHandler.Warning("Using deprecated method to calculate SpellTarget for : " + Name);
+
             (float min, float max) = ArenaManager.GetAreaBounds(team, SpellTarget == ESpellTarget.None || IsEnemyTarget);
 
             var zoneSize = ProjectileZoneSize;
             // if projectile size < 0 : use all the size of the arena
             if (zoneSize < 0f)
             {
-                zoneSize = ArenaManager.Instance.TargettableAreaSize;
-                target.x = min + zoneSize / 2;
+                zoneSize    = ArenaManager.Instance.TargettableAreaSize;
+                target.x    = min + zoneSize / 2;
             }
 
             switch (MultiProjectileType)
@@ -283,7 +335,7 @@ namespace Data
                     break;
 
                 case (EMultiProjectileType.Line):
-                    target.x += ((team == 0 ? -1 : 1) * zoneSize / 2) + i * (team == 0 ? 1 : -1) * zoneSize / (NProjectiles - 1);
+                    target.x += ((team == 0 ? -1 : 1) * zoneSize / 2) + (i+1) * (team == 0 ? 1 : -1) * zoneSize / (NProjectiles + 1);
                     break;
 
                 case (EMultiProjectileType.Random):
@@ -331,7 +383,7 @@ namespace Data
                 return null;
             }
 
-            SpellData finalSpellData = SubSpellData;
+            SpellData finalSpellData;
             if (m_UseAutoAttack)
             {
                 finalSpellData = controller.SpellHandler.GetSpellData(controller.SpellHandler.AutoAttack, m_Level);
@@ -339,17 +391,21 @@ namespace Data
                 // handle case where auto attack is a multispell data
                 if (finalSpellData is MultiSpellData multiSpellData && multiSpellData.SubSpellData != null)
                 {
-                    finalSpellData = multiSpellData.SubSpellData;
+                    finalSpellData = multiSpellData.SubSpellData.Clone(m_Level);
                 } else if (finalSpellData is MultiProjectilesData multiProjectilesData && multiProjectilesData.ProjectileData != null)
                 {
                     finalSpellData = multiProjectilesData.ProjectileData;
                 }
+            } else
+            {
+                finalSpellData = SubSpellData.Clone(m_Level);
             }
 
             finalSpellData.SetParent(Parent);
 
             // apply overriding data if any
             finalSpellData.AddOverridingData(m_OverridingSubData, m_Level);
+            finalSpellData.AnimationTimer = DelayBetweenLaunches;
 
             return finalSpellData;
         }
@@ -361,11 +417,6 @@ namespace Data
 
         public override void SetLevel(int level)
         {
-            if (SubSpellData != null)
-            {
-                SubSpellData = SubSpellData.Clone(level);
-            }
-
             base.SetLevel(level);
         }
 
@@ -378,7 +429,8 @@ namespace Data
         {
             string description = base.GetDescription();
             if (SubSpellData != null)
-                description = TextHandler.ReplaceSubSpellData(description, SubSpellData);
+                description = TextHandler.ReplaceSubSpellData(description, SubSpellData.Clone(m_Level, true));
+            description = description.Replace("[DelayBetweenWaves]", DelayBetweenWaves.ToString("F2"));
             return description;
         }
 
@@ -392,7 +444,7 @@ namespace Data
             }
             else if (SubSpellData != null)
             {
-                foreach (var item in SubSpellData.GetInfo())
+                foreach (var item in SubSpellData.Clone(m_Level).GetInfo())
                 {
                     if (keysToIgnore.Contains(item.Key))
                         continue;

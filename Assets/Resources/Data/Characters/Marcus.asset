@@ -19,7 +19,6 @@ MonoBehaviour:
     fading from the Empire\u2019s inner circle. Yet, a prophecy whispers of a Frozenblade
     who will rise to reclaim the glory of their ancestors\\n\\nDriven by an unshakable
     sense of honor, Marcus dedicates his life to restoring his family's lost prestige."
-  m_DescriptionVariables: []
   m_SpellElements: 02000000
   m_AutoAttack: FrozenOrb
   m_SpecialAbility: MarcusIceLance
@@ -33,35 +32,45 @@ MonoBehaviour:
   IsStructure: 0
   HealthScaleFactor: 0.1
   CharacterStatScaling:
-  - StateEffectProperty: 7
-    BaseValue: 20
-    BonusValue: 0
-    ScalingFactor: 0.1
-    SpecialConditions:
-    - IceBreak
-    StateEffectStackFactors: []
   - StateEffectProperty: 4
     BaseValue: 1000
     BonusValue: 0
     ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
-  - StateEffectProperty: 20
-    BaseValue: 0.05
+  - StateEffectProperty: 30
+    BaseValue: 12
     BonusValue: 0
-    ScalingFactor: 0
+    ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
-  - StateEffectProperty: 16
+  - StateEffectProperty: 22
+    BaseValue: 15
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 01000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 30
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 8
     BaseValue: 0.05
     BonusValue: 0
     ScalingFactor: 0.05
-    SpecialConditions: []
-    StateEffectStackFactors: []
-  - StateEffectProperty: 21
-    BaseValue: 0.1
-    BonusValue: 0
-    ScalingFactor: 0
-    SpecialConditions: []
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions:
+    - IceBreak
     StateEffectStackFactors: []
   m_SpecialPowers: []

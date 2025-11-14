@@ -2,6 +2,7 @@
 using Assets.Scripts.Game;
 using Assets.Scripts.Managers.Sound;
 using Data;
+using Data.DataStructures.SpellSubStructures;
 using Data.DataStructures.StateEffectSubStructures;
 using Enums;
 using Game.Character;
@@ -15,6 +16,7 @@ using System.Reflection;
 using Tools;
 using Unity.Collections;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -29,11 +31,13 @@ namespace Game.Spells
         // =========================================================================================
         // ACTIONS
         /// <summary> Event fired at each state effect state </summary>
-        public static Action<string, EStateEffectEvent, int, ulong, ulong, string> StateEffectEvent;
+        public static System.Action<string, EStateEffectEvent, int, ulong, ulong, string> StateEffectStaticEvent;
+        public System.Action<EStateEffectEvent, int, ulong, ulong, string> StateEffectEvent;
 
         // =========================================================================================
         // SERIALIZED DATA
         [Header("Description")]
+        [TextArea(minLines: 1, maxLines: 5)]
         [SerializeField] protected      string                      m_Description           = "";
         [SerializeField] protected      List<EStateEffectProperty>  m_DescriptionVariables  = new List<EStateEffectProperty>();
         [SerializeField] protected      int                         m_NStacksInDescription  = 1;
@@ -53,7 +57,9 @@ namespace Game.Spells
         [Header("General Stats")]
         [SerializeField] protected      bool                        m_IsInstantanious       = false;
         [SerializeField] protected      bool                        m_IsConsumedOnEnd       = false;
+        [SerializeField] protected      bool                        m_IsPreventingOverConsumption = false;
         [SerializeField] protected      bool                        m_IsTrueDamage          = false;
+        [SerializeField] protected      bool                        m_IgnoresBoosts         = false;
         [SerializeField] protected      bool                        m_EndWithShield         = false;
         [SerializeField] protected      bool                        m_EndAt0Stacks          = true;
         [SerializeField] protected      bool                        m_RefreshShield         = true;
@@ -73,6 +79,8 @@ namespace Game.Spells
         protected List<SStateEffectTrigger>                         m_StateEffectTriggers   = new();
         [SerializeField, Tooltip("List of activations effects that are adding stacks")]
         protected List<SStateEffectActivation>                      m_StateEffectActivations = new();
+        [SerializeField, Tooltip("List of spells events that are adding stacks")]
+        protected List<SSpellActivation>                            m_SpellActivations      = new();
 
         [Header("Statistics")]
         [SerializeField] protected      List<SBonusStats>           m_BonusStats;
@@ -128,6 +136,7 @@ namespace Game.Spells
         public bool                     IsActivated         => m_IsActivated;
         public bool                     IsDisplayed         => m_IsDisplayed;
         public bool                     IsTrueDamage         => m_IsTrueDamage;
+        public bool                     IgnoresBoosts       => m_IgnoresBoosts;
         public bool                     IsUnique            => StateEffectType == EStateEffectType.Incarnation;
         public List<StateEffectSpawnGFX> GfxEffects         => m_GfxEffects;
         public EAnimation               Animation           => m_Animation;
@@ -141,6 +150,7 @@ namespace Game.Spells
         public virtual int              MaxStacks           => m_MaxStacks;
         public EStateEffect             ConsumeState        => m_ConsumeState;
         public EStateEffect             DefaultState        => m_DefaultState;
+        public List<SStatConversion>    StatConversions     => m_StatConversions;
         public int                      Level               => m_Level;
         public bool                     IsBuff              => SpellLoader.IsSpell(StateEffectName);
 
@@ -148,6 +158,9 @@ namespace Game.Spells
         {
             get
             {
+                if (this.IsDestroyed())
+                    return "";
+
                 string myName = name;
                 if (myName.EndsWith("(Clone)"))
                     myName = myName[..^"(Clone)".Length];
@@ -206,9 +219,6 @@ namespace Game.Spells
             // register spell listeners
             RegisterListeners();
 
-            // call state effect that effect has been APPLIED
-            CallStateEffectEvent(EStateEffectEvent.OnApplied, m_Stacks, m_Controller.PlayerId, m_Caster.PlayerId);
-
             // has delay : activate in "m_Delay" seconds
             if (m_Delay > 0)
             {
@@ -221,7 +231,7 @@ namespace Game.Spells
                 return true;
 
             // activate effects that applies when the spell is ready
-            Activate();
+            CallStateEffectEvent(EStateEffectEvent.OnApplied, m_Stacks, m_Controller.PlayerId, m_Caster.PlayerId);
 
             // if spell is instantanious do not proceed after initalization in state handler
             if (m_IsInstantanious)
@@ -238,7 +248,21 @@ namespace Game.Spells
         /// <summary>
         /// Allow children to run code BEFORE enabling the spell
         /// </summary>
-        protected virtual void ApplyPreProcessing() { }
+        protected virtual void ApplyPreProcessing() 
+        {
+            ApplyExtraEffects();
+        }
+
+        protected void ApplyExtraEffects()
+        {
+            foreach (StateEffect stateEffect in m_Caster.StateHandler.StateEffects)
+            {
+                if (stateEffect is not StateEffectMod stateEffectMod)
+                    continue;
+
+                ApplyModOverride(stateEffectMod);
+            }
+        }
 
         /// <summary>
         /// Method that allows children to make a verification before instantiating this
@@ -262,7 +286,7 @@ namespace Game.Spells
             m_IsStarted = true;
 
             // reset data before start
-            RefreshStats();
+            RefreshStats(force: true);
 
             // start holding
             ActivateHoldingStateEffects(true);
@@ -291,6 +315,22 @@ namespace Game.Spells
         protected virtual void ApplyPostProcessing() { }
 
         /// <summary>
+        /// Apply overrides from an StateEffect Modificator
+        /// </summary>
+        /// <param name="stateEffectMod"></param>
+        public void ApplyModOverride(StateEffectMod stateEffectMod)
+        {
+            // check can be applied on this effect
+            if (!stateEffectMod.CheckCanBeApplied(this))
+                return;
+
+            if (stateEffectMod.BonusStatsOverride.IsNullOrEmpty())
+                return;
+
+            OverrideBonusStats(stateEffectMod.BonusStatsOverride, stateEffectMod.Level, stateEffectMod.Stacks);
+        }
+
+        /// <summary>
         /// Allow wraper data to override the state effect's data
         /// </summary>
         public void OverrideStateEffectData(List<SStateEffectProperty> overridingProperties)
@@ -302,6 +342,57 @@ namespace Game.Spells
             {
                 SetProperty(overridingProperty.StateEffectProperty, overridingProperty.Value);
             }
+        }
+
+        public void OverrideBonusStats(List<SBonusStatsOverride> bonusStatsOverrides, int overridingEffectLevel, int overridingEffectStacks)
+        {
+            foreach (SBonusStatsOverride bonusStatsOverride in bonusStatsOverrides)
+            {
+                if (CheckSpecialReplacementValues(bonusStatsOverride, overridingEffectLevel, overridingEffectStacks))
+                    continue;
+
+                int index;
+                switch (bonusStatsOverride.OverridingType)
+                {
+                    case EOverridingType.Additive:
+                        if (TryGetBonusStatIndex(bonusStatsOverride.BonusStat.StateEffectProperty, out index))
+                        {
+                            ErrorHandler.Warning($"Case not handled yet : Adding already existing bonus stat : {bonusStatsOverride.BonusStat.StateEffectProperty} in state effect {StateEffectName}");
+                            return;
+                        }
+                        m_BonusStats.Add(bonusStatsOverride.BonusStat);
+                        break;
+
+                    case EOverridingType.Replacement:
+                        if (TryGetBonusStatIndex(bonusStatsOverride.BonusStat.StateEffectProperty, out index))
+                        {
+                            ErrorHandler.Warning($"Case not handled yet : Replacing already existing bonus stat : {bonusStatsOverride.BonusStat.StateEffectProperty} in state effect {StateEffectName}");
+                            return;
+                        }
+                        m_BonusStats.Add(bonusStatsOverride.BonusStat);
+                        break;
+
+                    case EOverridingType.Multiply:
+                        if (TryGetBonusStatIndex(bonusStatsOverride.BonusStat.StateEffectProperty, out index))
+                        {
+                            m_BonusStats[index].BaseValue *= bonusStatsOverride.BonusStat.Get(overridingEffectLevel, overridingEffectStacks);
+                            return;
+                        }
+                        break;
+                }
+            }
+        }
+
+        protected virtual bool CheckSpecialReplacementValues(SBonusStatsOverride bonusStatsOverride, int level, int stacks)
+        {
+            switch (bonusStatsOverride.BonusStat.StateEffectProperty)
+            {
+                case EStateEffectProperty.MaxStacks:
+                    m_MaxStacks = (int)Math.Round(bonusStatsOverride.BonusStat.Get(level, stacks));
+                    return true;
+            }
+
+            return false;
         }
 
         public void PlaySoundEffect()
@@ -375,10 +466,6 @@ namespace Game.Spells
             if (m_IsActivated)
                 return;
 
-            if (! m_IsStarted)
-                OnStart();
-
-            m_IsActivated = true;
             CallStateEffectEvent(EStateEffectEvent.OnActivated, m_Stacks, m_Controller.PlayerId, m_Caster.PlayerId);
         }
 
@@ -444,12 +531,18 @@ namespace Game.Spells
                 End();
         }
 
-        protected virtual void RefreshStats()
+        protected virtual void RefreshStats(bool force = false)
+        {
+            if (force)
+                RefreshDuration();
+
+            if (force || m_RefreshShield)
+                RefreshShield();
+        }
+
+        public void RefreshDuration()
         {
             m_Timer = m_Duration;
-
-            if (m_RefreshShield)
-                RefreshShield();
         }
 
         /// <summary>
@@ -461,14 +554,32 @@ namespace Game.Spells
         {
             if (m_Controller == null)
                 return;
+            
+            // refresh duration if is 0 stacks or above max stacks
+            if (stacks <= 0 || (m_MaxStacks > 0 && (stacks + m_Stacks > m_MaxStacks)))
+            {
+                RefreshDuration();
+            } 
 
-            // if stacks > 0 -> just refresh timer
-            if (m_Stacks > 0 && level > 0)
+            // avoid getting above max number of stacks
+            if (m_MaxStacks > 0)
+                stacks = Math.Min(m_MaxStacks - m_Stacks, stacks);
+
+            // refresh shield if necessary
+            if (m_RefreshShield)
+                RefreshShield(stacks);
+
+            // adjust mean level of the effect
+            if (m_Stacks > 0 && stacks > 0 && level > 0 && level != m_Level)
             {
                 // re-adjust level
                 SetLevel((int)Math.Round((float)(m_Level * m_Stacks + level * stacks) / (m_Stacks + stacks)));
             }
+
+            // update number of stacks
             SetStacks(m_Stacks + stacks);
+
+            // send event that the spell has been refreshed N times
             CallStateEffectEvent(EStateEffectEvent.OnRefreshed, stacks, m_Controller.PlayerId, m_Caster.PlayerId);
         }
 
@@ -519,6 +630,14 @@ namespace Game.Spells
             // if has state to consume 
             if (targetController.StateHandler.HasState(m_ConsumeState))
             {
+                // recalculate max number of stacks that can be applied (to avoid overconsumption)
+                if (m_IsPreventingOverConsumption)
+                {
+                    StateEffect stateEffect = targetController.StateHandler.GetStateEffect(StateEffectName);
+                    if (stateEffect != null)
+                        stacks = Math.Min(stacks, stateEffect.MaxStacks - stateEffect.Stacks);
+                }
+
                 // consume "ConsumeState" state to apply current state
                 return targetController.StateHandler.RemoveStateEffect(m_ConsumeState, true, stacks);
             }
@@ -592,6 +711,7 @@ namespace Game.Spells
         }
 
         #endregion
+
 
         #region Shield
 
@@ -728,12 +848,12 @@ namespace Game.Spells
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        public bool HasEffectProperty(EStateEffectProperty property)
+        public bool HasEffectProperty(EStateEffectProperty property, EDamageCategory? damageCategory = null, EHitCategory? hitCategory = null, string specialCondition = "")
         {
-            if (! m_BonusStats.IsNullOrEmpty() && m_BonusStats.Any(value => value.StateEffectProperty == property))
+            if (! m_BonusStats.IsNullOrEmpty() && m_BonusStats.Any(value => value.StateEffectProperty == property && value.CheckConditions(damageCategory, hitCategory, specialCondition)))
                 return true;
 
-            if (! m_StatConversions.IsNullOrEmpty() && m_StatConversions.Any(value => value.HasStat(property)))
+            if (! m_StatConversions.IsNullOrEmpty() && m_StatConversions.Any(value => value.HasStat(property, damageCategory, hitCategory, specialCondition)))
                 return true;
 
             return TryGetPropertyInfo(property, out _, throwError: false);
@@ -763,12 +883,22 @@ namespace Game.Spells
             return true;
         }
 
-        protected virtual void AddProperties(List<SBonusStats> bonusStats)
+        protected virtual void ReplaceBonusStats(List<SBonusStats> bonusStats)
         {
             foreach (SBonusStats bonusStat in bonusStats)
             {
-                AddProperty(bonusStat.StateEffectProperty, bonusStat.Get(m_Level, m_Stacks));
+                ReplaceBonusStat(bonusStat);
             }
+        }
+
+        protected virtual void ReplaceBonusStat(SBonusStats bonusStat)
+        {
+            if (TryGetBonusStatIndex(bonusStat.StateEffectProperty, out int index))
+            {
+                m_BonusStats.RemoveAt(index);
+            }
+
+            m_BonusStats.Add(bonusStat);
         }
 
         /// <summary>
@@ -786,15 +916,17 @@ namespace Game.Spells
             }
 
             // CHECK : Bonus Stats
-            if (! TryGetBonusStat(property, out SBonusStats bonusStats))
+            if (TryGetBonusStat(property, out SBonusStats bonusStats))
             {
-                bonusStats = new SBonusStats(property, 0);
+                bonusStats.BaseValue += fValue;
+            } else
+            {
+                m_BonusStats.Add(new SBonusStats(property, fValue));
             }
-            bonusStats.BaseValue += fValue;
 
             // SPECIAL CASE : Shield
             if (property == EStateEffectProperty.Shield)
-                AddShield((int)Math.Round(bonusStats.Get(m_Level, m_Stacks)));
+                AddShield((int)Math.Round(bonusStats.Get(m_Level, m_Stacks, m_Controller)));
         }
 
         /// <summary>
@@ -878,12 +1010,12 @@ namespace Game.Spells
         /// </summary>
         /// <param name="property"></param>
         /// <returns></returns>
-        public virtual object GetProperty(EStateEffectProperty property, bool ignoreConversion = false, string specialCondition = "")
+        public virtual object GetProperty(EStateEffectProperty property, bool ignoreConversion = false, EDamageCategory? damageCategory = null, EHitCategory? hitCategory = null, string specialCondition = "")
         {
             object value;
 
             // check BONUS stats
-            if (TryGetBonusStatValue(property, out float fValue, Stacks, specialCondition: specialCondition))
+            if (TryGetBonusStatValue(property, out float fValue, Stacks, damageCategory: damageCategory, hitCategory: hitCategory, specialCondition: specialCondition))
                 value = fValue;
 
             // [DEPRECATED] check PROPERTY info
@@ -899,7 +1031,7 @@ namespace Game.Spells
             {
                 foreach (SStatConversion statConversion in m_StatConversions)
                 {
-                    if (statConversion.HasStat(property))
+                    if (statConversion.HasStat(property, damageCategory: damageCategory, hitCategory: hitCategory, specialCondition: specialCondition))
                     {
                         if (value == null)
                             value = 0f;
@@ -918,7 +1050,7 @@ namespace Game.Spells
             return value;
         }
 
-        protected virtual T GetProperty<T>(EStateEffectProperty property, bool ignoreConversion = false)
+        protected virtual T GetProperty<T>(EStateEffectProperty property, bool ignoreConversion = false, EDamageCategory? damageCategory = null, EHitCategory? hitCategory = null, string specialCondition = "")
         {
             object value = GetProperty(property, ignoreConversion);
             if (value == null)
@@ -962,17 +1094,35 @@ namespace Game.Spells
 
         #region Data Accessors
 
-        public virtual bool TryGetBonusStat(EStateEffectProperty property, out SBonusStats bonusStats, string specialCondition = "")
+        /// <summary>
+        /// Get ALL bonus stats linked to a property
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="bonusStats"></param>
+        /// <returns></returns>
+        public virtual bool TryGetAllBonusStats(EStateEffectProperty property, out List<SBonusStats> bonusStats)
         {
-            // init value
-            bonusStats = default;
+            bonusStats = new();
 
             // check if bonus stats provided
             if (m_BonusStats.IsNullOrEmpty())
                 return false;
 
+            bonusStats = m_BonusStats.Where(value => value.StateEffectProperty == property).ToList();
+
+            if (bonusStats.Count() == 0)
+                return false;
+
+            return true;
+        }
+
+        public virtual bool TryGetBonusStat(EStateEffectProperty property, out SBonusStats bonusStats, EDamageCategory? damageCategory = null, EHitCategory? hitCategory = null, string specialCondition = "")
+        {
+            // init value
+            bonusStats = default;
+
             // check that bonus stats has requested value
-            if (! TryGetBonusStatIndex(property, out int index, specialCondition))
+            if (! TryGetBonusStatIndex(property, out int index, damageCategory, hitCategory, specialCondition))
                 return false;
 
             // get bonus stats
@@ -980,7 +1130,7 @@ namespace Game.Spells
             return true;
         }
 
-        public virtual bool TryGetBonusStatIndex(EStateEffectProperty property, out int index, string specialCondition = "")
+        public virtual bool TryGetBonusStatIndex(EStateEffectProperty property, out int index, EDamageCategory? damageCategory = null, EHitCategory? hitCategory = null, string specialCondition = "")
         {
             // init value
             index = -1;
@@ -989,31 +1139,31 @@ namespace Game.Spells
             if (m_BonusStats.IsNullOrEmpty())
                 return false;
 
-            index = m_BonusStats.FirstIndex(value => value.StateEffectProperty == property && value.HasSpecialCondition(specialCondition));
+            index = m_BonusStats.FirstIndex(value => value.StateEffectProperty == property && value.CheckConditions(damageCategory,  hitCategory, specialCondition));
             if (index < 0)
                 return false;
 
             return true;
         }
 
-        public virtual bool TryGetBonusStatValue(EStateEffectProperty property, out float value, int stacks, string specialCondition = "")
+        public virtual bool TryGetBonusStatValue(EStateEffectProperty property, out float value, int stacks, EDamageCategory? damageCategory = null, EHitCategory? hitCategory = null, string specialCondition = "")
         {
             value = 0f;
 
             // check if bonus stats exists
-            if (! TryGetBonusStat(property, out SBonusStats bonusStats, specialCondition))
+            if (!TryGetBonusStat(property, out SBonusStats bonusStats, damageCategory, hitCategory, specialCondition))
                 return false;
 
-            value = bonusStats.Get(m_Level, stacks, specialCondition);
+            value = bonusStats.Get(m_Level, stacks, m_Controller, damageCategory, hitCategory, specialCondition);
             return true;
         }
 
-        public virtual int GetInt(EStateEffectProperty property, int? stacks = null, string specialCondition = "") 
+        public virtual int GetInt(EStateEffectProperty property, int? stacks = null, EDamageCategory? damageCategory = null, EHitCategory? hitCategory = null, string specialCondition = "") 
         {
-            if (TryGetBonusStatValue(property, out float value, stacks ?? Stacks, specialCondition))
+            if (TryGetBonusStatValue(property, out float value, stacks ?? Stacks, damageCategory, hitCategory, specialCondition))
                 return (int)Mathf.Round(value);
 
-            if (!HasEffectProperty(property))
+            if (!HasEffectProperty(property, damageCategory, hitCategory, specialCondition))
                 return 0;
 
             SStateEffectScaling stateEffectScalingStacks = m_StateEffectScalingStacks.FirstOrDefault(effect => effect.StateEffectProperty == property);
@@ -1026,7 +1176,7 @@ namespace Game.Spells
             if (m_Controller == null)
                 return baseValue;
 
-            int boostedValue        = m_Caster.StateHandler.ApplyBonusInt(baseValue, property, m_Controller, specialCondition);                                                              // Bonus values applied to the property
+            int boostedValue        = m_Caster.StateHandler.ApplyBonusInt(baseValue, property, m_Controller, damageCategory, hitCategory, specialCondition);                                                              // Bonus values applied to the property
 
             // get percentage 
             stacks ??= Stacks;
@@ -1036,12 +1186,12 @@ namespace Game.Spells
             return (int)Mathf.Round(boostedValue * stacksFactor);    
         }
 
-        public virtual float GetFloat(EStateEffectProperty property, bool ignoreConversion = false, int? stacks = null, string specialCondition = "") 
+        public virtual float GetFloat(EStateEffectProperty property, bool ignoreConversion = false, int? stacks = null, EDamageCategory? damageCategory = null, EHitCategory? hitCategory = null, string specialCondition = "") 
         {
-            if (TryGetBonusStatValue(property, out float value, stacks ?? Stacks, specialCondition))
+            if (TryGetBonusStatValue(property, out float value, stacks ?? Stacks, damageCategory: damageCategory, hitCategory: hitCategory, specialCondition: specialCondition))
                 return value;
 
-            if (!HasEffectProperty(property))
+            if (!HasEffectProperty(property, damageCategory, hitCategory, specialCondition))
                 return 0f;
 
             SStateEffectScaling stateEffectScaling = m_StateEffectScalingStacks.FirstOrDefault(effect => effect.StateEffectProperty == property);
@@ -1086,7 +1236,8 @@ namespace Game.Spells
             ErrorHandler.Log($"{StateEffectName} - {stateEffectEvent} : {stacks} stacks", ELogTag.StateEffects);
             
             // call event on server side
-            StateEffect.StateEffectEvent?.Invoke(StateEffectName, stateEffectEvent, stacks, targetId, casterId, m_Origin);
+            StateEffect.StateEffectStaticEvent?.Invoke(StateEffectName, stateEffectEvent, stacks, targetId, casterId, m_Origin);
+            StateEffectEvent?.Invoke(stateEffectEvent, stacks, targetId, casterId, m_Origin);
 
             switch (stateEffectEvent)
             {
@@ -1126,7 +1277,7 @@ namespace Game.Spells
             // OFFLINE      ---------------------------------------------------------------------
             if (GameManager.Instance.IsOfflineMode)
             {
-                m_Controller.StateHandler.CallOnStateEffectEventUI(stateEffectEvent, StateEffectName, stacks, m_MaxStacks, m_Duration, m_Caster.PlayerId);
+                m_Controller.StateHandler.CallOnStateEffectEventUI(stateEffectEvent, StateEffectName, stacks, m_MaxStacks, m_Duration, m_Timer, m_Caster.PlayerId);
                 return; 
             }
 
@@ -1140,10 +1291,14 @@ namespace Game.Spells
 
         protected virtual void OnApplied(int stacks) 
         {
+            // call first set of method if has never been started
+            OnStart();
+
+            // call refresh
             OnRefreshed(stacks);
 
-            // activate shield for the first time
-            RefreshShield();
+            // call activation
+            OnActivated();
         }
 
         protected virtual void OnRefreshed(int stacks) 
@@ -1151,9 +1306,8 @@ namespace Game.Spells
             if (stacks == 0)
                 return;
 
-            // ================================================================================================
-            // GENERAL STATISTICS
-            RefreshStats();
+            // send event to the Analytics
+            GameAnalyticsManager.Instance.IncreaseCounter(m_Caster.IsSpawn ? m_Caster.SpawnOwner.PlayerId : m_Caster.PlayerId, m_Parent, stacks);
 
             // ================================================================================================
             // ENERGY                   - check if should add energy
@@ -1162,7 +1316,7 @@ namespace Game.Spells
                 m_Caster.EnergyHandler.AddEnergy(value);
 
             // ================================================================================================
-            // ENERGY                   - check if should add energy
+            // BONUS HP                 - check if should add Max HP
             value = GetInt(EStateEffectProperty.Hp, stacks);
             if (value != 0)
                 m_Controller.Life.AddHp(value);
@@ -1173,16 +1327,19 @@ namespace Game.Spells
             if (value != 0)
             {
                 // add bonus damage IF there are special "bonus damage" for this effect (StateEffect dont use common bonus damage)
-                value = m_Caster.StateHandler.ApplyBonusTickDamage(value, m_Controller, specialCondition: SBonusStats.AsUnique(StateEffectName));
+                if (!m_IgnoresBoosts)
+                    value = m_Caster.StateHandler.ApplyBonusDamage(value, m_Controller, EDamageCategory.Magical, EHitCategory.Direct, specialCondition: StateEffectName);
 
                 // hit target
-                value = m_Controller.Life.Hit(value, casterId: m_Caster.PlayerId, source: m_Parent, spellCategory: ESpellCategory.Direct, ignoreRes: m_IsTrueDamage);
+                value = m_Controller.Life.Hit(value, casterId: m_Caster.PlayerId, source: m_Parent, damageCategory: EDamageCategory.Magical, hitCategory: EHitCategory.Direct, ignoreRes: m_IsTrueDamage);
 
                 // apply lifesteal (on caster)
-                var lifesteal = Mathf.Max(0f, GetInt(EStateEffectProperty.LifeSteal) + m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal, m_Controller, specialCondition: SBonusStats.AsUnique(StateEffectName)) - 1);
+                var lifesteal = GetFloat(EStateEffectProperty.LifeSteal);
+                if (!m_IgnoresBoosts)
+                    lifesteal += m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal, m_Controller, specialCondition: SBonusStats.AsUnique(StateEffectName)) - 1;
                 if (lifesteal > 0)
                 {
-                    m_Caster.Life.Heal((int)Mathf.Round(value * lifesteal), m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct);
+                    m_Caster.Life.Heal((int)Mathf.Round(value * lifesteal), m_Caster.PlayerId, StateEffectName, EHitCategory.Direct);
                 }
             }
 
@@ -1192,18 +1349,19 @@ namespace Game.Spells
             if (value != 0)
             {
                 // add bonus execution damage
-                value = m_Caster.StateHandler.ApplyBonusExecutionDamage(value, m_Controller, specialCondition: StateEffectName);
+                if (!m_IgnoresBoosts)
+                    value = m_Caster.StateHandler.ApplyBonusDamage(value, m_Controller, EDamageCategory.Magical, EHitCategory.Execution, specialCondition: StateEffectName);
                 var lethality = m_Caster.StateHandler.GetFloat(EStateEffectProperty.Lethality, m_Controller, specialCondition: StateEffectName);
                 var finalDamage = (int)Math.Round(value * (lethality + 1 - m_Controller.Life.PercHp));
 
                 // hit target
-                m_Controller.Life.Hit(finalDamage, casterId: m_Caster.PlayerId, source: m_Parent, spellCategory: ESpellCategory.Direct, ignoreRes: m_IsTrueDamage);
+                m_Controller.Life.Hit(finalDamage, casterId: m_Caster.PlayerId, source: m_Parent, damageCategory: EDamageCategory.Magical, hitCategory: EHitCategory.Execution, ignoreRes: m_IsTrueDamage);
 
                 // apply lifesteal (on caster)
                 var lifesteal = Mathf.Max(0f, GetInt(EStateEffectProperty.LifeSteal) + m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal, m_Controller, specialCondition: SBonusStats.AsUnique(StateEffectName)) - 1);
                 if (lifesteal > 0)
                 {
-                    m_Caster.Life.Heal((int)Mathf.Round(finalDamage * lifesteal), m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct);
+                    m_Caster.Life.Heal((int)Mathf.Round(finalDamage * lifesteal), m_Caster.PlayerId, StateEffectName, EHitCategory.Direct);
                 }
             }
 
@@ -1211,7 +1369,7 @@ namespace Game.Spells
             // HEALING                  -  check if should heal the target
             value = GetInt(EStateEffectProperty.Heal, stacks);
             if (value != 0)
-                m_Controller.Life.Heal(value, casterId: m_Caster.PlayerId, source: m_Parent, spellCategory: ESpellCategory.Direct);
+                m_Controller.Life.Heal(value, casterId: m_Caster.PlayerId, source: m_Parent, spellCategory: EHitCategory.Direct);
 
             // ================================================================================================
             // COOLDOWN REDUCTION
@@ -1231,27 +1389,35 @@ namespace Game.Spells
             if (value != 0)
             {
                 // add "BonusDamage" to the end damage value [ONLY] for damage that are boosting this state effect
-                value = m_Caster.StateHandler.ApplyBonusDamage(value, m_Controller, SBonusStats.AsUnique(StateEffectName));
+                if (! m_IgnoresBoosts)
+                    value = m_Caster.StateHandler.ApplyBonusDamage(value, m_Controller, EDamageCategory.Magical, EHitCategory.Direct, specialCondition: StateEffectName);
 
                 // hit target
-                m_Controller.Life.Hit(value, casterId: m_Caster.PlayerId, source: StateEffectName, spellCategory: ESpellCategory.Direct, ignoreRes: m_IsTrueDamage);
+                m_Controller.Life.Hit(value, casterId: m_Caster.PlayerId, source: StateEffectName, damageCategory: EDamageCategory.Magical, hitCategory: EHitCategory.Direct, ignoreRes: m_IsTrueDamage);
 
                 // apply lifesteal (on caster)
                 var lifesteal = GetFloat(EStateEffectProperty.LifeSteal, stacks: stacks, specialCondition: StateEffectName);
-                lifesteal = m_Caster.StateHandler.ApplyBonus(lifesteal, EStateEffectProperty.BonusTickLifeSteal, m_Controller, StateEffectName);
+                if (!m_IgnoresBoosts)
+                    lifesteal = m_Caster.StateHandler.ApplyBonus(lifesteal, EStateEffectProperty.BonusLifeSteal, m_Controller, damageCategory: EDamageCategory.Magical, hitCategory: EHitCategory.Direct, specialCondition: StateEffectName);
                 if (lifesteal > 0)
                 {
-                    m_Caster.Life.Heal((int)Mathf.Round(value * lifesteal), m_Caster.PlayerId, StateEffectName, ESpellCategory.Direct);
+                    m_Caster.Life.Heal((int)Mathf.Round(value * lifesteal), m_Caster.PlayerId, StateEffectName, EHitCategory.Direct);
                 }
             }
 
             // check if should add energy
             value = GetInt(EStateEffectProperty.EndHeal, stacks);
             if (value != 0)
-                m_Controller.Life.Heal(value, casterId: m_Caster.PlayerId, source: StateEffectName, spellCategory: ESpellCategory.Direct);
+                m_Controller.Life.Heal(value, casterId: m_Caster.PlayerId, source: StateEffectName, spellCategory: EHitCategory.Direct);
         }
 
-        protected virtual void OnActivated() { }
+        protected virtual void OnActivated() 
+        {
+            if (!m_IsStarted)
+                CallStateEffectEvent(EStateEffectEvent.OnApplied, m_Stacks, m_Controller.PlayerId, m_Caster.PlayerId);
+
+            m_IsActivated = true;
+        }
 
         protected virtual void OnDeactivated() { }
 
@@ -1262,14 +1428,22 @@ namespace Game.Spells
 
         #region Shield
 
-        protected virtual void RefreshShield()
+        protected virtual void RefreshShield(int nStacks = -1)
         {
-            SetShield(GetInt(EStateEffectProperty.Shield, m_Stacks));
+            if (!TryGetBonusStat(EStateEffectProperty.Shield, out _))
+                return;
+
+            if (nStacks <= 0)
+                nStacks = m_Stacks; 
+
+            AddShield(GetInt(EStateEffectProperty.Shield, nStacks));
+            m_Controller.StateHandler.RecalculateBonus();
         }
 
         protected virtual void AddShield(int value)
         {
-            SetShield(m_RemainingShield + value);
+            // add shield value (make sure that value + remaining is not above max shield per stacks)
+            SetShield(Math.Min(GetInt(EStateEffectProperty.Shield, m_Stacks), m_RemainingShield + value));
         }
 
         protected virtual void SetShield(int value)
@@ -1283,7 +1457,7 @@ namespace Game.Spells
             // send added shield to analytics
             var shieldAdded = m_RemainingShield - currentShield;
             if (shieldAdded > 0)
-                GameAnalyticsManager.Instance.OnSpellHit(m_Controller.PlayerId, m_Controller.PlayerId, StateEffectName, shieldAdded, EHitType.Shield, ESpellCategory.Direct);
+                GameAnalyticsManager.Instance.OnSpellHit(m_Controller.AnalyticsId, m_Controller.PlayerId, StateEffectName, shieldAdded, EHitType.Shield, EHitCategory.Direct);
         }
 
         #endregion
@@ -1304,11 +1478,17 @@ namespace Game.Spells
 
         protected virtual void RegisterListeners()
         {
+            if (m_Controller == null || !m_Controller.IsServer)
+                return;
+
             m_Controller.StateHandler.HoldingStateEffects.OnListChanged += RecheckIsHolding;
             RegisterTriggers();
 
             if (m_StateEffectActivations.Count() > 0)
-                StateEffect.StateEffectEvent += OnStateEffectEvent;
+                StateEffect.StateEffectStaticEvent += OnStateEffectEvent;
+
+            if (m_SpellActivations.Count() > 0)
+                Spell.OnSpellSpawn += OnSpellSpawn;
         }
 
         protected virtual void UnRegisterListeners()
@@ -1319,7 +1499,7 @@ namespace Game.Spells
             UnRegisterTriggers();
 
             if (m_StateEffectActivations.Count() > 0)
-                StateEffect.StateEffectEvent -= OnStateEffectEvent;
+                StateEffect.StateEffectStaticEvent -= OnStateEffectEvent;
         }
 
         void RecheckIsHolding(NetworkListEvent<FixedString64Bytes> changeEvent)
@@ -1381,6 +1561,43 @@ namespace Game.Spells
             }
         }
 
+        void OnSpellSpawn(Spell spell)
+        {
+            if (!GameManager.IsGameRunning)
+                return;
+
+            if (spell.Caster != m_Caster)
+                return;
+
+            foreach (SSpellActivation spellActivation in m_SpellActivations)
+            {
+                if (! (
+                    spellActivation.SpellName == spell.SpellData.Name 
+                    || (spellActivation.SpellName == "AutoAttack" && m_Caster.SpellHandler.IsAutoAttack(spell.SpellData))
+                    )
+                )
+                    continue;
+
+                // SPAWN : refresh instantly
+                if (spellActivation.SpellEvent == ESpellEvent.OnSpawn)
+                {
+                    Refresh(spellActivation.Stacks);
+                    return;
+                }
+
+                // duplicate to keep the value inside the callback
+                var spellActivationCopy = spellActivation;
+                
+                spell.OnSpellEvent += (ESpellEvent spellEvent) =>
+                {
+                    if (spellEvent == spellActivationCopy.SpellEvent)
+                    {
+                        Refresh(spellActivationCopy.Stacks);
+                    }
+                };
+            }
+        }
+
         #endregion
 
 
@@ -1407,13 +1624,24 @@ namespace Game.Spells
                 if (GetSpecialPropertiesInfos(ref infosDict, property))
                     continue;
 
-                var value = GetProperty(property, ignoreConversion: true);
-                if (value is float fValue && fValue == 0f)
-                    continue;
-                if (value is int iValue && iValue == 0)
-                    continue;
+                // check if has value as BonusStat
+                if (TryGetAllBonusStats(property, out List<SBonusStats> bonusStats))
+                {
+                    foreach (SBonusStats bonusStat in bonusStats)
+                    {
+                        infosDict.Add(bonusStat.GetKeyName(), bonusStat.ForceGet(m_Level, 1));
+                    }
+                }
+                else
+                {
+                    var value = GetProperty(property, ignoreConversion: true);
+                    if (value is float fValue && fValue == 0f)
+                        continue;
+                    if (value is int iValue && iValue == 0)
+                        continue;
 
-                infosDict.Add(property.ToString(), value);
+                    infosDict.Add(property.ToString(), value);
+                }
             }
 
             return infosDict;
@@ -1427,6 +1655,14 @@ namespace Game.Spells
         /// <returns></returns>
         protected virtual bool GetSpecialPropertiesInfos(ref Dictionary<string, object> infosDict, EStateEffectProperty property)
         {
+            // CHECK special name conversion first
+            string propertyName = property.ToString();
+            if (PropertyHandler.ConvertSpecialPropertyName(ref propertyName))
+            {
+                infosDict[propertyName] = GetProperty<float>(property);
+                return true;
+            }
+
             switch (property)
             {
                 case EStateEffectProperty.None:
@@ -1479,8 +1715,10 @@ namespace Game.Spells
                 values.Add(TextHandler.FormatPropertyIcon(property.ToString(), value, withPropertyName: false, scaling: scaling));
             }
 
-            var description = TextHandler.ReplaceStateEffectTokens(string.Format(m_Description, values.ToArray()));
+            string description = TextHandler.ReplaceStateEffectTokens(string.Format(m_Description, values.ToArray()));
+            description = TextHandler.ReplaceKeyWords(description);
             description = TextHandler.ReplaceStateEffectProperties(description, this);
+            description = TextHandler.ReplaceStatConversion(description, m_StatConversions, m_Level);
             ReplaceSubStateEffects(ref description);
             return description;
         }

@@ -36,7 +36,7 @@ namespace Menu.Common.Buttons
         
         public void Initialize(string avatar, string border)
         {
-            base.Initialize(name, EAchievementReward.None);
+            base.Initialize(name, EAchievementReward.Avatar);
 
             // setup Avatar Icon & Border
             SetAvatar(avatar);

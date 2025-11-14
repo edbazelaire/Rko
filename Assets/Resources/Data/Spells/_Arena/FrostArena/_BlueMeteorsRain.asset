@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: _BlueMeteorsRain
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: Each {0} seconds, {1} orbs fall from the sky. If they hit the GROUND,
-    the caster gains 1 [AzurePowerOrb] stack and heals for [SubSpellData.Heal] hp
+  m_Description: Each [DelayBetweenWaves] seconds, [NProjectiles] orbs fall from
+    the sky. If they hit the GROUND, the caster gains 1 [AzurePowerOrb] stack and
+    heals for [SubSpellData.Heal] hp
   m_DescriptionVariables:
   - Name: DelayBetweenWaves
     WithIcon: 1
@@ -25,6 +26,7 @@ MonoBehaviour:
   Graphics: {fileID: 0}
   SpellEventActions: []
   OnHit: []
+  PassiveEffects: []
   SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -48,12 +50,22 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
-  m_NCharges: 1
+  m_MaxHit: 1
+  m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
   m_Damage: 1
   m_ExecutionDamage: 0
+  m_Damages:
+  - m_BaseValue: 1
+    m_DamageCategory: 2
+    m_HitCategory: 1
+    m_SpellPropertyScaling:
+      Property: 0
+      Value: 0
+      ScalingType: 0
+      RoundingType: 0
+      ScalingTresholds: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -64,28 +76,67 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
+    m_Targets: 
   m_SpellsScalingLevel:
   - Property: 9
     Value: -0.05
     ScalingType: 0
+    RoundingType: 0
+    ScalingTresholds: []
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
   m_Size: 1
   TriggerPlayer: 1
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
   EnemyStateEffects: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 0
   IsCancellable: 0
+  IsInterruptable: 1
   AnimationTimer: 0
   m_Cooldown: 0
   SubSpellData: {fileID: 11400000, guid: 1d7b1882e97b8114b81eb211e2b3a767, type: 2}
   m_UseAutoAttack: 0
+  m_OverridingSubData: []
   MultiProjectileType: 0
   SubSpellSpawn:
     m_SpellTargetX:
       m_Dimension: 1
       m_MultiSpellTarget: 0
       m_ZoneSize: -1
+      m_NBreakPointMargin:
+        Min: 0
+        Max: 0
       m_NBreakPoints: 1
       m_OffsetMinMax:
         Min: 0
@@ -94,7 +145,33 @@ MonoBehaviour:
       m_Dimension: 2
       m_MultiSpellTarget: 0
       m_ZoneSize: -1
+      m_NBreakPointMargin:
+        Min: 0
+        Max: 0
       m_NBreakPoints: 1
+      m_OffsetMinMax:
+        Min: 0
+        Max: 0
+  SubSpellTarget:
+    m_SpellTargetX:
+      m_Dimension: 1
+      m_MultiSpellTarget: 1
+      m_ZoneSize: 0
+      m_NBreakPointMargin:
+        Min: 0
+        Max: 0
+      m_NBreakPoints: 0
+      m_OffsetMinMax:
+        Min: 0
+        Max: 0
+    m_SpellTargetY:
+      m_Dimension: 2
+      m_MultiSpellTarget: 0
+      m_ZoneSize: -1
+      m_NBreakPointMargin:
+        Min: 0
+        Max: 0
+      m_NBreakPoints: 0
       m_OffsetMinMax:
         Min: 0
         Max: 0
@@ -110,5 +187,7 @@ MonoBehaviour:
   m_DelayBetweenLaunches: 0
   m_NWaves: 2
   m_DelayBetweenWaves: 8
+  OnCastWaveAnimation: 0
+  OnCastProjectileAnimation: 0
   OnCastWaveSoundFX: {fileID: 0}
   OnCastProjectileSoundFX: {fileID: 0}

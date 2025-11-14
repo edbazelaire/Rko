@@ -15,7 +15,7 @@ public class TaskExitZone : TaskMove
 
     #region Init & End
     
-    public TaskExitZone(Controller controller, Func<float> weight = null) : base(controller, true, true, weight) { }
+    public TaskExitZone(Controller controller, Func<float> weight = null) : base(controller, true, true, false, weight) { }
 
     #endregion
 

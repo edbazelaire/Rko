@@ -15,7 +15,7 @@ public class TaskMoveToPos : TaskMove
 
     #region Init & End
 
-    public TaskMoveToPos(Controller controller, Func<float> weight = null) : base(controller, true, true, weight)
+    public TaskMoveToPos(Controller controller, Func<float> weight = null) : base(controller, true, true, true, weight)
     {
         m_CharacterBT = (CharacterBT)m_Controller.BehaviorTree;
     }

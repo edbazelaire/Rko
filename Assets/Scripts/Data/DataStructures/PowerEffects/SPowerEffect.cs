@@ -1,4 +1,5 @@
 ﻿using Data.DataStructures.CharacterSubStructures;
+using Data.DataStructures.SpellSubStructures;
 using Enums;
 using Game.Loaders;
 using System;
@@ -17,11 +18,8 @@ namespace Data.DataStructures.PowerEffects
 
         // ==========================================================================================
         // Serialized Fields
-        [Description("Description informations of the Rune")]
+        [Description("Description informations of the Rune"), TextArea(minLines: 0, maxLines: 5)]
         public string Description;
-
-        [SerializeField]
-        List<SDescriptionVariable> m_DescriptionVariables;
 
         [SerializeField, Tooltip("When set : gain the effects of the base effect with a BonusLevel")]
         int m_BonusLevel;
@@ -59,6 +57,16 @@ namespace Data.DataStructures.PowerEffects
             m_RuneActivation = runeActivation;
         }
 
+        public void SetParent(string parent)
+        {
+            for (int i = 0; i < m_TriggerEffects.Count; i++)
+            {
+                var triggerEffect = m_TriggerEffects[i];
+                triggerEffect.SetParent(parent);
+                m_TriggerEffects[i] = triggerEffect;
+            }
+        }
+
         public virtual void SetLevel(int level)
         {
             m_Level = level + m_BonusLevel;
@@ -78,20 +86,17 @@ namespace Data.DataStructures.PowerEffects
         #endregion
 
 
-        #region Debug
-
-        public List<SDescriptionVariable> DescriptionVariables => m_DescriptionVariables;
-
-        public void SetDescriptionVariables(List<SDescriptionVariable> descriptionVariables)
-        {
-            m_DescriptionVariables = descriptionVariables;
-        }
-
-        #endregion
-
-
         #region Info
 
+        /// <summary>
+        /// Split the raw name of the effect "Name - RuneActivation" 
+        /// into the name of the effect + the Rune Activation
+        /// </summary>
+        /// <param name="baseName">         Raw name : "Berserker - Major"                              </param>
+        /// <param name="powerUpName">      output name of the effect : "Berserker"                     </param>
+        /// <param name="runeActivation">   output rune activation of the effect : "Major"              </param>
+        /// <param name="throwError">       throw an error if the rune or powerup name is not found ?   </param>
+        /// <returns></returns>
         public static bool TrySplitPowerUpName(string baseName, out string powerUpName, out ERuneActivation runeActivation, bool throwError = true)
         {
             powerUpName = "";
@@ -139,6 +144,16 @@ namespace Data.DataStructures.PowerEffects
             return true;
         }
 
+        /// <summary>
+        /// Try to get the value of a property from bonus stats.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="characterStat"></param>
+        /// <param name="throwError"></param>
+        /// <returns> 
+        ///     + true : found
+        ///     + false : value not found
+        /// </returns>
         bool TryGetCharacterStat(EStateEffectProperty property, out SCharacterStatScaling characterStat, bool throwError = false)
         {
             characterStat = default;
@@ -168,56 +183,14 @@ namespace Data.DataStructures.PowerEffects
         {
             List<string> values = new List<string>();
 
-            foreach (SDescriptionVariable descriptionVariable in m_DescriptionVariables)
-            {
-                // State Effect    --------------------------------------------------------------
-                if (Enum.TryParse(descriptionVariable.Name, out EStateEffect _))
-                {
-                    values.Add(TextHandler.FormatStateEffectIcon(descriptionVariable.Name, descriptionVariable.WithIcon));
-                }
-
-                // Level            --------------------------------------------------------------
-                else if (descriptionVariable.Name.Trim() == "Level")
-                {
-                    values.Add($"<b>{m_Level}</b>");
-                }
-
-                // Property         --------------------------------------------------------------
-                else if (Enum.TryParse(descriptionVariable.Name, out EStateEffectProperty property))
-                {
-                    if (!TryGetCharacterStat(property, out SCharacterStatScaling characterStat))
-                    {
-                        ErrorHandler.Error("Unable to find property " + property + " in RUNE " + this);
-                        values.Add("<b>UNDEFINED</b>");
-                        continue;
-                    }
-
-                    // check scaling
-                    EScalingDirection scaling = EScalingDirection.None;
-                    if (characterStat.ScalingFactor > 0)
-                        scaling = EScalingDirection.Up;
-                    else if (characterStat.ScalingFactor < 0)
-                        scaling = EScalingDirection.Down;
-
-                    // add value to list of values
-                    values.Add($"<b>{TextHandler.FormatScaling(TextHandler.FormatPropertyValue(characterStat.GetDefaultValue(Level), descriptionVariable.Name), scaling)}</b>");
-                }
-
-                // UNDEFINED        --------------------------------------------------------------
-                else
-                {
-                    ErrorHandler.Error("Unable to find property " + descriptionVariable.Name + " in info dict of spell " + this);
-                    values.Add("<b>UNDEFINED</b>");
-                }
-            }
-
             string description = string.Format(Description, values.ToArray());
 
             if (description == "" && m_TriggerEffects.Count > 0)
                 description = "[TriggerEffect.0]";
 
             description = TextHandler.ReplaceStateEffectTokens(TextHandler.ReplaceTriggerEffectTokens(description, m_TriggerEffects));
-            return TextHandler.ReplaceCharacterStat(description, m_BonusStats, m_Level);
+            description = TextHandler.ReplaceKeyWords(description);
+            return TextHandler.ReplaceCharacterStat(description, m_BonusStats, m_Level - m_BonusLevel);
         }
 
         /// <summary>

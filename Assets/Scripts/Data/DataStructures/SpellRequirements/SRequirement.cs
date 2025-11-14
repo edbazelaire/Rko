@@ -1,6 +1,7 @@
 ﻿using Enums;
 using Game;
 using System;
+using System.Collections.Generic;
 using Tools;
 using UnityEditor;
 using UnityEngine;
@@ -33,12 +34,12 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
 
         #region Target
 
-        public Controller CalculateTarget(Controller caster, Controller targetController = null)
+        public List<Controller> CalculateTargets(Controller caster, Controller targetController = null)
         {
             switch (m_SpellTarget)
             {
                 case ESpellTarget.Self:
-                    return caster;
+                    return new List<Controller>() { caster };
 
                 case ESpellTarget.CurrentTarget:
                     if (targetController == null)
@@ -46,11 +47,14 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
                         ErrorHandler.Error("SRequirement.CalculateTarget() - Current Target is required but is null");
                         return null;
                     }
-                    return targetController;
+                    return new List<Controller>() { targetController };
 
                 case ESpellTarget.None:
                 case ESpellTarget.FirstEnemy:
-                    return GameManager.Instance.GetFirstEnemy(caster.Team);
+                    return GameManager.Instance.GetAllEnemies(caster.Team);
+
+                case ESpellTarget.FirstAlly:
+                    return GameManager.Instance.GetAllAllies(caster.Team);
 
                 default: 
                     ErrorHandler.Error("SRequirement.CalculateTarget() - Unhandled case : " +  m_SpellTarget);
@@ -68,7 +72,7 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
         /// </summary>
         /// <param name="targetController"></param>
         /// <returns></returns>
-        public virtual bool CheckRequirement(Controller caster)
+        public virtual bool CheckRequirement(List<Controller> targetControllers)
         {
             return true;
         }
@@ -78,9 +82,9 @@ namespace Assets.Scripts.Data.DataStructures.SpellRequirement
         /// </summary>
         /// <param name="targetController"></param>
         /// <returns></returns>
-        public virtual bool TryApplyRequirements(Controller targetController)
+        public virtual bool TryApplyRequirements(List<Controller> targetControllers)
         {
-            if (! CheckRequirement(targetController))
+            if (! CheckRequirement(targetControllers))
                 return false;
 
             return true;

@@ -15,7 +15,9 @@ namespace Menu.PopUps
     public class OverlayScreen : MObject
     {
         #region Members
-        
+
+        public Action OnExitEvent;
+
         [SerializeField, Tooltip("Is that screen blocking quick method to go to another screen")]
         protected bool m_IsBlockingQuickClose = false;
 
@@ -79,6 +81,7 @@ namespace Menu.PopUps
         {
             PlaySoundFX();
 
+            OnExitEvent?.Invoke();
             ScreenManager.RemoveScreen(this);
 
             UnRegisterButtons();

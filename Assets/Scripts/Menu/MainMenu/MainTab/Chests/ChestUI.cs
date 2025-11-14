@@ -135,15 +135,15 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
             if (!activate)
                 return;
             
-            Vector3 chestScale = m_Preview.transform.lossyScale;
+            //Vector3 chestScale = m_Preview.transform.lossyScale;
 
             // Set simulation space on all ParticleSystems
-            foreach (var ps in m_AuraEffects.GetComponentsInChildren<ParticleSystem>(true))
-            {
-                var main = ps.main;
-                main.simulationSpace = isLocal ? ParticleSystemSimulationSpace.Local : ParticleSystemSimulationSpace.World;
-                ps.transform.localScale = new Vector3(ps.transform.localScale.x * chestScale.x, ps.transform.localScale.y * chestScale.y, ps.transform.localScale.z * chestScale.z);
-            }
+            //foreach (var ps in m_AuraEffects.GetComponentsInChildren<ParticleSystem>(true))
+            //{
+            //    var main = ps.main;
+            //    main.simulationSpace = isLocal ? ParticleSystemSimulationSpace.Local : ParticleSystemSimulationSpace.World;
+            //    ps.transform.localScale = new Vector3(ps.transform.localScale.x * chestScale.x, ps.transform.localScale.y * chestScale.y, ps.transform.localScale.z * chestScale.z);
+            //}
         }
 
 
@@ -161,6 +161,7 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
                 Destroy(m_AudioSource);
 
             SoundFXManager.PlayOnce(m_ChestData.OpenSoundFX != null ? m_ChestData.OpenSoundFX : SoundFXManager.DefaultChestOpenSoundFX);
+            AnimatorStateInfo state;
 
             // wait for the animation to start
             while (!m_Animator.GetCurrentAnimatorStateInfo(0).IsName(OPEN_ANIMATION))
@@ -169,10 +170,12 @@ namespace Assets.Scripts.Menu.MainMenu.MainTab.Chests
             }
 
             // wait for the end of the animation
-            while (m_Animator.GetCurrentAnimatorStateInfo(0).IsName(OPEN_ANIMATION))
+            do
             {
+                state = m_Animator.GetCurrentAnimatorStateInfo(0);
                 yield return null;
             }
+            while (state.IsName(OPEN_ANIMATION) && state.normalizedTime < 1f);
 
             ActivateOpenParticles(false);
         }

@@ -25,7 +25,7 @@ namespace Menu.MainMenu.MainTab
         // ================================================================================
         // GameObejcts & Components
         protected GameObject                    m_PathDisplayContainer;
-        protected TMP_Text                      m_CurrentStageDisplay;
+        protected TMP_Text                      m_Title;
         protected List<Image>                   m_Knobs;
 
         // ================================================================================
@@ -45,7 +45,7 @@ namespace Menu.MainMenu.MainTab
             base.FindComponents();
 
             m_PathDisplayContainer = Finder.Find(gameObject, "PathDisplayContainer");
-            m_CurrentStageDisplay = Finder.FindComponent<TMP_Text>(gameObject, "CurrentStageText", false);
+            m_Title = Finder.FindComponent<TMP_Text>(gameObject, "CurrentStageText", false);
         }
 
         public virtual void Initialize(int level, int currentLevel, int currentStage, int nStages)
@@ -73,9 +73,9 @@ namespace Menu.MainMenu.MainTab
 
         protected virtual void RefreshTitle()
         {
-            if (m_CurrentStageDisplay == null)
+            if (m_Title == null)
                 return;
-            m_CurrentStageDisplay.text = GetLevelString();
+            m_Title.text = GetLevelString();
         }
 
         protected virtual void ResetPathDisplay()

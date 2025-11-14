@@ -1,11 +1,18 @@
 ﻿using Assets;
+using Assets.Scripts.Managers;
 using Data;
+using Data.DataStructures;
 using Data.DataStructures.PowerEffects;
 using Enums;
+using Game.Character;
+using Game.Loaders;
+using Game.StateEffects.Quests;
 using Managers;
+using MyBox;
 using Save;
 using System;
 using System.Linq;
+using TMPro;
 using Tools;
 using Tools.Animations;
 using Unity.VisualScripting;
@@ -25,6 +32,8 @@ namespace Menu.PopUps
         Image           m_Icon;
         Image           m_Overlay;
         Button          m_Button;
+        GameObject      m_StacksOverlay;
+        TMP_Text        m_StacksCounter;
         GameObject      m_DeactivatedOverlay;
 
         protected bool m_IsMissingData => m_Index < ProgressionCloudData.CurrentArena.Level && m_PowerEffect == null;
@@ -42,6 +51,8 @@ namespace Menu.PopUps
             m_Icon                  = Finder.FindComponent<Image>(gameObject, "Icon");
             m_Overlay               = Finder.FindComponent<Image>(gameObject, "Overlay");
             m_Button                = Finder.FindComponent<Button>(gameObject);
+            m_StacksOverlay         = Finder.Find(gameObject, "StacksOverlay");
+            m_StacksCounter         = Finder.FindComponent<TMP_Text>(m_StacksOverlay, "StacksCounter");
             m_DeactivatedOverlay    = Finder.Find(gameObject, "DeactivatedOverlay");
         }
 
@@ -73,6 +84,7 @@ namespace Menu.PopUps
             SetUpBackground();
             SetUpIcon();
 
+            RefreshStacks();
             RefreshActivation();
         }
 
@@ -113,6 +125,31 @@ namespace Menu.PopUps
             m_Icon.sprite = AssetLoader.LoadIcon(m_PowerEffect.BaseName);
             m_Overlay.gameObject.SetActive(true);
             m_Overlay.sprite = AssetLoader.LoadPowerUpIconBorder(m_PowerEffect.RuneActivation);
+        }
+
+
+        /// <summary>
+        /// Refresh number of stacks displayed
+        /// </summary>
+        void RefreshStacks()
+        {
+            m_StacksOverlay.gameObject.SetActive(false);
+
+            if (m_PowerEffect == null || m_PowerEffect.TriggerEffects.IsNullOrEmpty())
+                return;
+
+            foreach (STriggerEffect triggerEffect in m_PowerEffect.TriggerEffects)
+            {
+                if (!SpellLoader.IsStateEffect(triggerEffect.SpellDataName))
+                    continue;
+
+                if (!ProgressionCloudData.CurrentArena.HasMetaData(triggerEffect.SpellDataName))
+                    continue;
+
+                m_StacksOverlay.gameObject.SetActive(true);
+                m_StacksCounter.text = ProgressionCloudData.CurrentArena.GetMetaData<int>(triggerEffect.SpellDataName).ToString();
+                return;
+            }
         }
 
         /// <summary>
@@ -170,14 +207,14 @@ namespace Menu.PopUps
             // Do not have a PowerUp BUT SHOULD -> Display the Selection Screen
             if (m_IsMissingData)
             {
-                Main.SetPopUp(EPopUpState.PowerUpSelectionScreen, m_Index);
+                ScreenManager.PowerUpSelectionScreen(ProgressionCloudData.CurrentArena.ArenaType, m_Index);
                 return;
             }
 
             // Has PowerUp -> Display the Info Screen
             if (m_PowerEffect != null)
             {
-                Main.SetPopUp(EPopUpState.PowerUpInfoScreen, m_PowerEffect);
+                Main.SetPopUp(EPopUpState.PowerUpInfoScreen, m_PowerEffect, m_Index);
                 return;
             }
         }

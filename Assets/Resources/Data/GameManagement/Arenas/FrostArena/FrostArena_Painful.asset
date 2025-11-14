@@ -12,19 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7d51f633e46b344920f012b0e1eca8, type: 3}
   m_Name: FrostArena_Painful
   m_EditorClassIdentifier: 
-  m_NLifes: 1
+  m_RoundDuration: 0
   m_ArenaLevelData:
   - RewardsData:
       Currencies:
       - Currency: 0
-        Qty: 1500
+        Qty: 500
       - Currency: 3
-        Qty: 120
+        Qty: 80
       Chests: 00000000
-      Collectables:
-      - CollectableType: 3
-        CollectableName: BerserkerRune
-        Qty: 1
+      Collectables: []
       AchievementRewards: []
       Boosts: []
     TriggerEffects:
@@ -44,6 +41,7 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     - SpellDataName: _NeedlesStorm
       OverridingData: []
       Level: 0
@@ -60,23 +58,30 @@ MonoBehaviour:
       NActivations: -1
       Cooldown: 8
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_PowerUps:
-    - ShieldRune - Primal
-    - AncientAegisRune - Primal
-    - BerserkerRune - Major
+    - ShieldRune - Minor
+    - AncientAegisRune - Major
+    - BerserkerRune - Minor
     StageData:
     - m_Boss: 1001
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 040000004b0000001e0000001d000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1001
+      m_Skin: 0
       m_BonusLevel: 1
+      m_ExtraLifes: 0
       m_Spells: 0a0000004c000000170000001d000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 0
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 1527000014270000
       m_TriggerEffects:
       - SpellDataName: Melting
@@ -95,6 +100,7 @@ MonoBehaviour:
         NActivations: 0
         Cooldown: 0
         RepeatWhenCooldownOver: 0
+        ConsumeLifeOnActivation: 0
       m_BonusStats: []
   - RewardsData:
       Currencies:
@@ -104,7 +110,7 @@ MonoBehaviour:
       Collectables:
       - CollectableType: 3
         CollectableName: ToxicWaterRune
-        Qty: 2
+        Qty: 1
       AchievementRewards: []
       Boosts: []
     TriggerEffects:
@@ -124,23 +130,8 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     - SpellDataName: _PlagueArrows
-      OverridingData: []
-      Level: 0
-      Target: 0
-      SpellActivationEvent: 1
-      ActivationTreshold: 0
-      SpellDeactivationEvent: 0
-      DeactivationTreshold: 0
-      StateEffectEvent: 0
-      StateEffectName: 
-      NStateEffectActivationThreshold: 0
-      Delay: 25
-      Duration: 0
-      NActivations: 0
-      Cooldown: 0
-      RepeatWhenCooldownOver: 0
-    - SpellDataName: _VenomSpikes
       OverridingData: []
       Level: 0
       Target: 0
@@ -153,35 +144,39 @@ MonoBehaviour:
       NStateEffectActivationThreshold: 0
       Delay: 0
       Duration: 0
-      NActivations: 0
+      NActivations: 1
       Cooldown: 0
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_PowerUps:
-    - PoisonRune - Major
-    - ToxicWaterRune - Primal
-    - ParasiteRune - Major
+    - ToxicWaterRune - Minor
+    - ParasiteRune - Minor
     StageData:
     - m_Boss: 1002
+      m_Skin: 0
       m_BonusLevel: 0
-      m_Spells: 1a0000001d0000003000000028000000
+      m_ExtraLifes: 0
+      m_Spells: 1a0000001d00000030000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1002
+      m_Skin: 0
       m_BonusLevel: 1
-      m_Spells: 1a000000300000001d0000002800000049000000
+      m_ExtraLifes: 0
+      m_Spells: 1a000000300000001d000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 7827000079270000
       m_TriggerEffects: []
       m_BonusStats: []
   - RewardsData:
       Currencies:
       - Currency: 3
-        Qty: 250
-      - Currency: 0
-        Qty: 2500
+        Qty: 150
       Chests: 01000000
       Collectables:
       - CollectableType: 2
@@ -206,24 +201,30 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_PowerUps:
-    - HealRune - Primal
-    - CurseRune - Major
-    - SoulSiffonRune - Major
-    - ShardcurseRune - Primal
+    - CurseRune - Minor
+    - SoulSiffonRune - Minor
+    - ShardcurseRune - Major
     StageData:
     - m_Boss: 1003
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 1e0000001d00000031000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1003
+      m_Skin: 0
       m_BonusLevel: 1
+      m_ExtraLifes: 0
       m_Spells: 1e0000001d0000003100000024000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 2
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: dc270000dd270000
       m_TriggerEffects: []
       m_BonusStats: []
@@ -231,18 +232,17 @@ MonoBehaviour:
       Currencies:
       - Currency: 3
         Qty: 500
-      - Currency: 0
-        Qty: 5000
-      Chests: 02000000
+      Chests: 0100000001000000
       Collectables:
       - CollectableType: 3
         CollectableName: ThermalShockRune
         Qty: 1
       AchievementRewards:
-      - AchievementReward: 2
-        Title: 11
-        Avatar: 11
+      - AchievementReward: 4
+        Title: 1001
+        Avatar: 105
         Border: 0
+        Emot: 0
         Badge: 0
         League: 0
       Boosts: []
@@ -263,39 +263,30 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
       RepeatWhenCooldownOver: 0
-    - SpellDataName: _ArcticEruption
-      OverridingData: []
-      Level: 0
-      Target: 0
-      SpellActivationEvent: 1
-      ActivationTreshold: 0
-      SpellDeactivationEvent: 0
-      DeactivationTreshold: 0
-      StateEffectEvent: 0
-      StateEffectName: 
-      NStateEffectActivationThreshold: 0
-      Delay: 8
-      Duration: 0
-      NActivations: 0
-      Cooldown: 0
-      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_PowerUps:
     - ShieldRune - Minor
     - FrostRune - Primal
-    - ThermalShockRune - Major
+    - ThermalShockRune - Minor
     StageData:
     - m_Boss: 1004
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 1c000000110000004c000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1004
+      m_Skin: 0
       m_BonusLevel: 1
-      m_Spells: 1c000000110000004c00000021000000
+      m_ExtraLifes: 0
+      m_Spells: 1c000000110000004c000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 3
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 4028000041280000
       m_TriggerEffects:
       - SpellDataName: _BlueMeteorsRain
@@ -314,4 +305,5 @@ MonoBehaviour:
         NActivations: -1
         Cooldown: 0
         RepeatWhenCooldownOver: 0
+        ConsumeLifeOnActivation: 0
       m_BonusStats: []

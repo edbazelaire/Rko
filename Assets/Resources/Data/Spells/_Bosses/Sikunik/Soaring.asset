@@ -41,6 +41,7 @@ MonoBehaviour:
     StateEffects: a1860100
   OnHit:
   - {fileID: 11400000, guid: 200fd70042d10534fb1c76a0995e328a, type: 2}
+  PassiveEffects: []
   SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -80,6 +81,7 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
+    m_Targets: 
   m_SpellsScalingLevel: []
   m_Size: 1
   TriggerPlayer: 1
@@ -89,6 +91,7 @@ MonoBehaviour:
   PersistanceAfterEnd: 0
   Animation: 5
   IsCancellable: 0
+  IsInterruptable: 1
   AnimationTimer: 2.5
   m_Cooldown: 0
   m_Display: 0

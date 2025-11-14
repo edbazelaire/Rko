@@ -1,7 +1,6 @@
 ﻿using Enums;
 using Game.Spells;
 using Tools;
-using UnityEngine;
 
 
 namespace Game.SpellGFXs
@@ -37,12 +36,12 @@ namespace Game.SpellGFXs
 
         #region Duration
 
-        protected override void CalculateDuration()
+        protected override void CalculateDuration(float? forcedDuration = null)
         {
-            if (m_Duration != 0)
+            // recalculate spell duration
+            base.CalculateDuration(forcedDuration);
+            if (forcedDuration != null)
                 return;
-
-            m_Duration = Mathf.Max(0, m_PrefabSpawn.GFXLifetime.Persistance);
 
             if (IsGFXAlive(ESpellEvent.OnStartCast))
                 m_Duration += CalculateCastTime();
@@ -62,15 +61,6 @@ namespace Game.SpellGFXs
         bool IsGFXAlive(ESpellEvent spellEvent)
         {
             return m_PrefabSpawn.GFXLifetime.StartSpellPart <= spellEvent && spellEvent < m_PrefabSpawn.GFXLifetime.EndSpellPart;
-        }
-
-        /// <summary>
-        /// Anticipate how much time the spell will take to be casted
-        /// </summary>
-        /// <returns></returns>
-        protected override float CalculateCastTime()
-        {
-            return m_SpellData.AnimationTimer / m_Controller.SpellHandler.GetCastSpeed(m_SpellData.Spell.ToString());
         }
 
         #endregion

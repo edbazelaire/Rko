@@ -47,7 +47,7 @@ namespace Game.Spells.SpecialEffects
                 if (spawnController.Character != ESpawn.AzurePowerOrb.ToString())
                     continue;
 
-                spawnController.Life.Kill(true);
+                spawnController.Life.Kill(true, true);
                 nStacks++;  
             }
 

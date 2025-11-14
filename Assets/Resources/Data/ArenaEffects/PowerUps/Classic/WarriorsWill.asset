@@ -37,6 +37,7 @@ MonoBehaviour:
       NActivations: -1
       Cooldown: 0
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []
     BonusPowerOrb: 0
     BonusRewardsRarety: 0
@@ -61,6 +62,7 @@ MonoBehaviour:
       NActivations: -1
       Cooldown: 0
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []
     BonusPowerOrb: 0
     BonusRewardsRarety: 0
@@ -86,6 +88,7 @@ MonoBehaviour:
       NActivations: 0
       Cooldown: 0
       RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     - SpellDataName: Uncontrollable
       OverridingData: []
       Level: 0
@@ -102,13 +105,8 @@ MonoBehaviour:
       NActivations: -1
       Cooldown: 0
       RepeatWhenCooldownOver: 0
-    m_BonusStats:
-    - StateEffectProperty: 107
-      BaseValue: 0.25
-      BonusValue: 0
-      ScalingFactor: 0
-      SpecialConditions: []
-      StateEffectStackFactors: []
+      ConsumeLifeOnActivation: 0
+    m_BonusStats: []
     BonusPowerOrb: 0
     BonusRewardsRarety: 0
   PowerUpTags: 01000000ed030000

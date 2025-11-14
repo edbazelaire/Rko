@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Assets.Scripts.Data.DataStructures.SpellSubStructures
 {
@@ -13,5 +14,7 @@ namespace Assets.Scripts.Data.DataStructures.SpellSubStructures
             X = x;
             Y = y;
         }
+
+        public readonly Vector2 AsVector2 => new Vector2(X, Y);
     }
 }

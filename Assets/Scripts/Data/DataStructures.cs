@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Game;
 using Assets.Scripts.Managers.Sound;
+using Data.GameManagement;
 using Enums;
 using Game.Loaders;
 using Game.SpellGFXs;
@@ -18,6 +19,13 @@ namespace Data
     {
         public float Min;
         public float Max;
+    }
+
+    [Serializable]
+    public struct SMinMaxInt
+    {
+        public int Min;
+        public int Max;
     }
 
     [Serializable] 
@@ -40,13 +48,13 @@ namespace Data
     public struct SStateEffectData
     {
         public EStateEffect                 StateEffect;
-        public int                          Stacks;
+        public float                        Stacks;
         public float                        BonusStacksPerLevel;
         public List<SStateEffectProperty>   OverridingProperties;
 
         int m_Level;
 
-        public SStateEffectData(EStateEffect stateEffect, int stacks = 1, float bonusStacks = 0, int level = 1, List<SStateEffectProperty> overridingProperties = default)
+        public SStateEffectData(EStateEffect stateEffect, float stacks = 1, float bonusStacks = 0, int level = 1, List<SStateEffectProperty> overridingProperties = default)
         {
             StateEffect             = stateEffect;
             Stacks                  = stacks;
@@ -61,9 +69,9 @@ namespace Data
             m_Level = level;
         }
 
-        public int GetStacks()
+        public int GetStacks(int level)
         {
-            return Stacks + (int)Math.Floor(m_Level * BonusStacksPerLevel);
+            return (int)Math.Round(Stacks + Math.Floor(level * BonusStacksPerLevel));
         }
 
         public string Description
@@ -77,7 +85,7 @@ namespace Data
                 else if (BonusStacksPerLevel < 0)
                     scaling = EScalingDirection.Down;
 
-                var stacks = GetStacks();
+                var stacks = GetStacks(m_Level);
                 if (stacks <= 0 && scaling != EScalingDirection.Up)
                     return "";
 
@@ -160,6 +168,8 @@ namespace Data
         public ESoundDuration   SoundDuration;
     }
 
+    
+
 
     [Serializable]
     public class SPrefabSpawn<TEnum> where TEnum : Enum
@@ -177,6 +187,7 @@ namespace Data
         public ESpawnLocation       SpawnLocation;
         public EBodyPart            BodyPart;
         public bool                 IsFollowing;
+        public bool                 IsReplacingGFX;
         public Vector2              Offset;
 
         public EAnimation           Animation;
@@ -220,7 +231,7 @@ namespace Data
 
         #region Contructor
 
-        public SPrefabSpawn(GameObject prefab, Material materialEffect, List<SSoundFX> soundFX, SGFXLifetime<TEnum> gfxLifetime, ESpawnTarget spawnTarget, ESpawnLocation spawnLocation, EBodyPart bodyPart, bool isFollowing, Vector2 offset, EAnimation animation, List<EStateEffect> stateEffects = default, float size = 0f, int orderInLayer = 0)
+        public SPrefabSpawn(GameObject prefab, Material materialEffect, List<SSoundFX> soundFX, SGFXLifetime<TEnum> gfxLifetime, ESpawnTarget spawnTarget, ESpawnLocation spawnLocation, EBodyPart bodyPart, bool isFollowing, bool isReplacingGFX, Vector2 offset, EAnimation animation, List<EStateEffect> stateEffects = default, float size = 0f, int orderInLayer = 0)
         {
             Prefab          = prefab;
             MaterialEffect  = materialEffect;
@@ -233,6 +244,7 @@ namespace Data
             SpawnLocation   = spawnLocation;
             BodyPart        = bodyPart;
             IsFollowing     = isFollowing;
+            IsReplacingGFX  = isReplacingGFX;
             Offset          = offset;
 
             Animation       = animation;

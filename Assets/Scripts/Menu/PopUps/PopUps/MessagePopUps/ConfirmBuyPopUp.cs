@@ -46,7 +46,7 @@ namespace Menu.PopUps
             m_BuyButton             = Finder.FindComponent<Button>(m_Buttons, "BuyButton");
             m_BuyButtonDisplay      = Finder.FindComponent<PriceDisplay>(m_BuyButton.gameObject);
 
-            m_LootInfoSidebar = Finder.FindComponent<LootInfoSidebar>(gameObject, "LootInfoSidebar");
+            m_LootInfoSidebar = Finder.FindComponent<LootInfoSidebar>(gameObject, "LootInfoSidebar", false);
         }
 
         public void Initialize(string itemName, string productId, SPriceData priceData, bool watchAd, SRewardsData rewardsData, Action onValidate, Action onCancel)
@@ -83,6 +83,9 @@ namespace Menu.PopUps
 
         protected virtual void SetupLootInfoSidebar()
         {
+            if (m_LootInfoSidebar == null)
+                return;
+
             /* ONLY display loot info IF there is only ONE chest. 
              * The display of multiple rewards is "handled" but not very tight (some cases are problematic) */
             if (m_RewardsData.Chests != null && m_RewardsData.Chests.Count == 1)

@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Managers;
 using Data.GameManagement;
 using Menu.Common;
 using Save;
@@ -100,7 +101,7 @@ namespace Menu.PopUps
 
         void OnCollectionEnded()
         {
-            Main.DisplayRewards(m_Rewards, "AccountLevelUp", title: "Level up !");
+            ScreenManager.DisplayRewards(m_Rewards, "AccountLevelUp", title: "Level up !");
             Exit();
         }
 

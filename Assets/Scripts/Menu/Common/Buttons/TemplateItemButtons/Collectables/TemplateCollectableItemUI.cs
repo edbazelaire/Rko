@@ -34,11 +34,14 @@ namespace Menu.Common.Buttons
         protected CollectionFillBar         m_CollectionFillBar     = null;
         protected SCollectableCloudData     m_CollectableCloudData;
         protected HoldOnTrigger             m_HoldOnTrigger         = null;
+        protected Image                     m_MasteryBorder         = null;
 
         protected int m_Level;
+        protected int m_Mastery = 0;
         protected bool m_RemoveAllListeners = false;
 
         protected Enum m_Collectable                        => m_CollectableCloudData.GetCollectable();
+        protected ERarety m_Rarety                          => CollectablesManagementData.GetRaretyData(m_Collectable).Rarety;
         public SCollectableCloudData CollectableCloudData   => m_CollectableCloudData;
         public CollectionFillBar CollectionFillBar          => m_CollectionFillBar;
         public CollectablesSubButtons CSubButtons           => m_CSubButtons;
@@ -60,6 +63,7 @@ namespace Menu.Common.Buttons
             m_CSubButtons           = Finder.FindComponent<CollectablesSubButtons>(gameObject,  throwError: false);
             m_CollectionFillBar     = Finder.FindComponent<CollectionFillBar>(gameObject,       throwError: false);
             m_HoldOnTrigger         = Finder.FindComponent<HoldOnTrigger>(gameObject,           throwError: false);
+            m_MasteryBorder         = Finder.FindComponent<Image>(gameObject, "MasteryBorder",  throwError: false);
         }
 
         public virtual void Initialize(Enum collectable, bool asIconOnly = false)
@@ -71,18 +75,20 @@ namespace Menu.Common.Buttons
 
             base.Initialize();
 
+            SetMastery(m_CollectableCloudData.Mastery);
             ActivateHoldOnTrigger(false);
         }
 
-        public virtual void Initialize(Enum collectable, int level, bool asIconOnly = false, bool removeListeners = true)
+        public virtual void Initialize(Enum collectable, int level, int mastery = 0, bool asIconOnly = false, bool removeListeners = true)
         {
             m_AsIconOnly            = asIconOnly;
             m_RemoveAllListeners    = removeListeners;
             m_Level                 = level;
-            m_CollectableCloudData  = GetCollectableCloudData(collectable, level);
+            m_CollectableCloudData  = GetCollectableCloudData(collectable, level, mastery);
 
             base.Initialize();
 
+            SetMastery(mastery);
             ActivateHoldOnTrigger(false);
         }
 
@@ -90,7 +96,6 @@ namespace Menu.Common.Buttons
         {
             SetUpCollectable(m_Collectable, m_Level, m_AsIconOnly);
         }
-
 
         protected virtual void SetLevel(int level)
         {
@@ -101,6 +106,19 @@ namespace Menu.Common.Buttons
             }
 
             m_Level = m_CollectableCloudData.Level;
+        }
+
+        protected virtual void SetMastery(int mastery)
+        {
+            m_Mastery = mastery;
+            SetMasteryBorder(mastery);
+
+            // update collection fillbar (if allowed, exists and enabled)
+            if (! m_AsIconOnly && m_CollectionFillBar != null)
+            {
+                m_CollectableCloudData.Mastery = mastery;
+                m_CollectionFillBar.RefreshCloudData(m_CollectableCloudData);
+            }
         }
 
         /// <summary>
@@ -139,6 +157,14 @@ namespace Menu.Common.Buttons
             UpdateState();
         }
 
+        protected override void SetColor(Color color)
+        {
+            base.SetColor(color);
+
+            //if (m_MasteryBorder != null)
+            //    m_MasteryBorder.color = color;
+        }
+
         public virtual void SetUpCollectable(Enum collectable, int level, bool asIconOnly = false)
         {
             // load cloud data of the collectable
@@ -166,6 +192,24 @@ namespace Menu.Common.Buttons
                 return;
 
             m_CollectionFillBar.Initialize(m_CollectableCloudData);
+        }
+
+        public void SetMasteryBorder(int mastery)
+        {
+            if (m_MasteryBorder == null)
+                return;
+
+            if (mastery <= 0)
+            {
+                m_MasteryBorder.gameObject.SetActive(false);
+                return;
+            }
+
+            //m_MasteryBorder.sprite = AssetLoader.LoadMasteryBorder(m_Mastery, m_Rarety);
+            //m_MasteryBorder.gameObject.SetActive(true);
+
+            // TODO : REACTIVATE MASTERY BORDERS ???
+            m_MasteryBorder.gameObject.SetActive(false);
         }
 
         /// <summary>
@@ -297,7 +341,7 @@ namespace Menu.Common.Buttons
 
         #region Helpers
 
-        SCollectableCloudData GetCollectableCloudData(Enum collectable, int level = 0)
+        SCollectableCloudData GetCollectableCloudData(Enum collectable, int level = 0, int mastery = 0)
         {
             if (level <= 0)
                 return InventoryCloudData.Instance.GetCollectable(collectable);
@@ -306,7 +350,7 @@ namespace Menu.Common.Buttons
             if (! m_AsIconOnly)
                 qty = InventoryCloudData.Instance.GetCollectable(collectable).Qty;
 
-            return new SCollectableCloudData(collectable, level, qty);
+            return new SCollectableCloudData(collectable, level, qty, mastery);
         }
 
         public virtual void OpenInfoPopUp(int? level = null, bool asIconOnly = false)
@@ -340,8 +384,9 @@ namespace Menu.Common.Buttons
             if (m_RemoveAllListeners)
                 return;
 
-            InventoryCloudData.CollectableDataChangedEvent  += OnCollectableDataChanged;
-            InventoryManager.CollectableUpgradedEvent       += OnCollectableUpgraded;
+            InventoryCloudData.CollectableDataChangedEvent      += OnCollectableDataChanged;
+            InventoryManager.CollectableUpgradedEvent           += OnCollectableUpgraded;
+            InventoryManager.CollectableMasteryUpgradedEvent    += OnMasteryUpgraded;
         }
 
         protected override void UnRegisterListeners()
@@ -351,8 +396,9 @@ namespace Menu.Common.Buttons
             if (m_RemoveAllListeners)
                 return;
 
-            InventoryCloudData.CollectableDataChangedEvent  -= OnCollectableDataChanged;
-            InventoryManager.CollectableUpgradedEvent       -= OnCollectableUpgraded;
+            InventoryCloudData.CollectableDataChangedEvent      -= OnCollectableDataChanged;
+            InventoryManager.CollectableUpgradedEvent           -= OnCollectableUpgraded;
+            InventoryManager.CollectableMasteryUpgradedEvent    -= OnMasteryUpgraded;
         }
 
         protected override void OnClick()
@@ -397,9 +443,19 @@ namespace Menu.Common.Buttons
             RefreshUI();
         }
 
+        protected virtual void OnMasteryUpgraded(Enum collectable, int mastery) 
+        {
+            if (collectable.ToString() != m_Collectable.ToString())
+                return;
+
+            // refresh spell cloud data
+            m_CollectableCloudData = InventoryCloudData.Instance.GetCollectable(collectable);
+            SetMastery(mastery);
+        }
+
         protected virtual void OnClickLocked() 
         {
-            OpenInfoPopUp(0);
+            OpenInfoPopUp(CollectablesManagementData.GetStartLevel(m_Collectable), asIconOnly: true);
         }
 
         protected virtual void OnPurchased(bool success)

@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae354b3668cdd774ca39fa75fe4e38f7, type: 3}
+  m_Name: HardlyHuman
+  m_EditorClassIdentifier: 
+  m_PrettyName: 
+  m_Description: 
+  m_ResetCount: 1
+  m_Character: -1
+  m_MasteryThresholds: 
+  AchievementSubData:
+  - MaxValue: 1
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 1
+        Title: 0
+        Avatar: 11
+        Border: 0
+        Emot: 0
+        Badge: 10104
+        League: 0
+      Boosts: []
+    ArenaType: -1
+    ArenaDifficulty: 4
+    ArenaMods: 
+  - MaxValue: 1
+    Rewards:
+      Currencies: []
+      Chests: 0f000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+    ArenaType: -1
+    ArenaDifficulty: 5
+    ArenaMods: 
+  - MaxValue: 1
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 4
+        Title: 1107
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 10008
+        League: 0
+      Boosts: []
+    ArenaType: -1
+    ArenaDifficulty: 6
+    ArenaMods: 
+  m_ArenaType: 2
+  m_ArenaDifficulty: 0
+  m_ArenaMods: 03000000

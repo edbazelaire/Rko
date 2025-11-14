@@ -75,6 +75,12 @@ namespace Game.Loaders
                 // CHECK : Extra ?
                 if (spell.name.StartsWith("_"))
                 {
+                    if (m_ExtraSpellData.ContainsKey(spell.Name))
+                    {
+                        ErrorHandler.Error("spell " + spell.Name + " already in list of Extra Spells");
+                        continue;
+                    }
+
                     m_ExtraSpellData.Add(spell.Name, spell);
                     continue;
                 }
@@ -90,6 +96,12 @@ namespace Game.Loaders
                 if (IsBossSpell(spell.Spell))
                 {
                     m_ExtraSpellData.Add(spell.Name, spell);
+                    continue;
+                }
+
+                if (m_Spells.ContainsKey(spell.Spell))
+                {
+                    ErrorHandler.Error("spell " + spell.Spell + " already in list of spells");
                     continue;
                 }
 
@@ -766,7 +778,7 @@ namespace Game.Loaders
         ///     - Type 
         ///     - State Effects
         /// </summary>
-        /// <param name="raretyFilter">        allowed types of rarety for the runes                           </param>
+        /// <param name="raretyFilter">        allowed types of rarety for the runes                       </param>
         /// <param name="elementsFilter">  allowed elements of the runes                                   </param>
         /// <param name="notAllowedFilter">     list of not runes that are not allowed to be in the return data </param>
         /// <returns></returns>
@@ -807,7 +819,7 @@ namespace Game.Loaders
                     continue;
 
                 // FILTER : is owned
-                if (unlocked != null)
+                if (unlocked.HasValue)
                 {
                     // if UNLOCKED is required : check that spell is already unlocked
                     if (unlocked.Value && InventoryCloudData.Instance.GetCollectable(runeData.Rune).Level == 0)
@@ -860,9 +872,9 @@ namespace Game.Loaders
         /// <param name="unlocked"></param>
         /// <param name="containsName"></param>
         /// <returns></returns>
-        public static SPowerEffect GetRandomPowerUp(int level = 0, List<ERuneActivation> runeActivationFilter = default, bool powerUpOnly = false, List<string> notAllowedFilter = default,string containsName = "")
+        public static SPowerEffect GetRandomPowerUp(int level = 0, List<ERuneActivation> runeActivationFilter = default, string forcedType = "", List<string> notAllowedFilter = default,string containsName = "")
         {
-            var powerUps = FilterPowerUps(level, runeActivationFilter, powerUpOnly, notAllowedFilter, containsName);
+            var powerUps = FilterPowerUps(level, runeActivationFilter, forcedType, notAllowedFilter, containsName);
             if (powerUps.Count == 0)
                 return null;
 
@@ -880,64 +892,66 @@ namespace Game.Loaders
         /// <param name="elementsFilter">  allowed elements of the runes                                   </param>
         /// <param name="notAllowedFilter">     list of not runes that are not allowed to be in the return data </param>
         /// <returns></returns>
-        public static List<SPowerEffect> FilterPowerUps(int level = 0, List<ERuneActivation> runeActivationFilter = default, bool powerUpOnly = false, List<string> notAllowedFilter = default, string containsName = "")
+        public static List<SPowerEffect> FilterPowerUps(int level = 0, List<ERuneActivation> runeActivationFilter = default, string forcedType = "", List<string> notAllowedFilter = default, string containsName = "")
         {
             List<SPowerEffect> filteredData = new List<SPowerEffect>();
 
             // =================================================================================
             // CHECK : PowerUps
-            for (int i = 0; i < m_PowerUpsData.Count; i++)
+            if (forcedType.ToLower() == "powerup" || forcedType == string.Empty)
             {
-                // clone the data to avoid overwritting
-                PowerUpData powerUpData = m_PowerUpsData.Values.ToList()[i].Clone(level);
-
-                if (powerUpData.Name == "None")
-                    continue;
-                // get throught each activation level to collect as SRunePower
-                foreach (ERuneActivation runeActivation in Enum.GetValues(typeof(ERuneActivation)))
+                for (int i = 0; i < m_PowerUpsData.Count; i++)
                 {
-                    if (runeActivation == ERuneActivation.None)
+                    // clone the data to avoid overwritting
+                    PowerUpData powerUpData = m_PowerUpsData.Values.ToList()[i].Clone(level);
+
+                    if (powerUpData.Name == "None")
                         continue;
+                    // get throught each activation level to collect as SRunePower
+                    foreach (ERuneActivation runeActivation in Enum.GetValues(typeof(ERuneActivation)))
+                    {
+                        if (runeActivation == ERuneActivation.None)
+                            continue;
 
-                    SPowerUp data = powerUpData.GetRunePower(runeActivation);
+                        SPowerUp data = powerUpData.GetRunePower(runeActivation);
 
-                    if (! CheckPowerUpFilters(data, runeActivationFilter, powerUpOnly, notAllowedFilter, containsName))
-                        continue;
+                        if (!CheckPowerUpFilters(data, runeActivationFilter, true, notAllowedFilter, containsName))
+                            continue;
 
-                    filteredData.Add(data);
+                        filteredData.Add(data);
+                    }
                 }
             }
-
-            if (powerUpOnly)
-                return filteredData;
-
             // =================================================================================
             // CHECK : Runes
-            for (int i = 0; i < m_RunesData.Count; i++)
+            if (forcedType.ToLower() == "rune" || forcedType == string.Empty)
             {
-                // clone the data to avoid overwritting
-                RuneData runeData = m_RunesData.Values.ToList()[i].Clone(level);
-
-                // prevent None rune
-                if (runeData.Name == "None")
-                    continue;
-
-                // if rune rarety is below Epic, the rune can't be a "Power Up Effect"
-                if (runeData.Rarety < ERarety.Rare)
-                    continue;
-
-                // get throught each activation level to collect as SRunePower
-                foreach (ERuneActivation runeActivation in Enum.GetValues(typeof(ERuneActivation)))
+                for (int i = 0; i < m_RunesData.Count; i++)
                 {
-                    if (runeActivation == ERuneActivation.None)
+                    // clone the data to avoid overwritting
+                    RuneData runeData = m_RunesData.Values.ToList()[i].Clone(level);
+
+                    // prevent None rune
+                    if (runeData.Name == "None")
                         continue;
 
-                    SRunePower data = runeData.GetRunePower(runeActivation);
-
-                    if (!CheckPowerUpFilters(data, runeActivationFilter, powerUpOnly, notAllowedFilter, containsName))
+                    // if rune rarety is below Epic, the rune can't be a "Power Up Effect"
+                    if (runeData.Rarety < ERarety.Rare)
                         continue;
 
-                    filteredData.Add(data);
+                    // get throught each activation level to collect as SRunePower
+                    foreach (ERuneActivation runeActivation in Enum.GetValues(typeof(ERuneActivation)))
+                    {
+                        if (runeActivation == ERuneActivation.None)
+                            continue;
+
+                        SRunePower data = runeData.GetRunePower(runeActivation);
+
+                        if (!CheckPowerUpFilters(data, runeActivationFilter, false, notAllowedFilter, containsName))
+                            continue;
+
+                        filteredData.Add(data);
+                    }
                 }
             }
 
@@ -955,7 +969,7 @@ namespace Game.Loaders
                 return false;
 
             // FILTER : not in not allowed spells
-            if (notAllowedFilter != null && notAllowedFilter.Contains(runePower.Name))
+            if (notAllowedFilter != null && notAllowedFilter.Any(t => t.StartsWith(runePower.BaseName)))
                 return false;
 
             // FILTER : name contains string

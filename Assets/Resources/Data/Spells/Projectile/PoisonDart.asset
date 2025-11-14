@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: PoisonDart
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: Shoot a dart covered in poison in a straight line, applying {0}
-    damage (+{1} execution) and [EnemyStateEffect.0] on hitted enemy
+  m_Description: Shoot a dart covered in poison in a straight line, applying [Damage]
+    damage and [EnemyStateEffect.0] on hitted enemy
   m_DescriptionVariables:
   - Name: Damage
     WithIcon: 1
@@ -27,7 +27,7 @@ MonoBehaviour:
   - Prefab: {fileID: 181780, guid: 5fdd1ba310bbe8f4cad8518a0f8a57b1, type: 3}
     MaterialEffect: {fileID: 0}
     SoundFX:
-    - AudioClip: {fileID: 8300000, guid: 037688ea562d74144b0f62a682d368a6, type: 3}
+    - AudioClip: {fileID: 8300000, guid: 4c722adb5b59cf24bbb77d34c2b4e19a, type: 3}
       SoundDuration: 0
     GFXLifetime:
       m_StartSpellPart: 500
@@ -41,11 +41,13 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 0
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  PassiveEffects: []
   SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -69,12 +71,31 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
+  m_MaxHit: 1
   m_Charges: 1
   EnergyGain: 5
   EnergyCost: 0
   m_Damage: 20
-  m_ExecutionDamage: 30
+  m_ExecutionDamage: 50
+  m_Damages:
+  - m_BaseValue: 20
+    m_DamageCategory: 1
+    m_HitCategory: 1
+    m_SpellPropertyScaling:
+      Property: 2
+      Value: 0.1
+      ScalingType: 0
+      RoundingType: 0
+      ScalingTresholds: []
+  - m_BaseValue: 50
+    m_DamageCategory: 1
+    m_HitCategory: 3
+    m_SpellPropertyScaling:
+      Property: 19
+      Value: 0.1
+      ScalingType: 0
+      RoundingType: 0
+      ScalingTresholds: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -85,6 +106,7 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
+    m_Targets: 
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
@@ -103,8 +125,39 @@ MonoBehaviour:
     ScalingTresholds:
     - Level: 9
       Value: 2
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
   m_Size: 1
   TriggerPlayer: 1
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
   EnemyStateEffects:
   - StateEffect: 9
     Stacks: 1
@@ -115,6 +168,7 @@ MonoBehaviour:
   PersistanceAfterEnd: 0
   Animation: 1
   IsCancellable: 0
+  IsInterruptable: 1
   AnimationTimer: 0.6
   m_Cooldown: 20
   Trajectory: 2

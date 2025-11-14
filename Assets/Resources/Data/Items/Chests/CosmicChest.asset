@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b3ab460364119c408209877f7ac86d5, type: 3}
+  m_Name: CosmicChest
+  m_EditorClassIdentifier: 
+  UnlockTime: 43200
+  IdleSoundFX: {fileID: 8300000, guid: 0898f9dfb52b1d3418f822177902b4e5, type: 3}
+  OpenSoundFX: {fileID: 0}
+  RuneRarety: 2
+  Currencies:
+  - Currency: 0
+    Min: 0
+    Max: 7500
+  ExtraCardData:
+    ExtraCards: 5
+    RaretyPercData:
+    - Rarety: 0
+      Percentage: 0
+    - Rarety: 1
+      Percentage: 0
+    - Rarety: 2
+      Percentage: 100
+    - Rarety: 3
+      Percentage: 2.5
+  SpellsDistribution:
+  - Rarety: 0
+    Qty: 60
+    Splits: 2
+  - Rarety: 1
+    Qty: 35
+    Splits: 2
+  - Rarety: 2
+    Qty: 10
+    Splits: 2
+  - Rarety: 3
+    Qty: 0
+    Splits: 0
+  SpellElements: 04000000

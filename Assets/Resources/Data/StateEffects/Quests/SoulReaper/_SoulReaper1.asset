@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Description: Every second, gain {0} energy, {1} health and {2} shield
   m_DescriptionVariables: 730000000e0000000f000000
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 1
-  m_VisualEffects: []
   m_GfxEffects:
   - Prefab: {fileID: 2910976597878939058, guid: a4c395f28b6718c49802ad4358a5ca72, type: 3}
     MaterialEffect: {fileID: 0}
@@ -33,6 +33,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 1
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -44,32 +45,44 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
   m_EndWithShield: 0
+  m_EndAt0Stacks: 1
   m_RefreshShield: 0
+  m_RefreshDuration: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: -1
+  m_StartingStacks: 1
   m_MaxStacks: 1
   m_StackDecay: -1
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats:
   - StateEffectProperty: 14
-    BaseValue: 2
+    BaseValue: 5
     LevelScalingFactor: 0.1
     StackScalingFactor: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
   - StateEffectProperty: 15
     BaseValue: 2
     LevelScalingFactor: 0.1
     StackScalingFactor: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
   - StateEffectProperty: 115
     BaseValue: 1
-    LevelScalingFactor: 0.1
+    LevelScalingFactor: 0
     StackScalingFactor: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects: []
@@ -83,8 +96,9 @@ MonoBehaviour:
   m_Heal: 0
   m_EndHeal: 0
   m_Tick: 1
-  m_TickDamage: 0
-  m_TickHeal: 0
-  m_TickShield: 0
-  m_TickEnergy: 0
+  m_DotDamage: 0
+  m_DotHeal: 0
+  m_DotShield: 0
+  m_DotEnergy: 0
+  m_TickEffects: []
   m_TickSpellRequirements: []

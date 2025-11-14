@@ -1,8 +1,8 @@
 ﻿using Game;
 using Game.Pool;
 using System.Collections.Generic;
-using Tools;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Assets.Scripts.Game
@@ -30,6 +30,7 @@ namespace Assets.Scripts.Game
 
         #endregion
 
+
         #region Pooling (GameObject)
 
         /// <summary>
@@ -38,6 +39,21 @@ namespace Assets.Scripts.Game
         /// </summary>
         public static GameObject Pool(GameObject prefab, Transform parent, bool activate = true, bool checkSpawnLogic = false)
         {
+            GameObject SpawnObject()
+            {
+                GameObject obj;
+
+                // If the pool is empty, create a new object
+                obj = Instantiate(prefab, parent);
+                obj.SetActive(activate);
+
+                // offline mode : destroy NetworkObject component
+                if (obj.TryGetComponent<NetworkObject>(out var netObj))
+                    Destroy(netObj);
+
+                return obj;
+            }     
+
             if (prefab == null)
                 prefab = new GameObject("Default_GameObject");
 
@@ -46,16 +62,21 @@ namespace Assets.Scripts.Game
             GameObject obj;
             if (!Instance.m_GameObjectPool.ContainsKey(key) || Instance.m_GameObjectPool[key].Count == 0)
             {
-                // If the pool is empty, create a new object
-                obj = Instantiate(prefab, parent);
-                obj.gameObject.SetActive(activate);
+                obj = SpawnObject();
             }
             else
             {
                 // Otherwise, retrieve an object from the pool
                 obj = Instance.m_GameObjectPool[key].Dequeue();
-                obj.transform.SetParent(parent);
-                obj.gameObject.SetActive(activate);
+                if (obj.IsDestroyed())
+                {
+                    obj = SpawnObject();
+                }
+                else
+                {
+                    obj.transform.SetParent(parent);
+                    obj.SetActive(activate);
+                }
             }
 
             if (checkSpawnLogic)
@@ -79,6 +100,7 @@ namespace Assets.Scripts.Game
 
         #endregion
 
+
         #region Pooling (NetworkObject)
 
         /// <summary>
@@ -86,58 +108,54 @@ namespace Assets.Scripts.Game
         /// we simply activate and dispatch IPoolLifecycle.OnSpawnedFromPool().
         /// In online mode, we SpawnWithOwnership which will trigger OnNetworkSpawn (your code there).
         /// </summary>
-        public static NetworkObject Pool(NetworkObject prefab, ulong clientId, Vector3 position, Quaternion rotation, Transform parent = null, bool worldPositionStays = true)
+        public static GameObject Pool(NetworkObject prefab, ulong clientId, Vector3 position, Quaternion rotation, Transform parent = null, bool worldPositionStays = true)
         {
             string key = prefab.name;
 
-            NetworkObject obj;
+            // OFFLINE MODE : pool GameObject (and destroy the NetworkObject component)
+            if (GameManager.Instance.IsOfflineMode)
+            {
+                return Pool(prefab.gameObject, position, rotation, parent, activate: true, checkSpawnLogic: true);
+            }
+
+            NetworkObject netObj;
             if (!Instance.m_NetworkObjectPool.ContainsKey(key) || Instance.m_NetworkObjectPool[key].Count == 0)
             {
                 // If the pool is empty, create a new object
-                obj = Instantiate(prefab, position, rotation);
+                netObj = Instantiate(prefab);
             }
             else
             {
                 // Otherwise, retrieve an object from the pool
-                obj = Instance.m_NetworkObjectPool[key].Dequeue();
-                obj.transform.SetPositionAndRotation(position, rotation);
-                obj.gameObject.SetActive(true);
+                netObj = Instance.m_NetworkObjectPool[key].Dequeue();
             }
 
-            // OFFLINE: do not spawn on NGO, but invoke gameplay lifecycle
-            if (GameManager.Instance.IsOfflineMode)
-            {
-                if (parent != null)
-                {
-                    if (!obj.TrySetParent(parent, worldPositionStays))
-                        obj.gameObject.transform.SetParent(parent, worldPositionStays);
-                }
+            GameObject obj = netObj.gameObject;
+            
 
-                obj.gameObject.SetActive(true);
-                DispatchSpawned(obj.gameObject);
-                return obj;
-            }
+            // spawn the NetworkObject
+            netObj.SpawnWithOwnership(clientId);
 
+            // set global position and rotation
+            obj.transform.SetParent(null, false);
+            obj.transform.SetPositionAndRotation(position, rotation);
 
-            // ONLINE: resynchronize on the network (OnNetworkSpawn will handle gameplay lifecycle)
-            if (!obj.IsSpawned)
-                obj.SpawnWithOwnership(clientId);
-
+            // reparent object
             if (parent != null)
-            {
-                obj.TrySetParent(parent, worldPositionStays);
-            }
+                obj.transform.SetParent(parent, worldPositionStays);
 
+            obj.SetActive(true);
             return obj;
         }
 
         #endregion
 
+
         #region Return
 
         /// <summary>
         /// Return a GameObject to its pool.
-        /// In offline mode, dispatch IPoolLifecycle.OnReturnedFromPool() before disabling.
+        /// Optionally checks spawn logic and detaches the object from its parent before pooling.
         /// </summary>
         public static void ReturnObject(GameObject obj, bool checkSpawnLogic = false)
         {
@@ -146,16 +164,18 @@ namespace Assets.Scripts.Game
             string key = obj.name.Replace("(Clone)", "");
 
             if (!Instance.m_GameObjectPool.ContainsKey(key))
-            {
                 Instance.m_GameObjectPool[key] = new Queue<GameObject>();
-            }
 
             if (checkSpawnLogic)
                 DispatchReturned(obj);
 
+            // --- Ensure clean state
             obj.SetActive(false);
+
+            // --- Requeue
             Instance.m_GameObjectPool[key].Enqueue(obj);
         }
+
 
         /// <summary>
         /// Return a NetworkObject to its pool.
@@ -166,7 +186,7 @@ namespace Assets.Scripts.Game
         {
             string key = obj.name.Replace("(Clone)", "");
 
-            if (!Instance.m_GameObjectPool.ContainsKey(key))
+            if (!Instance.m_NetworkObjectPool.ContainsKey(key))
             {
                 Instance.m_NetworkObjectPool[key] = new Queue<NetworkObject>();
             }
@@ -190,6 +210,7 @@ namespace Assets.Scripts.Game
         }
 
         #endregion
+
 
         #region IPoolLifecycle Management
 

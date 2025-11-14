@@ -1,8 +1,8 @@
-﻿using Data;
+﻿using Assets.Scripts.Game;
+using Assets.Scripts.Managers.Sound;
+using Data;
+using Data.DataStructures.SpellSubStructures.Spawns;
 using Enums;
-using Game.Loaders;
-using Managers;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using Tools;
@@ -19,10 +19,15 @@ namespace Game.Spells
         protected SpawnerData m_SpellData => (SpawnerData)m_BaseSpellData;
         protected Life m_Life;
 
-        protected int   m_NSpawnsCounter;
-        protected bool  m_HasSpawnLeft;
-        protected float m_DurationTimer;
-        protected List<Controller> m_Spawns = new ();
+        // ===========================================================================
+        // Private Data
+        int m_CurrentWaveIndex;
+
+        // ===========================================================================
+        // Dependent Members
+        SWaveSpawn m_CurrentWave    => m_SpellData.Waves.GetWaveAtIndex(m_CurrentWaveIndex);
+        SWaveSpawn m_PreviousWave   => m_CurrentWaveIndex > 0 ? m_SpellData.Waves.GetWaveAtIndex(m_CurrentWaveIndex - 1) : null;
+        bool HasNextWave            => m_SpellData.NWaves > m_CurrentWaveIndex + 1;
 
         #endregion
 
@@ -32,9 +37,9 @@ namespace Game.Spells
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="radius"></param>
-        /// <param name="damage"></param>
-        /// <param name="duration"></param>
+        /// <param name="clientId"></param>
+        /// <param name="target"></param>
+        /// <param name="spellData"></param>
         public override void Initialize(ulong clientId, Vector3 target, SpellData spellData)
         {
             base.Initialize(clientId, target, spellData);
@@ -42,14 +47,15 @@ namespace Game.Spells
             if (!IsServer)
                 return;
 
-            m_NSpawnsCounter    = 0;
-            m_HasSpawnLeft      = true;
-
-            // initialize spawners delays
-            InitSpawns();
-
-            // setup radius and timer
-            m_DurationTimer     = m_SpellData.Duration;
+            if (m_SpellData.IsWaveSpawn)
+            {
+                StartWaveSpawns();
+            } 
+            // otherwise - spawn elements and end the spell
+            else
+            {
+                StartInstantSpawn();
+            }
         }
 
         /// <summary>
@@ -57,7 +63,13 @@ namespace Game.Spells
         /// </summary>
         protected override void End()
         {
+            if (m_IsOver)
+                return;
+
             StopAllCoroutines();
+            if (m_CurrentWave != null)
+                m_CurrentWave.End();
+
             base.End();
         }
 
@@ -80,119 +92,131 @@ namespace Game.Spells
                 return;
 
             CheckSpawns();
-
-            // if inifite zone, do nothing
-            if (m_SpellData.Duration <= -1f)
-                return;
-
-            m_DurationTimer -= Time.deltaTime;
-            if (m_DurationTimer <= 0f && ! m_IsOver)
-            {
-                End();
-                return;
-            }
         }
 
         #endregion
 
 
-        #region Spawn
+        #region Instant Spawn
 
-        void InitSpawns()
+        void StartInstantSpawn()
         {
-            // check if all spawnElements has been spawned
-            foreach (var spawnElement in m_SpellData.SpawnElements)
+            if (m_SpellData.NSpawns > 0)
             {
-                StartCoroutine(spawnElement.StartDelayTimer());
+                for (int i = 0; i < m_SpellData.NSpawns; i++)
+                {
+                    float proba = Random.Range(0f, 1f);
+                    float currentProba = 0f;
+                    var spawnElements = m_SpellData.SpawnElements.ShuffleClone();
+                    for (int j = 0; j < spawnElements.Count; j++)
+                    {
+                        currentProba += spawnElements[j].SpawnProbability;
+
+                        if (!spawnElements[j].HasSpawnLeft)
+                            continue;
+
+                        if (currentProba < proba)
+                            continue;
+
+                        spawnElements[j].Spawn(this);
+                        break;
+                    }
+                }
             }
+            else
+            {
+                foreach (var spawnElement in m_SpellData.SpawnElements)
+                {
+                    spawnElement.Spawn(this);
+                }
+            }
+
+
+            End();
+        }
+
+        #endregion
+
+
+        #region Wave Spawn
+
+        void StartWaveSpawns()
+        {
+            // initialize spawners delays
+            m_CurrentWaveIndex = 0;
+            StartCurrentWave();
+
+            // setup radius and timer
+            m_DurationTimer = m_SpellData.Duration;
+        }
+
+        void StartCurrentWave()
+        {
+            ErrorHandler.Log($"STARTING WAVE [{m_CurrentWaveIndex+1}/{m_SpellData.NWaves}] ==========================================", ELogTag.SpawnWaves);
+            if (m_CurrentWave == null)
+            {
+                StartNextWave();
+                return;
+            }
+
+            if (GameManager.Instance.IsOfflineMode)
+                SpawnWaveGraphics();
+            else
+                SpawnWaveGraphicsClientRPC();
+
+            List<Controller> previousSpawns = m_PreviousWave != null ? m_PreviousWave.Spawns : new();
+            StartCoroutine(m_CurrentWave.StartDelayTimer(previousSpawns, isLastWave: !HasNextWave));
+        }
+
+        [ClientRpc]
+        void SpawnWaveGraphicsClientRPC()
+        {
+            SpawnWaveGraphics();
+        }
+
+        void SpawnWaveGraphics()
+        {
+            var graphics = m_SpellData.GetWavesGraphicsAtIndex(m_CurrentWaveIndex);
+            if (graphics == null)
+                return;
+
+            // Initialize Graphics Container
+            UIHelper.CleanContent(m_GraphicsContainer);
+
+            m_Graphics = PoolManager.Pool(graphics, m_GraphicsContainer.transform, activate: false);
+            m_Graphics.transform.localScale = Vector3.one;
+            m_Graphics.transform.localPosition = Vector3.zero;
+            m_Graphics.SetActive(true);
+
+            var audioSource = Finder.FindComponent<AudioSource>(m_Graphics);
+            if (audioSource != null)
+                SoundFXManager.AdjustVolume(ref audioSource);
         }
 
         void CheckSpawns()
         {
-            if (!m_HasSpawnLeft)
-                return;
-
-            // check if all spawnElements has been spawned
-            bool hasAnySpawnLeft = false;
-
-            var currentProba = 0f;
-            float random = UnityEngine.Random.Range(0f, 1f);
-            for (int i = 0; i < m_SpellData.SpawnElements.Count; i++)
+            if (m_CurrentWave.IsOver)
             {
-                var spawnElement = m_SpellData.SpawnElements[i];
-                currentProba += spawnElement.SpawnProbability;
-
-                if (spawnElement.NSpawnCounter >= spawnElement.MaxSpawns && spawnElement.MaxSpawns > 0)
-                    continue;
-
-                hasAnySpawnLeft = true;
-
-                if (! spawnElement.CanSpawn)
-                    continue;
-
-                if (currentProba < random)
-                    continue;
-                
-                Spawn(ref spawnElement);
-                m_SpellData.SpawnElements[i] = spawnElement;
-                break;
+                StartNextWave();
+                return;
             }
 
-            if (!hasAnySpawnLeft || (m_SpellData.NSpawns > 0 && m_NSpawnsCounter >= m_SpellData.NSpawns))
-                m_HasSpawnLeft = false;
+            m_CurrentWave.Spawn(this);
         }
 
-        void Spawn(ref SSpawnElement spawnElement)
+        void StartNextWave()
         {
-            ErrorHandler.Log("Spawning [" + spawnElement.NSpawnCounter + "] : " + spawnElement.CharacterName, ELogTag.Spawns);
+            if (!HasNextWave)
+            {
+                End();
+                return;
+            }
 
-            // create an AI prefab and spawn it
-            var spawnPrefab = Instantiate(
-                CharacterLoader.GetPrefab(spawnElement.CharacterName, false), 
-                CalculateSpawnPosition(spawnElement.NSpawnCounter, spawnElement.MaxSpawns), 
-                Quaternion.Euler(0f, 0f, 0f)
-            );
-
-            spawnPrefab.GetComponent<NetworkObject>().Spawn(true);
-        
-            // add player to list of player controllers
-            Controller spawnController = Finder.FindComponent<Controller>(spawnPrefab);
-
-            // initialize player data
-            spawnController.InitializeSpawn(
-                playerData: CreatePlayerData(spawnElement),
-                team:       m_Caster.Team,
-                spawnOwner: m_Caster
-            );
-
-            // setup Kill coroutine if has duration
-            if (spawnElement.Duration > 0)
-                spawnController.StartCoroutine(KillSpawn(spawnController, spawnElement.Duration));
-
-            // update variables
-            spawnElement.NSpawnCounter++;
-            m_NSpawnsCounter++;
-            m_Spawns.Add(spawnController);
-
-            // link event that will remove spawn from list on external destruction
-            spawnController.OnDestroyedEvent += () => { OnSpawnDestroyed(spawnController); };
-
-            // set next timer before spawning
-            StartCoroutine(spawnElement.StartSpawnTimer());
+            m_CurrentWaveIndex++;
+            StartCurrentWave();
         }
 
-        SPlayerData CreatePlayerData(SSpawnElement spawnElement)
-        {
-            return new SPlayerData(
-                playerName:     "",
-                characterLevel: Math.Max(1, m_SpellData.Level + spawnElement.BonusLevel),
-                character:      spawnElement.CharacterName,
-                isPlayer:       false,
-                botData:        new SBotData()
-            );
-        }
-
-        IEnumerator KillSpawn(Controller spawnController, float duration)
+        public IEnumerator KillSpawn(Controller spawnController, float duration)
         {
             yield return new WaitForSeconds(duration);
 
@@ -213,9 +237,9 @@ namespace Game.Spells
             base.SetTarget(target);
         }
 
-        protected virtual Vector3 CalculateSpawnPosition(int index, int maxSpawns)
+        public virtual Vector3 CalculateSpawnPosition(int index, int maxSpawns)
         {
-            return m_SpellData.SpawnTarget.RecalculateTarget(transform.position, index, m_Caster.Team, maxSpawns);
+            return m_SpellData.SpawnTarget.Recalculate(transform.position, index, m_Caster.Team, maxSpawns);
         }
 
         #endregion
@@ -226,25 +250,6 @@ namespace Game.Spells
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
-
-            int nSpawns = m_Spawns.Count;
-            for (int i = 0; i < nSpawns; i++)
-            {
-                // in case a spawns dies during the process
-                if (i > m_Spawns.Count)
-                    return;
-
-                m_Spawns[i].OnDestroyedEvent = null;
-            }
-        }
-
-        void OnSpawnDestroyed(Controller spawnController)
-        {
-            m_Spawns.Remove(spawnController);
-
-            // if no more spawns and can not spawn any more -> end
-            if (m_Spawns.Count == 0 && ! m_HasSpawnLeft)
-                End();
         }
 
         #endregion

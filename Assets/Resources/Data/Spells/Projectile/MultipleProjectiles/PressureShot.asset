@@ -13,16 +13,14 @@ MonoBehaviour:
   m_Name: PressureShot
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: "Using your character\u2019s AutoAttack as a projectile, fire {0}
+  m_Description: "Using your character\u2019s AutoAttack as a projectile, fire [NProjectiles]
     shots in diagonal angle. Each shot is dealing 80% of projectile initial damage."
-  m_DescriptionVariables:
-  - Name: NProjectiles
-    WithIcon: 1
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
   SpellEventActions: []
   OnHit: []
+  PassiveEffects: []
   SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -46,12 +44,11 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
+  m_MaxHit: 1
   m_Charges: 1
   EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 0
-  m_ExecutionDamage: 0
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -62,6 +59,7 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
+    m_Targets: 
   m_SpellsScalingLevel:
   - Property: 3
     Value: -0.25
@@ -73,23 +71,52 @@ MonoBehaviour:
     ScalingType: 1
     RoundingType: 2
     ScalingTresholds:
-    - Level: 6
-      Value: 2
     - Level: 9
+      Value: 2
+    - Level: 15
       Value: 3
-    - Level: 12
-      Value: 4
-    - Level: 14
-      Value: 5
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
   m_Size: 1
   TriggerPlayer: 1
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
   EnemyStateEffects: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 2
   IsCancellable: 0
-  AnimationTimer: 0.3
+  IsInterruptable: 1
+  IgnoreCC: 0
+  AnimationTimer: 0.5
   m_Cooldown: 23.5
   SubSpellData: {fileID: 0}
   m_UseAutoAttack: 1
@@ -118,6 +145,9 @@ MonoBehaviour:
       m_Dimension: 1
       m_MultiSpellTarget: 0
       m_ZoneSize: -1
+      m_NBreakPointMargin:
+        Min: 0
+        Max: 0
       m_NBreakPoints: 1
       m_OffsetMinMax:
         Min: 0
@@ -126,7 +156,33 @@ MonoBehaviour:
       m_Dimension: 2
       m_MultiSpellTarget: 0
       m_ZoneSize: -1
+      m_NBreakPointMargin:
+        Min: 0
+        Max: 0
       m_NBreakPoints: 1
+      m_OffsetMinMax:
+        Min: 0
+        Max: 0
+  SubSpellTarget:
+    m_SpellTargetX:
+      m_Dimension: 1
+      m_MultiSpellTarget: 2
+      m_ZoneSize: 0.5
+      m_NBreakPointMargin:
+        Min: 0
+        Max: 0
+      m_NBreakPoints: 0
+      m_OffsetMinMax:
+        Min: 0
+        Max: 0
+    m_SpellTargetY:
+      m_Dimension: 2
+      m_MultiSpellTarget: 0
+      m_ZoneSize: -1
+      m_NBreakPointMargin:
+        Min: 0
+        Max: 0
+      m_NBreakPoints: 0
       m_OffsetMinMax:
         Min: 0
         Max: 0
@@ -138,9 +194,11 @@ MonoBehaviour:
   m_IsBlocking: 1
   m_NProjectiles: 3
   m_NBreakPoints: 0
-  m_ProjectileZoneSize: 0.5
+  m_ProjectileZoneSize: 0
   m_DelayBetweenLaunches: 0.2
   m_NWaves: 1
   m_DelayBetweenWaves: 0
+  OnCastWaveAnimation: 0
+  OnCastProjectileAnimation: 0
   OnCastWaveSoundFX: {fileID: 0}
   OnCastProjectileSoundFX: {fileID: 0}

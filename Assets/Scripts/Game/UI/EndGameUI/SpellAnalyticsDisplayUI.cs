@@ -1,21 +1,22 @@
 ﻿using Assets.Scripts.Game;
 using Enums;
 using MyBox;
-using System.Collections;
-using System.Linq;
+using TMPro;
 using Tools;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Game.UI.EndGameUI
 {
+    /// <summary>
+    /// Displays analytics for a single spell.
+    /// Shows the icon and per-hitType analytics bars (Damage/Heal/Shield).
+    /// Damage is split between Direct and Tick when applicable.
+    /// </summary>
     public class SpellAnalyticsDisplayUI : MObject
     {
         #region Members
-
-        [SerializeField] float m_AnalyticsUIHeight = 35;
-        EHitType[] m_HitTypeDisplayOrder => new EHitType[3] { EHitType.Damage, EHitType.Heal, EHitType.Shield };
-
+        EHitType[] m_HitTypeDisplayOrder => new EHitType[4] { EHitType.PhysicalDamage, EHitType.MagicalDamage, EHitType.Heal, EHitType.Shield };
 
         // ====================================================================================
         // Data
@@ -25,6 +26,8 @@ namespace Game.UI.EndGameUI
         // ====================================================================================
         // GameObjects & Components
         Image m_Icon;
+        TMP_Text m_EffectName;
+        TMP_Text m_EffectCounter;
         GameObject m_AnalyticsContainer;
 
         #endregion
@@ -36,10 +39,15 @@ namespace Game.UI.EndGameUI
         {
             base.FindComponents();
 
-            m_Icon = Finder.FindComponent<Image>(gameObject, "Icon");
-            m_AnalyticsContainer = Finder.Find(gameObject, "AnalyticsContainer");
+            m_EffectName            = Finder.FindComponent<TMP_Text>(gameObject, "EffectName");
+            m_Icon                  = Finder.FindComponent<Image>(gameObject, "Icon");
+            m_EffectCounter         = Finder.FindComponent<TMP_Text>(gameObject, "EffectCounter");
+            m_AnalyticsContainer    = Finder.Find(gameObject, "AnalyticsContainer");
         }
 
+        /// <summary>
+        /// Initialize spell analytics UI with data and max reference value.
+        /// </summary>
         public void Initialize(SSpellHitTypeData spellHitTypeData, int maxValue)
         {
             m_SpellHitTypeData = spellHitTypeData;
@@ -53,6 +61,8 @@ namespace Game.UI.EndGameUI
             base.SetUpUI();
 
             SetupIcon();
+            SetupName();
+            SetupCounter();
             DisplayAnalytics();
         }
 
@@ -66,41 +76,38 @@ namespace Game.UI.EndGameUI
             m_Icon.sprite = AssetLoader.LoadIcon(m_SpellHitTypeData.SpellName);
         }
 
+        void SetupName()
+        {
+            m_EffectName.text = TextHandler.Split(m_SpellHitTypeData.SpellName);
+        }
+
+        void SetupCounter()
+        {
+            m_EffectCounter.text = m_SpellHitTypeData.Counter.ToString();
+        }
+
+        /// <summary>
+        /// Displays analytics bars for each HitType (Damage/Heal/Shield).
+        /// Damage bars are split between Direct and Tick.
+        /// </summary>
         void DisplayAnalytics()
         {
-            // PREPARE : clean content and load template
+            // Clean content and load template
             UIHelper.CleanContent(m_AnalyticsContainer);
             AnalyticDisplayUI template = AssetLoader.Load<AnalyticDisplayUI>(AssetLoader.c_MainUIComponentsPath);
 
             foreach (EHitType hitType in m_HitTypeDisplayOrder)
             {
-                var data = m_SpellHitTypeData.HitTypeValues.ToList().FirstOrDefault(temp => temp.HitType == hitType);
+                // Compute values
+                var values = m_SpellHitTypeData.GetCategoryValuesSplitted(hitType);
 
-                if (data.Value == 0)
+                if (values.IsNullOrEmpty())
                     continue;
 
-                // instantiate object from template
+                // Instantiate UI element
                 AnalyticDisplayUI analyticDisplayUI = Instantiate(template, m_AnalyticsContainer.transform);
-                analyticDisplayUI.GetComponent<RectTransform>().SetHeight(m_AnalyticsUIHeight);
-
-                // init analytics from provided data
-                analyticDisplayUI.Initialize(data.HitType, data.Value, m_MaxValue);
+                analyticDisplayUI.InitializeSplit(hitType, values, m_MaxValue);
             }
-        }
-
-        #endregion
-
-
-        #region Listeners
-
-        protected override void RegisterListeners()
-        {
-            base.RegisterListeners();
-        }
-
-        protected override void UnRegisterListeners()
-        {
-            base.UnRegisterListeners();
         }
 
         #endregion

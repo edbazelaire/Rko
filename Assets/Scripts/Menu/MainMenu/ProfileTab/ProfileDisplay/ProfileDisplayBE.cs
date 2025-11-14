@@ -29,7 +29,7 @@ namespace Menu.MainMenu
         {
             base.FindComponents();
 
-            m_AchievementTabsManager        = Finder.FindComponent<AchievementsTabManager>(transform.parent.gameObject);
+            m_AchievementTabsManager        = Finder.FindComponent<AchievementsTabManager>(transform.parent.parent.gameObject);
             m_ProfileDisplayUI              = Finder.FindComponent<ProfileDisplayUI>(gameObject);
         }
 
@@ -172,6 +172,10 @@ namespace Menu.MainMenu
 
                 case EAchievementReward.Badge:
                     m_ProfileDisplayUI.RefreshBadges(ProfileCloudData.CurrentBadges);
+                    return;
+
+                default:
+                    ErrorHandler.Warning("Unhandled case : " + achievementReward); 
                     return;
             }
         }

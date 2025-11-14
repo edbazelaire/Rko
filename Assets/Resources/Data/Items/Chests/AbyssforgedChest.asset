@@ -12,36 +12,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b3ab460364119c408209877f7ac86d5, type: 3}
   m_Name: AbyssforgedChest
   m_EditorClassIdentifier: 
-  UnlockTime: 86400
-  IdleSoundFX: {fileID: 8300000, guid: bf78fbc1ef9adae459b37abf39595baf, type: 3}
+  UnlockTime: 21600
+  IdleSoundFX: {fileID: 0}
   OpenSoundFX: {fileID: 0}
-  RuneRarety: 3
+  RuneRarety: 1
   Currencies:
   - Currency: 0
     Min: 0
-    Max: 15000
+    Max: 2100
   ExtraCardData:
-    ExtraCards: 0
+    ExtraCards: 10
     RaretyPercData:
     - Rarety: 0
-      Percentage: 0
-    - Rarety: 1
-      Percentage: 0
-    - Rarety: 2
-      Percentage: 0
-    - Rarety: 3
       Percentage: 100
+    - Rarety: 1
+      Percentage: 50
+    - Rarety: 2
+      Percentage: 7
+    - Rarety: 3
+      Percentage: 0.5
   SpellsDistribution:
   - Rarety: 0
-    Qty: 60
-    Splits: 3
-  - Rarety: 1
-    Qty: 35
+    Qty: 28
     Splits: 2
-  - Rarety: 2
-    Qty: 15
-    Splits: 3
-  - Rarety: 3
-    Qty: 1
+  - Rarety: 1
+    Qty: 12
     Splits: 1
-  SpellElements: 04000000
+  - Rarety: 2
+    Qty: 0
+    Splits: 0
+  - Rarety: 3
+    Qty: 0
+    Splits: 0
+  SpellElements: 

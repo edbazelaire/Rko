@@ -34,6 +34,7 @@ namespace Game.Character
 
         // Network Variables
         NetworkVariable<float>  m_InitialSpeed      = new(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        NetworkVariable<float>  m_FinalSpeedFactor  = new(1f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         NetworkVariable<float>  m_Force             = new(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         bool m_IsActive = false;
@@ -74,8 +75,7 @@ namespace Game.Character
         bool m_CanMoveClient    = true;
         bool m_IsGroundedClient = false;
 
-        public float RawSpeed   => Math.Max(0, m_InitialSpeed.Value + m_Controller.StateHandler.SpeedBonus.Value);
-        public float Speed      => Settings.CharacterSpeedFactor * RawSpeed;
+        public float Speed      => Settings.CharacterSpeedFactor * CalculateRawSpeed();
         public bool IsMoving    => m_MoveX != 0;
         public int MoveX        => m_MoveX;
 
@@ -87,6 +87,17 @@ namespace Game.Character
                 return 0;
             }
             return direction * Speed + (m_IsGroundedClient ? 0 : m_Force.Value);
+        }
+
+        public float CalculateRawSpeed()
+        {
+            float speed = m_InitialSpeed.Value + m_Controller.StateHandler.SpeedBonus.Value;
+            if (speed < 1)
+            {
+                speed = 1 / (2 - speed);
+            }
+
+            return Mathf.Clamp(m_InitialSpeed.Value * speed * m_FinalSpeedFactor.Value, 0, 3);
         }
 
         #endregion
@@ -650,6 +661,11 @@ namespace Game.Character
 
             CancelMovement(block);
             m_MovementBlocked = block;
+        }
+
+        public void SetFinalSpeedFactor(float finalSpeedFactor)
+        {
+            m_FinalSpeedFactor.Value = finalSpeedFactor;
         }
 
         #endregion

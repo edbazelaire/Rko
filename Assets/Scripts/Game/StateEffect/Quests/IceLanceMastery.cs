@@ -15,14 +15,14 @@ namespace Game.StateEffects.Quests
         {
             base.RegisterListeners();
 
-            StateEffect.StateEffectEvent += OnStateEffectEvent;
+            StateEffect.StateEffectStaticEvent += OnStateEffectEvent;
         }
 
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
 
-            StateEffect.StateEffectEvent -= OnStateEffectEvent;
+            StateEffect.StateEffectStaticEvent -= OnStateEffectEvent;
         }
 
         void OnStateEffectEvent(string stateEffectName, EStateEffectEvent stateEffectEvent, int stacks, ulong targetId, ulong casterId, string origin)

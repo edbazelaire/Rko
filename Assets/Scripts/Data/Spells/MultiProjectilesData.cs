@@ -9,6 +9,7 @@ using Unity.VisualScripting;
 using Data.GameManagement;
 using System;
 using System.Linq;
+using Assets.Scripts.Game;
 
 namespace Data
 {
@@ -71,6 +72,8 @@ namespace Data
 
         public override void Cast(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default, bool recalculateTarget = true, bool recalculatePosition = true, bool recalculateRotation = true)
         {
+            var caster = GameManager.Instance.GetPlayer(clientId);
+
             // set parent of sub-spell data
             if (ProjectileData != null)
                 ProjectileData.SetParent(Parent);
@@ -93,7 +96,8 @@ namespace Data
                 return;
             }
 
-            GameManager.Instance.GetPlayer(clientId).StartCoroutine(CastMultipleProjectiles(clientId, target, position, rotation));
+            GameAnalyticsManager.Instance.IncreaseCounter(caster.AnalyticsId, Parent);
+            caster.StartCoroutine(CastMultipleProjectiles(clientId, target, position, rotation));
         }
 
         public IEnumerator CastMultipleProjectiles(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default)

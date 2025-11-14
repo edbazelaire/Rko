@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e2e82768b5485247a5beca96c51753c, type: 3}
   m_Name: MoltenSpirit
   m_EditorClassIdentifier: 
-  m_Description: 12% of heals received are converted to <b>Bonus Damage</b> for [Burn]
-    explosion
+  m_Description: 12% of heals received are converted to {{MagicalPower}} for [Burn]
+    explosion.
   m_DescriptionVariables: 
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 1
-  m_VisualEffects: []
   m_GfxEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
@@ -26,22 +26,31 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
   m_EndWithShield: 0
+  m_EndAt0Stacks: 1
   m_RefreshShield: 1
+  m_RefreshDuration: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: -1
+  m_StartingStacks: 1
   m_MaxStacks: 999
   m_StackDecay: -1
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats:
-  - StateEffectProperty: 7
+  - StateEffectProperty: 22
     BaseValue: 1
     LevelScalingFactor: 0
     StackScalingFactor: 1
+    ScalesOnMissingHealth: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions:
     - Burn
   m_StatConversions: []

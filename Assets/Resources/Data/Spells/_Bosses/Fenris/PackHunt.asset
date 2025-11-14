@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: PackHunt
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: A chilling howl summons Lunassians from the pack, overwhelming the
-    prey in a relentless pursuit.
-  m_DescriptionVariables: []
+  m_Description: A chilling howl summons [NSpawns] random Lunassians from the pack,
+    overwhelming the prey in a relentless pursuit.
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 0}
@@ -35,11 +34,13 @@ MonoBehaviour:
     SpawnLocation: 2
     BodyPart: 0
     IsFollowing: 0
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  PassiveEffects: []
   SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -63,12 +64,11 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
+  m_MaxHit: 1
   m_Charges: 1
   EnergyGain: 0
-  EnergyCost: 0
-  m_Damage: 0
-  m_ExecutionDamage: 0
+  EnergyCost: 150
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -79,68 +79,354 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
+    m_Targets: 
   m_SpellsScalingLevel:
   - Property: 3
     Value: -0.05
     ScalingType: 0
     RoundingType: 0
     ScalingTresholds: []
+  - Property: 37
+    Value: 0
+    ScalingType: 1
+    RoundingType: 0
+    ScalingTresholds:
+    - Level: 13
+      Value: 3
+    - Level: 15
+      Value: 4
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
   m_Size: 1
   TriggerPlayer: 1
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
   EnemyStateEffects: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 9
   IsCancellable: 0
+  IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 1
   m_Cooldown: 30
   m_IsUnique: 0
   m_DestroySpawnsOnEnd: 0
   m_SpawnTarget:
-    m_MultiProjectileSpawn: 1
-    m_ZoneSize: 2
-    m_NBreakPoints: 0
-    m_OffsetMin:
-      X: 0
-      Y: 0
-    m_OffsetMax:
-      X: 0
-      Y: 0
-  m_NSpawns: 1
+    m_SpellTargetX:
+      m_Dimension: 1
+      m_MultiSpellTarget: 0
+      m_ZoneSize: -1
+      m_NBreakPointMargin:
+        Min: 0
+        Max: 0
+      m_NBreakPoints: 0
+      m_OffsetMinMax:
+        Min: 0
+        Max: 0
+    m_SpellTargetY:
+      m_Dimension: 2
+      m_MultiSpellTarget: 0
+      m_ZoneSize: -1
+      m_NBreakPointMargin:
+        Min: 0
+        Max: 0
+      m_NBreakPoints: 0
+      m_OffsetMinMax:
+        Min: 0
+        Max: 0
+  IsWaveSpawn: 0
+  m_NSpawns: 2
   m_SpawnElements:
-  - CharacterName: Lunassian
-    m_MaxSpawns: 1
-    m_SpawnProbability: 0.2
-    m_BonusLevel: -4
-    m_SpawnInterval: 0
-    m_Delay: 0
-    m_Duration: -1
   - CharacterName: VenomfangLunassian
     m_MaxSpawns: 1
+    m_NSpawns: 1
     m_SpawnProbability: 0.2
-    m_BonusLevel: -4
+    m_BonusLevel: -5
     m_SpawnInterval: 0
     m_Delay: 0
     m_Duration: -1
+    m_RecalculatePosition: 0
+    m_SpawnPosition:
+      m_SpellTargetX:
+        m_Dimension: 1
+        m_MultiSpellTarget: 0
+        m_ZoneSize: -1
+        m_NBreakPointMargin:
+          Min: 0
+          Max: 0
+        m_NBreakPoints: 0
+        m_OffsetMinMax:
+          Min: 0
+          Max: 0
+      m_SpellTargetY:
+        m_Dimension: 2
+        m_MultiSpellTarget: 0
+        m_ZoneSize: -1
+        m_NBreakPointMargin:
+          Min: 0
+          Max: 0
+        m_NBreakPoints: 0
+        m_OffsetMinMax:
+          Min: 0
+          Max: 0
   - CharacterName: MoonclawLunassian
     m_MaxSpawns: 1
+    m_NSpawns: 1
     m_SpawnProbability: 0.2
-    m_BonusLevel: -4
+    m_BonusLevel: -5
     m_SpawnInterval: 0
     m_Delay: 0
     m_Duration: -1
+    m_RecalculatePosition: 0
+    m_SpawnPosition:
+      m_SpellTargetX:
+        m_Dimension: 1
+        m_MultiSpellTarget: 0
+        m_ZoneSize: -1
+        m_NBreakPointMargin:
+          Min: 0
+          Max: 0
+        m_NBreakPoints: 0
+        m_OffsetMinMax:
+          Min: 0
+          Max: 0
+      m_SpellTargetY:
+        m_Dimension: 2
+        m_MultiSpellTarget: 0
+        m_ZoneSize: -1
+        m_NBreakPointMargin:
+          Min: 0
+          Max: 0
+        m_NBreakPoints: 0
+        m_OffsetMinMax:
+          Min: 0
+          Max: 0
   - CharacterName: AshhowlLunassian
     m_MaxSpawns: 1
+    m_NSpawns: 1
     m_SpawnProbability: 0.2
-    m_BonusLevel: -4
+    m_BonusLevel: -5
     m_SpawnInterval: 0
     m_Delay: 0
     m_Duration: -1
+    m_RecalculatePosition: 0
+    m_SpawnPosition:
+      m_SpellTargetX:
+        m_Dimension: 1
+        m_MultiSpellTarget: 0
+        m_ZoneSize: -1
+        m_NBreakPointMargin:
+          Min: 0
+          Max: 0
+        m_NBreakPoints: 0
+        m_OffsetMinMax:
+          Min: 0
+          Max: 0
+      m_SpellTargetY:
+        m_Dimension: 2
+        m_MultiSpellTarget: 0
+        m_ZoneSize: -1
+        m_NBreakPointMargin:
+          Min: 0
+          Max: 0
+        m_NBreakPoints: 0
+        m_OffsetMinMax:
+          Min: 0
+          Max: 0
   - CharacterName: ElderLunassian
     m_MaxSpawns: 1
+    m_NSpawns: 1
     m_SpawnProbability: 0.2
-    m_BonusLevel: -4
+    m_BonusLevel: -5
     m_SpawnInterval: 0
     m_Delay: 0
     m_Duration: -1
+    m_RecalculatePosition: 0
+    m_SpawnPosition:
+      m_SpellTargetX:
+        m_Dimension: 1
+        m_MultiSpellTarget: 0
+        m_ZoneSize: -1
+        m_NBreakPointMargin:
+          Min: 0
+          Max: 0
+        m_NBreakPoints: 0
+        m_OffsetMinMax:
+          Min: 0
+          Max: 0
+      m_SpellTargetY:
+        m_Dimension: 2
+        m_MultiSpellTarget: 0
+        m_ZoneSize: -1
+        m_NBreakPointMargin:
+          Min: 0
+          Max: 0
+        m_NBreakPoints: 0
+        m_OffsetMinMax:
+          Min: 0
+          Max: 0
+  m_Waves:
+    WaveSpawns:
+    - m_WaveDuration: -1
+      m_MaxDeath: -1
+      m_Delay: 0
+      m_SpawnGroups:
+      - SpawnElements:
+        - CharacterName: VenomfangLunassian
+          m_MaxSpawns: 1
+          m_NSpawns: 1
+          m_SpawnProbability: 0.2
+          m_BonusLevel: -5
+          m_SpawnInterval: 0
+          m_Delay: 0
+          m_Duration: -1
+          m_RecalculatePosition: 0
+          m_SpawnPosition:
+            m_SpellTargetX:
+              m_Dimension: 1
+              m_MultiSpellTarget: 0
+              m_ZoneSize: -1
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+            m_SpellTargetY:
+              m_Dimension: 2
+              m_MultiSpellTarget: 0
+              m_ZoneSize: -1
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+        - CharacterName: MoonclawLunassian
+          m_MaxSpawns: 1
+          m_NSpawns: 1
+          m_SpawnProbability: 0.2
+          m_BonusLevel: -5
+          m_SpawnInterval: 0
+          m_Delay: 0
+          m_Duration: -1
+          m_RecalculatePosition: 0
+          m_SpawnPosition:
+            m_SpellTargetX:
+              m_Dimension: 1
+              m_MultiSpellTarget: 0
+              m_ZoneSize: -1
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+            m_SpellTargetY:
+              m_Dimension: 2
+              m_MultiSpellTarget: 0
+              m_ZoneSize: -1
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+        - CharacterName: AshhowlLunassian
+          m_MaxSpawns: 1
+          m_NSpawns: 1
+          m_SpawnProbability: 0.2
+          m_BonusLevel: -5
+          m_SpawnInterval: 0
+          m_Delay: 0
+          m_Duration: -1
+          m_RecalculatePosition: 0
+          m_SpawnPosition:
+            m_SpellTargetX:
+              m_Dimension: 1
+              m_MultiSpellTarget: 0
+              m_ZoneSize: -1
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+            m_SpellTargetY:
+              m_Dimension: 2
+              m_MultiSpellTarget: 0
+              m_ZoneSize: -1
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+        - CharacterName: ElderLunassian
+          m_MaxSpawns: 1
+          m_NSpawns: 1
+          m_SpawnProbability: 0.2
+          m_BonusLevel: -5
+          m_SpawnInterval: 0
+          m_Delay: 0
+          m_Duration: -1
+          m_RecalculatePosition: 0
+          m_SpawnPosition:
+            m_SpellTargetX:
+              m_Dimension: 1
+              m_MultiSpellTarget: 0
+              m_ZoneSize: -1
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+            m_SpellTargetY:
+              m_Dimension: 2
+              m_MultiSpellTarget: 0
+              m_ZoneSize: -1
+              m_NBreakPointMargin:
+                Min: 0
+                Max: 0
+              m_NBreakPoints: 0
+              m_OffsetMinMax:
+                Min: 0
+                Max: 0
+  m_WavesGraphics: []

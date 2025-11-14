@@ -1,11 +1,14 @@
-﻿using Data;
+﻿using Assets.Scripts.Game.Loaders.Filters;
+using Data;
+using Data.GameManagement;
 using Enums;
+using MyBox;
 using Save;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
+using UnityEditor;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Game.Loaders
 {
@@ -13,20 +16,42 @@ namespace Game.Loaders
     {
         #region Members
 
-        static List<AchievementData> m_Achievements;
-
-        public static List<AchievementData> Achievements => m_Achievements;
+        static List<IAchievement> m_Achievements;
+        public static List<IAchievement> Achievements => m_Achievements;
 
         #endregion
 
 
         #region Init & End
-        
+
         public static void Initialize()
         {
-            m_Achievements = AssetLoader.LoadAll<AchievementData>(AssetLoader.c_AchievementsDataPath).ToList();
+            // load all scriptables in Achievements data file
+            var loadedAssets = Resources.LoadAll<ScriptableObject>(AssetLoader.c_AchievementsDataPath);
 
-            RegisterListeners();
+            // clone all achievements (to be able to manipulate without re-writting)
+            m_Achievements = new List<IAchievement>();
+            foreach (var asset in loadedAssets)
+            {
+                if (asset.name.StartsWith("_"))
+                    continue;
+
+                var clone = Object.Instantiate(asset);
+
+                if (clone is ArenaAchievementData arenaData)
+                {
+                    arenaData.OverrideSubAchievements();
+                    m_Achievements.Add(arenaData);
+                }
+                else if (clone is IAchievement ach)
+                {
+                    m_Achievements.Add(ach);
+                }
+                else
+                {
+                    ErrorHandler.Warning("Found ScriptableObject that is not an IAchievement in " + AssetLoader.c_AchievementsDataPath + " : " + clone.name);
+                }
+            }
         }
 
         #endregion
@@ -34,31 +59,46 @@ namespace Game.Loaders
 
         #region Accessors
 
-        public static T Get<T> () where T : AchievementData
+        public static List<T> Get<T> (ECharacter character, bool strict = false)
         {
-            return (T)m_Achievements.First((AchievementData data) => data.GetType() == typeof(T));
+            return m_Achievements.FilterByCharacter(character, strict).FilterByType<T>();
         }
 
-        public static AchievementData Get (string name) 
+        public static IAchievement Get (EAchievement achievement) 
         {
-            return m_Achievements.First((AchievementData data) => data.Name == name);
+            return Get(achievement.ToString());
+        }
+
+        public static IAchievement Get (string achievement, ECharacter character = ECharacter.None) 
+        {
+            return m_Achievements.FilterByCharacter(character).FilterByName(achievement);
         }
 
         #endregion
 
 
-        #region Filters
+        #region Character Achievements
 
-        /// <summary>
-        /// Get only Achievements that have a linke to the provided StatData
-        /// </summary>
-        /// <param name="achievements"></param>
-        /// <param name="statData"></param>
-        /// <returns></returns>
-        public static List<AchievementData> FilterAchievementsByStatData(List<AchievementData> achievements, EAnalytics analytics)
+        public static SRewardsData GetAllRewardsAtMastery(ECharacter character, int mastery)
         {
-            ErrorHandler.Warning("Call deactivated method : FilterAchievementsByStatData()");
-            return achievements;
+            SRewardsData rewards = new SRewardsData();
+
+            var achievements = m_Achievements.FilterByCharacter(character, strict: true);
+
+            // CHECK : character has achievements
+            if (achievements.Count == 0) 
+            {
+                ErrorHandler.Warning("Unable to find any achievement for character " + character);
+                return rewards;
+            }
+
+            // get all rewards for each achievements
+            foreach (var achievementData in achievements)
+            {
+                rewards.Add(achievementData.GetAllRewardsAtMastery(mastery));
+            }
+
+            return rewards;
         }
 
         #endregion
@@ -66,18 +106,9 @@ namespace Game.Loaders
 
         #region Listeners
 
-        static void RegisterListeners()
-        {
-            // hook "on arena ended" events
-            foreach (var achievement in m_Achievements)
-            {
-                if (achievement is ArenaAchievementData arenaAchievement)
-                {
-                    ProgressionCloudData.CurrentArenaEndedEvent += arenaAchievement.CheckOnArenaEnded;
-                }
-            }
-        }
 
         #endregion
     }
+
+    
 }

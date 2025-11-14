@@ -26,10 +26,18 @@ namespace Game.AI.BehaviorTrees
     {
         public SikunikBT(Controller controller, EArenaDifficulty arenaDifficulty) : base(controller, arenaDifficulty) { }
 
+
+        #region Default Tree
+
         public override Node GetDefaultTree()
         {
             return new Selector(new List<Node>
-            {
+            {           
+                // DEBUG               ===================================================
+                //new TaskWait(m_Controller),
+                // DEBUG               ===================================================
+
+
                 // NONE STATE               ===================================================
                 new Sequence(new List<Node> {
                     new CheckBTState(m_Controller, ESikunikState.None.ToString()),
@@ -39,7 +47,7 @@ namespace Game.AI.BehaviorTrees
 
                 // =========================================================================================
                 // PHASE 1     
-                new Sequence(new List<Node> { 
+                new Sequence(new List<Node> {
                     new CheckPhase(m_Controller, 1),
 
                     new Selector(new List<Node>
@@ -48,7 +56,7 @@ namespace Game.AI.BehaviorTrees
                         new Sequence(new List<Node> {
                             new CheckBTState(m_Controller, ESikunikState.CastingSleep.ToString()),
                             new Sequence(new List<Node> {
-                                new TaskUseSpell(m_Controller, ESpell.DragonicRest),
+                                new TaskUseSpell(m_Controller, ESpell.DragonicRest, spellEvent: ESpellEvent.None),
                                 new SetState(m_Controller, ESikunikState.Sleeping.ToString())
                             }),
                         }),
@@ -59,6 +67,9 @@ namespace Game.AI.BehaviorTrees
 
                             new Selector(new List<Node>
                             {
+                                // CHECK : Should start phase 2 ?
+                                CheckStartPhase2(),
+
                                 // CHECK : Ultimate ready ?
                                 new Sequence(new List<Node> {
                                     new CheckCanBeCasted(m_Controller, ESpell.Soaring),
@@ -79,7 +90,7 @@ namespace Game.AI.BehaviorTrees
                                 // CAST : AzurPowerOrbs
                                 new Sequence(new List<Node> {
                                     new CheckCount(m_Controller,        ESpell.AzurePowerOrbs.ToString(), 1),
-                                    new TaskUseSpell(m_Controller,      ESpell.AzurePowerOrbs, spellEvent: ESpellEvent.OnCast, resetCooldown: true),
+                                    new TaskUseSpell(m_Controller,      ESpell.AzurePowerOrbs, resetCooldown: true),
                                     new IncreaseCounter(m_Controller,   ESpell.AzurePowerOrbs.ToString()),
                                     new GainEnergy(m_Controller,        100)   // re-set energy to max to be sure that the value is maxed
                                 }),
@@ -119,35 +130,7 @@ namespace Game.AI.BehaviorTrees
                         }),
 
                         // LANDING STATE            ===================================================
-                        new Sequence(new List<Node> {
-                            new CheckBTState(m_Controller, ESikunikState.Landing.ToString()),
-
-                            new Selector(new List<Node>
-                            {
-                                // CAST : Azure Deflagration
-                                new Sequence(new List<Node> {
-                                    // check Azure Deflagration has been used
-                                    new CheckCount(m_Controller, ESpell.AzureDeflagration.ToString(), 1),
-                            
-                                    // WAIT SUCCESS on Azure Deflagration
-                                    new Selector(new List<Node> {
-                                        new Sequence(new List<Node> {
-                                            new TaskUseSpell(m_Controller, ESpell.AzureDeflagration, resetCooldown: true),
-                                            new IncreaseCounter(m_Controller, ESpell.AzureDeflagration.ToString()),
-                                        }),
-                                        new TaskWait(m_Controller),
-                                    })
-                                }),
-
-                                // CHECK : Should set next state or next phase ?
-                                new Sequence(new List<Node> {
-                                    new CheckProperty(m_Controller, EStateEffectProperty.Hp, 0.5f, isPerc: true, relation: "<="),
-                                    new SetPhase(m_Controller, 2),
-                                }),
-
-                                new SetState(m_Controller, ESikunikState.CastingSleep.ToString())
-                            })
-                        }),
+                        LandingPhase(),
                     }),
                 }),
 
@@ -157,21 +140,99 @@ namespace Game.AI.BehaviorTrees
                     new CheckPhase(m_Controller, 2),
 
                     new Selector(new List<Node> {
-                        new TaskUseSpell(m_Controller, ESpell.AzureDeflagration, delay: 5f),
+                        new TaskUseSpell(m_Controller, ESpell.Disintegrate, spellEvent: ESpellEvent.OnEnd, globalCooldown: 2f),
+                        new TaskUseSpell(m_Controller, ESpell.Rainballs, globalCooldown: 2f),
+                        new TaskUseSpell(m_Controller, ESpell.Eruptions, globalCooldown: 2f),
+                        new TaskUseSpell(m_Controller, ESpell.AzureDeflagration, globalCooldown: 2f),
+                    }, saveCurrentNode: true, random: true),
 
-                        new TaskUseSpell(m_Controller, m_Controller.SpellHandler.AutoAttack),
-                    }),
+                    new TaskUseSpell(m_Controller, m_Controller.SpellHandler.AutoAttack, ignoreGlobalCooldown: true),
+                    new TaskWait(m_Controller),
                 }),
 
                 new TaskWait(m_Controller),
             });
         }
 
+        #endregion
+
+
+        #region Landing Phase
+
+        Sequence LandingPhase()
+        {
+            return new Sequence(new List<Node> {
+                new CheckBTState(m_Controller, ESikunikState.Landing.ToString()),
+
+                new Selector(new List<Node>
+                {
+                    // CHECK : while "landing phase" is not over, attack
+                    new Sequence(new List<Node>
+                    {
+                        new CheckTimer(m_Controller, "LandingPhase", GetLandingPhaseDuration()),
+
+                        // CHECK : Should set next state or next phase ?
+                        new Selector(new List<Node> {
+                            // check - should start phase 2 ?
+                            CheckStartPhase2(),
+
+                            // otherwise - go back to sleep
+                            new SetState(m_Controller, ESikunikState.CastingSleep.ToString())
+                        }),
+                    }),
+
+                    // SELECT : one of the spells
+                    new Selector(new List<Node> {
+                        new TaskUseSpell(m_Controller, ESpell.AzureDeflagration, globalCooldown: 2f),
+                        new TaskUseSpell(m_Controller, ESpell.Disintegrate, spellEvent: ESpellEvent.OnEnd, globalCooldown: 2f),
+                        new TaskUseSpell(m_Controller, ESpell.Eruptions, globalCooldown: 2f),
+                    }, saveCurrentNode: true, random: true),
+
+                    new TaskUseSpell(m_Controller, m_Controller.SpellHandler.AutoAttack, ignoreGlobalCooldown: true),
+                    new TaskWait(m_Controller),
+                })
+            });
+        }
+
+        float GetLandingPhaseDuration()
+        {
+            if (m_ArenaDifficulty <= EArenaDifficulty.Painful)
+                return 0f;
+
+            if (m_ArenaDifficulty == EArenaDifficulty.Brutal)
+                return 15f;
+
+            if (m_ArenaDifficulty >= EArenaDifficulty.Torment)
+                return 25f;
+
+            ErrorHandler.Warning("Unhanlded case : " + m_ArenaDifficulty);
+            return 0f;
+        }
+
+        Node CheckStartPhase2()
+        {
+            return new Sequence(new List<Node> {
+                new Selector(new List<Node>
+                {
+                    // HP : <= 50%
+                    new CheckProperty(m_Controller, EStateEffectProperty.Hp, 0.5f, isPerc: true, relation: "<="),
+                    // Timer : 240 sec
+                    new CheckTimer(m_Controller, "Phase2", 240),                
+                }),
+                new SetPhase(m_Controller, 2)
+            });
+        }
+
+        #endregion
+
+
+        #region State Management
+
         public override void OnStateChanged(string stringState)
         {
             base.OnStateChanged(stringState);
 
-            if (! Enum.TryParse(stringState, out ESikunikState state))
+            if (!Enum.TryParse(stringState, out ESikunikState state))
             {
                 ErrorHandler.Error("Unable to parse " + stringState + " into a ESikunikState state");
                 return;
@@ -181,7 +242,7 @@ namespace Game.AI.BehaviorTrees
             {
                 case ESikunikState.None:
                     return;
-                    
+
                 case ESikunikState.CastingSleep:
                     return;
 
@@ -189,12 +250,14 @@ namespace Game.AI.BehaviorTrees
                     return;
 
                 case ESikunikState.CastingUltimate:
+                    m_Controller.CounterHandler.EndCounter(ESpell.DragonicRest);
                     return;
 
                 case ESikunikState.Soaring:
                     return;
 
                 case ESikunikState.Landing:
+                    m_Controller.BehaviorTree.ResetTimer("LandingPhase", GetLandingPhaseDuration());
                     return;
 
                 default:
@@ -204,7 +267,7 @@ namespace Game.AI.BehaviorTrees
         }
 
         public void OnPhaseChanged(int phase)
-        { 
+        {
             switch (phase)
             {
                 case 1:
@@ -214,6 +277,8 @@ namespace Game.AI.BehaviorTrees
                     break;
             }
         }
+
+        #endregion
     }
 }
 

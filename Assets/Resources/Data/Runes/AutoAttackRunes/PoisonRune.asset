@@ -12,32 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a402882a257d18548a281b17574b3711, type: 3}
   m_Name: PoisonRune
   m_EditorClassIdentifier: 
-  Rarety: 2
+  m_Rarety: 1
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 03000000
-  Description: 
   m_MinorPower:
-    Description: Increase tick damage by {0}
-    m_DescriptionVariables:
-    - Name: BonusTickDamagePerc
-      WithIcon: 1
+    Description: 'Increase Dot Damage by [BonusDamagePerc.Dot]'
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
-    - StateEffectProperty: 101
+    - StateEffectProperty: 8
       BaseValue: 0.1
       BonusValue: 0
       ScalingFactor: 0.05
+      DamageCategories: 
+      HitCategories: 02000000
+      SpecialConditions: []
       StateEffectStackFactors: []
   m_MajorPower:
-    Description: 'Apply an extra [Poison] stack (level {0}) on every auto attack.\n[TriggerEffect.0]'
-    m_DescriptionVariables:
-    - Name: Level
-      WithIcon: 0
+    Description: 'Apply an extra [Poison] stack (level [Level]) on every auto attack.\n[TriggerEffect.0]'
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: _PoisonRuneMajor
+      OverridingData: []
       Level: 0
       Target: 4
       SpellActivationEvent: 1
@@ -51,16 +47,18 @@ MonoBehaviour:
       Duration: 0
       NActivations: -1
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []
   m_PrimalPower:
-    Description: 'Your auto attack applies a stack of [Infected] (level {0}) if the
-      target is already at max [Poison] stacks.\n[TriggerEffect.0]'
-    m_DescriptionVariables:
-    - Name: Level
-      WithIcon: 0
+    Description: 'Your auto attack applies a stack of [Infected]  (level [Level])
+      if the target is already at max [Poison] stacks.
+
+      [TriggerEffect.0]'
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: _PoisonRunePrimal
+      OverridingData: []
       Level: 0
       Target: 4
       SpellActivationEvent: 1
@@ -74,4 +72,6 @@ MonoBehaviour:
       Duration: 0
       NActivations: -1
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []

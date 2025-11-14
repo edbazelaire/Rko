@@ -1,7 +1,6 @@
 ﻿using Data;
 using Enums;
 using Game.NetworkStructures;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
@@ -21,9 +20,9 @@ namespace Game.Spells
 
         readonly NetworkVariable<float> m_Radius = new NetworkVariable<float>();
 
-        protected float m_DurationTimer;
-
         public IReplicatedVar<float> Radius { get; protected set; }
+
+        public virtual float Duration => 0;
 
         #endregion
 
@@ -58,6 +57,9 @@ namespace Game.Spells
         public override void Initialize(ulong clientId, Vector3 target, SpellData spellData)
         {
             base.Initialize(clientId, target, spellData);
+            
+            if (m_IsOver)
+                return;
 
             transform.localScale = new Vector3(m_SpellData.Size, m_SpellData.Size, m_SpellData.Size);
 
@@ -66,8 +68,6 @@ namespace Game.Spells
 
             // setup radius and timer
             Radius.Value          = m_SpellData.Size / 2;
-
-            m_DurationTimer = m_SpellData.Duration;
 
             CreateCollisionCircle();
         }
@@ -86,20 +86,6 @@ namespace Game.Spells
                 return;
 
             base.Update();
-
-            if (!IsServer)
-                return;
-
-            // if inifite zone, do nothing
-            if (m_SpellData.Duration <= -1f)
-                return;
-
-            m_DurationTimer -= Time.deltaTime;
-            if (m_DurationTimer <= 0f)
-            {
-                End();
-                return;
-            }
         }
 
         #endregion
@@ -110,25 +96,34 @@ namespace Game.Spells
         /// <summary>
         /// Create a collision circle of the spell's radius that will apply the spells effect for each allowed Controllers inside
         /// </summary>
-        protected void CreateCollisionCircle()
+        protected virtual void CreateCollisionCircle()
         {
             if (!IsServer)
                 return;
 
+            CreateCollisionCircleOnPosition(transform.position);
+        }
+
+        protected virtual void CreateCollisionCircleOnPosition(Vector3 position)
+        {
             // setup layer filter 
-            var filter = Physics2DQueries.BuildFilter(TargetHelper.ALL_LAYER_MASK);
+            var filter = Physics2DQueries.BuildFilter(TargetHelper.DEFAULT_LAYER_MASK);
 
             // Check for collisions within a circle with variableRadius radius
-            int count = Physics2DQueries.OverlapCircle(transform.position, Radius.Value, filter, out Collider2D[] hits);
+            Collider2D[] hits = new Collider2D[32];
+            int count = Physics2DQueries.OverlapAtPosition(m_Collider, position, m_SpellData.Size, filter, hits);
+
+            ErrorHandler.Log($"AOE at {position} hit {count} colliders.", ELogTag.Aoe);
 
             // Gat all controllers touched by the 2D collision circle
             var hitControllers = new List<Controller>();
             for (int i = 0; i < count; i++)
             {
-                if (! CheckCollision(hits[i], out Controller controller))
+                if (!CheckCollision(hits[i], out Controller controller))
                     continue;
 
                 hitControllers.Add(controller);
+                ErrorHandler.Log($" → Hit {hits[i].name}", ELogTag.Aoe);
             }
 
             // if "ApplyIfNotHitting" : set hitControllers to be the list of ALL controllers NOT HIT
@@ -139,7 +134,7 @@ namespace Game.Spells
                     : GameManager.Instance.GetAllAllies(m_Caster.Team);
 
                 hitControllers = allControllers.Where(
-                    controller => hitControllers.Any(hitController => hitController.PlayerId == controller.PlayerId)
+                    controller => ! hitControllers.Any(hitController => hitController.PlayerId == controller.PlayerId)
                 ).ToList();
             }
 
@@ -179,11 +174,13 @@ namespace Game.Spells
         #region Target & Position
 
         protected override void SetTarget(Vector3 target)
-        {
+        {            
             if (m_SpellData.SpellSpawn == ESpellSpawn.Ground)
                 target.y = m_SpellData.TargetOffset.Y;
 
-            transform.position = target;
+            if (! m_SpellData.OverridesSpawnPosition)
+                transform.position = target;
+
             base.SetTarget(target);
         }
 
@@ -198,5 +195,6 @@ namespace Game.Spells
         }
 
         #endregion
+
     }
 }

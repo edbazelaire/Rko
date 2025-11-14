@@ -32,13 +32,15 @@ namespace Game.AI.BehaviorTrees
                         new TaskUseSpell(m_Controller, ESpell.Carapice, delay: CarapiceDelay),
 
                         // CHECK - spells specifics to "Melting" state
-                        new TaskUseSpell(m_Controller, ESpell.CryoPunch, delay: 2f),
+                        new TaskUseSpell(m_Controller, ESpell.GroundBreaker),
                         new TaskUseSpell(m_Controller, ESpell.Stalacmite, delay: 8f),
+
                     })
                 }),
 
                 // CHECK - other spells
                 new TaskUseSpell(m_Controller, ESpell.FrostfistRain),
+                new TaskUseSpell(m_Controller, ESpell.CryoPunch, delay: 15f),
 
                 // AutoAttack
                 new TaskUseSpell(m_Controller, m_Controller.SpellHandler.AutoAttack),

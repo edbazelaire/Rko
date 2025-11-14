@@ -1,12 +1,13 @@
 ﻿using Assets;
 using Assets.Scripts.Game;
+using Game.GameManagers.Interfaces;
 using Assets.Scripts.Managers.Sound;
 using Assets.Scripts.Tools;
 using Data;
 using Data.DataStructures.CharacterSubStructures;
-using Data.DataStructures.SpellSubStructures;
 using Enums;
 using Externals;
+using Game.GameManagers.ArenaModules;
 using Game.GameManagers.Components;
 using Game.Loaders;
 using Game.Spells;
@@ -36,18 +37,25 @@ namespace Game
 
         public const int BOT_CLIENT_ID      = 100;
         public const int SPAWN_CLIENT_ID    = 1000;
+        public const int DEBUG_ID           = 999;
         public const int N_LOADING_STEPS    = 3;
         public const int DEFAULT_PVP_LEVEL  = 9;
 
         // ===================================================================================
         // ACTIONS
         public static Action GameStartedEvent;
+        public static Action TimerEndedEvent;
         public static Action GameEndEvent;
 
         // ===================================================================================
+        // Modules
+        private List<IGameModule> m_Modules;
+        private ArenaModule m_ArenaModule;
+
+        // ===================================================================================
         // GameObjects & Components
-        private GameAnalyticsManager m_GameAnalyticsManager;
-        private InGameDebugger m_InGameDebugger;
+        private GameAnalyticsManager    m_GameAnalyticsManager;
+        private InGameDebugger          m_InGameDebugger;
 
         // ===================================================================================
         // PRIVATE VARIABLES 
@@ -61,6 +69,7 @@ namespace Game
 
         // -- Game Data
         public EGameMode GameMode { get; private set; }
+        public int WinningTeam { get; private set; } = -1;
 
         // -- Player Data
         /// <summary> [SERVER] number of player data expected to be received (includes bot's PlayerData) </summary>
@@ -87,12 +96,19 @@ namespace Game
         bool m_IsTuto = false;
 
         // ===================================================================================
+        // LOCAL CLIENT DATA
+        public ulong MyId { get; private set;}
+        public SPlayerData MyPlayerData { get; private set;}
+
+
+        // ===================================================================================
         // PUBLIC ACCESSORS 
-        public GameAnalyticsManager GameAnalyticsManager => m_GameAnalyticsManager;
-        public Dictionary<ulong, Controller> Controllers => m_Controllers;
-        public Dictionary<ulong, Controller> Spawns => m_Spawns;
-        public NetworkVariable<float> ProgressGameStart => m_ProgressGameStart;
-        public NetworkVariable<EGameState> State => m_State;
+        public ArenaModule                      ArenaModule             => m_ArenaModule;
+        public GameAnalyticsManager             GameAnalyticsManager    => m_GameAnalyticsManager;
+        public Dictionary<ulong, Controller>    Controllers             => m_Controllers;
+        public Dictionary<ulong, Controller>    Spawns                  => m_Spawns;
+        public NetworkVariable<float>           ProgressGameStart       => m_ProgressGameStart;
+        public NetworkVariable<EGameState>      State                   => m_State;
 
         /// <summary> check if GameManager exists, if has an Instance or the game object exists in the scene </summary>
         public static bool Exists => s_Instance != null || FindAnyObjectByType<GameManager>() != null;
@@ -130,7 +146,6 @@ namespace Game
 #if !UNITY_EDITOR
             m_InGameDebugger.enabled = false;
 #endif
-
             AttachDebugMethods();
         }
 #endregion
@@ -176,6 +191,31 @@ namespace Game
             return;
         }
 
+        void InitializeModules()
+        {
+            if (!IsServer)
+                return;
+
+            m_Modules = new();
+
+            if (LobbyHandler.Instance.GameMode == EGameMode.Arena)
+            {
+                switch (LobbyHandler.Instance.ArenaType)
+                {
+                    case EArenaType.EternalMenagerie:
+                        m_ArenaModule = gameObject.AddComponent<EternalMenagerieModule>();
+                        break;
+
+                    default:
+                        m_ArenaModule = gameObject.AddComponent<ArenaModule>();
+                        break;
+                }
+
+                m_ArenaModule.Initialize(LobbyHandler.Instance.ArenaType, ProgressionCloudData.CurrentArena.GetArenaDifficulty(), ProgressionCloudData.CurrentArena.GetExtraDifficulty());
+                m_Modules.Add(m_ArenaModule);
+            }
+        }
+
         IEnumerator CheckInitialized()
         {
             TimeErrorWrapper.Instance.New(TIME_WRAPPER_ID, 30f, OnInitializingTimeLimit);
@@ -184,6 +224,9 @@ namespace Game
             {
                 yield return null;
             }
+
+            // start initializing modules
+            InitializeModules();
 
             TimeErrorWrapper.Instance.Cancel(TIME_WRAPPER_ID);
 
@@ -204,7 +247,7 @@ namespace Game
 
             // unregister from each events
             m_State.OnValueChanged -= OnStateValueChanged;
-            StateEffect.StateEffectEvent = null;    // reset all registeries to the StateEffect static event
+            StateEffect.StateEffectStaticEvent = null;    // reset all registeries to the StateEffect static event
             Spell.OnSpellSpawn = null;              // reset all registeries to the Spell static event
 
             // cancel methods in TimeWrapper
@@ -218,6 +261,22 @@ namespace Game
 
             // destroy this GameManager
             Destroy(gameObject);
+        }
+
+        #endregion
+
+
+        #region Modules
+
+        bool CheckModules()
+        {
+            foreach (var module in m_Modules)
+            {
+                if (!module.CheckIsValid())
+                    return false;
+            }
+
+            return true;
         }
 
         #endregion
@@ -251,7 +310,7 @@ namespace Game
             m_ProgressGameStart.Value += 1f / ((float)LobbyHandler.Instance.MaxPlayers * N_LOADING_STEPS);
 
             // check if all players are there
-            if (CheckConnectionDone())
+            if (CheckConnectionDone() && CheckModules())
                 SetState(EGameState.PreparingGame);
         }
 
@@ -314,7 +373,7 @@ namespace Game
             );
 
             // add event listener to the player's hp
-            controller.Life.DiedEvent += OnPlayerDied;
+            controller.Life.OnDeathEvent += OnPlayerDied;
         }
 
         /// <summary>
@@ -384,9 +443,13 @@ namespace Game
             {
                 if (CheckIsFilledWithBots())
                     break;
+
                 CheckInitializedClientRPC();
                 yield return null;
             }
+
+            while (!CheckModules())
+                yield return null;
 
             // once every one is initialized, setup the UI 
             SetupUIClientRPC();
@@ -471,6 +534,24 @@ namespace Game
             GameUIManager.Instance.SetUpIntroScreen();
         }
 
+        void SetUpTimer()
+        {
+            // display or not the Timer
+            if (LobbyHandler.Instance.GameMode == EGameMode.Ranked)
+            {
+                GameUIManager.GameTimerUI.Initialize(240);
+                TimerEndedEvent += OnTimerEnd;
+            }
+                
+            else if (LobbyHandler.Instance.GameMode == EGameMode.Arena)
+            {
+                m_ArenaModule.SetUpTimer();
+            }
+
+            else
+                GameUIManager.GameTimerUI.Initialize(0);
+        }
+
         public ulong GetNextBotId()
         {
             m_BotId++;  
@@ -533,6 +614,10 @@ namespace Game
             PlayCountDownClientRPC();
             yield return new WaitForSeconds(3);
 
+            // wait for modules to validate the end of the Intro
+            while (! CheckModules())
+                yield return null;
+
             // set state that game is running
             SetState(EGameState.GameRunning);
         }
@@ -557,6 +642,18 @@ namespace Game
 
         public void GameOver(int team)
         {
+            if (m_State.Value == EGameState.GameOver)
+            {
+                ErrorHandler.Warning("Trying to set GameOver whil game is already OVER");
+                return;
+            }
+
+            // save the winning team
+            WinningTeam = team;
+
+            // call that game is over
+            SetState(EGameState.GameOver);
+
             // shutdown on server side
             ShutDownControllersServerSide();
 
@@ -639,7 +736,6 @@ namespace Game
 
             if (teamCtr.Count == 1)
             {
-                SetState(EGameState.GameOver);
                 GameOver(teamCtr[0]);
             }
         }
@@ -770,6 +866,14 @@ namespace Game
             return null;
         }
 
+        public bool IsOnlySpawnEnemies(int team)
+        {
+            if (m_Controllers.Values.Any(t => t != null && t.IsPlayer && t.Team != team && t.IsTargettable))
+                return false;
+
+            return m_Spawns.Values.Any(t => t != null && t.Team != team && t.IsTargettable);
+        }
+
         public Controller GetFirstEnemy(int team)
         {
             Controller returnedController = null;
@@ -780,7 +884,16 @@ namespace Game
 
             foreach (Controller controller in m_Controllers.Values)
             {
+                // CHECK : controller null or deactivated
+                if (controller == null || ! controller.gameObject.activeInHierarchy || ! controller.IsActive)
+                    continue;
+
+                // CHECK : same team
                 if (controller.Team == team)
+                    continue;
+
+                // CHECK : no alive
+                if (!controller.Life.IsAlive)
                     continue;
 
                 // return this controller if can be targetted
@@ -790,13 +903,6 @@ namespace Game
                 // save this as current returned controller but keep looking for a better fit
                 returnedController = controller;
             }
-
-            if (returnedController == null)
-                return returnedController;
-
-            // check can be targetted
-            if (! returnedController.StateHandler.IsUnTargetable)
-                return returnedController;
 
             // get first targetable spawn
             var spawnController = GetFirstSpawn(team, ally: false);
@@ -910,10 +1016,19 @@ namespace Game
                 return;
             }
 
+            // same state applied twice
+            if (m_State.Value == state)
+            {
+                ErrorHandler.Warning("Same state (" + state + ") re-applied");
+                return;
+            }
+
             PlayStateMusicClientRPC(state);
 
+            m_State.Value = state;
+
             // fire event that game has started if state becomes GameRunning
-            if (state == EGameState.GameRunning && m_State.Value != EGameState.GameRunning)
+            if (m_State.Value == EGameState.GameRunning)
             {
                 // fire event that game has started (for Server)
                 GameStartedEvent?.Invoke();
@@ -921,8 +1036,6 @@ namespace Game
                 // fire event that game has started (for Clients)
                 GameStartedEventClientRPC();
             }
-
-            m_State.Value = state;
         }
 
         [ClientRpc]
@@ -1012,6 +1125,7 @@ namespace Game
 
                 case EGameState.PreparingGame:
                     TimeErrorWrapper.Instance.New(TIME_WRAPPER_ID, 90f, OnPreparingGameTimeLimit);
+                    SetUpTimer();
                     StartCoroutine(WaitClientInitialized());
                     SpawnPlayers();
                     break;
@@ -1023,12 +1137,13 @@ namespace Game
                     break;
 
                 case EGameState.GameRunning:
+                    var controller = m_Controllers.ElementAt(1).Value;
                     // initialize BT debugger if enemy is bot
-                    if (! GetFirstEnemy(Owner.Team).IsPlayer)
+                    if (!controller.IsPlayer)
                     {
                         if (IsServer && ProfileCloudData.IsAdmin && PlayerPrefsHandler.GetDebug(EDebugOption.DebugBots))
                         {
-                            GameUIManager.BTDebugger.Initialize(GetFirstEnemy(Owner.Team));
+                            GameUIManager.BTDebugger.Initialize(controller);
                             GameUIManager.BTDebugger.gameObject.SetActive(true);
                         }
                     }
@@ -1138,25 +1253,25 @@ namespace Game
         [Command(KeyCode.N)]
         public void AutoWin()
         {
-            GameOverClientRPC(Owner.Team);
+            GameOver(Owner.Team);
         }
 
         [Command(KeyCode.B)]
         public void AutoLoss()
         {
-            GameOverClientRPC((Owner.Team + 1) % 2);
+            GameOver((Owner.Team + 1) % 2);
         }
 
         [Command(KeyCode.M)]
         public void HitSelf()
         {
-            Owner.Life.Hit(500, 999, "Debug", Enums.ESpellCategory.Direct, true);
+            Owner.Life.Hit(500, DEBUG_ID, "Debug", EDamageCategory.Physical, EHitCategory.Direct, true);
         }
 
         [Command(KeyCode.L)]
         public void Hit()
         {
-            GetFirstEnemy(Owner.Team).Life.Hit(1000, 0, "Debug", Enums.ESpellCategory.Direct, true);
+            GetFirstEnemy(Owner.Team).Life.Hit(1000, 0, "Debug", EDamageCategory.Physical, EHitCategory.Direct, true);
         }
 
         /// <summary>
@@ -1187,6 +1302,28 @@ namespace Game
         {
             var controller = GetPlayer(Owner.PlayerId);
             controller.AutoAttackHandler.Activate(! controller.AutoAttackHandler.isActiveAndEnabled);
+        }
+
+        [Command(KeyCode.Keypad9)]
+        public void AutoAttackOnce()
+        {
+            var controller = GetPlayer(Owner.PlayerId);
+            controller.AutoAttackHandler.Activate(false);
+            controller.AutoAttackHandler.Activate(true);
+
+            void WaitForOneAttack(string spellName, ESpellEvent spellEvent)
+            {
+                if (spellName != controller.SpellHandler.AutoAttack.ToString())
+                    return;
+
+                if (spellEvent < ESpellEvent.OnCast)
+                    return;
+
+                controller.AutoAttackHandler.Activate(false);
+                controller.SpellHandler.OnPreSpellEvent -= WaitForOneAttack;
+            }
+
+            controller.SpellHandler.OnPreSpellEvent += WaitForOneAttack;
         }
 
         [Command(KeyCode.I)]
@@ -1243,11 +1380,22 @@ namespace Game
             Owner.SpellHandler.ResetCooldowns();
         }
 
+        /// <summary>
+        /// Add a state effect on a Target : 
+        ///     command: {StateEffect} -t {Target} -l {Level}
+        ///     
+        /// - {StateEffect} : (string)  name of a EStateEffect
+        /// - {Target}      : (string)  "e" for enemy, "s" for self
+        /// - {Stacks}      : (int)     number of stacks to add
+        /// - {Level}       : (int)     level of the effect
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         public bool CheckAddStateEffect(string command)
         {
-            // Regex : nom de l’effet, puis options -t et -d
+            // Regex 
             Regex regex = new Regex(
-                @"^(?<effect>\w+)(?:\s+-t\s+(?<target>[se]))?(?:\s+-l\s+(?<level>\d+))?",
+                @"^(?<effect>\w+)(?:\s+-t\s+(?<target>[se]))?(?:\s+-s\s+(?<stacks>\d+))?(?:\s+-l\s+(?<level>\d+))?",
                 RegexOptions.IgnoreCase
             );
 
@@ -1257,7 +1405,8 @@ namespace Game
                 return false;
             }
 
-            // Nom de l’effet
+            // ------------------------------------------------------------------------
+            // Effect
             string effectName = match.Groups["effect"].Value;
 
             if (!Enum.TryParse(effectName, true, out EStateEffect effect))
@@ -1265,6 +1414,7 @@ namespace Game
                 return false;
             }
 
+            // ------------------------------------------------------------------------
             // Target
             EStateEffectTarget target = EStateEffectTarget.Self;
             if (match.Groups["target"].Success)
@@ -1272,13 +1422,22 @@ namespace Game
                 target = match.Groups["target"].Value.ToLower() == "e"
                     ? EStateEffectTarget.Enemy
                     : EStateEffectTarget.Self;
-            }
-
-            // get target controller
+            }     
+            
+            // -- get target controller
             Controller targetController = TargetHelper.GetTargetController(Owner.PlayerId, target);
             if (targetController == null)
                 return false;
 
+            // ------------------------------------------------------------------------
+            // Stacks
+            int stacks = 1;
+            if (match.Groups["level"].Success)
+            {
+                stacks = int.Parse(match.Groups["level"].Value);
+            }
+
+            // ------------------------------------------------------------------------
             // Level
             int level = 0;
             if (match.Groups["level"].Success)
@@ -1286,59 +1445,123 @@ namespace Game
                 level = int.Parse(match.Groups["level"].Value);
             }
 
-            targetController.StateHandler.AddStateEffect(SpellLoader.GetStateEffect(effect.ToString(), level), Owner);
+            // APPLY the effect
+            targetController.StateHandler.AddStateEffect(effect, Owner, level: level, origin: "DEBUG", stacks: stacks); ;
             return true;
         }
 
+        /// <summary>
+        /// Parses a command string and applies a bonus stat to a target controller.
+        /// 
+        /// Example command:
+        ///     "+10 BonusDamage -t s -dc Magical,Physic -hc Direct,Dot -sc Fireball"
+        /// 
+        /// Supported tokens:
+        ///   + / -         → sign of the value
+        ///   <number>      → numeric value (float)
+        ///   <stat>        → stat name (EStateEffectProperty)
+        ///   -t <s|e>      → target (Self or Enemy)
+        ///   -dc <list>    → DamageCategories (comma separated)
+        ///   -hc <list>    → HitCategories (comma separated)
+        ///   -sc <list>    → SpecialConditions (comma separated)
+        /// </summary>
+        /// <param name="command">Full string command to parse</param>
+        /// <returns>True if the stat was successfully added; false otherwise</returns>
         public bool CheckAddStat(string command)
         {
-            // Regex : signe, valeur, stat, puis options -t et -d
+            if (string.IsNullOrWhiteSpace(command))
+                return false;
+
+            // Regex to parse sign, value, stat, and optional parameters
             Regex regex = new Regex(
-                @"^(?<sign>[+-])(?<value>\d+(?:[.,]\d+)?)\s+(?<stat>[A-Za-z0-9_]+)(?:\s+-t\s+(?<target>[se]))?(?:\s+-d\s+(?<duration>\d+))?",
+                @"^(?<sign>[+-])(?<value>\d+(?:[.,]\d+)?)\s+(?<stat>[A-Za-z0-9_]+)" +
+                @"(?:\s+-t\s+(?<target>[se]))?" +
+                @"(?:\s+-dc\s+(?<damageCats>[A-Za-z0-9_,]+))?" +
+                @"(?:\s+-hc\s+(?<hitCats>[A-Za-z0-9_,]+))?" +
+                @"(?:\s+-sc\s+(?<specialConds>[A-Za-z0-9_,]+))?",
                 RegexOptions.IgnoreCase
             );
 
             Match match = regex.Match(command);
             if (!match.Success)
             {
+                Debug.LogWarning($"Invalid AddStat command: {command}");
                 return false;
             }
 
-            // Récupération des groupes
+            // --- Extract sign and numeric value
             string sign = match.Groups["sign"].Value;
-            float value = float.Parse(match.Groups["value"].Value);
+            if (!float.TryParse(match.Groups["value"].Value.Replace(',', '.'), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float value))
+            {
+                Debug.LogError($"Invalid numeric value in command: {command}");
+                return false;
+            }
+
+            if (sign == "-") value *= -1f;
+
+            // --- Extract stat property
             string statName = match.Groups["stat"].Value;
-
-            // Appliquer le signe
-            if (sign == "-") value *= -1;
-
-            // Vérifier l'enum
             if (!Enum.TryParse(statName, true, out EStateEffectProperty stat))
             {
-                Debug.LogError($"Unknown stat '{statName}'. Must match EStatEffectProperty.");
+                Debug.LogError($"Unknown stat '{statName}'. Must match EStateEffectProperty.");
                 return false;
             }
 
-            // Target
+            // --- Target (default: Self)
             EStateEffectTarget target = EStateEffectTarget.Self;
             if (match.Groups["target"].Success)
             {
-                target = match.Groups["target"].Value.ToLower() == "e"
-                    ? EStateEffectTarget.Enemy
-                    : EStateEffectTarget.Self;
+                string targetValue = match.Groups["target"].Value.ToLower();
+                target = targetValue == "e" ? EStateEffectTarget.Enemy : EStateEffectTarget.Self;
             }
 
-            // get target controller
+            // --- Damage categories
+            List<EDamageCategory> damageCats = null;
+            if (match.Groups["damageCats"].Success)
+            {
+                damageCats = match.Groups["damageCats"].Value
+                    .Split(',')
+                    .Select(x => Enum.TryParse(x.Trim(), true, out EDamageCategory cat) ? cat : default)
+                    .Where(c => !EqualityComparer<EDamageCategory>.Default.Equals(c, default))
+                    .ToList();
+            }
+
+            // --- Hit categories
+            List<EHitCategory> hitCats = null;
+            if (match.Groups["hitCats"].Success)
+            {
+                hitCats = match.Groups["hitCats"].Value
+                    .Split(',')
+                    .Select(x => Enum.TryParse(x.Trim(), true, out EHitCategory cat) ? cat : default)
+                    .Where(c => !EqualityComparer<EHitCategory>.Default.Equals(c, default))
+                    .ToList();
+            }
+
+            // --- Special conditions
+            List<string> specialConds = null;
+            if (match.Groups["specialConds"].Success)
+            {
+                specialConds = match.Groups["specialConds"].Value
+                    .Split(',')
+                    .Select(x => x.Trim())
+                    .Where(x => !string.IsNullOrEmpty(x))
+                    .ToList();
+            }
+
+            // --- Retrieve the correct target controller
             Controller targetController = TargetHelper.GetTargetController(Owner.PlayerId, target);
             if (targetController == null)
+            {
+                Debug.LogWarning($"No valid target found for AddStat (target={target})");
                 return false;
+            }
 
-            // add stats
-            targetController.StateHandler.CharacterData.AddBonusStat(stat, value, null);
+            // --- Apply the bonus stat using the improved AddBonusStat signature
+            targetController.StateHandler.CharacterData.AddBonusStat(stat, value, damageCats, hitCats, specialConds);
             targetController.StateHandler.RecalculateBonus();
 
-            // ✅ Log résultat
-            Debug.Log($"AddStat: {value} {stat} | Target={target}");
+            // ✅ Log success
+            Debug.Log($"[AddStat] {value} {stat} | Target={target} | DamageCats={string.Join(",", damageCats ?? new())} | HitCats={string.Join(",", hitCats ?? new())} | Special={string.Join(",", specialConds ?? new())}");
             return true;
         }
 

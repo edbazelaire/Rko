@@ -15,6 +15,8 @@ using System.Collections;
 using Assets.Scripts.Managers;
 using Save.Data.Progression.Structs;
 using Managers;
+using Inventory;
+using Assets.Scripts.Data.GameManagement;
 
 namespace Menu.MainMenu.MainTab
 {
@@ -39,6 +41,10 @@ namespace Menu.MainMenu.MainTab
         GameObject          m_ButtonsSection;
         Button              m_SelectButton;
         Button              m_CollectButton;
+        Image               m_KeyIcon;
+        Image               m_LockIcon;
+
+        bool m_RequiresKey => ProgressionCloudData.IsCompleted(m_ArenaType, m_ArenaDifficulty.Difficulty);
 
         #endregion
 
@@ -61,6 +67,8 @@ namespace Menu.MainMenu.MainTab
             m_ButtonsSection            = Finder.Find(gameObject, "ButtonsSection");
             m_SelectButton              = Finder.FindComponent<Button>(m_ButtonsSection, "SelectButton");
             m_CollectButton             = Finder.FindComponent<Button>(m_ButtonsSection, "CollectButton");
+            m_LockIcon                  = Finder.FindComponent<Image>(gameObject, "LockIcon");
+            m_KeyIcon                   = Finder.FindComponent<Image>(m_SelectButton.gameObject, "Icon");
         }
 
         protected override void SetUpUI()
@@ -98,7 +106,7 @@ namespace Menu.MainMenu.MainTab
                 if (ProgressionCloudData.HasArenaInProgress)
                     ProgressionCloudData.ResetCurrentArena();
                 else
-                    PlayerPrefsHandler.SetArenaType(EArenaType.FrostArena);
+                    PlayerPrefsHandler.SetArenaType(PlayerPrefsHandler.DEFAULT_ARENA_TYPE);
 
                 m_ArenaType = PlayerPrefsHandler.GetArenaType();
                 var arenaDifficulty = PlayerPrefsHandler.GetArenaDifficulty(m_ArenaType);
@@ -114,7 +122,6 @@ namespace Menu.MainMenu.MainTab
 
             // set value to last selected value
             m_ArenaTypeDropdown.SetValueWithoutNotify(Enum.GetNames(typeof(EArenaType)).ToList().IndexOf(m_ArenaType.ToString()));
-            m_ArenaDifficultyDropdown.SetValueWithoutNotify(m_ArenaDifficultyDropdown.options.FindIndex(option => option.text == m_ArenaDifficulty.Difficulty.ToString()));
         }
 
         #endregion
@@ -133,6 +140,9 @@ namespace Menu.MainMenu.MainTab
             // refresh ArenaOptions
             m_ArenaOptionsUI.Initialize(m_ArenaType, m_ArenaDifficulty.Difficulty);
 
+            // by default, remove lock icon
+            m_LockIcon.gameObject.SetActive(false);
+
             // NO ARENA selected
             if (! ProgressionCloudData.HasArenaInProgress)
             {
@@ -143,6 +153,7 @@ namespace Menu.MainMenu.MainTab
                 m_StageSectionUI.transform.parent.gameObject.SetActive(false);
                 m_ButtonsSection.gameObject.SetActive(true);
                 m_SelectButton.gameObject.SetActive(true);
+                m_KeyIcon.gameObject.SetActive(m_RequiresKey);
                 m_CollectButton.gameObject.SetActive(false);
 
                 // check if has notification of unlocked arena
@@ -157,7 +168,13 @@ namespace Menu.MainMenu.MainTab
 
                     // tell notifications that the value has been seen
                     NotificationCloudData.CollectUnlockedArena(m_ArenaType);
-                }
+                } 
+                
+                // arena not unlocked yet
+                if (! ArenaManagementData.IsArenaUnlocked(m_ArenaType))
+                {
+                    m_LockIcon.gameObject.SetActive(true);
+                } 
             }
             
             // ARENA IS OVER
@@ -236,6 +253,9 @@ namespace Menu.MainMenu.MainTab
 
             // add values to dropdown
             m_ArenaDifficultyDropdown.AddOptions(values);
+
+            // set current difficulty as selected difficulty
+            m_ArenaDifficultyDropdown.SetValueWithoutNotify(m_ArenaDifficultyDropdown.options.FindIndex(option => option.text == m_ArenaDifficulty.Difficulty.ToString()));
         }
 
         #endregion
@@ -253,7 +273,7 @@ namespace Menu.MainMenu.MainTab
             yield return new WaitForSeconds(1f);
 
             // change value in the dropdown
-            m_ArenaDifficultyDropdown.SetValueWithoutNotify(m_ArenaDifficultyDropdown.options.FindIndex(option => option.text == m_ArenaDifficulty.ToString()));
+            m_ArenaDifficultyDropdown.value = m_ArenaDifficultyDropdown.options.FindIndex(option => option.text == m_ArenaDifficulty.Difficulty.ToString());
 
             yield return new WaitForSeconds(1.5f);
 
@@ -262,6 +282,27 @@ namespace Menu.MainMenu.MainTab
             m_ArenaDifficultyAnimation.SetActive(false);
         }
 
+        #endregion
+
+
+        #region Select Arena
+
+        void SelectArena()
+        {
+            ProgressionCloudData.CreateNewCurrentArena(
+                m_ArenaData.ArenaType,
+                m_ArenaDifficulty,
+                PlayerPrefsHandler.GetArenaMods(m_ArenaData.ArenaType, m_ArenaDifficulty.Difficulty),
+                CharacterBuildsCloudData.SelectedCharacter,
+                new SBuildData(0, "")
+            );
+
+            // CHECK : Random mod
+            if (ProgressionCloudData.CurrentArena.ArenaMods.Contains(EArenaMod.Random))
+            {
+                ScreenManager.SetPopUpFadeIn(EPopUpState.ArenaBuildConstructorScreen);
+            }
+        }
 
         #endregion
 
@@ -273,7 +314,6 @@ namespace Menu.MainMenu.MainTab
             base.RegisterListeners();
 
             ProgressionCloudData.CurrentArenaDataChangedEvent += OnCurrentArenaDataChanged;
-            PlayerPrefsHandler.ArenaExtraDifficultyChanged += OnArenaExtraDifficultyChanged;
             PlayerPrefsHandler.ArenaModsChangedEvent += OnArenaModsChanged;
             m_ArenaTypeDropdown.onValueChanged.AddListener(OnArenaTypeValueChanged);
             m_ArenaDifficultyDropdown.onValueChanged.AddListener(OnArenaDifficultyValueChanged);
@@ -287,7 +327,6 @@ namespace Menu.MainMenu.MainTab
             base.UnRegisterListeners();
 
             ProgressionCloudData.CurrentArenaDataChangedEvent -= OnCurrentArenaDataChanged;
-            PlayerPrefsHandler.ArenaExtraDifficultyChanged -= OnArenaExtraDifficultyChanged;
             PlayerPrefsHandler.ArenaModsChangedEvent -= OnArenaModsChanged;
             m_ArenaTypeDropdown.onValueChanged.RemoveAllListeners();
             m_ArenaDifficultyDropdown.onValueChanged.RemoveAllListeners();
@@ -319,13 +358,14 @@ namespace Menu.MainMenu.MainTab
             RefreshUI();
         }
 
-        void OnArenaExtraDifficultyChanged()
+        void OnArenaModsChanged() 
         {
-            // update the arena difficulty data
-            SetArenaDifficulty(m_ArenaDifficulty.Difficulty, PlayerPrefsHandler.GetArenaExtraDifficulty(m_ArenaType, m_ArenaDifficulty.Difficulty));
-        }
+            var difficulty = PlayerPrefsHandler.GetArenaDifficulty(m_ArenaType);
+            m_ArenaDifficulty = new SArenaDifficulty(difficulty, PlayerPrefsHandler.GetArenaExtraDifficulty(m_ArenaType, difficulty));
+            m_ArenaData = AssetLoader.LoadArenaData(m_ArenaType, m_ArenaDifficulty);
 
-        void OnArenaModsChanged() { }
+            m_ArenaButton.RefreshDifficulty(m_ArenaDifficulty);
+        }
 
         void OnCurrentArenaDataChanged()
         {
@@ -342,6 +382,7 @@ namespace Menu.MainMenu.MainTab
 
             SoundFXManager.PlayOnce(SoundFXManager.ClickButtonSoundFX);
 
+            PlayerPrefsHandler.SetArenaType(arenaType);
             SetArenaType(arenaType);
         }
 
@@ -364,18 +405,26 @@ namespace Menu.MainMenu.MainTab
 
         public void OnSelectButtonClicked()
         {
-            ProgressionCloudData.CreateNewCurrentArena(
-                m_ArenaData.ArenaType, 
-                m_ArenaDifficulty, 
-                PlayerPrefsHandler.GetArenaMods(m_ArenaData.ArenaType, m_ArenaDifficulty.Difficulty), 
-                new SBuildData(0, "")
-            );
-
-            // CHECK : Random mod
-            if (ProgressionCloudData.CurrentArena.ArenaMods.Contains(EArenaMod.Random))
+            if (!ArenaManagementData.IsArenaUnlocked(m_ArenaType))
             {
-                ScreenManager.SetPopUpFadeIn(EPopUpState.ArenaBuildConstructorScreen);
+                ScreenManager.QuickMessage($"This arena is unlocked at level {ArenaManagementData.GetArenaSpecialConfig(m_ArenaType).UnlockedLevel}");
+                return;
             }
+
+            if (m_RequiresKey)
+            {
+                if (InventoryCloudData.Instance.GetCurrency(ECurrency.Keys) <= 0)
+                {
+                    ScreenManager.QuickMessage(
+                       message: "You do not have any key " + TextHandler.FormatIcon("Keys") + " left to play this game mode.\nYou can earn more or buy some in the shop"
+                    );
+                    return;
+                }
+
+                InventoryManager.Spend(new SPriceData(1, ECurrency.Keys), $"{m_ArenaType}_{m_ArenaDifficulty.Difficulty}");
+            }
+
+            SelectArena();
         }
 
         void OnCollectButtonClicked()
@@ -383,7 +432,7 @@ namespace Menu.MainMenu.MainTab
             var rewards = m_ArenaData.GetCurrentRewards();
             ProgressionCloudData.UpdateArenaUnlockedRewards();
 
-            Main.DisplayRewards(rewards, "Arena");
+            ScreenManager.DisplayRewards(rewards, "Arena");
             ProgressionCloudData.ResetCurrentArena();
         }
 

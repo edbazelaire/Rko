@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bec91e441d966e438d35c0133adae84, type: 3}
   m_Name: Ma_EmperorOfFlames
   m_EditorClassIdentifier: 
-  m_Description: Everytime you consume a [Burn] effect, reduce your cooldowns by
-    {0}
-  m_DescriptionVariables: 13000000
+  m_Description: For [Duration] seconds, consuming a [Burn] effect reduces all of
+    your cooldowns by [CooldownReduction] second.
+  m_DescriptionVariables: 
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
-  m_IsDisplayed: 0
-  m_VisualEffects: []
+  m_IsDisplayed: 1
   m_GfxEffects:
   - Prefab: {fileID: 2910976597878939058, guid: bc842c50ae5559b42891be38b3af23bf, type: 3}
     MaterialEffect: {fileID: 0}
@@ -34,6 +34,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 0
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -45,30 +46,41 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
   m_EndWithShield: 0
-  m_RefreshShield: 1
+  m_EndAt0Stacks: 1
+  m_RefreshShield: 0
+  m_RefreshDuration: 0
   m_Priority: 0
   m_Delay: 0
-  m_Duration: 0
+  m_Duration: 4
+  m_StartingStacks: 1
   m_MaxStacks: -1
-  m_StackDecay: -1
+  m_StackDecay: -999
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations:
   - StateEffectEvent: 3
     StateEffectName: Burn
     Stacks: 1
+  m_SpellActivations: []
   m_BonusStats:
   - StateEffectProperty: 19
     BaseValue: 1
     LevelScalingFactor: 0
     StackScalingFactor: 0
+    ScalesOnMissingHealth: 0
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects: []
   m_HoldingStateEffects: []
   m_OnStartStateEffect: []
   m_OnEndStateEffect: []
-  m_StateEffectScalingLevel: []
+  m_StateEffectScalingLevel:
+  - StateEffectProperty: 1
+    ScalingFactor: 0.05
   m_StateEffectScalingStacks: []

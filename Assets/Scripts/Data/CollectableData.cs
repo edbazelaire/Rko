@@ -1,4 +1,5 @@
-﻿using Enums;
+﻿using Data.DataStructures.SpellSubStructures;
+using Enums;
 using System;
 using System.Collections.Generic;
 using Tools;
@@ -14,8 +15,8 @@ namespace Data
 
         // ===================================================================================================
         // Protected Serialize Data
-        [SerializeField] protected string m_Description = "";
-        [SerializeField] protected List<SDescriptionVariable> m_DescriptionVariables = new List<SDescriptionVariable>();
+        [SerializeField, TextArea(minLines: 1, maxLines: 5)]
+        protected string m_Description = "";
 
         [SerializeField, Tooltip("List of Element types of this collectable")]
         protected List<ESpellElement> m_SpellElements;
@@ -24,6 +25,7 @@ namespace Data
         // Private Data
         protected int m_Level = 1;
         protected virtual Type m_EnumType => null;
+        public string BaseDescription => m_Description;
        
         // ===================================================================================================
         // Dependent Data
@@ -104,22 +106,6 @@ namespace Data
         #endregion
 
 
-        #region Debug
-
-        public string BaseDescription => m_Description;
-        public void SetBaseDescription(string description)
-        {
-            m_Description = description;
-        }
-        public List<SDescriptionVariable> DescriptionVariables => m_DescriptionVariables;
-        public void SetDescriptionVariables(List<SDescriptionVariable> descriptionVariables)
-        {
-            m_DescriptionVariables = descriptionVariables;
-        }
-
-        #endregion
-
-
         #region Infos
 
         public virtual Dictionary<string, object> GetInfo()
@@ -133,15 +119,11 @@ namespace Data
         /// <returns></returns>
         public virtual string GetDescription()
         {
-            List<string> values = new List<string>();
-            var infos = GetInfo();
+            string description = TextHandler.ReplaceProperties(m_Description, GetInfo(), this);
+            description = TextHandler.ReplaceStateEffectTokens(description);
+            description = TextHandler.ReplaceKeyWords(description);
 
-            foreach (SDescriptionVariable descriptionVariable in m_DescriptionVariables)
-            {
-                values.Add(ConvertDescriptionVariable(descriptionVariable, infos));
-            }
-
-            return string.Format(TextHandler.ReplaceProperties(TextHandler.ReplaceStateEffectTokens(m_Description), infos, this), values.ToArray());
+            return description;
         }
 
         /// <summary>
@@ -181,6 +163,20 @@ namespace Data
                 ErrorHandler.Error("Unable to find property " + descriptionVariable.Name + " in info dict of spell " + Name);
 
             return TextHandler.UNDEFINED;
+        }
+
+        #endregion
+
+
+        #region Dev Tools
+
+        /// <summary>
+        /// DevTool method to make changes in the description from Editor
+        /// </summary>
+        /// <param name="description"></param>
+        public void OverrideDescription(string description) 
+        { 
+            m_Description = description;
         }
 
         #endregion

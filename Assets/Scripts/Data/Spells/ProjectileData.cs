@@ -32,6 +32,8 @@ namespace Data
 
         // ================================================================================================
         // Dependent Members
+        /// <summary> overriding duration of all projectiles to be infinit </summary>
+        public override float Duration      => -1;
         /// <summary> Movement speed of the spell </summary>
         public float Speed                  => Settings.SpellSpeedFactor * m_Speed;
         public bool TriggerGround           => m_TriggerGround;
@@ -69,6 +71,10 @@ namespace Data
         public override void RecalculatePosition(ref Vector3 position, Vector3 target, ulong clientId)
         {
             base.RecalculatePosition(ref position, target, clientId);
+
+            // position overwritten - handled in the base Method
+            if (OverridesSpawnPosition)
+                return;
 
             // handle Y position
             switch (Trajectory)
@@ -169,6 +175,10 @@ namespace Data
                     Trajectory = trajectory;
                     return true;
 
+                case ESpellProperty.Speed:
+                    m_Speed = overridingData.Get(m_Speed, Level);
+                    return true;
+
                 default:
                     return base.CheckSpecialOverridingData(overridingData);
             }
@@ -184,7 +194,7 @@ namespace Data
             var infoDict = base.GetInfo();
 
             if (m_Speed > 0)
-                infoDict.Add("Speed", m_Speed);
+                infoDict["Speed"] = m_Speed;
 
             return infoDict;
         }

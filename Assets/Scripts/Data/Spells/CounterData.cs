@@ -3,10 +3,10 @@ using Enums;
 using Game;
 using Game.Loaders;
 using Game.Spells;
+using Google.Apis.Sheets.v4.Data;
+using MyBox;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using Tools;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -33,9 +33,9 @@ namespace Data
 
         // =========================================================================================
         // Public Accessors
-        public readonly float Ratio     => m_Ratio * Mathf.Pow(1 + m_RatioScalingLevel, m_Level);
-        public readonly float MinValue  => m_MinValue > 0 ? m_MinValue * Mathf.Pow(1.05f, m_Level) : 0;
-        public readonly float MaxValue  => m_MaxValue > 0 ? m_MaxValue * Mathf.Pow(1.05f, m_Level) : 0;
+        public readonly float   Ratio                       => m_Ratio * Mathf.Pow(1 + m_RatioScalingLevel, m_Level);
+        public readonly float   MinValue                    => m_MinValue > 0 ? m_MinValue * Mathf.Pow(1.05f, m_Level) : 0;
+        public readonly float   MaxValue                    => m_MaxValue > 0 ? m_MaxValue * Mathf.Pow(1.05f, m_Level) : 0;
 
         #endregion
 
@@ -54,7 +54,7 @@ namespace Data
                 return;
             }
 
-            int stacks = ConvertStacks(spell);
+            int stacks = ConvertStacks(spell, caster);
 
             if (Enum.TryParse(m_Effect, out EStateEffectProperty property))
             {
@@ -72,10 +72,10 @@ namespace Data
             }
         }
 
-        public int ConvertStacks(Spell spell)
+        public int ConvertStacks(Spell spell, Controller caster)
         {
             // Calculate Stacks
-            int stacks = (int)Mathf.Floor(Ratio * spell.SpellData.Damage);
+            int stacks = (int)Mathf.Floor(Ratio * spell.GetBoostedDamage(targetController: caster));
             if (m_MaxValue > 0f && stacks > Mathf.Round(m_MaxValue))
                 stacks = (int)Mathf.Round(m_MaxValue);
             if (m_MinValue > 0f && stacks < Mathf.Round(m_MinValue))
@@ -89,10 +89,10 @@ namespace Data
             switch (property)
             {
                 case EStateEffectProperty.Heal:
-                    target.Life.Heal(stacks, caster.PlayerId, parent, ESpellCategory.Direct);
+                    target.Life.Heal(stacks, caster.PlayerId, parent, EHitCategory.Direct);
                     break;
                 case EStateEffectProperty.Damage:
-                    target.Life.Heal(stacks, caster.PlayerId, parent, ESpellCategory.Direct);
+                    target.Life.Heal(stacks, caster.PlayerId, parent, EHitCategory.Direct);
                     break;
                 default:
                     target.CharacterData.AddBonusStat(property, stacks, default);
@@ -182,13 +182,21 @@ namespace Data
         public ECounterType         CounterType;
         [Tooltip("How is the counter triggerred ? ")]
         public ECounterActivation   CounterActivation;
+        [SerializeField, Tooltip("Does the counter prevents the player from taking damage ?")]
+        protected bool              m_PreventsDamage;
+        [SerializeField, Tooltip("Does the counter has a StateEffect linked to it ? (enabled / diseabled like the Counter)")]
+        protected bool              m_HasLinkedStateEffect;
+        [SerializeField, Tooltip("Effect linked to the Counter, that ends when the counter ends, and vice-versa"), ConditionalField("m_HasLinkedStateEffect")]
+        SStateEffectData            m_LinkedStateEffect;
         [SerializeField, Tooltip("Type of spells that can proc the counter")] 
-        protected List<Enums.ESpellCategory>  m_DamageTypeActivation                   = new List<Enums.ESpellCategory>() { Enums.ESpellCategory.Direct };
+        protected List<ESpellType> m_SpellTypeActivation = new List<ESpellType>() { ESpellType.Projectile };
         [SerializeField, Tooltip("Offset spawning of the counter proc spell")] 
         protected Vector2           m_SpawnOffset                           = new Vector2(0, 0);
-        [SerializeField, Tooltip("")]
-        protected bool              m_IsFollowing                           = true;
-        [SerializeField, Tooltip("")]
+        [SerializeField, Tooltip("Is the counter following the character ?")]
+        protected bool              m_IsFollowing                           = true; 
+        [SerializeField, Tooltip("Is the counter size scaling with the size of the character ? ")] 
+        bool                        m_ScalesWithCharacterSize               = true;
+        [SerializeField, Tooltip("Animation to play during the counter state")]
         protected EAnimation        m_CounterAnimation                      = EAnimation.Counter;
         [SerializeField, Tooltip("Location where the counter is spawning")] 
         protected ESpawnLocation    m_SpawnLocation                         = ESpawnLocation.Center;
@@ -205,8 +213,12 @@ namespace Data
 
         // ===================================================================================
         // Public Accessors
-        public List<Enums.ESpellCategory>       DamageTypeActivation    => m_DamageTypeActivation;
+        public bool                             HasLinkedStateEffect    => m_HasLinkedStateEffect;
+        public bool                             PreventsDamage          => m_PreventsDamage;
+        public SStateEffectData                 LinkedStateEffect       => m_LinkedStateEffect;
+        public List<ESpellType>                 SpellTypeActivation     => m_SpellTypeActivation;
         public bool                             IsLinkedCounter         => IsBlockingCast || IsBlockingMovement || CounterActivation == ECounterActivation.OnHitPlayer;
+        public bool                             ScalesWithCharacterSize => m_ScalesWithCharacterSize;
         public List<SDamageConversionEffects>   DamageConversionEffects => m_DamageConversionEffects;
         public Vector2                          SpawnOffset             => m_SpawnOffset;
         public EAnimation                       CounterAnimation        => m_CounterAnimation;
@@ -274,6 +286,9 @@ namespace Data
                 effect.SetLevel(level);
                 m_DamageConversionEffects[i] = effect;
             }
+
+            if (HasLinkedStateEffect)
+                m_LinkedStateEffect.SetLevel(level);
         }
 
         #endregion
@@ -284,6 +299,17 @@ namespace Data
         public override Dictionary<string, object> GetInfo()
         {
             var infos = base.GetInfo();
+
+            if (OnCounterProc != null)
+            {
+                var counterProcInfo = OnCounterProc.GetInfo();
+                if (counterProcInfo.ContainsKey("Effects"))
+                {
+                    if (! infos.ContainsKey("Effects"))
+                        infos["Effects"] = new List<SStateEffectData>();
+                    (infos["Effects"] as List<SStateEffectData>).AddRange(counterProcInfo["Effects"] as List<SStateEffectData>);
+                }
+            }
 
             var description = "";
             switch (CounterType)
@@ -301,6 +327,22 @@ namespace Data
                     break;
             }
 
+            // add linked effect
+            if (m_HasLinkedStateEffect)
+            {
+                var stateEffectInfos = SpellLoader.GetStateEffect(m_LinkedStateEffect.StateEffect, m_Level).GetInfos();
+                foreach (var item in stateEffectInfos)
+                {
+                    if (infos.ContainsKey(item.Key))
+                    {
+                        ErrorHandler.Warning("Unhandled case - Counter already contains key : " + item.Key);
+                        continue;
+                    }
+
+                    infos.Add(item.Key, item.Value);
+                }
+            }
+
             infos["CounterActivation"] = description;
             return infos;
         }
@@ -308,14 +350,16 @@ namespace Data
         public override string GetDescription()
         {
             string description = base.GetDescription();
-            if (m_DamageConversionEffects == null || m_DamageConversionEffects.Count == 0)
-                return description;
 
-            foreach (var effect in m_DamageConversionEffects)
+            if (m_DamageConversionEffects != null)
             {
-                description += "\n" + effect.GetDescription();
+                foreach (var effect in m_DamageConversionEffects)
+                {
+                    description += "\n" + effect.GetDescription();
+                }
             }
 
+            description = TextHandler.ReplaceLinkedStateEffect(description, this);
             return description;
         }
 

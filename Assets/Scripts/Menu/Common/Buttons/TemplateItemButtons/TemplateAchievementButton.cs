@@ -6,6 +6,7 @@ using Save;
 using System;
 using TMPro;
 using Tools;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,7 +22,7 @@ namespace Menu.Common.Buttons
 
         // ==============================================================================================
         // Data
-        AchievementData m_Achievement;
+        protected IAchievement m_AchievementData;
 
         // ==============================================================================================
         // GameObjects & Components
@@ -29,9 +30,10 @@ namespace Menu.Common.Buttons
         RewardsDisplayer    m_RewardDisplayer;
         TMP_Text            m_Title;
         CollectionFillBar   m_FillBar;
+        TMP_Text            m_CurrentIndexText;
 
         public Button Button => m_Button;
-        public bool IsUnlockable => m_Achievement.IsUnlockable;
+        public bool IsUnlockable => m_AchievementData.IsUnlockable;
 
         #endregion
 
@@ -46,25 +48,27 @@ namespace Menu.Common.Buttons
             m_RewardDisplayer   = Finder.FindComponent<RewardsDisplayer>(gameObject);
             m_Title             = Finder.FindComponent<TMP_Text>(gameObject, "Title");
             m_FillBar           = Finder.FindComponent<CollectionFillBar>(gameObject);
+            m_CurrentIndexText  = Finder.FindComponent<TMP_Text>(gameObject, "CurrentIndexText");
         }
         
-        public void Initialize(AchievementData achievement)
+        public void Initialize(IAchievement achievement)
         {
             // if has no Current value (e.q : is finished) : remove
-            if (!achievement.Current.HasValue)
+            if (achievement.Current == null)
             {
                 Destroy(gameObject);
                 return;
             }
 
-            m_Achievement = achievement;
+            m_AchievementData = achievement;
             base.Initialize();
         }
 
         protected override void SetUpUI()
         {
-            m_Title.text = TextLocalizer.SplitCamelCase(m_Achievement.name);
-            m_FillBar.Initialize(m_Achievement.GetCount(), m_Achievement.RequestedValue);
+            m_Title.text = TextLocalizer.SplitCamelCase(m_AchievementData.GetName());
+            m_CurrentIndexText.text = (m_AchievementData.CurrentIndex + 1).ToString();
+            m_FillBar.Initialize(m_AchievementData.GetCount(), m_AchievementData.RequestedValue);
             RefreshReward();
         }
 
@@ -73,16 +77,17 @@ namespace Menu.Common.Buttons
 
         #region GUI Manipulators
 
-        void RefreshUI()
+        protected virtual void RefreshUI()
         {
             RefreshReward();
-            m_FillBar.UpdateCollection(m_Achievement.GetCount(), m_Achievement.RequestedValue);
+            m_CurrentIndexText.text = (m_AchievementData.CurrentIndex + 1).ToString();
+            m_FillBar.UpdateCollection(m_AchievementData.GetCount(), m_AchievementData.RequestedValue);
         }
 
         void RefreshReward()
         {
             // if has no Current value (e.q : is finished) : remove
-            if (!m_Achievement.Current.HasValue)
+            if (m_AchievementData.Current == null)
             {
                 Destroy(gameObject);
                 return;
@@ -95,7 +100,7 @@ namespace Menu.Common.Buttons
                 return;
             }
             
-            m_RewardDisplayer.Initialize(m_Achievement.Current.Value.Rewards, 2);
+            m_RewardDisplayer.Initialize(m_AchievementData.Current.Rewards, 2);
         }
 
         #endregion
@@ -111,7 +116,6 @@ namespace Menu.Common.Buttons
             StatCloudData.AnalyticsDataChanged          += OnAnalyticsDataChanged;
             ProfileCloudData.AchievementChangedEvent    += OnAchievementChanged;
         }
-
 
         protected override void UnRegisterListeners()
         {
@@ -131,13 +135,13 @@ namespace Menu.Common.Buttons
         /// </summary>
         void OnClicked()
         {
-            if (! m_Achievement.IsUnlockable)
+            if (! m_AchievementData.IsUnlockable)
             {
-                ScreenManager.QuickMessage(m_Achievement.GetDescription(), duration: 5f);
+                ScreenManager.QuickRewardMessage(m_AchievementData.GetDescription(), m_AchievementData.GetCurrent().Rewards, duration: 5f);
                 return;
             }
 
-            m_Achievement.Unlock();
+            m_AchievementData.Unlock();
             RefreshUI();
         }
 
@@ -148,7 +152,7 @@ namespace Menu.Common.Buttons
         /// <param name="analytics"></param>
         void OnAnalyticsDataChanged(EAnalytics analytics)
         {
-            if (m_Achievement is not AnalyticsAchievementData analyticsAchievementData || analyticsAchievementData.Analytics != analytics)
+            if (m_AchievementData is not AnalyticsAchievementData analyticsAchievementData || analyticsAchievementData.Analytics != analytics)
                 return;
 
             RefreshUI();
@@ -156,7 +160,7 @@ namespace Menu.Common.Buttons
 
         void OnAchievementChanged(string achievementId)
         {
-            if (m_Achievement.ID != achievementId)
+            if (m_AchievementData.GetID() != achievementId)
                 return;
 
             RefreshUI();

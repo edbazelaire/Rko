@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Managers;
 using Assets.Scripts.Save.RSDs;
 using Data.GameManagement;
 using Enums;
@@ -79,7 +80,7 @@ namespace Save.RSDs
             if (HandleSpecialCases(codeData.Code))
                 return (true, null);
 
-            Main.DisplayRewards(codeData.Rewards, "PromoCode");
+            ScreenManager.DisplayRewards(codeData.Rewards, "PromoCode");
             return (true, null);
         }
 
@@ -99,7 +100,7 @@ namespace Save.RSDs
                 rewards.Add(EChest.Common,  2);
                 rewards.Add(EChest.Rare,    1);
                 rewards.Add(EChest.Epic,    1);
-                Main.DisplayRewards(rewards, "BugFix");
+                ScreenManager.DisplayRewards(rewards, "BugFix");
                 return true;
             }
 

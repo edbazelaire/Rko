@@ -23,6 +23,8 @@ namespace Inventory
 
         /// <summary> event fired when a collectable has been upgraded (=level up) </summary>
         public static       Action<Enum, int>       CollectableUpgradedEvent;
+        /// <summary> event fired when a collectable mastery has been upgraded </summary>
+        public static       Action<Enum, int>       CollectableMasteryUpgradedEvent;
         /// <summary> event fired when a character gains xp </summary>
         public static       Action<int>             XpGainedEvent;
 
@@ -181,7 +183,7 @@ namespace Inventory
             // get data of this character (current xp, level)
             SCollectableCloudData data = InventoryCloudData.Instance.GetCollectable(collectable);
             // get level data (required xp, golds, ...)
-            SLevelData levelData = CollectablesManagementData.GetLevelData(collectable, data.Level);
+            SLevelData levelData = CollectablesManagementData.GetLevelData(collectable, data.Level, data.Mastery);
 
             // UPGRADE : spend golds and cards to update the level
             if (! Spend(levelData.RequiredGold, ECurrency.Gold, "Upgrade" + collectable.GetType().ToString().Replace("Enums.E", "") + "." + collectable.ToString()))
@@ -197,12 +199,30 @@ namespace Inventory
             CollectableUpgradedEvent?.Invoke(collectable, data.Level);
         }
 
+        public static bool UpgradeMastery(Enum collectable, int mastery)
+        {
+            // get data from cloud
+            SCollectableCloudData data = InventoryCloudData.Instance.GetCollectable(collectable);
+
+            // go to next mastery
+            data.Mastery = mastery;
+
+            // SAVE : update cloud data
+            InventoryCloudData.Instance.SetCollectable(data);
+
+            // fire event of upgrade
+            CollectableMasteryUpgradedEvent?.Invoke(collectable, data.Mastery);
+
+            // return that everything went fine
+            return true;
+        }
+
         public static bool CanUpgrade(Enum collectable)
         {
             // get data of this character (current xp, level)
             SCollectableCloudData data = InventoryCloudData.Instance.GetCollectable(collectable);
             // get level data (required xp, golds, ...)
-            SLevelData levelData = CollectablesManagementData.GetLevelData(collectable, data.Level);
+            SLevelData levelData = CollectablesManagementData.GetLevelData(collectable, data.Level, data.Mastery);
 
             if (IsMaxLevel(collectable))
                 return false;
@@ -216,10 +236,37 @@ namespace Inventory
             return true;
         }
 
+        public static bool CanUpgradeMastery(Enum collectable)
+        {
+            // get data of this character (current xp, level)
+            SCollectableCloudData data = InventoryCloudData.Instance.GetCollectable(collectable);
+
+            // get rarety of the collectable
+            var rarety = CollectablesManagementData.GetData(collectable, 1).Rarety;
+
+            // try get mastery upgrade data cost (required gems, golds, ...)
+            if (! CollectablesManagementData.TryGetMasteryUpgradeCost(rarety, data.Mastery, out SPriceData price))
+                return false;
+
+            if (IsMaxMastery(collectable))
+                return false;
+
+            if (! CanBuy(price.Price, price.Currency))
+                return false;
+
+            return true;
+        }
+
         public static bool IsMaxLevel(Enum collectable)
         {
             SCollectableCloudData data = InventoryCloudData.Instance.GetCollectable(collectable);
             return data.Level >= CollectablesManagementData.GetMaxLevel(collectable);
+        }
+
+        public static bool IsMaxMastery(Enum collectable)
+        {
+            SCollectableCloudData data = InventoryCloudData.Instance.GetCollectable(collectable);
+            return data.Mastery >= CollectablesManagementData.MAX_MASTERY;
         }
 
         #endregion

@@ -50,8 +50,12 @@ namespace Assets
         [SerializeField] EEnv               m_Env = EEnv.beta;
         [SerializeField] string             m_AuthId = "";
         [SerializeField] bool               m_ForceIsNewPlayer;
-        [SerializeField] bool               m_StopPreventiveLoss;
+        [SerializeField] bool               m_CheatMode;
+        [SerializeField] bool               m_SkipWaves;
+        [SerializeField] bool               m_SkipBossAnimations;
+        [SerializeField] bool               m_DeactivateEnemy;
         [SerializeField] bool               m_SkipWaitingRanked;
+        [SerializeField] bool               m_DrawColliders;
         [SerializeField] bool               m_InfinitGiftCodes;
         [SerializeField] List<ELogTag>      m_LogTags;
 
@@ -96,20 +100,73 @@ namespace Assets
         public static bool              ActivateSaveOnClose     => Instance.m_ActivateSaveOnClose;
         public static bool              ForceIsNewPlayer        => Instance.m_ForceIsNewPlayer;
         //public static bool              IsNewPlayer             => ForceIsNewPlayer || ! ProfileCloudData.TutoDone;
-        public static bool              IsNewPlayer             => false;
+        public static bool IsNewPlayer => false;
         public static List<ELogTag>     LogTags                 => s_Instance != null ? Instance.m_LogTags : new List<ELogTag>();
-        public static bool StopPreventiveLoss
+        public static bool CheatMode
         {
             get
             {
 #if UNITY_EDITOR
                 // only works in EDITOR mode
-                return Instance.m_StopPreventiveLoss;
+                return Instance.m_CheatMode;
+#else
+                return false;
+#endif
+            }
+        }   
+        
+        public static bool SkipWaves
+        {
+            get
+            {
+#if UNITY_EDITOR
+                // only works in EDITOR mode
+                return Instance.m_SkipWaves;
 #else
                 return false;
 #endif
             }
         }
+        
+        public static bool SkipBossAnimations
+        {
+            get
+            {
+#if UNITY_EDITOR
+                // only works in EDITOR mode
+                return Instance.m_SkipBossAnimations;
+#else
+                return false;
+#endif
+            }
+        }
+        
+        public static bool DeactivateEnemy
+        {
+            get
+            {
+#if UNITY_EDITOR
+                // only works in EDITOR mode
+                return Instance.m_DeactivateEnemy;
+#else
+                return false;
+#endif
+            }
+        }
+
+        public static bool DrawColliders
+        {
+            get
+            {
+#if UNITY_EDITOR
+                // only works in EDITOR mode
+                return Instance.m_DrawColliders;
+#else
+                return false;
+#endif
+            }
+        }
+
         public static bool InfinitGiftCodes
         {
             get
@@ -424,16 +481,6 @@ namespace Assets
             }, unlockedOnly);
         }
 
-        public static void DisplayRewards(SRewardsData rewardsData, string context, Action OnRewardCollected = null, string title = null)
-        {
-            Main.SetPopUp(EPopUpState.RewardsScreen, rewardsData, context, OnRewardCollected, title);
-        }
-     
-        public static void DisplayAchievementRewards(List<SAchievementReward> rewardsData)
-        {
-            Main.SetPopUp(EPopUpState.AchievementRewardScreen, rewardsData);
-        }
-
         public static void ConfirmPopUp(string message, string title = "", Action onValidate = null, Action onCancel = null)
         {
             Main.SetPopUp(EPopUpState.ConfirmPopUp, message, title, onValidate, onCancel);
@@ -458,7 +505,7 @@ namespace Assets
                 OnPurchase = (bool isPurchased) => {
                     if (!isPurchased)
                         return;
-                    DisplayRewards(rewardsData, context);
+                    ScreenManager.DisplayRewards(rewardsData, context);
                 };
             }
 
@@ -507,11 +554,6 @@ namespace Assets
         {
             Debug.LogWarning(message);
             SetPopUp(EPopUpState.MessagePopUp, message);
-        }
-
-        public static void StateEffectPopUp(SStateEffectData stateEffectData, int level)
-        {
-            SetPopUp(EPopUpState.StateEffectPopUp, stateEffectData, level);
         }
 
         #endregion

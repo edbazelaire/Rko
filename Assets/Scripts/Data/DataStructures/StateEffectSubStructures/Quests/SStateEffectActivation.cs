@@ -11,4 +11,12 @@ namespace Data.DataStructures.StateEffectSubStructures
         public string               StateEffectName;
         public int                  Stacks;
     }
+
+    [Serializable]
+    public struct SSpellActivation
+    {
+        public ESpellEvent          SpellEvent;
+        public string               SpellName;
+        public int                  Stacks;
+    }
 }

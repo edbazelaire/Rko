@@ -45,7 +45,7 @@ namespace Game.UI
             ReloadIcon();
 
             // setup stacks and duration
-            Refresh(duration, stacks, maxStacks);
+            Refresh(duration, timer: duration, stacks: stacks, maxStacks: maxStacks);
         }
 
 
@@ -67,15 +67,15 @@ namespace Game.UI
 
         #region GUI Manipulators
 
-        public void Refresh(float duration, int stacks, int? maxStacks)
+        public void Refresh(float duration, float? timer, int stacks, int? maxStacks)
         {
             ErrorHandler.Log("Refresh " + m_StateEffectName + " : with " + stacks + " stacks", ELogTag.StateEffectGFX);
 
             m_Stacks = 0;
-            AddStacks(stacks, maxStacks: maxStacks, duration: duration);
+            AddStacks(stacks, maxStacks: maxStacks, duration: duration, timer: timer);
         }
 
-        public void AddStacks(int stacks, int? maxStacks = null, float? duration = null)
+        public void AddStacks(int stacks, int? maxStacks = null, float? duration = null, float? timer = null)
         {
             if (maxStacks != null)
                 m_MaxStacks = maxStacks.Value;
@@ -83,18 +83,6 @@ namespace Game.UI
             m_Stacks = Math.Clamp(m_Stacks + stacks, 0, m_MaxStacks > 0 ? m_MaxStacks : 999);
 
             ErrorHandler.Log(m_StateEffectName + " : new stacks " + m_Stacks, ELogTag.StateEffectGFX);
-            // TODO : REMOVE    ============================================================================
-            if (m_StateEffectName == "_MeteorRain")
-            {
-                Debug.Log(m_StateEffectName + " : new stacks " + m_Stacks);
-                int actualStacks = GameManager.Instance.Owner.StateHandler.GetStacks("_MeteorRain");
-                if (m_Stacks != actualStacks)
-                {
-                    Debug.LogWarning("Missmatching number of stacks : " + m_Stacks + " vs " + actualStacks);
-                }
-            }
-            // TODO : REMOVE    ============================================================================
-
             if (m_Stacks <= 0 || m_StartingStacks >= 1 && m_Stacks == 1)
                 m_StacksContainer.SetActive(false);
             else
@@ -105,7 +93,9 @@ namespace Game.UI
 
             if (duration.HasValue)
                 m_Duration = duration.Value;
-            m_Timer = m_Duration;             // reset timer
+
+            if (timer != null)
+                m_Timer = timer.Value;             // reset timer
 
             if (duration <= 0)
                 m_TimerFill.fillAmount = 0;

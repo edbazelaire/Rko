@@ -1,0 +1,302 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9d516b3dac707b40872f083050bc425, type: 3}
+  m_Name: Damage
+  m_EditorClassIdentifier: 
+  m_PrettyName: 
+  m_Description: Deal at least [TresholdValue] damage to the enemy
+  m_ResetCount: 0
+  m_Character: -1
+  m_MasteryThresholds: 0300000006000000
+  AchievementSubData:
+  - MaxValue: 10000
+    Rewards:
+      Currencies:
+      - Currency: 1
+        Qty: 10
+      Chests: 
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 25000
+    Rewards:
+      Currencies:
+      - Currency: 0
+        Qty: 250
+      Chests: 
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 35000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 4
+        Title: 14
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 50000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 1
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 3
+        League: 2
+      Boosts: []
+  - MaxValue: 75000
+    Rewards:
+      Currencies: []
+      Chests: 00000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 100000
+    Rewards:
+      Currencies:
+      - Currency: 0
+        Qty: 700
+      - Currency: 3
+        Qty: 120
+      Chests: 
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 150000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 1
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 3
+        League: 3
+      Boosts: []
+  - MaxValue: 200000
+    Rewards:
+      Currencies: []
+      Chests: 00000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 250000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 4
+        Title: 15
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 300000
+    Rewards:
+      Currencies:
+      - Currency: 3
+        Qty: 150
+      - Currency: 0
+        Qty: 1000
+      Chests: 
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 400000
+    Rewards:
+      Currencies: []
+      Chests: 01000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 500000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 1
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 3
+        League: 4
+      Boosts: []
+  - MaxValue: 600000
+    Rewards:
+      Currencies: []
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 750000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 4
+        Title: 16
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 1000000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 1
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 3
+        League: 5
+      Boosts: []
+  - MaxValue: 1500000
+    Rewards:
+      Currencies: []
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 2000000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 4
+        Title: 17
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 2500000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 3
+        Title: 0
+        Avatar: 0
+        Border: 106
+        Emot: 0
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 3000000
+    Rewards:
+      Currencies: []
+      Chests: 03000000
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 3
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 4000000
+    Rewards:
+      Currencies: []
+      Chests: 03000000
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 3
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 5000000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 1
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 3
+        League: 7
+      Boosts: []
+  - MaxValue: 7500000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 4
+        Title: 18
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 3
+        League: 7
+      Boosts: []
+  - MaxValue: 10000000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 2
+        Title: 18
+        Avatar: 10001
+        Border: 0
+        Emot: 0
+        Badge: 3
+        League: 7
+      Boosts: []
+  - MaxValue: 15000000
+    Rewards:
+      Currencies: []
+      Chests: 06000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  m_Property: 11
+  m_DamageCategories: 
+  m_HitCategories: 
+  m_SpecialConditions: []

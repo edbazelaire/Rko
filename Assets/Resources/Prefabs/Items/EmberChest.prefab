@@ -114,6 +114,10 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: 51
       objectReference: {fileID: 0}
+    - target: {fileID: 4326472713233177137, guid: 0a6a2b5511ee7144580620269a32eb56, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4994663423667650367, guid: 0a6a2b5511ee7144580620269a32eb56, type: 3}
       propertyPath: moveWithTransform
       value: 1
@@ -128,7 +132,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4994663423667650367, guid: 0a6a2b5511ee7144580620269a32eb56, type: 3}
       propertyPath: EmissionModule.rateOverTime.scalar
-      value: 2
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4994663423667650367, guid: 0a6a2b5511ee7144580620269a32eb56, type: 3}
       propertyPath: InitialModule.startSpeed.minScalar
@@ -275,7 +279,8 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4326472713233177137, guid: 0a6a2b5511ee7144580620269a32eb56, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0a6a2b5511ee7144580620269a32eb56, type: 3}

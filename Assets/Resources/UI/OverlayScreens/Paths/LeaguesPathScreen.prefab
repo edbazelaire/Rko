@@ -136,10 +136,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1122656148035977432}
   - component: {fileID: 6135348872595649244}
-  - component: {fileID: 3225928820814960380}
   - component: {fileID: 2317418756477573228}
   - component: {fileID: 6100360204295336523}
   - component: {fileID: -8142021826480226426}
+  - component: {fileID: 8124785493241739838}
   m_Layer: 0
   m_Name: LeaguesPathScreen
   m_TagString: Untagged
@@ -177,18 +177,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7180806640842551164}
   m_CullTransparentMesh: 1
---- !u!114 &3225928820814960380
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7180806640842551164}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38815da637e31464d899c9922a42e122, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!223 &2317418756477573228
 Canvas:
   m_ObjectHideFlags: 0
@@ -252,6 +240,19 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 0
+--- !u!114 &8124785493241739838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7180806640842551164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4031a2aa2447a343be9b3655e4b7cc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsBlockingQuickClose: 0
 --- !u!1 &7829405134884997662
 GameObject:
   m_ObjectHideFlags: 0
@@ -945,7 +946,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5010661217913458879, guid: 0bf3a3b5105e1d34c849034ac9853037, type: 3}
       propertyPath: m_fontSize
-      value: 99
+      value: 101.3
       objectReference: {fileID: 0}
     - target: {fileID: 5012243578219084906, guid: 0bf3a3b5105e1d34c849034ac9853037, type: 3}
       propertyPath: m_AnchorMax.y

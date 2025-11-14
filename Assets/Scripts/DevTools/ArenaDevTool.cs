@@ -91,7 +91,7 @@ namespace DevTools
                 return;
             }
 
-            ProgressionCloudData.UpdateCurrentArena(level: level, stage: stage);
+            ProgressionCloudData.UpdateCurrentArena(level: level, stage: stage, enemyLostLifes: 0);
 
             // refresh values (if wrong data provided, it will set value back to allowed values)
             RefreshInputFields();

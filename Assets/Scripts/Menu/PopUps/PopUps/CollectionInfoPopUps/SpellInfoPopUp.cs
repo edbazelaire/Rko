@@ -123,7 +123,7 @@ namespace Menu.PopUps
         /// <summary>
         /// Display infos of the spell
         /// </summary>
-        protected override void SetUpInfoRow(GameObject container, string key, object value, object newDataValue = null, EScalingDirection scalingDirection = EScalingDirection.None)
+        protected override void SetUpInfoRow(GameObject container, string key, object value, object newDataValue = null, EScalingDirection scalingDirection = EScalingDirection.None, string title = "")
         {
             if (key == "Effects")
                 return;
@@ -134,7 +134,7 @@ namespace Menu.PopUps
             if (key == "Spawns")
                 return;
             
-            base.SetUpInfoRow(container, key, value, newDataValue, scalingDirection);
+            base.SetUpInfoRow(container, key, value, newDataValue, scalingDirection, title);
         }
 
         void SetUpStateEffects()

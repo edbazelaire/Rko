@@ -1,4 +1,5 @@
-﻿using Enums;
+﻿using Data.GameManagement;
+using Enums;
 using Game;
 using MyBox;
 using System.Collections.Generic;
@@ -10,13 +11,114 @@ namespace Tools.Helpers
     {
         #region Members
 
-        public static int ALL_LAYER_MASK   = LayerMask.GetMask(ETargetLayer.Player.ToString(), ETargetLayer.Structure.ToString());
+        public static int DEFAULT_LAYER_MASK    = LayerMask.GetMask(ETargetLayer.Player.ToString(), ETargetLayer.Structure.ToString());
+        public static int ALL_LAYER_MASK        = LayerMask.GetMask(ETargetLayer.Player.ToString(), ETargetLayer.Structure.ToString(), ETargetLayer.Counter.ToString());
         public static int PLAYER_LAYER_MASK     = LayerMask.GetMask(ETargetLayer.Player.ToString());
+        public static int COUNTER_LAYER_MASK    = LayerMask.GetMask(ETargetLayer.Counter.ToString());
 
         #endregion
 
 
-        #region Targetting
+        #region Target Position
+
+        public static void GetTargetPosition(ref Vector3 target, ESpellTarget spellTarget, Vector2 offset, bool clampTargetPos, ulong casterId, ulong? targetId = null)
+        {
+            Controller controller = GameManager.Instance.GetPlayer(casterId);
+            int direction = ArenaManager.GetAreaMovementDirection(controller.Team, IsEnemyTarget(spellTarget));
+
+            switch (spellTarget)
+            {
+                case ESpellTarget.Self:
+                    target.x = controller.transform.position.x;
+                    break;
+
+                case ESpellTarget.FirstAlly:
+                    target.x = GameManager.Instance.GetFirstAlly(controller.Team, casterId).transform.position.x;
+                    break;
+
+                case ESpellTarget.FirstEnemy:
+                    // Special case : trying to target first enemy but there are only "Spawns" on the map : set targeting to "Fix"
+                    if (GameManager.Instance.IsOnlySpawnEnemies(controller.Team))
+                    {
+                        GetTargetPosition(ref target, ESpellTarget.Fixed, offset, clampTargetPos, casterId, targetId);
+                        return;
+                    }
+                    target.x = GameManager.Instance.GetFirstEnemy(controller.Team).transform.position.x;
+                    break;
+
+                case ESpellTarget.CurrentTarget:
+                    if (!targetId.HasValue)
+                    {
+                        ErrorHandler.Error("SpellTarget is CurrentTarget but no target id was provided");
+                        break;
+                    }
+                    target.x = GameManager.Instance.GetPlayer(targetId.Value).transform.position.x;
+                    break;
+
+                case ESpellTarget.AllyZoneCenter:
+                case ESpellTarget.EnemyZoneCenter:
+                case ESpellTarget.EnemyZone:
+                case ESpellTarget.AllyZone:
+                    target.x = GetTargettableArea(controller.Team, spellTarget).position.x;
+                    break;
+
+                case ESpellTarget.AllyZoneEnd:
+                case ESpellTarget.EnemyZoneStart:
+                    var centerPos = GetTargettableArea(controller.Team, spellTarget).position.x;
+                    target.x = centerPos - direction * ArenaManager.Instance.TargettableAreaSize / 2;
+                    break;
+
+                case ESpellTarget.AllyZoneStart:
+                case ESpellTarget.EnemyZoneEnd:
+                    target.x = GetTargettableArea(controller.Team, spellTarget).position.x + direction * ArenaManager.Instance.TargettableAreaSize / 2;
+                    break;
+
+                case ESpellTarget.Mirror:
+                    target.x = -controller.transform.position.x;
+                    break;
+
+                case ESpellTarget.Fixed:
+                    direction = ArenaManager.GetAreaMovementDirection(controller.Team, true);
+                    target.x = controller.transform.position.x + direction * Settings.SpellFixedDistance;
+                    break;
+
+                default:
+                    ErrorHandler.Error("Unhandled case : " + spellTarget);
+                    break;
+            }
+
+            // APPLY OFFSET
+            target.x += direction * offset.x;
+            target.y += offset.y;
+
+            // CLAMP target in between available positions
+            if (clampTargetPos && spellTarget != ESpellTarget.Self)
+                ClampTargetX(ref target, spellTarget, casterId);
+        }
+
+        public static Transform GetTargettableArea(int team, ESpellTarget spellTarget)
+        {
+            if (IsEnemyTarget(spellTarget))
+                return ArenaManager.GetTargettableAreaTransform(team, true);
+
+            else if (IsAllyTarget(spellTarget))
+                return ArenaManager.GetTargettableAreaTransform(team, false);
+
+            else
+                return ArenaManager.Instance.Arena.transform;
+        }
+
+        public static void ClampTargetX(ref Vector3 target, ESpellTarget spellTarget, ulong clientId)
+        {
+            // clamp target between min/max xPos of the target zone
+            var zoneCenter = GetTargettableArea(GameManager.Instance.GetPlayer(clientId).Team, spellTarget).position.x;
+            target.x = Mathf.Clamp(target.x, zoneCenter - ArenaManager.Instance.TargettableAreaSize / 2, zoneCenter + ArenaManager.Instance.TargettableAreaSize / 2);
+        }
+
+        #endregion
+
+
+        #region Target Controller
 
         public static Controller GetTargetController(ulong casterId, ESpellTarget spellTarget, ulong? targetId = null, bool throwError = true)
         {

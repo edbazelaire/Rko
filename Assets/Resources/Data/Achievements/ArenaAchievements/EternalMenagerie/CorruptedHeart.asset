@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae354b3668cdd774ca39fa75fe4e38f7, type: 3}
+  m_Name: CorruptedHeart
+  m_EditorClassIdentifier: 
+  m_PrettyName: 
+  m_Description: 
+  m_ResetCount: 1
+  m_Character: -1
+  m_MasteryThresholds: 0300000006000000
+  AchievementSubData:
+  - MaxValue: 1
+    Rewards:
+      Currencies: []
+      Chests: 0e000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 4
+    ArenaMods: 
+  - MaxValue: 1
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 1
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 10103
+        League: 0
+      Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 5
+    ArenaMods: 
+  - MaxValue: 1
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 3
+        Title: 0
+        Avatar: 0
+        Border: 208
+        Emot: 0
+        Badge: 10011
+        League: 0
+      Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 6
+    ArenaMods: 
+  m_ArenaType: 2
+  m_ArenaDifficulty: 0
+  m_ArenaMods: 01000000

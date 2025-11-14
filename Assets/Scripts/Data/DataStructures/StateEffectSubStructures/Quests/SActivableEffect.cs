@@ -11,6 +11,7 @@ namespace Data.DataStructures.StateEffectSubStructures
         public string               Effect;
         public int                  BonusLevel;
         public bool                 IsDeactivable;
+        public int                  ReactivatedEveryStacks;
 
         int m_BaseLevel;
         public void SetLevel(int level) => m_BaseLevel = level;

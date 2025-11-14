@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Description: 
   m_DescriptionVariables: 
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 1
-  m_VisualEffects: []
   m_GfxEffects:
-  - Prefab: {fileID: 1923825553450198, guid: 60f6ce11d75f17540a6cf9652c8c3ac5, type: 3}
-    MaterialEffect: {fileID: 0}
+  - Prefab: {fileID: 0}
+    MaterialEffect: {fileID: 2100000, guid: 32fac6e45890e9d48961b3db7c93c0be, type: 2}
     SoundFX: []
     GFXLifetime:
       m_StartSpellPart: 1
@@ -33,6 +33,27 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 2
     IsFollowing: 1
+    IsReplacingGFX: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
+  - Prefab: {fileID: 0}
+    MaterialEffect: {fileID: 2100000, guid: 32fac6e45890e9d48961b3db7c93c0be, type: 2}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 1
+      m_EndSpellPart: 7
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 1
+    OrderInLayer: 0
+    SpawnTarget: 2
+    SpawnLocation: 0
+    BodyPart: 1
+    IsFollowing: 1
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -44,14 +65,23 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
+  m_EndWithShield: 0
+  m_EndAt0Stacks: 1
+  m_RefreshShield: 1
+  m_RefreshDuration: 1
   m_Priority: 0
-  m_Duration: 4
+  m_Delay: 0
+  m_Duration: 3
+  m_StartingStacks: 1
   m_MaxStacks: 1
   m_StackDecay: -1
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats: []
   m_StatConversions: []
   m_SubStateEffects: []
@@ -62,9 +92,13 @@ MonoBehaviour:
   - StateEffectProperty: 1
     ScalingFactor: 0.05
   m_StateEffectScalingStacks: []
+  m_Frequency: 1
+  m_AllowedSpells: []
   m_SpellEffectType: 0
   m_AllowedSpellTypes: 
   m_OnHits: []
   m_AllyStateEffects: []
   m_EnemyStateEffects: []
-  m_ReplacementData: {fileID: 11400000, guid: 9980bfe581c209048a565e453ca93629, type: 2}
+  m_SpellOverridingData: []
+  m_SpellGFXOverrides: []
+  m_ReplacementData: {fileID: 0}
