@@ -20,7 +20,7 @@ MonoBehaviour:
   m_Ultimate: 
   Size: 1
   BaseSpeed: 0.5
-  BaseHealth: 270
+  BaseHealth: 300
   MaxEnergy: 0
   BaseEnergy: 0
   PassiveEnergyGain: 0
@@ -34,4 +34,5 @@ MonoBehaviour:
   m_SpawnOffsetY:
     Min: 0
     Max: 0
-  m_PopUpOffset: {x: 0, y: 0}
+  PopUpOffset: {x: 0, y: 0, z: 0}
+  PopUpScale: 1

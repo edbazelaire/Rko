@@ -53,13 +53,13 @@ namespace Data.GameManagement
             data.SetDefaultData();
 
             if (index == 0)
-                data.Currencies.Add(new SCurrencyReward(ECurrency.Gold, 1000));
-            else if (index == 1)
-                data.Currencies.Add(new SCurrencyReward(ECurrency.Xp, 250));
-            else if (index == 2)
                 data.Currencies.Add(new SCurrencyReward(ECurrency.Keys, 1));
+            else if (index == 1)
+                data.Currencies.Add(new SCurrencyReward(ECurrency.Gold, 1000));
+            else if (index == 2)
+                data.Currencies.Add(new SCurrencyReward(ECurrency.Gems, 15));
             else
-                data.Currencies.Add(new SCurrencyReward(ECurrency.Gems, 25));
+                data.Currencies.Add(new SCurrencyReward(ECurrency.Keys, 3));
 
             return data;
         }
