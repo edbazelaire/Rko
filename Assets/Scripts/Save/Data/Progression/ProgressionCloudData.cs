@@ -406,7 +406,6 @@ namespace Save
 
             if (CurrentArena.PowerUps == null)
             {
-                ErrorHandler.Error("No PowerUpData provided to CurrentArena");
                 currentArena.PowerUps = DEFAULT_POWER_UPS;
             }
 

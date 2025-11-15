@@ -50,11 +50,7 @@ MonoBehaviour:
     DamageCategories: 02000000
     HitCategories: 
     SpecialConditions: []
-    StateEffectStackFactors:
-    - Target: 4
-      StateEffect: 13
-      BaseValue: 1
-      LevelFactor: 0.5
+    StateEffectStackFactors: []
   - StateEffectProperty: 22
     BaseValue: 20
     BonusValue: 0
@@ -62,11 +58,7 @@ MonoBehaviour:
     DamageCategories: 01000000
     HitCategories: 
     SpecialConditions: []
-    StateEffectStackFactors:
-    - Target: 4
-      StateEffect: 13
-      BaseValue: 1
-      LevelFactor: 0.5
+    StateEffectStackFactors: []
   - StateEffectProperty: 3
     BaseValue: 0.3
     BonusValue: 0

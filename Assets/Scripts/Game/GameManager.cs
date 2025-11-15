@@ -868,7 +868,7 @@ namespace Game
 
         public bool IsOnlySpawnEnemies(int team)
         {
-            if (m_Controllers.Values.Any(t => t != null && t.IsPlayer && t.Team != team && t.IsTargettable))
+            if (m_Controllers.Values.Any(t => t != null && ! t.IsSpawn && t.Team != team && t.IsTargettable))
                 return false;
 
             return m_Spawns.Values.Any(t => t != null && t.Team != team && t.IsTargettable);
