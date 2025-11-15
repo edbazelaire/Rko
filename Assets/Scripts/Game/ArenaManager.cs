@@ -24,6 +24,7 @@ namespace Game
 
         GameObject              m_Arena;
         Transform               m_TargetHight;
+        ClickableArea           m_ClickableArea;
         List<TargettableArea>   m_TargettableAreas;
         List<List<Transform>>   m_Spawns;
 
@@ -34,6 +35,7 @@ namespace Game
         public GameObject               Arena                   => m_Arena;
         public List<List<Transform>>    Spawns                  => m_Spawns;
         public Transform                TargetHight             => m_TargetHight;
+        public ClickableArea            ClickableArea           => m_ClickableArea;
         public float                    TargettableAreaSize     => m_TargettableAreaSize;
         public ArenaBackground          ArenaBackground         => m_ArenaBackground;
 
@@ -47,6 +49,7 @@ namespace Game
             m_Arena = gameObject;
             m_ArenaBackground = Finder.FindComponent<ArenaBackground>(gameObject);
             m_TargetHight = Finder.FindComponent<Transform>(m_Arena, c_TargetHight);
+            m_ClickableArea = Finder.FindComponent<ClickableArea>(m_Arena);
         }
 
         public void Initialize()

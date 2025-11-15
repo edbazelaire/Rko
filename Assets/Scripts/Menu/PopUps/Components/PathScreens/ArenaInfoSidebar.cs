@@ -1,4 +1,6 @@
-﻿using Data.GameManagement;
+﻿using Assets.Scripts.Managers;
+using Data;
+using Enums;
 using Game.Loaders;
 using MyBox;
 using Save;
@@ -28,7 +30,9 @@ namespace Menu.PopUps
         List<PowerUpSmallDisplay>   m_PowerUpsSmallDisplayers;
         Button                      m_DisplayButton;
         Button                      m_AbandonButton;
+        Button                      m_RefreshPowerUpsButton;
         Button                      m_RefreshLifeButton;
+        Button                      m_CharacterInfoButton;
         GameObject                  m_LossesContainer;
 
         // Public Accessors
@@ -46,7 +50,9 @@ namespace Menu.PopUps
             m_PowerUpsSmallDisplayers   = Finder.FindComponents<PowerUpSmallDisplay>(gameObject);
             m_DisplayButton             = Finder.FindComponent<Button>(gameObject, "DisplayButton");
             m_AbandonButton             = Finder.FindComponent<Button>(gameObject, "AbandonButton");
+            m_RefreshPowerUpsButton     = Finder.FindComponent<Button>(gameObject, "RefreshPowerUpsButton");
             m_RefreshLifeButton         = Finder.FindComponent<Button>(gameObject, "RefreshLifeButton");
+            m_CharacterInfoButton       = Finder.FindComponent<Button>(gameObject, "CharacterInfoButton");
             m_LossesContainer           = Finder.Find(gameObject, "LossesContainer");
 
             m_Width = Finder.FindComponent<RectTransform>(gameObject).rect.width;
@@ -62,6 +68,8 @@ namespace Menu.PopUps
             base.SetUpUI();
 
             m_RefreshLifeButton.gameObject.SetActive(ProfileCloudData.IsAdmin);
+            m_RefreshPowerUpsButton.gameObject.SetActive(ProfileCloudData.IsAdmin);
+            m_CharacterInfoButton.gameObject.SetActive(ProgressionCloudData.HasArenaInProgress);
 
             m_IsActive = true;
             RefreshUI();
@@ -182,6 +190,8 @@ namespace Menu.PopUps
 
             m_DisplayButton.onClick.AddListener(OnDisplayButtonClicked);
             m_RefreshLifeButton.onClick.AddListener(OnRefreshLifeButtonClicked);
+            m_RefreshPowerUpsButton.onClick.AddListener(OnRefreshPowerUpsButtonClicked);
+            m_CharacterInfoButton.onClick.AddListener(OnCharacterInfoButtonClicked);
             ProgressionCloudData.CurrentArenaDataChangedEvent += RefreshUI;
         }
 
@@ -191,6 +201,8 @@ namespace Menu.PopUps
 
             m_DisplayButton.onClick.RemoveListener(OnDisplayButtonClicked);
             m_RefreshLifeButton.onClick.RemoveListener(OnRefreshLifeButtonClicked);
+            m_RefreshPowerUpsButton.onClick.RemoveListener(OnRefreshPowerUpsButtonClicked);
+            m_CharacterInfoButton.onClick.RemoveListener(OnCharacterInfoButtonClicked);
             ProgressionCloudData.CurrentArenaDataChangedEvent -= RefreshUI;
         }
 
@@ -199,12 +211,27 @@ namespace Menu.PopUps
             ToggleActivation();
         }
 
+        void OnCharacterInfoButtonClicked()
+        {
+            ScreenManager.CollectableInfoPopUp(CharacterLoader.GetCharacterData(
+                ProgressionCloudData.CurrentArena.GetCharacter(), 
+                ProgressionCloudData.CurrentArena.HasBuildData() ? ProfileCloudData.AccountLevel : InventoryCloudData.Instance.GetCollectable(ProgressionCloudData.CurrentArena.GetCharacter()).Level));
+        }
+
         /// <summary>
         /// [CHEAT BUTTON]
         /// </summary>
         void OnRefreshLifeButtonClicked()
         {
             ProgressionCloudData.AddArenaLoss(-3);
+        }
+
+        /// <summary>
+        /// [CHEAT BUTTON]
+        /// </summary>
+        void OnRefreshPowerUpsButtonClicked()
+        {
+            ProgressionCloudData.ResetArenaPowerUps();
         }
 
         #endregion

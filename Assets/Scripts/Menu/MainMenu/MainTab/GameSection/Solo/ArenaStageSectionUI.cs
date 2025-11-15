@@ -1,9 +1,11 @@
 ﻿using Data.GameManagement;
 using Enums;
 using Save;
+using System;
 using System.Collections.Generic;
 using Tools;
 using Tools.Animations;
+using UnityEngine;
 using UnityEngine.UI;
 
 
@@ -13,7 +15,10 @@ namespace Menu.MainMenu.MainTab
     {
         #region Members
 
-        ArenaData m_ArenaData;
+        [SerializeField, Tooltip("GameObject used to display extra lifes at stage")]
+        GameObject m_ExtraLife;
+
+        protected ArenaData m_ArenaData;
 
         #endregion
 
@@ -43,7 +48,25 @@ namespace Menu.MainMenu.MainTab
 
             for (int i = 0; i < m_NStages; i++)
             {
-                m_Knobs.Add(Instantiate(m_Knob, m_PathDisplayContainer.transform).GetComponent<Image>());
+                int extraLifes = CalculateExtraLifes(i);
+
+                var knob = Instantiate(m_Knob, m_PathDisplayContainer.transform);
+                var extraLifeContainer = Finder.Find(knob, "ExtraLifesContainer");
+                if (extraLifes <= 0)
+                {
+                    extraLifeContainer.SetActive(false);
+                } else
+                {
+                    extraLifeContainer.SetActive(true);
+                    UIHelper.CleanContent(extraLifeContainer);
+
+                    for (int iExtraLife = 0; iExtraLife < extraLifes; iExtraLife++)
+                    {
+                        Instantiate(m_ExtraLife, extraLifeContainer.transform);
+                    }
+                }
+
+                m_Knobs.Add(knob.GetComponent<Image>());
                 SetKnobColor(i);
             }
         }
@@ -70,6 +93,37 @@ namespace Menu.MainMenu.MainTab
             pulse.Initialize(CURRENT_STAGE_ANIMATION, -1f, 0.9f, 1.1f, pulseDuration: 1.5f, pauseDuration: 0f);
         }
 
+        int CalculateExtraLifes(int stageIndex)
+        {
+            int baseExtraLifes = m_ArenaData.GetStageData(m_Level, stageIndex).ExtraLifes;
+            if (baseExtraLifes <= 0)
+                return 0;
+
+            // Check Arena Level first
+            if (m_Level < m_CurrentLevel)
+            {
+                return 0;
+            }
+
+            if (m_Level > m_CurrentLevel)
+            {
+                return baseExtraLifes;
+            }
+
+            // Check index of CURRENT STAGE
+            if (stageIndex < m_CurrentStage)
+            {
+                return 0;
+            }
+
+            if (stageIndex > m_CurrentStage)
+            {
+                return baseExtraLifes;
+            }
+
+            return baseExtraLifes - ProgressionCloudData.CurrentArena.CurrentEnemyLifesLost;
+        }
+
         #endregion
 
 
@@ -77,9 +131,10 @@ namespace Menu.MainMenu.MainTab
 
         protected override string GetLevelString()
         {
+            if (m_ArenaData.ArenaType == EArenaType.EternalMenagerie)
+                return "Phase " + TextHandler.ToRoman(m_Level + 1);
             return m_ArenaData.GetBoss(m_Level).ToString();
         }
-
 
         #endregion
 
@@ -90,7 +145,7 @@ namespace Menu.MainMenu.MainTab
         {
             base.RegisterListeners();
 
-            PlayerPrefsHandler.ArenaTypeChangedEvent    += OnArenaTypeChanged;
+            //PlayerPrefsHandler.ArenaTypeChangedEvent            += OnArenaTypeChanged;
             ProgressionCloudData.CurrentArenaDataChangedEvent  += OnArenaDataChanged;
         }
 
@@ -98,8 +153,8 @@ namespace Menu.MainMenu.MainTab
         {
             base.UnRegisterListeners();
 
-            PlayerPrefsHandler.ArenaTypeChangedEvent    -= OnArenaTypeChanged;
-            ProgressionCloudData.CurrentArenaDataChangedEvent  -= OnArenaDataChanged;
+            //PlayerPrefsHandler.ArenaTypeChangedEvent            -= OnArenaTypeChanged;
+            ProgressionCloudData.CurrentArenaDataChangedEvent   -= OnArenaDataChanged;
         }
 
         void OnArenaTypeChanged(EArenaType arenaType)

@@ -1,24 +1,28 @@
 ﻿using Assets.Scripts.Game;
+using Assets.Scripts.Game.Pool;
 using Assets.Scripts.Managers.Sound;
 using Data;
+using Data.DataStructures.SpellSubStructures;
 using Enums;
 using Game.Loaders;
 using Game.NetworkStructures;
 using Game.Spells.SpecialEffects;
 using MyBox;
+using NUnit.Framework.Internal;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using Tools;
+using Tools.Helpers;
 using Unity.Collections;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
+
 namespace Game.Spells
 {
-    public class Spell : NetworkBehaviour
+    public class Spell : PooledNetworkBehaviour
     {
         #region Members
 
@@ -37,8 +41,9 @@ namespace Game.Spells
         // ========================================================================================================
         // Data
         protected SpellData         m_BaseSpellData;
-        SpellData m_SpellData  => m_BaseSpellData;
-        protected Controller        m_Controller;
+        SpellData m_SpellData => m_BaseSpellData;
+        protected Controller        m_Caster;
+        protected Collider2D        m_Collider;
         protected Vector3           m_Target;
         protected Vector3           m_RelocationTargetPos;
         protected NetworkObject     m_NetworkObjectComponent;
@@ -47,13 +52,17 @@ namespace Game.Spells
         protected int               m_Team;
 
         /// <summary> in case of persistance of graphisme, allows to stop spell behavior </summary>
-        protected bool              m_IsOver = false;   
+        protected bool              m_IsOver = false;
+        /// <summary> timer counting down the remaining spell duration time </summary>
+        protected float             m_DurationTimer;
         /// <summary> timer delaying the end of spell graphismes after end of spell </summary>
         protected float             m_PersistanceTimer;
         /// <summary> counter of remaining number of target that this spell can hit </summary>
         protected List<ulong>       m_HittedPlayerId;
         /// <summary> on cast prefabs (spawn on cast) </summary>
         protected List<GameObject>  m_OnCastPrefabs;
+        /// <summary> is this spell currently checking relocation ? </summary>
+        protected bool              m_IsCheckingRelocation;
 
         // ========================================================================================================
         // Events
@@ -61,26 +70,29 @@ namespace Game.Spells
 
         // ========================================================================================================
         // Public Accessors
-        public SpellData    SpellData   => m_SpellData;
-        public Controller   Controller  => m_Controller;
-        public Vector3      Target      => m_Target;
-        public GameObject   Graphics    => m_Graphics;
-        public int          Team        => m_Team;
+        public SpellData    SpellData           => m_SpellData;
+        public Controller   Caster              => m_Caster;
+        public Collider2D   Collider            => m_Collider;
+        public Vector3      Target              => m_Target;
+        public GameObject   Graphics            => m_Graphics;
+        public GameObject   GraphicsContainer   => m_GraphicsContainer;
+        public int          Team                => m_Team;
+        public bool         IsOver              => m_IsOver;
 
-        public bool IsAutoAttack => m_SpellData.Name == m_Controller.SpellHandler.AutoAttack.ToString();
+        public bool IsAutoAttack => m_Caster.SpellHandler.IsAutoAttack(m_SpellData);
 
         #endregion
 
 
         #region Init & End
 
-        public override void OnNetworkSpawn() 
+        public override void OnSpawned() 
         {
-            m_GraphicsContainer = Finder.Find(gameObject, c_GraphicsContainer, throwError: false);
-            if (m_GraphicsContainer == null)
-                m_GraphicsContainer = new GameObject(c_GraphicsContainer);
+            base.OnSpawned();
 
-            m_NetworkObjectComponent = Finder.FindComponent<NetworkObject>(gameObject);
+            m_NetworkObjectComponent = gameObject.GetComponent<NetworkObject>();
+            m_IsOver = false;
+            m_Collider = this.GetComponent<Collider2D>(); 
 
             // destroy data (to avoid charging memory)
             if (m_BaseSpellData != null)
@@ -88,14 +100,11 @@ namespace Game.Spells
                 Destroy(m_BaseSpellData);
                 m_BaseSpellData = null;
             }
-
-            m_IsOver = false;
-            UIHelper.CleanContent(m_GraphicsContainer);
         }
 
-        public override void OnNetworkDespawn()
+        public override void OnDespawned()
         {
-            base.OnNetworkDespawn();
+            base.OnDespawned();
 
             // make sure is over is called
             m_IsOver = true;
@@ -135,10 +144,11 @@ namespace Game.Spells
         /// <param name="spellName"></param>
         public virtual void Initialize(ulong clientId, Vector3 target, SpellData spellData)
         {
-            m_Controller            = GameManager.Instance.GetPlayer(clientId);
-            m_Team                  = m_Controller.Team;
+            m_Caster                = GameManager.Instance.GetPlayer(clientId);
+            m_Team                  = m_Caster.Team;
             m_HittedPlayerId        = new List<ulong>();
             m_RelocationTargetPos   = default;
+            m_DurationTimer         = spellData.Duration;
 
             // setup spell data
             m_BaseSpellData = spellData.Clone(level: spellData.Level);
@@ -160,6 +170,19 @@ namespace Game.Spells
             if (IsServer)
                 AddSpecialComponent();
 
+            // if is channeling : check that caster 
+            if (m_SpellData.IsChanneling && ! m_Caster.SpellHandler.TryStartChanneling(this))
+            {
+                End();
+                return;
+            }
+
+            // initialize solid body
+            InitSolidBody();
+
+            // initialize size of the object
+            InitSize();
+
             // initialize graphics of the spell (with delay if has any)
             InitGraphics();
 
@@ -168,6 +191,14 @@ namespace Game.Spells
 
             // call event that spell has spawn
             CallSpellEvent(ESpellEvent.OnSpawn);
+
+            // send event to the Analytics
+            if (Enum.TryParse(m_SpellData.Name, out ESpell spell))
+                GameAnalyticsManager.Instance.IncreaseCounter(m_Caster.IsSpawn ? m_Caster.SpawnOwner.PlayerId : m_Caster.PlayerId, spell.ToString());
+
+            // -- also increase counter of TriggerEffect that procced the effect
+            if (m_SpellData.Parent != m_SpellData.Name && (SpellLoader.IsRune(m_SpellData.Parent) || SpellLoader.IsPowerUp(m_SpellData.Parent)))
+                GameAnalyticsManager.Instance.IncreaseCounter(m_Caster.IsSpawn ? m_Caster.SpawnOwner.PlayerId : m_Caster.PlayerId, m_SpellData.Parent);
         }
 
         /// <summary>
@@ -199,9 +230,12 @@ namespace Game.Spells
         {
             // destroy the spell game object
             if (instant)
-                PoolManager.ReturnObject(m_NetworkObjectComponent);
-            else
-                StartCoroutine(DestroySpell());
+            {
+                ReturnObjectToPool();
+                return;
+            }
+            
+            StartCoroutine(DestroySpell());
         }
 
         public virtual bool TryEnd()
@@ -224,8 +258,22 @@ namespace Game.Spells
                 yield return null;
             }
 
-            // destroy the spell
-            PoolManager.ReturnObject(m_NetworkObjectComponent);
+            if (!GameManager.Exists)
+            {
+                Destroy(this);
+                yield break;
+            }
+
+            // return spell to the PoolManager
+            ReturnObjectToPool();
+        }
+
+        void ReturnObjectToPool()
+        {
+            if (GameManager.Instance.IsOfflineMode)
+                PoolManager.ReturnObject(gameObject, checkSpawnLogic: true);
+            else
+                PoolManager.ReturnObject(m_NetworkObjectComponent);
         }
 
         #endregion
@@ -281,23 +329,67 @@ namespace Game.Spells
         }
 
         /// <summary>
+        /// Adjust the size of the spell depending on expected size and parent
+        /// </summary>
+        protected virtual void InitSize()
+        {
+            // set size of the 
+            Vector3 parentScale = transform.parent != null ? transform.parent.lossyScale : Vector3.one;
+            Vector3 targetScale = Vector3.one * m_SpellData.Size;
+            transform.localScale = new Vector3(
+                parentScale.x != 0 ? targetScale.x / parentScale.x : targetScale.x,
+                parentScale.y != 0 ? targetScale.y / parentScale.y : targetScale.y,
+                parentScale.z != 0 ? targetScale.z / parentScale.z : targetScale.z
+            );
+        }
+
+        /// <summary>
+        /// Initialize Module SolidBody
+        /// </summary>
+        protected virtual void InitSolidBody()
+        {
+            if (! m_SpellData.HasSolidBody)
+                return;
+
+            m_SpellData.MSolidBody.Initialize(this, m_SpellData.Level);
+        }
+
+        /// <summary>
         /// Instantiate the graphics of the spell
         /// </summary>
         protected virtual void InitGraphics()
         {
-            transform.localScale = Vector3.one * m_SpellData.Size;
+            // Initialize Graphics Container
+            m_GraphicsContainer = Finder.Find(gameObject, c_GraphicsContainer, throwError: false);
+            if (m_GraphicsContainer == null)
+                m_GraphicsContainer = new GameObject(c_GraphicsContainer);
+            UIHelper.CleanContent(m_GraphicsContainer);
 
+            // Spawn GFX and check if there is a special Collider
+            bool replacedCollider = false;
             if (m_SpellData.Graphics != null)
             {
                 m_Graphics = PoolManager.Pool(m_SpellData.Graphics, m_GraphicsContainer.transform, activate: false);
-                m_Graphics.transform.localScale = Vector3.one;
-                m_Graphics.transform.localPosition = Vector3.zero;
+                m_Graphics.transform.localScale     = Vector3.one;
+                m_Graphics.transform.localPosition  = Vector3.zero;
+                m_Graphics.transform.localRotation  = Quaternion.identity;
                 m_Graphics.SetActive(true);
-                SwapColliders(m_Graphics);
+                replacedCollider = SwapColliders(m_Graphics);
 
                 var audioSource = Finder.FindComponent<AudioSource>(m_Graphics);
                 if (audioSource != null)
                     SoundFXManager.AdjustVolume(ref audioSource);
+            } 
+
+            // NO COLLIDER REPLACED -> reset to default CircleCollider2D
+            if (!replacedCollider)
+            {
+                if (m_Collider != null)
+                    Destroy(m_Collider);
+                m_Collider = transform.AddComponent<CircleCollider2D>();
+                m_Collider.isTrigger = true;
+                m_Collider.offset = new Vector2(0f, 0f);
+                (m_Collider as CircleCollider2D).radius = 0.5f;
             }
 
             if (m_SpellData.PermanantSoundFX != null)
@@ -307,13 +399,13 @@ namespace Game.Spells
         protected virtual Collider2D CopyCollider(Collider2D collider)
         {
             // destroy the collider on the Spell before adding the new one
-            Destroy(this.GetComponent<Collider2D>());
+            Destroy(m_Collider);
 
             // Get the type of the original collider
             Type colliderType = collider.GetType();
 
             // Add a new collider of the same type to this GameObject
-            Collider2D newCollider = this.gameObject.AddComponent(colliderType) as Collider2D;
+            Collider2D newCollider = gameObject.AddComponent(colliderType) as Collider2D;
 
             // Copy properties from the original collider to the new one
             if (newCollider != null)
@@ -327,18 +419,19 @@ namespace Game.Spells
         /// <summary>
         /// Swap default Collider with Graphics Collider if it has one
         /// </summary>
-        protected virtual void SwapColliders(GameObject graphics)
+        protected bool SwapColliders(GameObject graphics)
         {
             // Check if the graphics GameObject has a enabled Collider2D component
             Collider2D graphicsCollider = graphics.GetComponent<Collider2D>();
             if (graphicsCollider == null || ! graphicsCollider.enabled)
-                return;
+                return false;
 
             // copy properties of the graphics collider on this object
-            CopyCollider(graphicsCollider);
+            m_Collider = CopyCollider(graphicsCollider);
 
             // Destroy the original collider on the graphics GameObject
             Destroy(graphicsCollider);
+            return true;
         }
 
         /// <summary>
@@ -365,6 +458,11 @@ namespace Game.Spells
             {
                 destinationCircleCollider.radius = sourceCircleCollider.radius;
             }
+            // Specific properties for CircleCollider2D
+            else if (source is CapsuleCollider2D sourceCapsuleCollider && destination is CapsuleCollider2D destinationCapsuleCollider)
+            {
+                destinationCapsuleCollider.size = sourceCapsuleCollider.size;
+            }
             // Specific properties for PolygonCollider2D
             else if (source is PolygonCollider2D sourcePolygonCollider && destination is PolygonCollider2D destinationPolygonCollider)
             {
@@ -375,7 +473,12 @@ namespace Game.Spells
             {
                 destinationEdgeCollider.points = sourceEdgeCollider.points;
             }
+
             // Add more collider types if necessary
+            else
+            {
+                ErrorHandler.Warning("Unhanlded case : " + source.GetType());
+            }
         }
 
         #endregion
@@ -391,6 +494,11 @@ namespace Game.Spells
             if (m_IsOver)
                 return;
 
+            UpdateTimer();
+
+            if (m_IsOver)
+                return;
+
             UpdateMovement();
             UpdateRelocation();
         }
@@ -400,10 +508,33 @@ namespace Game.Spells
 
         #region Movement & Relocation
 
+        protected virtual void UpdateTimer()
+        {
+            if (m_IsOver || m_SpellData == null)
+                return;
+
+            // if inifite zone, do nothing
+            if (m_SpellData.Duration < 0f)
+                return;
+
+            m_DurationTimer -= Time.deltaTime;
+            if (m_DurationTimer < 0f)
+            {
+                End();
+                return;
+            }
+        }
+
         /// <summary>
         /// Update the position of the spell and [SERVER] check if the spell has reached its max distance
         /// </summary>
-        protected virtual void UpdateMovement() { }
+        protected virtual void UpdateMovement() 
+        {
+            if (!m_SpellData.IsFollowing)
+                return;
+
+            transform.position = m_SpellData.MFollowing.UpdatePosition(transform.position, m_Caster.PlayerId, null);
+        }
 
         /// <summary>
         /// If spell has relocation, update its position
@@ -414,7 +545,7 @@ namespace Game.Spells
             if (m_RelocationTargetPos == default || transform.position.x == m_RelocationTargetPos.x)
                 return;
 
-            int teamFactor = m_Controller.Team == 0 ? 1 : -1;
+            int teamFactor = m_Caster.Team == 0 ? 1 : -1;
 
             // calculate expected position at that frame
             var xPos = m_RelocationTargetPos.x;
@@ -429,7 +560,7 @@ namespace Game.Spells
 
             // clamp position to target area
             if (m_SpellData.ClampTargetPos)
-                m_SpellData.ClampTargetX(ref pos, m_Controller.PlayerId);
+                m_SpellData.ClampTargetX(ref pos, m_Caster.PlayerId);
 
             // set new position
             transform.position = pos;
@@ -459,22 +590,18 @@ namespace Game.Spells
                 return;
 
             // apply force
-            if (m_SpellData.Force.IsActive)
+            if (m_SpellData.Force.IsActive && TargetHelper.IsAllowedTarget(controller, m_Caster, m_SpellData.Force.Targets))
                 controller.Movement.AddForce(m_SpellData.Force);
 
             // if spell has "OnHit" GFX : call on CLIENT that spell has touched something
             CallSpellEvent(ESpellEvent.OnHit, controller);
 
-            // add plyer id to list of hitted players
-            m_HittedPlayerId.Add(controller.OwnerClientId);
-
             // energy gain (if hitting not structure object)
             if (! controller.CharacterData.IsStructure)
-                m_Controller.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
+                m_Caster.EnergyHandler.AddEnergy(m_SpellData.EnergyGain);
 
-            // update hit count
-            if (m_HittedPlayerId.Count <= m_SpellData.MaxHit && m_SpellData.MaxHit > 0)
-                End();
+            // add player id to list of hitted players
+            AddHittedPlayer(controller.PlayerId);
         }
 
         /// <summary>
@@ -485,15 +612,15 @@ namespace Game.Spells
         protected virtual bool CheckHitEnemy(Controller targetController)
         {
             // Target is Ally - return
-            if (targetController.Team == m_Controller.Team)
+            if (targetController.Team == m_Caster.Team)
                 return false;
 
             // no base Damage, StateEffects or OnHit effects - return
-            if (m_SpellData.Damage <= 0 && m_SpellData.ExecutionDamage <= 0 && m_SpellData.EnemyStateEffects.Count == 0 && m_SpellData.OnHit.Count == 0)
+            if (m_SpellData.Damages.IsNullOrEmpty() && m_SpellData.Heal <= 0 && m_SpellData.EnemyStateEffects.Count == 0 && m_SpellData.OnHit.Count == 0)
                 return false;
 
             // check if target has counter(s)
-            if (targetController.CounterHandler.CheckCounters(this))
+            if (targetController.CounterHandler != null && targetController.CounterHandler.CheckCounters(this))
                 return false;
 
             HitEnemy(targetController);
@@ -501,7 +628,7 @@ namespace Game.Spells
             return true;
         }
 
-        void HitEnemy(Controller targetController)
+        public void HitEnemy(Controller targetController)
         {
             // split state effects application into effects that are applied before / after damages
             (List<SStateEffectData> beforeEffects, List<SStateEffectData> afterEffects) = SplitStateEffectsPriority(m_SpellData.EnemyStateEffects);
@@ -509,31 +636,62 @@ namespace Game.Spells
             // apply state effects specifics to enemies that are applied BEFORE damages
             ApplyStateEffects(targetController, beforeEffects);
 
-            // apply spell base damage on target
-            if (m_SpellData.Damage > 0)
-                ApplyDamageOnTarget(GetBoostedDamage(targetController), targetController);
+            // apply all damages
+            ApplyDamages(targetController);
 
-            // apply execution damage on target
-            if (m_SpellData.ExecutionDamage > 0)
-                ApplyDamageOnTarget(GetBoostedExecutionDamage(targetController), targetController);
+            // apply all heals
+            ApplyHeal(targetController);
 
             // apply state effects specifics to enemies that are applied AFTER damages
             ApplyStateEffects(targetController, afterEffects);
         }
 
-        void ApplyDamageOnTarget(int damage, Controller targetController)
+        void ApplyDamages(Controller targetController)
         {
+            if (m_SpellData.Damages.IsNullOrEmpty())
+                return;
+
+            foreach (SDamage damage in m_SpellData.Damages)
+            {
+                ApplyDamageOnTarget(damage, targetController);
+            }
+        }
+
+        void ApplyDamageOnTarget(SDamage damage, Controller targetController)
+        {
+            // calculate damage
+            int value = m_Caster.StateHandler.ApplyBonusDamage(
+                damage.Get(m_SpellData.Level, m_Caster, targetController),
+                targetController,
+                damageCategory:     damage.DamageCategory,
+                hitCategory:        damage.HitCategory,
+                specialCondition:   m_SpellData.Parent
+            );
+
             // get final damages after shields and resistances
-            int finalDamage = targetController.Life.Hit(damage, m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
+            int finalDamage = targetController.Life.Hit(value, m_Caster.PlayerId, m_SpellData.Parent, damage.DamageCategory, damage.HitCategory);
 
             ErrorHandler.Log(m_SpellData.Name + " : " + finalDamage, ELogTag.Spells);
 
             // apply lifesteal if any (remove 1 because floats values are always based on 1 as default value)
-            float lifeSteal = SpellData.LifeSteal + Mathf.Max(0f, m_Controller.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal) - 1);
+            float lifeSteal = SpellData.LifeSteal + Mathf.Max(0f, m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal) - 1);
             if (lifeSteal > 0 && finalDamage > 0)
             {
-                m_Controller.Life.Heal((int)Mathf.Round(lifeSteal * finalDamage), m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
+                m_Caster.Life.Heal((int)Mathf.Round(lifeSteal * finalDamage), m_Caster.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
             }
+        }
+
+        /// <summary>
+        /// Add plyer id to list of hitted players (to avoid multiple procs on the same target)
+        /// </summary>
+        /// <param name="playerId"></param>
+        public void AddHittedPlayer(ulong playerId)
+        {
+            m_HittedPlayerId.Add(playerId);
+
+            // update hit count
+            if (m_SpellData.MaxHit > 0 && m_HittedPlayerId.Count >= m_SpellData.MaxHit)
+                End();
         }
 
         /// <summary>
@@ -543,7 +701,7 @@ namespace Game.Spells
         /// <returns></returns>
         protected virtual bool CheckHitAlly(Controller targetController)
         {
-            if (targetController.Team != m_Controller.Team)
+            if (targetController.Team != m_Caster.Team)
                 return false;
 
             bool test = false;
@@ -557,21 +715,8 @@ namespace Game.Spells
             // apply state effects that are applied BEFORE damages
             ApplyStateEffects(targetController, beforeEffects);
 
-            if (m_SpellData.Heal > 0)
-            {
-                targetController.Life.Heal(
-                    m_Controller.StateHandler.ApplyBonusInt(m_SpellData.Heal, EStateEffectProperty.Heal, targetController, m_SpellData.Name), 
-                    m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
-                test = true;
-            }
-
-            if (m_SpellData.Shield > 0)
-            {
-                targetController.Life.AddShield(
-                    m_Controller.StateHandler.ApplyBonusInt(m_SpellData.Shield, EStateEffectProperty.Shield, targetController, m_SpellData.Name),
-                    m_Controller.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
-                test = true;
-            }
+            // try to apply Heal/Shield on the target
+            test |= ApplyHeal(targetController);
 
             // apply state effects that are applied AFTER damages
             ApplyStateEffects(targetController, afterEffects);
@@ -579,34 +724,46 @@ namespace Game.Spells
             return test;
         }
 
-        public virtual int GetBoostedDamage(Controller targetController)
+        /// <summary>
+        /// Try to apply Heal/Shield on the target
+        /// </summary>
+        /// <param name="targetController"></param>
+        /// <returns></returns>
+        protected virtual bool ApplyHeal(Controller targetController)
         {
-            var damages = m_SpellData.Damage;
+            bool test = false;
 
-            if (damages <= 0)
-                return 0;
-
-            if (m_SpellData.StateEffectStackFactor != EStateEffect.None)
+            if (m_SpellData.Heal > 0)
             {
-                damages *= targetController.StateHandler.GetStacks(m_SpellData.StateEffectStackFactor);
+                targetController.Life.Heal(
+                    m_Caster.StateHandler.ApplyBonusInt(m_SpellData.Heal, EStateEffectProperty.Heal, targetController, specialCondition: m_SpellData.Name),
+                    m_Caster.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
+                test = true;
             }
 
-            return m_Controller.StateHandler.ApplyBonusDamage(damages, targetController, specialCondition: m_SpellData.Name);
+            if (m_SpellData.Shield > 0)
+            {
+                targetController.Life.AddShield(
+                    m_Caster.StateHandler.ApplyBonusInt(m_SpellData.Shield, EStateEffectProperty.Shield, targetController, specialCondition: m_SpellData.Name),
+                    m_Caster.PlayerId, m_SpellData.Parent, m_SpellData.SpellCategory);
+                test = true;
+            }
+
+            return test;
         }
 
-        public virtual int GetBoostedExecutionDamage(Controller target)
+        public virtual int GetBoostedDamage(Controller targetController)
         {
-            if (m_SpellData.ExecutionDamage <= 0)
+            if (m_SpellData.Damages.IsNullOrEmpty())
                 return 0;
 
-            var boostedDamage = m_Controller.StateHandler.ApplyBonusExecutionDamage(m_SpellData.ExecutionDamage, target, specialCondition: m_SpellData.Name);
-            var finalDamage = (int)Math.Round(boostedDamage * (1 - target.Life.PercHp));
+            int damage = 0;
+            foreach (SDamage sDamage in  m_SpellData.Damages)
+            {
+                damage += m_Caster.StateHandler.ApplyBonusDamage(sDamage.Get(m_SpellData.Level, m_Caster, targetController), targetController, sDamage.DamageCategory, sDamage.HitCategory, m_SpellData.Parent);
+            }
 
-            ErrorHandler.Log("Execution Damage : " + m_SpellData.ExecutionDamage, ELogTag.Spells);
-            ErrorHandler.Log("BOOSTED Execution Damage : " + boostedDamage, ELogTag.Spells);
-            ErrorHandler.Log("Final Execution Damage : " + finalDamage + " (percHp "+ (100*target.Life.PercHp).ToString("0") + "%)", ELogTag.Spells);
-           
-            return finalDamage;
+            return damage;
         }
 
         /// <summary>
@@ -615,19 +772,19 @@ namespace Game.Spells
         protected virtual void AddExtraEffects()
         {
             // if spell is AutoAttack & controller has a "AutoAttackRune" : add effects of the rune to the spell
-            m_Controller.StateHandler.AddExtraEffects(ref m_BaseSpellData, m_Controller.SpellHandler.IsAutoAttack(m_SpellData));
+            m_Caster.StateHandler.AddExtraEffects(ref m_BaseSpellData, m_Caster.SpellHandler.IsAutoAttack(m_SpellData));
         }
 
         /// <summary>
         /// Spawn prefabs that procs on hitting a target
         /// </summary>
         /// <param name="targetController"></param>
-        protected virtual void SpawnOnHitPrefab()
+        public virtual void SpawnOnHitPrefab()
         {
             if (!IsServer)
                 return;
 
-            m_SpellData.SpawnOnHitPrefab(OwnerClientId, transform.position, transform.position);
+            m_SpellData.SpawnOnHitPrefab(m_Caster.PlayerId, transform.position, transform.position);
         }
 
         /// <summary>
@@ -652,7 +809,10 @@ namespace Game.Spells
             if (!targetController.Life.IsAlive)
                 return;
 
-            var caster = m_Controller.IsSpawn ? m_Controller.SpawnOwner : m_Controller;
+            if (targetController.StateHandler == null)
+                return;
+
+            var caster = m_Caster.IsSpawn ? m_Caster.SpawnOwner : m_Caster;
             foreach (var effect in stateEffects)
             {
                 targetController.StateHandler.AddStateEffect(effect, caster, m_SpellData.Level, origin: m_SpellData.Parent);
@@ -703,24 +863,22 @@ namespace Game.Spells
                 spellEvent:         spellEvent, 
                 level:              m_SpellData.Level,
                 parent:             m_SpellData.Parent,
-                caster:             m_Controller,
+                caster:             m_Caster,
                 targetController:   targetController, 
                 targetPosition:     m_Target, 
                 position:           transform.position
             );
 
             // ======================================================================================
-            // CHECK Spell Relocation Event
-            if (m_SpellData.HasSpellRelocationEventAt(spellEvent))
+            // CHECK GFX (send event to client)
+            if (GameManager.Instance.IsOfflineMode)
             {
-                if (m_SpellData.SpellRelocation.Lifetime.StartSpellPart == spellEvent)
-                    m_Controller.SpellHandler.RelocationTargetChangedEvent += OnRelocationTargetChanged;
-                else
-                    m_Controller.SpellHandler.RelocationTargetChangedEvent -= OnRelocationTargetChanged;
+                CallSpellEventGFX(spellEvent, targetController);
+                CheckSpellRelocationEvent(spellEvent);
+                return;
             }
 
-            // ======================================================================================
-            // CHECK GFX (send event to client)
+            // -- Online mode : send event to client
             if (m_SpellData.HasGfxEventAt(spellEvent, checkEnd: false))
             {
                 if (targetController == null)
@@ -738,10 +896,8 @@ namespace Game.Spells
         [ClientRpc]
         void CallSpellEventClientRPC(ESpellEvent spellEvent)
         {
-            if (spellEvent == ESpellEvent.OnSpawn)
-                OnSpellSpawn?.Invoke(this);
-
             CallSpellEventGFX(spellEvent, null);
+            CheckSpellRelocationEvent(spellEvent);
         }
 
         /// <summary>
@@ -754,6 +910,7 @@ namespace Game.Spells
         void CallSpellEventClientRPC(ESpellEvent spellEvent, ulong targetId)
         {
             CallSpellEventGFX(spellEvent, GameManager.Instance.GetPlayer(targetId));
+            CheckSpellRelocationEvent(spellEvent);
         }
 
         /// <summary>
@@ -763,6 +920,9 @@ namespace Game.Spells
         /// <param name="targetController"></param>
         protected virtual void CallSpellEventGFX(ESpellEvent spellEvent, Controller targetController = null)
         {
+            if (spellEvent == ESpellEvent.OnSpawn)
+                OnSpellSpawn?.Invoke(this);
+
             if (! IsHost)
                 OnSpellEvent?.Invoke(spellEvent);
 
@@ -783,7 +943,43 @@ namespace Game.Spells
                 if (spawnPrefab.GFXLifetime.StartSpellPart != spellEvent)
                     continue;
 
-                spawnPrefab.Spawn(m_Controller, m_SpellData, this, null, targetController, transform.position, m_Target);
+                spawnPrefab.Spawn(m_Caster, m_SpellData, this, null, targetController, transform.position, m_Target);
+            }
+        }
+
+        #endregion
+
+
+        #region Spell Relocation
+
+        void CheckSpellRelocationEvent(ESpellEvent spellEvent)
+        {
+            // must have spell relocation at this event
+            if (!m_SpellData.HasSpellRelocationEventAt(spellEvent))
+                return;
+
+            // must be caster of the spell
+            if (GameManager.Instance.OwnerClientId != m_Caster.PlayerId) 
+                return;
+
+            // register/unregister spell relocation
+            RegisterSpellRelocation(spellEvent);
+        }
+
+        void RegisterSpellRelocation(ESpellEvent spellEvent)
+        {
+            if (m_SpellData.SpellRelocation.Lifetime.StartSpellPart >= spellEvent && ! m_IsCheckingRelocation)
+            {
+                ErrorHandler.Log("REGISTERING Spell Relocation : " + m_SpellData.Name);
+                m_IsCheckingRelocation = true;
+                ArenaManager.Instance.ClickableArea.ClickedEvent += OnRelocationTargetChanged;
+            }
+
+            else if (m_SpellData.SpellRelocation.Lifetime.EndSpellPart <= spellEvent && m_IsCheckingRelocation)
+            {
+                ErrorHandler.Log("UN-REGISTERING Spell Relocation : " + m_SpellData.Name);
+                m_IsCheckingRelocation = false;
+                ArenaManager.Instance.ClickableArea.ClickedEvent -= OnRelocationTargetChanged;
             }
         }
 
@@ -801,7 +997,7 @@ namespace Game.Spells
             if (! SpellData.IsAutoTarget)
                 return null;
 
-            return m_SpellData.GetTargetController(m_Controller.PlayerId, m_SpellData.SpellTarget, m_SpellData.CurrentTargetId);
+            return m_SpellData.GetTargetController(m_Caster.PlayerId, m_SpellData.SpellTarget, m_SpellData.CurrentTargetId);
         }
 
         #endregion
@@ -809,15 +1005,11 @@ namespace Game.Spells
 
         #region Tools
 
-        protected bool TryGetController(Collider2D collider, out Controller controller)
+        protected bool TryGetController(Collider2D collider, out Controller controller, bool throwError = true)
         {
-            controller = null;
-            if (collider.gameObject.layer != LayerMask.NameToLayer("Player"))
-                return false;
-
             // check that players has controller 
             controller = Finder.FindComponent<Controller>(collider.gameObject);
-            if (controller == null)
+            if (controller == null && throwError)
             {
                 ErrorHandler.Error("Controller not found for player " + collider.gameObject.name);
                 return false;
@@ -844,10 +1036,16 @@ namespace Game.Spells
             if (! GameManager.Exists)
                 return;
 
+            // close all current listeners for that spell
+            OnSpellEvent = null;
+            // stop listening to the GameManager
             GameManager.Instance.State.OnValueChanged -= OnGameStateChanged;
 
-            if (m_Controller != null)
-                m_Controller.SpellHandler.RelocationTargetChangedEvent -= OnRelocationTargetChanged;
+            if (m_Caster != null && m_IsCheckingRelocation)
+            {
+                m_IsCheckingRelocation = false;
+                ArenaManager.Instance.ClickableArea.ClickedEvent -= OnRelocationTargetChanged;
+            }
         }
 
         void OnGameStateChanged(EGameState oldValue, EGameState state)
@@ -856,8 +1054,21 @@ namespace Game.Spells
                 Destroy(gameObject);
         }
 
+        [ServerRpc]
+        void OnRelocationTargetChangedServerRPC(float x)
+        {
+            OnRelocationTargetChanged(x);
+        }
+
         void OnRelocationTargetChanged(float x)
         {
+            if (IsClient)
+            {
+                OnRelocationTargetChangedServerRPC(x);
+                return;
+            }
+
+            ErrorHandler.Log("OnRelocationTargetChanged() - " + m_SpellData.Name + " : " + x, ELogTag.SpellRelocation);
             m_RelocationTargetPos = new Vector3(x, 0f, 0f);
         }
 

@@ -1,4 +1,5 @@
-﻿using Enums;
+﻿using Data.GameManagement;
+using Enums;
 using Game;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,13 +8,17 @@ using UnityEngine;
 
 namespace Assets.Scripts.Game
 {
+    /// <summary>
+    /// Data container for a hit display request.
+    /// Holds the hit value, type (damage/heal/etc.) and category (direct/tick/etc.).
+    /// </summary>
     public struct HitDisplayData
     {
         public int Damage;
         public EHitType HitType;
-        public Enums.ESpellCategory DamageType;
+        public EHitCategory DamageType;
 
-        public HitDisplayData(int damage, EHitType hitType, Enums.ESpellCategory damageType)
+        public HitDisplayData(int damage, EHitType hitType, EHitCategory damageType)
         {
             Damage = damage;
             HitType = hitType;
@@ -21,25 +26,39 @@ namespace Assets.Scripts.Game
         }
     }
 
+    /// <summary>
+    /// UI manager for displaying floating hit texts above characters.
+    /// Handles separate queues for direct hits and tick hits.
+    /// </summary>
     public class HitDisplayUI : MonoBehaviour
     {
         public static HitDisplayUI Instance;
 
-        [SerializeField] private GameObject m_FloatingTextPrefab; // Prefab for floating text
-        [SerializeField] private float m_QueueDelay = 0.35f;       // Delay for queued texts
+        [SerializeField] private GameObject m_FloatingTextPrefab;   // Prefab used for floating text
+        [SerializeField] private float m_QueueDelay = 0.35f;        // Delay between direct/zone texts
+        [SerializeField] private float m_TickBatchDelay = 0.5f;     // Delay before batching tick damage together
 
-        private Dictionary<ulong, Queue<HitDisplayData>> m_HitQueues = new();
-        private HashSet<ulong> m_ActiveDisplays = new();
+        // Queues for different hit categories
+        private Dictionary<ulong, Queue<HitDisplayData>> m_HitQueues = new();   // Direct/Zone
+        private Dictionary<ulong, Queue<HitDisplayData>> m_TickQueues = new();  // Tick-only
+
+        // Active trackers to prevent duplicate coroutines
+        private HashSet<ulong> m_ActiveHitDisplays = new();
+        private HashSet<ulong> m_ActiveTickDisplays = new();
 
         private void Awake()
         {
-            if (Instance == null) 
+            if (Instance == null)
                 Instance = this;
-            else 
+            else
                 Destroy(gameObject);
         }
 
-        public void DisplayHit(ulong clientId, int value, EHitType hitType, ESpellCategory damageType)
+        /// <summary>
+        /// Entry point to request the display of a hit.
+        /// Chooses the correct queue based on spell category.
+        /// </summary>
+        public void DisplayHit(ulong clientId, int value, EHitType hitType, EHitCategory hitCategory)
         {
             if (value <= 0)
             {
@@ -47,74 +66,125 @@ namespace Assets.Scripts.Game
                 return;
             }
 
-            if (!m_HitQueues.ContainsKey(clientId))
-            {
-                m_HitQueues[clientId] = new Queue<HitDisplayData>();
-            }
-
-            // check if should be displayed
-            if (damageType == ESpellCategory.None || (hitType == EHitType.Damage && damageType == ESpellCategory.Tick))
+            // ✅ Check player settings
+            if (! PlayerSettings.IsDisplayed(hitType, hitCategory))
                 return;
 
-            // check if is a spawn 
+            // Do not display hits on spawn objects
             if (GameManager.Instance.IsSpawnId(clientId))
                 return;
 
-            // Enqueue the hit data for the player
-            HitDisplayData data = new(value, hitType, damageType);
-            m_HitQueues[clientId].Enqueue(data);
+            HitDisplayData data = new(value, hitType, hitCategory);
 
-            // If not currently displaying for this player, start processing their queue
-            if (!m_ActiveDisplays.Contains(clientId))
+            if (hitCategory == EHitCategory.Dot)
             {
-                m_ActiveDisplays.Add(clientId);
-                StartCoroutine(DisplayQueue(clientId));
+                // Queue for ticks
+                if (!m_TickQueues.ContainsKey(clientId))
+                    m_TickQueues[clientId] = new Queue<HitDisplayData>();
+
+                m_TickQueues[clientId].Enqueue(data);
+
+                if (!m_ActiveTickDisplays.Contains(clientId))
+                {
+                    m_ActiveTickDisplays.Add(clientId);
+                    StartCoroutine(DisplayTickQueue(clientId));
+                }
+            }
+            else
+            {
+                // Queue for direct/zone hits
+                if (!m_HitQueues.ContainsKey(clientId))
+                    m_HitQueues[clientId] = new Queue<HitDisplayData>();
+
+                m_HitQueues[clientId].Enqueue(data);
+
+                if (!m_ActiveHitDisplays.Contains(clientId))
+                {
+                    m_ActiveHitDisplays.Add(clientId);
+                    StartCoroutine(DisplayHitQueue(clientId));
+                }
             }
         }
 
         /// <summary>
-        /// Display the queued events
+        /// Process queue for direct/zone hits.
         /// </summary>
-        /// <param name="clientId"></param>
-        /// <returns></returns>
-        private IEnumerator DisplayQueue(ulong clientId)
+        private IEnumerator DisplayHitQueue(ulong clientId)
         {
             while (m_HitQueues.ContainsKey(clientId) && m_HitQueues[clientId].Count > 0)
             {
-                // GAME OVER : stop this coroutine
                 if (GameManager.IsGameOver)
                 {
                     Destroy(gameObject);
                     yield break;
                 }
 
-                // display last data
                 HitDisplayData data = m_HitQueues[clientId].Dequeue();
                 ShowDamage(clientId, data);
 
                 yield return new WaitForSeconds(m_QueueDelay);
             }
 
-            // Mark this player's queue as no longer active
-            m_ActiveDisplays.Remove(clientId);
+            m_ActiveHitDisplays.Remove(clientId);
         }
 
         /// <summary>
-        /// Display Damage text on the target
+        /// Process queue for tick hits (batched).
+        /// Accumulates ticks for a short window before displaying.
         /// </summary>
-        /// <param name="clientId"></param>
-        /// <param name="data"></param>
+        private IEnumerator DisplayTickQueue(ulong clientId)
+        {
+            float tickTimer = 0f;
+            int tickAccumulator = 0;
+
+            while (m_TickQueues.ContainsKey(clientId) && m_TickQueues[clientId].Count > 0)
+            {
+                if (GameManager.IsGameOver)
+                {
+                    Destroy(gameObject);
+                    yield break;
+                }
+
+                HitDisplayData data = m_TickQueues[clientId].Dequeue();
+
+                // Accumulate tick damage
+                tickAccumulator += data.Damage;
+                tickTimer += m_QueueDelay;
+
+                if (tickTimer >= m_TickBatchDelay)
+                {
+                    ShowDamage(clientId, new HitDisplayData(tickAccumulator, data.HitType, EHitCategory.Dot));
+                    tickAccumulator = 0;
+                    tickTimer = 0f;
+                }
+
+                yield return new WaitForSeconds(m_QueueDelay);
+            }
+
+            // Flush remaining ticks
+            if (tickAccumulator > 0)
+            {
+                ShowDamage(clientId, new HitDisplayData(tickAccumulator, EHitType.PhysicalDamage, EHitCategory.Dot));
+            }
+
+            m_ActiveTickDisplays.Remove(clientId);
+        }
+
+        /// <summary>
+        /// Spawns a floating text prefab and sets its content.
+        /// </summary>
         private void ShowDamage(ulong clientId, HitDisplayData data)
         {
             var player = GameManager.Instance.GetPlayer(clientId);
-            if (player == null)
-                return;
+            if (player == null) return;
 
-            var pos = GameManager.Instance.GetPlayer(clientId).transform.position;
-            pos.y += 0.7f;
-            var damageText = Instantiate(m_FloatingTextPrefab, pos, Quaternion.identity);
-            damageText.GetComponent<FloatingTextUI>().SetText(data.Damage, data.HitType);
+            var pos = player.transform.position;
+            pos.y += 0.7f; // Offset above character head
 
+            var damageText = PoolManager.Pool(m_FloatingTextPrefab, pos, Quaternion.identity, null, true);
+            damageText.GetComponent<FloatingTextUI>().SetText(data.Damage, data.HitType, data.DamageType);
+
+            // Flip text for enemy team if needed
             if (GameManager.Instance.Owner.Team == 1)
             {
                 damageText.transform.rotation = Quaternion.Euler(transform.rotation.x, -180f, transform.rotation.z);

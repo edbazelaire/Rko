@@ -1,6 +1,4 @@
-﻿using Enums;
-using Game;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Tools;
 
 namespace AI

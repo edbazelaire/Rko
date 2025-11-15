@@ -20,7 +20,6 @@ MonoBehaviour:
     of the forsaken, unleashing their vengeance upon a world blind to their pain.
     And when the storm of wrath is spent, comes the shadow again, fading into the
     nothingness... until cries another soul.
-  m_DescriptionVariables: []
   m_SpellElements: 04000000
   m_AutoAttack: Curse
   m_SpecialAbility: Vortex
@@ -30,6 +29,7 @@ MonoBehaviour:
   BaseHealth: 1500
   MaxEnergy: 100
   BaseEnergy: 10
+  PassiveEnergyGain: 1
   IsStructure: 0
   HealthScaleFactor: 0.1
   CharacterStatScaling:
@@ -37,18 +37,32 @@ MonoBehaviour:
     BaseValue: 300
     BonusValue: 0
     ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
-  - StateEffectProperty: 8
-    BaseValue: 0.1
+  - StateEffectProperty: 30
+    BaseValue: 12
     BonusValue: 0
-    ScalingFactor: 0
+    ScalingFactor: 0.1
+    DamageCategories: 01000000
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
-  - StateEffectProperty: 21
-    BaseValue: 0.1
+  - StateEffectProperty: 30
+    BaseValue: 15
     BonusValue: 0
-    ScalingFactor: 0
+    ScalingFactor: 0.1
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 35
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 02000000
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers: []

@@ -22,15 +22,17 @@ namespace Save
         public string   CollectableName;
         public int      Level;
         public int      Qty;
+        public int      Mastery;
 
         [NonSerialized]
         private Enum m_Collectable;
 
-        public SCollectableCloudData(Enum collectable, int level = 1, int qty = 0)
+        public SCollectableCloudData(Enum collectable, int level = 1, int qty = 0, int mastery = 0)
         {
             CollectableName = collectable.ToString();
             Level           = level;
             Qty             = qty;
+            Mastery         = mastery;
 
             m_Collectable   = collectable;
         }
@@ -116,7 +118,7 @@ namespace Save
         /// <returns></returns>
         public bool HasEnoughQty()
         {
-            return GetQty() >= CollectablesManagementData.GetLevelData(GetCollectable(), Level).RequiredQty;
+            return GetQty() >= CollectablesManagementData.GetLevelData(GetCollectable(), Level, Mastery).RequiredQty;
         }
 
         /// <summary>
@@ -183,6 +185,7 @@ namespace Save
         // -- Keys
         public const string KEY_GOLD        = "Gold";
         public const string KEY_GEMS        = "Gems";
+        public const string KEY_KEYS        = "Keys";
         public const string KEY_TOTAL_XP    = "TotalXp";
         public const string KEY_XP          = "Xp";
         public const string KEY_SPELLS      = "Spells";
@@ -215,6 +218,7 @@ namespace Save
             { KEY_GOLD,         0                                   },
             { KEY_GEMS,         0                                   },
             { KEY_XP,           0                                   },
+            { KEY_KEYS,         0                                   },
             { KEY_TOTAL_XP,     0                                   },
             { KEY_CHARACTERS,   new List<SCollectableCloudData>()   },
             { KEY_SPELLS,       new List<SCollectableCloudData>()   },
@@ -228,8 +232,6 @@ namespace Save
 
         public override void SetData(string key, object value, bool save = true)
         {
-            object previousValue = m_Data[key];
-
             base.SetData(key, value, save);
 
             if (Enum.TryParse(key, out ECurrency currency))
@@ -249,6 +251,11 @@ namespace Save
             if (m_Data[item.Key].GetType() == typeof(List<SCollectableCloudData>))
             {
                 return item.Value.GetAs<SCollectableCloudData[]>().ToList();
+            }
+
+            if (m_Data[item.Key].GetType() == typeof(List<EEmot>))
+            {
+                return item.Value.GetAs<EEmot[]>().ToList();
             }
    
             return base.Convert(item);
@@ -376,6 +383,16 @@ namespace Save
             SetData(currency.ToString(), GetCurrency(currency) + value);
         }
 
+        public void SpendCurrency(ECurrency currency, int value)
+        {
+            if (value <= 0)
+            {
+                ErrorHandler.Warning("Trying to spend currency ("+currency+") with value (" + value + ") <= 0");
+            }
+
+            AddCurrency(currency, -value);
+        }
+
         #endregion
 
 
@@ -423,6 +440,11 @@ namespace Save
                 case KEY_GEMS:
                     m_Data[KEY_GEMS] = 0;
                     CurrencyChangedEvent?.Invoke(ECurrency.Gems, 0);
+                    break;
+
+                case KEY_KEYS:
+                    m_Data[KEY_KEYS] = 0;
+                    CurrencyChangedEvent?.Invoke(ECurrency.Keys, 0);
                     break;
 
                 case KEY_XP:
@@ -533,6 +555,12 @@ namespace Save
             {
                 ErrorHandler.Error("Gems (" + (int)m_Data[KEY_GEMS] + ") < 0 : reseting back to 0");
                 Reset(KEY_GEMS);
+            }
+
+            if ((int)m_Data[KEY_KEYS] < 0)
+            {
+                ErrorHandler.Error("Keys (" + (int)m_Data[KEY_KEYS] + ") < 0 : reseting back to 0");
+                Reset(KEY_KEYS);
             }
 
             if ((int)m_Data[KEY_XP] < 0)
@@ -660,7 +688,7 @@ namespace Save
                 ErrorHandler.Warning("Adding " + collectable + " in cloud data (unlock : " + unlock + ")");
                 
                 // add new empty spell data, set save to false as we save the batch at the end
-                SetCollectable(new SCollectableCloudData(collectable, startLevel, 0), save);
+                SetCollectable(new SCollectableCloudData(collectable, startLevel, qty: 0, mastery: 0), save);
 
                 return true;
             }

@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Managers;
 using Data.GameManagement;
 using Enums;
 using Inventory;
@@ -83,7 +84,7 @@ namespace Menu.Common.Buttons
             switch (success)
             {
                 case true:
-                    Main.DisplayRewards(m_Rewards, ERewardContext.Shop.ToString());
+                    ScreenManager.DisplayRewards(m_Rewards, ERewardContext.Shop.ToString());
                     break;
                 
                 case false:

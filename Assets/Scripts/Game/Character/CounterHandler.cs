@@ -72,7 +72,7 @@ namespace Game.Character
                 return false;
 
             // check is same team
-            if (GameManager.Instance.GetPlayer(spell.OwnerClientId).Team == m_Controller.Team)
+            if (GameManager.Instance.GetPlayer(spell.Caster.PlayerId).Team == m_Controller.Team)
                 return false;
 
             // duplicate to avoid inference during loop
@@ -89,12 +89,8 @@ namespace Game.Character
                 if (counter.SpellData.CounterActivation != ECounterActivation.OnHitPlayer)
                     continue;
 
-                // check that spell can proc counters
-                if (! counter.SpellData.DamageTypeActivation.Contains(spell.SpellData.SpellCategory))
-                    continue;
-
                 // try to proc it, return true if successfull
-                if (counter.ProcCounter(spell) && counter.SpellData.IsDestroyingSpell)
+                if (counter.ProcCounter(spell))
                     return true;
             }
 
@@ -107,7 +103,7 @@ namespace Game.Character
         /// </summary>
         /// <param name="spell"></param>
         /// <returns></returns>
-        public bool CheckCounters(int damages, Controller caster, ESpellCategory spellCategory)
+        public bool CheckCounters(int damages, Controller caster, ESpellType spellType)
         {
             // check has counters
             if (m_Counters.Count == 0)
@@ -124,12 +120,8 @@ namespace Game.Character
                 if (counter.SpellData.CounterActivation != ECounterActivation.OnHitPlayer)
                     continue;
 
-                // check that spell can proc counters
-                if (! counter.SpellData.DamageTypeActivation.Contains(spellCategory))
-                    continue;
-
                 // try to proc it, return true if successfull
-                if (counter.ProcCounter(damages, caster, spellCategory) && counter.SpellData.IsDestroyingSpell)
+                if (counter.ProcCounter(damages, caster, spellType))
                     return true;
             }
 
@@ -154,6 +146,8 @@ namespace Game.Character
 
         public void RemoveCounter(Counter counter)
         {
+            Debug.Log("RemoveCounter() : " + counter.name);
+
             if (!IsServer)
                 return;
 
@@ -190,6 +184,28 @@ namespace Game.Character
                 }
             }
         }
+
+        public void EndCounter(ESpell spell)
+        {
+            Debug.Log("RemoveCounter() : " + spell);
+
+            if (!IsServer)
+                return;
+
+            // find index
+            for (int i = 0; i < m_Counters.Count; i++)
+            {
+                if (m_Counters[i].SpellData.Spell == spell)
+                {
+                    m_Counters[i].EndCounter();
+                    return;
+                }
+            }
+
+            // remove at index if found
+            ErrorHandler.Error("Unable to find counter " + spell + " in list of counters");
+        }
+
 
         #endregion
 

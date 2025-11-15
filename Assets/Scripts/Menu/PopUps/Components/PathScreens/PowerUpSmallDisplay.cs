@@ -1,11 +1,18 @@
 ﻿using Assets;
-using Assets.Scripts.Data.PowerUps;
+using Assets.Scripts.Managers;
 using Data;
+using Data.DataStructures;
+using Data.DataStructures.PowerEffects;
 using Enums;
+using Game.Character;
+using Game.Loaders;
+using Game.StateEffects.Quests;
 using Managers;
+using MyBox;
 using Save;
 using System;
 using System.Linq;
+using TMPro;
 using Tools;
 using Tools.Animations;
 using Unity.VisualScripting;
@@ -18,15 +25,18 @@ namespace Menu.PopUps
     {
         #region Members
 
-        SRunePower      m_RunePower;
+        SPowerEffect    m_PowerEffect;
         int             m_Index;
 
         Image           m_Background;
         Image           m_Icon;
+        Image           m_Overlay;
         Button          m_Button;
+        GameObject      m_StacksOverlay;
+        TMP_Text        m_StacksCounter;
         GameObject      m_DeactivatedOverlay;
 
-        protected bool m_IsMissingData => m_Index < ProgressionCloudData.CurrentArena.Level && m_RunePower == null;
+        protected bool m_IsMissingData => m_Index < ProgressionCloudData.CurrentArena.Level && m_PowerEffect == null;
 
         #endregion
 
@@ -39,13 +49,16 @@ namespace Menu.PopUps
 
             m_Background            = Finder.FindComponent<Image>(gameObject, "Background");
             m_Icon                  = Finder.FindComponent<Image>(gameObject, "Icon");
+            m_Overlay               = Finder.FindComponent<Image>(gameObject, "Overlay");
             m_Button                = Finder.FindComponent<Button>(gameObject);
+            m_StacksOverlay         = Finder.Find(gameObject, "StacksOverlay");
+            m_StacksCounter         = Finder.FindComponent<TMP_Text>(m_StacksOverlay, "StacksCounter");
             m_DeactivatedOverlay    = Finder.Find(gameObject, "DeactivatedOverlay");
         }
 
-        public virtual void Initialize(SRunePower powerUpData, int index)
+        public virtual void Initialize(SPowerEffect powerUpData, int index)
         {
-            m_RunePower = powerUpData;
+            m_PowerEffect = powerUpData;
             m_Index = index;
 
             base.Initialize();
@@ -55,7 +68,7 @@ namespace Menu.PopUps
         {
             base.SetUpUI();
 
-            RefreshUI(m_RunePower);
+            RefreshUI(m_PowerEffect);
         }
 
         #endregion
@@ -63,14 +76,15 @@ namespace Menu.PopUps
 
         #region GUI Manipulators
 
-        public void RefreshUI(SRunePower powerUpData)
+        public void RefreshUI(SPowerEffect powerUpData)
         {
-            m_RunePower = powerUpData;
+            m_PowerEffect = powerUpData;
             m_DeactivatedOverlay.gameObject.SetActive(false);
 
             SetUpBackground();
             SetUpIcon();
 
+            RefreshStacks();
             RefreshActivation();
         }
 
@@ -85,7 +99,7 @@ namespace Menu.PopUps
                 return;
             }
 
-            if (m_RunePower == null)
+            if (m_PowerEffect == null)
             {
                 m_Background.color = new Color(0.2f, 0.2f, 0.2f);
                 return;
@@ -100,14 +114,42 @@ namespace Menu.PopUps
 
         void SetUpIcon()
         {
-            if (m_RunePower == null)
+            if (m_PowerEffect == null)
             {
                 m_Icon.gameObject.SetActive(false);
+                m_Overlay.gameObject.SetActive(false);
                 return;
             }
 
             m_Icon.gameObject.SetActive(true);
-            m_Icon.sprite = AssetLoader.LoadIcon(m_RunePower.RuneName);
+            m_Icon.sprite = AssetLoader.LoadIcon(m_PowerEffect.BaseName);
+            m_Overlay.gameObject.SetActive(true);
+            m_Overlay.sprite = AssetLoader.LoadPowerUpIconBorder(m_PowerEffect.RuneActivation);
+        }
+
+
+        /// <summary>
+        /// Refresh number of stacks displayed
+        /// </summary>
+        void RefreshStacks()
+        {
+            m_StacksOverlay.gameObject.SetActive(false);
+
+            if (m_PowerEffect == null || m_PowerEffect.TriggerEffects.IsNullOrEmpty())
+                return;
+
+            foreach (STriggerEffect triggerEffect in m_PowerEffect.TriggerEffects)
+            {
+                if (!SpellLoader.IsStateEffect(triggerEffect.SpellDataName))
+                    continue;
+
+                if (!ProgressionCloudData.CurrentArena.HasMetaData(triggerEffect.SpellDataName))
+                    continue;
+
+                m_StacksOverlay.gameObject.SetActive(true);
+                m_StacksCounter.text = ProgressionCloudData.CurrentArena.GetMetaData<int>(triggerEffect.SpellDataName).ToString();
+                return;
+            }
         }
 
         /// <summary>
@@ -116,11 +158,11 @@ namespace Menu.PopUps
         void RefreshActivation()
         {
             // CHECK : has data
-            if (m_RunePower == null)
+            if (m_PowerEffect == null)
                 return;
 
             // CHECK : it is a Rune
-            if (m_RunePower == null || ! Enum.TryParse(m_RunePower.RuneName, out ERune rune))
+            if (m_PowerEffect == null || ! Enum.TryParse(m_PowerEffect.BaseName, out ERune rune))
             {
                 SetActive(true);
                 return;
@@ -135,6 +177,7 @@ namespace Menu.PopUps
         {
             var color = active ? new Color(1f, 1f, 1f) : new Color(0.2f, 0.2f, 0.2f);
             m_Icon.color = color;
+            m_Overlay.color = color;
             m_Background.color = color;
 
             m_DeactivatedOverlay.SetActive(! active);
@@ -164,14 +207,14 @@ namespace Menu.PopUps
             // Do not have a PowerUp BUT SHOULD -> Display the Selection Screen
             if (m_IsMissingData)
             {
-                Main.SetPopUp(EPopUpState.PowerUpSelectionScreen, m_Index);
+                ScreenManager.PowerUpSelectionScreen(ProgressionCloudData.CurrentArena.ArenaType, m_Index);
                 return;
             }
 
             // Has PowerUp -> Display the Info Screen
-            if (m_RunePower != null)
+            if (m_PowerEffect != null)
             {
-                Main.SetPopUp(EPopUpState.PowerUpInfoScreen, m_RunePower);
+                Main.SetPopUp(EPopUpState.PowerUpInfoScreen, m_PowerEffect, m_Index);
                 return;
             }
         }

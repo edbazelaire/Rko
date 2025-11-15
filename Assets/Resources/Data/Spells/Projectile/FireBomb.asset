@@ -14,12 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 'Throw a fire bomb that explodes in contact of an enemy or the ground,
-    dealing {0} damage and applies [Scorched]'
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
-  - Name: Scorched
-    WithIcon: 1
+    dealing [Damage] damage and applies [Scorched]'
   m_SpellElements: 01000000
   Linked: 0
   Graphics: {fileID: 1258406917094090, guid: d17c3aaa467df414ba6c247f64f8d4bb, type: 3}
@@ -39,19 +34,40 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 7
     IsFollowing: 1
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
     StateEffects: 
-  OnHit:
-  - {fileID: 11400000, guid: 56417b5bba9def04eae71ca21e594175, type: 2}
+  - Prefab: {fileID: 3903842169140113438, guid: ff0a76846b4ace54a99a33b5b70bb0fc, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 1000
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 2
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 3
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    IsReplacingGFX: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
+  OnHit: []
+  PassiveEffects: []
   SpellEventEffects: []
-  OnHitSpellSpawn: 2
+  OnHitSpellSpawn: 0
   AnimationSoundFX: {fileID: 0}
   CastSoundFX: {fileID: 8300000, guid: acded229ef27b08438e9aec48559a382, type: 3}
   PermanantSoundFX: {fileID: 0}
   OnHitSoundFX: {fileID: 0}
-  OnEndSoundFX: {fileID: 0}
+  OnEndSoundFX: {fileID: 8300000, guid: 01a713bf23f13684d929745b03a12493, type: 3}
   SpellTarget: 102
   m_ClampTargetPos: 1
   TargetOffset:
@@ -68,12 +84,20 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
+  m_MaxHit: 1
   m_Charges: 1
-  EnergyGain: 15
+  EnergyGain: 5
   EnergyCost: 0
-  m_Damage: 50
-  m_ExecutionDamage: 0
+  m_Damages:
+  - m_BaseValue: 90
+    m_DamageCategory: 2
+    m_HitCategory: 1
+    m_SpellPropertyScaling:
+      Property: 2
+      Value: 0.1
+      ScalingType: 0
+      RoundingType: 2
+      ScalingTresholds: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -84,6 +108,7 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
+    m_Targets: 
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
@@ -94,26 +119,56 @@ MonoBehaviour:
     Value: -0.25
     ScalingType: 1
     RoundingType: 0
-    ScalingTresholds: []
-  - Property: 20
-    Value: 0
-    ScalingType: 1
-    RoundingType: 2
     ScalingTresholds:
-    - Level: 9
-      Value: 2
-    - Level: 14
-      Value: 3
+    - Level: 12
+      Value: 13
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
   m_Size: 2
   TriggerPlayer: 1
-  EnemyStateEffects: []
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
+  EnemyStateEffects:
+  - StateEffect: 15
+    Stacks: 1
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 2
   IsCancellable: 0
+  IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.5
-  m_Cooldown: 12
+  m_Cooldown: 14
   Trajectory: 1
   m_TriggerGround: 1
   m_StopOnTargetPos: 0

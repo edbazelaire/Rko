@@ -15,14 +15,15 @@ MonoBehaviour:
   m_Rarety: 0
   m_Description: Slashes through enemies in a blur, dealing [Damage] damage and applying
     [Frost] and [Poison].
-  m_DescriptionVariables: []
   m_SpellElements: 0200000003000000
   Linked: 1
   Graphics: {fileID: 1923825553450198, guid: b1a124fee389c864cb8a58e2572a93ba, type: 3}
   SpellEventActions:
   - Prefab: {fileID: 1923825553450198, guid: bd4cb3e325f36c84f89950ca3ce6659d, type: 3}
     MaterialEffect: {fileID: 0}
-    SoundFX: []
+    SoundFX:
+    - AudioClip: {fileID: 8300000, guid: 970fd9b105ac0f04e92babbcfc2ac8f1, type: 3}
+      SoundDuration: 0
     GFXLifetime:
       m_StartSpellPart: 100
       m_EndSpellPart: 300
@@ -35,6 +36,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 2
     IsFollowing: 1
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -54,6 +56,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 0
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -73,11 +76,13 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 0
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  PassiveEffects: []
   SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 8300000, guid: 970fd9b105ac0f04e92babbcfc2ac8f1, type: 3}
@@ -101,12 +106,29 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
+  m_MaxHit: 1
   m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 50
-  m_ExecutionDamage: 0
+  m_Damages:
+  - m_BaseValue: 50
+    m_DamageCategory: 1
+    m_HitCategory: 1
+    m_SpellPropertyScaling:
+      Property: 2
+      Value: 0.1
+      ScalingType: 0
+      RoundingType: 2
+      ScalingTresholds: []
+  - m_BaseValue: 50
+    m_DamageCategory: 1
+    m_HitCategory: 3
+    m_SpellPropertyScaling:
+      Property: 19
+      Value: 0.12
+      ScalingType: 0
+      RoundingType: 2
+      ScalingTresholds: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -117,19 +139,51 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
+    m_Targets: 
   m_SpellsScalingLevel:
   - Property: 2
-    Value: 0.13
+    Value: 0.1
     ScalingType: 0
     RoundingType: 2
     ScalingTresholds: []
-  - Property: 3
-    Value: -0.05
+  - Property: 19
+    Value: 0.12
     ScalingType: 0
     RoundingType: 2
     ScalingTresholds: []
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
   m_Size: 5
   TriggerPlayer: 1
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
   EnemyStateEffects:
   - StateEffect: 6
     Stacks: 1
@@ -137,15 +191,17 @@ MonoBehaviour:
     OverridingProperties: []
   - StateEffect: 9
     Stacks: 2
-    BonusStacksPerLevel: 0
+    BonusStacksPerLevel: 0.2
     OverridingProperties: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 2
   IsCancellable: 0
-  AnimationTimer: 1
-  m_Cooldown: 2.5
+  IsInterruptable: 1
+  IgnoreCC: 0
+  AnimationTimer: 1.5
+  m_Cooldown: 0.4
   Trajectory: 1
   m_TriggerGround: 1
   m_StopOnTargetPos: 0

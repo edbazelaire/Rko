@@ -19,7 +19,6 @@ MonoBehaviour:
     blending black and white energy in a deadly dance of destruction. His abilities
     reflect his mastery of both concealment and overwhelming force, making him a
     formidable foe to any who dare face him
-  m_DescriptionVariables: []
   m_SpellElements: 00000000
   m_AutoAttack: EclipseBlade
   m_SpecialAbility: ShadowStrike
@@ -29,25 +28,48 @@ MonoBehaviour:
   BaseHealth: 1300
   MaxEnergy: 100
   BaseEnergy: 10
+  PassiveEnergyGain: 1
   IsStructure: 0
   HealthScaleFactor: 0.1
   CharacterStatScaling:
-  - StateEffectProperty: 7
+  - StateEffectProperty: 30
     BaseValue: 10
     BonusValue: 0
     ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
   - StateEffectProperty: 3
     BaseValue: 0.05
     BonusValue: 0
     ScalingFactor: 0.05
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
   - StateEffectProperty: 22
+    BaseValue: 30
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 01000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 7
     BaseValue: 10
     BonusValue: 0
     ScalingFactor: 0.1
+    DamageCategories: 01000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 8
+    BaseValue: 0.1
+    BonusValue: 0
+    ScalingFactor: 0.05
+    DamageCategories: 
+    HitCategories: 03000000
     SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers: []

@@ -34,6 +34,7 @@ namespace Game.Character
 
         // Network Variables
         NetworkVariable<float>  m_InitialSpeed      = new(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        NetworkVariable<float>  m_FinalSpeedFactor  = new(1f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         NetworkVariable<float>  m_Force             = new(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         bool m_IsActive = false;
@@ -70,10 +71,11 @@ namespace Game.Character
         bool            m_MovementCancelled = false;
 
         // Client Data
-        int m_MovementInput = 0;
-        bool m_CanMoveClient = true;
+        int m_MovementInput     = 0;
+        bool m_CanMoveClient    = true;
+        bool m_IsGroundedClient = false;
 
-        public float Speed      => Math.Max(0, Settings.CharacterSpeedFactor * (m_InitialSpeed.Value + m_Controller.StateHandler.SpeedBonus.Value));
+        public float Speed      => Settings.CharacterSpeedFactor * CalculateRawSpeed();
         public bool IsMoving    => m_MoveX != 0;
         public int MoveX        => m_MoveX;
 
@@ -84,7 +86,18 @@ namespace Game.Character
                 ErrorHandler.Error("Velocity of " + gameObject.name + " is Nan");
                 return 0;
             }
-            return direction * Speed + m_Force.Value;
+            return direction * Speed + (m_IsGroundedClient ? 0 : m_Force.Value);
+        }
+
+        public float CalculateRawSpeed()
+        {
+            float speed = m_InitialSpeed.Value + m_Controller.StateHandler.SpeedBonus.Value;
+            if (speed < 1)
+            {
+                speed = 1 / (2 - speed);
+            }
+
+            return Mathf.Clamp(m_InitialSpeed.Value * speed * m_FinalSpeedFactor.Value, 0, 3);
         }
 
         #endregion
@@ -226,7 +239,8 @@ namespace Game.Character
                 inputPayload = m_ServerInputQueue.Dequeue();
                 bufferIndex = inputPayload.Tick % BUFFER_SIZE;
 
-                if (IsHost && IsOwner) //If we dont check if its host then we will have double input from host. I mean host will move twice faster then he should
+                // If we dont check if its host then we will have double input from host.
+                if (IsHost && IsOwner) 
                 {
                     statePayload = new SStatePayload()
                     {
@@ -509,14 +523,23 @@ namespace Game.Character
             if (!IsServer)
                 return;
 
-            // check changes
+            // CHECK : changes in "CanMove"
             bool canMove = CanMove;
-            if (m_CanMoveClient == canMove)
-                return;
+            if (m_CanMoveClient != canMove)
+            {
+                // send changes to client
+                m_CanMoveClient = canMove;
+                SetCanMoveClientRPC(canMove);
+            }
 
-            // send changes to client
-            m_CanMoveClient = canMove;
-            SetCanMoveClientRPC(canMove);
+            // CHECK : changes in "IsGrounded"
+            bool isGrounded = m_Controller.StateHandler.IsGrounded;
+            if (m_IsGroundedClient != isGrounded)
+            {
+                m_IsGroundedClient = isGrounded;
+                SetIsGroundedClientRPC(isGrounded);
+            }
+                
         }
 
         #endregion
@@ -598,6 +621,12 @@ namespace Game.Character
         }
 
         [ClientRpc]
+        void SetIsGroundedClientRPC(bool value)
+        {
+            m_IsGroundedClient = value;
+        }
+
+        [ClientRpc]
         void ResetRotationClientRPC()
         {
             ResetRotation();
@@ -632,6 +661,11 @@ namespace Game.Character
 
             CancelMovement(block);
             m_MovementBlocked = block;
+        }
+
+        public void SetFinalSpeedFactor(float finalSpeedFactor)
+        {
+            m_FinalSpeedFactor.Value = finalSpeedFactor;
         }
 
         #endregion

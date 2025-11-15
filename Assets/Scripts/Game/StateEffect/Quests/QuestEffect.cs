@@ -22,7 +22,9 @@ namespace Game.StateEffects.Quests
         // Serialize Fields
         [Header("Quest")]
         [SerializeField, Tooltip("Are the effect of the list cumulative ?")]
-        protected bool m_IsCumulativeEffects = new();
+        protected bool m_IsCumulativeEffects = false;
+        [SerializeField, Tooltip("Is the effect reseting to 0 stacks when reaching max stacks ?")]
+        protected bool m_ResetsOnMaxStacks = false;
 
         [SerializeField, Tooltip("List of effects for each thresholds")]
         protected List<SQuestThreshold> m_QuestThresholds = new();
@@ -37,6 +39,8 @@ namespace Game.StateEffects.Quests
         List<(int index, Spell)>         m_Spells                    = new();
         /// <summary> list of state effects applied by this effect - using threshold index as reference </summary>
         List<(int index, StateEffect)>   m_StateEffects              = new();
+        /// <summary> repeted activable effects </summary>
+        List<(SActivableEffect effect, int counter)> m_RepetedActivableEffects = new();
 
         // =====================================================================================================
         // Dependent
@@ -51,7 +55,15 @@ namespace Game.StateEffects.Quests
 
         public override void SetStacks(int stacks)
         {
+            int previousStacks = m_Stacks;
+
             base.SetStacks(stacks);
+
+            if (m_Controller == null)
+                return;
+
+            // check if a Repeted effects is procced
+            RefreshRepetedEffects(Stacks - previousStacks);
 
             // go through all allowed thresholds
             for (int i = 0; i < m_MaxIndex; i++)
@@ -63,7 +75,7 @@ namespace Game.StateEffects.Quests
                     if (i == m_MaxIndex - 1)
                     {
                         ActivateThresholdIndex(i);
-                        return;
+                        break;
                     }
 
                     // CHECK : if is NOT last - check next effect
@@ -73,7 +85,13 @@ namespace Game.StateEffects.Quests
 
                 // Current threshold not reached - activate last threshold
                 ActivateThresholdIndex(i - 1);
-                return;
+                break;
+            }
+
+            if (m_Stacks >= m_MaxStacks && m_ResetsOnMaxStacks)
+            {
+                Debug.Log("Stacks == m_MaxStacks - Resets number of stacks");
+                ResetQuest();
             }
         }
         
@@ -85,6 +103,12 @@ namespace Game.StateEffects.Quests
         public void SetMaxStacks(int maxStacks)
         {
             m_MaxStacks = maxStacks;
+        }
+
+        void ResetQuest()
+        {
+            // remove "-1" to remove all the stacks at once
+            RemoveStacks(-1);
         }
 
         #endregion
@@ -117,7 +141,7 @@ namespace Game.StateEffects.Quests
                 }
                 else
                 {
-                    for (int i = m_CurrentThresholdIndex - 1; i >= index; i--)
+                    for (int i = m_CurrentThresholdIndex - 1; i > index; i--)
                     {
                         DeactivateEffectAtIndex(i);
                     }
@@ -125,70 +149,41 @@ namespace Game.StateEffects.Quests
             }
 
             // set new index
+            ErrorHandler.Log(StateEffectName + " - New threshold index : " + index, ELogTag.Quests);
             m_CurrentThresholdIndex = index;
 
             // call CLIENT event that a new index has been activated
-            m_Controller.StateHandler.CallQuestThresholdEventClientRPC(StateEffectName, index);
+            if (GameManager.Instance.IsOfflineMode)
+                m_Controller.StateHandler.CallQuestThresholdEvent(StateEffectName, index);
+            else
+                m_Controller.StateHandler.CallQuestThresholdEventClientRPC(StateEffectName, index);
         }
 
         void ActivateEffect(SQuestThreshold questThreshold)
         {
-            int tresholdIndex = m_QuestThresholds.IndexOf(questThreshold);
+            int thresholdIndex = m_QuestThresholds.IndexOf(questThreshold);
 
-            ErrorHandler.Log("ActivateEffect at treshold : " + questThreshold.RequiredStacks, ELogTag.StateEffects);
+            ErrorHandler.Log("ActivateEffect at treshold : " + questThreshold.RequiredStacks, ELogTag.Quests);
 
             foreach (SActivableEffect activableEffect in questThreshold.ActivableEffects)
             {
-                if (SpellLoader.IsSpell(activableEffect.Effect))
-                {
-                    ErrorHandler.Log("     + ActivateEffect Spell : " + activableEffect.Effect, ELogTag.StateEffects);
+                if (activableEffect.ReactivatedEveryStacks > 0)
+                    StoreRepetedEffect(activableEffect);
 
-                    SpellData spellData = SpellLoader.GetSpellData(activableEffect.Effect, activableEffect.Level);
-                    spellData.SetParent(m_Parent);
-                    if (activableEffect.Target != ESpellTarget.None)
-                        spellData.SpellTarget = activableEffect.Target;
-
-                    spellData.CastDelay(m_Controller.PlayerId, Vector3.zero, recalculateTarget: true, recalculatePosition: true);
-
-                    // add to list of state effects - to allow deactivation if necessary
-                    if (activableEffect.IsDeactivable)
-                        spellData.OnSpellSpawn += (Spell spell) => { m_Spells.Add((tresholdIndex, spell)); };
-                }
-
-                else if (SpellLoader.IsStateEffect(activableEffect.Effect))
-                {
-                    ErrorHandler.Log("     + ActivateEffect StateEffect : " + activableEffect.Effect, ELogTag.StateEffects);
-
-                    Controller targetController = TargetHelper.GetTargetController(m_Caster.PlayerId, activableEffect.Target);
-                    if (targetController == null)
-                        return;
-
-                    StateEffect stateEffect = SpellLoader.GetStateEffect(activableEffect.Effect, activableEffect.Level, parent: m_Parent);
-                    stateEffect.SetParent(m_Parent);
-                    targetController.StateHandler.AddStateEffect(stateEffect, m_Caster);
-
-                    // add to list of state effects - to allow deactivation if necessary
-                    if (activableEffect.IsDeactivable)
-                        m_StateEffects.Add((tresholdIndex, stateEffect));
-                }
-
-                else
-                {
-                    ErrorHandler.Error("Unhandled effect - " + activableEffect.Effect);
-                }
+                ActivateEffect(activableEffect, thresholdIndex);
             }
 
             // Add bonus stats
             if (! questThreshold.BonusStats.IsNullOrEmpty())
             {
                 ErrorHandler.Log("     + Adding BonusStats : " + questThreshold.BonusStats.Count(), ELogTag.StateEffects);
-                AddProperties(questThreshold.BonusStats);
+                ReplaceBonusStats(questThreshold.BonusStats);
             }
         }
 
         void DeactivateEffectAtIndex(int thresholdIndex)
         {
-            ErrorHandler.Log("DeactivateEffectAtIndex : " + thresholdIndex, ELogTag.StateEffects);
+            ErrorHandler.Log("DeactivateEffectAtIndex : " + thresholdIndex, ELogTag.Quests);
             
             var spells = m_Spells;
 
@@ -226,6 +221,79 @@ namespace Game.StateEffects.Quests
                 m_BonusStats.Remove(bonusStats);
             } 
         }
+
+        void ActivateEffect(SActivableEffect activableEffect, int? thresholdIndex)
+        {
+            if (SpellLoader.IsSpell(activableEffect.Effect))
+            {
+                ErrorHandler.Log("     + ActivateEffect Spell : " + activableEffect.Effect, ELogTag.Quests);
+
+                // load / setup the spell data
+                SpellData spellData = SpellLoader.GetSpellData(activableEffect.Effect, activableEffect.Level);
+                spellData.SetParent(m_Parent);
+                if (activableEffect.Target != ESpellTarget.None)
+                    spellData.SpellTarget = activableEffect.Target;
+
+                // cast the spell
+                m_Controller.StartCoroutine(spellData.CastDelay(m_Controller.PlayerId, Vector3.zero, recalculateTarget: true, recalculatePosition: true));
+
+                // add to list of state effects - to allow deactivation if necessary
+                if (activableEffect.IsDeactivable && thresholdIndex != null)
+                    spellData.OnSpellSpawn += (Spell spell) => { m_Spells.Add((thresholdIndex.Value, spell)); };
+            }
+
+            else if (SpellLoader.IsStateEffect(activableEffect.Effect))
+            {
+                ErrorHandler.Log("     + ActivateEffect StateEffect : " + activableEffect.Effect, ELogTag.Quests);
+
+                Controller targetController = TargetHelper.GetTargetController(m_Caster.PlayerId, activableEffect.Target, targetId: m_Controller.PlayerId);
+                if (targetController == null)
+                    return;
+
+                StateEffect stateEffect = SpellLoader.GetStateEffect(activableEffect.Effect, activableEffect.Level, parent: m_Parent);
+                stateEffect.SetParent(m_Parent);
+                targetController.StateHandler.AddStateEffect(stateEffect, m_Caster);
+
+                // add to list of state effects - to allow deactivation if necessary
+                if (activableEffect.IsDeactivable && thresholdIndex != null)
+                    m_StateEffects.Add((thresholdIndex.Value, stateEffect));
+            }
+
+            else
+            {
+                ErrorHandler.Error("Unhandled effect - " + activableEffect.Effect);
+            }
+        }
+
+        void RefreshRepetedEffects(int stacks)
+        {
+            if (stacks <= 0)
+                return;
+
+            if (m_RepetedActivableEffects.IsNullOrEmpty())
+                return;
+
+            for (int i = 0; i < m_RepetedActivableEffects.Count; i++)
+            {
+                var item = m_RepetedActivableEffects[i];
+                item.counter += stacks;
+                
+                if (item.effect.ReactivatedEveryStacks > item.counter)
+                {
+                    item.counter -= item.effect.ReactivatedEveryStacks;
+                    ActivateEffect(item.effect, null);
+                }
+
+                // save changes
+                m_RepetedActivableEffects[i] = item;
+            }
+        }
+
+        void StoreRepetedEffect(SActivableEffect activableEffect)
+        {
+            m_RepetedActivableEffects.Add((activableEffect, 0));
+        }
+
 
         #endregion
 

@@ -1,6 +1,4 @@
 ﻿using AI;
-using System.Collections;
-using UnityEngine;
 
 
 namespace Tools.Debugs.BT

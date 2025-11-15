@@ -45,14 +45,14 @@ namespace Game.Spells
             switch (SpellData.SpellTarget)
             {
                 case ESpellTarget.Self:
-                    return m_Controller;
+                    return m_Caster;
 
                 case ESpellTarget.FirstEnemy:
-                    return GameManager.Instance.GetFirstEnemy(m_Controller.Team);
+                    return GameManager.Instance.GetFirstEnemy(m_Caster.Team);
 
                 default:
                     ErrorHandler.Error("Unhandled case : " + SpellData.SpellTarget + " for BUFF spell " + SpellData.Name);
-                    return m_Controller;
+                    return m_Caster;
             }
         }
 

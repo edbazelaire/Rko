@@ -12,12 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d7f08dc3ee145543900ace7d951ecea, type: 3}
   m_Name: Uncontrollable
   m_EditorClassIdentifier: 
-  m_Description: Become immune to control effects ([Stun], [Scorched], [Frozen],
-    [Airborne])
+  m_Description: Is immuned to control effects ([Stun], [Scorched], [Frozen], [Airborne])
   m_DescriptionVariables: 
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
-  m_IsDisplayed: 0
-  m_VisualEffects: []
+  m_IsDisplayed: 1
   m_GfxEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
@@ -26,17 +25,22 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
   m_EndWithShield: 0
+  m_EndAt0Stacks: 1
   m_RefreshShield: 0
   m_Priority: 0
   m_Delay: 0
   m_Duration: -1
+  m_StartingStacks: 1
   m_MaxStacks: 1
-  m_StackDecay: -1
+  m_StackDecay: 0
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats: []
   m_StatConversions: []
   m_SubStateEffects: []

@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Description: 
   m_DescriptionVariables: 
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 1
-  m_VisualEffects: []
   m_GfxEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
@@ -25,17 +25,22 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
   m_EndWithShield: 0
+  m_EndAt0Stacks: 0
   m_RefreshShield: 0
   m_Priority: 0
   m_Delay: 0
   m_Duration: -1
+  m_StartingStacks: 1
   m_MaxStacks: 5
   m_StackDecay: 0
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats: []
   m_StatConversions: []
   m_SubStateEffects: []
@@ -45,6 +50,7 @@ MonoBehaviour:
   m_StateEffectScalingLevel: []
   m_StateEffectScalingStacks: []
   m_IsCumulativeEffects: 1
+  m_ResetsOnMaxStacks: 0
   m_QuestThresholds:
   - RequiredStacks: 1
     ReplacementIcon: {fileID: 0}
@@ -53,49 +59,69 @@ MonoBehaviour:
       Effect: _SoulReaper0
       BonusLevel: 0
       IsDeactivable: 0
+      ReactivatedEveryStacks: 0
     BonusStats: []
   - RequiredStacks: 2
     ReplacementIcon: {fileID: 0}
-    ActivableEffects:
-    - Target: 4
-      Effect: _SoulReaper1
-      BonusLevel: 0
-      IsDeactivable: 0
-    BonusStats: []
+    ActivableEffects: []
+    BonusStats:
+    - StateEffectProperty: 28
+      BaseValue: 0.08
+      LevelScalingFactor: 0.05
+      StackScalingFactor: 0
+      ScalesOnMissingHealth: 0
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
   - RequiredStacks: 3
     ReplacementIcon: {fileID: 0}
     ActivableEffects: []
     BonusStats:
-    - StateEffectProperty: 22
+    - StateEffectProperty: 7
       BaseValue: 50
       LevelScalingFactor: 0.1
       StackScalingFactor: 0
+      ScalesOnMissingHealth: 0
+      DamageCategories: 
+      HitCategories: 03000000
       SpecialConditions: []
     - StateEffectProperty: 9
       BaseValue: 0.05
       LevelScalingFactor: 0.1
       StackScalingFactor: 0
+      ScalesOnMissingHealth: 0
+      DamageCategories: 
+      HitCategories: 03000000
       SpecialConditions: []
   - RequiredStacks: 4
     ReplacementIcon: {fileID: 0}
     ActivableEffects: []
     BonusStats:
-    - StateEffectProperty: 4
-      BaseValue: 500
-      LevelScalingFactor: 0.1
-      StackScalingFactor: 0
-      SpecialConditions: []
-    - StateEffectProperty: 23
-      BaseValue: 0.15
+    - StateEffectProperty: 16
+      BaseValue: 0.1
       LevelScalingFactor: 0.05
       StackScalingFactor: 0
+      ScalesOnMissingHealth: 0
+      DamageCategories: 
+      HitCategories: 
       SpecialConditions: []
   - RequiredStacks: 5
     ReplacementIcon: {fileID: 0}
     ActivableEffects: []
     BonusStats:
-    - StateEffectProperty: 7
-      BaseValue: 45
+    - StateEffectProperty: 4
+      BaseValue: 300
       LevelScalingFactor: 0.1
       StackScalingFactor: 0
+      ScalesOnMissingHealth: 0
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+    - StateEffectProperty: 22
+      BaseValue: 25
+      LevelScalingFactor: 0.1
+      StackScalingFactor: 0
+      ScalesOnMissingHealth: 0
+      DamageCategories: 01000000
+      HitCategories: 
       SpecialConditions: []

@@ -119,15 +119,6 @@ namespace Menu.MainMenu
         }
 
         /// <summary>
-        /// Open the info pop up of this item
-        /// </summary>
-        public override void OpenInfoPopUp(int? level = null)
-        {
-            level ??= m_Level;
-            ScreenManager.SetPopUp(EPopUpState.SpellInfoPopUp, Collectable, level);
-        }
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="character"></param>

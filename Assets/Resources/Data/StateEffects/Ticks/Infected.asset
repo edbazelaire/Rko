@@ -18,7 +18,6 @@ MonoBehaviour:
   m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 1
-  m_VisualEffects: []
   m_GfxEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
@@ -27,17 +26,22 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 1
   m_IsTrueDamage: 1
+  m_IgnoresBoosts: 0
   m_EndWithShield: 0
+  m_EndAt0Stacks: 1
   m_RefreshShield: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: 4
+  m_StartingStacks: 1
   m_MaxStacks: 10
   m_StackDecay: -1
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats:
   - StateEffectProperty: 105
     BaseValue: 0.25
@@ -64,4 +68,5 @@ MonoBehaviour:
   m_TickHeal: 0
   m_TickShield: 0
   m_TickEnergy: 0
+  m_TickEffects: []
   m_TickSpellRequirements: []

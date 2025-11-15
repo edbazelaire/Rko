@@ -37,7 +37,7 @@ namespace Tools.Debugs.BT
             m_Selection     = Finder.FindComponent<Image>(gameObject,       "Selection");
             m_Background    = Finder.FindComponent<Image>(gameObject,       "Background");
             m_Weight        = Finder.FindComponent<TMP_Text>(gameObject,    "Weight");
-            m_Info          = Finder.FindComponent<TMP_Text>(gameObject, "Info");
+            m_Info          = Finder.FindComponent<TMP_Text>(gameObject,    "Info");
 
             m_HasWeight = m_Node.WeightMethod != null;
         }

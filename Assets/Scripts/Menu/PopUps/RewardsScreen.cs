@@ -124,10 +124,10 @@ namespace Menu.PopUps
                 var verticalLayoutGroupIcon = Finder.FindComponent<VerticalLayoutGroup>(m_RewardIconSection);
                 if (verticalLayoutGroupIcon != null)
                 {
-                    verticalLayoutGroupIcon.padding.left = 50;
-                    verticalLayoutGroupIcon.padding.right = 50;
-                    verticalLayoutGroupIcon.padding.top = 50;
-                    verticalLayoutGroupIcon.padding.bottom = 50;
+                    verticalLayoutGroupIcon.padding.left    = 50;
+                    verticalLayoutGroupIcon.padding.right   = 50;
+                    verticalLayoutGroupIcon.padding.top     = 50;
+                    verticalLayoutGroupIcon.padding.bottom  = 50;
                 }
 
                 // adjust max layout width of the Icon
@@ -303,6 +303,10 @@ namespace Menu.PopUps
             else if (reward.RewardType == typeof(EBoost) && Enum.TryParse(reward.RewardName, out EBoost boost))
             {
                 yield return DisplayBoostReward(boost, reward.Qty);
+            }
+            else if (reward.RewardType == typeof(EEmot) && Enum.TryParse(reward.RewardName, out EEmot emot))
+            {
+                yield return DisplayEmotReward(emot);
             }
             else
             {
@@ -605,6 +609,39 @@ namespace Menu.PopUps
             yield return new WaitUntil(() => m_Skip);
         }
 
+        IEnumerator DisplayEmotReward(EEmot emot)
+        {
+            ErrorHandler.Log("DisplayEmotReward : ", ELogTag.Rewards);
+            ErrorHandler.Log("      + EEmot : " + emot,   ELogTag.Rewards);
+
+            // play sound effect
+            SoundFXManager.PlayOnce(SoundFXManager.AchievementRewardCollectedSoundFX);
+
+            // activate rewards display container
+            m_RewardDisplayContainer.SetActive(true);
+            m_RewardInfosSection.SetActive(false);
+            // deactivate chest containers
+            m_ChestContainer.SetActive(false);
+
+            // clean content before next display
+            UIHelper.CleanContent(m_RewardIconSection);
+
+            // setup ui of the new template
+            SetUpEmotRewardTemplate(emot);
+            if (m_CurrentTemplateItem == null)
+                yield break;
+
+            yield return PlayAchievementRewardAnimation();
+
+            AnimationHandler.AddRaycast(m_RewardIconSection, size: 2f, color: new Color(1f, 1f, 1f, 0.3f));
+
+            // add reward to collection of rewards
+            ProfileCloudData.AddAchievementReward(EAchievementReward.Emot, emot.ToString());
+
+            // wait for click to display next
+            yield return new WaitUntil(() => m_Skip);
+        }
+
         void SetUpTemplateItem(Enum collectable, int qty)
         {
             m_CurrentTemplateItem = Instantiate(AssetLoader.LoadTemplateItem(collectable), m_RewardIconSection.transform);
@@ -636,7 +673,7 @@ namespace Menu.PopUps
             m_CollectionQty.text = "+ " + qty.ToString();
 
             // -- setup collection fill bar
-            m_CollectionFillBar.Initialize(cloudData.GetQty(), CollectablesManagementData.GetLevelData(collectable, cloudData.Level).RequiredQty);
+            m_CollectionFillBar.Initialize(cloudData.GetQty(), CollectablesManagementData.GetLevelData(collectable, cloudData.Level, cloudData.Mastery).RequiredQty);
 
             // set the content hidden or not
             DisplayRewardInfosContent(showContent);
@@ -770,6 +807,18 @@ namespace Menu.PopUps
         void SetUpBoostRewardTemplate(EBoost boost)
         {
             m_CurrentTemplateItem = Instantiate(AssetLoader.LoadBoostTemplate(boost), m_RewardIconSection.transform);
+        }
+
+        #endregion
+
+
+        #region Boosts
+
+        void SetUpEmotRewardTemplate(EEmot emot)
+        {
+            var emotTemplate = Instantiate(AssetLoader.LoadEmotRewardTemplate(emot), m_RewardIconSection.transform);
+            emotTemplate.Initialize(emot);
+            m_CurrentTemplateItem = emotTemplate.gameObject;
         }
 
         #endregion

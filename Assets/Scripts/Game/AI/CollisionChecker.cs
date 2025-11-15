@@ -2,8 +2,9 @@
 using Game.Spells;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
+using Tools;
+
 
 namespace Game.AI
 {
@@ -53,18 +54,27 @@ namespace Game.AI
         /// <returns></returns>
         public static Collider2D[] GetColliderCollisions(CapsuleCollider2D capsuleCollider2D, List<ELayer> layers)
         {
-            int layerMask = layers.Count > 0 ? LayerMask.GetMask(layers.Select(layer => layer.ToString()).ToArray()) : Physics2D.AllLayers;
+            int layerMask = (layers != null && layers.Count > 0)
+                ? LayerMask.GetMask(layers.Select(l => l.ToString()).ToArray())
+                : Physics2D.AllLayers;
 
-            // Check for overlapped colliders with the capsule collider
-            return Physics2D.OverlapCapsuleAll(
-                capsuleCollider2D.transform.position,               // Center of the capsule collider
-                capsuleCollider2D.size,                             // Size of the capsule collider
-                capsuleCollider2D.direction,                        // Direction of the capsule collider (0 for vertical, 1 for horizontal)
-                capsuleCollider2D.transform.rotation.eulerAngles.z, // Rotation of the capsule collider
-                layerMask                                           // Layer mask for filtering colliders
+            var filter = Physics2DQueries.BuildFilter(layerMask);
+
+            int count = Physics2DQueries.OverlapCapsule(
+                capsuleCollider2D.transform.position,
+                capsuleCollider2D.size,
+                capsuleCollider2D.direction,
+                capsuleCollider2D.transform.rotation.eulerAngles.z,
+                filter,
+                out Collider2D[] buf
             );
-        }
 
+            if (count <= 0) return System.Array.Empty<Collider2D>();
+
+            var results = new Collider2D[count];
+            System.Array.Copy(buf, results, count);
+            return results;
+        }
 
         #endregion
 
@@ -88,21 +98,42 @@ namespace Game.AI
 
         public static Collider2D[] GetCollidersBetween(float basePositionX, float endPositionX, List<ELayer> layers = default)
         {
-            int layerMask = layers.Count > 0 ? LayerMask.GetMask(layers.Select(layer => layer.ToString()).ToArray()) : Physics2D.AllLayers;
+            int layerMask = (layers != null && layers.Count > 0)
+                ? LayerMask.GetMask(layers.Select(l => l.ToString()).ToArray())
+                : Physics2D.AllLayers;
 
-            // Check for collisions within a circle with variableRadius radius
             float distance = endPositionX - basePositionX;
-            return Physics2D.OverlapBoxAll(
-                new Vector2(basePositionX + distance / 2, 0f), 
-                new Vector2(Mathf.Abs(distance), 1f), 0f, 
-                layerMask
-            );
+            var center = new Vector2(basePositionX + distance / 2f, 0f);
+            var size = new Vector2(Mathf.Abs(distance), 1f);
+
+            var filter = Physics2DQueries.BuildFilter(layerMask);
+
+            Collider2D[] buf;
+            int count = Physics2DQueries.OverlapBox(center, size, 0f, filter, out buf);
+
+            if (count <= 0) return System.Array.Empty<Collider2D>();
+
+            var results = new Collider2D[count];
+            System.Array.Copy(buf, results, count);
+            return results;
         }
+
 
         #endregion
 
 
         #region Filter Colliders
+
+        public static List<ELayer> GetObstacleLayers(bool ignoreInvisibleWalls = false, bool ignoreStructures = false)
+        {
+            var layers = OBSTACLES_LAYERS;
+            if (ignoreInvisibleWalls)
+                layers.Remove(ELayer.InvisibleWall);
+            if (ignoreStructures)
+                layers.Remove(ELayer.Structure);
+
+            return layers;
+        }
 
         public static List<Spell> FilterSpells(Collider2D[] colliders, ESpellType spellType, int? ofTeam = null)
         {
@@ -116,7 +147,7 @@ namespace Game.AI
                     continue;
 
                 // ignore allies spells
-                if (ofTeam.HasValue && spell.Controller.Team != ofTeam)
+                if (ofTeam.HasValue && spell.Caster.Team != ofTeam)
                     continue;
 
                 if (spell.SpellData.SpellType != spellType)

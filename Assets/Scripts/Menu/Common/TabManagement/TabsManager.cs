@@ -163,7 +163,7 @@ namespace Menu
             var tabObject = Finder.FindComponent<TabContent>(m_TabsContainerContent, tab.ToString(), false);
             if (tabObject == null)
             {
-                ErrorHandler.Error("Unable to find tab " + tab.ToString() + " in " + name);
+                //ErrorHandler.Error("Unable to find tab " + tab.ToString() + " in " + name);
                 return;
             }
 

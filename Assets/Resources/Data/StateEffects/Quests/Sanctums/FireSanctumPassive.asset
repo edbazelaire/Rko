@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37a2110fb8b24914fb18b6f82bc81e62, type: 3}
+  m_Name: FireSanctumPassive
+  m_EditorClassIdentifier: 
+  m_Description: 'While in the Sanctum, your Spells applies [Burn]'
+  m_DescriptionVariables: 
+  m_NStacksInDescription: 1
+  m_StateEffectType: 0
+  m_IsDisplayed: 1
+  m_GfxEffects: []
+  m_Animation: 0
+  m_OnApplySoundFX: {fileID: 0}
+  m_PermanantSoundFX: {fileID: 0}
+  m_ConsumeState: 0
+  m_DefaultState: 0
+  m_IsInstantanious: 0
+  m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
+  m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
+  m_EndWithShield: 0
+  m_EndAt0Stacks: 1
+  m_RefreshShield: 1
+  m_Priority: 0
+  m_Delay: 0
+  m_Duration: -1
+  m_StartingStacks: 1
+  m_MaxStacks: 1
+  m_StackDecay: 0
+  m_StartsActivated: 1
+  m_StateEffectTriggers: []
+  m_StateEffectActivations: []
+  m_SpellActivations: []
+  m_BonusStats: []
+  m_StatConversions: []
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
+  m_OnStartStateEffect: []
+  m_OnEndStateEffect: []
+  m_StateEffectScalingLevel: []
+  m_StateEffectScalingStacks: []
+  m_Frequency: 1
+  m_FrequencyLevelScaling: 0
+  m_AllowedSpells: []
+  m_SpellEffectType: 1
+  m_AllowedSpellTypes: 
+  m_OnHits: []
+  m_AllyStateEffects: []
+  m_EnemyStateEffects:
+  - StateEffect: 8
+    Stacks: 1
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
+  m_SpellOverridingData: []
+  m_SpellGFXOverrides: []

@@ -20,15 +20,19 @@ namespace Data.GameManagement
     public struct SStageData
     {
         [SerializeField] EBoss                          m_Boss;
+        [SerializeField] ESkin                          m_Skin;
         [SerializeField] int                            m_BonusLevel;
+        [SerializeField] int                            m_ExtraLifes;
         [SerializeField] List<ESpell>                   m_Spells;
-        [SerializeField] List<STriggerEffect>           m_TriggerEffects;
+        [SerializeField] List<STriggerEffect>           m_TriggerEffects; 
         [SerializeField] List<SCharacterStatScaling>    m_BonusStats;
 
         int m_BaseLevel;
 
         public readonly EBoss                   Boss            => m_Boss;
+        public readonly ESkin                   Skin            => m_Skin;
         public readonly int                     Level           => m_BonusLevel + m_BaseLevel;
+        public readonly int                     ExtraLifes      => m_ExtraLifes;
         public readonly List<ESpell>            Spells          => m_Spells;
         public readonly List<STriggerEffect>    TriggerEffects
         {
@@ -67,7 +71,7 @@ namespace Data.GameManagement
     }
 
 
-    [CreateAssetMenu(fileName = "ArenaData", menuName = "Game/Management/ArenaData")]
+    [CreateAssetMenu(fileName = "ArenaData", menuName = "Game/Management/ArenaData/Default")]
     public class ArenaData : ScriptableObject
     {
         #region Members
@@ -83,7 +87,7 @@ namespace Data.GameManagement
         // ===============================================================================================
         // DATA
         [Header("Arena Data")]
-        [SerializeField] int m_NLifes = 1;
+        [SerializeField] int m_RoundDuration = 0;
         [SerializeField] List<SArenaLevelData> m_ArenaLevelData;
 
         // ===============================================================================================
@@ -97,10 +101,11 @@ namespace Data.GameManagement
         public SArenaPosition CurrentArenaPosition  => new SArenaPosition(ArenaDifficulty, CurrentLevel, CurrentStage);
         public int CurrentLevel                     => ProgressionCloudData.CurrentArena.Level;
         public int CurrentStage                     => ProgressionCloudData.CurrentArena.Stage;
-        public int CurrentBaseCharacterLevel        => 1 + (int)ArenaDifficulty * 2 + m_ArenaDifficultyLevel;
-        public float CurrentRewardMultiplicator     => 1 + (int)ArenaDifficulty * 0.5f + m_ArenaDifficultyLevel * 0.15f;
+        public int CurrentBaseCharacterLevel        => GetBaseCharacterLevel(ArenaDifficulty, m_ArenaDifficultyLevel);
+        public float CurrentRewardMultiplicator     => ArenaSpecialConfig.BaseLevel + (int)ArenaDifficulty * 0.5f + m_ArenaDifficultyLevel * 0.15f;
 
         public EArenaType               ArenaType               => Enum.TryParse(name.Split("_")[0], out EArenaType arenaType) ? arenaType : EArenaType.FrostArena;
+        public SArenaSpecialConfig      ArenaSpecialConfig      => ArenaManagementData.GetArenaSpecialConfig(ArenaType);
         public SArenaDifficulty         SArenaDifficulty        => new SArenaDifficulty(ArenaDifficulty, ArenaDifficultyLevel);
         public EArenaDifficulty         ArenaDifficulty         => Enum.TryParse(name.Split("_")[1], out EArenaDifficulty arenaDifficulty) ? arenaDifficulty : EArenaDifficulty.Normal;
         public int                      ArenaDifficultyLevel    => m_ArenaDifficultyLevel;
@@ -108,6 +113,7 @@ namespace Data.GameManagement
         public SArenaLevelData          CurrentArenaLevelData   => GetArenaLevelData(CurrentLevel);
         public SStageData               CurrentStageData        => GetStageData(CurrentLevel, CurrentStage);
         public int                      MaxLevel                => m_ArenaLevelData.Count - 1;
+        public int                      RoundDuration           => m_RoundDuration;
 
         #endregion
 
@@ -176,6 +182,16 @@ namespace Data.GameManagement
             return arenaStage == m_ArenaLevelData[arenaLevel].StageData.Count - 1;
         }
 
+        public bool IsLastBoss(int arenaLevel, int arenaStage)
+        {
+            return IsBoss(arenaLevel, arenaStage) && arenaLevel == m_ArenaLevelData.Count - 1;
+        }
+
+        public int GetBaseCharacterLevel(EArenaDifficulty arenaDifficulty, int arenaDifficultyLevel)
+        {
+            return ArenaSpecialConfig.BaseLevel + (int)arenaDifficulty * 2 + arenaDifficultyLevel;
+        }
+
         public SStageData GetBossStageData(int arenaLevel)
         {
             if (arenaLevel > m_ArenaLevelData.Count)
@@ -189,6 +205,11 @@ namespace Data.GameManagement
         public EBoss GetBoss(int arenaLevel)
         {
             return GetBossStageData(arenaLevel).Boss;
+        }
+
+        public ESkin GetBossSkin(int arenaLevel)
+        {
+            return GetBossStageData(arenaLevel).Skin;
         }
 
         public SRewardsData GetCurrentRewards()
@@ -246,13 +267,20 @@ namespace Data.GameManagement
         /// <returns></returns>
         public int CalculateOrbPowerReward(int arenaLevel, int arenaStage)
         {
-            SScalingStat powerScaling = IsBoss(arenaLevel, arenaStage) ? ArenaManagementData.BossPowerDrop : ArenaManagementData.MobPowerDrop;
+            var arenaConfigData = ArenaManagementData.GetArenaSpecialConfig(ArenaType);
+            if (arenaConfigData == null)
+                return 0;
+
+            SScalingStat powerScaling = IsBoss(arenaLevel, arenaStage) ? arenaConfigData.BossPowerDrop : arenaConfigData.MobPowerDrop;
             powerScaling.SetLevel(arenaLevel);
+            float baseValue = powerScaling.GetValue();
+
+            if (IsLastBoss(arenaLevel, arenaStage))
+                baseValue += arenaConfigData.CompletionPowerDrop.GetValue();
 
             return (int)Math.Round(
-                powerScaling.GetValue()        // base power level from current arena level
-                * Math.Pow(1 + ArenaManagementData.BonusArenaDifficulty, (int)ArenaDifficulty)      // power level increase from arena difficulty (normal, hard, brutal, ...)
-                * (1 + ArenaManagementData.BonusArenaDifficultyLevel * ArenaDifficultyLevel)        // power level increase from arena difficulty bonus level (+, ++, ... etc)
+                baseValue                                                                           // base power level from current arena level
+                * Math.Pow(1 + arenaConfigData.BonusArenaDifficulty, (int)ArenaDifficulty)      // power level increase from arena difficulty (normal, hard, brutal, ...)
                 * ProgressionCloudData.CurrentArena.GetBonusPowerOrb()                              // percentage of bonus reward
             );
         }
@@ -291,10 +319,12 @@ namespace Data.GameManagement
             // create & return PlayerData
             var triggerEffects = CurrentArenaLevelData.TriggerEffects;
             triggerEffects.AddRange(CurrentStageData.TriggerEffects);
+
             return new SPlayerData(
                 playerName:     CurrentStageData.Boss.ToString(),
                 characterLevel: CurrentStageData.Level,
                 character:      CurrentStageData.Boss.ToString(),
+                skin:           CurrentStageData.Skin,
                 runes:          runes,
                 runeLevels:     runeLevels,      
                 spells:         CurrentStageData.Spells.ToArray(),
@@ -303,7 +333,7 @@ namespace Data.GameManagement
                 isPlayer:       false,
 
                 triggerEffects: triggerEffects.ToArray(),
-                powerUps:       CurrentArenaLevelData.PowerUps.Select(str => new FixedString128Bytes(str)).ToArray(),
+                powerUps:       CurrentArenaLevelData.PowerUps.Select(str => new FixedString512Bytes(str)).ToArray(),
                 bonusStats:     CurrentStageData.BonusStats.ToArray(),
                 botData :       new SBotData(
                     ArenaDifficulty.ToString(),

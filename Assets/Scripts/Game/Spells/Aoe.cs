@@ -1,9 +1,10 @@
 ﻿using Data;
 using Enums;
-using System.Collections;
+using Game.NetworkStructures;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
+using Tools.Helpers;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -17,9 +18,11 @@ namespace Game.Spells
 
         AoeData m_SpellData => m_BaseSpellData as AoeData;
 
-        protected NetworkVariable<float>  m_Radius    = new NetworkVariable<float>(0);
+        readonly NetworkVariable<float> m_Radius = new NetworkVariable<float>();
 
-        protected float m_DurationTimer;
+        public IReplicatedVar<float> Radius { get; protected set; }
+
+        public virtual float Duration => 0;
 
         #endregion
 
@@ -29,11 +32,20 @@ namespace Game.Spells
         /// <summary>
         /// 
         /// </summary>
-        public override void OnNetworkSpawn()
+        public override void OnSpawned()
         {
-            base.OnNetworkSpawn();
+            base.OnSpawned();
+            Radius = ReplicatedVar.Create(m_Radius, offlineInitial: 0);
+            Radius.OnValueChanged += OnRadiusChanged;
+        }
 
-            m_Radius.OnValueChanged += OnRadiusChanged;
+        /// <summary>
+        /// Unsubscribe from events
+        /// </summary>
+        public override void OnDespawned()
+        {
+            base.OnDespawned();
+            Radius.OnValueChanged -= OnRadiusChanged;
         }
 
         /// <summary>
@@ -45,6 +57,9 @@ namespace Game.Spells
         public override void Initialize(ulong clientId, Vector3 target, SpellData spellData)
         {
             base.Initialize(clientId, target, spellData);
+            
+            if (m_IsOver)
+                return;
 
             transform.localScale = new Vector3(m_SpellData.Size, m_SpellData.Size, m_SpellData.Size);
 
@@ -52,19 +67,9 @@ namespace Game.Spells
                 return;
 
             // setup radius and timer
-            m_Radius.Value      = m_SpellData.Size / 2;
-            m_DurationTimer     = m_SpellData.Duration;
+            Radius.Value          = m_SpellData.Size / 2;
 
             CreateCollisionCircle();
-        }
-
-        /// <summary>
-        /// Unsubscribe from events
-        /// </summary>
-        public override void OnDestroy()
-        {
-            m_Radius.OnValueChanged -= OnRadiusChanged;
-            base.OnDestroy();
         }
 
         #endregion
@@ -81,20 +86,6 @@ namespace Game.Spells
                 return;
 
             base.Update();
-
-            if (!IsServer)
-                return;
-
-            // if inifite zone, do nothing
-            if (m_SpellData.Duration <= -1f)
-                return;
-
-            m_DurationTimer -= Time.deltaTime;
-            if (m_DurationTimer <= 0f)
-            {
-                End();
-                return;
-            }
         }
 
         #endregion
@@ -103,57 +94,47 @@ namespace Game.Spells
         #region Collision Manipulators
 
         /// <summary>
-        /// 
-        /// </summary>q
-        /// <param name="collision"></param>
-        protected virtual bool CheckCollision(Collider2D collision, out Controller controller)
+        /// Create a collision circle of the spell's radius that will apply the spells effect for each allowed Controllers inside
+        /// </summary>
+        protected virtual void CreateCollisionCircle()
         {
-            controller = null;
-
             if (!IsServer)
-                return false;
+                return;
 
-            if (collision.gameObject.layer != LayerMask.NameToLayer("Player") && collision.gameObject.layer != LayerMask.NameToLayer("Structure"))
-                return false;
-
-            // check that players has controller 
-            controller = Finder.FindComponent<Controller>(collision.gameObject);
-            if (controller == null)
-            {
-                ErrorHandler.Error("Controller not found for player " + collision.gameObject.name);
-                return false;
-            }
-
-            return true;
-            
+            CreateCollisionCircleOnPosition(transform.position);
         }
 
-        protected virtual void OnCollisionController(Controller controller)
+        protected virtual void CreateCollisionCircleOnPosition(Vector3 position)
         {
-            // hit the player
-            OnHit(controller);
-        }
+            // setup layer filter 
+            var filter = Physics2DQueries.BuildFilter(TargetHelper.DEFAULT_LAYER_MASK);
 
-        protected void CreateCollisionCircle()
-        {
             // Check for collisions within a circle with variableRadius radius
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, m_Radius.Value);
+            Collider2D[] hits = new Collider2D[32];
+            int count = Physics2DQueries.OverlapAtPosition(m_Collider, position, m_SpellData.Size, filter, hits);
+
+            ErrorHandler.Log($"AOE at {position} hit {count} colliders.", ELogTag.Aoe);
 
             // Gat all controllers touched by the 2D collision circle
             var hitControllers = new List<Controller>();
-            foreach (Collider2D collider in colliders)
+            for (int i = 0; i < count; i++)
             {
-                if (!CheckCollision(collider, out Controller controller))
+                if (!CheckCollision(hits[i], out Controller controller))
                     continue;
+
                 hitControllers.Add(controller);
+                ErrorHandler.Log($" → Hit {hits[i].name}", ELogTag.Aoe);
             }
 
             // if "ApplyIfNotHitting" : set hitControllers to be the list of ALL controllers NOT HIT
             if (m_SpellData.ApplyIfNotHitting)
             {
-                var allControllers = m_SpellData.IsEnemyTarget ? GameManager.Instance.GetAllEnemies(m_Controller.Team) : GameManager.Instance.GetAllAllies(m_Controller.Team);
+                var allControllers = m_SpellData.IsEnemyTarget
+                    ? GameManager.Instance.GetAllEnemies(m_Caster.Team)
+                    : GameManager.Instance.GetAllAllies(m_Caster.Team);
+
                 hitControllers = allControllers.Where(
-                    controller => hitControllers.Any(hitController => hitController.PlayerId == controller.PlayerId)
+                    controller => ! hitControllers.Any(hitController => hitController.PlayerId == controller.PlayerId)
                 ).ToList();
             }
 
@@ -164,17 +145,42 @@ namespace Game.Spells
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>q
+        /// <param name="collision"></param>
+        protected virtual bool CheckCollision(Collider2D collision, out Controller controller)
+        {
+            // check that players has controller 
+            controller = Finder.FindComponent<Controller>(collision.gameObject);
+            if (controller == null)
+            {
+                ErrorHandler.Error("Controller not found for player " + collision.gameObject.name);
+                return false;
+            }
+
+            return true;
+        }
+
+        protected virtual void OnCollisionController(Controller controller)
+        {
+            // hit the player
+            OnHit(controller);
+        }
+
         #endregion
 
 
         #region Target & Position
 
         protected override void SetTarget(Vector3 target)
-        {
+        {            
             if (m_SpellData.SpellSpawn == ESpellSpawn.Ground)
                 target.y = m_SpellData.TargetOffset.Y;
 
-            transform.position = target;
+            if (! m_SpellData.OverridesSpawnPosition)
+                transform.position = target;
+
             base.SetTarget(target);
         }
 
@@ -189,5 +195,6 @@ namespace Game.Spells
         }
 
         #endregion
+
     }
 }

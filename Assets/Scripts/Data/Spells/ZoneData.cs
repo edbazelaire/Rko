@@ -1,11 +1,8 @@
-﻿using Assets.Scripts.Data.DataStructures.SpellSubStructures;
-using Data.DataStructures.SpellSubStructures;
+﻿using Data.DataStructures.SpellSubStructures;
 using Enums;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.Video;
+using UnityEngine.Serialization;
 
 namespace Data
 {
@@ -19,14 +16,18 @@ namespace Data
         [Header("Zone Data")]
         [Tooltip("Tick over time duration of re-appliance of the spell")]
         public float                    DurationTick    = 0f;
+        [FormerlySerializedAs("m_TickDamage")]
         [SerializeField, Tooltip("Damage delt at each ticks")]
-        protected int                   m_TickDamage   = 0;
+        protected int                   m_DotDamage   = 0;
+        [FormerlySerializedAs("m_TickHeal")]
         [SerializeField, Tooltip("Heals provided at each ticks")]
-        protected int                   m_TickHeal      = 0;
+        protected int                   m_DotHeal      = 0;
+        [FormerlySerializedAs("m_TickHeal")]
         [SerializeField, Tooltip("Shield provided at each ticks")]
-        protected int                   m_TickShield    = 0;
+        protected int                   m_DotShield    = 0;
+        [FormerlySerializedAs("m_TickHeal")]
         [SerializeField, Tooltip("Energy provided at each ticks")]
-        protected int                   m_TickEnergy    = 0;
+        protected int                   m_DotEnergy    = 0;
         [SerializeField, Tooltip("Continuous force in the zone")]
         protected SForce                m_ZoneForce     = default;
         [Tooltip("Growing factor of the spell (as bonus percentage)")]
@@ -38,10 +39,10 @@ namespace Data
 
         // ==================================================================================================
         // PUBLIC ACCESSORS
-        public int TickDamage       => (int)GetScaledValue(ESpellProperty.TickDamage, m_TickDamage);
-        public int TickHeal         => (int)GetScaledValue(ESpellProperty.TickHeal, m_TickHeal);
-        public int TickShield       => (int)GetScaledValue(ESpellProperty.TickShield, m_TickShield);
-        public int TickEnergy       => (int)GetScaledValue(ESpellProperty.TickEnergy, m_TickEnergy);
+        public int DotDamage       => (int)GetScaledValue(ESpellProperty.DotDamage, m_DotDamage);
+        public int DotHeal          => (int)GetScaledValue(ESpellProperty.DotHeal, m_DotHeal);
+        public int DotShield        => (int)GetScaledValue(ESpellProperty.DotShield, m_DotShield);
+        public int DotEnergy        => (int)GetScaledValue(ESpellProperty.DotEnergy, m_DotEnergy);
         public SForce ZoneForce     => m_ZoneForce;
 
         #endregion
@@ -64,13 +65,16 @@ namespace Data
         public override Dictionary<string, object> GetInfo()
         {
             var infosDict = base.GetInfo();
+            infosDict.Add("Tick", DurationTick);
 
-            if (TickDamage > 0)
-                infosDict.Add("TickDamage", TickDamage);
-            if (TickHeal > 0)
-                infosDict.Add("TickHeal", TickHeal);
-            if (TickShield > 0)
-                infosDict.Add("TickShield", TickShield);
+            if (DotDamage > 0)
+                infosDict.Add("DotDamage", DotDamage);
+            if (DotHeal > 0)
+                infosDict.Add("DotHeal", DotHeal);
+            if (DotShield > 0)
+                infosDict.Add("DotShield", DotShield);
+            if (DotEnergy > 0)
+                infosDict.Add("DotEnergy", DotEnergy);
 
             if (PersistentStateEffects.Count > 0)
             {

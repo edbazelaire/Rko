@@ -21,8 +21,8 @@ namespace Menu.PopUps
         protected Image         m_Background;
 
         // Data
-        string m_Message;
-        float m_Duration;
+        protected string m_Message;
+        protected float m_Duration;
 
         #endregion
 
@@ -50,7 +50,7 @@ namespace Menu.PopUps
         {
             base.OnPrefabLoaded();
 
-            CoroutineManager.DelayMethod(() => m_MessageText.text = m_Message);
+            CoroutineManager.DelayMethod(() => m_MessageText.text = TextHandler.ReplaceStateEffectTokens(m_Message));
         }
 
         protected override void OnInitializationCompleted()

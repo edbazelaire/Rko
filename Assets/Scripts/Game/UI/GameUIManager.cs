@@ -24,6 +24,9 @@ public class GameUIManager : MonoBehaviour
     private bool m_Initialized;
     public static bool Initialized => s_Instance != null && s_Instance.m_Initialized;
 
+    [SerializeField] private Canvas m_Canvas;
+    public Canvas Canvas => m_Canvas;
+
     private IntroGameUI     m_IntroGameUI;
     private EndGameUI       m_EndGameUI;
     private ErrorGameUI     m_ErrorGameUI;
@@ -119,12 +122,6 @@ public class GameUIManager : MonoBehaviour
         m_TutoGameUI.gameObject.SetActive(false);
         m_BTDebugger.gameObject.SetActive(false);
         m_PlayerUIs = new Dictionary<ulong, PlayerUI> { };
-
-        // display or not the Timer
-        if (LobbyHandler.Instance.GameMode != EGameMode.Ranked)
-            Destroy(m_GameTimerUI.gameObject);
-        else
-            m_GameTimerUI.Initialize();
 
         LoadArena();
 

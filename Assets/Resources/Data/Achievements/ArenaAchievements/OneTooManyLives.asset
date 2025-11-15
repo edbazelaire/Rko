@@ -9,61 +9,71 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 47479451774634f41bf6a5cb0514ad38, type: 3}
+  m_Script: {fileID: 11500000, guid: ae354b3668cdd774ca39fa75fe4e38f7, type: 3}
   m_Name: OneTooManyLives
   m_EditorClassIdentifier: 
+  m_PrettyName: 
   m_Description: 
+  m_ResetCount: 0
+  m_Character: -1
+  m_MasteryThresholds: 0300000006000000
   AchievementSubData:
-  - MaxValue: 5
-    Rewards:
-      Currencies:
-      - Currency: 1
-        Qty: 15
-      Chests: 
-      Collectables: []
-      AchievementRewards: []
-      Boosts: []
   - MaxValue: 10
     Rewards:
       Currencies:
       - Currency: 0
-        Qty: 2500
+        Qty: 5000
       Chests: 
       Collectables: []
       AchievementRewards: []
       Boosts: []
-  - MaxValue: 20
+    ArenaType: 0
+    ArenaDifficulty: 4
+    ArenaMods: 
+  - MaxValue: 25
     Rewards:
       Currencies: []
       Chests: 
       Collectables: []
       AchievementRewards:
-      - AchievementReward: 2
+      - AchievementReward: 1
         Title: 0
-        Avatar: 107
+        Avatar: 504
         Border: 0
-        Badge: 0
+        Emot: 0
+        Badge: 10004
         League: 0
       Boosts: []
-  - MaxValue: 35
-    Rewards:
-      Currencies: []
-      Chests: 01000000
-      Collectables: []
-      AchievementRewards: []
-      Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 4
+    ArenaMods: 
   - MaxValue: 50
     Rewards:
       Currencies: []
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+    ArenaType: 0
+    ArenaDifficulty: 5
+    ArenaMods: 
+  - MaxValue: 100
+    Rewards:
+      Currencies: []
       Chests: 
       Collectables: []
       AchievementRewards:
-      - AchievementReward: 3
-        Title: 0
+      - AchievementReward: 4
+        Title: 902
         Avatar: 0
-        Border: 203
+        Border: 0
+        Emot: 0
         Badge: 0
         League: 0
       Boosts: []
-  m_ArenaType: 1
-  ArenaMods: 02000000
+    ArenaType: 0
+    ArenaDifficulty: 6
+    ArenaMods: 
+  m_ArenaType: -1
+  m_ArenaDifficulty: 0
+  m_ArenaMods: 02000000

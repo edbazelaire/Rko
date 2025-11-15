@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Data.DataStructures.SpellRequirement;
 using Assets.Scripts.Managers.Sound;
 using Data;
+using Data.DataStructures.SpellSubStructures;
 using Data.GameManagement;
 using Enums;
 using Game.Loaders;
@@ -53,9 +54,12 @@ namespace Menu.PopUps
         protected Enum m_Collectable                    => m_Data.Id;
         protected string m_CollectableName              => m_Data.Name;
         protected int m_Level                           => m_Data.Level;
+        protected int m_Mastery                         => ! m_InfoOnly ? InventoryCloudData.Instance.GetCollectable(m_Collectable).Mastery : 0;
         protected virtual bool m_IsUnlocked             => m_InfoOnly || InventoryCloudData.Instance.IsUnlocked(m_Collectable);
-        protected virtual bool m_IsMaxedLevel           => m_Level >= 14;
+        protected virtual bool m_IsMaxedLevel           => m_Level >= CollectablesManagementData.MAX_LEVEL;
+        protected virtual bool m_IsMaxedMastery         => m_Mastery >= CollectablesManagementData.MAX_MASTERY;
         protected virtual bool m_CanUpgrade             => ! m_InfoOnly && InventoryManager.CanUpgrade(m_Collectable);
+        protected virtual bool m_CanUpgradeMastery      => ! m_InfoOnly && InventoryManager.CanUpgradeMastery(m_Collectable);
         protected virtual bool m_CanBuy                 => ! m_InfoOnly && InventoryManager.CanBuy(m_Collectable);
         protected virtual SPriceData m_BuyPriceData     => ShopManagementData.GetPrice(m_Collectable);
 
@@ -198,7 +202,7 @@ namespace Menu.PopUps
         {
             UIHelper.CleanContent(m_PreviewContainer);
             m_CollectableItemUI = Instantiate(m_TemplateItemUI, m_PreviewContainer.transform).GetComponent<TemplateCollectableItemUI>();
-            m_CollectableItemUI.Initialize(m_Collectable, m_Level, asIconOnly: m_InfoOnly, removeListeners: m_InfoOnly);
+            m_CollectableItemUI.Initialize(m_Collectable, m_Level, mastery: m_Mastery, asIconOnly: m_InfoOnly, removeListeners: m_InfoOnly);
 
             // deactivate button
             m_CollectableItemUI.Button.interactable = false;
@@ -227,12 +231,15 @@ namespace Menu.PopUps
             UIHelper.CleanContent(container);
             m_InfoRows = new();
 
+            // setup data (preprocess if data needs manipulation before display)
+            data = PreprocessData(data);
+            var infos = data.GetInfo();
+
             // -- get new data if spell is updatable
             Dictionary<string, object> newDataInfos = null;
             if (!m_IsMaxedLevel)
                 newDataInfos = data.Clone(m_Level + 1, true).GetInfo();
 
-            var infos = data.GetInfo();
             foreach (var item in infos)
             {
                 // check if key should be ignored
@@ -250,7 +257,32 @@ namespace Menu.PopUps
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="newDataValue"></param>
-        protected virtual void SetUpInfoRow(GameObject container, string key, object value, object newDataValue = null, EScalingDirection scaling = EScalingDirection.None)
+        protected virtual void SetUpInfoRow(GameObject container, string key, object value, object newDataValue = null, EScalingDirection scaling = EScalingDirection.None, string title = "")
+        {
+            // check if key is a special case
+            if (HandleSpecialCases(container, key, value, newDataValue, scaling))
+                return;
+
+            // spawn a spellRowInfo from prefab and init with spell data
+            SpellInfoRowUI spellRowInfo = Instantiate(m_InfoPrefab, container.transform).GetComponent<SpellInfoRowUI>();
+            spellRowInfo.Initialize(key, value, newDataValue, scaling);
+            while (m_InfoRows.ContainsKey(key))
+            {
+                key = "_" + key;
+            }            
+            m_InfoRows.Add(key, spellRowInfo);
+        }
+
+        /// <summary>
+        /// Handle keys that requires a special behavior
+        /// </summary>
+        /// <param name="container"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="newDataValue"></param>
+        /// <param name="scaling"></param>
+        /// <returns></returns>
+        protected virtual bool HandleSpecialCases(GameObject container, string key, object value, object newDataValue = null, EScalingDirection scaling = EScalingDirection.None)
         {
             if (key == "SpellRequirements")
             {
@@ -262,18 +294,63 @@ namespace Menu.PopUps
                 else
                     ErrorHandler.Warning("SpellRequirements was provided for " + m_CollectableName + " but unable to parse the value as SpellRequirements");
 
-                return;
+                return true;
             }
 
+            // Keys to ignore
             if (key == "MaxThresholdIndex")
             {
-                return;
+                return true;
             }
 
-            // spawn a spellRowInfo from prefab and init with spell data
-            SpellInfoRowUI spellRowInfo = Instantiate(m_InfoPrefab, container.transform).GetComponent<SpellInfoRowUI>();
-            spellRowInfo.Initialize(key, value, newDataValue, scaling);
-            m_InfoRows.Add(key, spellRowInfo);
+            // Damages
+            if (key == "Damages")
+            {
+                if (value is List<SDamage> damages)
+                {
+                    for (int i = 0; i < damages.Count; i++)
+                    {
+                        SetUpInfoRow(
+                           m_InfosContent,
+                           damages[i].PropertyName(),
+                           damages[i].Get(m_Level, null, null),
+                           m_Level < CollectablesManagementData.GetMaxLevel(m_Collectable) ? damages[i].Get(m_Level + 1, null, null) : null,
+                           damages[i].ScalingDirection,
+                           title: damages[i].GetPrettyName()
+                       );
+                    }
+                }
+                else
+                {
+                    ErrorHandler.Warning("List of damages was provided for " + m_CollectableName + " but unable to parse the value as SDamage");
+                }
+
+                return true;
+            }
+
+            // Resistance : resistance with no specific value -> split in Magical/Physical for better understanding
+            if (key == "Resistance")
+            {
+                SetUpInfoRow(
+                    m_InfosContent,
+                    PropertyHandler.FormatSpecialPropertyName(key, EDamageCategory.Physical),
+                    value,
+                    newDataValue,
+                    scaling
+                );
+
+                SetUpInfoRow(
+                    m_InfosContent,
+                    PropertyHandler.FormatSpecialPropertyName(key, EDamageCategory.Magical),
+                    value,
+                    newDataValue,
+                    scaling
+                );
+
+                return true;
+            }
+
+            return false;
         }
 
         void SetupSpellRequirementsInfoRows(List<SpellRequirements> allSpellRequirements, List<SpellRequirements> newAllSpellRequirements = null)
@@ -382,7 +459,7 @@ namespace Menu.PopUps
 
             m_UpgradeButton.gameObject.SetActive(true);
             m_UpgradeButton.interactable = m_CanUpgrade;
-            m_CostText.text = CollectablesManagementData.GetLevelData(m_Collectable, m_Level).RequiredGold.ToString();
+            m_CostText.text = CollectablesManagementData.GetLevelData(m_Collectable, m_Level, m_Mastery).RequiredGold.ToString();
         }
 
         #endregion
@@ -393,6 +470,11 @@ namespace Menu.PopUps
         protected virtual void LoadTemplateItem()
         {
             m_TemplateItemUI = AssetLoader.LoadTemplateItem(m_Collectable);
+        }
+
+        protected virtual CollectableData PreprocessData(CollectableData data)
+        {
+            return data;
         }
 
         #endregion
@@ -407,7 +489,6 @@ namespace Menu.PopUps
             if (m_InfoOnly)
                 return;
 
-            //InventoryManager.CollectableUpgradedEvent += OnLevelUp;
             InventoryCloudData.CollectableDataChangedEvent += OnCollectableDataChanged;
         }
 
@@ -418,7 +499,6 @@ namespace Menu.PopUps
             if (m_InfoOnly)
                 return;
 
-            //InventoryManager.CollectableUpgradedEvent -= OnLevelUp;
             InventoryCloudData.CollectableDataChangedEvent -= OnCollectableDataChanged;
         }
 

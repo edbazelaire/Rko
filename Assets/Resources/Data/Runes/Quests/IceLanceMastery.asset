@@ -16,7 +16,6 @@ MonoBehaviour:
   m_Description: 
   m_DescriptionVariables: []
   m_SpellElements: 02000000
-  Description: 
   m_MinorPower:
     Description: 
     m_DescriptionVariables: []
@@ -39,6 +38,8 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []
   m_MajorPower:
     Description: 
@@ -62,9 +63,11 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []
   m_PrimalPower:
-    Description: 
+    Description: '[TriggerEffect.0]'
     m_DescriptionVariables: []
     m_BonusLevel: 3
     m_TriggerEffects:
@@ -83,5 +86,7 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []
   m_TriggerEffects: []

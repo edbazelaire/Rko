@@ -1,7 +1,10 @@
-﻿using Enums;
+﻿using Data.DataStructures.PowerEffects;
+using Enums;
 using Game;
 using Game.Loaders;
 using Game.Spells;
+using MyBox;
+using Save;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,7 +23,7 @@ namespace Data.DataStructures
 
 
     [Serializable]
-    public struct STriggerEffect : INetworkSerializable, ITriggerEffect
+    public class STriggerEffect : INetworkSerializable, ITriggerEffect
     {
         #region Members
 
@@ -47,6 +50,8 @@ namespace Data.DataStructures
         public  float                   Duration;
         public  int                     NActivations;
         public  float                   Cooldown;
+        public  bool                    RepeatWhenCooldownOver;
+        public  bool                    ConsumeLifeOnActivation;
 
         // ==================================================================================
         // Data
@@ -84,6 +89,8 @@ namespace Data.DataStructures
             serializer.SerializeValue(ref Duration);
             serializer.SerializeValue(ref NActivations);
             serializer.SerializeValue(ref Cooldown);
+            serializer.SerializeValue(ref RepeatWhenCooldownOver);
+            serializer.SerializeValue(ref ConsumeLifeOnActivation);
         }
 
         #endregion
@@ -93,20 +100,25 @@ namespace Data.DataStructures
 
         public bool IsActivable()
         {
+            // TODO : Handle multiple "ExtraLife". For now, it is only checking one extra life effect
+            if (ConsumeLifeOnActivation && ProgressionCloudData.CurrentArena.CurrentEnemyLifesLost > 0)
+                return false;
+
+            // CHECK : return has enough Activations left
             return (NActivations == -1                                          // infinite activations
                 || m_NActivationsCtr < (NActivations >= 1 ? NActivations : 1))  // OR below min activation
             && m_CooldownTimer <= 0;                                            // AND not in cooldown
         }
 
-        public void Activate(Controller controller)
+        public void Activate(Controller controller, float delay = 0f)
         {
             if (m_IsActivated)
                 return;
 
-            Debug.Log("Activate Effect : " + SpellDataName);
-
             if (! IsActivable())
                 return;
+
+            Debug.Log("Activate Effect : " + SpellDataName);
 
             if (controller == null)
             {
@@ -119,12 +131,15 @@ namespace Data.DataStructures
             m_TargetController      = CalculateTarget();
             m_NActivationsCtr++;
 
-            m_Coroutine = m_Caster.StartCoroutine(ActivationDelay());
+            // check consume LIFE in Cloud
+            CheckLifeConsumption();
+
+            m_Coroutine = m_Caster.StartCoroutine(ActivationDelay(delay));
         }
 
-        IEnumerator ActivationDelay()
+        IEnumerator ActivationDelay(float extraDelay = 0f)
         {
-            yield return new WaitForSeconds(Delay);
+            yield return new WaitForSeconds(Delay + extraDelay);
 
             if (NStateEffectActivationThreshold > 1)
             {
@@ -137,7 +152,7 @@ namespace Data.DataStructures
             } 
             else
             {
-                StateEffect.StateEffectEvent += OnStateEffectEvent;
+                StateEffect.StateEffectStaticEvent += OnStateEffectEvent;
             }
 
             // activate duration coroutine
@@ -163,13 +178,14 @@ namespace Data.DataStructures
             // start cooldown
             if (Cooldown > 0)
             {
-                m_CooldownTimer = Cooldown;
-                m_TargetController.StartCoroutine(UpdateCooldownTimer());
+                m_TargetController.StartCoroutine(StartCooldownTimer());
             }
 
             if (SpellLoader.IsSpell(SpellDataName))
             {
                 SpellData spellData = SpellLoader.GetSpellData(SpellDataName, Level);
+                if (Target != ESpellTarget.None)
+                    spellData.SpellTarget = Target;
                 spellData.SetCurrentTargetId(m_TargetController.PlayerId);
                 spellData.SetParent(m_Parent);
                 m_Caster.StartCoroutine(spellData.CastDelay(m_Caster.PlayerId, Vector3.zero, recalculateTarget: true));
@@ -178,17 +194,30 @@ namespace Data.DataStructures
             else if (SpellLoader.IsStateEffect(SpellDataName))
             {
                 StateEffect stateEffect = SpellLoader.GetStateEffect(SpellDataName, Level, overridingData: OverridingData, parent: m_Parent);
+                if (stateEffect.StateEffectName.StartsWith("_"))
+                    stateEffect.SetParent(m_Parent);
                 m_TargetController.StateHandler.AddStateEffect(stateEffect, m_Caster);
             }
 
             else if (SpellLoader.PowerUpExists(SpellDataName))
             {
-                SRunePower powerUp = SpellLoader.GetPowerUp(SpellDataName, Level);
+                SPowerEffect powerUp = SpellLoader.GetPowerUp(SpellDataName, Level);
                 m_TargetController.TriggerEffectHandler.AddPowerUp(powerUp);
             }
 
             else
                 ErrorHandler.Error(SpellDataName + " not recognize either as Spell or StateEffect");
+        }
+
+        void CheckLifeConsumption()
+        {
+            if (! ConsumeLifeOnActivation)
+            {
+                return;
+            }
+
+            // remove enemy life in cloud
+            ProgressionCloudData.RemoveCurrentEnemyLife(1);
         }
 
         #endregion
@@ -214,7 +243,9 @@ namespace Data.DataStructures
             if (! m_IsActivated)
                 return;
 
-            StateEffect.StateEffectEvent -= OnStateEffectEvent;
+            Debug.Log("Deactivate Effect : " + SpellDataName);
+
+            StateEffect.StateEffectStaticEvent -= OnStateEffectEvent;
 
             m_IsActivated = false;
 
@@ -246,16 +277,25 @@ namespace Data.DataStructures
 
         public void SetParent(string parent)
         {
+            if (parent.IsNullOrEmpty())
+                return;
+
             m_Parent = parent;
         }
 
-        IEnumerator UpdateCooldownTimer()
+        IEnumerator StartCooldownTimer()
         {
+            m_CooldownTimer = Cooldown;
+
             while (m_CooldownTimer > 0)
             {
                 m_CooldownTimer -= Time.deltaTime;
                 yield return null;
             }
+
+            if (RepeatWhenCooldownOver && m_IsActivated && IsActivable())
+                ActivateEffect();
+
         }
 
         bool HasStateEffect(string stateEffectName)
@@ -288,7 +328,7 @@ namespace Data.DataStructures
                     return GameManager.Instance.GetFirstAlly(m_Caster.Team, m_Caster.PlayerId);
 
                 default:
-                    ErrorHandler.Warning("Unhandled case : " + Target);
+                    ErrorHandler.Warning("Unhandled case - " + Target + " for TriggerEffect : " + SpellDataName);
                     return m_Caster;
             }
         }
@@ -314,10 +354,8 @@ namespace Data.DataStructures
             // SAFETY : is still active
             if (! m_IsActivated)
             {
-                //ErrorHandler.Error("Trying to activate effect (" + SpellDataName + ") that has been deactivated");
                 return;
             }
-
             // CHECK : does the provided stateEffect have one of activation effect
             if (! HasStateEffect(stateEffectName))
                 return;
@@ -328,6 +366,10 @@ namespace Data.DataStructures
 
             // CHECK : comes from the correct caster
             if (casterId != m_Caster.PlayerId)
+                return;
+
+            // CHECK : effect can be activated
+            if (!IsActivable())
                 return;
 
             // QUEST : increase number of activations
@@ -353,6 +395,43 @@ namespace Data.DataStructures
                 Deactivate();
             }
         }
+
+        #endregion
+
+
+        #region Description
+
+        public bool TryGetProperty(string property, out string value)
+        {
+            value = null;
+
+            switch (property)
+            {
+                case nameof(SpellDataName): value = SpellDataName; return true;
+                case nameof(Level): value = Level.ToString(); return true;
+                case nameof(Target): value = Target.ToString(); return true;
+
+                case nameof(SpellActivationEvent): value = SpellActivationEvent.ToString(); return true;
+                case nameof(ActivationTreshold): value = ActivationTreshold.ToString(); return true;
+                case nameof(SpellDeactivationEvent): value = SpellDeactivationEvent.ToString(); return true;
+                case nameof(DeactivationTreshold): value = DeactivationTreshold.ToString(); return true;
+
+                case nameof(StateEffectEvent): value = StateEffectEvent.ToString(); return true;
+                case nameof(StateEffectName): value = StateEffectName; return true;
+                case nameof(NStateEffectActivationThreshold): value = NStateEffectActivationThreshold.ToString(); return true;
+
+                case nameof(Delay): value = Delay.ToString(); return true;
+                case nameof(Duration): value = Duration.ToString(); return true;
+                case nameof(NActivations): value = NActivations.ToString(); return true;
+                case nameof(Cooldown): value = Cooldown.ToString(); return true;
+                case nameof(RepeatWhenCooldownOver): value = RepeatWhenCooldownOver.ToString(); return true;
+                case nameof(ConsumeLifeOnActivation): value = ConsumeLifeOnActivation.ToString(); return true;
+
+                default:
+                    return false;
+            }
+        }
+
 
         #endregion
     }

@@ -3,7 +3,6 @@ using Enums;
 using Game.AI;
 using Game.Spells;
 using System.Collections.Generic;
-using Tools;
 using UnityEngine;
 
 public class ImmediatThreatTrigger : MonoBehaviour
@@ -54,7 +53,7 @@ public class ImmediatThreatTrigger : MonoBehaviour
             return;
 
         // check is enemy
-        if (spell.Controller.Team == m_Controller.Team)
+        if (spell.Caster.Team == m_Controller.Team)
             return;
 
         m_Spells.Add(spell);
@@ -68,7 +67,7 @@ public class ImmediatThreatTrigger : MonoBehaviour
             return;
 
         // check is enemy
-        if (spell.Controller.Team == m_Controller.Team)
+        if (spell.Caster.Team == m_Controller.Team)
             return;
 
         m_Spells.Remove(spell);
@@ -90,6 +89,10 @@ public class ImmediatThreatTrigger : MonoBehaviour
     {
         foreach (Spell spell in m_Spells)
         {
+            // can happen if spell is deactivated by the PoolManager
+            if (spell.SpellData == null)
+                continue;
+
             // check if spell is a projectile type
             if (spell.SpellData.SpellType != ESpellType.Projectile && spell.SpellData.SpellType != ESpellType.MultiProjectiles)
                 continue;

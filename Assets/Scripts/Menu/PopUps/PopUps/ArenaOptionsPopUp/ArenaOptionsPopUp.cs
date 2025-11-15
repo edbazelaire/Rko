@@ -28,7 +28,6 @@ namespace Menu.PopUps
         // GameObjects & Components
         private ArenaModInfoUI              m_InfoSection;
         private CurrentArenaModsDisplayer   m_CurrentArenaModsDisplayer;
-        private ArenaExtraDifficultyUI      m_ArenaExtraDifficultyUI;
         private Transform                   m_ModsContainer;
         private TMP_Text                    m_ModTitle;
         private Image                       m_SelectedModIcon;
@@ -52,7 +51,6 @@ namespace Menu.PopUps
             base.FindComponents();
 
             m_CurrentArenaModsDisplayer = Finder.FindComponent<CurrentArenaModsDisplayer>(gameObject);
-            m_ArenaExtraDifficultyUI    = Finder.FindComponent<ArenaExtraDifficultyUI>(gameObject);
             m_ModTitle                  = Finder.FindComponent<TMP_Text>(gameObject, "ModTitle");
             m_SelectedModIcon           = Finder.FindComponent<Image>(gameObject, "SelectedModIcon");
             m_ModsContainer             = Finder.Find(gameObject, "ModsContainer").transform;
@@ -66,11 +64,12 @@ namespace Menu.PopUps
         /// </summary>
         protected override void OnPrefabLoaded()
         {
+            base.OnPrefabLoaded();
+            
             InitializeMods();
-            RefreshRewards();
+            RefreshUI();
             m_InfoSection.Initialize();
-            m_CurrentArenaModsDisplayer.Initialize();
-            m_ArenaExtraDifficultyUI.Initialize(PlayerPrefsHandler.CurrentArenaType, PlayerPrefsHandler.CurrentArenaDifficulty);
+            CoroutineManager.DelayMethod(m_CurrentArenaModsDisplayer.Initialize);
 
             // initialize UI with a selected mod
             SelectMod(PlayerPrefsHandler.CurrentArenaMods.Count > 0 ? PlayerPrefsHandler.CurrentArenaMods[0] : EArenaMod.Random);
@@ -105,6 +104,12 @@ namespace Menu.PopUps
 
         #region GUI Manipulators
 
+        void RefreshUI()
+        {
+            RefreshCurrentMods();
+            RefreshRewards();
+        }
+
         /// <summary>
         /// Updates the bottom section showing the total bonus rewards.
         /// </summary>
@@ -124,6 +129,15 @@ namespace Menu.PopUps
         {
             m_PowerOrbContainer.Initialize(ProgressionCloudData.CurrentArena.GetPowerOrb(), activateIdle: false);
             m_CurrentPowerOrbRarety = ProgressionCloudData.CurrentArena.GetPowerOrb().Rarety;
+        }
+
+        void RefreshCurrentMods()
+        {
+            var currentMods = PlayerPrefsHandler.CurrentArenaMods;
+            foreach (var arenaButton in m_ArenaModButtons)
+            {
+                arenaButton.SetIsCurrent(currentMods.Contains(arenaButton.ArenaMod));
+            }
         }
 
         /// <summary>
@@ -156,8 +170,8 @@ namespace Menu.PopUps
         {
             base.RegisterListeners();
 
-            PlayerPrefsHandler.ArenaModsChangedEvent += RefreshRewards;
-            PlayerPrefsHandler.ArenaExtraDifficultyChanged += RefreshRewards;
+            PlayerPrefsHandler.ArenaModsChangedEvent        += RefreshUI;
+            PlayerPrefsHandler.ArenaExtraDifficultyChanged  += RefreshUI;
         }
 
         /// <summary>
@@ -167,8 +181,8 @@ namespace Menu.PopUps
         {
             base.UnRegisterListeners();
 
-            PlayerPrefsHandler.ArenaModsChangedEvent -= RefreshRewards;
-            PlayerPrefsHandler.ArenaExtraDifficultyChanged -= RefreshRewards;
+            PlayerPrefsHandler.ArenaModsChangedEvent        -= RefreshUI;
+            PlayerPrefsHandler.ArenaExtraDifficultyChanged  -= RefreshUI;
         }
 
         /// <summary>
@@ -180,7 +194,7 @@ namespace Menu.PopUps
             var currentMods = PlayerPrefsHandler.CurrentArenaMods;
             if (currentMods.Contains(arenaMod)) 
             { 
-                currentMods.Remove(arenaMod); 
+                currentMods.Remove(arenaMod);
             } else
             {
                 currentMods.Add(arenaMod);

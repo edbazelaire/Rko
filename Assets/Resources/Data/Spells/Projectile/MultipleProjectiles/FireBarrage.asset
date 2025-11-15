@@ -13,13 +13,8 @@ MonoBehaviour:
   m_Name: FireBarrage
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 'Shoots {0} fireballs at once spreading on the enemy''s area, each
-    dealing {1} damage and applying [EnemyStateEffect.0]'
-  m_DescriptionVariables:
-  - Name: Projectiles
-    WithIcon: 1
-  - Name: Damage
-    WithIcon: 1
+  m_Description: 'Shoots [Projectiles] fireballs at once spreading on the enemy''s
+    area, each dealing [Damage] damage and applying [Burn]'
   m_SpellElements: 01000000
   Linked: 0
   Graphics: {fileID: 7995130027969150761, guid: b1712247fe6bb8f43bc42f653ed748ec, type: 3}
@@ -39,6 +34,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 7
     IsFollowing: 1
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -60,11 +56,13 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 0
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  PassiveEffects: []
   SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -88,12 +86,11 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: 1
+  m_MaxHit: 1
   m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 90
-  m_ExecutionDamage: 0
+  m_Damages: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -104,36 +101,68 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
+    m_Targets: 
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.1
     ScalingType: 0
     RoundingType: 2
     ScalingTresholds: []
-  - Property: 3
-    Value: -0.25
-    ScalingType: 1
-    RoundingType: 0
-    ScalingTresholds: []
   - Property: 20
     Value: 0
     ScalingType: 1
     RoundingType: 2
     ScalingTresholds:
-    - Level: 14
+    - Level: 9
       Value: 2
+  - Property: 20
+    Value: 0
+    ScalingType: 1
+    RoundingType: 2
+    ScalingTresholds:
+    - Level: 15
+      Value: 3
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
   m_Size: 1
   TriggerPlayer: 1
-  EnemyStateEffects:
-  - StateEffect: 8
-    Stacks: 1
-    BonusStacksPerLevel: 0
-    OverridingProperties: []
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
+  EnemyStateEffects: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 2
   IsCancellable: 0
+  IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.5
   m_Cooldown: 12
   Trajectory: 1
@@ -141,7 +170,7 @@ MonoBehaviour:
   m_StopOnTargetPos: 0
   m_Speed: 7
   m_YSpawnPos: 0
-  ProjectileData: {fileID: 0}
+  ProjectileData: {fileID: 11400000, guid: 658acb2460eca274ca7050b6e52ad55a, type: 2}
   MultiProjectileType: 1
   m_RecalculatePosition: 1
   m_IsBlocking: 1

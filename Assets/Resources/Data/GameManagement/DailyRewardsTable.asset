@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aeb13c4bb17c463448b2b6908701141a, type: 3}
+  m_Name: DailyRewardsTable
+  m_EditorClassIdentifier: 
+  NDays: 5
+  m_WeeklyRewards:
+  - Currencies: []
+    Chests: 00000000
+    Collectables: []
+    AchievementRewards: []
+    Boosts: []
+  - Currencies:
+    - Currency: 0
+      Qty: 2500
+    Chests: 
+    Collectables: []
+    AchievementRewards: []
+    Boosts: []
+  - Currencies:
+    - Currency: 5
+      Qty: 3
+    Chests: 
+    Collectables: []
+    AchievementRewards: []
+    Boosts: []
+  - Currencies:
+    - Currency: 1
+      Qty: 60
+    Chests: 
+    Collectables: []
+    AchievementRewards: []
+    Boosts: []
+  - Currencies: []
+    Chests: 01000000
+    Collectables: []
+    AchievementRewards: []
+    Boosts: []
+  - Currencies:
+    - Currency: 0
+      Qty: 5000
+    Chests: 
+    Collectables: []
+    AchievementRewards: []
+    Boosts: []
+  - Currencies:
+    - Currency: 5
+      Qty: 5
+    Chests: 
+    Collectables: []
+    AchievementRewards: []
+    Boosts: []
+  - Currencies:
+    - Currency: 1
+      Qty: 120
+    Chests: 
+    Collectables: []
+    AchievementRewards: []
+    Boosts: []
+  - Currencies:
+    - Currency: 3
+      Qty: 2000
+    Chests: 
+    Collectables: []
+    AchievementRewards: []
+    Boosts: []
+  - Currencies: []
+    Chests: 0100000001000000
+    Collectables: []
+    AchievementRewards: []
+    Boosts: []
+  - Currencies: []
+    Chests: 02000000
+    Collectables: []
+    AchievementRewards: []
+    Boosts: []

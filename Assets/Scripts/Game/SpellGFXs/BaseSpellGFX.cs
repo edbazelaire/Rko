@@ -4,7 +4,6 @@ using Data;
 using Data.GameManagement;
 using Enums;
 using Game.Spells;
-using Google.Apis.Sheets.v4.Data;
 using MyBox;
 using System;
 using System.Collections;
@@ -32,6 +31,7 @@ namespace Game.SpellGFXs
         protected string                m_StateEffectName;
         protected SPrefabSpawn<TEnum>   m_PrefabSpawn;
         protected EBodyPart             m_BodyPart;
+        protected GameObject            m_ReplacedGFX;          // graphics that are replaced by this GFX (to activate/deactivate based on this activation)
 
         protected Coroutine             m_EndCoroutine;
         protected bool                  m_EndStarted            = false;
@@ -62,11 +62,8 @@ namespace Game.SpellGFXs
             m_PrefabSpawn       = prefabSpawn;
             m_BodyPart          = prefabSpawn.BodyPart;
 
-            if (forcedDuration != null) 
-                m_Duration = forcedDuration.Value;
-
-            if (prefabSpawn.Prefab != null && ArenaManager.IsInVoid(transform.position.x) && prefabSpawn.SpawnTarget != ESpawnTarget.MapCenter)
-                ErrorHandler.Warning("Spell GFX spawned in void : " + m_Name + " - " + prefabSpawn.Prefab.name);
+            // caclulate duration
+            CalculateDuration(forcedDuration);
 
             // find components if any
             FindComponents();
@@ -78,7 +75,8 @@ namespace Game.SpellGFXs
             transform.localScale = Vector3.one * (prefabSpawn.Size > 0 ? prefabSpawn.Size : (spellData != null ? spellData.Size : 1));
 
             // adjust rotation depending on team
-            transform.rotation = Quaternion.Euler(0f, controller.Team == 0 ? 0f : 180f, 0f); 
+            if (! prefabSpawn.IsFollowing)
+                transform.rotation = Quaternion.Euler(0f, controller.Team == 0 ? 0f : 180f, 0f);
 
             // adjuste order and size of the elements
             AdjustOrderInLayer(prefabSpawn.OrderInLayer);
@@ -88,6 +86,9 @@ namespace Game.SpellGFXs
             {
                 controller.AnimationHandler.PlayAnimation(prefabSpawn.Animation != EAnimation.Self ? prefabSpawn.Animation.ToString() : spellData.Name, GetDuration());
             }
+
+            // hide base graphics (if requested)
+            ReplaceGFX(true, null);
 
             // make spell play animation if any
             PlaySpellAnimation(prefabSpawn.SpellAnimation);
@@ -120,6 +121,9 @@ namespace Game.SpellGFXs
 
             // start animation
             StartAnimation();
+
+            // call methods after initialization (one frame after, to be sure that everything is set)
+            CoroutineManager.DelayMethod(OnInitializationCompleted);
         }
 
         protected virtual void RefreshData() 
@@ -127,7 +131,15 @@ namespace Game.SpellGFXs
             m_EndStarted = false;
         }
 
+        /// <summary>
+        /// Start animation coroutines (if any)
+        /// </summary>
         protected virtual void StartAnimation() { }
+
+        /// <summary>
+        /// Called at the end of the Initialization, one frame after completion
+        /// </summary>
+        protected virtual void OnInitializationCompleted() { }
 
         #endregion
 
@@ -170,6 +182,9 @@ namespace Game.SpellGFXs
         protected virtual void ForceEnd()
         {
             ErrorHandler.Log("ForceEnd() SPELL GFX : " + this.name, ELogTag.SpellGFX);
+
+            // re-activate replaced graphics
+            ReplaceGFX(false, null);
 
             // remove material applied
             RemoveMaterial();
@@ -241,7 +256,7 @@ namespace Game.SpellGFXs
                 case ESpawnTarget.Target:
                     if (targetController == null)
                     {
-                        ErrorHandler.Error("Trying to spawn " + prefabSpawn.Prefab.name + " on TargetHit but targetController is None");
+                        ErrorHandler.Error("Trying to spawn " + prefabSpawn.Prefab.name + " on TargetHit but targetController is null");
                         return null;
                     }
                     // check specific body part
@@ -255,6 +270,7 @@ namespace Game.SpellGFXs
                 case ESpawnTarget.OnSpell:
                     if (spell == null)
                     {
+                        ErrorHandler.Error("Trying to spawn " + prefabSpawn.Prefab.name + " on Spell but provided spell is null");
                         return null;
                     }
                     return spell.transform;
@@ -334,20 +350,18 @@ namespace Game.SpellGFXs
 
         protected virtual float GetDuration()
         {
-            if (m_Duration == 0)
-                CalculateDuration();
-
             return m_Duration;
         }
 
-        protected virtual void CalculateDuration()
+        protected virtual void CalculateDuration(float? forcedDuration = null)
         {
-            if (m_Duration != 0)
+            if (forcedDuration != null)
+            {
+                m_Duration = forcedDuration.Value;
                 return;
+            }
 
-            m_Duration = 0;
-
-            m_Duration += Mathf.Max(0, m_PrefabSpawn.GFXLifetime.Persistance);
+            m_Duration = Mathf.Max(0, m_PrefabSpawn.GFXLifetime.Persistance);
         }
 
         /// <summary>
@@ -356,7 +370,7 @@ namespace Game.SpellGFXs
         /// <returns></returns>
         protected virtual float CalculateCastTime()
         {
-            return m_SpellData.AnimationTimer / m_Controller.SpellHandler.GetCastSpeed(m_SpellData.Spell.ToString());
+            return m_SpellData.AnimationTimer / m_Controller.SpellHandler.GetCastSpeed(m_SpellData);
         }
 
         #endregion
@@ -376,7 +390,7 @@ namespace Game.SpellGFXs
 
             if (! m_AudioSource.loop)
             {
-                if (GetDuration() <= 0)
+                if (m_Duration <= 0)
                     return;
 
                 SoundFXManager.AdjustDuration(ref m_AudioSource, m_Duration);
@@ -409,6 +423,67 @@ namespace Game.SpellGFXs
                         break;
                 }
             }
+        }
+
+        #endregion
+
+
+        #region Replace GFX
+
+        protected virtual void ReplaceGFX(bool activate, Controller targetController = null)
+        {
+            // CHECK : is actually replacing graphics
+            if (!m_PrefabSpawn.IsReplacingGFX)
+                return;
+
+            // Deactivating graphics replacement
+            if (! activate)
+            {
+                if (m_ReplacedGFX != null && ! m_ReplacedGFX.IsDestroyed())
+                    m_ReplacedGFX.gameObject.SetActive(true);
+                return;
+            }
+
+            switch (m_PrefabSpawn.SpawnTarget)
+            {
+                case ESpawnTarget.Caster:
+                    if (m_PrefabSpawn.BodyPart != EBodyPart.None)
+                    {
+                        if (! m_Controller.GFXHandler.TryGetBodyPart(m_PrefabSpawn.BodyPart, out m_ReplacedGFX, trackError: true))
+                            return;
+                    }
+                    break;
+
+                case ESpawnTarget.Target:
+                    if (targetController == null)
+                    {
+                        ErrorHandler.Error("Trying to spawn " + m_PrefabSpawn.Prefab.name + " on TargetHit but targetController is null");
+                        return;
+                    }
+
+                    // check specific body part
+                    if (m_PrefabSpawn.BodyPart != EBodyPart.None)
+                    {
+                        if (! targetController.GFXHandler.TryGetBodyPart(m_PrefabSpawn.BodyPart, out m_ReplacedGFX, trackError: true))
+                            return;
+                    }
+                    break;
+
+                case ESpawnTarget.OnSpell:
+                    if (m_Spell == null)
+                    {
+                        ErrorHandler.Error("Trying to spawn " + m_PrefabSpawn.Prefab.name + " on Spell but provided spell is null");
+                        return;
+                    }
+                    m_ReplacedGFX = m_Spell.GraphicsContainer;
+                    break;
+
+                default:
+                    ErrorHandler.Warning("SPrefabSpawn::Spawn() - Unhandled GFX REPLACEMENT " + m_PrefabSpawn.SpawnTarget + " for prefab " + m_PrefabSpawn.Prefab != null ? m_PrefabSpawn.Prefab.name : null);
+                    return;
+            }
+
+            m_ReplacedGFX.gameObject.SetActive(false);
         }
 
         #endregion

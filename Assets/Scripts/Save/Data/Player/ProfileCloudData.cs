@@ -29,8 +29,9 @@ namespace Save
         public FixedString32Bytes       Border;
         public FixedString32Bytes       Title;
         public FixedString32Bytes[]     Badges;
+        public FixedString32Bytes[]     Emots;
 
-        public SProfileDataNetwork(int accountLevel = 0, string gamerTag = default, string avatar = default, string border = default, string title = default, string[] badges = null)
+        public SProfileDataNetwork(int accountLevel = 0, string gamerTag = default, string avatar = default, string border = default, string title = default, string[] badges = null, string[] emots = null)
         {
             if (gamerTag == default)
                 gamerTag = SProfileCurrentData.DEFAULT_PSEUDO;
@@ -47,12 +48,16 @@ namespace Save
             if (badges == null)
                 badges = SProfileCurrentData.DEFAULT_BADGES;
 
+            if (emots == null)
+                emots = SProfileCurrentData.DEFAULT_EMOTS;
+
             AccountLevel    = accountLevel;
             GamerTag        = gamerTag;
             Avatar          = avatar;
             Border          = border;
             Title           = title;
             Badges          = badges.Select(badge => (FixedString32Bytes)badge).ToArray();
+            Emots           = emots.Select(emot => (FixedString32Bytes)emot).ToArray();
         }
 
         #region Network Serialization
@@ -65,7 +70,7 @@ namespace Save
             serializer.SerializeValue(ref Border);
             serializer.SerializeValue(ref Title);
 
-            // Serialize the length of the badges array followed by each badge string
+            // BADGES : Serialize the length of the badges array followed by each badge string
             int numBadges = Badges != null ? Badges.Length : 0;
             serializer.SerializeValue(ref numBadges);
             if (serializer.IsReader)
@@ -76,6 +81,19 @@ namespace Save
             for (int i = 0; i < numBadges; i++)
             {
                 serializer.SerializeValue(ref Badges[i]);
+            }
+
+            // EMOTS : Serialize the length of the badges array followed by each emot string
+            int nEmots = Emots != null ? Emots.Length : 0;
+            serializer.SerializeValue(ref nEmots);
+            if (serializer.IsReader)
+            {
+                Emots = new FixedString32Bytes[nEmots];
+            }
+
+            for (int i = 0; i < nEmots; i++)
+            {
+                serializer.SerializeValue(ref Emots[i]);
             }
         }
 
@@ -98,17 +116,19 @@ namespace Save
         };
         public static string DEFAULT_BADGE => EBadge.None.ToString();
         public static string[] DEFAULT_BADGES => new string[] { DEFAULT_BADGE, DEFAULT_BADGE, DEFAULT_BADGE };
-
+        public static string[] DEFAULT_EMOTS => new string[] { EEmot.ThumbUp.ToString(), EEmot.Hey.ToString(), EEmot.BigMuscles.ToString(), EEmot.SadKitty.ToString() };
+    
         public int      AccountLevel; 
         public string   GamerTag; 
         public string   Avatar; 
         public string   Border; 
         public string   Title;
         public string[] Badges;
+        public string[] Emots;
 
         #endregion
 
-        public SProfileCurrentData(int accountLevel = 1, string gamerTag = default, string avatar = default, string border = default, string title = default, string[] badges = null)
+        public SProfileCurrentData(int accountLevel = 1, string gamerTag = default, string avatar = default, string border = default, string title = default, string[] badges = null, string[] emots = null)
         {
             if (accountLevel <= 0)
                 accountLevel = 1;
@@ -128,17 +148,21 @@ namespace Save
             if (badges == null)
                 badges = DEFAULT_BADGES;
 
+            if (emots == null)
+                emots = DEFAULT_EMOTS;
+
             AccountLevel    = accountLevel;
             GamerTag        = gamerTag;
             Avatar          = avatar;
             Border          = border;
             Title           = title;
             Badges          = badges;
+            Emots           = emots;
         }
 
         public SProfileDataNetwork AsNetworkSerializable()
         {
-            return new SProfileDataNetwork(AccountLevel, GamerTag, Avatar, Border, Title, Badges);
+            return new SProfileDataNetwork(AccountLevel, GamerTag, Avatar, Border, Title, Badges, Emots);
         }
 
          
@@ -227,9 +251,6 @@ namespace Save
         {
             foreach (EAchievementReward ar in Enum.GetValues(typeof(EAchievementReward)))
             {
-                if (ar == EAchievementReward.None)
-                    continue;
-
                 CheckAchievementReward(ar);
             }
         }
@@ -244,6 +265,13 @@ namespace Save
             if (achievementReward == EAchievementReward.Badge)
             {
                 CheckCurrentBadges();
+                return;
+            }
+
+            // special BADGE checks
+            if (achievementReward == EAchievementReward.Emot)
+            {
+                CheckCurrentEmots();
                 return;
             }
 
@@ -305,6 +333,37 @@ namespace Save
             }
         }
 
+        void CheckCurrentEmots()
+        {
+            // CHECK : setup correctly 
+            if (Emots == null || Emots.Length == 0)
+            {
+                ErrorHandler.Warning("Current Emots are empty : use default ones");
+                Emots = DEFAULT_EMOTS;
+                return;
+            }
+
+            // CHECK : exists
+            for (int i = 0; i < Emots.Length; i++)
+            {
+                // CHECK : can be parsed
+                if (! Enum.TryParse(Emots[i], out EEmot emot))
+                {
+                    ErrorHandler.Warning("Unable to parse emot " + Emots[i] + " - reseting to default");
+                    Emots[i] = DEFAULT_EMOTS[i];
+                    continue;
+                }
+
+                // CHECK : is in unlocked data
+                if (! ProfileCloudData.HasAchievementReward(EAchievementReward.Emot, emot.ToString()))
+                {
+                    ErrorHandler.Warning("Emot " + emot + " not found in unlocked data - reseting to default");
+                    Emots[i] = DEFAULT_EMOTS[i];
+                    continue;
+                }
+            }
+        }
+
         #endregion
     }
 
@@ -358,19 +417,66 @@ namespace Save
     }
 
     [Serializable]
+    public struct IndexCount
+    {
+        public int Index;
+        public float Count;
+
+        public IndexCount(int index, float count)
+        {
+            Index = index;
+            Count = count;
+        }
+    }
+
+    [Serializable]
     public struct SAchievementInfo
     {
         public string Id;
         public float Count;
         public int Index;
+        public List<IndexCount> CountAtIndex;
 
-        public SAchievementInfo(string id, float count = 0f, int index = 0)
+        public SAchievementInfo(string id, float count = 0f, int index = 0, List<IndexCount> countAtIndex = null)
         {
-            Id = id;
-            Count = count;
-            Index = index;
+            Id              = id;
+            Count           = count;
+            Index           = index;
+            CountAtIndex    = countAtIndex ?? new List<IndexCount>();
+        }
+
+        public void SetCountAtIndex(int index, float count)
+        {
+            if (index == Index)
+            {
+                Count = count;
+                return;
+            }
+
+            if (CountAtIndex == null)
+                CountAtIndex = new List<IndexCount>();
+
+            int idx = CountAtIndex.FindIndex(item => item.Index == index);
+            if (idx >= 0)
+            {
+                // Replace
+                CountAtIndex[idx] = new IndexCount(index, count);
+            }
+            else
+            {
+                // Add new
+                CountAtIndex.Add(new IndexCount(index, count));
+            }
+        }
+
+        public float GetCountAtIndex(int index)
+        {
+            if (index == Index) return (int)Count;
+            var found = CountAtIndex?.Find(item => item.Index == index);
+            return found.HasValue ? found.Value.Count : 0;
         }
     }
+
 
     public class ProfileCloudData : CloudData
     {
@@ -382,6 +488,7 @@ namespace Save
         // CONSTANTS
         /// <summary> number of spells in one build </summary>
         public const int N_BADGES_DISPLAYED = 3;
+        public const int N_EMOTS_DISPLAYED  = 4;
         public const int MIN_CHAR_GAMER_TAG = 4;
         public const int MAX_CHAR_GAMER_TAG = 25;
         public static List<char> FORBIDDEN_CHARACTERS => new (){ '#', ' ', '\\' };
@@ -400,9 +507,20 @@ namespace Save
         public const string KEY_ACHIEVEMENT_REWARDS     = "AchievementRewards";
         public const string KEY_GIFT_CODES              = "GiftCodes";
 
+        // DEFAULT VALUES   -----------------------
+        public static Dictionary<EAchievementReward, List<string>> DEFAULT_ACHIVEMENT_REWARDS = new()
+        {
+            { EAchievementReward.Avatar,    new () { EAvatar.None.ToString() }          },
+            { EAchievementReward.Border,    new () { EBorder.None.ToString() }          },
+            { EAchievementReward.Title,     new () { ETitle.None.ToString() }           },
+            { EAchievementReward.Badge,     new () { EBadge.None.ToString() }           },
+            { EAchievementReward.Emot,      SProfileCurrentData.DEFAULT_EMOTS.ToList()  },
+        };
+       
+
         // ===============================================================================================
         // EVENTS
-        /// <summary> action fired when the amount of gold changed </summary>
+            /// <summary> action fired when the amount of gold changed </summary>
         public static Action                                AccountLevelUpEvent;
         public static Action<EAchievementReward, string>    AchievementRewardCollectedEvent;
         public static Action<string>                        AchievementCompletedEvent;
@@ -438,6 +556,7 @@ namespace Save
         // ===============================================================================================
         // DEPENDENT STATIC ACCESSORS
         public static int                   LastSelectedBadgeIndex = 0;
+        public static int                   LastSelectedEmotIndex = 0;
         public static bool                  IsAdmin             => (bool)Instance.m_Data[KEY_IS_ADMIN];
         public static bool                  IsAccountMaxed      => AccountLevel >= CollectablesManagementData.Instance.AccountLevelData.Count;
         public static bool                  IsAccountUpgradable => ! IsAccountMaxed && CollectablesManagementData.GetCurrentAccountLevelData().RequiredXp <= InventoryCloudData.Instance.GetCurrency(ECurrency.TotalXp);
@@ -451,6 +570,7 @@ namespace Save
         public static string                Region              => (string)Instance.m_Data[KEY_REGION];
         public static SProfileCurrentData   CurrentProfileData  => (SProfileCurrentData)Instance.m_Data[KEY_CURRENT_PROFILE_DATA];
         public static string[]              CurrentBadges       => CurrentProfileData.Badges;
+        public static string[]              CurrentEmots        => CurrentProfileData.Emots;
 
         public static int                   AccountLevel        => CurrentProfileData.AccountLevel;
         public static List<SAchievementInfo> Achievements       => (Instance.m_Data[KEY_ACHIEVEMENTS] as List<SAchievementInfo>);
@@ -559,6 +679,9 @@ namespace Save
             if (achR == EAchievementReward.Badge)
                 return CurrentProfileData.Badges[LastSelectedBadgeIndex];
 
+            if (achR == EAchievementReward.Emot)
+                return CurrentProfileData.Emots[LastSelectedBadgeIndex];
+
             return CurrentProfileData.Get(achR);
         }
 
@@ -595,6 +718,15 @@ namespace Save
             // Save & Fire event of the change
             Instance.SetData(KEY_CURRENT_PROFILE_DATA, CurrentProfileData);
             CurrentDataChanged?.Invoke(EAchievementReward.Badge);
+        }
+
+        public static void SetCurrentEmot(string emotName, int index)
+        {
+            CurrentEmots[index] = emotName;
+
+            // Save & Fire event of the change
+            Instance.SetData(KEY_CURRENT_PROFILE_DATA, CurrentProfileData);
+            CurrentDataChanged?.Invoke(EAchievementReward.Emot);
         }
 
         #endregion
@@ -707,21 +839,31 @@ namespace Save
                 Instance.SaveValue(KEY_ACHIEVEMENTS);
         }
 
-        public static void UpdateAchievementCount(string achievementId, float count)
+        public static void UpdateAchievementCount(string achievementId, float count, int? index = null, bool save = true)
         {
             var achInfo = GetAchievementInfo(achievementId);
-            achInfo.Count = count;
-            SetAchievementInfo(achInfo, true);
+            if (index == null)
+                achInfo.Count = count;
+            else
+                achInfo.SetCountAtIndex(index.Value, count);
 
+            SetAchievementInfo(achInfo, save);
             AchievementChangedEvent?.Invoke(achievementId);
         }
 
-        public static void CompleteAchievement(string achievementId)
+        public static void CompleteAchievement(string achievementId, bool resetCount)
         {
             ErrorHandler.Log("CompleteAchievement : " + achievementId, ELogTag.Achievements);
             var achievementInfo = GetAchievementInfo(achievementId);
+
+            // if count needs to be reset between indexes, get count at new current index
+            if (resetCount)
+                achievementInfo.Count = achievementInfo.GetCountAtIndex(achievementInfo.Index + 1);
+
+            // increase index
             achievementInfo.Index++;
 
+            // save changes
             SetAchievementInfo(achievementInfo, true);
 
             AchievementCompletedEvent?.Invoke(achievementId);
@@ -795,6 +937,11 @@ namespace Save
 
         public static bool HasAchievementReward(EAchievementReward achievementReward, string value)
         {
+            if (!AchievementRewards.ContainsKey(achievementReward))
+            {
+                ErrorHandler.Warning("key " + achievementReward + " not found in AchievementRewards - reseting with default values");
+                AchievementRewards.Add(achievementReward, DEFAULT_ACHIVEMENT_REWARDS[achievementReward]);
+            }
             return AchievementRewards[achievementReward].Contains(value);
         }
 
@@ -947,7 +1094,7 @@ namespace Save
 
         public static bool TryGetType(Type type, out EAchievementReward arType, bool throwError = true)
         {
-            arType = EAchievementReward.None;
+            arType = EAchievementReward.Avatar;
             foreach (EAchievementReward ar in Enum.GetValues(typeof(EAchievementReward)))
             {
                 if (type == GetTypeOf(ar))
@@ -966,9 +1113,6 @@ namespace Save
         {
             foreach (EAchievementReward ar in Enum.GetValues(typeof(EAchievementReward)))
             {
-                if (ar == EAchievementReward.None)
-                    continue;
-
                 if (type == GetTypeOf(ar))
                     return true;
             }
@@ -980,9 +1124,6 @@ namespace Save
         {
             switch(achievementReward)
             {
-                case EAchievementReward.None:
-                    return null;
-
                 case EAchievementReward.Title:
                     return typeof(ETitle);
 
@@ -994,6 +1135,9 @@ namespace Save
 
                 case EAchievementReward.Badge:
                     return typeof(EBadge);
+
+                case EAchievementReward.Emot:
+                    return typeof(EEmot);
 
                 default:
                     ErrorHandler.Error("Unhandled case : " + achievementReward);
@@ -1089,9 +1233,6 @@ namespace Save
                 case KEY_ACHIEVEMENT_REWARDS:
                     foreach (EAchievementReward ar in Enum.GetValues(typeof(EAchievementReward)))
                     {
-                        if (ar == EAchievementReward.None)
-                            continue;
-
                         UnlockAchivementRewardAll(ar, false);
                     }
 
@@ -1168,13 +1309,64 @@ namespace Save
 
         void CheckAchievementRewards()
         {
+            // check missing TYPES of Achievements
+            bool success = CheckMissingAchievementRewards();
+
+            // check if any data are incorrect
+            success &= CheckBadAchievementRewards();
+
+            // SAVE 
+            if (!success)
+                Instance.SaveValue(KEY_ACHIEVEMENT_REWARDS);
+        }
+
+        bool CheckMissingAchievementRewards()
+        {
             if (!m_Data.ContainsKey(KEY_ACHIEVEMENT_REWARDS) || AchievementRewards == null || AchievementRewards.Count == 0)
             {
                 ErrorHandler.Warning("Achievement Rewards are empty : use default ones");
                 Reset(KEY_ACHIEVEMENT_REWARDS);
+                return false;
             }
 
-            Dictionary<EAchievementReward, List<string>> valuesToRemove     = new();
+            bool success = true;
+            foreach (EAchievementReward achievementReward in Enum.GetValues(typeof(EAchievementReward)))
+            {
+                if (!AchievementRewards.ContainsKey(achievementReward))
+                {
+                    ErrorHandler.Warning("Unable to find achivement of type " + achievementReward + " in AchievementRewards - reseting with default values");
+                    AchievementRewards[achievementReward] = DEFAULT_ACHIVEMENT_REWARDS[achievementReward];
+                    success = false;
+                    continue;
+                }
+
+                // check that every default values are IN the unlocked values
+                foreach (string value in DEFAULT_ACHIVEMENT_REWARDS[achievementReward])
+                {
+                    if (AchievementRewards[achievementReward].Contains(value))
+                        continue;
+                    ErrorHandler.Warning("Default achievement value " + value + " for achivement of type " + achievementReward + " is missing - adding it");
+                    AchievementRewards[achievementReward].Add(value);
+                    success = false;
+                }
+            }
+
+            return success;
+        }
+
+        /// <summary>
+        /// Check bad values in achievement rewards : 
+        ///     - Duplicates
+        ///     - Not Existing values
+        /// </summary>
+        /// <returns>
+        ///     success : to know if we need to save the data or not
+        /// </returns>
+        bool CheckBadAchievementRewards()
+        {
+            bool success = true;
+
+            Dictionary<EAchievementReward, List<string>> valuesToRemove = new();
             Dictionary<EAchievementReward, List<string>> duplicatesToRemove = new();
 
             foreach (var item in AchievementRewards)
@@ -1192,10 +1384,11 @@ namespace Save
                 {
                     bool test = true;
 
-                    if (seenValues.Contains(value)) 
+                    if (seenValues.Contains(value))
                     {
                         ErrorHandler.Error("Value " + value + " in " + item.Key + " is duplicated");
                         duplicatesToRemove[item.Key].Add(value);
+                        success = false;
                     }
 
                     seenValues.Add(value);
@@ -1210,10 +1403,11 @@ namespace Save
                         test = false;
                     }
 
-                    if (! test)
+                    if (!test)
                     {
                         ErrorHandler.Error("Unable to find " + value + " in EnumValues of " + item.Key);
                         valuesToRemove[item.Key].Add(value);
+                        success = false;
                     }
                 }
             }
@@ -1223,10 +1417,7 @@ namespace Save
                 foreach (var value in item.Value)
                     RemoveAchievementReward(item.Key, value, false);
 
-            // TODO : REMOVE DUPLICATES
-
-            // SAVE 
-            Instance.SaveValue(KEY_ACHIEVEMENT_REWARDS);
+            return success;
         }
 
         void CheckCurrentData()

@@ -13,11 +13,8 @@ MonoBehaviour:
   m_Name: Shardskin
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: "Reinforces his icy scales, gaining {0} shield.\\nEach time he\u2019s
-    hit by a projectile, he retaliates with a blast that applies [Frost]"
-  m_DescriptionVariables:
-  - Name: Shield
-    WithIcon: 1
+  m_Description: "Reinforces his icy scales, [LinkedStateEffect]\nEach time he\u2019s
+    hit by a projectile, he retaliates with a blast that applies [Frostbite]"
   m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 0}
@@ -37,6 +34,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 0
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -56,11 +54,13 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 5
     IsFollowing: 1
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
     StateEffects: 
   OnHit: []
+  PassiveEffects: []
   SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -84,14 +84,13 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: -1
-  m_NCharges: 1
-  EnergyGain: 10
+  m_MaxHit: -1
+  m_Charges: 1
+  EnergyGain: 0
   EnergyCost: 0
-  m_Damage: 0
-  m_ExecutionDamage: 0
+  m_Damages: []
   m_Heal: 0
-  m_Shield: 250
+  m_Shield: 0
   m_LifeSteal: 0
   Distance: -1
   OverrideOnHitProperties: 
@@ -100,27 +99,69 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
+    m_Targets: 
   m_SpellsScalingLevel:
   - Property: 17
-    Value: 0.12
+    Value: 0.1
     ScalingType: 0
     RoundingType: 0
     ScalingTresholds: []
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
   m_Size: 1
   TriggerPlayer: 1
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
   EnemyStateEffects: []
   AllyStateEffects: []
   StateEffectStackFactor: 0
   PersistanceAfterEnd: 0
   Animation: 9
   IsCancellable: 0
+  IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.5
   m_Cooldown: 30
   CounterType: 1
   CounterActivation: 0
-  m_DamageTypeActivation: 01000000
+  m_PreventsDamage: 0
+  m_HasLinkedStateEffect: 1
+  m_LinkedStateEffect:
+    StateEffect: 45
+    Stacks: 1
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
+  m_SpellTypeActivation: 00000000
   m_SpawnOffset: {x: 0, y: 0}
   m_IsFollowing: 1
+  m_ScalesWithCharacterSize: 0
   m_CounterAnimation: 4
   m_SpawnLocation: 1
   IsDestroyingSpell: 0

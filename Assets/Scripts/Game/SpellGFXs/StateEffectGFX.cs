@@ -69,7 +69,7 @@ namespace Game.SpellGFXs
             m_Controller.StateHandler.StateEffectEvent -= OnStateEffectEvent;
         }
 
-        void OnStateEffectEvent(EStateEffectEvent stateEffectEvent, string stateEffectName, int stacks, int maxStacks, float duration)
+        void OnStateEffectEvent(EStateEffectEvent stateEffectEvent, string stateEffectName, int stacks, int maxStacks, float duration, float timer)
         {
             if (stateEffectName != m_StateEffectName)
                 return;

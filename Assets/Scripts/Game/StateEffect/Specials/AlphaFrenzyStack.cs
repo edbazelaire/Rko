@@ -63,7 +63,7 @@ namespace Game.Spells
             m_Controller.StateHandler.StateEffectEvent -= OnStateEffectEvent;
         }
 
-        void OnStateEffectEvent(EStateEffectEvent stateEffectEvent, string stateEffectName, int nStacks, int maxStacks, float duration)
+        void OnStateEffectEvent(EStateEffectEvent stateEffectEvent, string stateEffectName, int nStacks, int maxStacks, float duration, float timer)
         {
             if (stateEffectEvent != EStateEffectEvent.OnApplied 
                 && stateEffectEvent != EStateEffectEvent.OnRefreshed

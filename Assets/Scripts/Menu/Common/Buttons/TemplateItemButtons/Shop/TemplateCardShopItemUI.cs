@@ -54,7 +54,7 @@ namespace Menu.Common.Buttons
             if (m_ShopData.Rewards.Currencies.Count > 0)
             {
                 if (m_Title == "")
-                    m_Title = m_ShopData.Rewards.Currencies[0].Qty.ToString();
+                    m_Title = CleanTitle(m_ShopData.Rewards.Currencies[0].Qty.ToString());
 
                 if (m_ShopData.Icon == null)
                     m_ShopData.Icon = AssetLoader.LoadCurrencyIcon(m_ShopData.Rewards.Currencies[0].Currency, m_ShopData.Rewards.Currencies[0].Qty);
@@ -66,7 +66,7 @@ namespace Menu.Common.Buttons
             else if (m_ShopData.Rewards.Chests.Count > 0)
             {
                 if (m_Title == "")
-                    m_Title = m_ShopData.Rewards.Chests[0].ToString() + " Chest";
+                    m_Title = CleanTitle(m_ShopData.Rewards.Chests[0].ToString());
 
                 if (m_ShopData.Icon == null)
                     m_ShopData.Icon = AssetLoader.LoadChestIcon(m_ShopData.Rewards.Chests[0]);
@@ -76,7 +76,7 @@ namespace Menu.Common.Buttons
             else if (m_ShopData.Rewards.Collectables.Count > 0)
             {
                 if (m_Title == "")
-                    m_Title = m_ShopData.Rewards.Collectables[0].Qty.ToString();
+                    m_Title = CleanTitle(m_ShopData.Rewards.Collectables[0].Qty.ToString());
 
                 var collectable = CollectablesManagementData.Cast(m_ShopData.Rewards.Collectables[0].CollectableName, m_ShopData.Rewards.Collectables[0].CollectableType);
                 if (m_ShopData.Icon == null)

@@ -88,7 +88,7 @@ namespace Menu.PopUps.Messagerie
 
         void OnCollectButtonClicked()
         {
-            Main.DisplayRewards(m_Message.RewardsData, "Messagerie", OnRewardCollected);
+            ScreenManager.DisplayRewards(m_Message.RewardsData, "Messagerie", OnRewardCollected);
         }
 
         void OnRewardCollected()

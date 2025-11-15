@@ -1,13 +1,13 @@
 ﻿using Enums;
 using Game.Loaders;
 using Game.StateEffects.Quests;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using Tools;
 using Unity.Collections;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,12 +21,11 @@ namespace Game.UI
 
         string[] IGNORED_STATE_EFFECTS = { 
             EStateEffect.None.ToString(), 
-            EStateEffect.Invulnerable.ToString(), 
-            EStateEffect.Uncontrollable.ToString(), 
             EStateEffect.UnTargettable.ToString(), 
             EStateEffect.Jump.ToString(),
             EStateEffect.BlockCast.ToString(),
             EStateEffect.BlockMovement.ToString(),
+            EStateEffect.BlockEnergyGain.ToString(),
             EStateEffect.SpecialAnimation.ToString(),
             EStateEffect.Vanish.ToString(),
         };
@@ -116,7 +115,7 @@ namespace Game.UI
 
         #region State Displayer
 
-        void OnStateEffectEvent(EStateEffectEvent stateEffectEvent, string state, int stacks, int maxStacks, float duration)
+        void OnStateEffectEvent(EStateEffectEvent stateEffectEvent, string state, int stacks, int maxStacks, float duration, float timer)
         {
             if (!isActiveAndEnabled)
                 return;
@@ -133,16 +132,16 @@ namespace Game.UI
             {
                 case EStateEffectEvent.OnApplied:
                 case EStateEffectEvent.OnActivated:
-                    AddState(state, stacks, maxStacks, duration);
+                    AddState(state, stacks, maxStacks, duration, timer, stateEffectData.StartingStacks);
                     break;
 
                 case EStateEffectEvent.OnRefreshed:
-                    UpdateStacks(state, stacks, maxStacks, duration);
+                    UpdateStacks(state, stacks, maxStacks, duration, timer, stateEffectData.StartingStacks);
                     break;
 
                 case EStateEffectEvent.OnRemoved:
                 case EStateEffectEvent.OnConsumed:
-                    UpdateStacks(state, -stacks, maxStacks, duration);
+                    UpdateStacks(state, -stacks, maxStacks, duration, timer, stateEffectData.StartingStacks);
                     break;
 
                 case EStateEffectEvent.OnDeactivated:
@@ -162,13 +161,13 @@ namespace Game.UI
             }
         }
 
-        void AddState(string stateEffect, int stacks, int maxStacks, float duration)
+        void AddState(string stateEffect, int stacks, int maxStacks, float duration, float timer, int startingStacks)
         {
             // if already in existing state, refresh it
             if (m_StateEffectsUI.ContainsKey(stateEffect))
             {
                 // initialize the state (or refresh it)
-                m_StateEffectsUI[stateEffect].Refresh(duration, stacks, maxStacks);
+                m_StateEffectsUI[stateEffect].Refresh(duration, timer, stacks, maxStacks);
                 return;
             }
 
@@ -176,19 +175,19 @@ namespace Game.UI
             m_StateEffectsUI.Add(stateEffect, stateEffectUI.GetComponent<StateEffectUI>());
 
             // initialize the state (or refresh it)
-            m_StateEffectsUI[stateEffect].Initialize(stateEffect, stacks, maxStacks, duration);
+            m_StateEffectsUI[stateEffect].Initialize(stateEffect, stacks, maxStacks, duration, startingStacks);
         }
 
-        void UpdateStacks(string stateEffect, int stacks, int maxStacks, float duration)
+        void UpdateStacks(string stateEffect, int stacks, int maxStacks, float duration, float timer, int startingStacks)
         {
             if (! m_StateEffectsUI.ContainsKey(stateEffect))
             {
                 ErrorHandler.Warning($"UpdateStacks ({stacks}) of {stateEffect} but this state effect UI was not found");
-                AddState(stateEffect, stacks, maxStacks, duration);
+                AddState(stateEffect, stacks, maxStacks, duration, timer, startingStacks);
                 return;
             }
 
-            m_StateEffectsUI[stateEffect].AddStacks(stacks, maxStacks, duration);
+            m_StateEffectsUI[stateEffect].AddStacks(stacks, maxStacks, duration, timer);
         }
 
         void RemoveState(string stateEffect)
@@ -212,7 +211,7 @@ namespace Game.UI
 
         void OnShieldChanged(int _, int newValue)
         {
-            if (!isActiveAndEnabled)
+            if (gameObject.IsDestroyed() || !isActiveAndEnabled)
                 return;
 
             m_ShieldBar.OnValueChanged(0, newValue);
@@ -220,7 +219,7 @@ namespace Game.UI
 
         void OnHoldingStateEffectsChanged(NetworkListEvent<FixedString64Bytes> changeEvent)
         {
-            if (!isActiveAndEnabled)
+            if (gameObject.IsDestroyed() || !isActiveAndEnabled)
                 return;
 
             foreach (string stateEffect in m_StateEffectsUI.Keys)
@@ -231,15 +230,18 @@ namespace Game.UI
 
         void OnQuestTreshold(string stateEffectName, int index)
         {
-            if (!isActiveAndEnabled)
+            // CHECK : UI is enabled
+            if (gameObject.IsDestroyed() || !isActiveAndEnabled)
                 return;
 
+            // CHECK : is in our list of effects
             if (! m_StateEffectsUI.ContainsKey(stateEffectName))
             {
                 ErrorHandler.Warning($"Unable to find {stateEffectName} in list of effects");
                 return;
             }
 
+            // CHECK : StateEffect is indeed Quest
             var stateEffect = SpellLoader.GetStateEffect(stateEffectName);
             if (stateEffect is not QuestEffect questEffect)
             {
@@ -247,10 +249,27 @@ namespace Game.UI
                 return;
             }
 
-            var replacementIcon = questEffect.QuestThresholds[index].ReplacementIcon;
-            if (replacementIcon == null)
+            // CHECK : index is allowed
+            if (index >= questEffect.QuestThresholds.Count)
+            {
+                ErrorHandler.Warning($"Call OnQuestTreshold() on state effect {stateEffectName} at index {index} but max index is {questEffect.QuestThresholds.Count}");
                 return;
+            }
+
+            // Select icon
+            Sprite replacementIcon;
+            if (index >= 0)
+            {
+                // CHECK : requires special ICON
+                replacementIcon = questEffect.QuestThresholds[index].ReplacementIcon;
+                if (replacementIcon == null)
+                    return;
+            } else
+            {
+                replacementIcon = null;
+            }
             
+            // change the Icon of the state effect
             m_StateEffectsUI[stateEffectName].ReloadIcon(replacementIcon);
         }
 

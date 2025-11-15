@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Managers;
 using Assets.Scripts.Managers.Sound;
 using Data.GameManagement;
 using Enums;
@@ -83,7 +84,7 @@ namespace Menu.PopUps
             if (!NotificationCloudData.CollectLeagueReward(m_League, m_Level))
                 return;
 
-            Main.DisplayRewards(GetRewards(), ERewardContext.LeagueReward.ToString());
+            ScreenManager.DisplayRewards(GetRewards(), ERewardContext.LeagueReward.ToString());
         }
 
         #endregion

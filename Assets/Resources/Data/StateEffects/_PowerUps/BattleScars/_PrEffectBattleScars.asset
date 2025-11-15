@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea8328bdbe40b584daa6549887933f55, type: 3}
+  m_Name: _PrEffectBattleScars
+  m_EditorClassIdentifier: 
+  m_Description: When hp are below 25%, gain [ResistanceFix] resistance
+  m_DescriptionVariables: 
+  m_NStacksInDescription: 1
+  m_StateEffectType: 0
+  m_IsDisplayed: 1
+  m_GfxEffects:
+  - Prefab: {fileID: 8992406793559661190, guid: 0a4d304b385159340bf3a0d4e7535924, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 5
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 2
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 2
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
+  m_Animation: 0
+  m_OnApplySoundFX: {fileID: 0}
+  m_PermanantSoundFX: {fileID: 0}
+  m_ConsumeState: 0
+  m_DefaultState: 0
+  m_IsInstantanious: 0
+  m_IsConsumedOnEnd: 0
+  m_IsTrueDamage: 0
+  m_EndWithShield: 0
+  m_RefreshShield: 0
+  m_Priority: 0
+  m_Delay: 0
+  m_Duration: -1
+  m_MaxStacks: 1
+  m_StackDecay: -1
+  m_StartsActivated: 0
+  m_StateEffectTriggers:
+  - ReverseEffect: 1
+    ConditionTriggers:
+    - Trigger: 3
+      Comparator: 2
+      Value: 0.25
+      IsPercValue: 1
+    StateEffectAction:
+      StateEffectEvent: 5
+      Value: 
+  m_StateEffectActivations: []
+  m_BonusStats:
+  - StateEffectProperty: 5
+    BaseValue: 20
+    LevelScalingFactor: 0.1
+    StackScalingFactor: 0
+    SpecialConditions: []
+  m_StatConversions: []
+  m_SubStateEffects: []
+  m_HoldingStateEffects: []
+  m_OnStartStateEffect: []
+  m_OnEndStateEffect: []
+  m_StateEffectScalingLevel: []
+  m_StateEffectScalingStacks: []
+  m_Damage: 0
+  m_EndDamage: 0
+  m_Heal: 0
+  m_EndHeal: 0
+  m_Tick: 0
+  m_TickDamage: 0
+  m_TickHeal: 0
+  m_TickShield: 0
+  m_TickEnergy: 0
+  m_TickSpellRequirements: []

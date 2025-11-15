@@ -12,25 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7d51f633e46b344920f012b0e1eca8, type: 3}
   m_Name: FrostArena_Brutal
   m_EditorClassIdentifier: 
-  m_NLifes: 1
+  m_RoundDuration: 0
   m_ArenaLevelData:
   - RewardsData:
       Currencies:
       - Currency: 0
-        Qty: 2500
-      - Currency: 3
-        Qty: 150
+        Qty: 500
       Chests: 00000000
       Collectables:
       - CollectableType: 3
-        CollectableName: BerserkerRune
+        CollectableName: FrostRune
         Qty: 1
       AchievementRewards: []
       Boosts: []
     TriggerEffects:
     - SpellDataName: _FrostBites
       OverridingData: []
-      Level: 0
+      Level: 9
       Target: 0
       SpellActivationEvent: 1
       ActivationTreshold: 0
@@ -43,9 +41,11 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     - SpellDataName: _NeedlesStorm
       OverridingData: []
-      Level: 0
+      Level: 9
       Target: 0
       SpellActivationEvent: 3
       ActivationTreshold: 0.5
@@ -58,9 +58,11 @@ MonoBehaviour:
       Duration: 0
       NActivations: -1
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     - SpellDataName: _ArcticFog
       OverridingData: []
-      Level: 0
+      Level: 9
       Target: 0
       SpellActivationEvent: 3
       ActivationTreshold: 0.25
@@ -73,13 +75,17 @@ MonoBehaviour:
       Duration: 12
       NActivations: -1
       Cooldown: 8
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_PowerUps:
-    - ShieldRune - Primal
-    - AncientAegisRune - Primal
+    - AncientAegisRune - Major
     - BerserkerRune - Major
+    - ShieldRune - Minor
     StageData:
     - m_Boss: 1001
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 0a000000020000001d0000004c000000
       m_TriggerEffects: []
       m_BonusStats:
@@ -87,36 +93,39 @@ MonoBehaviour:
         BaseValue: 1000
         BonusValue: 0
         ScalingFactor: 0
+        DamageCategories: 
+        HitCategories: 
         SpecialConditions: []
         StateEffectStackFactors: []
     - m_Boss: 1001
+      m_Skin: 0
       m_BonusLevel: 1
+      m_ExtraLifes: 0
       m_Spells: 0a000000040000001e0000001d0000004c000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 0
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 142700003400000015270000
       m_TriggerEffects: []
       m_BonusStats: []
   - RewardsData:
       Currencies:
       - Currency: 3
-        Qty: 350
-      Chests: 01000000
+        Qty: 200
+      Chests: 00000000
       Collectables:
       - CollectableType: 3
-        CollectableName: PoisonfangRune
-        Qty: 5
-      - CollectableType: 3
         CollectableName: ParasiteRune
-        Qty: 5
+        Qty: 3
       AchievementRewards: []
       Boosts: []
     TriggerEffects:
     - SpellDataName: _PlagueArrows
       OverridingData: []
-      Level: 0
+      Level: 9
       Target: 0
       SpellActivationEvent: 1
       ActivationTreshold: 0
@@ -125,31 +134,18 @@ MonoBehaviour:
       StateEffectEvent: 0
       StateEffectName: 
       NStateEffectActivationThreshold: 0
-      Delay: 5
+      Delay: 20
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     - SpellDataName: _SporeSacks
       OverridingData: []
-      Level: 0
-      Target: 0
-      SpellActivationEvent: 1
-      ActivationTreshold: 0.5
-      SpellDeactivationEvent: 0
-      DeactivationTreshold: 0
-      StateEffectEvent: 0
-      StateEffectName: 
-      NStateEffectActivationThreshold: 0
-      Delay: 3
-      Duration: 0
-      NActivations: 0
-      Cooldown: 0
-    - SpellDataName: _VenomSpikes
-      OverridingData: []
-      Level: 0
+      Level: 9
       Target: 0
       SpellActivationEvent: 3
-      ActivationTreshold: 0.5
+      ActivationTreshold: 0.4
       SpellDeactivationEvent: 0
       DeactivationTreshold: 0
       StateEffectEvent: 0
@@ -159,44 +155,50 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_PowerUps:
-    - PoisonRune - Major
-    - ToxicWaterRune - Primal
-    - ParasiteRune - Primal
-    - PoisonfangRune - Major
+    - ParasiteRune - Major
+    - PoisonfangRune - Minor
     StageData:
     - m_Boss: 1002
+      m_Skin: 0
       m_BonusLevel: 1
+      m_ExtraLifes: 0
       m_Spells: 1a000000300000001700000028000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1002
+      m_Skin: 0
       m_BonusLevel: 2
+      m_ExtraLifes: 0
       m_Spells: 1a000000300000001700000028000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 782700007927000049000000
       m_TriggerEffects: []
       m_BonusStats: []
   - RewardsData:
       Currencies:
       - Currency: 3
-        Qty: 320
+        Qty: 150
       - Currency: 0
-        Qty: 3500
+        Qty: 400
       Chests: 01000000
       Collectables:
-      - CollectableType: 2
-        CollectableName: SoulFreeze
-        Qty: 1
+      - CollectableType: 3
+        CollectableName: CurseRune
+        Qty: 3
       AchievementRewards: []
       Boosts: []
     TriggerEffects:
     - SpellDataName: _VoidMines
       OverridingData: []
-      Level: 5
+      Level: 9
       Target: 0
       SpellActivationEvent: 1
       ActivationTreshold: 0
@@ -209,12 +211,14 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     - SpellDataName: _TormentedSoil
       OverridingData: []
-      Level: 0
+      Level: 9
       Target: 0
       SpellActivationEvent: 3
-      ActivationTreshold: 0.5
+      ActivationTreshold: 0.35
       SpellDeactivationEvent: 0
       DeactivationTreshold: 0
       StateEffectEvent: 0
@@ -224,35 +228,40 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_PowerUps:
-    - HealRune - Primal
-    - CurseRune - Major
-    - CurseRune - Primal
-    - SoulSiffonRune - Primal
-    - ShardcurseRune - Primal
+    - CurseRune - Minor
+    - SoulSiffonRune - Minor
     StageData:
     - m_Boss: 1003
+      m_Skin: 0
       m_BonusLevel: 0
-      m_Spells: 2b00000024000000310000001d000000
+      m_ExtraLifes: 0
+      m_Spells: 2b000000240000001d00000028000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1003
+      m_Skin: 0
       m_BonusLevel: 1
-      m_Spells: 2b00000024000000310000001d000000f0030000
+      m_ExtraLifes: 0
+      m_Spells: 2b000000240000003100000028000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 2
+      m_Skin: 0
       m_BonusLevel: 0
-      m_Spells: dc270000dd270000de270000
+      m_ExtraLifes: 0
+      m_Spells: dc270000dd270000de270000e1270000
       m_TriggerEffects: []
       m_BonusStats: []
   - RewardsData:
       Currencies:
       - Currency: 3
-        Qty: 700
+        Qty: 250
       - Currency: 0
-        Qty: 5000
-      Chests: 02000000
+        Qty: 1000
+      Chests: 01000000
       Collectables:
       - CollectableType: 3
         CollectableName: ThermalShockRune
@@ -262,7 +271,7 @@ MonoBehaviour:
     TriggerEffects:
     - SpellDataName: _FallingOrbs
       OverridingData: []
-      Level: 0
+      Level: 9
       Target: 0
       SpellActivationEvent: 1
       ActivationTreshold: 0
@@ -275,9 +284,11 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     - SpellDataName: _ArcticEruption
       OverridingData: []
-      Level: 0
+      Level: 9
       Target: 0
       SpellActivationEvent: 1
       ActivationTreshold: 0
@@ -290,25 +301,33 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_PowerUps:
-    - ShieldRune - Minor
     - FrostRune - Primal
-    - InfernalProtectionRune - Primal
     - ThermalShockRune - Major
+    - InfernalProtectionRune - Major
+    - ShieldRune - Minor
     StageData:
     - m_Boss: 1004
+      m_Skin: 0
       m_BonusLevel: 0
-      m_Spells: 1c0000002800000011000000200000004c000000
+      m_ExtraLifes: 0
+      m_Spells: 1c00000011000000200000004c000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1004
+      m_Skin: 0
       m_BonusLevel: 1
-      m_Spells: 1c0000002800000011000000200000004c000000
+      m_ExtraLifes: 0
+      m_Spells: 1c00000011000000200000004c000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 3
+      m_Skin: 0
       m_BonusLevel: 0
-      m_Spells: 4028000041280000
+      m_ExtraLifes: 0
+      m_Spells: 402800004128000042280000
       m_TriggerEffects:
       - SpellDataName: _BlueMeteorsRain
         OverridingData: []
@@ -325,27 +344,32 @@ MonoBehaviour:
         Duration: 0
         NActivations: -1
         Cooldown: 0
+        RepeatWhenCooldownOver: 0
+        ConsumeLifeOnActivation: 0
       m_BonusStats: []
   - RewardsData:
       Currencies:
+      - Currency: 1
+        Qty: 35
       - Currency: 3
-        Qty: 1000
+        Qty: 200
       - Currency: 0
-        Qty: 10000
-      Chests: 03000000
+        Qty: 1000
+      Chests: 02000000
       Collectables: []
       AchievementRewards:
       - AchievementReward: 3
         Title: 0
         Avatar: 0
         Border: 202
+        Emot: 0
         Badge: 0
         League: 0
       Boosts: []
     TriggerEffects:
     - SpellDataName: _SnowStorm
       OverridingData: []
-      Level: 0
+      Level: 9
       Target: 0
       SpellActivationEvent: 1
       ActivationTreshold: 0
@@ -358,9 +382,11 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     - SpellDataName: _FrostTraps
       OverridingData: []
-      Level: 0
+      Level: 9
       Target: 0
       SpellActivationEvent: 1
       ActivationTreshold: 0
@@ -373,35 +399,28 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
-    - SpellDataName: _FrozenSpikes
-      OverridingData: []
-      Level: 0
-      Target: 0
-      SpellActivationEvent: 1
-      ActivationTreshold: 0
-      SpellDeactivationEvent: 0
-      DeactivationTreshold: 0
-      StateEffectEvent: 0
-      StateEffectName: 
-      NStateEffectActivationThreshold: 0
-      Delay: 0
-      Duration: 0
-      NActivations: 0
-      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_PowerUps: []
     StageData:
     - m_Boss: 1005
+      m_Skin: 0
       m_BonusLevel: 0
-      m_Spells: 1d0000001e0000001f000000150000004c000000
+      m_ExtraLifes: 0
+      m_Spells: 1d0000001e0000001f00000049000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 1005
+      m_Skin: 0
       m_BonusLevel: 1
-      m_Spells: 1d0000001e0000001f000000490000004c00000004000000
+      m_ExtraLifes: 0
+      m_Spells: 1d0000001e0000001f0000004900000004000000
       m_TriggerEffects: []
       m_BonusStats: []
     - m_Boss: 4
+      m_Skin: 0
       m_BonusLevel: 0
+      m_ExtraLifes: 0
       m_Spells: 
       m_TriggerEffects: []
       m_BonusStats: []

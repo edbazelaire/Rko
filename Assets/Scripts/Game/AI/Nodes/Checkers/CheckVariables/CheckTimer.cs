@@ -40,5 +40,15 @@ namespace AI.Checkers
         }
 
         #endregion
+
+
+        #region Infos
+
+        public override string GetInfo()
+        {
+            return "Timer : " + m_Controller.BehaviorTree.GetTimer(m_Id).ToString("F2");
+        }
+
+        #endregion
     }
 }

@@ -20,6 +20,7 @@ namespace Game.UI
         string          m_StateEffectName;
         int             m_Stacks;
         int             m_MaxStacks;
+        int             m_StartingStacks;
         float           m_Duration;
         float           m_Timer;
         bool            m_IsHolding;
@@ -34,16 +35,17 @@ namespace Game.UI
             m_TimerFill         = Finder.FindComponent<Image>(gameObject, "TimerFill");
         }
 
-        public void Initialize(string stateEffect, int stacks, int maxStacks, float duration)
+        public void Initialize(string stateEffect, int stacks, int maxStacks, float duration, int startingStacks)
         {
             m_StateEffectName   = stateEffect;
             m_MaxStacks         = maxStacks;
+            m_StartingStacks    = startingStacks;
 
             // Setup icon (if found)
             ReloadIcon();
 
             // setup stacks and duration
-            Refresh(duration, stacks, maxStacks);
+            Refresh(duration, timer: duration, stacks: stacks, maxStacks: maxStacks);
         }
 
 
@@ -65,22 +67,23 @@ namespace Game.UI
 
         #region GUI Manipulators
 
-        public void Refresh(float duration, int stacks, int? maxStacks)
+        public void Refresh(float duration, float? timer, int stacks, int? maxStacks)
         {
             ErrorHandler.Log("Refresh " + m_StateEffectName + " : with " + stacks + " stacks", ELogTag.StateEffectGFX);
 
             m_Stacks = 0;
-            AddStacks(stacks, maxStacks: maxStacks, duration: duration);
+            AddStacks(stacks, maxStacks: maxStacks, duration: duration, timer: timer);
         }
 
-        public void AddStacks(int stacks, int? maxStacks = null, float? duration = null)
+        public void AddStacks(int stacks, int? maxStacks = null, float? duration = null, float? timer = null)
         {
             if (maxStacks != null)
                 m_MaxStacks = maxStacks.Value;
 
             m_Stacks = Math.Clamp(m_Stacks + stacks, 0, m_MaxStacks > 0 ? m_MaxStacks : 999);
 
-            if (m_Stacks <= 1)
+            ErrorHandler.Log(m_StateEffectName + " : new stacks " + m_Stacks, ELogTag.StateEffectGFX);
+            if (m_Stacks <= 0 || m_StartingStacks >= 1 && m_Stacks == 1)
                 m_StacksContainer.SetActive(false);
             else
             {
@@ -90,7 +93,9 @@ namespace Game.UI
 
             if (duration.HasValue)
                 m_Duration = duration.Value;
-            m_Timer = m_Duration;             // reset timer
+
+            if (timer != null)
+                m_Timer = timer.Value;             // reset timer
 
             if (duration <= 0)
                 m_TimerFill.fillAmount = 0;

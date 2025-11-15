@@ -6,8 +6,8 @@ namespace Data
     [CreateAssetMenu(fileName = "Aoe", menuName = "Game/Spells/Aoe")]
     public class AoeData : SpellData
     {
-        public override ESpellType SpellType    => ESpellType.Aoe;
-        public override Enums.ESpellCategory SpellCategory  => Enums.ESpellCategory.Zone;
+        public override ESpellType SpellType        => ESpellType.Aoe;
+        //public override EHitCategory SpellCategory  => EHitCategory.Aoe;
 
         [Header("AoeData")]
         [SerializeField] protected ESpellSpawn m_SpellSpawn = ESpellSpawn.Ground;

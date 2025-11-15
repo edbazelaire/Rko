@@ -12,12 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bec91e441d966e438d35c0133adae84, type: 3}
   m_Name: HeavyHitter
   m_EditorClassIdentifier: 
-  m_Description: Alexander gains bonus damage equal to 50% of all bonus resistance
-    currently applied to him.
+  m_Description: '[StatConversion.0]'
   m_DescriptionVariables: 
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 0
-  m_VisualEffects: []
   m_GfxEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
@@ -26,23 +25,42 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
+  m_EndWithShield: 0
+  m_EndAt0Stacks: 1
+  m_RefreshShield: 1
+  m_RefreshDuration: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: 0
+  m_StartingStacks: 1
   m_MaxStacks: 1
   m_StackDecay: -1
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats: []
   m_StatConversions:
-  - ExpectedStat: 7
+  - ToStat:
+      StateEffectProperty: 22
+      BaseValue: 0
+      LevelScalingFactor: 0
+      StackScalingFactor: 0
+      ScalesOnMissingHealth: 0
+      DamageCategories: 01000000
+      HitCategories: 
+      SpecialConditions: []
     OriginalStatScaling:
-      StateEffectProperty: 5
+      StateEffectProperty: 30
       BaseValue: 0.5
       LevelScalingFactor: 0
       StackScalingFactor: 1
+      ScalesOnMissingHealth: 0
+      DamageCategories: 01000000
+      HitCategories: 
       SpecialConditions: []
   m_SubStateEffects: []
   m_HoldingStateEffects: []

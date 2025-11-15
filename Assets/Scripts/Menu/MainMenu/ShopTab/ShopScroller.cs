@@ -1,5 +1,6 @@
 ﻿using Data.GameManagement;
 using Menu.Common.Buttons;
+using MyBox;
 using System.Collections.Generic;
 using Tools;
 using UnityEngine;
@@ -69,7 +70,11 @@ namespace Menu.MainMenu.ShopTab
             // Single reward : Card type
             if (data.Rewards.Count == 1)
             {
-                return AssetLoader.LoadShopTemplateItem<TemplateCardShopItemUI>();
+                if (! data.Rewards.Currencies.IsNullOrEmpty())
+                    return AssetLoader.LoadCurrencyTemplateItem<TemplateCardShopItemUI>(data.Rewards.Currencies[0].Currency);
+                if (! data.Rewards.Chests.IsNullOrEmpty())
+                    return AssetLoader.LoadChestTemplateItem<TemplateCardShopItemUI>(data.Rewards.Chests[0]);
+                return AssetLoader.LoadShopTemplateItem<TemplateCardShopItemUI>("TemplateShopCardItem");
             }
             
             // Multiple rewards : Bundle

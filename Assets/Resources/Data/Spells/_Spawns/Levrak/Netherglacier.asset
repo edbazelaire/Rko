@@ -1,0 +1,169 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3187be67d58548144a9d4f83cb44e7d2, type: 3}
+  m_Name: Netherglacier
+  m_EditorClassIdentifier: 
+  m_Rarety: 0
+  m_Description: 
+  m_SpellElements: 
+  Linked: 1
+  Graphics: {fileID: 1364846237022580, guid: 9f4fd9de9f2576e4ebf8618debe9fafe, type: 3}
+  SpellEventActions:
+  - Prefab: {fileID: 147226, guid: 3d63c8decec83924d851e688e13c31f0, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 100
+      m_EndSpellPart: 300
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 1
+    SpawnLocation: 0
+    BodyPart: 2
+    IsFollowing: 1
+    IsReplacingGFX: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
+  - Prefab: {fileID: 1364846237022580, guid: 757251bcd4f5def4091943b9d7ce1036, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 100
+      m_EndSpellPart: 300
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 4
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    IsReplacingGFX: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
+  OnHit: []
+  PassiveEffects: []
+  SpellEventEffects: []
+  OnHitSpellSpawn: 1
+  AnimationSoundFX: {fileID: 0}
+  CastSoundFX: {fileID: 0}
+  PermanantSoundFX: {fileID: 0}
+  OnHitSoundFX: {fileID: 0}
+  OnEndSoundFX: {fileID: 0}
+  SpellTarget: 102
+  m_ClampTargetPos: 1
+  TargetOffset:
+    X: -5.5
+    Y: 0
+  LockTarget: 100
+  ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
+  m_SpellRequirements: []
+  m_MaxHit: 1
+  m_Charges: 1
+  EnergyGain: 25
+  EnergyCost: 0
+  m_Damages:
+  - m_BaseValue: 120
+    m_DamageCategory: 2
+    m_HitCategory: 1
+    m_SpellPropertyScaling:
+      Property: 2
+      Value: 0.1
+      ScalingType: 0
+      RoundingType: 2
+      ScalingTresholds: []
+    m_DamageModifiers: []
+  m_Heal: 0
+  m_Shield: 0
+  m_LifeSteal: 0
+  Distance: -1
+  OverrideOnHitProperties: 
+  m_Duration: 0
+  Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
+    m_Targets: 
+  m_SpellsScalingLevel:
+  - Property: 2
+    Value: 0.1
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
+  m_Size: 10
+  TriggerPlayer: 1
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
+  EnemyStateEffects:
+  - StateEffect: 34
+    Stacks: 1
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
+  - StateEffect: 13
+    Stacks: 10
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
+  AllyStateEffects: []
+  StateEffectStackFactor: 0
+  PersistanceAfterEnd: 1.5
+  Animation: 6
+  IsCancellable: 0
+  IsInterruptable: 1
+  IgnoreCC: 0
+  AnimationTimer: 1.5
+  m_Cooldown: 8
+  m_SpellSpawn: 1

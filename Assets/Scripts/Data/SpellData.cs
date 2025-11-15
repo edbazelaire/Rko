@@ -22,39 +22,12 @@ using Game.NetworkStructures;
 using Data.DataStructures.SpellSubStructures;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using UnityEngine.Windows;
+using Tools.Helpers;
+using Data.DataStructures.SpellSubStructures.SpellModules;
+using UnityEngine.Serialization;
 
 namespace Data
 {
-    [Serializable]
-    public struct SDescriptionVariable
-    {
-        public string Name;
-        public bool WithIcon;
-
-        public SDescriptionVariable(string name, bool withIcon = true)
-        {
-            Name = name;
-            WithIcon = withIcon;
-        }
-    }
-
-    [Serializable]
-    public struct SSpellEventEffect
-    {
-        public string       EffectName;
-        public ESpellEvent  SpellEvent;
-        public ESpellTarget SpellTarget;
-    }
-
-    [Serializable]
-    public struct SSpellPassiveEffect
-    {
-        public StateEffect  StateEffect;
-        public bool         DeactivateOnCooldown;
-    }
-
-
     [CreateAssetMenu(fileName = "Spell", menuName = "Game/Spells/Default")]
     public class SpellData : CollectableData
     {
@@ -114,18 +87,17 @@ namespace Data
         protected List<SpellRequirements> m_SpellRequirements = new List<SpellRequirements>();
 
         [Header("Stats")]
-        [Tooltip("Maximum number of target that this spell can hit")]
-        public int MaxHit = 1;
+        [SerializeField, FormerlySerializedAs("MaxHit"), Tooltip("Maximum number of target that this spell can hit")]
+        protected int m_MaxHit = 1;
         [SerializeField, Tooltip("Number of charges for the spell")]
         protected int m_Charges = 1;
         [Tooltip("Energy gained when this spell hits his target")]
         public int EnergyGain = 10;
         [Tooltip("Request amount on energy to be able to cast this spell")]
         public int EnergyCost = 0;
-        [SerializeField, Tooltip("Damage of the spell")]
-        public int m_Damage = 0;
-        [SerializeField, Tooltip("Execution damage of the spell (growing with missing life)")]
-        public int m_ExecutionDamage = 0;
+
+        [SerializeField, Tooltip("All Damage applied by the effect")]
+        protected List<SDamage> m_Damages;
         [SerializeField, Tooltip("Heals provided to the target")]
         public int m_Heal = 0;
         [SerializeField, Tooltip("Quantity of (permanant) shield provided to the target")]
@@ -144,10 +116,19 @@ namespace Data
         protected SForce m_Force = default;
 
         [Header("Scaling")]
-        [SerializeField] protected List<SSpellPropertyScaling> m_SpellsScalingLevel = new() {
-            new SSpellPropertyScaling(ESpellProperty.Damage, 0.1f),
-            new SSpellPropertyScaling(ESpellProperty.Heal, 0.1f),
-        };
+        [SerializeField] protected List<SSpellPropertyScaling> m_SpellsScalingLevel = new() {};
+
+        [Header("Position")]
+        [SerializeField, Tooltip("Is this spell overrides the default spawn position ?")]
+        public bool OverridesSpawnPosition = false;
+        [SerializeField, ConditionalField("OverridesSpawnPosition")]
+        protected SSpawnPosition m_SpawnPosition;
+
+        [Header("Following")]
+        [Tooltip("Is spell following a target ?")]
+        public bool IsFollowing = false;
+        [ConditionalField("IsFollowing")]
+        public MFollowing MFollowing;
 
         [Header("Collision")]
         [Description("Size of the spell (and hitbox)")]
@@ -155,6 +136,17 @@ namespace Data
         [Description("Does the spell get trigger on touching a player")]
         public bool TriggerPlayer = true;
 
+        [Header("SolidBody")]
+        [Tooltip("Is this a channel spell (ends when caster stops channeling)")]
+        public bool HasSolidBody = false;
+        [ConditionalField("HasSolidBody")]
+        public MSolidBody MSolidBody;
+
+        [Header("Channeling")]
+        [Tooltip("Is this a channel spell (ends when caster stops channeling)")]
+        public bool     IsChanneling                = false;
+        [ConditionalField("IsChanneling")]
+        public MChanneling MChanneling;
         [Header("State Effects")]
         [Description("List of effects that proc on hitting an enemy")]
         public List<SStateEffectData> EnemyStateEffects;
@@ -170,8 +162,12 @@ namespace Data
         [Header("Animation & Cooldowns")]
         [Description("Name of the animation to use")]
         public EAnimation Animation;
-        [Description("Can the animation be cancelled ?")]
+        [Description("Can the animation be cancelled by the player ?")]
         public bool IsCancellable = false;
+        [Description("Can the animation be interrupted by the enemy ?")]
+        public bool IsInterruptable = true;
+        [Description("Can the spell be casted through CC ?")]
+        public bool IgnoreCC = false;
         [Description("Time for the animation to take from start to begin (in seconds)")]
         public float AnimationTimer;
         [Description("Cooldown to be able to re-use that ability")]
@@ -188,25 +184,28 @@ namespace Data
 
         // ===========================================================================
         // Dependent Members
-        public override ERarety Rarety => GetRarety();
-        public virtual string Parent => m_Parent.IsNullOrEmpty() ? Name : m_Parent;
-        public ESpell Spell => Id == null ? ESpell.None : (ESpell)Id;
+        public override ERarety Rarety          => GetRarety();
+        public virtual string Parent            => m_Parent.IsNullOrEmpty() ? Name : m_Parent;
+        public ESpell Spell                     => Id == null ? ESpell.None : (ESpell)Id;
         public ulong? CurrentTargetId           => m_CurrentTargetId;
         public virtual List<SpellRequirements> SpellRequirements => m_SpellRequirements;
+        public SSpawnPosition SpawnPosition     => m_SpawnPosition;
         public virtual ESpellType SpellType     => ESpellType.InstantSpell;
+        public List<SSpellPropertyScaling> SpellsScalingLevel => m_SpellsScalingLevel;
         public float BaseSize                   => m_Size;
         public float Size                       => m_Size >= 0 ? m_Size * Settings.SpellSizeFactor : ArenaManager.Instance.TargettableAreaSize;
         protected override Type m_EnumType      => typeof(ESpell);
         public bool ClampTargetPos              => m_ClampTargetPos;
+        public bool IsAutoTarget                => true;
+        public bool IsEnemyTarget               => TargetHelper.IsEnemyTarget(SpellTarget);
+        public bool IsAllyTarget                => TargetHelper.IsAllyTarget(SpellTarget);
 
         // ===========================================================================
         // Level Dependent Members
+        public virtual int MaxHit               => (int)GetScaledValue(ESpellProperty.MaxHit, m_MaxHit);
         public virtual int Charges              => (int)GetScaledValue(ESpellProperty.Charges, m_Charges);
-        //public virtual float Cooldown           => Mathf.Max(Mathf.Round(100f * m_Cooldown / GetScaledValue(ESpellProperty.Cooldowns)) / 100f, 0f);
         public virtual float Cooldown           => GetScaledValue(ESpellProperty.Cooldown, m_Cooldown);
-        public virtual int Damage               => (int)GetScaledValue(ESpellProperty.Damage, m_Damage);
-        public virtual int ExecutionDamage      => (int)GetScaledValue(ESpellProperty.ExecutionDamage, m_ExecutionDamage);
-
+        public virtual List<SDamage> Damages    => m_Damages;
         public virtual int Heal                 => (int)GetScaledValue(ESpellProperty.Heal, m_Heal);
         public virtual int Shield               => (int)GetScaledValue(ESpellProperty.Shield, m_Shield);
         public virtual float LifeSteal          => GetScaledValue(ESpellProperty.LifeSteal, m_LifeSteal);
@@ -215,7 +214,7 @@ namespace Data
 
         /// <summary> is the "IsCasting" over once the spell has been casted (before delay) ? </summary>
         public virtual bool IsCompletedOnCast   => true;
-        public virtual ESpellCategory SpellCategory => ESpellCategory.Direct;
+        public virtual EHitCategory SpellCategory => EHitCategory.Direct;
 
         #endregion
 
@@ -279,20 +278,20 @@ namespace Data
             if (recalculateRotation)
                 RecalculateRotation(ref rotation);
 
-            // instantiate the prefab of the spell
-            NetworkObject spellGO = PoolManager.Pool(GetSpellPrefab(), clientId, position, rotation);
+            // remove all CC if is UnstoppableCast
+            ApplyIgnoreCC(GameManager.Instance.GetPlayer(clientId));
 
-            // reparent if any
+            // instantiate the prefab of the spell
             Transform parent = FindParent(clientId);
-            if (parent != null)
-                spellGO.transform.SetParent(FindParent(clientId));
+            GameObject spellGO = PoolManager.Pool(GetSpellPrefab(), clientId, position, rotation, parent);
 
             // initialize the spell
-            var spell = Finder.FindComponent<Spell>(spellGO.gameObject);
+            var spell = Finder.FindComponent<Spell>(spellGO);
             spell.Initialize(clientId, target, this);
 
             // backpropagate the spell intialization to the client (for the preview)
-            spell.InitializeClientRpc(clientId, new Vector2Short(target), Name, (byte)m_Level);
+            if (! GameManager.Instance.IsOfflineMode)
+                spell.InitializeClientRpc(clientId, new Vector2Short(target), Name, (byte)m_Level);
 
             // call event that spell spawned
             OnSpellSpawn?.Invoke(spell);
@@ -302,7 +301,7 @@ namespace Data
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="clientId"></param>
+        /// <param name="clientId"></param>q
         /// <param name="position"></param>
         /// <param name="rotation"></param>
         public void SpawnOnHitPrefab(ulong clientId, Vector3 target, Vector3 position = default, Quaternion rotation = default)
@@ -342,6 +341,14 @@ namespace Data
 
             // call graphics event
             controller.SpellHandler.CallSpellEvent(spellData.Name, ESpellEvent.OnStartCast, level: m_Level, targetPosition: targetPos);
+        }
+
+        void ApplyIgnoreCC(Controller caster)
+        {
+            if (!IgnoreCC)
+                return;
+
+            caster.StateHandler.RemoveAllCC();
         }
 
         #endregion
@@ -414,7 +421,7 @@ namespace Data
         {
             if (CheckSpecialCase_Dash(spellEventEffect, out float speed, out float duration))
             {
-                caster.Movement.AddForce(new SForce(speed, duration));
+                caster.Movement.AddForce(new SForce(speed, duration, null));
                 return true;
             }
             return false;
@@ -446,8 +453,11 @@ namespace Data
 
         #region Spell GFX
 
-        void CallSpellEvent(Controller controller, ESpellEvent spellEvent, Vector3 target)
+        public void CallSpellEvent(Controller controller, ESpellEvent spellEvent, Vector3 target)
         {
+            if (controller == null)
+                return;
+
             // spawn SubSpell - SpellGFX
             controller.SpellHandler.CallSpellEvent(Name, spellEvent, m_Level, targetPosition: target);
         }
@@ -466,7 +476,7 @@ namespace Data
                 return false;
 
             // is starting
-            if (checkStart && SpellRelocation.Lifetime.StartSpellPart == spellEvent)
+            if (checkStart && SpellRelocation.Lifetime.StartSpellPart != ESpellEvent.None && SpellRelocation.Lifetime.StartSpellPart == spellEvent)
                 return true;
 
             // spell has "End" event and current event is this event or higher
@@ -558,6 +568,11 @@ namespace Data
 
         #region Spell Helpers
 
+        protected virtual GameObject GetSpellPrefabOffline()
+        {
+            return SpellLoader.GetSpellPrefab(Name, SpellType);
+        }
+
         protected virtual NetworkObject GetSpellPrefab()
         {
             return SpellLoader.GetSpellPrefab(Name, SpellType).GetComponent<NetworkObject>();
@@ -648,87 +663,17 @@ namespace Data
             if (!IsAutoTarget)
                 return;
 
-            Controller controller = GameManager.Instance.GetPlayer(casterId);
-            int direction = ArenaManager.GetAreaMovementDirection(controller.Team, IsEnemyTarget);
-
-            switch (SpellTarget)
-            {
-                case ESpellTarget.Self:
-                    target.x = controller.transform.position.x;
-                    break;
-
-                case ESpellTarget.FirstAlly:
-                    target.x = GameManager.Instance.GetFirstAlly(controller.Team, casterId).transform.position.x;
-                    break;
-
-                case ESpellTarget.FirstEnemy:
-                    target.x = GameManager.Instance.GetFirstEnemy(controller.Team).transform.position.x;
-                    break;
-
-                case ESpellTarget.CurrentTarget:
-                    if (!targetId.HasValue)
-                    {
-                        ErrorHandler.Error("SpellTarget of " + Name + " is CurrentTarget but no target id was provided");
-                        break;
-                    }
-                    target.x = GameManager.Instance.GetPlayer(targetId.Value).transform.position.x;
-                    break;
-
-                case ESpellTarget.AllyZoneCenter:
-                case ESpellTarget.EnemyZoneCenter:
-                    target.x = GetTargettableArea(controller.Team).position.x;
-                    break;
-
-                case ESpellTarget.AllyZoneStart:
-                case ESpellTarget.EnemyZoneStart:
-                    var centerPos = GetTargettableArea(controller.Team).position.x;
-                    target.x = centerPos - direction * ArenaManager.Instance.TargettableAreaSize / 2;
-                    break;
-
-                case ESpellTarget.AllyZoneEnd:
-                case ESpellTarget.EnemyZoneEnd:
-                    target.x = GetTargettableArea(controller.Team).position.x + direction * ArenaManager.Instance.TargettableAreaSize / 2;
-                    break;
-
-                case ESpellTarget.Mirror:
-                    target.x = -controller.transform.position.x;
-                    break;
-
-                case ESpellTarget.Fixed:
-                    direction = ArenaManager.GetAreaMovementDirection(controller.Team, true);
-                    target.x = controller.transform.position.x + direction * Settings.SpellFixedDistance;
-                    break;
-
-                default:
-                    ErrorHandler.Error("("+ Name +") - Unhandled case : " + SpellTarget);
-                    break;
-            }
-
-            // APPLY OFFSET
-            target.x += direction * TargetOffset.X;
-            target.y += TargetOffset.Y;
-
-            // CLAMP target in between available positions
-            if (m_ClampTargetPos && SpellTarget != ESpellTarget.Self)
-                ClampTargetX(ref target, casterId);
+            TargetHelper.GetTargetPosition(ref target, SpellTarget, TargetOffset.AsVector2, m_ClampTargetPos, casterId, targetId);
         }
 
         public virtual void ClampTargetX(ref Vector3 target, ulong clientId) 
         {
-            // clamp target between min/max xPos of the target zone
-            var zoneCenter = GetTargettableArea(GameManager.Instance.GetPlayer(clientId).Team).position.x;
-            target.x = Mathf.Clamp(target.x, zoneCenter - ArenaManager.Instance.TargettableAreaSize / 2, zoneCenter + ArenaManager.Instance.TargettableAreaSize / 2);
+            TargetHelper.ClampTargetX(ref target, SpellTarget, clientId);
         }
 
         public Transform GetTargettableArea(int team)
         {
-            if (IsEnemyTarget)
-                return ArenaManager.GetTargettableAreaTransform(team, true);
-
-            else if (IsAllyTarget)
-                return ArenaManager.GetTargettableAreaTransform(team, false);
-            else
-                return ArenaManager.Instance.Arena.transform;
+            return TargetHelper.GetTargettableArea(team, SpellTarget);
         }
 
         /// <summary>
@@ -771,14 +716,21 @@ namespace Data
 
         public virtual void RecalculatePosition(ref Vector3 position, Vector3 target, ulong clientId) 
         {
-            position = GameManager.Instance.GetPlayer(clientId).GFXHandler.GetSpellSpawn().position;
+            if (! OverridesSpawnPosition)
+            {
+                position = GameManager.Instance.GetPlayer(clientId).GFXHandler.GetSpellSpawn().position;
+                return;
+            }
+
+            var caster = GameManager.Instance.GetPlayer(clientId);
+            var parent = m_SpawnPosition.CalculateParent(caster, spell: null, targetController: null);
+            position = m_SpawnPosition.CalculatePosition(parent, caster, callFromPosition: position, targetPosition: target);
         }
 
         public virtual void RecalculateRotation(ref Quaternion rotation)
         {
             rotation = Quaternion.identity;
         }
-
 
         #endregion
 
@@ -963,6 +915,9 @@ namespace Data
             infosDict.Add("Type", GetTypeInfo());
             infosDict.Add("Target", GetTargetTypeInfo());
 
+            if (IgnoreCC)
+                infosDict.Add("IgnoreCC", Cooldown);
+
             if (Cooldown > 0)
                 infosDict.Add("Cooldown", Cooldown);
             if (Charges > 1 || IsScalingProperty(ESpellProperty.Charges.ToString(), out EScalingDirection _))
@@ -971,10 +926,12 @@ namespace Data
                 infosDict.Add("EnergyCost", EnergyCost);
             if (SpellRequirements.Count > 0)
                 infosDict.Add("SpellRequirements", SpellRequirements);
-            if (Damage > 0)
-                infosDict.Add("Damage", Damage);
-            if (ExecutionDamage > 0)
-                infosDict.Add("ExecutionDamage", ExecutionDamage);
+
+            if (! Damages.IsNullOrEmpty())
+                infosDict.Add("Damages", Damages);
+            if (LifeSteal > 0)
+                infosDict.Add("LifeSteal", LifeSteal);
+
             if (Heal > 0)
                 infosDict.Add("Heal", Heal);
             if (Shield > 0)
@@ -985,7 +942,7 @@ namespace Data
                 infosDict.Add("Energy", EnergyGain);
             if (m_Size > 0 && m_Size != 1)
                 infosDict.Add("Size", m_Size);
-            if (SpellRelocation.Lifetime.StartSpellPart >= ESpellEvent.OnSpawn)
+            if (SpellRelocation.Exists && SpellRelocation.Lifetime.StartSpellPart >= ESpellEvent.OnSpawn)
                 infosDict.Add("Movement", "Manual");
 
             infosDict.Add("CastDuration",   AnimationTimer);
@@ -1065,7 +1022,7 @@ namespace Data
             if (OnHit.Count > 0)
             {
                 if (OnHit.Count > 1)
-                    ErrorHandler.Warning("OnHit.Count > 1 : this case is not handled in infos description");
+                    ErrorHandler.Warning("OnHit.Count > 1 in "+Name+" : this case is not handled in infos description");
 
                 OnHit[0].AddAsSubSpellInfos(ref infosDict);
                 return;
@@ -1074,7 +1031,7 @@ namespace Data
             if (SpellEventEffects.Count > 0)
             {
                 if (SpellEventEffects.Count > 1)
-                    ErrorHandler.Warning("SpellEventEffects.Count > 1 : this case is not handled in infos description");
+                    ErrorHandler.Warning("SpellEventEffects.Count > 1 in "+Name+" : this case is not handled in infos description");
 
                 var effect = SpellEventEffects[0].EffectName;
                 if (SpellLoader.IsSpell(effect))
@@ -1092,7 +1049,7 @@ namespace Data
         public void AddAsSubSpellInfos(ref Dictionary<string, object> infosDict)
         {
             string[] keysToIgnore = new string[] { "Type", "Target", "Cooldown", "CastDuration", "Distance", "EnergyCost", "Delay", "Charges" };        // keys to ignore as overwrite  
-            string[] keysToAdd = new string[] { "Damage", "Heal", "Shield", "TickDamage", "TickHeal", "Effects" };                                // keys that are not overritten but additionned 
+            string[] keysToAdd = new string[] { "Damages", "PhysicalDamage", "MagicalDamage", "ExecutionDamage", "Heal", "Shield", "DotDamage", "DotHeal", "Effects" };                                // keys that are not overritten but additionned 
 
             var subSpellInfos = GetInfo();
             foreach (var info in subSpellInfos)
@@ -1105,15 +1062,27 @@ namespace Data
                 if (OverrideOnHitProperties.Any(property => property.ToString().Equals(info.Key, StringComparison.OrdinalIgnoreCase)))
                     continue;
 
-                if (keysToAdd.Contains(info.Key) && infosDict.ContainsKey(info.Key))
+                if (keysToAdd.Contains(info.Key))
                 {
                     if (info.Key == "Effects")
                     {
+                        if (!infosDict.ContainsKey(info.Key))
+                            infosDict[info.Key] = new List<SStateEffectData>();
                         ((List<SStateEffectData>)infosDict[info.Key]).AddRange((List<SStateEffectData>)info.Value);
                         continue;
                     }
 
-                    if (!float.TryParse(infosDict[info.Key].ToString(), out float baseValue))
+                    if (info.Key == "Damages")
+                    {
+                        if (!infosDict.ContainsKey(info.Key))
+                            infosDict[info.Key] = new List<SDamage>();
+                        ((List<SDamage>)infosDict[info.Key]).AddRange((List<SDamage>)info.Value);
+                        continue;
+                    }
+
+                    // DEFAULT BEHAVIOR : must be a float
+                    float baseValue = 0f;
+                    if (infosDict.ContainsKey(info.Key) && !float.TryParse(infosDict[info.Key].ToString(), out baseValue))
                     {
                         ErrorHandler.Error("Unable to parse " + info.Key + " with value " + infosDict[info.Key] + " in base spell of " + Spell);
                         continue;
@@ -1330,7 +1299,73 @@ namespace Data
 
         public virtual bool CheckSpecialOverridingData(SOverridingData overridingData) 
         { 
-            return false; 
+            switch (overridingData.Property)
+            {
+                // -----------------------------------------------------------------------
+                // Damage
+                case ESpellProperty.Damage:
+                    OverrideDamage(overridingData);
+                    return true;
+
+                case ESpellProperty.ExecutionDamage:
+                    OverrideDamage(overridingData);
+                    return true;
+
+                // -----------------------------------------------------------------------
+                // Target & Position
+                case ESpellProperty.SpellTarget:
+                    if (! Enum.TryParse(overridingData.Value, out ESpellTarget spellTarget))
+                    {
+                        ErrorHandler.Warning("Trying to override spell target of " + Name + " with value " + overridingData.Value + " - but this is not recognized as ESpellTarget");
+                        return true;    // return "true" because it was recognized as "Special case" anyway
+                    }
+                    SpellTarget = spellTarget;
+                    return true;
+
+                // -----------------------------------------------------------------------
+                // MFollowing Properties
+                case ESpellProperty.IsFollowing:
+                    if (!bool.TryParse(overridingData.Value, out bool isFollowing))
+                    {
+                        ErrorHandler.Warning("Trying to override spell target of " + Name + " with value " + overridingData.Value + " - but this is not recognized as boolean");
+                        return true;
+                    }
+                    IsFollowing = isFollowing;
+                    return true;
+
+                case ESpellProperty.MFollowing_TargetToFollow:
+                case ESpellProperty.MFollowing_TargetOffset:
+                case ESpellProperty.MFollowing_FollowingSpeed:
+                    // activate "MFollowing" Module if not done already
+                    IsFollowing = true;
+                    MFollowing.Override(overridingData.Property, overridingData.Value);
+                    return true;
+
+                // -----------------------------------------------------------------------
+                // SpawnPosition Properties
+                case ESpellProperty.OverridesSpawnPosition:
+                    if (!bool.TryParse(overridingData.Value, out bool overrideSpawnPosition))
+                    {
+                        ErrorHandler.Warning("Trying to override spell target of " + Name + " with value " + overridingData.Value + " - but this is not recognized as boolean");
+                        return true;
+                    }
+                    OverridesSpawnPosition = overrideSpawnPosition;
+                    return true;
+
+                case ESpellProperty.MSpawnPosition_SpawnTarget:
+                case ESpellProperty.MSpawnPosition_SpawnLocation:
+                case ESpellProperty.MSpawnPosition_BodyPart:
+                case ESpellProperty.MSpawnPosition_IsFollowing:
+                case ESpellProperty.MSpawnPosition_Offset:
+                    // activate "SpawnPosition" Module if not done already
+                    OverridesSpawnPosition = true;
+                    SpawnPosition.Override(overridingData.Property, overridingData.Value);
+                    return true;
+
+                // -----------------------------------------------------------------------
+                default:
+                    return false;
+            }
         }
 
         protected bool TryGetOverridingData(ESpellProperty property, out float overridingValue)
@@ -1349,6 +1384,46 @@ namespace Data
 
             return false;
         }
+
+        void OverrideDamage(SOverridingData overridingData)
+        {
+            if (Damages.IsNullOrEmpty())
+            {
+                ErrorHandler.Warning("Trying to override damage but spell " + Name + " has no damage");
+                return;
+            }
+
+            switch (overridingData.Property)
+            {
+                case ESpellProperty.Damage:
+                    for (int i = 0; i < Damages.Count(); i++)
+                    {
+                        Damages[i].AddBonusValue(overridingData.Get(Damages[i].BaseValue, m_Level));
+                    }
+                    break;
+
+                case ESpellProperty.ExecutionDamage:
+                    // no execution damage : add it
+                    if (! Damages.Any(t => t.HitCategory == EHitCategory.Execution))
+                    {
+                        Damages.Add(new SDamage(overridingData.Get(0, m_Level), EDamageCategory.Physical, EHitCategory.Execution));
+                        return;
+                    }
+
+                    // execution damage exists : override the base value
+                    for (int i = 0; i < Damages.Count(); i++)
+                    {
+                        if (Damages[i].HitCategory == EHitCategory.Execution)
+                            Damages[i].AddBonusValue(overridingData.Get(Damages[i].BaseValue, m_Level));
+                    }
+                    break;
+
+                default:
+                    ErrorHandler.Warning("Trying to override damage but property is : " + overridingData.Property);
+                    return;
+            }
+        }
+
         #endregion
 
 
@@ -1370,31 +1445,6 @@ namespace Data
             }
         }
 
-        public bool IsAutoTarget
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-        public bool IsEnemyTarget => SpellTarget == ESpellTarget.FirstEnemy
-            || SpellTarget == ESpellTarget.EnemyZone
-            || SpellTarget == ESpellTarget.EnemyZoneStart
-            || SpellTarget == ESpellTarget.EnemyZoneCenter
-            || SpellTarget == ESpellTarget.EnemyZoneEnd
-            || SpellTarget == ESpellTarget.Fixed
-            || SpellTarget == ESpellTarget.Mirror;
-            
-
-        public bool IsAllyTarget => SpellTarget == ESpellTarget.FirstAlly
-            || SpellTarget == ESpellTarget.Self
-            || SpellTarget == ESpellTarget.AllyZone
-            || SpellTarget == ESpellTarget.AllyZoneStart
-            || SpellTarget == ESpellTarget.AllyZoneCenter
-            || SpellTarget == ESpellTarget.AllyZoneEnd;
-
         #endregion
-
     }
 }

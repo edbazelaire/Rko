@@ -15,7 +15,14 @@ public class CheckInZone : BaseChecker
 
     #region Init & End
     
-    public CheckInZone(Controller controller) : base(controller) { }
+    public CheckInZone(Controller controller) : base(controller)
+    {
+        if (m_ImmediatThreatTrigger == null)
+        {
+            ErrorHandler.Error("Using CheckInZone() without a component : m_ImmediatThreatTrigger - ABORTING");
+            Abort();
+        }
+    }
 
     #endregion
 
@@ -25,6 +32,10 @@ public class CheckInZone : BaseChecker
     public override NodeState Evaluate()
     {
         base.Evaluate();
+
+        if (m_Abort)
+            return NodeState.FAILURE;
+
         if (m_State != NodeState.FAILURE)
             return m_State;
 
@@ -55,7 +66,7 @@ public class CheckInZone : BaseChecker
                 continue;
 
             // ignore allies spells
-            if (spell.Controller.Team == m_Controller.Team)
+            if (spell.Caster.Team == m_Controller.Team)
                 continue;
 
             // only check zones

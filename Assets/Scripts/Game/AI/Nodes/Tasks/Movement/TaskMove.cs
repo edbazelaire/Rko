@@ -20,6 +20,7 @@ public class TaskMove : BaseTask
     // CONSTANTS
     /// <summary> dodge time window for a projectile to be considerated as a threat </summary>
     public const float THREAT_TIME_WINDOW = 1f;
+    public const float SIZE_OFFSET = 0.1f;
 
     // =============================================================================
     // Component & GameObjects
@@ -29,6 +30,8 @@ public class TaskMove : BaseTask
     // Data
     protected bool m_CheckZones;
     protected bool m_CheckProjectiles;
+    protected bool m_IgnoreInvisibleWalls;
+    protected bool m_IgnoreInvisibleStructures;
     protected bool m_RefreshMovement;           // when set to true, refresh the movement decision
     protected Coroutine m_CurrentCoroutine;     // current active coroutine
 
@@ -39,6 +42,7 @@ public class TaskMove : BaseTask
     // -- continue data
     protected List<int> m_AllowedMovements      = new List<int> { -1, 1 };
     protected int m_CurrentMoveX                = 1;
+    protected float m_SizeOffset                = 0f;
     protected Vector2 m_Position => m_Controller.transform.position;
 
     #endregion
@@ -46,10 +50,13 @@ public class TaskMove : BaseTask
 
     #region Init & End
 
-    public TaskMove(Controller controller, bool checkZones = true, bool checkProjectiles = true, Func<float> weight = null) : base(controller, weight)
+    public TaskMove(Controller controller, bool checkZones = true, bool checkProjectiles = true, bool ignoreInvisibleWalls = false, Func<float> weight = null) : base(controller, weight)
     { 
-        m_CheckZones = checkZones;
-        m_CheckProjectiles = checkProjectiles;
+        m_CheckZones                    = checkZones;
+        m_CheckProjectiles              = checkProjectiles;
+        m_IgnoreInvisibleWalls          = ignoreInvisibleWalls;
+        m_IgnoreInvisibleStructures     = controller.IsSpawn;       // invocations can ignore structures
+        m_SizeOffset = GetSizeOffset();
     }
 
     #endregion
@@ -77,7 +84,7 @@ public class TaskMove : BaseTask
         if (m_State != NodeState.RUNNING)
             SetNodeState(NodeState.FAILURE);
 
-        if (! m_Movement.CanMove)
+        if (! m_Movement.CanMove || m_Movement.Speed <= 0)
         {
             ErrorHandler.Log("TaskMove - " + m_State + " : m_Movement.CanMove = false", ELogTag.AITaskMove);
             SetNodeState(NodeState.FAILURE);
@@ -146,28 +153,12 @@ public class TaskMove : BaseTask
         // duplicate array to be able to remove while going through
         var allowedMovement = m_AllowedMovements.ToArray();
 
-        // Récupère le collider depuis le Controller -> GFXHandler
-        var col = m_Controller?.GFXHandler?.Collider;
-
-        // Marge de sécurité pour éviter les collisions "collées"
-        const float skin = 0.1f;
-
-        // Largeur monde du collider (avec scale), fallback sur CharacterSize si besoin
-        float colliderWidthWorld = (col != null)
-            ? col.bounds.size.x                      // largeur complète (gauche->droite)
-            : m_Controller.GFXHandler.CharacterSize; // fallback si pas de collider
-
-        // Option : travailler en "demi-largeur"
-        float halfWidth = colliderWidthWorld * 0.5f;
-
         foreach (int moveX in allowedMovement)
         {
-            // Si tu préfères baser le check sur la largeur complète, utilise colliderWidthWorld à la place.
-
             Collider2D[] colliders = CollisionChecker.GetCollidersInDistance(
                 m_Controller.transform.position.x,
-                moveX * (m_CheckObstaclesSize * halfWidth + skin),
-                CollisionChecker.OBSTACLES_LAYERS
+                moveX * (m_CheckObstaclesSize * m_SizeOffset + SIZE_OFFSET),
+                CollisionChecker.GetObstacleLayers(m_IgnoreInvisibleWalls, m_IgnoreInvisibleStructures)
             );
 
             if (colliders != null && colliders.Length > 0)
@@ -354,6 +345,29 @@ public class TaskMove : BaseTask
 
         // projectile is a threat if the required time to move (+ a safety) is superior to the time that the
         return (timeToMove + THREAT_TIME_WINDOW > timeProjectile, timeToMove <= timeProjectile, move);
+    }
+
+    #endregion
+
+
+    #region Helpers
+
+    /// <summary>
+    /// Calculate half the length of the character (required to check accuracte collision with walls)
+    /// </summary>
+    /// <returns></returns>
+    float GetSizeOffset()
+    {
+        // Récupère le collider depuis le Controller -> GFXHandler
+        var col = m_Controller?.GFXHandler?.Collider;
+
+        // Largeur monde du collider (avec scale), fallback sur CharacterSize si besoin
+        float colliderWidthWorld = (col != null)
+            ? col.bounds.size.x                      // largeur complète (gauche->droite)
+            : m_Controller.GFXHandler.CharacterSize; // fallback si pas de collider
+
+        // Option : travailler en "demi-largeur"
+        return colliderWidthWorld * 0.5f + SIZE_OFFSET;
     }
 
     #endregion

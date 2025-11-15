@@ -1,5 +1,4 @@
 ﻿using Assets.Scripts.Managers.Sound;
-using System;
 using TMPro;
 using Tools;
 using UnityEngine;
@@ -10,7 +9,6 @@ namespace Menu.Common.Buttons
 {
     public class TemplateItemButton : MonoBehaviour
     {
-
         #region Members
 
         // ========================================================================================

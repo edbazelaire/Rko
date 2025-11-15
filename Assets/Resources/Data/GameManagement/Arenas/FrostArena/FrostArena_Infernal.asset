@@ -1,0 +1,583 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df7d51f633e46b344920f012b0e1eca8, type: 3}
+  m_Name: FrostArena_Infernal
+  m_EditorClassIdentifier: 
+  m_RoundDuration: 0
+  m_ArenaLevelData:
+  - RewardsData:
+      Currencies: []
+      Chests: 01000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+    TriggerEffects:
+    - SpellDataName: _FrostBites
+      OverridingData: []
+      Level: 13
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 10
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    - SpellDataName: _NeedlesStorm
+      OverridingData: []
+      Level: 13
+      Target: 0
+      SpellActivationEvent: 3
+      ActivationTreshold: 0.5
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: -1
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    - SpellDataName: _ArcticFog
+      OverridingData: []
+      Level: 13
+      Target: 0
+      SpellActivationEvent: 3
+      ActivationTreshold: 0.25
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 12
+      NActivations: -1
+      Cooldown: 8
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    m_PowerUps:
+    - AncientAegisRune - Primal
+    - BerserkerRune - Major
+    StageData:
+    - m_Boss: 1001
+      m_Skin: 0
+      m_BonusLevel: 0
+      m_ExtraLifes: 0
+      m_Spells: 0a0000004d0000001d00000033000000
+      m_TriggerEffects: []
+      m_BonusStats:
+      - StateEffectProperty: 4
+        BaseValue: 1000
+        BonusValue: 0
+        ScalingFactor: 0
+        DamageCategories: 
+        HitCategories: 
+        SpecialConditions: []
+        StateEffectStackFactors: []
+    - m_Boss: 1001
+      m_Skin: 0
+      m_BonusLevel: 1
+      m_ExtraLifes: 0
+      m_Spells: 0a0000004d0000001d0000003300000004000000
+      m_TriggerEffects: []
+      m_BonusStats: []
+    - m_Boss: 0
+      m_Skin: 0
+      m_BonusLevel: 0
+      m_ExtraLifes: 1
+      m_Spells: 14270000340000001527000016270000
+      m_TriggerEffects:
+      - SpellDataName: _EternalWinter
+        OverridingData: []
+        Level: 13
+        Target: 4
+        SpellActivationEvent: 5
+        ActivationTreshold: 0
+        SpellDeactivationEvent: 0
+        DeactivationTreshold: 0
+        StateEffectEvent: 0
+        StateEffectName: 
+        NStateEffectActivationThreshold: 0
+        Delay: 0
+        Duration: 0
+        NActivations: 1
+        Cooldown: 0
+        RepeatWhenCooldownOver: 0
+        ConsumeLifeOnActivation: 1
+      m_BonusStats: []
+  - RewardsData:
+      Currencies:
+      - Currency: 3
+        Qty: 450
+      Chests: 01000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+    TriggerEffects:
+    - SpellDataName: _PlagueArrows
+      OverridingData: []
+      Level: 13
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 5
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    - SpellDataName: _VenomSpikes
+      OverridingData: []
+      Level: 13
+      Target: 0
+      SpellActivationEvent: 3
+      ActivationTreshold: 0.8
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    - SpellDataName: _SporeSacks
+      OverridingData: []
+      Level: 13
+      Target: 0
+      SpellActivationEvent: 3
+      ActivationTreshold: 0.6
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    - SpellDataName: _GasLeak
+      OverridingData: []
+      Level: 13
+      Target: 0
+      SpellActivationEvent: 3
+      ActivationTreshold: 0.2
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    m_PowerUps:
+    - ParasiteRune - Major
+    - PoisonfangRune - Major
+    - ToxicWaterRune - Major
+    StageData:
+    - m_Boss: 1002
+      m_Skin: 0
+      m_BonusLevel: 1
+      m_ExtraLifes: 0
+      m_Spells: 1a000000300000001700000028000000
+      m_TriggerEffects: []
+      m_BonusStats: []
+    - m_Boss: 1002
+      m_Skin: 0
+      m_BonusLevel: 2
+      m_ExtraLifes: 0
+      m_Spells: 1a000000300000001700000028000000
+      m_TriggerEffects: []
+      m_BonusStats: []
+    - m_Boss: 1
+      m_Skin: 0
+      m_BonusLevel: 0
+      m_ExtraLifes: 1
+      m_Spells: 7827000079270000772700007a2700007c270000
+      m_TriggerEffects:
+      - SpellDataName: _EternalWinter
+        OverridingData: []
+        Level: 13
+        Target: 4
+        SpellActivationEvent: 5
+        ActivationTreshold: 0
+        SpellDeactivationEvent: 0
+        DeactivationTreshold: 0
+        StateEffectEvent: 0
+        StateEffectName: 
+        NStateEffectActivationThreshold: 0
+        Delay: 0
+        Duration: 0
+        NActivations: 1
+        Cooldown: 0
+        RepeatWhenCooldownOver: 0
+        ConsumeLifeOnActivation: 1
+      m_BonusStats: []
+  - RewardsData:
+      Currencies:
+      - Currency: 3
+        Qty: 350
+      - Currency: 0
+        Qty: 1500
+      Chests: 01000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+    TriggerEffects:
+    - SpellDataName: _VoidMines
+      OverridingData: []
+      Level: 13
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 3
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    - SpellDataName: _DoomCrystals
+      OverridingData: []
+      Level: 13
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: -1
+      Cooldown: 20
+      RepeatWhenCooldownOver: 1
+      ConsumeLifeOnActivation: 0
+    - SpellDataName: _TormentedSoil
+      OverridingData: []
+      Level: 13
+      Target: 0
+      SpellActivationEvent: 2
+      ActivationTreshold: 30
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    - SpellDataName: _EndlessFrost
+      OverridingData: []
+      Level: 13
+      Target: 0
+      SpellActivationEvent: 2
+      ActivationTreshold: 40
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 40
+      RepeatWhenCooldownOver: 1
+      ConsumeLifeOnActivation: 0
+    m_PowerUps:
+    - SoulSiffonRune - Primal
+    - ShardcurseRune - Major
+    - CurseRune - Primal
+    - CurseRune - Major
+    StageData:
+    - m_Boss: 1003
+      m_Skin: 0
+      m_BonusLevel: 0
+      m_ExtraLifes: 0
+      m_Spells: 2b00000024000000310000001d000000
+      m_TriggerEffects: []
+      m_BonusStats: []
+    - m_Boss: 1003
+      m_Skin: 0
+      m_BonusLevel: 1
+      m_ExtraLifes: 0
+      m_Spells: 2b00000024000000310000001d000000f0030000
+      m_TriggerEffects: []
+      m_BonusStats: []
+    - m_Boss: 2
+      m_Skin: 0
+      m_BonusLevel: 0
+      m_ExtraLifes: 1
+      m_Spells: dc270000dd270000de270000df270000e0270000e1270000
+      m_TriggerEffects:
+      - SpellDataName: _EternalWinter
+        OverridingData: []
+        Level: 13
+        Target: 4
+        SpellActivationEvent: 5
+        ActivationTreshold: 0
+        SpellDeactivationEvent: 0
+        DeactivationTreshold: 0
+        StateEffectEvent: 0
+        StateEffectName: 
+        NStateEffectActivationThreshold: 0
+        Delay: 0
+        Duration: 0
+        NActivations: 1
+        Cooldown: 0
+        RepeatWhenCooldownOver: 0
+        ConsumeLifeOnActivation: 1
+      m_BonusStats: []
+  - RewardsData:
+      Currencies: []
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+    TriggerEffects:
+    - SpellDataName: _FallingOrbs
+      OverridingData: []
+      Level: 13
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 3
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    - SpellDataName: _ArcticEruption
+      OverridingData: []
+      Level: 13
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 8
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    - SpellDataName: _Geysers
+      OverridingData: []
+      Level: 13
+      Target: 0
+      SpellActivationEvent: 2
+      ActivationTreshold: 30
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 8
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    - SpellDataName: InfinitPower
+      OverridingData: []
+      Level: 13
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 120
+      Duration: 0
+      NActivations: 1
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    m_PowerUps:
+    - FrostRune - Primal
+    - InfernalProtectionRune - Primal
+    - ThermalShockRune - Major
+    - HealRune - Primal
+    - ShieldRune - Minor
+    StageData:
+    - m_Boss: 1004
+      m_Skin: 0
+      m_BonusLevel: 0
+      m_ExtraLifes: 0
+      m_Spells: 1c0000002800000003000000200000004c000000
+      m_TriggerEffects: []
+      m_BonusStats: []
+    - m_Boss: 1004
+      m_Skin: 0
+      m_BonusLevel: 1
+      m_ExtraLifes: 0
+      m_Spells: 1c0000002800000003000000200000004c000000
+      m_TriggerEffects: []
+      m_BonusStats: []
+    - m_Boss: 3
+      m_Skin: 0
+      m_BonusLevel: 0
+      m_ExtraLifes: 0
+      m_Spells: 4028000041280000422800004328000044280000
+      m_TriggerEffects:
+      - SpellDataName: _BlueMeteorsRain
+        OverridingData: []
+        Level: 13
+        Target: 0
+        SpellActivationEvent: 1
+        ActivationTreshold: 0
+        SpellDeactivationEvent: 0
+        DeactivationTreshold: 0
+        StateEffectEvent: 1
+        StateEffectName: Jump
+        NStateEffectActivationThreshold: 0
+        Delay: 2
+        Duration: 0
+        NActivations: -1
+        Cooldown: 0
+        RepeatWhenCooldownOver: 0
+        ConsumeLifeOnActivation: 0
+      m_BonusStats: []
+  - RewardsData:
+      Currencies:
+      - Currency: 3
+        Qty: 800
+      - Currency: 0
+        Qty: 2500
+      - Currency: 1
+        Qty: 80
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 4
+        Title: 1003
+        Avatar: 0
+        Border: 202
+        Emot: 0
+        Badge: 0
+        League: 0
+      Boosts: []
+    TriggerEffects:
+    - SpellDataName: _SnowStorm
+      OverridingData: []
+      Level: 13
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 1
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    - SpellDataName: _FrostTraps
+      OverridingData: []
+      Level: 13
+      Target: 0
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    - SpellDataName: InfinitPower
+      OverridingData: []
+      Level: 13
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 120
+      Duration: 0
+      NActivations: 1
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    m_PowerUps:
+    - FrostbiteRune - Major
+    - BerserkerRune - Minor
+    StageData:
+    - m_Boss: 1005
+      m_Skin: 0
+      m_BonusLevel: 0
+      m_ExtraLifes: 0
+      m_Spells: 1e0000001f0000004c00000015000000
+      m_TriggerEffects: []
+      m_BonusStats: []
+    - m_Boss: 1005
+      m_Skin: 0
+      m_BonusLevel: 1
+      m_ExtraLifes: 0
+      m_Spells: 1e0000001f0000004c00000015000000
+      m_TriggerEffects: []
+      m_BonusStats: []
+    - m_Boss: 4
+      m_Skin: 0
+      m_BonusLevel: 0
+      m_ExtraLifes: 0
+      m_Spells: a4280000
+      m_TriggerEffects: []
+      m_BonusStats: []

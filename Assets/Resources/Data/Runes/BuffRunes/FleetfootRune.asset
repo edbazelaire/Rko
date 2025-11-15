@@ -14,14 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 
-  Description: 
   m_MinorPower:
-    Description: Increase your speed by {0}
-    m_DescriptionVariables:
-    - Name: SpeedBonus
-      WithIcon: 1
+    Description: 'Increase your speed by [SpeedBonus]'
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
@@ -29,12 +24,12 @@ MonoBehaviour:
       BaseValue: 0.05
       BonusValue: 0
       ScalingFactor: 0.05
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
       StateEffectStackFactors: []
   m_MajorPower:
-    Description: Increase your speed by {0}
-    m_DescriptionVariables:
-    - Name: SpeedBonus
-      WithIcon: 1
+    Description: 'Increase your speed by [SpeedBonus]'
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
@@ -42,12 +37,12 @@ MonoBehaviour:
       BaseValue: 0.15
       BonusValue: 0
       ScalingFactor: 0.05
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
       StateEffectStackFactors: []
   m_PrimalPower:
-    Description: Increase your speed by {0}
-    m_DescriptionVariables:
-    - Name: SpeedBonus
-      WithIcon: 1
+    Description: 'Increase your speed by [SpeedBonus]'
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
@@ -55,5 +50,8 @@ MonoBehaviour:
       BaseValue: 0.3
       BonusValue: 0
       ScalingFactor: 0.05
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
       StateEffectStackFactors: []
   m_BonusStats: []

@@ -39,7 +39,6 @@ MonoBehaviour:
     job is a test. Every kill, an experiment. And if the poison doesn\u2019t drop
     his target fast enough\u2026 well, he\u2019ll just slip a little under his own
     tongue and see what happens next."
-  m_DescriptionVariables: []
   m_SpellElements: 03000000
   m_AutoAttack: Quickfix
   m_SpecialAbility: Leaner
@@ -49,19 +48,64 @@ MonoBehaviour:
   BaseHealth: 1500
   MaxEnergy: 100
   BaseEnergy: 10
+  PassiveEnergyGain: 1
   IsStructure: 0
   HealthScaleFactor: 0.1
   CharacterStatScaling:
-  - StateEffectProperty: 101
-    BaseValue: 0.03
+  - StateEffectProperty: 30
+    BaseValue: 7
     BonusValue: 0
-    ScalingFactor: 0.12
+    ScalingFactor: 0.1
+    DamageCategories: 01000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 30
+    BaseValue: 11
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 8
+    BaseValue: 0.1
+    BonusValue: 0
+    ScalingFactor: 0.05
+    DamageCategories: 
+    HitCategories: 02000000
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 8
+    BaseValue: 0.1
+    BonusValue: 0
+    ScalingFactor: 0.05
+    DamageCategories: 
+    HitCategories: 03000000
     SpecialConditions: []
     StateEffectStackFactors: []
   - StateEffectProperty: 22
-    BaseValue: 5
+    BaseValue: 10
     BonusValue: 0
     ScalingFactor: 0.1
+    DamageCategories: 01000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 25
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 107
+    BaseValue: 0.05
+    BonusValue: 0
+    ScalingFactor: 0.05
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers:
@@ -84,4 +128,6 @@ MonoBehaviour:
       Duration: 0
       NActivations: 1
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []

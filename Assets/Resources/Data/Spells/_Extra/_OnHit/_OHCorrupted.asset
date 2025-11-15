@@ -13,15 +13,13 @@ MonoBehaviour:
   m_Name: _OHCorrupted
   m_EditorClassIdentifier: 
   m_Rarety: 0
-  m_Description: 'dealing {0} damage and [EnemyStateEffect.0]'
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
+  m_Description: 'dealing [Damage] damage and [EnemyStateEffect.0]'
   m_SpellElements: 
   Linked: 0
   Graphics: {fileID: 2910976597878939058, guid: 6004c88444bcc9b48ad4d76700f22980, type: 3}
   SpellEventActions: []
   OnHit: []
+  PassiveEffects: []
   SpellEventEffects: []
   OnHitSpellSpawn: 1
   AnimationSoundFX: {fileID: 0}
@@ -45,12 +43,21 @@ MonoBehaviour:
       Persistance: 0
     Speed: 0
   m_SpellRequirements: []
-  MaxHit: 0
+  m_MaxHit: 0
   m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 100
-  m_ExecutionDamage: 0
+  m_Damages:
+  - m_BaseValue: 75
+    m_DamageCategory: 2
+    m_HitCategory: 1
+    m_SpellPropertyScaling:
+      Property: 2
+      Value: 0.1
+      ScalingType: 0
+      RoundingType: 0
+      ScalingTresholds: []
+    m_DamageModifiers: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -61,17 +68,49 @@ MonoBehaviour:
   m_Force:
     m_Speed: 0
     m_Duration: 0
+    m_Targets: 
   m_SpellsScalingLevel:
   - Property: 2
     Value: 0.12
     ScalingType: 0
     RoundingType: 0
     ScalingTresholds: []
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
   m_Size: 3
   TriggerPlayer: 1
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
   EnemyStateEffects:
   - StateEffect: 13
-    Stacks: 3
+    Stacks: 2
     BonusStacksPerLevel: 0.1
     OverridingProperties: []
   AllyStateEffects: []
@@ -79,6 +118,8 @@ MonoBehaviour:
   PersistanceAfterEnd: 1
   Animation: 0
   IsCancellable: 1
+  IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0
   m_Cooldown: 0
   m_SpellSpawn: 0

@@ -14,7 +14,7 @@ namespace AI
 
         #region Core
 
-        public SelectorWeight(List<Node> nodes, Func<float> weight = null) : base(nodes, weight)
+        public SelectorWeight(List<Node> nodes, bool saveCurrent = false, Func<float> weight = null) : base(nodes, saveCurrent, weight)
         {
             
         }

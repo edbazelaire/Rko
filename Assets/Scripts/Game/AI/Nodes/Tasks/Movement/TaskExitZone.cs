@@ -15,7 +15,7 @@ public class TaskExitZone : TaskMove
 
     #region Init & End
     
-    public TaskExitZone(Controller controller, Func<float> weight = null) : base(controller, true, true, weight) { }
+    public TaskExitZone(Controller controller, Func<float> weight = null) : base(controller, true, true, false, weight) { }
 
     #endregion
 
@@ -64,7 +64,7 @@ public class TaskExitZone : TaskMove
                 continue;
 
             // ignore allies spells
-            if (spell.Controller.Team == m_Controller.Team)
+            if (spell.Caster.Team == m_Controller.Team)
                 continue;
 
             if (spell.SpellData.SpellType != ESpellType.Zone)

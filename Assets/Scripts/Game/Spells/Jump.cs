@@ -11,6 +11,8 @@ namespace Game.Spells
         JumpData    m_SpellData => m_BaseSpellData as JumpData;
         float       m_CharacterOffsetY;
 
+        public override float Speed => m_SpellData.Speed * Mathf.Max(0.2f, m_Caster.Movement.CalculateRawSpeed());
+
         #endregion
 
 
@@ -20,29 +22,29 @@ namespace Game.Spells
         {
             base.Initialize(clientId, target, spellData);
             
-            m_CharacterOffsetY = 0.1f + ((CapsuleCollider2D)m_Controller.Collider).size.y / 2;
-            transform.localScale = m_Controller.transform.localScale * m_SpellData.BaseSize;
+            m_CharacterOffsetY = 0.1f + ((CapsuleCollider2D)m_Caster.Collider).size.y / 2;
+            transform.localScale = m_Caster.transform.localScale * m_SpellData.BaseSize;
 
             if (EJumpType.Teleport == m_SpellData.JumpType)
-                m_Controller.GFXHandler.HideCharacter(true);
+                m_Caster.GFXHandler.HideCharacter(true);
 
             // make player untargatable, unmovable and unrotatable
             if (IsServer)
             {
                 // get collider of the Controller
-                var collider = CopyCollider(m_Controller.GFXHandler.Collider);
+                var collider = CopyCollider(m_Caster.GFXHandler.Collider);
                 collider.isTrigger = true;
 
-                m_Controller.StateHandler.SetStateJump(true);
-                m_Controller.SpellHandler.ForceBlockCast(true);
-                m_Controller.Movement.ForceBlockMovement(true);
+                m_Caster.StateHandler.SetStateJump(true);
+                m_Caster.SpellHandler.ForceBlockCast(true);
+                m_Caster.Movement.ForceBlockMovement(true);
             }
 
             // play corresponding animation
             if (m_SpellData.JumpAnimation == EAnimation.None)
-                m_Controller.AnimationHandler.CancelCastAnimation();
+                m_Caster.AnimationHandler.CancelCastAnimation();
             else
-                m_Controller.AnimationHandler.PlayAnimation(m_SpellData.JumpAnimation);
+                m_Caster.AnimationHandler.PlayAnimation(m_SpellData.JumpAnimation);
         }
 
         protected override void End()
@@ -51,40 +53,40 @@ namespace Game.Spells
                 return;
 
             // re activate collider
-            m_Controller.Collider.enabled = true;
+            m_Caster.Collider.enabled = true;
 
             // force pos to original Y
-            var pos = m_Controller.transform.position;
+            var pos = m_Caster.transform.position;
             pos.y = 0f;
-            m_Controller.transform.position = pos;
+            m_Caster.transform.position = pos;
 
             if (m_SpellData.JumpType == EJumpType.Teleport)
             {
-                m_Controller.GFXHandler.HideCharacterClientRPC(false);
-                m_Controller.transform.position = transform.position;
+                m_Caster.GFXHandler.HideCharacterClientRPC(false);
+                m_Caster.transform.position = transform.position;
             }
 
             base.End();
         }
 
-        public override void OnNetworkDespawn()
+        public override void OnDespawned()
         {
-            base.OnNetworkDespawn();
+            base.OnDespawned();
 
             // cancel animation
-            m_Controller.AnimationHandler.CancelCastAnimation();
+            m_Caster.AnimationHandler.CancelCastAnimation();
 
             // reset player position
             m_OriginalPosition.y = 0.5f;
-            m_Controller.transform.position = m_OriginalPosition;
+            m_Caster.transform.position = m_OriginalPosition;
 
             if (!IsServer)
                 return;
 
             // reset jump state
-            m_Controller.StateHandler.SetStateJump(false);
-            m_Controller.SpellHandler.ForceBlockCast(false);
-            m_Controller.Movement.ForceBlockMovement(false);
+            m_Caster.StateHandler.SetStateJump(false);
+            m_Caster.SpellHandler.ForceBlockCast(false);
+            m_Caster.Movement.ForceBlockMovement(false);
         }
 
         #endregion
@@ -99,10 +101,6 @@ namespace Game.Spells
 
             base.Update();
 
-            // only server can check for distance and update the Controller position
-            //if (!IsServer)
-            //    return;
-
             if (m_SpellData.JumpType != EJumpType.Teleport)
                 UpdatePlayerPosition();
         }
@@ -116,8 +114,8 @@ namespace Game.Spells
                 return;
 
             Vector3 pos = transform.position;
-            pos.y += m_CharacterOffsetY;
-            m_Controller.transform.position = pos;
+            //pos.y += m_CharacterOffsetY;
+            m_Caster.transform.position = pos;
         }
 
         #endregion
@@ -132,7 +130,7 @@ namespace Game.Spells
         protected override void OnHitGround(Collider2D collision)
         {
             // check if is caster's arena : do not collide with our arena
-            var arenaTransform = ArenaManager.GetTargettableAreaTransform(m_Controller.Team, false);
+            var arenaTransform = ArenaManager.GetTargettableAreaTransform(m_Caster.Team, false);
             if (arenaTransform == collision.transform)
                 return;
 

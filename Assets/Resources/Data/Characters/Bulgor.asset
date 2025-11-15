@@ -20,7 +20,6 @@ MonoBehaviour:
     furnace-depths of his iron fortress. Beneath the smoke-choked skies, his forges
     burn, his warriors gather\u2014and the silence grows heavier with each passing
     day. "
-  m_DescriptionVariables: []
   m_SpellElements: 
   m_AutoAttack: Lavachunk
   m_SpecialAbility: VolcanicMeditation
@@ -35,27 +34,51 @@ MonoBehaviour:
   HealthScaleFactor: 0.1
   CharacterStatScaling:
   - StateEffectProperty: 5
-    BaseValue: 5
+    BaseValue: 6
     BonusValue: 0
     ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
-  - StateEffectProperty: 27
-    BaseValue: 0.1
+  - StateEffectProperty: 30
+    BaseValue: 25
     BonusValue: 0
-    ScalingFactor: 0
+    ScalingFactor: 0.1
+    DamageCategories: 01000000
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
-  - StateEffectProperty: 101
-    BaseValue: 0.05
+  - StateEffectProperty: 30
+    BaseValue: 25
     BonusValue: 0
-    ScalingFactor: 0
+    ScalingFactor: 0.1
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 25
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 22
+    BaseValue: 20
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 01000000
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
   - StateEffectProperty: 107
-    BaseValue: 0.05
+    BaseValue: 0.1
     BonusValue: 0
-    ScalingFactor: 0
+    ScalingFactor: 0.05
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers:
@@ -78,4 +101,6 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []

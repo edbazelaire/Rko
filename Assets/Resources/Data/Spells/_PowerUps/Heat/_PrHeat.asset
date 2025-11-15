@@ -1,0 +1,152 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c134d41ca291c244b96cfda56a7e83fd, type: 3}
+  m_Name: _PrHeat
+  m_EditorClassIdentifier: 
+  m_Rarety: 0
+  m_Description: Heat the entire field dealing [TickDamage] damage and applying [Burn]
+    every [DurationTick] seconds
+  m_DescriptionVariables:
+  - Name: DurationTick
+    WithIcon: 1
+  m_SpellElements: 
+  Linked: 0
+  Graphics: {fileID: 0}
+  SpellEventActions:
+  - Prefab: {fileID: 1939305563288243135, guid: 58fbc3d1f06ad854890aebf39f289e20, type: 3}
+    MaterialEffect: {fileID: 0}
+    SoundFX: []
+    GFXLifetime:
+      m_StartSpellPart: 450
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 3
+    Size: 0
+    OrderInLayer: 0
+    SpawnTarget: 3
+    SpawnLocation: 2
+    BodyPart: 0
+    IsFollowing: 0
+    IsReplacingGFX: 0
+    Offset: {x: 0, y: 0}
+    Animation: 0
+    SpellAnimation: 
+    StateEffects: 
+  OnHit: []
+  PassiveEffects: []
+  SpellEventEffects: []
+  OnHitSpellSpawn: 1
+  AnimationSoundFX: {fileID: 0}
+  CastSoundFX: {fileID: 0}
+  PermanantSoundFX: {fileID: 0}
+  OnHitSoundFX: {fileID: 0}
+  OnEndSoundFX: {fileID: 0}
+  SpellTarget: 7
+  m_ClampTargetPos: 1
+  TargetOffset:
+    X: 0
+    Y: 0
+  LockTarget: 300
+  ApplyIfNotHitting: 0
+  SpellRelocation:
+    Lifetime:
+      m_StartSpellPart: 0
+      m_EndSpellPart: 0
+      StartAt: 0
+      EndAt: 0
+      Persistance: 0
+    Speed: 0
+  m_SpellRequirements: []
+  m_MaxHit: 0
+  m_Charges: 1
+  EnergyGain: 0
+  EnergyCost: 0
+  m_Damage: 0
+  m_ExecutionDamage: 0
+  m_Damages: []
+  m_Heal: 0
+  m_Shield: 0
+  m_LifeSteal: 0
+  Distance: -1
+  OverrideOnHitProperties: 
+  m_Duration: -1
+  Delay: 0
+  m_Force:
+    m_Speed: 0
+    m_Duration: 0
+    m_Targets: 
+  m_SpellsScalingLevel:
+  - Property: 14
+    Value: 0.1
+    ScalingType: 0
+    RoundingType: 2
+    ScalingTresholds: []
+  OverridesSpawnPosition: 0
+  m_SpawnPosition:
+    SpawnTarget: 0
+    SpawnLocation: 0
+    BodyPart: 0
+    IsFollowing: 0
+    Offset: {x: 0, y: 0}
+  IsFollowing: 0
+  MFollowing:
+    m_TargetToFollow: 0
+    m_TargetOffset: {x: 0, y: 0}
+    m_FollowingSpeed: -1
+  m_Size: 50
+  TriggerPlayer: 1
+  HasSolidBody: 0
+  MSolidBody:
+    m_BodyPrefab: {fileID: 0}
+    m_BodySizePerc: 1
+    m_Hp:
+      StateEffectProperty: 111
+      BaseValue: 1
+      BonusValue: 0
+      ScalingFactor: 0.1
+      DamageCategories: 
+      HitCategories: 
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  IsChanneling: 0
+  MChanneling:
+    IsCancellable: 1
+    IsInterruptable: 1
+    m_ForcedMovementSpeed: 0
+    Animation: 0
+  EnemyStateEffects:
+  - StateEffect: 8
+    Stacks: 1
+    BonusStacksPerLevel: 0
+    OverridingProperties: []
+  AllyStateEffects: []
+  StateEffectStackFactor: 0
+  PersistanceAfterEnd: 0
+  Animation: 0
+  IsCancellable: 0
+  IsInterruptable: 1
+  AnimationTimer: 0
+  m_Cooldown: 0
+  m_SpellSpawn: 1
+  DurationTick: 2
+  m_TickDamage: 50
+  m_TickHeal: 0
+  m_TickShield: 0
+  m_TickEnergy: 0
+  m_ZoneForce:
+    m_Speed: 0
+    m_Duration: 0
+    m_Targets: 
+  GrowSizeFactor: 0
+  MaxSizeAt: 1
+  PersistentStateEffects: []

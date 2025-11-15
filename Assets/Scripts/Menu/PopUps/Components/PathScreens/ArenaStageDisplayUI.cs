@@ -1,6 +1,6 @@
 ﻿using Assets.Scripts.Managers;
-using Data;
 using Data.DataStructures;
+using Data.DataStructures.PowerEffects;
 using Data.GameManagement;
 using Enums;
 using Game.Loaders;
@@ -17,10 +17,10 @@ namespace Menu.PopUps
     {
         #region Members
         
-        ArenaData           m_ArenaData;
-        SArenaLevelData     m_ArenaLevelData;
-        int                 m_ArenaLevel;
-        EArenaType          m_ArenaType;
+        protected ArenaData           m_ArenaData;
+        protected SArenaLevelData     m_ArenaLevelData;
+        protected int                 m_ArenaLevel;
+        protected EArenaType          m_ArenaType;
 
         /// <summary> section containg all objects related to bonus effects </summary>
         GameObject          m_EffectsSection;
@@ -66,12 +66,13 @@ namespace Menu.PopUps
             SetUpBossPreview();
         }
 
+
         #endregion
 
 
         #region GUI Manipulators
 
-        public void RefreshUI()
+        public virtual void RefreshUI()
         {
 
         }
@@ -128,18 +129,18 @@ namespace Menu.PopUps
             TemplateRunePowerUI templateRune = AssetLoader.LoadTemplateItem<TemplateRunePowerUI>();     // load template
             foreach (string powerName in m_ArenaLevelData.PowerUps)
             {
-                SRunePower runePower = SpellLoader.GetPowerUp(powerName, level);
+                SPowerEffect powerEffect = SpellLoader.GetPowerUp(powerName, level);
                 TemplateRunePowerUI runeItemUI = Instantiate(templateRune, m_RunesContainer.transform);
-                runeItemUI.Initialize(runePower);
+                runeItemUI.Initialize(powerEffect);
             }
         }
 
         void SetUpBossPreview()
         {
             SStageData stageData = m_ArenaData.GetBossStageData(m_ArenaLevel);
-            int level = (int)m_ArenaData.ArenaDifficulty * 2 + 1 + m_ArenaData.ArenaDifficultyLevel;
-            m_BossPreviewDisplay.Initialize(stageData.Boss, level);
-            m_BossPreviewDisplay.Button.onClick.AddListener(() => ScreenManager.SetPopUp(EPopUpState.BossInfoPopUp, stageData.Boss.ToString(), level, stageData.Spells.ConvertAll(t => t.ToString())));
+            int level = m_ArenaData.CurrentBaseCharacterLevel;
+            m_BossPreviewDisplay.Initialize(stageData.Boss, stageData.Skin, level);
+            m_BossPreviewDisplay.Button.onClick.AddListener(() => ScreenManager.SetPopUp(EPopUpState.BossInfoPopUp, stageData.Boss.ToString(), stageData.Skin, level, stageData.Spells.ConvertAll(t => t.ToString()), stageData.BonusStats));
         }
 
         #endregion

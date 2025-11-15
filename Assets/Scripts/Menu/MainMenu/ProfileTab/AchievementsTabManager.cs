@@ -9,6 +9,7 @@ namespace Menu
         Borders,
         Titles,
         Badges,
+        Emots,
     }
 
     public class AchievementsTabManager : TabsManager

@@ -14,7 +14,16 @@ namespace Game.AI.BehaviorTrees
         {
             // DEFAULT SPAWN BT
             if (CharacterLoader.IsSpawn(characterName))
-                return new DefaultSpawnBT(controller);
+            {
+                if (characterName == ESpawn.Levrak.ToString())
+                    return new LevrakBT(controller);
+
+                if (characterName == ESpawn.Voidgazer.ToString())
+                    return new VoidgazerBT(controller);
+
+                return new DefaultSpawnBT(controller, characterName);
+            }
+                
 
             // CREATURE
             if (CharacterLoader.IsBoss(characterName))
@@ -53,6 +62,9 @@ namespace Game.AI.BehaviorTrees
 
             if (characterName == EBoss.Fenris.ToString())
                 return new FenrisBT(controller, arenaDifficulty);
+
+            if (characterName == EBoss.Zorg.ToString())
+                return new ZorgBT(controller, arenaDifficulty);
 
             if (characterName == EBoss.Lunassian.ToString()
                 || characterName == EBoss.VenomfangLunassian.ToString()

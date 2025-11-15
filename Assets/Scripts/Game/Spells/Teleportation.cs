@@ -22,25 +22,25 @@ namespace Game.Spells
             base.Initialize(clientId, target, spellData);
 
             m_Timer = m_SpellData.Duration;
-            m_OriginalPosition = m_Controller.transform.position;
+            m_OriginalPosition = m_Caster.transform.position;
 
             // if character is not in his area during cast (can happen for some special animations) get center of his area as original position
-            if (!ArenaManager.IsInAreaBounds(m_OriginalPosition.x, m_Controller.Team, false))
-                m_OriginalPosition = new Vector3(ArenaManager.GetTargettableAreaTransform(m_Controller.Team, false).transform.position.x, 0f, 0f);
+            if (!ArenaManager.IsInAreaBounds(m_OriginalPosition.x, m_Caster.Team, false))
+                m_OriginalPosition = new Vector3(ArenaManager.GetTargettableAreaTransform(m_Caster.Team, false).transform.position.x, 0f, 0f);
 
             // hide character
-            m_Controller.GFXHandler.HideCharacter(true);
+            m_Caster.GFXHandler.HideCharacter(true);
 
-            target.y = 0.1f + ((CapsuleCollider2D)m_Controller.Collider).size.y / 2;
+            target.y = 0.1f + ((CapsuleCollider2D)m_Caster.Collider).size.y / 2;
             transform.position = target;
 
             // make player untargatable, unmovable and unrotatable
             if (!IsServer)
                 return;
 
-            m_Controller.StateHandler.SetStateJump(true);
-            m_Controller.SpellHandler.ForceBlockCast(true);
-            m_Controller.Movement.ForceBlockMovement(true);
+            m_Caster.StateHandler.SetStateJump(true);
+            m_Caster.SpellHandler.ForceBlockCast(true);
+            m_Caster.Movement.ForceBlockMovement(true);
         }
 
 
@@ -49,38 +49,38 @@ namespace Game.Spells
             if (IsServer)
             {
                 // re activate collider
-                m_Controller.Collider.enabled = true;
+                m_Caster.Collider.enabled = true;
 
                 // set character (not hidden) at the position of the spell
-                m_Controller.GFXHandler.HideCharacterClientRPC(false);
-                m_Controller.transform.position = transform.position;
+                m_Caster.GFXHandler.HideCharacterClientRPC(false);
+                m_Caster.transform.position = transform.position;
             }
 
             base.End();
         }
 
-        public override void OnNetworkDespawn()
+        public override void OnDespawned()
         {
             // check if spell went throught the "End()" method
             if (IsServer && ! m_IsOver)
             {
-                m_Controller.Collider.enabled = true;
-                m_Controller.GFXHandler.HideCharacterClientRPC(false);
+                m_Caster.Collider.enabled = true;
+                m_Caster.GFXHandler.HideCharacterClientRPC(false);
             }
 
             // reset player position
             m_OriginalPosition.y = 0.1f;
-            m_Controller.transform.position = m_OriginalPosition;
+            m_Caster.transform.position = m_OriginalPosition;
 
-            base.OnNetworkDespawn();
+            base.OnDespawned();
 
             if (!IsServer)
                 return;
 
             // reset jump state
-            m_Controller.StateHandler.SetStateJump(false);
-            m_Controller.SpellHandler.ForceBlockCast(false);
-            m_Controller.Movement.ForceBlockMovement(false);
+            m_Caster.StateHandler.SetStateJump(false);
+            m_Caster.SpellHandler.ForceBlockCast(false);
+            m_Caster.Movement.ForceBlockMovement(false);
         }
 
         #endregion

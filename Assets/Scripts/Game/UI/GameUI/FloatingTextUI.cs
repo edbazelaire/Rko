@@ -1,71 +1,53 @@
-﻿using Enums;
+﻿using Assets.Scripts.Game;
+using Data.GameManagement;
+using Enums;
+using Save;
 using System.Collections;
 using TMPro;
-using Tools;
 using UnityEngine;
 
-
-public class FloatingTextUI : MObject
+/// <summary>
+/// Component for floating hit text.
+/// Handles color, scaling, and animation depending on hit type.
+/// </summary>
+public class FloatingTextUI : MonoBehaviour
 {
-    #region Members
+    public TMP_Text Text;              // TextMeshPro text component
+    public float Duration = 1f;        // Duration of the float animation
+    public Vector3 FloatOffset = new Vector3(0, 1f, 0); // Base offset direction
+    [Tooltip("Values between which the text size will scale")]
+    public Vector2 TextScale = new Vector2(0, 300);
+    [Tooltip("Max scaling value of the text")]
+    public float TextScaleFactor = 1.5f;
 
-    public TMP_Text Text;
-    public float    Duration = 1f;
-    public Vector3  FloatOffset = new Vector3(0, 1, 0);
+    private EHitCategory m_SpellCategory;
 
-    #endregion
-
-
-    #region Init & End
-
-    protected override void FindComponents()
+    /// <summary>
+    /// Initialize floating text with hit data.
+    /// Sets color, size, and animation.
+    /// </summary>
+    public void SetText(int damage, EHitType hitType, EHitCategory spellCategory)
     {
-        base.FindComponents();
-    }
-
-    public override void Initialize()
-    {
-        base.Initialize();
-    }
-
-    protected override void SetUpUI()
-    {
-        base.SetUpUI();
-    }
-
-    #endregion
-
-
-    #region GUI Manipulators
-
-    public void SetText(int damage, EHitType hitType)
-    {
+        m_SpellCategory = spellCategory;
         Text.text = damage.ToString();
+        Text.color = PlayerSettings.GetHitTypeColor(hitType, spellCategory);
 
-        switch (hitType)
-        {
-            case EHitType.Damage:
-                Text.color = Color.red;
-                break;
+        // Scale text size proportionally to damage value (min -> 1/scale ; max -> scale)
+        float min = TextScale.x * Mathf.Pow(1.1f, ProfileCloudData.AccountLevel - 1);   
+        float max = TextScale.y * Mathf.Pow(1.1f, ProfileCloudData.AccountLevel - 1);
+        float normalized = Mathf.Clamp01((damage - min) / (max - min));
+        transform.localScale = Vector3.one * Mathf.Lerp(1 / TextScaleFactor, TextScaleFactor, normalized * 2f);
 
-            case EHitType.Heal:
-            case EHitType.LifeSteal:
-                Text.color = Color.green;
-                break;
-
-            case EHitType.Shield:
-                Text.color = Color.blue;
-                break;
-
-            default:
-                ErrorHandler.Warning("Unhandled case : " + hitType);
-                Text.color = Color.white;
-                break;
-        }
-
-        StartCoroutine(FloatUp());
+        // 🪄 Choose animation depending on category
+        if (spellCategory == EHitCategory.Dot)
+            StartCoroutine(FloatCurve());
+        else
+            StartCoroutine(FloatUp());
     }
 
+    /// <summary>
+    /// Standard floating animation (straight upward).
+    /// </summary>
     private IEnumerator FloatUp()
     {
         Vector3 startPos = transform.position;
@@ -79,23 +61,28 @@ public class FloatingTextUI : MObject
             yield return null;
         }
 
-        Destroy(gameObject);
+        PoolManager.ReturnObject(gameObject);
     }
 
-    #endregion
-
-
-    #region Listeners
-
-    protected override void RegisterListeners()
+    /// <summary>
+    /// Curved floating animation (used for ticks).
+    /// Adds a side-to-side sine movement.
+    /// </summary>
+    private IEnumerator FloatCurve()
     {
-        base.RegisterListeners();
-    }
+        Vector3 startPos = transform.position;
+        Vector3 endPos = startPos + FloatOffset + new Vector3(Random.Range(-0.5f, 0.5f), 0.2f, 0f);
+        float elapsed = 0f;
 
-    protected override void UnRegisterListeners()
-    {
-        base.UnRegisterListeners();
-    }
+        while (elapsed < Duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / Duration;
+            transform.position = Vector3.Lerp(startPos, endPos, t)
+                               + new Vector3(Mathf.Sin(t * Mathf.PI) * 0.2f, 0, 0);
+            yield return null;
+        }
 
-    #endregion
+        PoolManager.ReturnObject(gameObject);
+    }
 }

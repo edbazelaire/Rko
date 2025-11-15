@@ -1,10 +1,35 @@
 ﻿using Enums;
+using MyBox;
+using NUnit.Framework;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Tools;
 using UnityEngine;
 
 namespace Data.GameManagement
 {
+    [Serializable]
+    public struct SDamageTypeColor
+    {
+        public EHitCategory DamageType;
+        public Color Color;
+    }
+
+    [Serializable]
+    public struct SSpecialValueColor
+    {
+        public ESpecialValue SpecialValue;
+        public Color Color;
+    }
+
+    [Serializable]
+    public struct SHitTypeColor
+    {
+        public EHitType                 HitType;
+        public List<SDamageTypeColor>   Colors;
+    }
+
     [CreateAssetMenu(fileName = "PlayerSettings", menuName = "Game/Management/PlayerSettings")]
     public class PlayerSettings : ScriptableObject
     {
@@ -23,14 +48,23 @@ namespace Data.GameManagement
             { ESpellSlot.Spell4,            KeyCode.Alpha4  },
         };
 
+        [Header("UI")]
+        [SerializeField] List<SHitTypeColor> m_HitTypeColor;
+        [SerializeField] List<SSpecialValueColor> m_SpecialValueColor;
+
+        // =======================================================================================
+        // Public properties
+        public static List<SHitTypeColor> HitTypeColor => Instance.m_HitTypeColor;
+        public static List<SSpecialValueColor> SpecialValueColor => Instance.m_SpecialValueColor;
+
         #endregion
 
 
         #region Instance
 
-        static Settings s_Instance;
+        static PlayerSettings s_Instance;
 
-        public static Settings Instance
+        public static PlayerSettings Instance
         {
             get
             {
@@ -44,7 +78,7 @@ namespace Data.GameManagement
         }
         static void Load()
         {
-            s_Instance = AssetLoader.Load<Settings>("PlayerSettings", AssetLoader.c_ManagementDataPath);
+            s_Instance = AssetLoader.Load<PlayerSettings>("PlayerSettings", AssetLoader.c_ManagementDataPath);
 
             //// reset player prefs
             //foreach (ESettings setting in Enum.GetValues(typeof(ESettings)))
@@ -56,7 +90,7 @@ namespace Data.GameManagement
         #endregion
 
 
-        #region Getters & Setters
+        #region Keys
 
         public static KeyCode GetKeyAtIndex(int index)
         {
@@ -75,6 +109,27 @@ namespace Data.GameManagement
         public static void SetKey(ESpellSlot slot, KeyCode value)
         {
             PlayerPrefs.SetString(slot+"Key", value.ToString());
+        }
+
+        #endregion
+
+
+        #region HitDisplay
+
+        public static bool IsDisplayed(EHitType hitType, EHitCategory damageType)
+        {
+            return true;
+        }
+
+        public static Color GetHitTypeColor(EHitType hitType, EHitCategory damageType)
+        {
+            var hitTypeColor = HitTypeColor.Where((sHitTypeColor) => sHitTypeColor.HitType == hitType).FirstOrDefault();
+            return hitTypeColor.Colors.Where((damageTypeColor) => damageTypeColor.DamageType == damageType).FirstOrDefault().Color;
+        }
+
+        public static Color GetSpecialValueColor(ESpecialValue specialValue)
+        {
+            return SpecialValueColor.Where((sHitTypeColor) => sHitTypeColor.SpecialValue == specialValue).FirstOrDefault().Color;
         }
 
         #endregion

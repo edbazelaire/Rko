@@ -22,7 +22,7 @@ namespace Game.Spells
 
         #region Data Accessors
 
-        public override int GetInt(EStateEffectProperty property, int? stacks = null, string specialCondition = "")
+        public override int GetInt(EStateEffectProperty property, int? stacks = null, EDamageCategory? damageCategory = null, EHitCategory? hitCategory = null, string specialCondition = "")
         {
             if (! HasEffectProperty(property))
                 return 0;
@@ -33,16 +33,16 @@ namespace Game.Spells
             return (int)Mathf.Round(GetFloat(property, specialCondition: specialCondition));
         }
 
-        public override float GetFloat(EStateEffectProperty property, bool ignoreConversion = false, int? stacks = null, string specialCondition = "")
+        public override float GetFloat(EStateEffectProperty property, bool ignoreConversion = false, int? stacks = null, EDamageCategory? damageCategory = null, EHitCategory? hitCategory = null, string specialCondition = "")
         {
             if (! HasEffectProperty(property))
                 return 0f;
 
             if (m_Controller == null)
-                return ApplyMissingLifeFactor(base.GetFloat(property, ignoreConversion, stacks, specialCondition: specialCondition), 0, 1);
+                return ApplyMissingLifeFactor(base.GetFloat(property, ignoreConversion, stacks, damageCategory: damageCategory, hitCategory: hitCategory, specialCondition: specialCondition), 0, 1);
 
             var controller = GetTarget(m_Caster, null);
-            return ApplyMissingLifeFactor(base.GetFloat(property, ignoreConversion, stacks, specialCondition: specialCondition), controller.Life.Hp.Value, controller.Life.MaxHp.Value);
+            return ApplyMissingLifeFactor(base.GetFloat(property, ignoreConversion, stacks, damageCategory: damageCategory, hitCategory: hitCategory, specialCondition: specialCondition), controller.Life.Hp.Value, controller.Life.MaxHp.Value);
         }
 
         #endregion
@@ -52,7 +52,7 @@ namespace Game.Spells
 
         float ApplyMissingLifeFactor(float baseValue, int hp, int maxHp)
         {
-            return m_MissingLifeFactor * (1 - (hp / maxHp)) * baseValue;
+            return m_MissingLifeFactor * (1 - ((float)hp / (float)maxHp)) * baseValue;
         }
 
         public Controller GetTarget(Controller caster, Controller target)

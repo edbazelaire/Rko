@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
+  m_Script: {fileID: 11500000, guid: fddbcff511bf8f6468f46e05e8811cf7, type: 3}
   m_Name: ChaosTurtle
   m_EditorClassIdentifier: 
   m_Rarety: 0
@@ -17,7 +17,6 @@ MonoBehaviour:
     an ally creature dies, or when either a [Burn] or [Cursed] stacks is consumed,
     the Chaos Turtle increase in Size, Hp, Damage and Resistances.\n\nIts carapace
     sends shards of itself everytime it gets hit.
-  m_DescriptionVariables: []
   m_SpellElements: 
   m_AutoAttack: 
   m_SpecialAbility: 
@@ -31,10 +30,12 @@ MonoBehaviour:
   IsStructure: 0
   HealthScaleFactor: 0.12
   CharacterStatScaling:
-  - StateEffectProperty: 27
-    BaseValue: 0.5
+  - StateEffectProperty: 30
+    BaseValue: 15
     BonusValue: 0
-    ScalingFactor: 0
+    ScalingFactor: 0.05
+    DamageCategories: 
+    HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers:
@@ -57,6 +58,8 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []
   - Description: 
     m_DescriptionVariables: []
@@ -77,4 +80,13 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []
+  m_SpawnOffsetX:
+    Min: 0
+    Max: 0
+  m_SpawnOffsetY:
+    Min: 0
+    Max: 0
+  m_PopUpOffset: {x: 0, y: 0}

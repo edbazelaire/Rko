@@ -1,0 +1,119 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7504dcfdefea8814d88795763efaea6d, type: 3}
+  m_Name: Attack
+  m_EditorClassIdentifier: 
+  m_PrettyName: 
+  m_Description: Auto Attack [TresholdValue] times.
+  m_ResetCount: 0
+  m_Character: 10
+  m_MasteryThresholds: 0300000006000000
+  AchievementSubData:
+  - MaxValue: 250
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables:
+      - CollectableType: 2
+        CollectableName: ExtraHands
+        Qty: 5
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 1000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 2
+        Title: 0
+        Avatar: 1103
+        Border: 0
+        Emot: 15
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 2500
+    Rewards:
+      Currencies: []
+      Chests: 01000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 5000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 5
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Emot: 706
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 10000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables:
+      - CollectableType: 2
+        CollectableName: ExtraHands
+        Qty: 20
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 15000
+    Rewards:
+      Currencies: []
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 25000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 5
+        Title: 0
+        Avatar: 0
+        Border: 0
+        Emot: 709
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 50000
+    Rewards:
+      Currencies: []
+      Chests: 05000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 100000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 1
+        Title: 30
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 2011
+        League: 0
+      Boosts: []
+  m_Spells: 07040000
+  m_StateEffects: 

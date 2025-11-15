@@ -76,7 +76,7 @@ namespace Menu.MainMenu.MainTab
             UIHelper.DisplayIconCount(value, AssetLoader.Load<Sprite>("Skull_2_White", AssetLoader.c_OtherUIPath), m_ValueDisplayer.transform);
 
             // save in player prefs (this send an event)
-            PlayerPrefsHandler.SetArenaExtraDifficulty(m_ArenaType, m_ArenaDifficulty, value);
+            //PlayerPrefsHandler.SetArenaExtraDifficulty(m_ArenaType, m_ArenaDifficulty, value);
         }
 
         void RefreshButtons()

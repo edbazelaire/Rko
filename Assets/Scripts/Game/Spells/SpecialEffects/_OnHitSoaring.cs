@@ -19,7 +19,7 @@ namespace Game.Spells.SpecialEffects
         {
             base.FindComponents();
 
-            m_Controller = Finder.FindComponent<Spell>(gameObject).Controller;
+            m_Controller = Finder.FindComponent<Spell>(gameObject).Caster;
         }
 
         public override void Initialize(int level)
@@ -47,7 +47,7 @@ namespace Game.Spells.SpecialEffects
                 if (spawnController.Character != ESpawn.AzurePowerOrb.ToString())
                     continue;
 
-                spawnController.Life.Kill(true);
+                spawnController.Life.Kill(true, true);
                 nStacks++;  
             }
 

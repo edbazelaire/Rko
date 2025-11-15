@@ -1,14 +1,14 @@
 ﻿using Enums;
 using Game.UI;
 using Game;
-using System;
-using System.Collections;
 using Tools;
 using Unity.Netcode;
 using UnityEngine;
-using Menu.Common.Dots;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEngine.UI;
+using Assets.Scripts.Data.DataStructures.SpellSubStructures;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Assets.Scripts.Game
 {
@@ -45,6 +45,9 @@ namespace Assets.Scripts.Game
         {
             DisplayEmot(emot, clientId);
 
+            if (GameManager.Instance.IsOfflineMode)
+                return;
+
             // Server sends display request to target client
             if (IsServer)
             {
@@ -64,15 +67,32 @@ namespace Assets.Scripts.Game
                 return;
             }
 
-            // check if already has an emot active
+            // check si déjà un emot actif
             if (m_CurrentEmots.ContainsKey(clientId) && !m_CurrentEmots[clientId].IsDestroyed())
                 m_CurrentEmots[clientId].End();
 
+            // charge prefab UI
             var emotUI = AssetLoader.Load<EmotUI>("Emot", AssetLoader.c_EmotsPath);
-            m_CurrentEmots[clientId] = Instantiate(emotUI, player.transform);
-            m_CurrentEmots[clientId].Initialize(emot);
-            m_CurrentEmots[clientId].transform.localPosition += new Vector3(0f, 1.2f, 0f);
-            m_CurrentEmots[clientId].transform.localScale *= 0.2f;
+
+            // instancie dans le HUD canvas
+            m_CurrentEmots[clientId] = Instantiate(emotUI, GameUIManager.Instance.Canvas.transform);
+
+            // Position en pixels écran
+            Vector3 screenPos = Camera.main.WorldToScreenPoint(player.transform.position + new Vector3(0.5f, 0.7f, 0));
+
+            // Conversion écran -> local UI
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                GameUIManager.Instance.Canvas.transform as RectTransform,
+                screenPos,
+                GameUIManager.Instance.Canvas.worldCamera,  // la caméra du canvas
+                out Vector2 localPos
+            );
+
+            // Applique la position locale
+            m_CurrentEmots[clientId].GetComponent<RectTransform>().localPosition = localPos;
+
+            // init game object
+            m_CurrentEmots[clientId].Initialize(emot, startTimer: true);
         }
 
         [ServerRpc]

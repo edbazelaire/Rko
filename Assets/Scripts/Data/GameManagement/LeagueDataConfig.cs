@@ -12,6 +12,12 @@ namespace Data.GameManagement
     {
         public int                      NStages;
         public SRewardsData             Rewards;
+
+        public SLeagueLevelData(int nStages, SRewardsData rewards)
+        {
+            NStages = nStages;
+            Rewards = rewards;
+        }
     }
 
     [Serializable]
@@ -19,6 +25,12 @@ namespace Data.GameManagement
     {
         public ELeague                  League;
         public List<SLeagueLevelData>   LevelData;
+
+        public SLeagueData(ELeague league, List<SLeagueLevelData> levelData)
+        {
+            League = league;
+            LevelData = levelData;
+        }
     }
 
 
@@ -28,13 +40,14 @@ namespace Data.GameManagement
         #region Members
 
         public static Action<EArenaType, int> LeagueLevelCompletedEvent;
+        public static ELeague MaxLeague => ELeague.Champion;
+
 
         [SerializeField] List<SLeagueData> m_LeagueData;
 
         public List<SLeagueData>        LeagueDataList          => m_LeagueData;
         public SLeagueData              CurrentLeagueData       => GetLeagueData(ProgressionCloudData.CurrentLeague);
         public SLeagueLevelData         CurrentLeagueLevelData  => GetLeagueLevelData(ProgressionCloudData.CurrentLeague, ProgressionCloudData.CurrentLeagueLevel);
-        public ELeague                  MaxLeague               => ELeague.Champion;
 
         #endregion
 
@@ -48,6 +61,11 @@ namespace Data.GameManagement
         /// <returns></returns>
         public SLeagueData GetLeagueData(ELeague league)
         {
+            if (league == MaxLeague)
+            {
+                return new SLeagueData(league, new());
+            }
+
             foreach (var temp in m_LeagueData)
             {
                 if (temp.League == league)
@@ -55,7 +73,7 @@ namespace Data.GameManagement
             }
 
             ErrorHandler.Error("Unable to find data for league " + league);
-            return new SLeagueData();
+            return new SLeagueData(league, new());
         }
 
         /// <summary>
@@ -66,6 +84,9 @@ namespace Data.GameManagement
         /// <returns></returns>
         public SLeagueLevelData GetLeagueLevelData(ELeague league, int level)
         {
+            if (league == MaxLeague)
+                return new SLeagueLevelData(level, new());
+
             var leagueData = GetLeagueData(league);
             if (level < 0 || level >= leagueData.LevelData.Count)
             {
@@ -78,6 +99,9 @@ namespace Data.GameManagement
 
         public void UpdateLeagueValue(bool up)
         {
+            if (CurrentLeagueData.League == MaxLeague)
+                return;
+
             ProgressionCloudData.UpdateLeagueValue(up);
         }
 

@@ -27,9 +27,9 @@ namespace Menu.Common.Infos
             m_BonusValue.gameObject.SetActive(false);
         }
 
-        public virtual void Initialize(string name, object value, object newValue = null, EScalingDirection scalingDirection = EScalingDirection.None)
+        public virtual void Initialize(string name, object value, object newValue = null, EScalingDirection scalingDirection = EScalingDirection.None, string title = "")
         {
-            base.Initialize(name, value);
+            base.Initialize(name, value, title);
 
             // change color depending on scaling direction
             SetupScalingDirection(scalingDirection);
@@ -90,7 +90,14 @@ namespace Menu.Common.Infos
                     m_Icon.sprite = AssetLoader.LoadUIElementIcon("TrueDamage");
                     m_NameText.text = TextLocalizer.LocalizeText("Ignore Resistances");
                     m_ValueText.text = "";
-                    m_BonusValue.gameObject.SetActive(false);
+                    m_ValueContainer?.SetActive(false);
+                    return true;
+
+                case "IgnoreCC":
+                    m_Icon.sprite = AssetLoader.LoadUIElementIcon("IgnoreCC");
+                    m_NameText.text = TextLocalizer.LocalizeText("Removes Control Effects");
+                    m_ValueText.text = "";
+                    m_ValueContainer?.SetActive(false);
                     return true;
             }
 
@@ -101,14 +108,15 @@ namespace Menu.Common.Infos
         {
             base.SetUpIcon();
 
-            if (SpellLoader.IsStateEffect(m_Name))
+            if (SpellLoader.IsStateEffect(m_IconName))
             {
-                m_Icon.sprite = AssetLoader.LoadStateEffectIcon(m_Name);
-                m_NameText.text += " Cost";
+                m_Icon.sprite = AssetLoader.LoadStateEffectIcon(m_IconName);
+                if (SpellLoader.IsStateEffect(m_NameText.text))
+                    m_NameText.text += " Cost";
             }
             else
             {
-                m_Icon.sprite = AssetLoader.LoadUIElementIcon(m_Name);
+                m_Icon.sprite = AssetLoader.LoadUIElementIcon(m_IconName);
             }
         }
 

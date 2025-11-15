@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Menu.MainMenu.MainTab.Chests;
+using Assets.Scripts.UI;
 using Data.ArenaEffects.ArenaMods;
 using Data.GameManagement;
 using Enums;
@@ -45,6 +46,7 @@ namespace Tools
         // ---- Backgrounds 
         public const string c_BackgroundsPath               = c_PrefabsPath + "Backgrounds/";
         public const string c_ArenaBackgroundsPath          = c_BackgroundsPath + "Arenas/";
+        public const string c_LoadingScreenPath             = c_BackgroundsPath + "LoadingScreen/";
         // ---- Characters 
         public const string c_CharactersPreviewPath         = c_PrefabsPath + "Characters/";
         public const string c_BossesPreviewPath             = c_PrefabsPath + "Bosses/";
@@ -66,6 +68,7 @@ namespace Tools
         public const string c_PowerOrbsTemplatesPath        = c_TemplatesUIPath + "PowerOrbs/";
         public const string c_PowerUpsTemplatesPath         = c_TemplatesUIPath + "PowerUps/";
         public const string c_BoostsTemplatesPath           = c_TemplatesUIPath + "Boosts/";
+        public const string c_EmotsTemplatesPath            = c_TemplatesUIPath + "Emots/";
         // ---- Commons
         public const string c_CommonPath                    = c_UIPath + "Common/";
         public const string c_ButtonPath                    = c_CommonPath + "Buttons/";
@@ -81,6 +84,7 @@ namespace Tools
         // ---- Arena Background
         public const string c_GameContentPath               = c_UIPath + "Game/";
         public const string c_GameUIContentPath             = c_GameContentPath + "GameUI/";
+        public const string c_EndGameUIPath                 = c_GameUIContentPath + "EndGameUI/";
         public const string c_EmotsSectionUIPath            = c_GameUIContentPath + "EmotsSectionUI/";
         public const string c_SpawnUIContentPath            = c_GameUIContentPath + "Spawns/";
         public const string c_ArenaBackgroundPath           = c_GameContentPath + "Arena/";
@@ -101,13 +105,14 @@ namespace Tools
         public const string c_SpritesPath                   = "Sprites/";
         
         // -- UI
+        public const string c_EndGameSprites                = c_SpritesPath + "EndGame/";
         public const string c_UISpritesPath                 = c_SpritesPath + "UI/";
         public const string c_ButtonsPath                   = c_UISpritesPath + "Buttons/";
+        public const string c_CardsPath                     = c_ButtonsPath + "Cards/";
         public const string c_RaysPath                      = c_UISpritesPath + "Rays/";
         public const string c_TutoUIPath                    = c_UISpritesPath + "Tuto/";
         public const string c_OtherUIPath                   = c_UISpritesPath + "Other/";
         public const string c_CaptionsPath                  = c_TutoUIPath + "Captions/";
-        public const string c_EmotsSpritePath               = c_SpritesPath + "Emots/";
         
         // -- Backgrounds
         public const string c_BackgroundsImagePath         = c_SpritesPath + "Backgrounds/";
@@ -121,11 +126,13 @@ namespace Tools
         public const string c_AvatarsPath                   = c_ProfilePath + "Avatars/";
         public const string c_BordersPath                   = c_ProfilePath + "Borders/";
         public const string c_BadgesPath                    = c_ProfilePath + "Badges/";
-        
+        public const string c_EmotsSpritePath               = c_ProfilePath + "Emots/";
+
         // -- Icons
         public const string c_IconPath                      = c_SpritesPath + "Icons/";
         public const string c_IconCharactersPath            = c_IconPath + "Characters/";
         public const string c_IconBossesHeadsPath           = c_IconCharactersPath + "BossesHeads/";
+        public const string c_IconSpawnsPath                = c_IconCharactersPath + "Spawns/";
         public const string c_IconSpellsPath                = c_IconPath + "Spells/";
         public const string c_IconStateEffectsPath          = c_IconSpellsPath + "StateEffects/";
         public const string c_IconRunesPath                 = c_IconPath + "Runes/";
@@ -348,6 +355,16 @@ namespace Tools
             return Load<TemplateShopItemUI>(c_TemplatesShopPath + c_TemplatePrefix + name + "Item");
         }
 
+        public static T LoadCurrencyTemplateItem<T>(ECurrency currency) where T : TemplateShopItemUI
+        {
+            T template = Load<T>(c_TemplatesShopPath + "Currency/TemplateShopItem_" + currency.ToString(), false);
+            if (template != null)
+                return template;
+
+            ErrorHandler.Warning("Unable to find template for currency : " +  currency + " - loading default");
+            return Load<T>(c_TemplatesShopPath + "Currency/TemplateShopItem_Currency");
+        }
+
         public static T LoadShopTemplateItem<T>(string name = "") where T : TemplateShopItemUI
         {
             var allTemplates = LoadAll<T>(c_TemplatesShopPath);
@@ -378,6 +395,16 @@ namespace Tools
 
             return allTemplates[0];
         }
+
+        public static T LoadChestTemplateItem<T>(EChest chest) where T : TemplateShopItemUI
+        {
+            T template = Load<T>(c_TemplatesShopPath + "Chests/TemplateShopItem_" + chest.ToString(), false);
+            if (template != null)
+                return template;
+
+            return Load<T>(c_TemplatesShopPath + "Chests/TemplateShopItem_Chest");
+        }
+
 
         public static AchievementRewardUI LoadAchievementRewardTemplate(EAchievementReward achievementReward)
         {
@@ -417,6 +444,15 @@ namespace Tools
         public static GameObject LoadBoostTemplate(EBoost boost)
         {
             return Load<GameObject>(boost.ToString(), c_BoostsTemplatesPath);
+        }
+
+        public static EmotTemplateUI LoadEmotRewardTemplate(EEmot emot)
+        {
+            var template = Load<EmotTemplateUI>(c_EmotsTemplatesPath + emot.ToString(), warning: false);
+            if (template == null)
+                template = Load<EmotTemplateUI>(c_EmotsTemplatesPath + "EmotTemplate", warning: false);
+
+            return template;
         }
 
         #endregion
@@ -478,7 +514,7 @@ namespace Tools
                 path = c_IconCharactersPath;
 
             else if (iconType == typeof(ESpawn))
-                path = c_IconCharactersPath;
+                path = c_IconSpawnsPath;
 
             else if (iconType == typeof(ESpell))
                 path = c_IconSpellsPath;
@@ -501,11 +537,15 @@ namespace Tools
             else if (iconType == typeof(EBadge))
                 return Load<Sprite>(itemName, AssetLoader.c_BadgesPath);
 
+            else if (iconType == typeof(EEmot))
+                return Load<Sprite>(itemName, AssetLoader.c_EmotsSpritePath);
+
             else if (iconType == typeof(EChest))
             {
                 path = c_ChestsIconPath;
                 itemName += "Chest";
             }
+
             else if (iconType == typeof(EArenaMod))
                 return LoadFilterIcon(itemName);
 
@@ -623,6 +663,34 @@ namespace Tools
         public static Sprite LoadFilterIcon(string name)
         {
             return Load<Sprite>(c_IconFiltersPath + c_IconPrefix + name);
+        }
+
+        public static Sprite LoadPowerUpIconBorder(ERuneActivation runeActivation)
+        {
+            return Load<Sprite>(c_CardsPath + "PowerUpCards/PowerUpBorder_" + runeActivation.ToString());
+        }
+
+        public static Sprite LoadMasteryBorder(int mastery, ERarety rarety)
+        {
+            if (mastery <= 0)
+            {
+                ErrorHandler.Warning("Trying to load border for mastery <= 0 : " + mastery);
+                return null;
+            }
+
+            //return Load<Sprite>(c_CardsPath + "MasteryBorders/MasteryBorder_" + mastery.ToString());
+            return Load<Sprite>(c_CardsPath + "MasteryBorders/CardMastery_" + rarety.ToString() + "_" + mastery.ToString());
+        }
+
+        #endregion
+
+
+        #region Loading Screens
+
+        public static bool TryLoadLoadingScreen(string name, out LoadingScreen screen)
+        {
+            screen = Load<LoadingScreen>("LoadingScreen_" + name, c_LoadingScreenPath, warning: false);
+            return screen != null;
         }
 
         #endregion

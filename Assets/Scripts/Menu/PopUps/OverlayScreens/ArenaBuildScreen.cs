@@ -103,7 +103,7 @@ namespace Menu.PopUps.OverlayScreens
 
         void SetupCharacter()
         {
-            CoroutineManager.DelayMethod(() => UIHelper.SpawnCharacter(ProgressionCloudData.CurrentArena.BuildData.Character, m_CharacterSection, padding: new Vector2(0.1f, 0)));
+            CoroutineManager.DelayMethod(() => UIHelper.SpawnCharacter(ProgressionCloudData.CurrentArena.BuildData.Character, ESkin.None, m_CharacterSection, padding: new Vector2(0.1f, 0)));
         }
 
         void SetupSpells()
@@ -198,7 +198,7 @@ namespace Menu.PopUps.OverlayScreens
                 if (buildIndex == 1)
                     runeActivation = ERuneActivation.Major;
 
-                Main.SetPopUp(EPopUpState.RuneInfoPopUp, (ERune)template.Collectable, ProgressionCloudData.CurrentArena.BuildData.RuneLevels[buildIndex], runeActivation);
+                Main.SetPopUp(EPopUpState.RuneInfoPopUp, (ERune)template.Collectable, ProgressionCloudData.CurrentArena.BuildData.RuneLevels[buildIndex], true, runeActivation);
                 return;
             }
 

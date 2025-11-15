@@ -1,0 +1,121 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9d516b3dac707b40872f083050bc425, type: 3}
+  m_Name: ReduceDamage
+  m_EditorClassIdentifier: 
+  m_PrettyName: 
+  m_Description: Reduce [TresholdValue] damage with Alexander.
+  m_ResetCount: 0
+  m_Character: 1
+  m_MasteryThresholds: 0300000006000000
+  AchievementSubData:
+  - MaxValue: 1000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 2
+        Title: 0
+        Avatar: 1000
+        Border: 0
+        Emot: 17
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 2500
+    Rewards:
+      Currencies: []
+      Chests: 01000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 5000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 5
+        Title: 0
+        Avatar: 1001
+        Border: 0
+        Emot: 22
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 10000
+    Rewards:
+      Currencies: []
+      Chests: 01000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 25000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables:
+      - CollectableType: 3
+        CollectableName: HammeredRune
+        Qty: 9
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 50000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 4
+        Title: 23
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 0
+        League: 0
+      Boosts: []
+  - MaxValue: 100000
+    Rewards:
+      Currencies: []
+      Chests: 02000000
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 250000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables:
+      - CollectableType: 3
+        CollectableName: HammeredRune
+        Qty: 15
+      AchievementRewards: []
+      Boosts: []
+  - MaxValue: 500000
+    Rewards:
+      Currencies: []
+      Chests: 
+      Collectables: []
+      AchievementRewards:
+      - AchievementReward: 4
+        Title: 24
+        Avatar: 0
+        Border: 0
+        Emot: 0
+        Badge: 0
+        League: 0
+      Boosts: []
+  m_Property: 5
+  m_DamageCategories: 
+  m_HitCategories: 
+  m_SpecialConditions: []

@@ -12,14 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b96e741d1163c1b49a8e5f5d3d9c60b3, type: 3}
   m_Name: ChaosTurtleDiet
   m_EditorClassIdentifier: 
-  m_Description: Feeds on the soul of the dying spawns to get 25 stacks.\nAlso gains
-    stacks on consuming [Burn] (+5 stacks) and [Cursed] (+1 stack).\n\nFor each stack
-    gain {0} hp and {1} resistance
+  m_Description: Feeds on the soul of the dying spawns to get [EnergyGainOnDeath]
+    stacks.\nAlso gains stacks on consuming [Burn] (+5 stacks) and [Cursed] (+1 stack).\n\nFor
+    each stack gain {0} hp and {1} resistance
   m_DescriptionVariables: 6f00000005000000
   m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 1
-  m_VisualEffects: []
   m_GfxEffects: []
   m_Animation: 0
   m_OnApplySoundFX: {fileID: 0}
@@ -30,10 +29,12 @@ MonoBehaviour:
   m_IsConsumedOnEnd: 0
   m_IsTrueDamage: 0
   m_EndWithShield: 0
+  m_EndAt0Stacks: 1
   m_RefreshShield: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: -1
+  m_StartingStacks: 1
   m_MaxStacks: 250
   m_StackDecay: -1
   m_StartsActivated: 1
@@ -44,7 +45,7 @@ MonoBehaviour:
     Stacks: 1
   - StateEffectEvent: 3
     StateEffectName: Burn
-    Stacks: 5
+    Stacks: 7
   m_BonusStats:
   - StateEffectProperty: 5
     BaseValue: 1
@@ -64,3 +65,4 @@ MonoBehaviour:
   m_StateEffectScalingLevel: []
   m_StateEffectScalingStacks: []
   m_CounterProjectile: {fileID: 11400000, guid: c27c4e74eb70f8e439d1354e7e8ffaad, type: 2}
+  m_EnergyGainOnDeath: 10

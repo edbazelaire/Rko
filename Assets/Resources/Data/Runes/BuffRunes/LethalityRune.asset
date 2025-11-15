@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a402882a257d18548a281b17574b3711, type: 3}
+  m_Name: LethalityRune
+  m_EditorClassIdentifier: 
+  m_Rarety: 1
+  m_Description: 
+  m_DescriptionVariables: []
+  m_SpellElements: 00000000
+  m_MinorPower:
+    Description: Gain [Lethality] lethality
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects: []
+    m_BonusStats:
+    - StateEffectProperty: 28
+      BaseValue: 0.1
+      BonusValue: 0
+      ScalingFactor: 0.05
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  m_MajorPower:
+    Description: Gain [Lethality] lethality
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects: []
+    m_BonusStats:
+    - StateEffectProperty: 28
+      BaseValue: 0.15
+      BonusValue: 0
+      ScalingFactor: 0.05
+      SpecialConditions: []
+      StateEffectStackFactors: []
+  m_PrimalPower:
+    Description: Gain [Lethality] lethality
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects: []
+    m_BonusStats:
+    - StateEffectProperty: 28
+      BaseValue: 0.2
+      BonusValue: 0
+      ScalingFactor: 0.05
+      SpecialConditions: []
+      StateEffectStackFactors: []

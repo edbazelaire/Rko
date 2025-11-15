@@ -10,12 +10,17 @@ namespace Game.Spells
     {
         void IHealInterceptor.OnPreHeal(ref int heal, ulong casterId)
         {
+            var controller = GameManager.Instance.GetFirstEnemy(m_Controller.Team);
+            if (controller == null)
+                return;
+
             // convert heal to damages
-            GameManager.Instance.GetFirstEnemy(m_Controller.Team).Life.Hit(
+            controller.Life.Hit(
                 damage:         (int)Math.Round(0.5f * heal), 
                 casterId:       m_Controller.PlayerId, 
-                source:         "Junkheal", 
-                spellCategory:  ESpellCategory.Tick, 
+                source:         StateEffectName, 
+                damageCategory: EDamageCategory.Magical, 
+                hitCategory:    EHitCategory.Dot, 
                 ignoreRes:      true
             );
 

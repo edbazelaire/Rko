@@ -33,6 +33,10 @@ namespace Assets.Scripts.Data.DataStructures.SpellSubStructures
 
         public float GetBonusValue(int level, Controller caster, Controller target)
         {
+            // SHOWCASE (to get info from outside the game - return the value at 1 stack)
+            if (caster == null && target == null)
+                return GetBonusValue(level, 1);
+
             var controller = GetTarget(caster, target);
             var finalValue = GetBonusValue(level, controller.StateHandler.GetStacks(StateEffect));
 

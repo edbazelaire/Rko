@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Enums;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Data.DataStructures.SpellSubStructures
@@ -14,6 +16,8 @@ namespace Data.DataStructures.SpellSubStructures
         protected float m_Speed;
         [SerializeField]
         protected float m_Duration;
+        [SerializeField]
+        protected List<EStateEffectTarget> m_Targets;
 
         // =======================================================================
         // Private
@@ -25,6 +29,7 @@ namespace Data.DataStructures.SpellSubStructures
         public int          Level       => m_Level;
         public float        Speed       => m_Speed;
         public float        Duration    => m_Duration;
+        public List<EStateEffectTarget> Targets => m_Targets;
 
         public bool         IsActive    => Speed != 0;
 
@@ -33,10 +38,11 @@ namespace Data.DataStructures.SpellSubStructures
 
         #region Init & End
 
-        public SForce(float speed, float duration)
+        public SForce(float speed, float duration, List<EStateEffectTarget> targets)
         {
             m_Speed = speed;
             m_Duration = duration;
+            m_Targets = targets;
         }
 
         #endregion

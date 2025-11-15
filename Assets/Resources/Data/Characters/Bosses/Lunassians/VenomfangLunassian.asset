@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f867e729cd163844296773769e23f97f, type: 3}
   m_Name: VenomfangLunassian
   m_EditorClassIdentifier: 
-  Rarety: 0
+  m_Rarety: 0
   m_Description: 
-  m_DescriptionVariables: []
+  m_SpellElements: 
   m_AutoAttack: FrostVenomOrb
   m_SpecialAbility: PoisonDart
   m_Ultimate: HealingField
@@ -22,7 +22,8 @@ MonoBehaviour:
   BaseSpeed: 0.5
   BaseHealth: 1500
   MaxEnergy: 100
-  BaseEnergy: 10
+  BaseEnergy: 0
+  PassiveEnergyGain: 1
   IsStructure: 0
   HealthScaleFactor: 0.12
   CharacterStatScaling:
@@ -30,15 +31,32 @@ MonoBehaviour:
     BaseValue: 0.1
     BonusValue: 0
     ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
     StateEffectStackFactors: []
   - StateEffectProperty: 3
     BaseValue: 0.1
     BonusValue: 0
     ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
     StateEffectStackFactors: []
   - StateEffectProperty: 5
     BaseValue: 10
     BonusValue: 0
     ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 30
+    BaseValue: 30
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
     StateEffectStackFactors: []
   m_SpecialPowers: []

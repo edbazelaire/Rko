@@ -1,7 +1,9 @@
 ﻿using Enums;
+using System;
 using System.Collections;
 using Tools;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 namespace Game.UI
@@ -12,8 +14,9 @@ namespace Game.UI
 
         [SerializeField] float DISPLAY_TIME = 2f;
 
-        SpriteRenderer m_SpriteRenderer;
+        Image m_EmotIcon;
         float m_Timer;
+        bool m_IsTimerStarted = false;
 
         #endregion
 
@@ -24,15 +27,30 @@ namespace Game.UI
         {
             base.FindComponents();
 
-            m_SpriteRenderer = Finder.FindComponent<SpriteRenderer>(gameObject, "EmotIcon");
+            m_EmotIcon = Finder.FindComponent<Image>(gameObject, "EmotIcon");
         }
 
-        public void Initialize(EEmot emot)
+        public void Initialize(string emotName, bool startTimer = true)
+        {
+            if (! Enum.TryParse(emotName, out EEmot emot))
+            {
+                ErrorHandler.Warning("Unable to set " + emotName + " as emot");
+                Destroy(gameObject);
+                return;
+            }
+
+            Initialize(emot, startTimer);
+        }
+
+        public void Initialize(EEmot emot, bool startTimer = true)
         {
             base.Initialize();
+            m_IsTimerStarted = false;
 
-            m_Timer = DISPLAY_TIME;
             SetEmot(emot);
+
+            if (startTimer)
+                StartTimer();
         }
 
         protected override void SetUpUI()
@@ -50,10 +68,13 @@ namespace Game.UI
 
         #region Update
 
-        private void Update()
+        private void LateUpdate()
         {
-            if (!m_Initialized)
+            if (!m_IsTimerStarted)
                 return;
+
+            // Freeze rotation (world-space)
+            transform.rotation = Quaternion.identity;
 
             if (m_Timer > 0)
             {
@@ -64,10 +85,10 @@ namespace Game.UI
             End();
         }
 
-        private void LateUpdate()
+        public void StartTimer(float? timer = null)
         {
-            // Freeze rotation (world-space)
-            transform.rotation = Quaternion.identity; 
+            m_Timer = timer ?? DISPLAY_TIME;
+            m_IsTimerStarted = true;
         }
 
         #endregion
@@ -77,7 +98,7 @@ namespace Game.UI
 
         public void SetEmot(EEmot emot)
         {
-            m_SpriteRenderer.sprite = AssetLoader.Load<Sprite>(emot.ToString(), AssetLoader.c_EmotsSpritePath);
+            m_EmotIcon.sprite = AssetLoader.Load<Sprite>(emot.ToString(), AssetLoader.c_EmotsSpritePath);
         }
 
         #endregion

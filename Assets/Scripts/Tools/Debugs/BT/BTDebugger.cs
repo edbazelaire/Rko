@@ -99,7 +99,6 @@ namespace Tools.Debugs.BT
 
         void ToggleActivation()
         {
-            Debug.Log("ToggleActivation");
             Activate(!m_IsActive);
         }
 

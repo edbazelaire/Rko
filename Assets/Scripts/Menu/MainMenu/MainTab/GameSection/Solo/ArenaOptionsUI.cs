@@ -20,7 +20,6 @@ namespace Menu.MainMenu.MainTab
         // =================================================================================
         // GameObject & Components
         CurrentArenaModsDisplayer m_CurrentArenaModsDisplayer;
-        Transform m_ArenaExtraDifficulty;
         Button m_Button;
         TMP_Text m_Replacement;
 
@@ -40,7 +39,6 @@ namespace Menu.MainMenu.MainTab
 
             m_CurrentArenaModsDisplayer = Finder.FindComponent<CurrentArenaModsDisplayer>(gameObject);
             m_Button = Finder.FindComponent<Button>(gameObject, "Button");
-            m_ArenaExtraDifficulty = Finder.Find(gameObject, "ArenaExtraDifficulty").transform;
             m_Replacement = Finder.FindComponent<TMP_Text>(gameObject, "Replacement");
         }
 
@@ -58,7 +56,7 @@ namespace Menu.MainMenu.MainTab
             base.Initialize();
 
             m_CurrentArenaModsDisplayer.Initialize();
-            RefreshExtraDifficulty();
+            CheckIsEmpty();
         }
 
         protected override void SetUpUI()
@@ -71,30 +69,19 @@ namespace Menu.MainMenu.MainTab
                 return;
             }
 
-            if (m_ArenaDifficulty != ProgressionCloudData.MaxArenaDifficulty && m_ArenaDifficulty >= ProgressionCloudData.GetUnlockedArenaDifficulty(m_ArenaType))
-            {
-                gameObject.SetActive(false);
-            }
-            else
-            {
-                gameObject.SetActive(true);
-            }
+            // display options only if conditions are met
+            gameObject.SetActive(ShouldDisplay());
         }
 
         void CheckIsEmpty()
         {
-            m_Replacement.gameObject.SetActive(PlayerPrefsHandler.CurrentArenaExtraDifficulty == 0 && PlayerPrefsHandler.CurrentArenaMods.IsNullOrEmpty());
+            m_Replacement.gameObject.SetActive(PlayerPrefsHandler.CurrentArenaMods.IsNullOrEmpty());
         }
 
-        #endregion
-
-
-        #region GUI Manipulators
-
-        void RefreshExtraDifficulty()
+        bool ShouldDisplay()
         {
-            UIHelper.DisplayIconCount(PlayerPrefsHandler.CurrentArenaExtraDifficulty, AssetLoader.Load<Sprite>("Skull_2_White", AssetLoader.c_OtherUIPath), m_ArenaExtraDifficulty, ratio: 1f);
-            CheckIsEmpty();
+            return m_ArenaDifficulty >= EArenaDifficulty.Brutal &&
+               m_ArenaDifficulty <= ProgressionCloudData.GetUnlockedArenaDifficulty(m_ArenaType);
         }
 
         #endregion
@@ -108,7 +95,6 @@ namespace Menu.MainMenu.MainTab
 
             m_Button.onClick.AddListener(OnButtonClicked);
             PlayerPrefsHandler.ArenaModsChangedEvent        += CheckIsEmpty;
-            PlayerPrefsHandler.ArenaExtraDifficultyChanged  += RefreshExtraDifficulty;
         }
 
         protected override void UnRegisterListeners()
@@ -117,7 +103,6 @@ namespace Menu.MainMenu.MainTab
 
             m_Button.onClick.RemoveAllListeners();
             PlayerPrefsHandler.ArenaModsChangedEvent -= CheckIsEmpty;
-            PlayerPrefsHandler.ArenaExtraDifficultyChanged -= RefreshExtraDifficulty;
         }
 
         void OnButtonClicked()

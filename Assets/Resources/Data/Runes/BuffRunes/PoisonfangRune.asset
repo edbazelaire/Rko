@@ -14,14 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 1
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 03000000
-  Description: 
   m_MinorPower:
-    Description: Increase damage by {0} for each stacks of Poison on the target
-    m_DescriptionVariables:
-    - Name: BonusDamage
-      WithIcon: 1
+    Description: Increase {{PhysicalDamage}} by [BonusDamage.Physical] for each stacks
+      of Poison on the target
+    m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
@@ -29,16 +26,18 @@ MonoBehaviour:
       BaseValue: 0
       BonusValue: 0
       ScalingFactor: 0
+      DamageCategories: 01000000
+      HitCategories: 
+      SpecialConditions: []
       StateEffectStackFactors:
       - Target: 2
         StateEffect: 9
         BaseValue: 1
         LevelFactor: 0.1
   m_MajorPower:
-    Description: Increase damage by {0} for each stacks of Poison on the target
-    m_DescriptionVariables:
-    - Name: BonusDamage
-      WithIcon: 1
+    Description: Increase {{PhysicalDamage}} by [BonusDamage.Physical] for each stacks
+      of Poison on the target
+    m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects: []
     m_BonusStats:
@@ -46,19 +45,22 @@ MonoBehaviour:
       BaseValue: 0
       BonusValue: 0
       ScalingFactor: 0
+      DamageCategories: 01000000
+      HitCategories: 
+      SpecialConditions: []
       StateEffectStackFactors:
       - Target: 2
         StateEffect: 9
         BaseValue: 2
         LevelFactor: 0.1
   m_PrimalPower:
-    Description: Increase damage by {0} for each stacks of Poison on the target
-    m_DescriptionVariables:
-    - Name: BonusDamage
-      WithIcon: 1
+    Description: Increase {{PhysicalDamage}} by [BonusDamage.Physical] for each stacks
+      of Poison on the target
+    m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: 
+      OverridingData: []
       Level: 0
       Target: 0
       SpellActivationEvent: 0
@@ -72,11 +74,16 @@ MonoBehaviour:
       Duration: 0
       NActivations: 0
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats:
     - StateEffectProperty: 7
       BaseValue: 0
       BonusValue: 0
       ScalingFactor: 0
+      DamageCategories: 01000000
+      HitCategories: 
+      SpecialConditions: []
       StateEffectStackFactors:
       - Target: 2
         StateEffect: 9

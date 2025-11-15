@@ -17,6 +17,7 @@ namespace Assets.Scripts.Menu
         Button m_GiftButton;
         Button m_MessagerieButton;
         Button m_SettingsButton;
+        Button m_DailyRewardsButton;
 
         #endregion
 
@@ -32,11 +33,12 @@ namespace Assets.Scripts.Menu
         {
             base.FindComponents();
 
-            m_ButtonsContainer = Finder.Find(gameObject, "ButtonsContainer");
-            m_LoginButton = Finder.FindComponent<Button>(m_ButtonsContainer, "LoginButton");
-            m_GiftButton = Finder.FindComponent<Button>(m_ButtonsContainer, "GiftButton");
-            m_MessagerieButton = Finder.FindComponent<Button>(m_ButtonsContainer, "MessagerieButton");
-            m_SettingsButton = Finder.FindComponent<Button>(m_ButtonsContainer, "SettingsButton");
+            m_ButtonsContainer      = Finder.Find(gameObject, "ButtonsContainer");
+            m_LoginButton           = Finder.FindComponent<Button>(m_ButtonsContainer, "LoginButton");
+            m_GiftButton            = Finder.FindComponent<Button>(m_ButtonsContainer, "GiftButton");
+            m_MessagerieButton      = Finder.FindComponent<Button>(m_ButtonsContainer, "MessagerieButton");
+            m_SettingsButton        = Finder.FindComponent<Button>(m_ButtonsContainer, "SettingsButton");
+            m_DailyRewardsButton    = Finder.FindComponent<Button>(m_ButtonsContainer, "DailyRewardsButton");
         }
 
         protected override void SetUpUI()
@@ -45,6 +47,7 @@ namespace Assets.Scripts.Menu
 
             m_LoginButton.gameObject.SetActive(! AuthManager.Instance.IsLoggedIn);
             CoroutineManager.DelayMethod(() => SetMessagesNotification());
+            CoroutineManager.DelayMethod(() => SetDailyRewardNotification());
         }
 
         #endregion
@@ -67,6 +70,20 @@ namespace Assets.Scripts.Menu
             } 
         }
 
+        protected void SetDailyRewardNotification()
+        {
+            if (! TimeCloudData.DailyRewards.CanCollect())
+                return;
+
+            NotificationPulse.Add(
+                baseGameObject:     m_DailyRewardsButton.gameObject,
+                animationTarget:    m_DailyRewardsButton.gameObject,
+                redDotTarget:       m_DailyRewardsButton.gameObject,
+                counter: 1,
+                size: 1f
+            );
+        }
+
         #endregion
 
 
@@ -80,10 +97,12 @@ namespace Assets.Scripts.Menu
             m_MessagerieButton.onClick.AddListener(() => Main.SetPopUp(EPopUpState.MessageriePopUp));
             m_GiftButton.onClick.AddListener(() => Main.SetPopUp(EPopUpState.PromoCodePopUp));
             m_SettingsButton.onClick.AddListener(() => Main.SetPopUp(EPopUpState.SettingsPopUp));
+            m_DailyRewardsButton.onClick.AddListener(() => ScreenManager.SetPopUp(EPopUpState.DailyRewardsPopUp));
 
             AuthManager.LoginEvent += OnLogin;
             NotificationCloudData.MessageSeenEvent += OnMessageSeen;
             NotificationCloudData.MessageCountChangedEvent += OnMessageCountChanged;
+            TimeCloudData.DailyRewardCollected += OnDailyRewardCollected;
         }
 
         protected override void UnRegisterListeners()
@@ -94,10 +113,12 @@ namespace Assets.Scripts.Menu
             m_MessagerieButton.onClick.RemoveAllListeners();
             m_GiftButton.onClick.RemoveAllListeners();
             m_SettingsButton.onClick.RemoveAllListeners();
+            m_DailyRewardsButton.onClick.RemoveAllListeners();
 
             AuthManager.LoginEvent -= OnLogin;
             NotificationCloudData.MessageSeenEvent -= OnMessageSeen;
             NotificationCloudData.MessageCountChangedEvent -= OnMessageCountChanged;
+            TimeCloudData.DailyRewardCollected -= OnDailyRewardCollected;
         }
 
         protected void OnMessageSeen(string _)
@@ -117,6 +138,7 @@ namespace Assets.Scripts.Menu
                 NotificationPulse.UpdateCounter(m_MessagerieButton.gameObject, nMessages);
             }
         }
+
         void OnLoginButtonClicked()
         {
             ScreenManager.SetPopUp(EPopUpState.LoginPopUp);
@@ -125,6 +147,11 @@ namespace Assets.Scripts.Menu
         void OnLogin(bool login)
         {
             m_LoginButton.gameObject.SetActive(!login);
+        }
+
+        void OnDailyRewardCollected()
+        {
+            NotificationPulse.Remove(m_DailyRewardsButton.gameObject);
         }
 
         #endregion

@@ -12,13 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18f7ea3d56763fd408be3444f1896a70, type: 3}
   m_Name: ShadowVeil
   m_EditorClassIdentifier: 
-  m_Description: A shroud of living night spills around Atassut, increasing resistance
-    by {0}\n\nThe veil gets taked down when Atassut is CC ([Stun], [Frozen], [Airborne],
-    ...)
-  m_DescriptionVariables: 05000000
+  m_Description: "A shroud of living night spills around Atassut, granting [Resistance.Physical]
+    {{PhysicalResistance}} and [Resistance.Magical] {{MagicalResistance}}. \nAlso
+    provides +[BonusDamagePerc.Magical] {{MagicalDamage}}\n\nThe veil ends when Atassut
+    is CC ([Stun], [Frozen], [Airborne], ...)"
+  m_DescriptionVariables: 
+  m_NStacksInDescription: 1
   m_StateEffectType: 0
   m_IsDisplayed: 1
-  m_VisualEffects: []
   m_GfxEffects:
   - Prefab: {fileID: 0}
     MaterialEffect: {fileID: 2100000, guid: 811ec8534b97f234b8755309ae2f6864, type: 2}
@@ -35,6 +36,7 @@ MonoBehaviour:
     SpawnLocation: 0
     BodyPart: 0
     IsFollowing: 0
+    IsReplacingGFX: 0
     Offset: {x: 0, y: 0}
     Animation: 0
     SpellAnimation: 
@@ -46,22 +48,44 @@ MonoBehaviour:
   m_DefaultState: 0
   m_IsInstantanious: 0
   m_IsConsumedOnEnd: 0
+  m_IsPreventingOverConsumption: 0
   m_IsTrueDamage: 0
+  m_IgnoresBoosts: 0
   m_EndWithShield: 0
+  m_EndAt0Stacks: 1
   m_RefreshShield: 1
+  m_RefreshDuration: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: -1
+  m_StartingStacks: 1
   m_MaxStacks: 1
   m_StackDecay: -1
   m_StartsActivated: 1
   m_StateEffectTriggers: []
   m_StateEffectActivations: []
+  m_SpellActivations: []
   m_BonusStats:
-  - StateEffectProperty: 5
-    BaseValue: 35
+  - StateEffectProperty: 30
+    BaseValue: 40
     LevelScalingFactor: 0.2
     StackScalingFactor: 0
+    DamageCategories: 01000000
+    HitCategories: 
+    SpecialConditions: []
+  - StateEffectProperty: 30
+    BaseValue: 40
+    LevelScalingFactor: 0.2
+    StackScalingFactor: 0
+    DamageCategories: 02000000
+    HitCategories: 
+    SpecialConditions: []
+  - StateEffectProperty: 8
+    BaseValue: 0.15
+    LevelScalingFactor: 0.1
+    StackScalingFactor: 0
+    DamageCategories: 02000000
+    HitCategories: 
     SpecialConditions: []
   m_StatConversions: []
   m_SubStateEffects: []

@@ -8,6 +8,9 @@ using System;
 using Tools;
 using Managers;
 using MyBox;
+using Game.Loaders;
+using Data.DataStructures.PowerEffects;
+using Game.GameManagers.ArenaModules;
 
 
 namespace Save.Data.Progression.Structs
@@ -22,18 +25,21 @@ namespace Save.Data.Progression.Structs
 
         public int              Level;
         public int              Stage;
+        public ECharacter       SelectedCharacter;
         public SBuildData       BuildData;
         public int              MaxLifes;
         public int              Losses;
         public float            Erosion;
         public string[]         PowerUps;
         public List<EArenaMod>  ArenaMods;
-        public int              CurrentEnemyLifes;
+        public int              CurrentEnemyLifesLost;
         public int              RewardPower;
         public ERarety          RewardRarety;
         public int              RefreshTokens;
 
-        private bool            m_IsOver;
+        public Dictionary<string, string> MetaData;
+
+        bool                    m_IsOver;
 
         public readonly EArenaDifficulty GetArenaDifficulty()   => SArenaDifficulty.Difficulty;
         public readonly int GetExtraDifficulty()                => SArenaDifficulty.Level;
@@ -41,7 +47,9 @@ namespace Save.Data.Progression.Structs
         public readonly bool InProgress()                       => ArenaType != EArenaType.None;
         public readonly int GetMaxLosses()                      => ArenaMods.Contains(EArenaMod.NoDeath) ? 1 : ArenaData.MAX_LOSSES;
         public readonly bool IsOver()                           => m_IsOver || Losses >= GetMaxLosses() || Level > AssetLoader.LoadArenaData(ArenaType, SArenaDifficulty).MaxLevel;
-        public readonly bool HasBuildData()                      => ! BuildData.Character.IsNullOrEmpty();
+        public readonly ECharacter GetCharacter()               => BuildData.Character.IsNullOrEmpty() ? SelectedCharacter : Enum.Parse<ECharacter>(BuildData.Character);
+        public readonly int GetCharacterLevel()                 => (SelectedCharacter != ECharacter.None && BuildData.Character.IsNullOrEmpty()) ? InventoryCloudData.Instance.GetCollectable(SelectedCharacter).Level : ProfileCloudData.AccountLevel;
+        public readonly bool HasBuildData()                     => ! BuildData.Character.IsNullOrEmpty();
         public bool IsBoss()
         {
             SArenaLevelData? arenaLevelData = ArenaLevelData();
@@ -49,6 +57,11 @@ namespace Save.Data.Progression.Structs
                 return false;
 
             return Stage == arenaLevelData.Value.StageData.Count - 1;
+        }
+
+        public bool IsLastBoss()
+        {
+            return IsMaxArenaLevel() && IsMaxStage();
         }
 
         public SArenaLevelData? ArenaLevelData()
@@ -94,7 +107,25 @@ namespace Save.Data.Progression.Structs
 
         #region Constructor
 
-        public SCurrentArenaCloudData(EArenaType arenaType, SArenaDifficulty arenaDifficulty = default, int level = 0, int stage = 0, SBuildData buildData = default, List<EArenaMod> arenaMods = null, int maxLifes = 3, int losses = 0, float erosion = 0f, string[] powerUps = default, int currentEnemyLifes = 1, int rewardPower = 0, ERarety rewardRarety = 0, int refreshTokens = 0, bool isOver = false)
+        public SCurrentArenaCloudData(
+            EArenaType arenaType, 
+            SArenaDifficulty arenaDifficulty    = default, 
+            int level                           = 0, 
+            int stage                           = 0,
+            ECharacter character                = ECharacter.None,
+            SBuildData buildData                = default, 
+            List<EArenaMod> arenaMods           = null, 
+            int maxLifes                        = 3, 
+            int losses                          = 0, 
+            float erosion                       = 0f, 
+            string[] powerUps                   = default, 
+            int currentEnemyLifesLost           = 1, 
+            int rewardPower                     = 0,
+            ERarety rewardRarety                = 0, 
+            int refreshTokens                   = 0, 
+            bool isOver                         = false, 
+            Dictionary<string, string> metaData = null
+        )
         {
             if (losses < 0)
             {
@@ -102,21 +133,24 @@ namespace Save.Data.Progression.Structs
                 losses = 0;
             }
 
-            ArenaType           = arenaType;
-            SArenaDifficulty    = arenaDifficulty;
-            Level               = level;
-            Stage               = stage;
-            BuildData           = buildData;
-            MaxLifes            = maxLifes;
-            Losses              = losses;
-            Erosion             = erosion;
-            PowerUps            = powerUps;
-            ArenaMods           = arenaMods;
-            CurrentEnemyLifes   = currentEnemyLifes;
-            RewardPower         = rewardPower;
-            RewardRarety        = rewardRarety;
-            RefreshTokens       = refreshTokens;
-            m_IsOver            = isOver;
+            ArenaType               = arenaType;
+            SArenaDifficulty        = arenaDifficulty;
+            Level                   = level;
+            Stage                   = stage;
+            SelectedCharacter       = character;
+            BuildData               = buildData;
+            MaxLifes                = maxLifes;
+            Losses                  = losses;
+            Erosion                 = erosion;
+            PowerUps                = powerUps;
+            ArenaMods               = arenaMods;
+            CurrentEnemyLifesLost   = currentEnemyLifesLost;
+            RewardPower             = rewardPower;
+            RewardRarety            = rewardRarety;
+            RefreshTokens           = refreshTokens;
+            m_IsOver                = isOver;
+
+            MetaData = metaData ?? new Dictionary<string, string>();
         }
 
         #endregion
@@ -145,6 +179,16 @@ namespace Save.Data.Progression.Structs
                 bonus += AssetLoader.LoadArenaMod(mod).BonusPower;
             }
 
+            foreach (var powerUpName in GetPowerUps())
+            {
+                if (powerUpName.IsNullOrEmpty())
+                    continue;
+
+                var powerUp = SpellLoader.GetPowerUp(powerUpName);
+                if (powerUp is SPowerUp sPowerUp)
+                    bonus += sPowerUp.BonusPowerOrb;
+            }
+
             return bonus;
         }
 
@@ -166,6 +210,16 @@ namespace Save.Data.Progression.Structs
         {
             var arenaMods = GetArenaMods();
             return arenaMods != null && arenaMods.Contains(arenaMod);
+        }
+
+        #endregion
+
+
+        #region Lifes
+
+        public void RemoveEnemyLife(int nLifes) 
+        {
+            CurrentEnemyLifesLost += nLifes;
         }
 
         #endregion
@@ -226,6 +280,89 @@ namespace Save.Data.Progression.Structs
 
             // return as list
             return powerUpList.ToList();
+        }
+
+        #endregion
+
+
+        #region MetaData
+
+        public void RefreshMetaData()
+        {
+            MetaData = new();
+        }
+
+        public bool HasMetaData(string key)
+        {
+            return MetaData.ContainsKey(key);
+        }
+
+        public void SetMetaData(string key, string value)
+        {
+            if (MetaData == null)
+                MetaData = new();
+
+            CheckMetadata(key, ref value);
+
+            if (! HasMetaData(key))
+                MetaData.Add(key, value);
+            else
+                MetaData[key] = value;
+        }
+
+        public T GetMetaData<T>(string key)
+        {
+            if (MetaData == null || ! HasMetaData(key))
+                return default;
+
+            string raw = MetaData[key];
+
+            try
+            {
+                if (typeof(T) == typeof(int))
+                {
+                    if (int.TryParse(raw, out int iValue))
+                        return (T)(object)iValue;
+                    ErrorHandler.Error($"Unable to parse '{raw}' as int");
+                    return default;
+                }
+
+                if (typeof(T) == typeof(float))
+                {
+                    if (float.TryParse(raw, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float fValue))
+                        return (T)(object)fValue;
+                    ErrorHandler.Error($"Unable to parse '{raw}' as float");
+                    return default;
+                }
+
+                if (typeof(T) == typeof(bool))
+                {
+                    if (bool.TryParse(raw, out bool bValue))
+                        return (T)(object)bValue;
+                    ErrorHandler.Error($"Unable to parse '{raw}' as bool");
+                    return default;
+                }
+
+                if (typeof(T).IsEnum)
+                {
+                    if (Enum.TryParse(typeof(T), raw, out object eValue))
+                        return (T)eValue;
+                    ErrorHandler.Error($"Unable to parse '{raw}' as enum {typeof(T).Name}");
+                    return default;
+                }
+
+                // fallback : string
+                if (typeof(T) == typeof(string))
+                    return (T)(object)raw;
+
+                ErrorHandler.Warning($"GetMetaData: Unsupported type {typeof(T).Name}, returning default.");
+                return default;
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.Error($"Exception parsing MetaData[{key}]='{raw}' as {typeof(T).Name}: {ex.Message}");
+                return default;
+            }
         }
 
         #endregion
@@ -347,6 +484,28 @@ namespace Save.Data.Progression.Structs
             }
 
             return test;
+        }
+
+        public bool CheckMetadata(string key, ref string value)
+        {
+            if (key == EArenaMetadataKeys.CorruptionStacks.ToString())
+            {
+                if (! int.TryParse(value, out int iValue))
+                {
+                    ErrorHandler.Error($"Unable to parse value {value} of {key} into a string");
+                    value = "0";
+                    return false;
+                }
+
+                if (iValue < 0 || iValue > 100)
+                {
+                    ErrorHandler.Error($"Wrong value {value} provided for {key} : must be between 0 and 100");
+                    value = Math.Clamp(iValue, 0, 100).ToString();
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         #endregion

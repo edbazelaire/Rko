@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fddbcff511bf8f6468f46e05e8811cf7, type: 3}
+  m_Name: Boomcrust
+  m_EditorClassIdentifier: 
+  m_Rarety: 0
+  m_Description: 'Every time a [Burn] effect is consummed, the Molken gains 10 Energy.
+    On reaching [MaxEnergy] energy, they jump on the enemy to fufill there 2 minutes
+    life span goal : Explode on something yelling "Wazaaah !"'
+  m_SpellElements: 
+  m_AutoAttack: Boomer
+  m_SpecialAbility: 
+  m_Ultimate: BoomBlast
+  Size: 0.9
+  BaseSpeed: 0
+  BaseHealth: 800
+  MaxEnergy: 65
+  BaseEnergy: 15
+  PassiveEnergyGain: 1
+  IsStructure: 0
+  HealthScaleFactor: 0.1
+  CharacterStatScaling:
+  - StateEffectProperty: 5
+    BaseValue: 5
+    BonusValue: 0
+    ScalingFactor: 0.1
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  - StateEffectProperty: 30
+    BaseValue: 25
+    BonusValue: 0
+    ScalingFactor: 0
+    DamageCategories: 
+    HitCategories: 
+    SpecialConditions: []
+    StateEffectStackFactors: []
+  m_SpecialPowers:
+  - Description: 
+    m_DescriptionVariables: []
+    m_BonusLevel: 0
+    m_TriggerEffects:
+    - SpellDataName: BornedToBurn
+      OverridingData: []
+      Level: 0
+      Target: 4
+      SpellActivationEvent: 1
+      ActivationTreshold: 0
+      SpellDeactivationEvent: 0
+      DeactivationTreshold: 0
+      StateEffectEvent: 0
+      StateEffectName: 
+      NStateEffectActivationThreshold: 0
+      Delay: 0
+      Duration: 0
+      NActivations: 0
+      Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
+    m_BonusStats: []
+  m_SpawnOffsetX:
+    Min: 0
+    Max: 0
+  m_SpawnOffsetY:
+    Min: 0
+    Max: 0
+  PopUpOffset: {x: 0, y: -50, z: 0}
+  PopUpScale: 0.8

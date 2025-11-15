@@ -48,8 +48,12 @@ namespace Game.AI.BehaviorTrees
                 // ULTI : as soon as available
                 new TaskUseSpell(controller, controller.SpellHandler.Ultimate),
 
-                // use Special Ability in 10 seconds
-                new TaskUseSpell(controller, controller.SpellHandler.SpecialAbility, delay: 10f),
+                // Check one of Extra Spells
+                new Sequence(new List<Node> {
+                    new CheckTimer(controller, "TaskAttack", 10f),
+                    new TaskRandomAttack(controller),
+                    new ResetTimer(controller, "TaskAttack", Random.Range(1f, 5f))
+                }),
 
                 // Auto Attack
                 new TaskUseSpell(controller, controller.SpellHandler.AutoAttack, delay: 1.5f, nTimes: 6),
@@ -68,9 +72,13 @@ namespace Game.AI.BehaviorTrees
             {
                 // ULTI : as soon as available
                 new TaskUseSpell(controller, controller.SpellHandler.Ultimate),
-                
-                // use Special Ability in 5 seconds
-                new TaskUseSpell(controller, controller.SpellHandler.SpecialAbility, delay: 5f),
+
+                // Check one of Extra Spells
+                new Sequence(new List<Node> {
+                    new CheckTimer(controller, "TaskAttack", 1f),
+                    new TaskRandomAttack(controller),
+                    new ResetTimer(controller, "TaskAttack", Random.Range(0.5f, 7f))
+                }),
 
                 // Attack 5 times every 3 seconds
                 new TaskUseSpell(controller, controller.SpellHandler.AutoAttack, delay: 1f, nTimes: 5),
@@ -90,34 +98,28 @@ namespace Game.AI.BehaviorTrees
                 // check ULTIMATE
                 new TaskUseSpell(controller, controller.SpellHandler.Ultimate),
 
-                // use Special Ability in 5f seconds
-                new TaskUseSpell(controller, controller.SpellHandler.SpecialAbility, delay: 5f),
+                new Selector(new List<Node>
+                {
+                    // use Consummable Attacks in priority as soon as available
+                    new TaskAttack(controller, allowedSpellCategories: new() { ESpellTypeCategory.ConsumeStateEffect }),
 
-                // use Consummable Attacks in priority as soon as available
-                new TaskAttack(controller, allowedSpellCategories: new() { ESpellTypeCategory.ConsumeStateEffect }),
+                    // Check one of Extra Spells
+                    new Sequence(new List<Node> {
+                        new CheckTimer(controller, "TaskAttack", 1f),
+                        new TaskRandomAttack(controller),
+                        new ResetTimer(controller, "TaskAttack", () => Random.Range(0.5f, 5f))
+                    }),
 
-                // Check one of Extra Spells
-                new Sequence(new List<Node> {
-                    new CheckTimer(controller, "TaskAttack", 1f),
-                    new TaskAttack(controller),
-                    new ResetTimer(controller, "TaskAttack", Random.Range(0.5f, 7f))
-                }),
-
-                // Check if character is currently in a ZoneSpell
-                new Sequence(new List<Node> {
-                    new CheckInZone(controller),
-                    new TaskExitZone(controller),
-                }),
-
-                // Attack 4 times 
-                new Sequence(new List<Node> {
-                    new CheckTimer(controller, "TaskAutoAttack", 0.5f),
-                    new TaskUseSpell(controller, controller.SpellHandler.AutoAttack, nTimes: 4, spellEvent: ESpellEvent.OnCast),
-                    new ResetTimer(controller, "TaskAutoAttack", 2.5f)
-                }),
+                    // Attack 4 times 
+                    new Sequence(new List<Node> {
+                        new CheckTimer(controller, "TaskAutoAttack", 0.5f),
+                        new TaskUseSpell(controller, controller.SpellHandler.AutoAttack, nTimes: 4, spellEvent: ESpellEvent.None),
+                        new ResetTimer(controller, "TaskAutoAttack", () => Random.Range(1f, 4f))
+                    })
+                }, saveCurrentNode: true),
 
                 // MOVE
-                new TaskMove(controller, checkZones: true, checkProjectiles: false),         
+                new TaskMove(controller, checkZones: false, checkProjectiles: false),         
 
                 // Default - if cant move (should not be used most of the time)
                 new TaskWait(controller),

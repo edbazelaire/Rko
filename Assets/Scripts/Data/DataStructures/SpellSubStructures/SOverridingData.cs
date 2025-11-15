@@ -44,7 +44,6 @@ namespace Data.DataStructures.SpellSubStructures
                 default:
                     ErrorHandler.Warning("Unhandled case : " + OverridingType);
                     return baseValue;
-
             }
         }
     }

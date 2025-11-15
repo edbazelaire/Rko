@@ -12,11 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e83ee2023ecc7e04480ae9c612ad7749, type: 3}
   m_Name: InfernalProtectionRune
   m_EditorClassIdentifier: 
-  Rarety: 1
+  m_Rarety: 1
   m_Description: 
-  m_DescriptionVariables: []
   m_SpellElements: 01000000
-  Description: 
   m_MinorPower:
     Description: 'Every time you proc a [Burn] effect, apply "Infernal Protection"
       : [TriggerEffect.0]'
@@ -24,6 +22,7 @@ MonoBehaviour:
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: InfernalProtection
+      OverridingData: []
       Level: 0
       Target: 0
       SpellActivationEvent: 1
@@ -37,6 +36,8 @@ MonoBehaviour:
       Duration: 0
       NActivations: -1
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []
   m_MajorPower:
     Description: 'Every time you proc a [Burn] effect, apply "Infernal Protection"
@@ -45,6 +46,7 @@ MonoBehaviour:
     m_BonusLevel: 6
     m_TriggerEffects:
     - SpellDataName: InfernalProtection
+      OverridingData: []
       Level: 0
       Target: 0
       SpellActivationEvent: 1
@@ -58,14 +60,17 @@ MonoBehaviour:
       Duration: 0
       NActivations: -1
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []
   m_PrimalPower:
     Description: 'Every time you proc a [Burn] effect, apply "Infernal Protection"
       : [TriggerEffect.0]'
     m_DescriptionVariables: []
-    m_BonusLevel: 12
+    m_BonusLevel: 10
     m_TriggerEffects:
     - SpellDataName: InfernalProtection
+      OverridingData: []
       Level: 0
       Target: 0
       SpellActivationEvent: 1
@@ -79,5 +84,7 @@ MonoBehaviour:
       Duration: 0
       NActivations: -1
       Cooldown: 0
+      RepeatWhenCooldownOver: 0
+      ConsumeLifeOnActivation: 0
     m_BonusStats: []
   m_TriggerEffects: []
