@@ -176,8 +176,8 @@ namespace Game.Character
                 return;
             
             target.mass                     = source.mass;
-            target.drag                     = source.drag;
-            target.angularDrag              = source.angularDrag;
+            target.linearDamping                     = source.linearDamping;
+            target.angularDamping              = source.angularDamping;
             target.gravityScale             = source.gravityScale;
             target.collisionDetectionMode   = source.collisionDetectionMode;
             target.interpolation            = source.interpolation;
