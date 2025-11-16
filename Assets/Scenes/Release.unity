@@ -38,12 +38,12 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -1117,7 +1117,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7331426314855813146, guid: 31810dd91ac2f7b419ede3745d62a1cc, type: 3}
       propertyPath: m_DeactivateEnemy
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7331426314855813146, guid: 31810dd91ac2f7b419ede3745d62a1cc, type: 3}
       propertyPath: m_ForceIsNewPlayer
