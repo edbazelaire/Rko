@@ -23,7 +23,7 @@ namespace Managers.Monetization.IAP
         }
 
         [Header("Products")]
-        [SerializeField] private List<ProductInfo> m_ProductsInfo = new List<ProductInfo>();
+        [SerializeField] private List<ProductInfo> m_ProductsInfo = new List<ProductInfo>() { };
 
         // v5: use StoreController instead of IStoreController/IExtensionProvider
         private StoreController m_StoreController;

@@ -122,7 +122,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6354773373622718888, guid: 21adf034c3d462f4ba2fe2c862c11ab0, type: 3}
       propertyPath: m_fontSize
-      value: 23.1
+      value: 23.9
       objectReference: {fileID: 0}
     - target: {fileID: 7794314657170739679, guid: 21adf034c3d462f4ba2fe2c862c11ab0, type: 3}
       propertyPath: m_Sprite
@@ -179,5 +179,59 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1209719962331004053, guid: 21adf034c3d462f4ba2fe2c862c11ab0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2793372436874378597}
   m_SourcePrefab: {fileID: 100100000, guid: 21adf034c3d462f4ba2fe2c862c11ab0, type: 3}
+--- !u!1 &7934898956820481530 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1209719962331004053, guid: 21adf034c3d462f4ba2fe2c862c11ab0, type: 3}
+  m_PrefabInstance: {fileID: 9139955843617732975}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2793372436874378597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7934898956820481530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b79b5624d944058bd39aad2b90fb275, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Purchasing.Codeless::UnityEngine.Purchasing.CodelessIAPButton
+  productId: Gems_100
+  buttonType: 0
+  automaticallyConfirmTransaction: 1
+  onProductFetched:
+    m_PersistentCalls:
+      m_Calls: []
+  onProductFetchFailed:
+    m_PersistentCalls:
+      m_Calls: []
+  onPurchaseFetched:
+    m_PersistentCalls:
+      m_Calls: []
+  onTransactionsRestored:
+    m_PersistentCalls:
+      m_Calls: []
+  onOrderPending:
+    m_PersistentCalls:
+      m_Calls: []
+  onOrderConfirmed:
+    m_PersistentCalls:
+      m_Calls: []
+  onPurchaseFailed:
+    m_PersistentCalls:
+      m_Calls: []
+  onOrderDeferred:
+    m_PersistentCalls:
+      m_Calls: []
+  onPurchaseCompleteLegacy:
+    m_PersistentCalls:
+      m_Calls: []
+  onPurchaseFailedLegacy:
+    m_PersistentCalls:
+      m_Calls: []
+  button: {fileID: 0}
