@@ -1,9 +1,26 @@
 #!/bin/bash
-echo "Uploading IPA to Appstore Connect..."
-#Path is "/BUILD_PATH/<ORG_ID>.<PROJECT_ID>.<BUILD_TARGET_ID>/.build/last/<BUILD_TARGET_ID>/build.ipa"
-path="$WORKSPACE/.build/last/$TARGET_NAME/build.ipa"
-if xcrun altool --upload-app -t ios -f $path -u $ITUNES_USERNAME -p $ITUNES_PASSWORD ; then
-    echo "Upload IPA to Appstore Connect finished with success"
-else
-    echo "Upload IPA to Appstore Connect failed"
-fi
+set -e
+
+echo "Archiving..."
+xcodebuild archive \
+  -workspace "$WORKSPACE/App.xcworkspace" \
+  -scheme "$TARGET_NAME" \
+  -configuration Release \
+  -archivePath "$WORKSPACE/build/$TARGET_NAME.xcarchive"
+
+echo "Exporting IPA..."
+xcodebuild -exportArchive \
+  -archivePath "$WORKSPACE/build/$TARGET_NAME.xcarchive" \
+  -exportPath "$WORKSPACE/build/ipa" \
+  -exportOptionsPlist "$WORKSPACE/ExportOptions.plist"
+
+IPA_PATH="$WORKSPACE/build/ipa/$TARGET_NAME.ipa"
+echo "IPA generated at: $IPA_PATH"
+
+echo "Uploading IPA to App Store Connect..."
+xcrun upload-app \
+  --file "$IPA_PATH" \
+  --apiKey "$APPSTORE_API_KEY" \
+  --apiIssuer "$APPSTORE_API_ISSUER"
+
+echo "Upload finished successfully."
