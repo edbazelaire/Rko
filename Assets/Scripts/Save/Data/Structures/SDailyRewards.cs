@@ -13,12 +13,6 @@ namespace Save.Data
         public int CurrentIndex;                    // next reward to claim (0..4)
         public int NextCollectAt;                   // next day unlock timestamp
 
-        public bool IsNewIndex()
-        {
-            int now = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            return now >= NextCollectAt;
-        }
-
         public bool IsExpired()
         {
             int now = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
