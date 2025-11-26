@@ -418,7 +418,7 @@ namespace Save
 
             if (data.Rewards == null || data.Rewards.Count != 5 || data.IsExpired())
             {
-                ResetWeek(save: false);
+                ResetWeek();
                 return true;
             }
 
@@ -431,7 +431,7 @@ namespace Save
             var data = DailyRewards;
 
             if (data.IsExpired())
-                ResetWeek(save: false);
+                ResetWeek();
 
             return data.CurrentIndex;
         }

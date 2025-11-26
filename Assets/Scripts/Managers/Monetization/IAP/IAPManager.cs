@@ -2,38 +2,40 @@
 using Enums;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Tools;
 using UnityEngine;
 using UnityEngine.Purchasing;
-using UnityEngine.Purchasing.Extension;
-
+// using UnityEngine.Purchasing.Extension;   // not needed anymore
 
 namespace Managers.Monetization.IAP
 {
-    public class IAPManager : MonoBehaviour, IDetailedStoreListener
+    public class IAPManager : MonoBehaviour
     {
         #region Members
 
         public static IAPManager Instance;
+        public bool Aborted = false;
 
         [Serializable]
         public class ProductInfo
         {
-            public EProduct         Product;
-            public ProductType      Type;
+            public EProduct Product;
+            public ProductType Type;
         }
 
         [Header("Products")]
-        [SerializeField] private List<ProductInfo> m_ProductsInfo = new List<ProductInfo>();
+        [SerializeField] private List<ProductInfo> m_ProductsInfo = new List<ProductInfo>() { };
 
-        private IStoreController    m_StoreController;
-        private IExtensionProvider  m_ExtensionProvider;
+        // v5: use StoreController instead of IStoreController/IExtensionProvider
+        private StoreController m_StoreController;
 
-        private Action              m_OnPurchaseSuccess;
-        public static bool Initialized => Instance != null && Instance.m_StoreController != null && Instance.m_ExtensionProvider != null;
+        private Action m_OnPurchaseSuccess;
+
+        public static bool Initialized =>
+            Instance != null && Instance.m_StoreController != null && ! Instance.Aborted;
 
         #endregion
-
 
         #region Init & End
 
@@ -49,52 +51,101 @@ namespace Managers.Monetization.IAP
             DontDestroyOnLoad(gameObject);
         }
 
+        /// <summary>
+        /// Entry point used by the rest of your code.
+        /// </summary>
         public static void Initialize()
         {
-            if (Initialized)
+            if (Initialized || Instance == null)
                 return;
 
-            var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
-
-            foreach (ProductInfo product in Instance.m_ProductsInfo)
-            {
-                builder.AddProduct(product.Product.ToString(), product.Type);
-            }
-
-            UnityPurchasing.Initialize(Instance, builder);
+            // Fire-and-forget async init (Unity recommended pattern for IAP v5)
+            Instance.InitializeInternal();
         }
 
+        /// <summary>
+        /// Full IAP v5 init flow:
+        /// 1) Get StoreController
+        /// 2) Subscribe to events
+        /// 3) Connect()
+        /// 4) FetchProducts(...)
+        /// </summary>
+        private async void InitializeInternal()
+        {
+            try
+            {
+                Aborted = false;
+
+                // 1) Get controller
+                m_StoreController = UnityIAPServices.StoreController();
+
+                // 2) Subscribe to events BEFORE connecting
+                m_StoreController.OnProductsFetched     += OnProductsFetched;
+                m_StoreController.OnProductsFetchFailed += OnProductsFetchFailed;
+
+                m_StoreController.OnPurchasesFetched    += OnPurchasesFetched;
+
+                m_StoreController.OnPurchasePending     += OnPurchasePending;
+                m_StoreController.OnPurchaseConfirmed   += OnPurchaseConfirmed;
+                m_StoreController.OnPurchaseFailed      += OnPurchaseFailed;
+                m_StoreController.OnStoreDisconnected   += OnStoreDisconnected;
+
+                await ConnectToStore();
+            }
+            catch (Exception e)
+            {
+                ErrorHandler.Error($"[IAP] Initialization failed: {e}");
+            }
+        }
+
+        async Task ConnectToStore()
+        {
+            // 3) Connect to the store
+            await m_StoreController.Connect();
+            Debug.Log("[IAP] Connected to store.");
+
+            // 4) Tell IAP which products you care about
+            var productDefs = new List<ProductDefinition>();
+            foreach (var info in m_ProductsInfo)
+            {
+                productDefs.Add(new ProductDefinition(info.Product.ToString(), info.Type));
+            }
+
+            m_StoreController.FetchProducts(productDefs);   // triggers OnProductsFetched
+        }
 
         #endregion
 
-
-        #region Achats
+        #region Purchases
 
         /// <summary>
         /// Tente d’acheter un produit donné
         /// </summary>
         public void BuyProduct(string productId, Action onSuccess)
         {
-            if (! Initialized)
+            if (!Initialized)
             {
                 ErrorHandler.Warning("[IAP] Non initialisé.");
                 return;
             }
 
-            Product productToBuy = GetProduct(productId);
+            var productToBuy = GetProduct(productId);
 
-            if (productToBuy == null || !productToBuy.availableToPurchase)
+            if (productToBuy == null)
             {
-                ScreenManager.QuickMessage($"Produit invalide ou non disponible : {productId}\nIf the problem persists, please report the issue.");
+                ScreenManager.QuickMessage(
+                    $"Produit invalide ou non disponible : {productId}\nIf the problem persists, please report the issue.");
                 return;
             }
 
             m_OnPurchaseSuccess = onSuccess;
-            m_StoreController.InitiatePurchase(productToBuy);
+
+            // v5: use PurchaseProduct instead of InitiatePurchase
+            m_StoreController.PurchaseProduct(productToBuy);
         }
 
         /// <summary>
-        /// Restaure les achats sur iOS
+        /// Restaure les achats sur iOS / macOS (v5 way)
         /// </summary>
         public void RestorePurchases()
         {
@@ -102,16 +153,14 @@ namespace Managers.Monetization.IAP
             if (!Initialized)
                 return;
 
-            var apple = m_ExtensionProvider.GetExtension<IAppleExtensions>();
-            apple.RestoreTransactions(result =>
+            m_StoreController.RestoreTransactions((success, error) =>
             {
-                Debug.Log($"[IAP] Restauration terminée : {result}");
+                Debug.Log($"[IAP] RestoreTransactions finished. Success: {success}, error: {error}");
             });
 #endif
         }
 
         #endregion
-
 
         #region Product Management
 
@@ -122,51 +171,70 @@ namespace Managers.Monetization.IAP
 
         public Product GetProduct(string productId)
         {
-            return m_StoreController.products.WithID(productId);
+            if (!Initialized)
+                return null;
+
+            // v5: use StoreController.GetProductById
+            return m_StoreController.GetProductById(productId);
         }
 
         #endregion
 
+        #region StoreController callbacks (v5 replacement for IStoreListener)
 
-        #region Callbacks IStoreListener
-
-        public void OnInitialized(IStoreController controller, IExtensionProvider extensions)
+        private void OnProductsFetched(List<Product> products)
         {
-            m_StoreController = controller;
-            m_ExtensionProvider = extensions;
-
-            Debug.Log("[IAP] Initialisation réussie.");
+            Debug.Log($"[IAP] Products fetched: {products.Count}");
         }
 
-        public void OnInitializeFailed(InitializationFailureReason error)
+        private void OnProductsFetchFailed(ProductFetchFailed failure)
         {
-            ErrorHandler.Error($"[IAP] Échec de l'initialisation : {error}");
+            ErrorHandler.Error($"[IAP] Product fetch failed: {failure.FailureReason}");
         }
 
-        public void OnInitializeFailed(InitializationFailureReason error, string message)
+        private void OnPurchasesFetched(Orders orders)
         {
-            ErrorHandler.Error($"[IAP] Échec de l'initialisation : {error} - {message}");
+            // Called for restored purchases, etc.
+            Debug.Log($"[IAP] Purchases fetched. Confirmed: {orders.ConfirmedOrders.Count}, Pending: {orders.PendingOrders.Count}");
+            // If you have non-consumables/subscriptions, re-grant entitlements here.
         }
 
-        public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args)
+        /// <summary>
+        /// v5 replacement for ProcessPurchase.
+        /// Called both for new purchases and (optionally) pending ones.
+        /// </summary>
+        private void OnPurchasePending(PendingOrder order)
         {
-            Debug.Log($"[IAP] Purchase success : {args.purchasedProduct.definition.id}");
+            Debug.Log("[IAP] Purchase pending; granting content and confirming.");
 
+            // Re-use your old ProcessPurchase logic here:
             m_OnPurchaseSuccess?.Invoke();
             m_OnPurchaseSuccess = null;
 
-            return PurchaseProcessingResult.Complete;
+            // Required in v5: confirm the pending order when you're done
+            m_StoreController.ConfirmPurchase(order);
         }
 
-        public void OnPurchaseFailed(Product product, PurchaseFailureReason failureReason)
+        private void OnPurchaseConfirmed(Order order)
         {
-            Debug.Log($"[IAP] Purchase Failed : {product} - " + failureReason.ToString());
+            // Order can be ConfirmedOrder or FailedOrder, but by this point
+            // you've already run your success logic in OnPurchasePending.
+            Debug.Log("[IAP] Purchase confirmed.");
         }
 
-        public void OnPurchaseFailed(Product product, PurchaseFailureDescription failureDescription)
+        private void OnPurchaseFailed(FailedOrder failedOrder)
         {
-            Debug.Log($"[IAP] Purchase Failed : {product} - " + failureDescription.message);
-            throw new NotImplementedException();
+            Debug.Log($"[IAP] Purchase failed. Details: {failedOrder.Details}");
+        }
+
+        private async void OnStoreDisconnected(StoreConnectionFailureDescription storeConnectionFailure)
+        {
+            Debug.Log($"[IAP] Purchase failed. Details: {storeConnectionFailure.Message}");
+
+            if (storeConnectionFailure.isRetryable)
+                await ConnectToStore();
+            else
+                Aborted = true;
         }
 
         #endregion

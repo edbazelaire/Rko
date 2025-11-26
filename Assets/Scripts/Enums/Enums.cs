@@ -89,15 +89,14 @@
         None = 0,
 
         // DEFAULT OFFERS ----------------------------------------------
-        Gems_01 = 1,
-        Gems_02 = 2,
+        Gems_100 = 1,
+        Gems_750 = 2,
         Gems_03 = 3,
         Gems_04 = 4,
         Gems_05 = 5,
         Gems_06 = 6,
 
         // SPECIAL PACKS ----------------------------------------------
-
     }
 
     public enum EArenaType
