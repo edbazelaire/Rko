@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 5366dd5d958bffc42b914abe4288b432
+guid: fe67af3fe0263074f8243700f01d0d8b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 4019131893425562826
-    second: GemsPack_05_0
+      213: -4745816179567597883
+    second: GemsPack_04_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -70,7 +70,7 @@ TextureImporter:
   swizzle: 50462976
   cookieLightType: 0
   platformSettings:
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -83,7 +83,7 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -96,7 +96,7 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -109,8 +109,8 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: iPhone
+  - serializedVersion: 4
+    buildTarget: iOS
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -126,27 +126,29 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: GemsPack_05_0
+      name: GemsPack_04_0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 27
-        width: 505
-        height: 472
+        x: 56
+        y: 8
+        width: 404
+        height: 492
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ac4e21da923d6c730800000000000000
-      internalID: 4019131893425562826
+      spriteID: 5c6629f3459732eb0800000000000000
+      internalID: -4745816179567597883
       vertices: []
       indices: 
       edges: []
       weights: []
     outline: []
+    customData: 
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
@@ -156,8 +158,10 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
     nameFileIdTable:
-      GemsPack_05_0: 4019131893425562826
+      GemsPack_04_0: -4745816179567597883
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

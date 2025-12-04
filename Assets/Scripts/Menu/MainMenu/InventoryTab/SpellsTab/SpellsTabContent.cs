@@ -6,194 +6,367 @@ using Inventory;
 using Menu.Common.Filters;
 using Save;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Tools;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Menu.MainMenu
 {
+    /// <summary>
+    /// Version B - Ultra-optimisée
+    /// - Instancie chaque SpellItem UNE SEULE FOIS à l'Initialize
+    /// - Maintient une liste triée (m_OrderedSpells) pour définir les indices
+    /// - Ne détruit/instancie plus rien ensuite : change parent, SetActive, SetSiblingIndex
+    /// - Throttle le LayoutRebuilder (rebuild 1x/frame au maximum)
+    /// - Minimise les allocations et appels lourds
+    ///
+    /// Remarques d'intégration:
+    /// - TemplateSpellItemUI doit exposer une méthode UpdateFromData(ESpell) si besoin
+    /// - SpellLoader.OrderSpells(...) doit retourner l'ordre souhaité
+    /// - Ce script assume que les containers ont un LayoutGroup vertical/horizontal
+    /// </summary>
     public class SpellsTabContent : TabContent
     {
-        #region Members
-
         const string SPELL_ITEM_NAME_FORMAT = "SpellItem_{0}";
 
-        GameObject m_TemplateSpellItem;
+        [Header("References")]
+        [SerializeField] GameObject m_TemplateSpellItem; // if null, loaded from AssetLoader
+        [SerializeField] Transform m_SpellItemContainer;
+        [SerializeField] Transform m_LockedSpellItemContainer;
+        [SerializeField] SpellFiltersSection m_SpellFiltersSection;
+
+        // Runtime
         Dictionary<ESpell, TemplateSpellItemUI> m_SpellItems = new();
+        List<SpellData> m_OrderedSpells = new();
 
-        SpellFiltersSection m_SpellFiltersSection;
-        GameObject          m_ParentContent;
-        GameObject          m_SpellItemContainer;
-        GameObject          m_LockedSpellItemContainer;
+        // Layout rebuild throttling
+        bool m_LayoutDirty = false;
+        Coroutine m_LayoutCoroutine = null;
 
-        #endregion
+        // Cache parent rects for faster access
+        RectTransform m_ParentContentRect;
+        RectTransform m_SpellContainerRect;
+        RectTransform m_LockedContainerRect;
 
-
-        #region Init & End
-
-        void Awake()
+        protected override void FindComponents()
         {
-            m_TemplateSpellItem             = AssetLoader.LoadTemplateItem("SpellItem");
-            m_SpellFiltersSection           = Finder.FindComponent<SpellFiltersSection>("SpellFiltersSection");
-            m_ParentContent                 = transform.parent.gameObject;
-            m_SpellItemContainer            = Finder.Find(gameObject, "SpellItemContainer");
-            m_LockedSpellItemContainer      = Finder.Find(gameObject, "LockedSpellItemContainer");
+            base.FindComponents();
 
-            // Listeners
-            CharacterBuildsCloudData.SelectedCharacterChangedEvent  += RefreshSpellItemsDisplay;
-            CharacterBuildsCloudData.CurrentBuildIndexChangedEvent  += RefreshSpellItemsDisplay;
-            CharacterBuildsCloudData.CurrentBuildValueChangedEvent  += RefreshSpellItemsDisplay;
-            InventoryManager.UnlockCollectableEvent                 += OnUnlockedSpell;
-            m_SpellFiltersSection.FilterChangedEvent                += OnFilterChanged;
+            if (m_TemplateSpellItem == null)
+                m_TemplateSpellItem = AssetLoader.LoadTemplateItem("SpellItem");
+
+            if (m_SpellFiltersSection == null)
+                m_SpellFiltersSection = Finder.FindComponent<SpellFiltersSection>("SpellFiltersSection");
+
+            if (m_SpellItemContainer == null)
+                m_SpellItemContainer = Finder.Find(gameObject, "SpellItemContainer").transform;
+
+            if (m_LockedSpellItemContainer == null)
+                m_LockedSpellItemContainer = Finder.Find(gameObject, "LockedSpellItemContainer").transform;
+
+            m_ParentContentRect = transform.parent.GetComponent<RectTransform>();
+            m_SpellContainerRect = m_SpellItemContainer.GetComponent<RectTransform>();
+            m_LockedContainerRect = m_LockedSpellItemContainer.GetComponent<RectTransform>();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="tabButton"></param>
         public override void Initialize(TabButton tabButton, AudioClip activationSoundFX)
         {
             base.Initialize(tabButton, activationSoundFX);
 
-            // remove content in spell items displayers
-            UIHelper.CleanContent(m_SpellItemContainer);
-            UIHelper.CleanContent(m_LockedSpellItemContainer);
-
-            // init Filters
+            // initialize filter section
             m_SpellFiltersSection.Initialize();
             m_SpellFiltersSection.SearchInputField.onValueChanged.AddListener(OnSearchValueChanged);
 
-            m_SpellItems = new Dictionary<ESpell, TemplateSpellItemUI>();
-            var allSpellsData = SpellLoader.OrderSpells(SpellLoader.SpellsData, EOrderBy.Rarety);
-            int index = -1;
-            foreach (SpellData spellData in allSpellsData)
+            // Build order once (can be cached outside if desired)
+            m_OrderedSpells = SpellLoader.OrderSpells(SpellLoader.SpellsData, EOrderBy.Rarety)
+                .Where(sd => !sd.Linked) // keep only usable spells
+                .ToList();
+
+            // Instantiate all SpellItem UI once
+            BuildSpellItemsOnce();
+
+            // Initial refresh
+            RefreshSpellItemsDisplay();
+        }
+
+        void BuildSpellItemsOnce()
+        {
+            // Clear previous if any
+            m_SpellItems.Clear();
+
+            // Ensure containers are empty (only do this at initialize to avoid destroying prefabs later)
+            UIHelper.CleanContent(m_SpellItemContainer.gameObject);
+            UIHelper.CleanContent(m_LockedSpellItemContainer.gameObject);
+
+            for (int index = 0; index < m_OrderedSpells.Count; index++)
             {
-                // increment index
-                index++;
+                SpellData spellData = m_OrderedSpells[index];
 
-                // skip if spell is linked to a character
-                if (spellData.Linked)
-                    continue;
-
-                // check if is unlocked or not
                 bool isUnlocked = InventoryCloudData.Instance.GetSpell(spellData.Spell).Level > 0;
-                var parent = isUnlocked ? m_SpellItemContainer.transform : m_LockedSpellItemContainer.transform;
+                Transform parent = isUnlocked ? m_SpellItemContainer : m_LockedSpellItemContainer;
 
-                // spawn and init ui of the spell
-                TemplateSpellItemUI spellUI = Instantiate(m_TemplateSpellItem, parent).GetComponent<TemplateSpellItemUI>();
-                spellUI.gameObject.name = string.Format(SPELL_ITEM_NAME_FORMAT, spellData.Name);
-                spellUI.Initialize(spellData.Spell);
-                spellUI.CollectionFillBar?.gameObject.SetActive(isUnlocked);
+                var go = Instantiate(m_TemplateSpellItem, parent);
+                go.name = string.Format(SPELL_ITEM_NAME_FORMAT, spellData.Name);
 
-                if (isUnlocked)
-                    m_SpellItems.Add(spellData.Spell, spellUI);
+                var ui = go.GetComponent<TemplateSpellItemUI>();
+                ui.Initialize(spellData.Spell);
+                ui.CollectionFillBar?.gameObject.SetActive(isUnlocked);
 
-                // hide if spell is in current build
+                // store reference
+                m_SpellItems.Add(spellData.Spell, ui);
+
+                // hide if in current build
                 if (CharacterBuildsCloudData.CurrentSpells.Contains(spellData.Spell))
-                    spellUI.gameObject.SetActive(false);
+                    ui.gameObject.SetActive(false);
+
+                // set sibling index to match the global ordering so the container has correct order initially
+                // If parent = locked container, compute index among locked items: we keep same relative order
+                int siblingIndex = ComputeSiblingIndexForInitialization(spellData.Spell, parent == m_SpellItemContainer);
+                ui.transform.SetSiblingIndex(siblingIndex);
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        protected override void OnDestroy()
+        int ComputeSiblingIndexForInitialization(ESpell spell, bool isUnlockedContainer)
         {
-            base.OnDestroy();
+            // Place index based on ordering but relative to its container.
+            // This keeps the initial visual order correct.
+            int idx = 0;
+            foreach (var sd in m_OrderedSpells)
+            {
+                bool unlocked = InventoryCloudData.Instance.GetSpell(sd.Spell).Level > 0;
+                if (unlocked == isUnlockedContainer)
+                {
+                    if (sd.Spell == spell)
+                        return idx;
+                    idx++;
+                }
+            }
+            return idx;
+        }
 
-            CharacterBuildsCloudData.SelectedCharacterChangedEvent  -= RefreshSpellItemsDisplay;
-            CharacterBuildsCloudData.CurrentBuildIndexChangedEvent  -= RefreshSpellItemsDisplay;
-            CharacterBuildsCloudData.CurrentBuildValueChangedEvent  -= RefreshSpellItemsDisplay;
-            InventoryManager.UnlockCollectableEvent                 -= OnUnlockedSpell;
-            m_SpellFiltersSection.FilterChangedEvent                -= OnFilterChanged;
+        protected override void RegisterListeners()
+        {
+            base.RegisterListeners();
+
+            CharacterBuildsCloudData.SelectedCharacterChangedEvent += RefreshSpellItemsDisplay;
+            CharacterBuildsCloudData.CurrentBuildIndexChangedEvent += RefreshSpellItemsDisplay;
+            CharacterBuildsCloudData.CurrentBuildValueChangedEvent += RefreshSpellItemsDisplay;
+            InventoryManager.UnlockCollectableEvent += OnUnlockedSpell;
+            m_SpellFiltersSection.FilterChangedEvent += OnFilterChanged;
+        }
+
+        protected override void UnRegisterListeners()
+        {
+            base.UnRegisterListeners();
+
+            CharacterBuildsCloudData.SelectedCharacterChangedEvent -= RefreshSpellItemsDisplay;
+            CharacterBuildsCloudData.CurrentBuildIndexChangedEvent -= RefreshSpellItemsDisplay;
+            CharacterBuildsCloudData.CurrentBuildValueChangedEvent -= RefreshSpellItemsDisplay;
+            InventoryManager.UnlockCollectableEvent -= OnUnlockedSpell;
+            m_SpellFiltersSection.FilterChangedEvent -= OnFilterChanged;
             m_SpellFiltersSection.SearchInputField.onValueChanged.RemoveListener(OnSearchValueChanged);
         }
 
-        #endregion
-
-
-        #region GUI Manipulators
-
         public override void Activate(bool activate)
         {
-            base.Activate(activate);    
-
+            base.Activate(activate);
             m_SpellFiltersSection.gameObject.SetActive(activate);
         }
 
+        #region Display Refresh
+
         /// <summary>
-        /// When a build or character selected is changed, refresh which spell item is displayed or not
+        /// Refresh which spell item is displayed. This is light-weight: we only SetActive and optionally reparent / reindex.
         /// </summary>
         public void RefreshSpellItemsDisplay()
         {
             var allowedSpells = m_SpellFiltersSection.GetFilteredSpells();
-            foreach (var item in m_SpellItems)
+            string searchText = m_SpellFiltersSection.SearchInputField.text;
+
+            // We'll compute visible ordering for the unlocked container to maintain order after filtering
+            List<ESpell> visibleUnlockedInOrder = new List<ESpell>();
+
+            // First pass: evaluate each spell's visibility and gather unlocked visible spells in order
+            foreach (var sd in m_OrderedSpells)
             {
-                bool activate = true;
+                if (!m_SpellItems.TryGetValue(sd.Spell, out var ui))
+                    continue; // should not happen
 
-                // CHECK : is in current build
-                if (CharacterBuildsCloudData.CurrentSpells.Contains(item.Key))
-                    activate = false;
+                bool visible = true;
 
-                // CHECK : is allowed by filters
-                if (activate && allowedSpells.Where(data => data.Spell == item.Key).ToList().Count == 0)
-                    activate = false;
+                // hidden if in current build
+                if (CharacterBuildsCloudData.CurrentSpells.Contains(sd.Spell))
+                    visible = false;
 
-                item.Value.gameObject.SetActive(activate);
+                // hidden if not matching search
+                if (visible && !string.IsNullOrWhiteSpace(searchText))
+                {
+                    string lower = searchText.Trim().ToLowerInvariant();
+                    if (!sd.Name.ToLowerInvariant().Contains(lower) && !sd.Spell.ToString().ToLowerInvariant().Contains(lower))
+                        visible = false;
+                }
+
+                // hidden if filter excludes
+                if (visible && allowedSpells.Where(d => d.Spell == sd.Spell).ToList().Count == 0)
+                    visible = false;
+
+                // apply active
+                ui.gameObject.SetActive(visible);
+
+                // collect unlocked visible spells in the global order so we can reindex
+                bool unlocked = InventoryCloudData.Instance.GetSpell(sd.Spell).Level > 0;
+                if (visible && unlocked)
+                    visibleUnlockedInOrder.Add(sd.Spell);
             }
 
-            // Force layout rebuild for both containers
-            LayoutRebuilder.ForceRebuildLayoutImmediate(m_LockedSpellItemContainer.GetComponent<RectTransform>());
-            LayoutRebuilder.ForceRebuildLayoutImmediate(m_SpellItemContainer.GetComponent<RectTransform>());
-            LayoutRebuilder.ForceRebuildLayoutImmediate(m_ParentContent.GetComponent<RectTransform>());
+            // Second pass: ensure sibling indices for unlocked visible items reflect the global order
+            // We'll move only items that are parented to unlocked container.
+            for (int i = 0; i < visibleUnlockedInOrder.Count; i++)
+            {
+                var spell = visibleUnlockedInOrder[i];
+                var ui = m_SpellItems[spell];
+                if (ui.transform.parent != m_SpellItemContainer)
+                    ui.transform.SetParent(m_SpellItemContainer, false);
+
+                // Only change sibling index if different to avoid layout churn
+                if (ui.transform.GetSiblingIndex() != i)
+                    ui.transform.SetSiblingIndex(i);
+            }
+
+            // If filters show locked spells in the locked container we could optionally reorder them similarly
+            // For simplicity we'll keep locked container order as originally built.
+
+            MarkLayoutDirty();
         }
 
         #endregion
 
+        #region Unlock / Reparent
 
-        #region Listeners
-
-        /// <summary>
-        /// When a spell is unlock, change its parent from Locked to normal SpellItemContainer
-        /// </summary>
-        /// <param name="spell"></param>
-        void OnUnlockedSpell(Enum spell)
+        void OnUnlockedSpell(Enum spellEnum)
         {
-            if (spell.GetType() != typeof(ESpell))
+            if (spellEnum.GetType() != typeof(ESpell))
                 return;
 
-            // find the item
-            TemplateSpellItemUI spellItemUI = Finder.FindComponent<TemplateSpellItemUI>(m_LockedSpellItemContainer, string.Format(SPELL_ITEM_NAME_FORMAT, spell.ToString()));
-            if (spellItemUI == null)
-                return;
+            ESpell spell = (ESpell)spellEnum;
 
-            // change parent
-            spellItemUI.transform.SetParent(m_SpellItemContainer.transform);
-            spellItemUI.CollectionFillBar?.gameObject.SetActive(true);
+            if (!m_SpellItems.TryGetValue(spell, out var ui))
+            {
+                // Unexpected: item missing (maybe initialization didn't include it). Fallback: create it.
+                // In our "B" design we expect everything to be created at initialize; still handle gracefully.
+                CreateMissingSpellItem(spell);
+                if (!m_SpellItems.TryGetValue(spell, out ui))
+                    return;
+            }
 
-            // Force layout rebuild for both containers
-            LayoutRebuilder.ForceRebuildLayoutImmediate(m_LockedSpellItemContainer.GetComponent<RectTransform>());
-            LayoutRebuilder.ForceRebuildLayoutImmediate(m_SpellItemContainer.GetComponent<RectTransform>());
+            ui.CollectionFillBar?.gameObject.SetActive(true);
 
-            // add spellUI to dict of spell UIs
-            m_SpellItems.Add(spellItemUI.Spell, spellItemUI);
+            // Compute its place in the unlocked container based on global ordering and current filters
+            int targetIndex = GetTargetIndexForUnlocked(spell);
+
+            ui.transform.SetParent(m_SpellItemContainer, false);
+            ui.transform.SetSiblingIndex(targetIndex);
+
+            // ensure active state follows filters/build
+            RefreshSpellItemsDisplay();
         }
+
+        void CreateMissingSpellItem(ESpell spell)
+        {
+            // Find SpellData
+            var sd = m_OrderedSpells.Find(s => s.Spell == spell);
+            if (sd == null) return;
+
+            var go = Instantiate(m_TemplateSpellItem, m_SpellItemContainer);
+            go.name = string.Format(SPELL_ITEM_NAME_FORMAT, sd.Name);
+            var ui = go.GetComponent<TemplateSpellItemUI>();
+            ui.Initialize(spell);
+            ui.CollectionFillBar?.gameObject.SetActive(true);
+            m_SpellItems.Add(spell, ui);
+        }
+
+        int GetTargetIndexForUnlocked(ESpell spell)
+        {
+            // Target index is number of unlocked spells (in global order) that are visible before this spell
+            int idx = 0;
+            foreach (var sd in m_OrderedSpells)
+            {
+                if (sd.Spell == spell)
+                    return idx;
+
+                bool unlocked = InventoryCloudData.Instance.GetSpell(sd.Spell).Level > 0;
+                bool visible = true;
+
+                // skip if hidden by current build
+                if (CharacterBuildsCloudData.CurrentSpells.Contains(sd.Spell))
+                    visible = false;
+
+                // skip if hidden by search/filter
+                if (visible && m_SpellFiltersSection.SearchInputField.text != "")
+                {
+                    string lower = m_SpellFiltersSection.SearchInputField.text.Trim().ToLowerInvariant();
+                    if (!sd.Name.ToLowerInvariant().Contains(lower) && !sd.Spell.ToString().ToLowerInvariant().Contains(lower))
+                        visible = false;
+                }
+
+                var allowed = m_SpellFiltersSection.GetFilteredSpells();
+                if (visible && allowed.Where(d => d.Spell == sd.Spell).ToList().Count == 0)
+                    visible = false;
+
+                if (unlocked && visible)
+                    idx++;
+            }
+            return idx;
+        }
+
+        #endregion
+
+        #region Filters / Listeners
 
         void OnSearchValueChanged(string value)
         {
+            // We keep behaviour: if search field has text, filter change events don't rerun
             RefreshSpellItemsDisplay();
         }
 
         void OnFilterChanged()
         {
-            // refresh filter only if no search input
             if (m_SpellFiltersSection.SearchInputField.text != "")
                 return;
 
             RefreshSpellItemsDisplay();
+        }
+
+        #endregion
+
+        #region Layout Throttling
+
+        void MarkLayoutDirty()
+        {
+            if (m_LayoutDirty) return;
+            m_LayoutDirty = true;
+            if (m_LayoutCoroutine != null) StopCoroutine(m_LayoutCoroutine);
+            m_LayoutCoroutine = StartCoroutine(DelayedRebuild());
+        }
+
+        IEnumerator DelayedRebuild()
+        {
+            // wait one frame to batch multiple changes
+            yield return null;
+
+            // Force rebuild bottom-up
+            if (m_LockedContainerRect != null)
+                LayoutRebuilder.ForceRebuildLayoutImmediate(m_LockedContainerRect);
+            if (m_SpellContainerRect != null)
+                LayoutRebuilder.ForceRebuildLayoutImmediate(m_SpellContainerRect);
+            if (m_ParentContentRect != null)
+                LayoutRebuilder.ForceRebuildLayoutImmediate(m_ParentContentRect);
+
+            m_LayoutDirty = false;
+            m_LayoutCoroutine = null;
         }
 
         #endregion

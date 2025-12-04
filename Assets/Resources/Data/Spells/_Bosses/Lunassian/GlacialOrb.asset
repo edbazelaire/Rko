@@ -14,11 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Rarety: 0
   m_Description: 'Shoots a Frozen Orb dealing [Damage] Damages and applying [Frost]'
-  m_DescriptionVariables:
-  - Name: Damage
-    WithIcon: 1
-  - Name: Frost
-    WithIcon: 1
   m_SpellElements: 
   Linked: 1
   Graphics: {fileID: 4510707380993797748, guid: a9c24cf11836c21488d85cae4c84dc0c, type: 3}
@@ -94,10 +89,8 @@ MonoBehaviour:
   m_Charges: 1
   EnergyGain: 10
   EnergyCost: 0
-  m_Damage: 70
-  m_ExecutionDamage: 0
   m_Damages:
-  - m_BaseValue: 70
+  - m_BaseValue: 60
     m_DamageCategory: 1
     m_HitCategory: 1
     m_SpellPropertyScaling:
@@ -106,6 +99,7 @@ MonoBehaviour:
       ScalingType: 0
       RoundingType: 0
       ScalingTresholds: []
+    m_DamageModifiers: []
   m_Heal: 0
   m_Shield: 0
   m_LifeSteal: 0
@@ -167,6 +161,7 @@ MonoBehaviour:
   Animation: 2
   IsCancellable: 1
   IsInterruptable: 1
+  IgnoreCC: 0
   AnimationTimer: 0.7
   m_Cooldown: 0.5
   Trajectory: 1

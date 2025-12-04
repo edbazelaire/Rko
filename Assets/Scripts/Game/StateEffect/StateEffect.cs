@@ -1233,7 +1233,7 @@ namespace Game.Spells
             if (!GameManager.IsGameRunning)
                 return;
 
-            ErrorHandler.Log($"{StateEffectName} - {stateEffectEvent} : {stacks} stacks", ELogTag.StateEffects);
+            ErrorHandler.Log(() => $"{StateEffectName} - {stateEffectEvent} : {stacks} stacks", ELogTag.StateEffects);
             
             // call event on server side
             StateEffect.StateEffectStaticEvent?.Invoke(StateEffectName, stateEffectEvent, stacks, targetId, casterId, m_Origin);
@@ -1555,7 +1555,7 @@ namespace Game.Spells
                 if (stateEffectActivation.StateEffectEvent != stateEffectEvent)
                     continue;
 
-                ErrorHandler.Log("OnStateEffectEvent - " + stateEffectName + " | " + stateEffectEvent + " (" + stacks + ")", ELogTag.StateEffects);
+                ErrorHandler.Log(() => "OnStateEffectEvent - " + stateEffectName + " | " + stateEffectEvent + " (" + stacks + ")", ELogTag.StateEffects);
 
                 Refresh(stateEffectActivation.Stacks * stacks);
             }

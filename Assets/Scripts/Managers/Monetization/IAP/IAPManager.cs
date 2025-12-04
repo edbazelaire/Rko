@@ -37,6 +37,7 @@ namespace Managers.Monetization.IAP
 
         #endregion
 
+
         #region Init & End
 
         private void Awake()
@@ -100,21 +101,22 @@ namespace Managers.Monetization.IAP
 
         async Task ConnectToStore()
         {
-            // 3) Connect to the store
+            // connect to the store
             await m_StoreController.Connect();
             Debug.Log("[IAP] Connected to store.");
 
-            // 4) Tell IAP which products you care about
+            // tell IAP which products you care about
             var productDefs = new List<ProductDefinition>();
             foreach (var info in m_ProductsInfo)
             {
-                productDefs.Add(new ProductDefinition(info.Product.ToString(), info.Type));
+                productDefs.Add(new ProductDefinition(info.Product.ToString().ToLower(), info.Type));
             }
 
             m_StoreController.FetchProducts(productDefs);   // triggers OnProductsFetched
         }
 
         #endregion
+
 
         #region Purchases
 
@@ -133,8 +135,7 @@ namespace Managers.Monetization.IAP
 
             if (productToBuy == null)
             {
-                ScreenManager.QuickMessage(
-                    $"Produit invalide ou non disponible : {productId}\nIf the problem persists, please report the issue.");
+                ScreenManager.QuickMessage($"Invalid or non available product : {productId}\nIf the problem persists, please report the issue.");
                 return;
             }
 
@@ -162,6 +163,7 @@ namespace Managers.Monetization.IAP
 
         #endregion
 
+
         #region Product Management
 
         public Product GetProduct(EProduct product)
@@ -180,11 +182,16 @@ namespace Managers.Monetization.IAP
 
         #endregion
 
+
         #region StoreController callbacks (v5 replacement for IStoreListener)
 
         private void OnProductsFetched(List<Product> products)
         {
             Debug.Log($"[IAP] Products fetched: {products.Count}");
+            foreach (var product in products)
+            {
+                Debug.Log($"    - {product.metadata.localizedTitle} | {product.metadata.localizedPriceString}");
+            }
         }
 
         private void OnProductsFetchFailed(ProductFetchFailed failure)

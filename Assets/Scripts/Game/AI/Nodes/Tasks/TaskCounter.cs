@@ -25,7 +25,7 @@ public class TaskCounter : BaseTask
             }
         }
 
-        ErrorHandler.Log("Found " + m_CounterSpells.Count + " counter spells", ELogTag.AITaskCounter);
+        ErrorHandler.Log(() => "Found " + m_CounterSpells.Count + " counter spells", ELogTag.AITaskCounter);
     }
 
     #endregion
@@ -38,13 +38,13 @@ public class TaskCounter : BaseTask
 
         if (m_ImmediatThreatTrigger.CheckTriggerSpellSpawn())
         {
-            ErrorHandler.Log("TaskCounter : FAILURE (in spell spawn)", ELogTag.AITaskCounter);
+            ErrorHandler.Log(() => "TaskCounter : FAILURE (in spell spawn)", ELogTag.AITaskCounter);
             return m_State;
         }
 
         if (m_ImmediatThreatTrigger.CheckTriggerZone())
         {
-            ErrorHandler.Log("TaskCounter : FAILURE (in spell spawn)", ELogTag.AITaskCounter);
+            ErrorHandler.Log(() => "TaskCounter : FAILURE (in spell spawn)", ELogTag.AITaskCounter);
             return m_State;
         }
 
@@ -52,14 +52,14 @@ public class TaskCounter : BaseTask
         {
             if (m_Controller.SpellHandler.CanCast(spell))
             {
-                ErrorHandler.Log("TaskCounter : SUCCESS", ELogTag.AITaskCounter);
+                ErrorHandler.Log(() => "TaskCounter : SUCCESS", ELogTag.AITaskCounter);
                 m_State = NodeState.SUCCESS;
                 m_Controller.SpellHandler.TryStartCastSpell(spell, m_Controller.CharacterLevel);
                 return m_State;
             }
         }
 
-        ErrorHandler.Log("TaskCounter FAILURE : all spells are in cooldown", ELogTag.AITaskCounter);
+        ErrorHandler.Log(() => "TaskCounter FAILURE : all spells are in cooldown", ELogTag.AITaskCounter);
         return m_State;
     }
 

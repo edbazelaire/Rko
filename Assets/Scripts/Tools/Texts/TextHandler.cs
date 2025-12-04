@@ -214,7 +214,13 @@ namespace Tools
 
         public static string FormatPercValue(float value)
         {
-            return (value >= 0.01 ? Mathf.Round(value * 100).ToString("0") : (Mathf.Round(value * 1000) / 10).ToString("F1")) + "%";
+            if (value >= 0.01)
+                return (value * 100).ToString("0") + "%";
+            
+            if (value >= 0.001)
+                return (value * 100).ToString("F1") + "%";
+            
+            return (value * 100).ToString("F2") + "%";
         }
 
         public static string FormatNumericalString(int number, string separator = " ")

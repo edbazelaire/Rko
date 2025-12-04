@@ -4,6 +4,7 @@ using Data.GameManagement;
 using Enums;
 using Inventory;
 using MyBox;
+using Newtonsoft.Json;
 using Save.Data;
 using System;
 using System.Collections.Generic;
@@ -100,7 +101,7 @@ namespace Save
         /// </summary>
         /// <param name="charsBuildsList"></param>
         /// <returns></returns>
-        protected override object Convert(Item item)
+        protected override object BaseConversion(Item item)
         {
             if (m_Data[item.Key].GetType() == typeof(List<STimeData>))
                 return item.Value.GetAs<List<STimeData>>();
@@ -108,7 +109,7 @@ namespace Save
             if (m_Data[item.Key].GetType() == typeof(SDailyRewardsData))
                 return item.Value.GetAs<SDailyRewardsData>();
 
-            return base.Convert(item);
+            return base.BaseConversion(item);
         }
 
         #endregion
@@ -349,12 +350,12 @@ namespace Save
 
         #region Daily Rewards
 
-        static SDailyRewardsData GetWeeklyRewardsData()
+        static SDailyRewardsData GetDailyRewardsData()
         {
             return DailyRewards;
         }
 
-        static void SetWeeklyRewardsData(SDailyRewardsData data, bool save = true)
+        static void SetDailyRewardsData(SDailyRewardsData data, bool save = true)
         {
             Instance.m_Data[KEY_DAILY_REWARDS] = data;
             if (save)
@@ -364,8 +365,11 @@ namespace Save
         public static void ResetWeek(bool save = true)
         {
             Debug.LogWarning("ResetWeek()");
-            int streak = DailyRewards.Streak;
 
+            // keep streak only if the rewards were all collected
+            int streak = DailyRewards.IsFullyCollected() ? DailyRewards.Streak : 0;
+
+            // create new data
             var newData = new SDailyRewardsData
             {
                 Rewards = DailyRewardsTable.GenerateWeeklyReward(streak),
@@ -375,7 +379,8 @@ namespace Save
                 NextCollectAt = 0
             };
 
-            SetWeeklyRewardsData(newData, save);
+            // save
+            SetDailyRewardsData(newData, save);
         }
 
         public static SRewardsData? CollectCurrentReward(bool save = true)
@@ -404,7 +409,7 @@ namespace Save
                 data.Streak++;
             }
 
-            SetWeeklyRewardsData(data, save);
+            SetDailyRewardsData(data, save);
             DailyRewardCollected?.Invoke();
 
             return reward;
@@ -414,7 +419,7 @@ namespace Save
         /// <summary>Ensures daily rewards are valid for the current week.</summary>
         bool CheckDailyRewards()
         {
-            var data = GetWeeklyRewardsData();
+            var data = GetDailyRewardsData();
 
             if (data.Rewards == null || data.Rewards.Count != 5 || data.IsExpired())
             {
@@ -438,7 +443,7 @@ namespace Save
 
         public static bool IsCollected(int index)
         {
-            var data = GetWeeklyRewardsData();
+            var data = GetDailyRewardsData();
 
             if (data.Rewards == null || index < 0 || index >= data.Rewards.Count)
                 return false;
@@ -449,13 +454,13 @@ namespace Save
 
         public static int TimeBeforeResetWeek()
         {
-            var data = GetWeeklyRewardsData();
+            var data = GetDailyRewardsData();
             return data.TimeBeforeReset();
         }
 
         public static SRewardsData? GetRewardAtIndex(int index)
         {
-            var data = GetWeeklyRewardsData();
+            var data = GetDailyRewardsData();
 
             if (data.Rewards == null || index < 0 || index >= data.Rewards.Count)
                 return null;
@@ -475,14 +480,14 @@ namespace Save
 
         public static int GetStreak()
         {
-            return GetWeeklyRewardsData().Streak;
+            return GetDailyRewardsData().Streak;
         }
 
         public static void ResetStreak(bool save = true)
         {
-            var data = GetWeeklyRewardsData();
+            var data = GetDailyRewardsData();
             data.Streak = 0;
-            SetWeeklyRewardsData(data, save);
+            SetDailyRewardsData(data, save);
         }
 
         #endregion
@@ -617,9 +622,9 @@ namespace Save
         {
             var test = CheckDailyShopOffers()
                 || CheckSpecialShopOffers();
-            
+
             if (test)
-                Save();
+                SaveValue(KEY_TIME_DATA);
 
             return test;
         }

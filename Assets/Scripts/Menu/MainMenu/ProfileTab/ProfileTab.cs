@@ -116,14 +116,8 @@ namespace Menu.MainMenu.ProfileTab
             m_NAchivementsToCollect = 0;
             foreach (var achievementData in AchievementLoader.Achievements)
             {
-                if (achievementData.IsUnlockable)
+                if (achievementData.IsUnlockable && ! achievementData.IsCharacterMastery)
                     m_NAchivementsToCollect++;
-            }
-
-            if (m_NAchivementsToCollect < 0)
-            {
-                ErrorHandler.Error("m_NAchivementsToCollect (" + m_NAchivementsToCollect + ") < 0");
-                m_NAchivementsToCollect = 0;
             }
 
             if (m_NAchivementsToCollect > 0)
@@ -147,7 +141,7 @@ namespace Menu.MainMenu.ProfileTab
             base.RegisterListeners();
             m_AchievementsTabManager.TabSelectedEvent   += OnTabSelected;
             ProfileCloudData.AchievementChangedEvent    += OnAchievementChanged;
-            ProfileCloudData.AchievementCompletedEvent  += OnAchievementChanged;
+            ProfileCloudData.AchievementCollectedEvent  += OnAchievementChanged;
             m_SwitchButton.onClick.AddListener(ToggleDisplay);
         }
 
@@ -156,7 +150,7 @@ namespace Menu.MainMenu.ProfileTab
             base.UnRegisterListeners();
 
             ProfileCloudData.AchievementChangedEvent    -= OnAchievementChanged;
-            ProfileCloudData.AchievementCompletedEvent  -= OnAchievementChanged;
+            ProfileCloudData.AchievementCollectedEvent  -= OnAchievementChanged;
             m_SwitchButton.onClick.RemoveAllListeners();
         }
 

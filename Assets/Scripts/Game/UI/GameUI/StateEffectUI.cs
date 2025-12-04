@@ -69,7 +69,7 @@ namespace Game.UI
 
         public void Refresh(float duration, float? timer, int stacks, int? maxStacks)
         {
-            ErrorHandler.Log("Refresh " + m_StateEffectName + " : with " + stacks + " stacks", ELogTag.StateEffectGFX);
+            ErrorHandler.Log(() => "Refresh " + m_StateEffectName + " : with " + stacks + " stacks", ELogTag.StateEffectGFX);
 
             m_Stacks = 0;
             AddStacks(stacks, maxStacks: maxStacks, duration: duration, timer: timer);
@@ -82,7 +82,7 @@ namespace Game.UI
 
             m_Stacks = Math.Clamp(m_Stacks + stacks, 0, m_MaxStacks > 0 ? m_MaxStacks : 999);
 
-            ErrorHandler.Log(m_StateEffectName + " : new stacks " + m_Stacks, ELogTag.StateEffectGFX);
+            ErrorHandler.Log(() => m_StateEffectName + " : new stacks " + m_Stacks, ELogTag.StateEffectGFX);
             if (m_Stacks <= 0 || m_StartingStacks >= 1 && m_Stacks == 1)
                 m_StacksContainer.SetActive(false);
             else

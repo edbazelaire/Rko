@@ -45,7 +45,7 @@ public class CheckDodge : BaseChecker
         // checks if is on a spell preview
         if (m_ImmediatThreatTrigger != null && m_ImmediatThreatTrigger.CheckTriggerSpellSpawn())
         {
-            ErrorHandler.Log("CheckDodge : CheckTriggerSpellSpawn() SUCCESS", ELogTag.AICheckers);
+            ErrorHandler.Log(() => "CheckDodge : CheckTriggerSpellSpawn() SUCCESS", ELogTag.AICheckers);
             SetNodeState(NodeState.SUCCESS);
             return m_State;
         }
@@ -58,7 +58,7 @@ public class CheckDodge : BaseChecker
                 (bool isThreat, bool isDodgeable, int _) = TaskMove.IsProjectileAtThreatDistance(projectile, m_Controller, new List<int>() { -1, 1 });
                 if (isThreat) 
                 {
-                    ErrorHandler.Log("CheckDodge : IsProjectileAtThreatDistance() SUCCESS - isThreat = true | isDodgeable = " + isDodgeable, ELogTag.AICheckers);
+                    ErrorHandler.Log(() => "CheckDodge : IsProjectileAtThreatDistance() SUCCESS - isThreat = true | isDodgeable = " + isDodgeable, ELogTag.AICheckers);
                     SetNodeState(NodeState.SUCCESS);
                     return m_State;
                 }

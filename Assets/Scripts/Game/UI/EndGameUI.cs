@@ -148,7 +148,7 @@ public class EndGameUI : MObject
     // Use this for initialization
     public void Activate(EGameResult gameResult, bool preventiveLossApplied)
     {
-        ErrorHandler.Log("END OF GAME : " + LobbyHandler.Instance.GameMode + " - " + gameResult.ToString(), ELogTag.GameSystem);
+        ErrorHandler.Log(() => "END OF GAME : " + LobbyHandler.Instance.GameMode + " - " + gameResult.ToString(), ELogTag.GameSystem);
 
         // make sure that into is deactivated
         GameUIManager.IntroGameUI.Deactivate();
@@ -261,7 +261,7 @@ public class EndGameUI : MObject
 
     void DisplayRewards()
     {
-        ErrorHandler.Log("HandleReward() : start", ELogTag.Rewards);
+        ErrorHandler.Log(() => "HandleReward() : start", ELogTag.Rewards);
 
         m_GemsRewardDisplay.SetActive(false);
         m_XpRewardDisplay.SetActive(false);
@@ -297,7 +297,7 @@ public class EndGameUI : MObject
         // ----------------------------------------------------------------------------
         // Xp   
         int xp = rewardCalculator.GetXp();
-        ErrorHandler.Log("         + XP : " + xp, ELogTag.Rewards);
+        ErrorHandler.Log(() => "         + XP : " + xp, ELogTag.Rewards);
         if (xp > 0)
         {
             m_XpRewardDisplay.SetActive(true);
@@ -308,7 +308,7 @@ public class EndGameUI : MObject
         // ----------------------------------------------------------------------------
         // GOLDS   
         int golds = rewardCalculator.GetGold();
-        ErrorHandler.Log("         + GOLD : " + golds, ELogTag.Rewards);
+        ErrorHandler.Log(() => "         + GOLD : " + golds, ELogTag.Rewards);
         if (golds > 0)
         {
             m_GoldRewardDisplay.SetActive(true);
@@ -319,7 +319,7 @@ public class EndGameUI : MObject
         // ----------------------------------------------------------------------------
         // Gems   
         int gems = rewardCalculator.GetGems();
-        ErrorHandler.Log("         + XP : " + xp, ELogTag.Rewards);
+        ErrorHandler.Log(() => "         + XP : " + xp, ELogTag.Rewards);
         if (gems > 0)
         {
             m_GemsRewardDisplay.SetActive(true);
@@ -331,7 +331,7 @@ public class EndGameUI : MObject
         // CHESTS
         // init chests rewards to empty list
         List<EChest> chests = new();
-        ErrorHandler.Log("         + CHESTS : " + chests.Count, ELogTag.Rewards);
+        ErrorHandler.Log(() => "         + CHESTS : " + chests.Count, ELogTag.Rewards);
 
         // check if any index is available to store the chest (otherwise : no chest reward)
         if (InventoryManager.GetFirstAvailableIndex(out int index))
@@ -361,7 +361,7 @@ public class EndGameUI : MObject
 
         StartCoroutine(RewardsAnimation());
 
-        ErrorHandler.Log("HandleReward() : end", ELogTag.Rewards);
+        ErrorHandler.Log(() => "HandleReward() : end", ELogTag.Rewards);
     }
 
     void HandlePowerOrbDisplay()
@@ -440,7 +440,7 @@ public class EndGameUI : MObject
         switch (LobbyHandler.Instance.GameMode)
         {
             case EGameMode.Arena:
-                ErrorHandler.Log("HandleProgression() : Loading Arena Data : " + PlayerPrefsHandler.GetArenaType().ToString(), ELogTag.GameSystem);
+                ErrorHandler.Log(() => "HandleProgression() : Loading Arena Data : " + PlayerPrefsHandler.GetArenaType().ToString(), ELogTag.GameSystem);
 
                 // if preventive loss has been applied, remove life loss
                 switch(m_GameResult)
@@ -467,7 +467,7 @@ public class EndGameUI : MObject
                 break;
 
             case EGameMode.Ranked:
-                ErrorHandler.Log("HandleProgression() : Ranked game", ELogTag.GameSystem);
+                ErrorHandler.Log(() => "HandleProgression() : Ranked game", ELogTag.GameSystem);
 
                 // if preventive loss has been applied, remove life loss
                 switch (m_GameResult)

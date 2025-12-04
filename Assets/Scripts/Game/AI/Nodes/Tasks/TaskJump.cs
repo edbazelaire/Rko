@@ -25,7 +25,7 @@ public class TaskJump : BaseTask
             }
         }
 
-        ErrorHandler.Log("Found " + m_JumpSpells.Count + " jump spells", ELogTag.AITaskJump);
+        ErrorHandler.Log(() => "Found " + m_JumpSpells.Count + " jump spells", ELogTag.AITaskJump);
     }
 
     #endregion
@@ -38,7 +38,7 @@ public class TaskJump : BaseTask
 
         if (m_JumpSpells.Count == 0)
         {
-            ErrorHandler.Log("TaskJump FAILURE : No jump spells", ELogTag.AITaskJump);
+            ErrorHandler.Log(() => "TaskJump FAILURE : No jump spells", ELogTag.AITaskJump);
             return m_State;
         }
 
@@ -46,14 +46,14 @@ public class TaskJump : BaseTask
         {
             if (m_Controller.SpellHandler.CanCast(spell))
             {
-                ErrorHandler.Log("TaskJump SUCCESS", ELogTag.AITaskJump);
+                ErrorHandler.Log(() => "TaskJump SUCCESS", ELogTag.AITaskJump);
                 m_State = NodeState.SUCCESS;
                 m_Controller.SpellHandler.TryStartCastSpell(spell, m_Controller.CharacterLevel, out string _);
                 return m_State;
             }
         }
 
-        ErrorHandler.Log("TaskJump FAILURE : all jump spells in cooldown", ELogTag.AITaskJump);
+        ErrorHandler.Log(() => "TaskJump FAILURE : all jump spells in cooldown", ELogTag.AITaskJump);
         return m_State;
     }
 

@@ -113,7 +113,7 @@ namespace Game.Spells
             Collider2D[] hits = new Collider2D[32];
             int count = Physics2DQueries.OverlapAtPosition(m_Collider, position, m_SpellData.Size, filter, hits);
 
-            ErrorHandler.Log($"AOE at {position} hit {count} colliders.", ELogTag.Aoe);
+            ErrorHandler.Log(() => $"AOE at {position} hit {count} colliders.", ELogTag.Aoe);
 
             // Gat all controllers touched by the 2D collision circle
             var hitControllers = new List<Controller>();
@@ -123,7 +123,7 @@ namespace Game.Spells
                     continue;
 
                 hitControllers.Add(controller);
-                ErrorHandler.Log($" → Hit {hits[i].name}", ELogTag.Aoe);
+                ErrorHandler.Log(() => $" → Hit {hits[i].name}", ELogTag.Aoe);
             }
 
             // if "ApplyIfNotHitting" : set hitControllers to be the list of ALL controllers NOT HIT

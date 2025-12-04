@@ -69,7 +69,7 @@ namespace Save
         /// Convert CloudData into a dictionnary (easier to manipulate type of data)
         /// </summary>
         /// <returns></returns>
-        protected override object Convert(Item item)
+        protected override object BaseConversion(Item item)
         {
             try
             {
@@ -103,7 +103,7 @@ namespace Save
                 return m_Data[item.Key];
             }
 
-            return base.Convert(item);
+            return base.BaseConversion(item);
         }
 
         #endregion

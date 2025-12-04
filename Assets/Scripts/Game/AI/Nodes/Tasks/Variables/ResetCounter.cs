@@ -32,12 +32,12 @@ namespace Game.AI.Tasks.Variables
             m_State = NodeState.SUCCESS;
             if (m_Counter == null)
             {
-                ErrorHandler.Log("ResetTimer - SUCCESS : Reseting " + m_Id + " with timer " + m_Counter, ELogTag.AITaskJump);
+                ErrorHandler.Log(() => "ResetTimer - SUCCESS : Reseting " + m_Id + " with timer " + m_Counter, ELogTag.AITaskJump);
                 m_Controller.BehaviorTree.DeleteCounter(m_Id);
             }
             else
             {
-                ErrorHandler.Log("ResetTimer - SUCCESS : Reseting " + m_Id + " with timer " + m_Counter, ELogTag.AITaskJump);
+                ErrorHandler.Log(() => "ResetTimer - SUCCESS : Reseting " + m_Id + " with timer " + m_Counter, ELogTag.AITaskJump);
                 m_Controller.BehaviorTree.ResetCounter(m_Id, m_Counter.Value);
             }
 

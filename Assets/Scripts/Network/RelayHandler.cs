@@ -62,7 +62,7 @@ namespace Assets.Scripts.Network
 
         public async Task<string> CreateRelay()
         {
-            ErrorHandler.Log("RelayHandler.CreateRelay()", ELogTag.System);
+            ErrorHandler.Log(() => "RelayHandler.CreateRelay()", ELogTag.System);
 
             try
             {
@@ -70,7 +70,7 @@ namespace Assets.Scripts.Network
 
                 string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
-                ErrorHandler.Log("Created relay with code " + joinCode, ELogTag.System);
+                ErrorHandler.Log(() => "Created relay with code " + joinCode, ELogTag.System);
 
                 RelayServerData relayServerData = new RelayServerData(allocation, "dtls");
 
@@ -91,7 +91,7 @@ namespace Assets.Scripts.Network
 
         public async Task JoinRelay(string joinCode)
         {
-            ErrorHandler.Log("Joining relay with code " + joinCode, ELogTag.System);
+            ErrorHandler.Log(() => "Joining relay with code " + joinCode, ELogTag.System);
 
             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
             RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
@@ -100,7 +100,7 @@ namespace Assets.Scripts.Network
 
             NetworkManager.Singleton.StartClient();
 
-            ErrorHandler.Log("Client started with local id : " + NetworkManager.Singleton.LocalClientId, ELogTag.System);
+            ErrorHandler.Log(() => "Client started with local id : " + NetworkManager.Singleton.LocalClientId, ELogTag.System);
         }
 
         #endregion

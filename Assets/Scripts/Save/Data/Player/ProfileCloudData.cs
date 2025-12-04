@@ -523,7 +523,7 @@ namespace Save
             /// <summary> action fired when the amount of gold changed </summary>
         public static Action                                AccountLevelUpEvent;
         public static Action<EAchievementReward, string>    AchievementRewardCollectedEvent;
-        public static Action<string>                        AchievementCompletedEvent;
+        public static Action<string>                        AchievementCollectedEvent;
         public static Action<string>                        AchievementChangedEvent;
         public static Action                                PseudoChangedEvent;
         public static Action<EAchievementReward>            CurrentDataChanged;
@@ -590,7 +590,7 @@ namespace Save
         /// </summary>
         /// <param name="charsBuildsList"></param>
         /// <returns></returns>
-        protected override object Convert(Item item)
+        protected override object BaseConversion(Item item)
         {
             if (m_Data[item.Key].GetType() == typeof(SProfileCurrentData))
                 return item.Value.GetAs<SProfileCurrentData>();
@@ -607,7 +607,7 @@ namespace Save
             if (m_Data[item.Key].GetType() == typeof(SAchievementInfo))
                 return item.Value.GetAs<Dictionary<string, int>>();
 
-            return base.Convert(item);
+            return base.BaseConversion(item);
         }
 
         #endregion
@@ -853,7 +853,7 @@ namespace Save
 
         public static void CompleteAchievement(string achievementId, bool resetCount)
         {
-            ErrorHandler.Log("CompleteAchievement : " + achievementId, ELogTag.Achievements);
+            ErrorHandler.Log(() => "CompleteAchievement : " + achievementId, ELogTag.Achievements);
             var achievementInfo = GetAchievementInfo(achievementId);
 
             // if count needs to be reset between indexes, get count at new current index
@@ -866,7 +866,7 @@ namespace Save
             // save changes
             SetAchievementInfo(achievementInfo, true);
 
-            AchievementCompletedEvent?.Invoke(achievementId);
+            AchievementCollectedEvent?.Invoke(achievementId);
         }
 
         #endregion
@@ -900,7 +900,7 @@ namespace Save
         /// <param name="value"></param>
         public static void AddAchievementReward(EAchievementReward achievementReward, string value, bool save = true)
         {
-            ErrorHandler.Log("AddAchievementReward() : " + value, ELogTag.Achievements);
+            ErrorHandler.Log(() => "AddAchievementReward() : " + value, ELogTag.Achievements);
             if (HasAchievementReward(achievementReward, value))
             {
                 ErrorHandler.Error("Trying to unlock achievement REWARD already unlocked : " + achievementReward.ToString() + " - " + value);

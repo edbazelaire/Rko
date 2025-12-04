@@ -246,7 +246,7 @@ namespace Save
             SetData(currency.ToString(), value, save);
         }
 
-        protected override object Convert(Item item)
+        protected override object BaseConversion(Item item)
         {
             if (m_Data[item.Key].GetType() == typeof(List<SCollectableCloudData>))
             {
@@ -258,7 +258,7 @@ namespace Save
                 return item.Value.GetAs<EEmot[]>().ToList();
             }
    
-            return base.Convert(item);
+            return base.BaseConversion(item);
         }
 
         #endregion

@@ -58,7 +58,7 @@ namespace Menu.PopUps.Components.ProfilePopUp
             if (ProfileCloudData.CurrentEmots.Contains(m_Name))
             {
                 // TODO : error message ?
-                ErrorHandler.Log("Emot " + m_Name + " already used");
+                ErrorHandler.Log(() => "Emot " + m_Name + " already used");
                 return;
             }
 

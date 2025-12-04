@@ -81,7 +81,7 @@ namespace Game.Character
         /// </summary>
         public void UpdateMovementSpeed()
         {
-            ErrorHandler.Log("Setting Animation MovementSpeed factor : " + m_Controller.Movement.Speed, ELogTag.Animation);
+            ErrorHandler.Log(() => "Setting Animation MovementSpeed factor : " + m_Controller.Movement.Speed, ELogTag.Animation);
             m_Animator.SetFloat("MovementSpeed", m_Controller.Movement.Speed);
         }
 
@@ -91,7 +91,7 @@ namespace Game.Character
         /// <param name="win"></param>
         public void GameOverAnimation(bool win)
         {
-            ErrorHandler.Log("Player (" + m_Controller.PlayerId + ") GameOverAnimation", ELogTag.Animation);
+            ErrorHandler.Log(() => "Player (" + m_Controller.PlayerId + ") GameOverAnimation", ELogTag.Animation);
             m_Animator.SetTrigger(win ? EAnimation.Win.ToString() : EAnimation.Loss.ToString());
         }
 
@@ -117,7 +117,7 @@ namespace Game.Character
             if (animation == EAnimation.None || animation == EAnimation.Self || duration == 0f)
                 return;
 
-            ErrorHandler.Log(animation + " animation with a duration of " + duration, ELogTag.Animation);
+            ErrorHandler.Log(() => animation + " animation with a duration of " + duration, ELogTag.Animation);
 
             // update speed of the animation
             m_Animator.SetFloat("CastSpeed", duration <= 0f ? 1f : 1 / duration);
@@ -130,7 +130,7 @@ namespace Game.Character
             if (animation == EAnimation.None.ToString() || duration == 0f)
                 return;
 
-            ErrorHandler.Log(animation + " animation with a duration of " + duration, ELogTag.Animation);
+            ErrorHandler.Log(() => animation + " animation with a duration of " + duration, ELogTag.Animation);
 
             // update speed of the animation
             m_Animator.SetFloat("CastSpeed", duration <= 0f ? 1f : 1 / duration);
@@ -180,7 +180,7 @@ namespace Game.Character
             if (animation != EAnimation.None && !IsCurrentAnimation(animation.ToString()))
                 return;
 
-            ErrorHandler.Log("CancelCastAnimation : " + animation, ELogTag.Animation);
+            ErrorHandler.Log(() => "CancelCastAnimation : " + animation, ELogTag.Animation);
 
             m_Animator.SetTrigger(EAnimation.CancelCast.ToString());
             m_Animator.SetFloat("CastSpeed", 1f);
@@ -239,7 +239,7 @@ namespace Game.Character
         /// <param name="newValue"></param>
         void OnStateAnimationValueChanged(EAnimation oldValue, EAnimation newValue)
         {
-            ErrorHandler.Log("STATE ANIMATION CHANGED : animation = " + newValue.ToString().ToUpper(), ELogTag.Animation);
+            ErrorHandler.Log(() => "STATE ANIMATION CHANGED : animation = " + newValue.ToString().ToUpper(), ELogTag.Animation);
 
             if (newValue == EAnimation.None)
             {
@@ -257,7 +257,7 @@ namespace Game.Character
         /// <param name="newValue"></param>
         void OnHasCounterValueChanged(bool oldValue, bool newValue)
         {
-            ErrorHandler.Log("STATE ANIMATION CHANGED : Counter = " + newValue.ToString().ToUpper(), ELogTag.Animation);
+            ErrorHandler.Log(() => "STATE ANIMATION CHANGED : Counter = " + newValue.ToString().ToUpper(), ELogTag.Animation);
 
             m_Animator.SetBool("HasCounter", newValue);
         }
@@ -269,7 +269,7 @@ namespace Game.Character
         /// <param name="newValue"></param>
         void OnStateEffectListChanged(EStateEffectEvent stateEffectEvent, string stateEffect, int stacks, int maxStacks, float duration, float timer)
         {
-            ErrorHandler.Log(stateEffect + " " + stateEffect, ELogTag.Animation);
+            ErrorHandler.Log(() => stateEffect + " " + stateEffectEvent, ELogTag.Animation);
 
             if (stateEffectEvent == EStateEffectEvent.OnApplied)
                 OnAddStateEffect(stateEffect);

@@ -2,12 +2,8 @@
 using Data;
 using Data.GameManagement;
 using Enums;
-using MyBox;
-using Save;
 using System.Collections.Generic;
-using System.Linq;
 using Tools;
-using UnityEditor;
 using UnityEngine;
 
 namespace Game.Loaders
@@ -72,6 +68,30 @@ namespace Game.Loaders
         public static IAchievement Get (string achievement, ECharacter character = ECharacter.None) 
         {
             return m_Achievements.FilterByCharacter(character).FilterByName(achievement);
+        }
+
+        public static IAchievement GetFromId(string achievementId)
+        {
+            if (string.IsNullOrEmpty(achievementId))
+                return null;
+
+            // Cherche pattern "Character_AchievementName"
+            int index = achievementId.IndexOf('_');
+
+            if (index > 0)
+            {
+                string characterStr = achievementId.Substring(0, index);
+                string name = achievementId.Substring(index + 1);
+
+                // Essaye de parser le personnage
+                if (System.Enum.TryParse<ECharacter>(characterStr, true, out ECharacter character))
+                {
+                    return Get(name, character);
+                }
+            }
+
+            // Sinon, c'est juste le nom de l'achievement
+            return Get(achievementId, ECharacter.None);
         }
 
         #endregion

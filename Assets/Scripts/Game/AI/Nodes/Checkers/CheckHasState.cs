@@ -43,13 +43,13 @@ namespace AI
                 if (controllerToCheck.StateHandler.GetStacks(stateEffect, checkActivated: true) >= m_NStacks)
                 {
                     SetNodeState(NodeState.SUCCESS);
-                    ErrorHandler.Log("CheckHasState(" + m_StateEffects[0] + ")" + (m_IsReversed ? " REVERSERD" : "") + " : " + m_State, ELogTag.AIFinalDecision);
+                    ErrorHandler.Log(() => "CheckHasState(" + m_StateEffects[0] + ")" + (m_IsReversed ? " REVERSERD" : "") + " : " + m_State, ELogTag.AIFinalDecision);
                     return m_State;
                 }
             }
 
             SetNodeState(NodeState.FAILURE);
-            ErrorHandler.Log("CheckHasState(" + m_StateEffects[0] + ")" + (m_IsReversed ? " REVERSERD" : "") + " : " + m_State, ELogTag.AIFinalDecision);
+            ErrorHandler.Log(() => "CheckHasState(" + m_StateEffects[0] + ")" + (m_IsReversed ? " REVERSERD" : "") + " : " + m_State, ELogTag.AIFinalDecision);
             return m_State;
         }
 

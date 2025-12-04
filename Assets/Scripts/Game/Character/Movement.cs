@@ -454,7 +454,7 @@ namespace Game.Character
             if (force == null || force == default || force.Speed == 0)
                 return;
 
-            ErrorHandler.Log("AddForce() : " + force.Speed, ELogTag.Forces);
+            ErrorHandler.Log(() => "AddForce() : " + force.Speed, ELogTag.Forces);
 
             if (force.Duration > 0)
                 StartCoroutine(StartForceTimer(force));
@@ -716,31 +716,31 @@ namespace Game.Character
             {
                 if (! m_Controller.StateHandler.CanMove)
                 {
-                    ErrorHandler.Log("CanMove - FALSE : has state preventing movement", ELogTag.Movement);
+                    ErrorHandler.Log(() => "CanMove - FALSE : has state preventing movement", ELogTag.Movement);
                     return false;
                 }
 
                 if (m_MovementBlocked)
                 {
-                    ErrorHandler.Log("CanMove - FALSE : Movement is blocked", ELogTag.Movement);
+                    ErrorHandler.Log(() => "CanMove - FALSE : Movement is blocked", ELogTag.Movement);
                     return false;
                 }
 
                 if (m_MovementCancelled)
                 {
-                    ErrorHandler.Log("CanMove - FALSE : Movement is cancelled", ELogTag.Movement);
+                    ErrorHandler.Log(() => "CanMove - FALSE : Movement is cancelled", ELogTag.Movement);
                     return false;
                 }
 
                 if (m_Controller.SpellHandler.IsCastingUncancellable)
                 {
-                    ErrorHandler.Log("CanMove - FALSE : Current cast is not cancellable", ELogTag.Movement);
+                    ErrorHandler.Log(() => "CanMove - FALSE : Current cast is not cancellable", ELogTag.Movement);
                     return false;
                 }
 
                 if (m_Controller.CounterHandler.IsBlockingMovement.Value)
                 {
-                    ErrorHandler.Log("CanMove - FALSE : Has counter blocking movement", ELogTag.Movement);
+                    ErrorHandler.Log(() => "CanMove - FALSE : Has counter blocking movement", ELogTag.Movement);
                     return false;
                 }
 

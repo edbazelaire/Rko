@@ -1,5 +1,6 @@
 ﻿using Assets;
 using Enums;
+using Newtonsoft.Json;
 using Save.Data;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ using Unity.Services.CloudSave;
 using Unity.Services.CloudSave.Internal;
 using Unity.Services.CloudSave.Models;
 using Unity.Services.CloudSave.Models.Data.Player;
+using UnityEngine;
 using SaveOptions = Unity.Services.CloudSave.Models.Data.Player.SaveOptions;
 
 
@@ -114,11 +116,13 @@ namespace Save
                         test = false;
                     }
                 }
-            } 
-            catch (Exception)
+            }
+            catch (Exception e)
             {
-                ErrorHandler.Error("Unable to Convert " + key + " with value " + item.Value.GetAsString());
-                test = OnLoadingError(key, item);
+                ErrorHandler.Error($"[CloudData] Error converting key '{item.Key}' to type {m_Data[item.Key]?.GetType()}");
+                ErrorHandler.Error($"[CloudData] Exception: {e.GetType().Name} - {e.Message}\n{e.StackTrace}");
+                ErrorHandler.Error($"[CloudData] Raw JSON:\n{item.Value.GetAsString()}");
+                test = false;
             }
 
             OnCloudDataKeyLoaded(key);
@@ -253,7 +257,7 @@ namespace Save
             try
             {
                 await CloudDatabase.SaveAsync(resolvedData);
-                ErrorHandler.Log($"Successfully saved resolved value for {key}");
+                ErrorHandler.Log(() => $"Successfully saved resolved value for {key}");
             }
             catch (Exception ex)
             {
@@ -318,6 +322,20 @@ namespace Save
 
         protected virtual object Convert(Item item)
         {
+            var expectedType = m_Data[item.Key].GetType();
+
+            if (expectedType.IsPrimitive ||   
+                expectedType == typeof(string) ||
+                expectedType.IsEnum)
+            {
+                return BaseConversion(item);
+            }
+            return JsonConvert.DeserializeObject(item.Value.GetAsString(), expectedType);
+        }
+
+        protected virtual object BaseConversion(Item item)
+        {
+
             var expectedType = m_Data[item.Key].GetType().Name;
 
             if (m_Data[item.Key].GetType() == typeof(List<string>))
@@ -421,7 +439,7 @@ namespace Save
             if (m_KeysToLoad.Count == 0)
                 OnCloudDataLoadingCompleted();
 
-            ErrorHandler.Log("Key Loaded : " + key, ELogTag.CloudData);
+            ErrorHandler.Log(() => "Key Loaded : " + key, ELogTag.CloudData);
         }
 
         protected virtual void OnCloudDataLoadingCompleted()

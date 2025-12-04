@@ -26,7 +26,7 @@ namespace AI
             // checks if is on a spell preview
             if (m_ImmediatThreatTrigger.IsTriggered)
             {
-                ErrorHandler.Log("ImmediatThreat Trigger detected", Enums.ELogTag.AI);
+                ErrorHandler.Log(() => "ImmediatThreat Trigger detected", Enums.ELogTag.AI);
                 SetNodeState(NodeState.SUCCESS);
             }
 

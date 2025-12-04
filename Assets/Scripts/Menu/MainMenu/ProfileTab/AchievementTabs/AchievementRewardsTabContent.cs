@@ -85,7 +85,7 @@ namespace Menu.MainMenu.ProfileTab
             if (arType != m_AchivementRewardType)
                 return;
 
-            ErrorHandler.Log("OnAchievementRewardCollected() : " + arType + " - " + rewardName, ELogTag.Achievements);
+            ErrorHandler.Log(() => "OnAchievementRewardCollected() : " + arType + " - " + rewardName, ELogTag.Achievements);
 
             // not a badge -> add and return
             if (arType != EAchievementReward.Badge)

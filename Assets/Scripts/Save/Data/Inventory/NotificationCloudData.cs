@@ -77,7 +77,7 @@ namespace Save
         /// </summary>
         /// <param name="charsBuildsList"></param>
         /// <returns></returns>
-        protected override object Convert(Item item)
+        protected override object BaseConversion(Item item)
         {
             if (m_Data[item.Key].GetType() == typeof(List<EArenaType>))
                 return item.Value.GetAs<List<EArenaType>>();
@@ -91,7 +91,7 @@ namespace Save
             if (m_Data[item.Key].GetType() == typeof(List<SMessage>))
                 return item.Value.GetAs<List<SMessage>>();
 
-            return base.Convert(item);
+            return base.BaseConversion(item);
         }
 
         #endregion

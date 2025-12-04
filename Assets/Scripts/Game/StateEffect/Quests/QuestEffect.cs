@@ -149,7 +149,7 @@ namespace Game.StateEffects.Quests
             }
 
             // set new index
-            ErrorHandler.Log(StateEffectName + " - New threshold index : " + index, ELogTag.Quests);
+            ErrorHandler.Log(() => StateEffectName + " - New threshold index : " + index, ELogTag.Quests);
             m_CurrentThresholdIndex = index;
 
             // call CLIENT event that a new index has been activated
@@ -163,7 +163,7 @@ namespace Game.StateEffects.Quests
         {
             int thresholdIndex = m_QuestThresholds.IndexOf(questThreshold);
 
-            ErrorHandler.Log("ActivateEffect at treshold : " + questThreshold.RequiredStacks, ELogTag.Quests);
+            ErrorHandler.Log(() => "ActivateEffect at treshold : " + questThreshold.RequiredStacks, ELogTag.Quests);
 
             foreach (SActivableEffect activableEffect in questThreshold.ActivableEffects)
             {
@@ -176,14 +176,14 @@ namespace Game.StateEffects.Quests
             // Add bonus stats
             if (! questThreshold.BonusStats.IsNullOrEmpty())
             {
-                ErrorHandler.Log("     + Adding BonusStats : " + questThreshold.BonusStats.Count(), ELogTag.StateEffects);
+                ErrorHandler.Log(() => "     + Adding BonusStats : " + questThreshold.BonusStats.Count(), ELogTag.StateEffects);
                 ReplaceBonusStats(questThreshold.BonusStats);
             }
         }
 
         void DeactivateEffectAtIndex(int thresholdIndex)
         {
-            ErrorHandler.Log("DeactivateEffectAtIndex : " + thresholdIndex, ELogTag.Quests);
+            ErrorHandler.Log(() => "DeactivateEffectAtIndex : " + thresholdIndex, ELogTag.Quests);
             
             var spells = m_Spells;
 
@@ -226,7 +226,7 @@ namespace Game.StateEffects.Quests
         {
             if (SpellLoader.IsSpell(activableEffect.Effect))
             {
-                ErrorHandler.Log("     + ActivateEffect Spell : " + activableEffect.Effect, ELogTag.Quests);
+                ErrorHandler.Log(() => "     + ActivateEffect Spell : " + activableEffect.Effect, ELogTag.Quests);
 
                 // load / setup the spell data
                 SpellData spellData = SpellLoader.GetSpellData(activableEffect.Effect, activableEffect.Level);
@@ -244,7 +244,7 @@ namespace Game.StateEffects.Quests
 
             else if (SpellLoader.IsStateEffect(activableEffect.Effect))
             {
-                ErrorHandler.Log("     + ActivateEffect StateEffect : " + activableEffect.Effect, ELogTag.Quests);
+                ErrorHandler.Log(() => "     + ActivateEffect StateEffect : " + activableEffect.Effect, ELogTag.Quests);
 
                 Controller targetController = TargetHelper.GetTargetController(m_Caster.PlayerId, activableEffect.Target, targetId: m_Controller.PlayerId);
                 if (targetController == null)

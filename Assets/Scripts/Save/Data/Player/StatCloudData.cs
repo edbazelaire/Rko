@@ -49,7 +49,7 @@ namespace Save
         /// </summary>
         /// <param name="charsBuildsList"></param>
         /// <returns></returns>
-        protected override object Convert(Item item)
+        protected override object BaseConversion(Item item)
         {
             if (m_Data[item.Key].GetType() == typeof(List<SGameEndedCloudData>))
                 return item.Value.GetAs<List<SGameEndedCloudData>>();
@@ -60,7 +60,7 @@ namespace Save
             if (m_Data[item.Key].GetType() == typeof(List<SInGameEventCloudData>))
                 return item.Value.GetAs<List<SInGameEventCloudData>>();
 
-            return base.Convert(item);
+            return base.BaseConversion(item);
         }
 
         #endregion
@@ -78,7 +78,7 @@ namespace Save
                     count += data.Count;
             }
 
-            ErrorHandler.Log($"Count of {analytics} : " + count, ELogTag.StatCloudData);
+            ErrorHandler.Log(() => $"Count of {analytics} : " + count, ELogTag.StatCloudData);
             return count;
         }
 

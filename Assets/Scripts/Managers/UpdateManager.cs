@@ -152,9 +152,21 @@ namespace Assets.Scripts.Managers
             {
                 int currentIndex = ProfileCloudData.GetAchievementThresholdIndex(achievementData.GetName());
 
+                if (currentIndex < 0)
+                {
+                    ErrorHandler.Warning("No index found for : " + achievementData.GetName());
+                    continue;
+                }
+
                 // check all achievements so far to see if any reward is missing
                 for (int i = 0; i < currentIndex; i++)
                 {
+                    if (i >= achievementData.AchievementSubData.Count)
+                    {
+                        ErrorHandler.Warning($"index ({i}) > AchievementSubData.Count ({achievementData.AchievementSubData.Count}) : " + achievementData.GetName());
+                        break;
+                    }
+
                     var rewards = achievementData.AchievementSubData[i].Rewards;
 
                     // only check AchievementRewards data

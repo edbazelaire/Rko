@@ -147,7 +147,7 @@ namespace AI
 
         public void SetState(string state)
         {
-            ErrorHandler.Log("BT STAT : " + state + "    =====================================================", ELogTag.AIBtState);
+            ErrorHandler.Log(() => "BT STAT : " + state + "    =====================================================", ELogTag.AIBtState);
             m_State = state;
 
             StateChangedEvent?.Invoke(state);
@@ -155,7 +155,7 @@ namespace AI
 
         public void SetPhase(int phase)
         {
-            ErrorHandler.Log("BT PHASE : " + phase + "    =====================================================", ELogTag.AIBtState);
+            ErrorHandler.Log(() => "BT PHASE : " + phase + "    =====================================================", ELogTag.AIBtState);
             m_Phase = phase;
 
             PhaseChangedEvent?.Invoke(phase);

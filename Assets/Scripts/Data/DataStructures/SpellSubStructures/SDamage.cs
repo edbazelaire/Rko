@@ -68,7 +68,7 @@ namespace Data.DataStructures.SpellSubStructures
                 damage += modifier.Apply(baseDamage, level, caster, targetController);
             }
 
-            ErrorHandler.Log("Final damage after Damage Modifiers : " + Math.Round(damage), ELogTag.BonusDamage);
+            ErrorHandler.Log(() => "Final damage after Damage Modifiers : " + Math.Round(damage), ELogTag.BonusDamage);
             return (int)Math.Round(damage);
         }
 
@@ -120,8 +120,8 @@ namespace Data.DataStructures.SpellSubStructures
                 return baseValue;
             }
 
-            ErrorHandler.Log("Applying damage modifier based on " + StateEffectName, ELogTag.BonusDamage);
-            ErrorHandler.Log("      + Base Value : " + baseValue, ELogTag.BonusDamage);
+            ErrorHandler.Log(() => "Applying damage modifier based on " + StateEffectName, ELogTag.BonusDamage);
+            ErrorHandler.Log(() => "      + Base Value : " + baseValue, ELogTag.BonusDamage);
 
             int nStacks;
             // Check : StateEffect
@@ -140,15 +140,15 @@ namespace Data.DataStructures.SpellSubStructures
             switch (OverridingType)
             {
                 case EOverridingType.Replacement:
-                    ErrorHandler.Log("      + Replaced with value : " + overrideValue, ELogTag.BonusDamage);
+                    ErrorHandler.Log(() => "      + Replaced with value : " + overrideValue, ELogTag.BonusDamage);
                     return overrideValue;
 
                 case EOverridingType.Additive:
-                    ErrorHandler.Log("      + Added with value : " + overrideValue + " -> " + Math.Round(overrideValue + baseValue), ELogTag.BonusDamage);
+                    ErrorHandler.Log(() => "      + Added with value : " + overrideValue + " -> " + Math.Round(overrideValue + baseValue), ELogTag.BonusDamage);
                     return baseValue + overrideValue;
 
                 case EOverridingType.Multiply:
-                    ErrorHandler.Log("      + Multiplied by value : " + (1 + overrideValue) + " -> " + (1 + overrideValue) * baseValue, ELogTag.BonusDamage);
+                    ErrorHandler.Log(() => "      + Multiplied by value : " + (1 + overrideValue) + " -> " + (1 + overrideValue) * baseValue, ELogTag.BonusDamage);
                     return baseValue * (1 + overrideValue);
 
                 default:

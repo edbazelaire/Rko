@@ -13,6 +13,7 @@ using System;
 using Assets.Scripts.Managers;
 using MyBox;
 using System.Collections.Generic;
+using Menu.Common.Notifications;
 
 namespace Menu.MainMenu
 {
@@ -81,16 +82,7 @@ namespace Menu.MainMenu
             SetUpLeftSideUI();
 
             // register listeners
-            m_CharacterInfoButton.Button.onClick.AddListener(OnCharacterInfoButtonClicked);
-            m_CharacterLockedButton.onClick.AddListener(OnCharacterLockedButtonClicked);
-            CharacterBuildsCloudData.SelectedCharacterChangedEvent  += OnSelectedCharacterChanged;
-            CharacterBuildsCloudData.CurrentBuildIndexChangedEvent  += OnCurrentRuneChanged;
-            CharacterBuildsCloudData.CurrentRuneChangedEvent        += OnCurrentRuneChanged;
-            ProfileCloudData.AccountLevelUpEvent                    += OnAccountLevelUp;
-            ProgressionCloudData.CurrentArenaDataChangedEvent       += OnSelectedCharacterChanged;
-            PlayerPrefsHandler.GameModeChangedEvent                 += OnGameModeChanged;
-            InventoryManager.CollectableUpgradedEvent               += OnCharacterLeveledUp;
-            InventoryCloudData.CurrencyChangedEvent                 += OnCurrencyChanged;
+            RegisterListeners();
 
             // setup ui of current selected character
             OnSelectedCharacterChanged();
@@ -103,15 +95,7 @@ namespace Menu.MainMenu
 
         private void OnDestroy()
         {
-            m_CharacterInfoButton.Button.onClick.RemoveAllListeners();
-            CharacterBuildsCloudData.SelectedCharacterChangedEvent  -= OnSelectedCharacterChanged;
-            PlayerPrefsHandler.GameModeChangedEvent                 -= OnGameModeChanged;
-            CharacterBuildsCloudData.CurrentBuildIndexChangedEvent  -= OnCurrentRuneChanged;
-            CharacterBuildsCloudData.CurrentRuneChangedEvent        -= OnCurrentRuneChanged;
-            ProfileCloudData.AccountLevelUpEvent                    -= OnAccountLevelUp;
-            ProgressionCloudData.CurrentArenaDataChangedEvent       -= OnSelectedCharacterChanged;
-            InventoryManager.CollectableUpgradedEvent               -= OnCharacterLeveledUp;
-            InventoryCloudData.CurrencyChangedEvent                 -= OnCurrencyChanged;
+            UnregisterListeners();
 
             if (m_UpgradeSubButton != null)
                 m_UpgradeSubButton.onClick.RemoveAllListeners();   
@@ -208,6 +192,9 @@ namespace Menu.MainMenu
             }
         }
 
+        /// <summary>
+        /// Refresh the display of the XP Bar
+        /// </summary>
         void RefreshXpBarUI()
         {
             var charData = InventoryCloudData.Instance.GetCollectable(m_Character);
@@ -234,6 +221,9 @@ namespace Menu.MainMenu
             UIHelper.SpawnCharacter(m_Character.ToString(), ESkin.None, m_CharacterPreviewContainer);
         }
 
+        /// <summary>
+        /// Refresh the display of the current character
+        /// </summary>
         void RefreshCharacter()
         {
             if (! m_CheckGameMod || ! m_IsArenaMod || ! ProgressionCloudData.HasArenaInProgress || ProgressionCloudData.CurrentArena.GetCharacter() == ECharacter.None)
@@ -247,6 +237,10 @@ namespace Menu.MainMenu
             m_CharacterLockedButton.gameObject.SetActive(true);
         }
 
+        /// <summary>
+        /// Make RuneButtons un-interactable
+        /// </summary>
+        /// <param name="runesToLock"></param>
         public void LockRuneButtons(List<ERuneActivation> runesToLock)
         {
             m_TemplateRuneButtonMinor.SetInteractable(!runesToLock.Contains(ERuneActivation.Minor));
@@ -277,6 +271,36 @@ namespace Menu.MainMenu
 
 
         #region Listeners
+
+        void RegisterListeners()
+        {
+            m_CharacterInfoButton.Button.onClick.AddListener(OnCharacterInfoButtonClicked);
+            m_CharacterLockedButton.onClick.AddListener(OnCharacterLockedButtonClicked);
+            CharacterBuildsCloudData.SelectedCharacterChangedEvent  += OnSelectedCharacterChanged;
+            CharacterBuildsCloudData.CurrentBuildIndexChangedEvent  += OnCurrentRuneChanged;
+            CharacterBuildsCloudData.CurrentRuneChangedEvent        += OnCurrentRuneChanged;
+            ProfileCloudData.AccountLevelUpEvent                    += OnAccountLevelUp;
+            ProfileCloudData.AchievementChangedEvent                += OnAchievementChanged;
+            ProfileCloudData.AchievementCollectedEvent              += OnAchievementChanged;
+            ProgressionCloudData.CurrentArenaDataChangedEvent       += OnSelectedCharacterChanged;
+            PlayerPrefsHandler.GameModeChangedEvent                 += OnGameModeChanged;
+            InventoryManager.CollectableUpgradedEvent               += OnCharacterLeveledUp;
+            InventoryCloudData.CurrencyChangedEvent                 += OnCurrencyChanged;
+        }
+
+        void UnregisterListeners()
+        {
+            CharacterBuildsCloudData.SelectedCharacterChangedEvent  -= OnSelectedCharacterChanged;
+            CharacterBuildsCloudData.CurrentBuildIndexChangedEvent  -= OnCurrentRuneChanged;
+            CharacterBuildsCloudData.CurrentRuneChangedEvent        -= OnCurrentRuneChanged;
+            ProfileCloudData.AccountLevelUpEvent                    -= OnAccountLevelUp;
+            ProfileCloudData.AchievementChangedEvent                -= OnAchievementChanged;
+            ProfileCloudData.AchievementCollectedEvent              -= OnAchievementChanged;
+            ProgressionCloudData.CurrentArenaDataChangedEvent       -= OnSelectedCharacterChanged;
+            PlayerPrefsHandler.GameModeChangedEvent                 -= OnGameModeChanged;
+            InventoryManager.CollectableUpgradedEvent               -= OnCharacterLeveledUp;
+            InventoryCloudData.CurrencyChangedEvent                 -= OnCurrencyChanged;
+        }
 
         /// <summary>
         /// When a character is seleted :
@@ -351,6 +375,15 @@ namespace Menu.MainMenu
             // refresh the info button UI
             m_CharacterInfoButton.RefreshUI(m_Character);
             RefreshXpBarUI();
+        }
+
+        void OnAchievementChanged(string achievementId)
+        {
+            var achievement = AchievementLoader.GetFromId(achievementId);
+            if (achievement == null || ! achievement.IsCharacterMastery || achievement.Character != m_Character)
+                return;
+
+            m_CharacterInfoButton.RefreshUI(m_Character);
         }
 
         /// <summary>

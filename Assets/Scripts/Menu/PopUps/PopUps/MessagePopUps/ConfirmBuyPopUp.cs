@@ -70,8 +70,11 @@ namespace Menu.PopUps
 
             m_WatchAdButton.gameObject.SetActive(m_EnableWatchAd);
 
-            if (m_PriceData.Price == 0)
-                m_BuyButton.gameObject.SetActive(false);
+            // ================================================================================
+            // TODO : SET BACK AFTER TESTS 
+            //if (m_PriceData.Price == 0)
+            //    m_BuyButton.gameObject.SetActive(false);
+            // ================================================================================
 
             SetupLootInfoSidebar();
         }

@@ -115,6 +115,7 @@ namespace Menu.Common.Buttons
             m_Button.onClick.AddListener(OnClicked);
             StatCloudData.AnalyticsDataChanged          += OnAnalyticsDataChanged;
             ProfileCloudData.AchievementChangedEvent    += OnAchievementChanged;
+            ProfileCloudData.AchievementCollectedEvent  += OnAchievementChanged;
         }
 
         protected override void UnRegisterListeners()
@@ -127,6 +128,7 @@ namespace Menu.Common.Buttons
             m_Button.onClick.RemoveAllListeners();
             StatCloudData.AnalyticsDataChanged          -= OnAnalyticsDataChanged;
             ProfileCloudData.AchievementChangedEvent    -= OnAchievementChanged;
+            ProfileCloudData.AchievementCollectedEvent  -= OnAchievementChanged;
         }
 
         /// <summary>

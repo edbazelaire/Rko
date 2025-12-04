@@ -70,12 +70,12 @@ namespace Save
 
         #region Inherited Manipulators
 
-        protected override object Convert(Item item)
+        protected override object BaseConversion(Item item)
         {
             if (m_Data[item.Key].GetType() == typeof(ChestData[]))
                 return item.Value.GetAs<ChestData[]>();
 
-            return base.Convert(item);
+            return base.BaseConversion(item);
         }
 
         #endregion

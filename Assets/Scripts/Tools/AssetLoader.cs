@@ -606,10 +606,50 @@ namespace Tools
         {
             if (!qty.HasValue || currency == ECurrency.Xp)
                 return Load<Sprite>(c_CurrenciesPath + c_IconPrefix + currency.ToString());
-           
-            float factor = currency == ECurrency.Gems ? 500f : 5000f;
-            int packNumber = Mathf.Clamp((int)Mathf.Round(qty.Value / factor), 1, currency == ECurrency.Gold ? 4 : 3);
-            return Load<Sprite>(c_ShopPath + currency.ToString() + "Pack_0" + packNumber.ToString());
+
+            string packNumber = "01";
+            if (currency == ECurrency.Gold)
+            {
+                if (qty.Value < 10000)
+                    packNumber = "01";
+                else if (qty.Value < 50000)
+                    packNumber = "02";
+                else if (qty.Value < 100000)
+                    packNumber = "03";
+                else if (qty.Value < 250000)
+                    packNumber = "04";
+                else if (qty.Value < 500000)
+                    packNumber = "05";
+                else 
+                    packNumber = "06";
+            } 
+            
+            else if (currency == ECurrency.Gems)
+            {
+                if (qty.Value < 750)
+                    packNumber = "01";
+                else if (qty.Value < 2000)
+                    packNumber = "02";
+                else if (qty.Value < 5000)
+                    packNumber = "03";
+                else if (qty.Value < 11000)
+                    packNumber = "04";
+                else if (qty.Value < 24000)
+                    packNumber = "05";
+                else
+                    packNumber = "06";
+            }
+
+            else if (currency == ECurrency.Keys)
+            {
+                if (qty.Value <= 1)
+                    packNumber = "01";
+                else if (qty.Value < 15)
+                    packNumber = "02";
+                else
+                    packNumber = "03";
+            }
+            return Load<Sprite>(c_ShopPath + currency.ToString() + "Pack_" + packNumber);
         }
 
         public static Sprite LoadShopIcon(string shopOfferName)

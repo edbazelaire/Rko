@@ -46,11 +46,11 @@ public static class MAnalytics
     private static void LogEvent(string eventName, Dictionary<string, object> eventData)
     {
         // Output the event name and data to the console
-        ErrorHandler.Log($"Event: {eventName}", ELogTag.Analytics);
+        ErrorHandler.Log(() => $"Event: {eventName}", ELogTag.Analytics);
 
         foreach (var entry in eventData)
         {
-            ErrorHandler.Log($"   {entry.Key}: {entry.Value}", ELogTag.Analytics);
+            ErrorHandler.Log(() => $"   {entry.Key}: {entry.Value}", ELogTag.Analytics);
         }
     }
 }

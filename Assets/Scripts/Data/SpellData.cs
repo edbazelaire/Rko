@@ -548,16 +548,16 @@ namespace Data
             if (overridingData.OverrideOnHitProperties.Count == 0)
                 return;
 
-            ErrorHandler.Log("Overriding data of " + Name + " with " + overridingData.Name, ELogTag.Spells);
+            ErrorHandler.Log(() => "Overriding data of " + Name + " with " + overridingData.Name, ELogTag.Spells);
 
             foreach (ESpellProperty spellProperty in overridingData.OverrideOnHitProperties)
             {
-                ErrorHandler.Log("      + " + spellProperty + " : ", ELogTag.Spells);
-                ErrorHandler.Log("          - FROM : " + GetProperty(spellProperty), ELogTag.Spells);
+                ErrorHandler.Log(() => "      + " + spellProperty + " : ", ELogTag.Spells);
+                ErrorHandler.Log(() => "          - FROM : " + GetProperty(spellProperty), ELogTag.Spells);
 
                 SetProperty(spellProperty, overridingData.GetProperty(spellProperty));
 
-                ErrorHandler.Log("          - TO : " + GetProperty(spellProperty), ELogTag.Spells);
+                ErrorHandler.Log(() => "          - TO : " + GetProperty(spellProperty), ELogTag.Spells);
             }
         }
 

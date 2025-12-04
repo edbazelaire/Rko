@@ -131,7 +131,7 @@ public class Controller : NetworkBehaviour
     /// </summary>
     public override void OnNetworkSpawn()
     {
-        ErrorHandler.Log("Controller.OnNetworkSpawn()", ELogTag.GameSystem);
+        ErrorHandler.Log(() => "Controller.OnNetworkSpawn()", ELogTag.GameSystem);
 
         FindComponents();
 

@@ -390,7 +390,20 @@ namespace Data.GameManagement
 
         public bool Abort => m_Abort;
         public float Price => (1 - Reduction) * Cost;
-        public string ProductId => !Name.IsNullOrEmpty() ? Name : (Rewards.Rewards[0].RewardName + (Rewards.Rewards[0].Qty > 0 ? "_" + Rewards.Rewards[0].Qty : ""));
+        public string ProductId
+        {
+            get
+            {
+                if (Product != EProduct.None)
+                    return Product.ToString().ToLower();
+
+                if (!Name.IsNullOrEmpty())
+                    return Name;
+
+                return (Rewards.Rewards[0].RewardName + (Rewards.Rewards[0].Qty > 0 ? "_" + Rewards.Rewards[0].Qty : ""));
+            }
+        }
+
         public string PrettyName {
             get
             {
