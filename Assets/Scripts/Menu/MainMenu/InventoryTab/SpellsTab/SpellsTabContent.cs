@@ -32,11 +32,10 @@ namespace Menu.MainMenu
     {
         const string SPELL_ITEM_NAME_FORMAT = "SpellItem_{0}";
 
-        [Header("References")]
-        [SerializeField] GameObject m_TemplateSpellItem; // if null, loaded from AssetLoader
-        [SerializeField] Transform m_SpellItemContainer;
-        [SerializeField] Transform m_LockedSpellItemContainer;
-        [SerializeField] SpellFiltersSection m_SpellFiltersSection;
+        GameObject          m_TemplateSpellItem;
+        Transform           m_SpellItemContainer;
+        Transform           m_LockedSpellItemContainer;
+        SpellFiltersSection m_SpellFiltersSection;
 
         // Runtime
         Dictionary<ESpell, TemplateSpellItemUI> m_SpellItems = new();
@@ -153,7 +152,7 @@ namespace Menu.MainMenu
 
             CharacterBuildsCloudData.SelectedCharacterChangedEvent += RefreshSpellItemsDisplay;
             CharacterBuildsCloudData.CurrentBuildIndexChangedEvent += RefreshSpellItemsDisplay;
-            CharacterBuildsCloudData.CurrentBuildValueChangedEvent += RefreshSpellItemsDisplay;
+            //CharacterBuildsCloudData.CurrentBuildValueChangedEvent += RefreshSpellItemsDisplay;
             InventoryManager.UnlockCollectableEvent += OnUnlockedSpell;
             m_SpellFiltersSection.FilterChangedEvent += OnFilterChanged;
         }
@@ -164,7 +163,7 @@ namespace Menu.MainMenu
 
             CharacterBuildsCloudData.SelectedCharacterChangedEvent -= RefreshSpellItemsDisplay;
             CharacterBuildsCloudData.CurrentBuildIndexChangedEvent -= RefreshSpellItemsDisplay;
-            CharacterBuildsCloudData.CurrentBuildValueChangedEvent -= RefreshSpellItemsDisplay;
+            //CharacterBuildsCloudData.CurrentBuildValueChangedEvent -= RefreshSpellItemsDisplay;
             InventoryManager.UnlockCollectableEvent -= OnUnlockedSpell;
             m_SpellFiltersSection.FilterChangedEvent -= OnFilterChanged;
             m_SpellFiltersSection.SearchInputField.onValueChanged.RemoveListener(OnSearchValueChanged);
@@ -183,6 +182,8 @@ namespace Menu.MainMenu
         /// </summary>
         public void RefreshSpellItemsDisplay()
         {
+            Debug.LogWarning("RefreshSpellItemsDisplay()");
+
             var allowedSpells = m_SpellFiltersSection.GetFilteredSpells();
             string searchText = m_SpellFiltersSection.SearchInputField.text;
 
@@ -195,30 +196,30 @@ namespace Menu.MainMenu
                 if (!m_SpellItems.TryGetValue(sd.Spell, out var ui))
                     continue; // should not happen
 
-                bool visible = true;
+                bool activated = true;
 
                 // hidden if in current build
-                if (CharacterBuildsCloudData.CurrentSpells.Contains(sd.Spell))
-                    visible = false;
+                //if (CharacterBuildsCloudData.CurrentSpells.Contains(sd.Spell))
+                //    activated = false;
 
                 // hidden if not matching search
-                if (visible && !string.IsNullOrWhiteSpace(searchText))
+                if (activated && !string.IsNullOrWhiteSpace(searchText))
                 {
                     string lower = searchText.Trim().ToLowerInvariant();
                     if (!sd.Name.ToLowerInvariant().Contains(lower) && !sd.Spell.ToString().ToLowerInvariant().Contains(lower))
-                        visible = false;
+                        activated = false;
                 }
 
                 // hidden if filter excludes
-                if (visible && allowedSpells.Where(d => d.Spell == sd.Spell).ToList().Count == 0)
-                    visible = false;
+                if (activated && allowedSpells.Where(d => d.Spell == sd.Spell).ToList().Count == 0)
+                    activated = false;
 
                 // apply active
-                ui.gameObject.SetActive(visible);
+                ui.gameObject.SetActive(activated);
 
                 // collect unlocked visible spells in the global order so we can reindex
                 bool unlocked = InventoryCloudData.Instance.GetSpell(sd.Spell).Level > 0;
-                if (visible && unlocked)
+                if (activated && unlocked)
                     visibleUnlockedInOrder.Add(sd.Spell);
             }
 
@@ -238,11 +239,11 @@ namespace Menu.MainMenu
 
             // If filters show locked spells in the locked container we could optionally reorder them similarly
             // For simplicity we'll keep locked container order as originally built.
-
             MarkLayoutDirty();
         }
 
         #endregion
+
 
         #region Unlock / Reparent
 
@@ -324,6 +325,7 @@ namespace Menu.MainMenu
 
         #endregion
 
+
         #region Filters / Listeners
 
         void OnSearchValueChanged(string value)
@@ -341,6 +343,7 @@ namespace Menu.MainMenu
         }
 
         #endregion
+
 
         #region Layout Throttling
 
