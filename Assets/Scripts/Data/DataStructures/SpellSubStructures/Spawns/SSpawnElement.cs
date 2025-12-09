@@ -130,13 +130,13 @@ namespace Data.DataStructures.SpellSubStructures.Spawns
 
         public IEnumerator StartSpawnTimer()
         {
-            ErrorHandler.Log("Start Spawn timer : " + CharacterName, ELogTag.Spawns);
+            ErrorHandler.Log(() => "Start Spawn timer : " + CharacterName, ELogTag.Spawns);
 
             m_CanSpawn = false;
             yield return new WaitForSeconds(SpawnInterval);
             m_CanSpawn = true;
 
-            ErrorHandler.Log("Ended Spawn timer : " + CharacterName, ELogTag.Spawns);
+            ErrorHandler.Log(() => "Ended Spawn timer : " + CharacterName, ELogTag.Spawns);
         }
 
         #endregion
@@ -184,7 +184,7 @@ namespace Data.DataStructures.SpellSubStructures.Spawns
         /// <returns></returns>
         public Controller SpawnOne(Spawner spell)
         {
-            ErrorHandler.Log("Spawning [" + NSpawnCounter + "] : " + CharacterName, ELogTag.Spawns);
+            ErrorHandler.Log(() => "Spawning [" + NSpawnCounter + "] : " + CharacterName, ELogTag.Spawns);
 
             var offset = (CharacterLoader.GetCharacterData(CharacterName) is SpawnData data) ? data.GetSpawnOffset() : Vector3.zero;
             var position = m_RecalculatePosition ? 

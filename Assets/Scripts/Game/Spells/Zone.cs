@@ -339,7 +339,7 @@ namespace Game.Spells
             if (finalDamage > 0 && m_Caster.ClientAnalytics != null)
                 m_Caster.ClientAnalytics.SendSpellDataClientRPC(m_SpellData.Name, EHitType.PhysicalDamage, finalDamage);
 
-            ErrorHandler.Log(m_SpellData.Name + " : " + finalDamage, ELogTag.Spells);
+            ErrorHandler.Log(() => m_SpellData.Name + " : " + finalDamage, ELogTag.Spells);
 
             // apply lifesteal if any (remove 1 because floats values are always based on 1 as default value)
             float lifeSteal = SpellData.LifeSteal + Mathf.Max(0f, m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal) - 1);

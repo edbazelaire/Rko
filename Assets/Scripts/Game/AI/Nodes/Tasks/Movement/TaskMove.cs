@@ -75,7 +75,7 @@ public class TaskMove : BaseTask
             m_Movement.SetMovement((sbyte)((m_Controller.Team == 0 ? 1 : -1) * m_CurrentMoveX));
         }
 
-        ErrorHandler.Log("TaskMove - " + m_State, ELogTag.AITaskMove);
+        ErrorHandler.Log(() => "TaskMove - " + m_State, ELogTag.AITaskMove);
         return m_State;
     }
 
@@ -86,7 +86,7 @@ public class TaskMove : BaseTask
 
         if (! m_Movement.CanMove || m_Movement.Speed <= 0)
         {
-            ErrorHandler.Log("TaskMove - " + m_State + " : m_Movement.CanMove = false", ELogTag.AITaskMove);
+            ErrorHandler.Log(() => "TaskMove - " + m_State + " : m_Movement.CanMove = false", ELogTag.AITaskMove);
             SetNodeState(NodeState.FAILURE);
             return;
         }
@@ -163,7 +163,7 @@ public class TaskMove : BaseTask
 
             if (colliders != null && colliders.Length > 0)
             {
-                ErrorHandler.Log($"      -- TaskMove CheckObstacles() : removing movement {moveX}", ELogTag.AITaskMove);
+                ErrorHandler.Log(() => $"      -- TaskMove CheckObstacles() : removing movement {moveX}", ELogTag.AITaskMove);
                 m_AllowedMovements.Remove(moveX);
             }
         }
@@ -194,7 +194,7 @@ public class TaskMove : BaseTask
                 continue;
 
             // if any : un-allow movement
-            ErrorHandler.Log("      -- TaskMove CheckZones() : removing movement " + moveX, ELogTag.AITaskMove);
+            ErrorHandler.Log(() => "      -- TaskMove CheckZones() : removing movement " + moveX, ELogTag.AITaskMove);
             m_AllowedMovements.Remove(moveX);
         }
     }
@@ -214,7 +214,7 @@ public class TaskMove : BaseTask
             if (xPos + 0.5f <= m_Controller.transform.position.x)
                 return;
 
-            ErrorHandler.Log("      -- TaskMove CheckProjectiles() : removing movement -1 because of STRAIGHT PROJECTILE", ELogTag.AITaskMove);
+            ErrorHandler.Log(() => "      -- TaskMove CheckProjectiles() : removing movement -1 because of STRAIGHT PROJECTILE", ELogTag.AITaskMove);
 
             // otherwise : run the other direction
             m_AllowedMovements.Remove(-1);
@@ -230,7 +230,7 @@ public class TaskMove : BaseTask
             // force dodge first encoutered dodgeable projectile
             if (isThreat && isDodgeable && move != 0)
             {
-                ErrorHandler.Log("      -- TaskMove CheckProjectiles() : forcing movement "+move+" because of PROJECTILE", ELogTag.AITaskMove);
+                ErrorHandler.Log(() => "      -- TaskMove CheckProjectiles() : forcing movement "+move+" because of PROJECTILE", ELogTag.AITaskMove);
                 m_AllowedMovements = new List<int>() { move };
                 break;
             }
@@ -410,7 +410,7 @@ public class TaskMove : BaseTask
             yield return null;
         }
 
-        ErrorHandler.Log("      -- TaskMove CheckRefreshMovement() : REFRESHING", ELogTag.AITaskMove);
+        ErrorHandler.Log(() => "      -- TaskMove CheckRefreshMovement() : REFRESHING", ELogTag.AITaskMove);
 
         m_RefreshMovement = true;
     }

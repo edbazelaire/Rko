@@ -70,7 +70,7 @@ namespace Game.AI.BehaviorTrees
 
         Node LoadBasicTree()
         {
-            ErrorHandler.Log("Loading BASIC Tree for " + m_Controller.Character);
+            ErrorHandler.Log(() => "Loading BASIC Tree for " + m_Controller.Character);
 
             return new Selector(new List<Node>
             {
@@ -125,7 +125,7 @@ namespace Game.AI.BehaviorTrees
 
         Node LoadAdvancedTree()
         {
-            ErrorHandler.Log("Loading ADVANCED BOT Tree for " + m_Controller.Character);
+            ErrorHandler.Log(() => "Loading ADVANCED BOT Tree for " + m_Controller.Character);
 
             return new Selector(new List<Node>
             {

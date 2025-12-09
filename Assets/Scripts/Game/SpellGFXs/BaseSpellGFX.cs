@@ -53,7 +53,7 @@ namespace Game.SpellGFXs
 
         public virtual void Initialize(Controller controller, SpellData spellData, Spell spell, string stateEffectName, SPrefabSpawn<TEnum> prefabSpawn, float? forcedDuration = null)
         {
-            ErrorHandler.Log("Initialize SPELL GFX : " + this.name, ELogTag.SpellGFX);
+            ErrorHandler.Log(() => "Initialize SPELL GFX : " + this.name, ELogTag.SpellGFX);
 
             m_Controller        = controller;
             m_SpellData         = spellData;
@@ -160,7 +160,7 @@ namespace Game.SpellGFXs
             if (m_EndStarted)
                 return;
 
-            ErrorHandler.Log("End() SPELL GFX : " + this.name, ELogTag.SpellGFX);
+            ErrorHandler.Log(() => "End() SPELL GFX : " + this.name, ELogTag.SpellGFX);
 
             // call that end has already started
             m_EndStarted = true;
@@ -181,7 +181,7 @@ namespace Game.SpellGFXs
         /// </summary>
         protected virtual void ForceEnd()
         {
-            ErrorHandler.Log("ForceEnd() SPELL GFX : " + this.name, ELogTag.SpellGFX);
+            ErrorHandler.Log(() => "ForceEnd() SPELL GFX : " + this.name, ELogTag.SpellGFX);
 
             // re-activate replaced graphics
             ReplaceGFX(false, null);

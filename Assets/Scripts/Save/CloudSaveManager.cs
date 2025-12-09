@@ -74,7 +74,7 @@ namespace Save
 
             if ( ! Main.ActivateSaveOnClose)
             {
-                ErrorHandler.Log("SaveAll() called but deactivated");
+                ErrorHandler.Log(() => "SaveAll() called but deactivated");
                 return;
             }
             

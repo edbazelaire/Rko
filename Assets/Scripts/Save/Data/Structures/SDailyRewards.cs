@@ -19,6 +19,11 @@ namespace Save.Data
             return now >= WeekEndAt;
         }
 
+        public bool IsFullyCollected()
+        {
+            return CurrentIndex >= Rewards.Count && Rewards.Count > 0;
+        }
+
         public bool CanCollect()
         {
             int now = (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();

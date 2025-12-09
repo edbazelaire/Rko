@@ -51,7 +51,7 @@ namespace Menu.MainMenu
                 SoundFXManager.PlayOnce(m_ActivationSoundFX);
             }
 
-            if (m_ActivationContent != null)
+            if (m_ActivationContent != null && m_ActivationContent.activeSelf != activate)
                 m_ActivationContent.SetActive(activate);
         }
 

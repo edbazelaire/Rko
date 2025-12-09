@@ -25,11 +25,11 @@ namespace Game.AI.BehaviorTrees
                 case ESpawn.Noctrelle:
                 case ESpawn.Toxstinger:
                 case ESpawn.DoomCrystal:
-                    ErrorHandler.Log("Loading FLYER TREE for " + m_Controller.Character, ELogTag.AITree);
+                    ErrorHandler.Log(() => "Loading FLYER TREE for " + m_Controller.Character, ELogTag.AITree);
                     return GetDefaultFlyerTree();
 
                 default:
-                    ErrorHandler.Log("Loading DEFAULT SPAWN TREE for " + m_Controller.Character, ELogTag.AITree);
+                    ErrorHandler.Log(() => "Loading DEFAULT SPAWN TREE for " + m_Controller.Character, ELogTag.AITree);
                     return GetDefaultTree();
             }
         }

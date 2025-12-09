@@ -40,7 +40,7 @@ namespace Game.Arena
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            ErrorHandler.Log("OnPointerDown() : " + eventData.position, ELogTag.SpellRelocation);
+            ErrorHandler.Log(() => "OnPointerDown() : " + eventData.position, ELogTag.SpellRelocation);
             SendClickPosition(eventData);
         }
 
@@ -55,7 +55,7 @@ namespace Game.Arena
             if (RectTransformUtility.ScreenPointToLocalPointInRectangle(m_RectTransform, eventData.position, eventData.pressEventCamera, out localPoint))
             {
                 float normalizedX = localPoint.x - transform.position.x;
-                ErrorHandler.Log("SendClickPosition() : " + normalizedX, ELogTag.SpellRelocation);
+                ErrorHandler.Log(() => "SendClickPosition() : " + normalizedX, ELogTag.SpellRelocation);
                 ClickedEvent?.Invoke(normalizedX);
             }
         }

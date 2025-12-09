@@ -168,7 +168,7 @@ namespace Game
 
         public void Initialize()
         {
-            ErrorHandler.Log("Initialize()", ELogTag.GameSystem);
+            ErrorHandler.Log(() => "Initialize()", ELogTag.GameSystem);
 
             // avoid re-initialization
             if (m_Initialized)
@@ -304,7 +304,7 @@ namespace Game
             if (!IsServer)
                 return;
 
-            ErrorHandler.Log("AddPlayerDataServerRPC + clientId " + clientId + " with character " + playerData.BuildData.Character.ToString(), ELogTag.GameSystem);
+            ErrorHandler.Log(() => "AddPlayerDataServerRPC + clientId " + clientId + " with character " + playerData.BuildData.Character.ToString(), ELogTag.GameSystem);
             m_PlayersData.Add(clientId, playerData);
 
             m_ProgressGameStart.Value += 1f / ((float)LobbyHandler.Instance.MaxPlayers * N_LOADING_STEPS);
@@ -500,7 +500,7 @@ namespace Game
         [ServerRpc(RequireOwnership = false)]
         void SetClientIntializedServerRPC(ulong clientId)
         {
-            ErrorHandler.Log("Client Initialized : " + clientId, ELogTag.GameSystem);
+            ErrorHandler.Log(() => "Client Initialized : " + clientId, ELogTag.GameSystem);
 
             if (!m_ClientsInitialized.Contains(clientId))
                 m_ClientsInitialized.Add(clientId);
@@ -530,7 +530,7 @@ namespace Game
                 controller.InitializeUI();
             }
 
-            ErrorHandler.Log("SetupUIClientRPC()", ELogTag.GameSystem);
+            ErrorHandler.Log(() => "SetupUIClientRPC()", ELogTag.GameSystem);
             GameUIManager.Instance.SetUpIntroScreen();
         }
 
@@ -625,7 +625,7 @@ namespace Game
         [ClientRpc]
         void PlayIntroAnimationClientRPC()
         {
-            ErrorHandler.Log("Play Intro Animation");
+            ErrorHandler.Log(() => "Play Intro Animation");
             GameUIManager.IntroGameUI.PlayEnterAnimation();
         }
 
@@ -671,7 +671,7 @@ namespace Game
         [ClientRpc]
         public void GameOverClientRPC(int team)
         {
-            ErrorHandler.Log("GameOverClientRPC", ELogTag.GameSystem);
+            ErrorHandler.Log(() => "GameOverClientRPC", ELogTag.GameSystem);
 
             if (! Instance.Owner.IsPlayer)
                 return;
@@ -745,12 +745,12 @@ namespace Game
             switch (LobbyHandler.Instance.GameMode)
             {
                 case EGameMode.Arena:
-                    ErrorHandler.Log("RefundGame() : Loading Arena Data : " + PlayerPrefsHandler.GetArenaType().ToString(), ELogTag.GameSystem);
+                    ErrorHandler.Log(() => "RefundGame() : Loading Arena Data : " + PlayerPrefsHandler.GetArenaType().ToString(), ELogTag.GameSystem);
                     ProgressionCloudData.AddArenaLoss(-1, true);
                     break;
 
                 case EGameMode.Ranked:
-                    ErrorHandler.Log("RefundGame() : Ranked game", ELogTag.GameSystem);
+                    ErrorHandler.Log(() => "RefundGame() : Ranked game", ELogTag.GameSystem);
                     ProgressionCloudData.UpdateLeagueValue(true);
                     break;
 
@@ -1115,7 +1115,7 @@ namespace Game
 
         void OnStateValueChanged(EGameState oldValue, EGameState newState)
         {
-            ErrorHandler.Log("New state : " + newState, ELogTag.GameSystem);
+            ErrorHandler.Log(() => "New state : " + newState, ELogTag.GameSystem);
 
             switch (newState)
             {

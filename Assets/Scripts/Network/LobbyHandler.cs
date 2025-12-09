@@ -347,7 +347,7 @@ namespace Network
             }
 
             gameManager.Initialize();
-            ErrorHandler.Log("CREATED : GameManager");
+            ErrorHandler.Log(() => "CREATED : GameManager");
 
             // spawn the GameManager on Server
             SetState(ELobbyState.WaitingGameManager);
@@ -553,7 +553,7 @@ namespace Network
             // reset value of the lobby
             ResetLobby();
 
-            ErrorHandler.Log("Lobby left", ELogTag.Lobby);
+            ErrorHandler.Log(() => "Lobby left", ELogTag.Lobby);
         }
 
         /// <summary>
@@ -740,7 +740,7 @@ namespace Network
 
         void SetState(ELobbyState state)
         {
-            ErrorHandler.Log("NEW LOBBY STATE : " + state, ELogTag.Lobby);
+            ErrorHandler.Log(() => "NEW LOBBY STATE : " + state, ELogTag.Lobby);
 
             // if state changes : reset request in progress
             SetRequestInProgress(false);
@@ -926,7 +926,7 @@ namespace Network
 
                 QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync(queryLobbiesOptions);
 
-                ErrorHandler.Log("Lobbies found: " + queryResponse.Results.Count, ELogTag.Lobby);
+                ErrorHandler.Log(() => "Lobbies found: " + queryResponse.Results.Count, ELogTag.Lobby);
 
                 // Filter and sort the results
                 lobbies = queryResponse.Results

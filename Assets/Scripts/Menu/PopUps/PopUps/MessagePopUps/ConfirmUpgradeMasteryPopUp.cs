@@ -76,9 +76,9 @@ namespace Menu.PopUps
         #endregion
 
 
-            #region GUI Manipulators
+        #region GUI Manipulators
 
 
-            #endregion
+        #endregion
     }
 }

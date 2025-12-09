@@ -35,12 +35,12 @@ public class TaskRandomAttack : BaseTask
 
     public override NodeState Evaluate()
     {
-        ErrorHandler.Log("===================================================================", ELogTag.AITaskRandomAttack);
-        ErrorHandler.Log("TaskRandomAttack.Evaluate()", ELogTag.AITaskRandomAttack);
+        ErrorHandler.Log(() => "===================================================================", ELogTag.AITaskRandomAttack);
+        ErrorHandler.Log(() => "TaskRandomAttack.Evaluate()", ELogTag.AITaskRandomAttack);
         if (m_Controller.SpellHandler.IsCasting)
         {
-            ErrorHandler.Log("     + IsCasting     : true",     ELogTag.AITaskRandomAttack);
-            ErrorHandler.Log("     + State         : RUNNING",  ELogTag.AITaskRandomAttack);
+            ErrorHandler.Log(() => "     + IsCasting     : true",     ELogTag.AITaskRandomAttack);
+            ErrorHandler.Log(() => "     + State         : RUNNING",  ELogTag.AITaskRandomAttack);
 
             m_State = NodeState.RUNNING;
             return m_State;
@@ -49,8 +49,8 @@ public class TaskRandomAttack : BaseTask
         // check that no state is blocking the cast
         if (! m_Controller.StateHandler.CanCast)
         {
-            ErrorHandler.Log("     + HasStateBlockingCast  : true",     ELogTag.AITaskRandomAttack);
-            ErrorHandler.Log("     + State                 : FAILURE",  ELogTag.AITaskRandomAttack);
+            ErrorHandler.Log(() => "     + HasStateBlockingCast  : true",     ELogTag.AITaskRandomAttack);
+            ErrorHandler.Log(() => "     + State                 : FAILURE",  ELogTag.AITaskRandomAttack);
 
             m_State = NodeState.FAILURE;
             return m_State;
@@ -62,18 +62,18 @@ public class TaskRandomAttack : BaseTask
         {
             m_Controller.SpellHandler.TryStartCastSpell(spell, m_Controller.CharacterLevel, out string _);
                 
-            ErrorHandler.Log("     + Casting Spell     : " + spell, ELogTag.AITaskRandomAttack);
-            ErrorHandler.Log("     + State             : SUCCESS",  ELogTag.AITaskRandomAttack);
+            ErrorHandler.Log(() => "     + Casting Spell     : " + spell, ELogTag.AITaskRandomAttack);
+            ErrorHandler.Log(() => "     + State             : SUCCESS",  ELogTag.AITaskRandomAttack);
 
-            ErrorHandler.Log("TaskRandomAttack() : Casting Spell - " + spell, ELogTag.AIFinalDecision);
+            ErrorHandler.Log(() => "TaskRandomAttack() : Casting Spell - " + spell, ELogTag.AIFinalDecision);
 
             m_State = NodeState.SUCCESS;
             return m_State;
         }
 
         // action failed, no spell can be used
-        ErrorHandler.Log("     + no spell avaliable", ELogTag.AI);
-        ErrorHandler.Log("     + State                 : FAILURE", ELogTag.AITaskRandomAttack);
+        ErrorHandler.Log(() => "     + no spell avaliable", ELogTag.AI);
+        ErrorHandler.Log(() => "     + State                 : FAILURE", ELogTag.AITaskRandomAttack);
 
         m_State = NodeState.FAILURE;
         return m_State;
@@ -110,7 +110,7 @@ public class TaskRandomAttack : BaseTask
         if (spell != ESpell.None)
             return;
 
-        ErrorHandler.Log("CheckUltimate()", ELogTag.AITaskRandomAttack);
+        ErrorHandler.Log(() => "CheckUltimate()", ELogTag.AITaskRandomAttack);
 
         // check : ULTIMATE
         if (m_SpellHandler.CanCast(m_SpellHandler.Ultimate))

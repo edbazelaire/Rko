@@ -279,12 +279,14 @@ namespace Menu.Common.Buttons
 
             SoundFXManager.PlayOnce(SoundFXManager.ClickButtonSoundFX);
 
-            if (m_ShopData.Cost == 0)
+            // free shop item - instant completion
+            if (m_ShopData.Cost == 0 && m_ShopData.Currency != ECurrency.Real)
             {
                 OnPurchaseCompleted(true);
                 return;
             }
-            
+
+            // send to the confirmation screen
             Main.ConfirmBuyRewards(m_ShopData.PrettyName, m_ShopData.ProductId, new SPriceData(m_ShopData.Cost, m_ShopData.Currency), m_ShopData.Rewards, OnPurchaseCompleted);
         }
 

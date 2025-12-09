@@ -90,7 +90,7 @@ namespace Game.AI
             m_IsActivated = m_Controller.SpellHandler.Spells.Contains(m_Spell);
 
             if (m_IsActivated)
-                ErrorHandler.Log("TaskUseSell("+m_Spell+") : Deactivated", ELogTag.AITaskUseSpell);
+                ErrorHandler.Log(() => "TaskUseSell("+m_Spell+") : Deactivated", ELogTag.AITaskUseSpell);
         }
 
         #endregion
@@ -127,7 +127,7 @@ namespace Game.AI
             if (m_CastState == ECastState.TimerActivated)
             {
                 m_State = NodeState.FAILURE;
-                ErrorHandler.Log("TaskUseSpell("+m_Spell.ToString()+") - " + m_State + " : waiting for timer to end (" + (Mathf.Round(m_Timer * 100) / 100) + ")", ELogTag.AITaskUseSpell);
+                ErrorHandler.Log(() => "TaskUseSpell("+m_Spell.ToString()+") - " + m_State + " : waiting for timer to end (" + (Mathf.Round(m_Timer * 100) / 100) + ")", ELogTag.AITaskUseSpell);
                 return m_State;
             }
 
@@ -139,7 +139,7 @@ namespace Game.AI
                 // check is currently casting the spell
                 if (m_Controller.SpellHandler.IsCasting && m_Controller.SpellHandler.SelectedSpell == m_Spell.ToString())
                 {
-                    ErrorHandler.Log("TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : already casting", ELogTag.AITaskUseSpell);
+                    ErrorHandler.Log(() => "TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : already casting", ELogTag.AITaskUseSpell);
                     SetCastState(ECastState.Casting);
                     return m_State;
                 }
@@ -147,7 +147,7 @@ namespace Game.AI
                 // CHECK : already casting spell 
                 if (m_Controller.SpellHandler.IsCastingNotInterruptable)
                 {
-                    ErrorHandler.Log("TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : casting not interruptable spell", ELogTag.AITaskUseSpell);
+                    ErrorHandler.Log(() => "TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : casting not interruptable spell", ELogTag.AITaskUseSpell);
                     return m_State;
                 }
 
@@ -157,7 +157,7 @@ namespace Game.AI
                     if (!m_ResetCooldown)
                     {
                         m_State = NodeState.FAILURE;
-                        ErrorHandler.Log("TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : spell is in cooldown", ELogTag.AITaskUseSpell);
+                        ErrorHandler.Log(() => "TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : spell is in cooldown", ELogTag.AITaskUseSpell);
                         return m_State;
                     }
 
@@ -168,7 +168,7 @@ namespace Game.AI
                 if (!m_IgnoreGlobalCooldown && m_Controller.BehaviorTree.GetTimer("GlobalCooldown") > 0)
                 {
                     m_State = NodeState.FAILURE;
-                    ErrorHandler.Log("TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : waiting the end of global cooldown", ELogTag.AITaskUseSpell);
+                    ErrorHandler.Log(() => "TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : waiting the end of global cooldown", ELogTag.AITaskUseSpell);
                     return m_State;
                 }
 
@@ -183,12 +183,12 @@ namespace Game.AI
                     }
 
                     SetCastState(ECastState.Casting);
-                    ErrorHandler.Log("TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : started cast", ELogTag.AITaskUseSpell);
+                    ErrorHandler.Log(() => "TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : started cast", ELogTag.AITaskUseSpell);
                     return m_State;
                 }
 
                 m_State = NodeState.FAILURE;
-                ErrorHandler.Log("TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : unable to cast - " + reason, ELogTag.AITaskUseSpell);
+                ErrorHandler.Log(() => "TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : unable to cast - " + reason, ELogTag.AITaskUseSpell);
                 return m_State;
             }
 
@@ -205,12 +205,12 @@ namespace Game.AI
                 // check is currently casting the spell
                 if (! m_Controller.SpellHandler.IsCasting)
                 {
-                    ErrorHandler.Log("TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : cast is over", ELogTag.AITaskUseSpell);
+                    ErrorHandler.Log(() => "TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : cast is over", ELogTag.AITaskUseSpell);
                     SetCastState(ECastState.StartCast);
                     return m_State;
                 }
 
-                ErrorHandler.Log("TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : currently casting", ELogTag.AITaskUseSpell);
+                ErrorHandler.Log(() => "TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : currently casting", ELogTag.AITaskUseSpell);
                 return m_State;
             }
 
@@ -224,11 +224,11 @@ namespace Game.AI
                     return m_State;
                 }
 
-                ErrorHandler.Log("TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : waiting for callback", ELogTag.AITaskUseSpell);
+                ErrorHandler.Log(() => "TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : waiting for callback", ELogTag.AITaskUseSpell);
                 return m_State;
             }
 
-            ErrorHandler.Log("TaskUseSpell("+m_Spell.ToString()+") - " + m_State, ELogTag.AITaskUseSpell);
+            ErrorHandler.Log(() => "TaskUseSpell("+m_Spell.ToString()+") - " + m_State, ELogTag.AITaskUseSpell);
             return m_State;
         }
 
@@ -249,7 +249,7 @@ namespace Game.AI
 
             m_CastState = castState;
 
-            ErrorHandler.Log("      -- TaskUseSpell(" + m_Spell.ToString() + ") : m_CastState = " + m_CastState, ELogTag.AITaskUseSpell);
+            ErrorHandler.Log(() => "      -- TaskUseSpell(" + m_Spell.ToString() + ") : m_CastState = " + m_CastState, ELogTag.AITaskUseSpell);
 
             switch (castState)
             {
@@ -338,7 +338,7 @@ namespace Game.AI
             if (m_CastState != ECastState.Casting)
                 return;
 
-            ErrorHandler.Log("TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : received cast event - " + spellEvent, ELogTag.AITaskUseSpell);
+            ErrorHandler.Log(() => "TaskUseSpell(" + m_Spell.ToString() + ") - " + m_State + " : received cast event - " + spellEvent, ELogTag.AITaskUseSpell);
             SetCastState(ECastState.WaitingCallback);
         }
 
@@ -353,7 +353,7 @@ namespace Game.AI
         void IncreaseCounter()
         {
             m_NTimesCounter++;
-            ErrorHandler.Log("      -- TaskUseSpell(" + m_Spell + ") - " + m_SpellEventToAwait + " : m_NTimesCounter = " + m_NTimesCounter + " / " + m_NTimes, ELogTag.AITaskUseSpell);
+            ErrorHandler.Log(() => "      -- TaskUseSpell(" + m_Spell + ") - " + m_SpellEventToAwait + " : m_NTimesCounter = " + m_NTimesCounter + " / " + m_NTimes, ELogTag.AITaskUseSpell);
 
             // number of attacks reached 
             if (m_NTimesCounter >= m_NTimes)

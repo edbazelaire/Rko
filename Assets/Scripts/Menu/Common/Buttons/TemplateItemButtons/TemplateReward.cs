@@ -4,7 +4,6 @@ using Inventory;
 using Menu.Common.Buttons;
 using Save;
 using System;
-using System.Runtime.InteropServices.WindowsRuntime;
 using TMPro;
 using Tools;
 using Unity.VisualScripting;
@@ -20,6 +19,11 @@ namespace Menu.Common
         Image m_Icon;
         TMP_Text m_Qty;
 
+        SReward m_Reward;
+        bool m_IsAborted;
+
+        public bool IsAborted => m_IsAborted;
+
         #endregion
 
 
@@ -27,6 +31,8 @@ namespace Menu.Common
 
         public void Initialize(SReward reward)
         {
+            m_IsAborted = false;
+            m_Reward = reward;
             m_Icon = Finder.FindComponent<Image>(gameObject, "Icon");
             m_Qty = Finder.FindComponent<TMP_Text>(gameObject, "Qty");
            
@@ -72,11 +78,17 @@ namespace Menu.Common
             else if (CollectablesManagementData.IsCollectableType(reward.RewardType))
             {
                 if (! CollectablesManagementData.TryCast(reward.RewardName, reward.RewardType, out Enum collectable))
+                {
+                    Abort("Unable to parse " + reward.RewardName + " as Collectable");
                     return;
+                }
 
                 var baseTemplate = AssetLoader.LoadTemplateItem(collectable).GetComponent<TemplateCollectableItemUI>();
                 if (baseTemplate == null)
+                { 
+                    Abort("Unable to load template for reward " + reward.RewardName + " of collectable type : " + collectable);
                     return;
+                }
 
                 m_Qty.gameObject.SetActive(false);
 
@@ -108,7 +120,10 @@ namespace Menu.Common
             else if (reward.RewardType == typeof(EBoost))
             {
                 if (!Enum.TryParse(reward.RewardName, out EBoost boost))
+                {
+                    Abort("Unable to parse " + reward.RewardName + " as Boost");
                     return;
+                }
 
                 // load boost template
                 var template = Instantiate(AssetLoader.LoadBoostTemplate(boost), m_Icon.transform);
@@ -145,6 +160,18 @@ namespace Menu.Common
 
         #region GUI Manipulators
 
+        void Abort(string errorMsg = "")
+        {
+            m_IsAborted = true;
+            if (m_Icon == null)
+                return;
+
+            m_Icon.sprite = null;
+            m_Qty.text = "Not found : " + m_Reward.RewardName;
+
+            if (errorMsg != "")
+                ErrorHandler.Error(errorMsg);
+        }
      
         #endregion
     }

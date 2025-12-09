@@ -203,7 +203,7 @@ namespace Menu
         /// <param name="withAnim"></param>
         public virtual void SelectTab(Enum tabIndex, bool withAnim = true)
         {
-            if (m_CurrentTab == tabIndex)
+            if (m_CurrentTab != null && m_CurrentTab.Equals(tabIndex))
                 return;
 
             // deactivate current tab window

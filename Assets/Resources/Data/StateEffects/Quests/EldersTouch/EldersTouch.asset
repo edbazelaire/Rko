@@ -32,7 +32,6 @@ MonoBehaviour:
   m_EndWithShield: 0
   m_EndAt0Stacks: 1
   m_RefreshShield: 1
-  m_RefreshDuration: 1
   m_Priority: 0
   m_Delay: 0
   m_Duration: 0
@@ -46,8 +45,9 @@ MonoBehaviour:
   m_BonusStats:
   - StateEffectProperty: 30
     BaseValue: -5
-    LevelScalingFactor: 0.1
+    LevelScalingFactor: 0.05
     StackScalingFactor: 1
+    ScalesOnMissingHealth: 0
     DamageCategories: 
     HitCategories: 
     SpecialConditions: []

@@ -280,7 +280,7 @@ namespace Data
         /// <param name="overridingData"></param>
         public void OverrideProjectile(ProjectileData overridingData)
         {
-            ErrorHandler.Log("Overriding data of " + Name + " with " + overridingData.Name, ELogTag.Spells);
+            ErrorHandler.Log(() => "Overriding data of " + Name + " with " + overridingData.Name, ELogTag.Spells);
 
             ProjectileData              = overridingData;
             Animation                   = overridingData.Animation;

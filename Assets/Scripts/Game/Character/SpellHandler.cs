@@ -311,8 +311,6 @@ namespace Game.Character
             if (GetCharges(spellData.Name) == 0)
             {
                 reason = "Spell selection (" + spellData.Name + ") BLOCKED : No charges left";
-                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
@@ -320,8 +318,6 @@ namespace Game.Character
             if (spellData.EnergyCost > m_Controller.EnergyHandler.Energy.Value)
             {
                 reason = "Spell selection (" + spellData.Name + ") BLOCKED : Not enought energy";
-                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
@@ -329,8 +325,6 @@ namespace Game.Character
             if (spellData.SpellType == ESpellType.Jump &&  m_Controller.StateHandler.IsGrounded)
             {
                 reason = "Spell selection (" + spellData.Name + ") BLOCKED : Jump cant be casted while GROUNDED";
-                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
@@ -338,8 +332,6 @@ namespace Game.Character
             if (!CheckUniqueSpell(spellData))
             {
                 reason = "Spell selection (" + spellData.Name + ") BLOCKED : Unique spell";
-                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
@@ -347,8 +339,6 @@ namespace Game.Character
             if (!CheckSpellRequirements(spellData))
             {
                 reason = "Spell selection (" + spellData.Name + ") BLOCKED : CheckSpellRequirements";
-                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
@@ -373,14 +363,14 @@ namespace Game.Character
 
             if (spell != ESpell.None && spell != m_AutoAttack.Value)
             {
-                ErrorHandler.Log("TrySelectSpell " + spell, ELogTag.SpellHandler);
-                ErrorHandler.Log("     -- CHECK : is already Casting (" + m_SelectedSpell + ") : " + m_IsCasting, ELogTag.SpellHandler);
+                ErrorHandler.Log(() => "TrySelectSpell " + spell, ELogTag.SpellHandler);
+                ErrorHandler.Log(() => "     -- CHECK : is already Casting (" + m_SelectedSpell + ") : " + m_IsCasting, ELogTag.SpellHandler);
             }
 
             // set in queue if possible 
             if ((m_IsCasting || m_CastCoroutine != null) && ! SpellLoader.GetSpellData(m_SelectedSpell).IsCancellable)
             {
-                ErrorHandler.Log("     -- Setting spell (" + spell + ") as m_NextSelectedSpell", ELogTag.SpellHandler);
+                ErrorHandler.Log(() => "     -- Setting spell (" + spell + ") as m_NextSelectedSpell", ELogTag.SpellHandler);
                 m_NextSelectedSpell = spell;
                 return true;
             }
@@ -396,10 +386,10 @@ namespace Game.Character
             bool success = TryStartCastSpell(m_SpellsData[spellIndex]);
 
             if (m_Controller.IsPlayer)
-                ErrorHandler.Log("TryStartCastSpell " + spell + " success : " + success, ELogTag.SpellHandler);
+                ErrorHandler.Log(() => "TryStartCastSpell " + spell + " success : " + success, ELogTag.SpellHandler);
 
             if (!success)
-                ErrorHandler.Log("Trying to cast spell " + spell + " on selection but was not able", ELogTag.SpellHandler);
+                ErrorHandler.Log(() => "Trying to cast spell " + spell + " on selection but was not able", ELogTag.SpellHandler);
 
             return true;
         }
@@ -463,8 +453,6 @@ namespace Game.Character
             // check that spell respect conditions to be selected
             if (! CanSelect(spellData, out reason))
             {
-                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
@@ -488,8 +476,6 @@ namespace Game.Character
             if (m_CastBlocked.Value)
             {
                 reason = "Spell cast (" + spellData.Name + ") BLOCKED : cast is forced cancel";
-                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
@@ -497,8 +483,6 @@ namespace Game.Character
             if (m_Controller.CounterHandler.IsBlockingCast.Value)
             {
                 reason = "Spell cast (" + spellData.Name + ") BLOCKED : counter is blocking cast";
-                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
@@ -506,8 +490,6 @@ namespace Game.Character
             if (m_GlobalCooldown.Value > 0f)
             {
                 reason = "Spell cast (" + spellData.Name + ") BLOCKED : m_GlobalCooldown (" + m_GlobalCooldown.Value + ") > 0";
-                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
@@ -515,8 +497,6 @@ namespace Game.Character
             if (IsCastingUncancellable)
             {
                 reason = "Spell cast (" + spellData.Name + ") BLOCKED : is casting another non cancellable spell";
-                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
@@ -536,8 +516,6 @@ namespace Game.Character
             if (! spellData.IgnoreCC && ! m_Controller.StateHandler.CanCast)
             {
                 reason = "Spell cast (" + spellData.Name + ") BLOCKED : HasStateBlockingCast()";
-                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
@@ -545,8 +523,6 @@ namespace Game.Character
             if (m_Controller.StateHandler.HasState(EStateEffect.SpecialAnimation) || m_Controller.StateHandler.HasState(EStateEffect.Vanish))
             {
                 reason = "Spell cast (" + spellData.Name + ") BLOCKED : Has state 'SpecialAnimation'";
-                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
@@ -554,9 +530,6 @@ namespace Game.Character
             if (! CheckEnemyTargetable(spellData))
             {
                 reason = "Spell cast (" + spellData.Name + ") BLOCKED : Enemy is not targetable";
-
-                if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                    ErrorHandler.Log(reason, ELogTag.SpellHandler);
                 return false;
             }
 
@@ -642,7 +615,7 @@ namespace Game.Character
         public bool TryStartCastSpell(SpellData spellData, out string reason)
         {
             if ((m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI)) && spellData.Name != m_AutoAttack.Value.ToString())
-                ErrorHandler.Log("TryStartCastSpell : " + spellData.Name, ELogTag.SpellHandler);
+                ErrorHandler.Log(() => "TryStartCastSpell : " + spellData.Name, ELogTag.SpellHandler);
 
             if (!IsServer)
             {
@@ -684,7 +657,7 @@ namespace Game.Character
             spellData = spellData.Clone();
 
             if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                ErrorHandler.Log("StartCastSpell : " + spellData.Name, ELogTag.SpellHandler);
+                ErrorHandler.Log(() => "StartCastSpell : " + spellData.Name, ELogTag.SpellHandler);
 
             // only owner can ask for cast
             if (!IsServer)
@@ -734,7 +707,7 @@ namespace Game.Character
             }
 
             if (m_Controller.IsPlayer)
-                ErrorHandler.Log("     -- CAST DONE : " + spellData.Name, ELogTag.SpellHandler);
+                ErrorHandler.Log(() => "     -- CAST DONE : " + spellData.Name, ELogTag.SpellHandler);
 
             // ask server to cast the spell
             Cast(spellData);
@@ -753,7 +726,7 @@ namespace Game.Character
                 return;
 
             if (m_Controller.IsPlayer || Main.LogTags.Contains(ELogTag.AI))
-                ErrorHandler.Log("Cast : " + spellData.Name, ELogTag.SpellHandler);
+                ErrorHandler.Log(() => "Cast : " + spellData.Name, ELogTag.SpellHandler);
 
             if (spellData.LockTarget == ESpellEvent.OnCast)
                 LockTarget(spellData);
@@ -829,7 +802,7 @@ namespace Game.Character
 
         public bool TryStartChanneling(Spell spell)
         {
-            ErrorHandler.Log("TryStartChanneling() : " + spell.name, ELogTag.SpellHandler);
+            ErrorHandler.Log(() => "TryStartChanneling() : " + spell.name, ELogTag.SpellHandler);
 
             if (spell == null)
             {
@@ -846,7 +819,7 @@ namespace Game.Character
 
         public void StopChanneling()
         {
-            ErrorHandler.Log("StopChanneling() : " + m_ChannelingSpell ?? m_ChannelingSpell.name, ELogTag.SpellHandler);
+            ErrorHandler.Log(() => "StopChanneling() : " + m_ChannelingSpell ?? m_ChannelingSpell.name, ELogTag.SpellHandler);
 
             // cancel cast values shared by the Channeling method
             CancelCast();
@@ -872,7 +845,7 @@ namespace Game.Character
         {
             m_ChannelingSpell = spell;
 
-            ErrorHandler.Log("Channel : " + m_ChannelingSpell.SpellData.Name, ELogTag.SpellHandler);
+            ErrorHandler.Log(() => "Channel : " + m_ChannelingSpell.SpellData.Name, ELogTag.SpellHandler);
 
             // only owner can ask for cast
             if (!IsServer)
@@ -951,7 +924,7 @@ namespace Game.Character
         [ServerRpc]
         void SendTargetAdjustmentServerRpc(float x)
         {
-            ErrorHandler.Log("SendTargetAdjustmentServerRpc() : " + x, ELogTag.SpellRelocation);
+            ErrorHandler.Log(() => "SendTargetAdjustmentServerRpc() : " + x, ELogTag.SpellRelocation);
             RelocationTargetChangedEvent?.Invoke(x);
         }
 
@@ -1132,7 +1105,7 @@ namespace Game.Character
         {
             EnqueueCooldownAction(() =>
             {
-                ErrorHandler.Log("Reducing cooldowns by : " + cooldownReduction, ELogTag.CooldownReduction);
+                ErrorHandler.Log(() => "Reducing cooldowns by : " + cooldownReduction, ELogTag.CooldownReduction);
                 for (int i = 0; i < m_Cooldowns.Count; i++)
                 {
                     ReduceCooldownAtIndex(i, cooldownReduction);
@@ -1164,7 +1137,7 @@ namespace Game.Character
             float baseCooldown = m_Cooldowns[index];
             m_Cooldowns[index] = Mathf.Max(0, m_Cooldowns[index] - cooldownReduction);
 
-            ErrorHandler.Log($"  + {m_SpellsData[index].Name} : {baseCooldown:0} -> {m_Cooldowns[index]:0}", ELogTag.CooldownReduction);
+            ErrorHandler.Log(() => $"  + {m_SpellsData[index].Name} : {baseCooldown:0} -> {m_Cooldowns[index]:0}", ELogTag.CooldownReduction);
 
             // fire event that cooldown has been updated
             OnCooldownEvent?.Invoke(Spells[index], m_Cooldowns[index]);
@@ -1377,13 +1350,13 @@ namespace Game.Character
 
         void OnRelocationTargetChanged(float x)
         {
-            ErrorHandler.Log("OnRelocationTargetChanged() : " + x, ELogTag.SpellRelocation);
+            ErrorHandler.Log(() => "OnRelocationTargetChanged() : " + x, ELogTag.SpellRelocation);
             m_RelocationTargetPos = new Vector3(x, 0f, 0f);
         }
 
         void RegisterSpellRelocation(SpellData spellData)
         {
-            ErrorHandler.Log("RegisterSpellRelocation() : " + spellData.Name, ELogTag.SpellRelocation);
+            ErrorHandler.Log(() => "RegisterSpellRelocation() : " + spellData.Name, ELogTag.SpellRelocation);
             if (m_RelocationSpellData.Count == 0)
                 RelocationTargetChangedEvent += OnRelocationTargetChanged;
 

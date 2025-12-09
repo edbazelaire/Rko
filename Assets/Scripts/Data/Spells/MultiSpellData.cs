@@ -125,15 +125,15 @@ namespace Data
             // block movement and cast until the end
             Controller controller = GameManager.Instance.GetPlayer(clientId);
 
-            ErrorHandler.Log("MutliSpell STARTED : " + Name + " =============================================================", ELogTag.MultiSpells);
+            ErrorHandler.Log(() => "MutliSpell STARTED : " + Name + " =============================================================", ELogTag.MultiSpells);
 
             for (int i = 0; i < NWaves; i++)
             {
-                ErrorHandler.Log("     + " + Name + " WAVE [" + i + " / "+ NWaves + "] - start", ELogTag.MultiSpells);
+                ErrorHandler.Log(() => "     + " + Name + " WAVE [" + i + " / "+ NWaves + "] - start", ELogTag.MultiSpells);
 
                 yield return CastOneWave(clientId, target, position, rotation);
 
-                ErrorHandler.Log("     + " + Name + " WAVE [" + i + " / " + NWaves + "] - over", ELogTag.MultiSpells);
+                ErrorHandler.Log(() => "     + " + Name + " WAVE [" + i + " / " + NWaves + "] - over", ELogTag.MultiSpells);
 
                 if (i == NWaves - 1 || m_IsCancelled)
                     break;
@@ -185,7 +185,7 @@ namespace Data
                 GameManager.Instance.GetPlayer(clientId).SpellHandler.OnCastCompleted();
             }
 
-            ErrorHandler.Log("MutliSpell ENDED : " + Name + " =============================================================", ELogTag.MultiSpells);
+            ErrorHandler.Log(() => "MutliSpell ENDED : " + Name + " =============================================================", ELogTag.MultiSpells);
 
             CallSpellEvent(controller, ESpellEvent.OnEnd, target);
             Destroy(this);
@@ -208,7 +208,7 @@ namespace Data
 
             for (int i = 0; i < NProjectiles; i++)
             {
-                ErrorHandler.Log("          - " + Name + " Projectile (" + i + " / " + NProjectiles + ")", ELogTag.MultiSpells);
+                ErrorHandler.Log(() => "          - " + Name + " Projectile (" + i + " / " + NProjectiles + ")", ELogTag.MultiSpells);
 
                 CastOneProjectile(
                     caster, 

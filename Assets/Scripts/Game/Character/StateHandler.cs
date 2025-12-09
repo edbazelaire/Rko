@@ -201,7 +201,7 @@ namespace Game.Character
 
         public void CallOnStateEffectEventUI(EStateEffectEvent stateEffectEvent, string stateEffectName, int stacks, int maxStacks, float duration, float timer, ulong casterId)
         {
-            ErrorHandler.Log(stateEffectName + " : event " + stateEffectEvent + " | stacks " + stacks, ELogTag.StateEffectGFX);
+            ErrorHandler.Log(() => stateEffectName + " : event " + stateEffectEvent + " | stacks " + stacks, ELogTag.StateEffectGFX);
 
             // event already called on SERVER side
             StateEffectEvent?.Invoke(stateEffectEvent, stateEffectName, stacks, maxStacks, duration, timer);
@@ -265,58 +265,58 @@ namespace Game.Character
             if (hitCategory == EHitCategory.Dot)
                 return ApplyDotResistance(damage);
 
-            ErrorHandler.Log(m_Controller.Character + " - APPLYING RESISTANCE   ========================================================================", ELogTag.Resistance);
-            ErrorHandler.Log($"     + Base Damage : {damage} ({damageCategory} - {hitCategory})", ELogTag.Resistance);
+            ErrorHandler.Log(() => m_Controller.Character + " - APPLYING RESISTANCE   ========================================================================", ELogTag.Resistance);
+            ErrorHandler.Log(() => $"     + Base Damage : {damage} ({damageCategory} - {hitCategory})", ELogTag.Resistance);
 
             // =====================================================================================================
             // RESISTANCE : FIX
             int resistanceFix = GetInt(EStateEffectProperty.ResistanceFix, damageCategory: damageCategory, hitCategory: hitCategory, specialCondition: specialCondition);
             damage = Math.Max(0, damage - resistanceFix);
 
-            ErrorHandler.Log($"     + After Resistance FIX ({resistanceFix}): {damage}", ELogTag.Resistance);
+            ErrorHandler.Log(() => $"     + After Resistance FIX ({resistanceFix}): {damage}", ELogTag.Resistance);
 
             // =====================================================================================================
             // RESISTANCE : GLOBAL
             int resistance = GetInt(EStateEffectProperty.Resistance, null, damageCategory: damageCategory, hitCategory: hitCategory, specialCondition: specialCondition);
             damage = Math.Max(0, 100 * damage / Math.Max(100 + resistance, 50));
 
-            ErrorHandler.Log($"     + After Resistance ({resistance}): {damage}", ELogTag.Resistance);
+            ErrorHandler.Log(() => $"     + After Resistance ({resistance}): {damage}", ELogTag.Resistance);
 
             // =====================================================================================================
             // RESISTANCE : PERCENT
             float percResistance = GetFloat(EStateEffectProperty.ResistancePerc, null, damageCategory: damageCategory, hitCategory: hitCategory, specialCondition: specialCondition);
             damage = (int)Mathf.Round(damage * Mathf.Max(1 - percResistance, 0));
 
-            ErrorHandler.Log($"     + After Resistance Perc ({percResistance}) : {damage}", ELogTag.Resistance);
+            ErrorHandler.Log(() => $"     + After Resistance Perc ({percResistance}) : {damage}", ELogTag.Resistance);
 
             return damage;
         }
 
         public int ApplyDotResistance(int damage, string specialCondition = "")
         {
-            ErrorHandler.Log(m_Controller.Character + " - APPLYING DOT RESISTANCE   ========================================================================", ELogTag.ResistanceDot);
-            ErrorHandler.Log($"     + Base Dot Damage : {damage}", ELogTag.ResistanceDot);
+            ErrorHandler.Log(() => m_Controller.Character + " - APPLYING DOT RESISTANCE   ========================================================================", ELogTag.ResistanceDot);
+            ErrorHandler.Log(() => $"     + Base Dot Damage : {damage}", ELogTag.ResistanceDot);
 
             // =====================================================================================================
             // RESISTANCE : FIX
             int resistanceDot = GetInt(EStateEffectProperty.ResistanceFix, hitCategory: EHitCategory.Dot, specialCondition: specialCondition);
             damage = Math.Max(0, damage - resistanceDot);
 
-            ErrorHandler.Log($"     + After Resistance DOT ({resistanceDot}) : {damage}", ELogTag.ResistanceDot);
+            ErrorHandler.Log(() => $"     + After Resistance DOT ({resistanceDot}) : {damage}", ELogTag.ResistanceDot);
 
             // =====================================================================================================
             // RESISTANCE : GLOBAL
             int dotResistance       = GetInt(EStateEffectProperty.Resistance, null, damageCategory: EDamageCategory.Magical, hitCategory: EHitCategory.Dot, specialCondition: specialCondition);
             damage = Math.Max(0, 100 * damage / Math.Max(100 + dotResistance, 50));
 
-            ErrorHandler.Log($"     + After Resistance ({dotResistance}) : {damage}", ELogTag.ResistanceDot);
+            ErrorHandler.Log(() => $"     + After Resistance ({dotResistance}) : {damage}", ELogTag.ResistanceDot);
 
             // =====================================================================================================
             // RESISTANCE : PERCENT
             float percDotResistance = GetFloat(EStateEffectProperty.ResistancePerc, null, damageCategory: EDamageCategory.Magical, hitCategory: EHitCategory.Dot);
             damage = (int)Mathf.Round(damage * Mathf.Max(1 - percDotResistance, 0));
 
-            ErrorHandler.Log($"     + After Resistance PERCENTAGE ({percDotResistance}) : {damage}", ELogTag.ResistanceDot);
+            ErrorHandler.Log(() => $"     + After Resistance PERCENTAGE ({percDotResistance}) : {damage}", ELogTag.ResistanceDot);
 
             return damage;
         }
@@ -327,29 +327,29 @@ namespace Game.Character
             if (hitCategory == EHitCategory.Dot)
                 logTag = ELogTag.BonusDotDamage;
 
-            ErrorHandler.Log(m_Controller.Character + " | "+specialCondition+" - APPLYING BONUS DAMAGE   ========================================================================", logTag);
-            ErrorHandler.Log($"     + Base Damage : {damage} ({damageCategory} - {hitCategory})", logTag);
+            ErrorHandler.Log(() => m_Controller.Character + " | "+specialCondition+" - APPLYING BONUS DAMAGE   ========================================================================", logTag);
+            ErrorHandler.Log(() => $"     + Base Damage : {damage} ({damageCategory} - {hitCategory})", logTag);
 
             // =====================================================================================================
             // BONUS DAMAGE : POWER
             float power = GetInt(EStateEffectProperty.Power, targetController, damageCategory: damageCategory, hitCategory: hitCategory, specialCondition: specialCondition);
             damage = Math.Max(0, (int)Mathf.Round(damage * ((100 + power) / 100)));
 
-            ErrorHandler.Log($"      + After POWER ({power:0}) : " + damage, logTag);
+            ErrorHandler.Log(() => $"      + After POWER ({power:0}) : " + damage, logTag);
 
             // =====================================================================================================
             // BONUS DAMAGE : FIX
             int bonusDamage = GetInt(EStateEffectProperty.BonusDamage, targetController, damageCategory, hitCategory, specialCondition);
             damage = Math.Max(0, damage + bonusDamage);
 
-            ErrorHandler.Log($"      + After Bonus Damage FIX ({bonusDamage}): " + damage, logTag);
+            ErrorHandler.Log(() => $"      + After Bonus Damage FIX ({bonusDamage}): " + damage, logTag);
 
             // =====================================================================================================
             // BONUS DAMAGE : PERC
             float bonusDamagePerc = GetFloat(EStateEffectProperty.BonusDamagePerc, targetController, damageCategory: damageCategory, hitCategory: hitCategory, specialCondition: specialCondition);
             damage = Math.Max(0, (int)Mathf.Round(damage * bonusDamagePerc));
 
-            ErrorHandler.Log($"      + After Bonus Damage PERCENT ({100 * bonusDamagePerc:F2}%) : " + damage, logTag);
+            ErrorHandler.Log(() => $"      + After Bonus Damage PERCENT ({100 * bonusDamagePerc:F2}%) : " + damage, logTag);
 
             // =====================================================================================================
             // BONUS DAMAGE : EXECUTION
@@ -358,7 +358,7 @@ namespace Game.Character
                 float lethality = m_Controller.StateHandler.GetFloat(EStateEffectProperty.Lethality, targetController, specialCondition: specialCondition);
                 damage          = (int)Math.Round(damage * (lethality + 1 - targetController.Life.PercHp));
 
-                ErrorHandler.Log($"      + Final Execution Damage (lethality : {lethality} | targetHp : {targetController.Life.PercHp * 100:F2}%) : " + damage, logTag);
+                ErrorHandler.Log(() => $"      + Final Execution Damage (lethality : {lethality} | targetHp : {targetController.Life.PercHp * 100:F2}%) : " + damage, logTag);
             }
 
             return damage;
@@ -366,17 +366,17 @@ namespace Game.Character
 
         public int ApplyBonusHealDealt(int heal, Controller targetController, string specialCondition = "")
         {
-            ErrorHandler.Log("Base Heal : " + heal, ELogTag.BonusHeal);
+            ErrorHandler.Log(() => "Base Heal : " + heal, ELogTag.BonusHeal);
             
             // apply fix bonus heal
             heal = Math.Max(0, heal + GetInt(EStateEffectProperty.BonusHeal));
 
-            ErrorHandler.Log("Heal + Fix: " + heal, ELogTag.BonusHeal);
+            ErrorHandler.Log(() => "Heal + Fix: " + heal, ELogTag.BonusHeal);
 
             // apply percentage bonus heal
             heal = Math.Max(0, (int)Mathf.Round(heal * GetFloat(EStateEffectProperty.BonusHealPerc, targetController, specialCondition: specialCondition)));
 
-            ErrorHandler.Log("Final : " + heal, ELogTag.BonusExecutionDamage);
+            ErrorHandler.Log(() => "Final : " + heal, ELogTag.BonusExecutionDamage);
 
             return heal;   
         }
@@ -586,7 +586,7 @@ namespace Game.Character
             if (! stateEffect.Initialize(m_Controller, caster, overridingData, stacks))
                 return;
 
-            ErrorHandler.Log("Adding state effect " + stateEffect.StateEffectName, ELogTag.StateEffects);
+            ErrorHandler.Log(() => "Adding state effect " + stateEffect.StateEffectName, ELogTag.StateEffects);
 
             // add the state effect to the list of active effects
             m_StateEffects.Add(stateEffect);
@@ -869,7 +869,7 @@ namespace Game.Character
 
             value += m_CharacterData.GetValue(property, damageCategory: damageCategory, hitCategory: hitCategory, specialCondition, m_Controller, targetController);
 
-            ErrorHandler.Log("Base value (" + property + ") : " + value, ELogTag.BonusStats);
+            ErrorHandler.Log(() => "Base value (" + property + ") : " + value, ELogTag.BonusStats);
 
             foreach (var effect in m_StateEffects)
             {
@@ -879,7 +879,7 @@ namespace Game.Character
                 value += effect.GetFloat(property, ignoreConversion, damageCategory: damageCategory, hitCategory: hitCategory, specialCondition: specialCondition);
             }
 
-            ErrorHandler.Log("Final value (" + property + ") : " + value, ELogTag.BonusStats);
+            ErrorHandler.Log(() => "Final value (" + property + ") : " + value, ELogTag.BonusStats);
 
             return value;
         }
@@ -893,7 +893,7 @@ namespace Game.Character
             // get BASE VALUE from Character
             int value = m_CharacterData.GetInt(property, damageCategory: damageCategory, hitCategory: hitCategory, specialCondition, m_Controller, targetController);
 
-            ErrorHandler.Log("Base value (" + property + ") : " + value, ELogTag.BonusStats);
+            ErrorHandler.Log(() => "Base value (" + property + ") : " + value, ELogTag.BonusStats);
 
             // add EXTRA VALUE from StateEffects
             foreach (var effect in m_StateEffects)
@@ -903,7 +903,7 @@ namespace Game.Character
                 value += effect.GetInt(property, damageCategory: damageCategory, hitCategory: hitCategory, specialCondition: specialCondition);
             }
 
-            ErrorHandler.Log("Final value (" + property + ") : " + value, ELogTag.BonusStats);
+            ErrorHandler.Log(() => "Final value (" + property + ") : " + value, ELogTag.BonusStats);
 
             return value;
         }

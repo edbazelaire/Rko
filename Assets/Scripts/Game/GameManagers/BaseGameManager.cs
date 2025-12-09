@@ -122,7 +122,7 @@
 //            if (!m_IsAuthorized)
 //                return;
 
-//            ErrorHandler.Log("AddPlayerDataServerRPC + clientId " + clientId + " with character " + playerData.Character.ToString(), ELogTag.GameSystem);
+//            ErrorHandler.Log(() => "AddPlayerDataServerRPC + clientId " + clientId + " with character " + playerData.Character.ToString(), ELogTag.GameSystem);
 //            m_PlayersData.Add(clientId, playerData);
 
 //            AddProgress(1f / (m_NPlayers * N_LOADING_STEPS));
@@ -286,7 +286,7 @@
 //        [ServerRpc(RequireOwnership = false)]
 //        void SetClientIntializedServerRPC(ulong clientId)
 //        {
-//            ErrorHandler.Log("Client Initialized : " + clientId, ELogTag.GameSystem);
+//            ErrorHandler.Log(() => "Client Initialized : " + clientId, ELogTag.GameSystem);
 
 //            if (!m_ClientsInitialized.Contains(clientId))
 //                m_ClientsInitialized.Add(clientId);
@@ -303,7 +303,7 @@
 //                controller.InitializeUI();
 //            }
 
-//            ErrorHandler.Log("SetupUIClientRPC()", ELogTag.GameSystem);
+//            ErrorHandler.Log(() => "SetupUIClientRPC()", ELogTag.GameSystem);
 //            GameUIManager.Instance.SetUpIntroScreen();
 //        }
 
@@ -390,7 +390,7 @@
 //        [ClientRpc]
 //        void PlayIntroAnimationClientRPC()
 //        {
-//            ErrorHandler.Log("Play Intro Animation");
+//            ErrorHandler.Log(() => "Play Intro Animation");
 //            GameUIManager.IntroGameUI.PlayEnterAnimation();
 //        }
 
@@ -491,7 +491,7 @@
 
 //            m_State = state;
 
-//            ErrorHandler.Log("New state : " + state, ELogTag.GameSystem);
+//            ErrorHandler.Log(() => "New state : " + state, ELogTag.GameSystem);
 //            switch (state)
 //            {
 //                case EGameState.WaitingForConnection:

@@ -43,7 +43,7 @@ public class TaskPatrol : TaskMove
         if (CheckReachedEnd())
             GameManager.Instance.StartCoroutine(DeactivateCharacter());
 
-        ErrorHandler.Log("TaskPatrol - " + m_State, ELogTag.AITaskMove);
+        ErrorHandler.Log(() => "TaskPatrol - " + m_State, ELogTag.AITaskMove);
         return m_State;
     }
 

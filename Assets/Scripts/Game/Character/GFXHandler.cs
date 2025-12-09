@@ -378,7 +378,7 @@ namespace Game.Character
                 return;
             }
 
-            ErrorHandler.Log(spellName + " SpawnSpellGFX : " + spellEvent, ELogTag.SpellGFX);
+            ErrorHandler.Log(() => spellName + " SpawnSpellGFX : " + spellEvent, ELogTag.SpellGFX);
 
             foreach (SPrefabSpawn<ESpellEvent> prefabSpawn in spellData.SpellEventActions)
             {

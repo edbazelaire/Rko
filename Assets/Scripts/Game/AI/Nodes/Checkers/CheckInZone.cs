@@ -41,7 +41,7 @@ public class CheckInZone : BaseChecker
 
         if (CheckIsInZone())
         {
-            ErrorHandler.Log("CheckIsInZone() : SUCCESS", ELogTag.AICheckers);
+            ErrorHandler.Log(() => "CheckIsInZone() : SUCCESS", ELogTag.AICheckers);
             m_State = NodeState.SUCCESS;
             return m_State;
         }

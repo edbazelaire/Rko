@@ -119,7 +119,7 @@ namespace Tools
         /// <param name="classType"></param>
         public void RegisterClass(object obj)
         {
-            ErrorHandler.Log("RegisterClass " + obj.GetType().ToString(), ELogTag.Debugger);
+            ErrorHandler.Log(() => "RegisterClass " + obj.GetType().ToString(), ELogTag.Debugger);
 
             if (IsRegistered(obj))
             {
@@ -140,7 +140,7 @@ namespace Tools
         /// <param name="classType"></param>
         public void UnregisterClass(object obj, List<string> skips = default)
         {
-            ErrorHandler.Log("UnregisterClass " + obj.GetType().ToString(), ELogTag.Debugger);
+            ErrorHandler.Log(() => "UnregisterClass " + obj.GetType().ToString(), ELogTag.Debugger);
             if (! IsRegistered(obj))
                 return;
 
@@ -196,7 +196,7 @@ namespace Tools
         /// <param name="key"></param>
         public void RegisterCommand(Action callback, string command = "", KeyCode key = KeyCode.None)
         {
-            ErrorHandler.Log("Registering command : " + command, ELogTag.Debugger);
+            ErrorHandler.Log(() => "Registering command : " + command, ELogTag.Debugger);
 
             bool hasError = false;
             foreach (SCommand sCommand in m_Commands)
@@ -228,7 +228,7 @@ namespace Tools
         /// <returns></returns>
         public bool UnregisterCommand(string command)
         {
-            ErrorHandler.Log("Unregistering Command : " + command, ELogTag.Debugger);
+            ErrorHandler.Log(() => "Unregistering Command : " + command, ELogTag.Debugger);
 
             foreach (SCommand sCommand in m_Commands)
             {

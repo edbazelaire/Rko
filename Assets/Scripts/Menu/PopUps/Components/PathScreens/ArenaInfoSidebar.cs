@@ -56,6 +56,10 @@ namespace Menu.PopUps
             m_LossesContainer           = Finder.Find(gameObject, "LossesContainer");
 
             m_Width = Finder.FindComponent<RectTransform>(gameObject).rect.width;
+
+            /* TODO : Activate this button ONCE THE SPECIAL CALCULATION IS DONE
+             *  Calculate the TOTAL stats of the character, including boosts, power Ups, runes, ... */
+            m_CharacterInfoButton.gameObject.SetActive(false);
         }
 
         public override void Initialize()

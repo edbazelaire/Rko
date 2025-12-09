@@ -29,7 +29,7 @@ namespace Game.Spells
                     continue;
 
                 int removedStacks = m_Controller.StateHandler.RemoveStateEffect(state, consume: false, m_Stacks);
-                ErrorHandler.Log("Cleansing " + removedStacks + " stacks of " + state, ELogTag.StateEffects);
+                ErrorHandler.Log(() => "Cleansing " + removedStacks + " stacks of " + state, ELogTag.StateEffects);
             }
 
             base.OnStart();

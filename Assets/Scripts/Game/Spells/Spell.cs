@@ -671,7 +671,7 @@ namespace Game.Spells
             // get final damages after shields and resistances
             int finalDamage = targetController.Life.Hit(value, m_Caster.PlayerId, m_SpellData.Parent, damage.DamageCategory, damage.HitCategory);
 
-            ErrorHandler.Log(m_SpellData.Name + " : " + finalDamage, ELogTag.Spells);
+            ErrorHandler.Log(() => m_SpellData.Name + " : " + finalDamage, ELogTag.Spells);
 
             // apply lifesteal if any (remove 1 because floats values are always based on 1 as default value)
             float lifeSteal = SpellData.LifeSteal + Mathf.Max(0f, m_Caster.StateHandler.GetFloat(EStateEffectProperty.BonusLifeSteal) - 1);
@@ -970,14 +970,14 @@ namespace Game.Spells
         {
             if (m_SpellData.SpellRelocation.Lifetime.StartSpellPart >= spellEvent && ! m_IsCheckingRelocation)
             {
-                ErrorHandler.Log("REGISTERING Spell Relocation : " + m_SpellData.Name);
+                ErrorHandler.Log(() => "REGISTERING Spell Relocation : " + m_SpellData.Name);
                 m_IsCheckingRelocation = true;
                 ArenaManager.Instance.ClickableArea.ClickedEvent += OnRelocationTargetChanged;
             }
 
             else if (m_SpellData.SpellRelocation.Lifetime.EndSpellPart <= spellEvent && m_IsCheckingRelocation)
             {
-                ErrorHandler.Log("UN-REGISTERING Spell Relocation : " + m_SpellData.Name);
+                ErrorHandler.Log(() => "UN-REGISTERING Spell Relocation : " + m_SpellData.Name);
                 m_IsCheckingRelocation = false;
                 ArenaManager.Instance.ClickableArea.ClickedEvent -= OnRelocationTargetChanged;
             }
@@ -1068,7 +1068,7 @@ namespace Game.Spells
                 return;
             }
 
-            ErrorHandler.Log("OnRelocationTargetChanged() - " + m_SpellData.Name + " : " + x, ELogTag.SpellRelocation);
+            ErrorHandler.Log(() => "OnRelocationTargetChanged() - " + m_SpellData.Name + " : " + x, ELogTag.SpellRelocation);
             m_RelocationTargetPos = new Vector3(x, 0f, 0f);
         }
 

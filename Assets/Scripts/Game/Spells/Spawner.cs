@@ -152,7 +152,7 @@ namespace Game.Spells
 
         void StartCurrentWave()
         {
-            ErrorHandler.Log($"STARTING WAVE [{m_CurrentWaveIndex+1}/{m_SpellData.NWaves}] ==========================================", ELogTag.SpawnWaves);
+            ErrorHandler.Log(() => $"STARTING WAVE [{m_CurrentWaveIndex+1}/{m_SpellData.NWaves}] ==========================================", ELogTag.SpawnWaves);
             if (m_CurrentWave == null)
             {
                 StartNextWave();

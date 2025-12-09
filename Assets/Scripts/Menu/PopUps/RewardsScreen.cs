@@ -256,7 +256,7 @@ namespace Menu.PopUps
 
             for (int i = 0; i < rewards.Count; i++)
             {
-                ErrorHandler.Log("Reward : " + (i+1) + "/" + rewards.Count, ELogTag.Rewards);
+                ErrorHandler.Log(() => "Reward : " + (i+1) + "/" + rewards.Count, ELogTag.Rewards);
 
                 // get the reward
                 SReward reward = rewards[i];
@@ -279,7 +279,7 @@ namespace Menu.PopUps
 
         IEnumerator DisplayReward(SReward reward, bool isBonus = false)
         {
-            ErrorHandler.Log("DisplayReward : " + reward.RewardName, ELogTag.Rewards);
+            ErrorHandler.Log(() => "DisplayReward : " + reward.RewardName, ELogTag.Rewards);
 
             // reset skip before next reward
             m_Skip = false;
@@ -328,9 +328,9 @@ namespace Menu.PopUps
 
         IEnumerator DisplayChestReward(EChest chestType, int qty)
         {
-            ErrorHandler.Log("DisplayChestReward() : ", ELogTag.Rewards);
-            ErrorHandler.Log("      + chestType : " + chestType, ELogTag.Rewards);
-            ErrorHandler.Log("      + qty : " + qty, ELogTag.Rewards);
+            ErrorHandler.Log(() => "DisplayChestReward() : ", ELogTag.Rewards);
+            ErrorHandler.Log(() => "      + chestType : " + chestType, ELogTag.Rewards);
+            ErrorHandler.Log(() => "      + qty : " + qty, ELogTag.Rewards);
 
             m_Skip = false;
 
@@ -443,8 +443,8 @@ namespace Menu.PopUps
 
         IEnumerator DisplayCurrencyReward(ECurrency currency, int qty, bool isBonus = false)
         {
-            ErrorHandler.Log("DisplayCurrencyReward() : ", ELogTag.Rewards);
-            ErrorHandler.Log("      + "+ (isBonus ? "(bonus) " : "") + "currency : " + currency, ELogTag.Rewards);
+            ErrorHandler.Log(() => "DisplayCurrencyReward() : ", ELogTag.Rewards);
+            ErrorHandler.Log(() => "      + "+ (isBonus ? "(bonus) " : "") + "currency : " + currency, ELogTag.Rewards);
 
             m_Skip = false;
 
@@ -543,9 +543,9 @@ namespace Menu.PopUps
 
         IEnumerator DisplayAchievementReward(EAchievementReward arType, string value)
         {
-            ErrorHandler.Log("DisplayAchievementReward : ", ELogTag.Rewards);
-            ErrorHandler.Log("      + EAchievementReward : " + arType, ELogTag.Rewards);
-            ErrorHandler.Log("      + value : " + value, ELogTag.Rewards);
+            ErrorHandler.Log(() => "DisplayAchievementReward : ", ELogTag.Rewards);
+            ErrorHandler.Log(() => "      + EAchievementReward : " + arType, ELogTag.Rewards);
+            ErrorHandler.Log(() => "      + value : " + value, ELogTag.Rewards);
 
             // play sound effect
             SoundFXManager.PlayOnce(SoundFXManager.AchievementRewardCollectedSoundFX);
@@ -577,9 +577,9 @@ namespace Menu.PopUps
 
         IEnumerator DisplayBoostReward(EBoost boost, int duration)
         {
-            ErrorHandler.Log("DisplayBoostReward : ", ELogTag.Rewards);
-            ErrorHandler.Log("      + EBoost : " + boost,   ELogTag.Rewards);
-            ErrorHandler.Log("      + duration : " + duration,    ELogTag.Rewards);
+            ErrorHandler.Log(() => "DisplayBoostReward : ", ELogTag.Rewards);
+            ErrorHandler.Log(() => "      + EBoost : " + boost,   ELogTag.Rewards);
+            ErrorHandler.Log(() => "      + duration : " + duration,    ELogTag.Rewards);
 
             // play sound effect
             SoundFXManager.PlayOnce(SoundFXManager.AchievementRewardCollectedSoundFX);
@@ -603,7 +603,7 @@ namespace Menu.PopUps
             AnimationHandler.AddRaycast(m_RewardIconSection, size: 2f, color: new Color(1f, 1f, 1f, 0.3f));
 
             // add reward to collection of rewards
-            TimeCloudData.AddBoost(boost, duration);
+            TimeCloudData.AddBoost(boost, duration * 3600);
 
             // wait for click to display next
             yield return new WaitUntil(() => m_Skip);
@@ -611,8 +611,8 @@ namespace Menu.PopUps
 
         IEnumerator DisplayEmotReward(EEmot emot)
         {
-            ErrorHandler.Log("DisplayEmotReward : ", ELogTag.Rewards);
-            ErrorHandler.Log("      + EEmot : " + emot,   ELogTag.Rewards);
+            ErrorHandler.Log(() => "DisplayEmotReward : ", ELogTag.Rewards);
+            ErrorHandler.Log(() => "      + EEmot : " + emot,   ELogTag.Rewards);
 
             // play sound effect
             SoundFXManager.PlayOnce(SoundFXManager.AchievementRewardCollectedSoundFX);

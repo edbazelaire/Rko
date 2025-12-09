@@ -73,7 +73,7 @@ namespace Menu.PopUps.Components.ProfilePopUp
             if (ProfileCloudData.CurrentBadges.Contains(m_BadgeName) && m_Badge != EBadge.None)
             {
                 // TODO : error message ?
-                ErrorHandler.Log("Badge " + m_Badge + " already used");
+                ErrorHandler.Log(() => "Badge " + m_Badge + " already used");
                 return;
             }
 

@@ -114,7 +114,7 @@ namespace Data.DataStructures.SpellSubStructures.Spawns
             yield return new WaitForSeconds(Delay);
             m_CanSpawn = true;
 
-            ErrorHandler.Log("-- Wave is starting", ELogTag.SpawnWaves);
+            ErrorHandler.Log(() => "-- Wave is starting", ELogTag.SpawnWaves);
 
             // call delay timer of the sub-spawn groups
             foreach (var spawnGroup in m_SpawnGroups)
@@ -153,7 +153,7 @@ namespace Data.DataStructures.SpellSubStructures.Spawns
             m_IsOver = true;
             UnRegisterListeners();
 
-            ErrorHandler.Log("-- Wave is ending", ELogTag.SpawnWaves);
+            ErrorHandler.Log(() => "-- Wave is ending", ELogTag.SpawnWaves);
         }
 
         #endregion
@@ -250,7 +250,7 @@ namespace Data.DataStructures.SpellSubStructures.Spawns
 
             if (m_IsLastWave)
             {
-                ErrorHandler.Log("LAST WAVE - Spawn Counter : " + m_Spawns.Count, ELogTag.SpawnWaves);
+                ErrorHandler.Log(() => "LAST WAVE - Spawn Counter : " + m_Spawns.Count, ELogTag.SpawnWaves);
                 if (m_Spawns.Count == 0)
                     End();
             }
@@ -262,7 +262,7 @@ namespace Data.DataStructures.SpellSubStructures.Spawns
             else if (m_KillCounter.ContainsKey(spawnController.Character) && m_KillCounter[spawnController.Character] > 0)
             {
                 m_KillCounter[spawnController.Character] -= 1;
-                ErrorHandler.Log("Kill Counter : " + m_KillCounter.Values.Sum(), ELogTag.SpawnWaves);
+                ErrorHandler.Log(() => "Kill Counter : " + m_KillCounter.Values.Sum(), ELogTag.SpawnWaves);
                 if (m_KillCounter.Values.Sum() <= 0 && !m_IsLastWave)
                     End();
             }

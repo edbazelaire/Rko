@@ -35,7 +35,7 @@ namespace Tools
 
         #region Basic Errors
 
-        public static void Log(string message, ELogTag logTag = ELogTag.None, int frame = 0)
+        public static void Log(Func<string> messageFactory, ELogTag logTag = ELogTag.None, int frame = 0)
         {
             if (! IsActivated)
                 return;
@@ -43,6 +43,11 @@ namespace Tools
             if (! ShouldDisplayLogTag(logTag))
                 return;
 
+            Log(messageFactory(), logTag, frame + 1);
+        }
+
+        public static void Log(string message, ELogTag logTag = ELogTag.None, int frame = 0)
+        {
             AddError(message, EError.Log, frame + 1, logTag);
         }
 

@@ -140,7 +140,7 @@ namespace Game.Spells
             }
 
             bonusStat.BaseValue = m_HpToSizeConversion * m_Controller.Life.MaxHp.Value;
-            ErrorHandler.Log($"{StateEffectName} - {bonusStat.GetKeyName()} : {bonusStat.Get(m_Level, m_Stacks):F2}", ELogTag.StatConversion);
+            ErrorHandler.Log(() => $"{StateEffectName} - {bonusStat.GetKeyName()} : {bonusStat.Get(m_Level, m_Stacks):F2}", ELogTag.StatConversion);
 
             m_Controller.StateHandler.RecalculateBonus();
         }
@@ -155,7 +155,7 @@ namespace Game.Spells
             }
 
             bonusStat.BaseValue = 100 * m_SizeToDamageConversion * m_Controller.StateHandler.Size;
-            ErrorHandler.Log($"{StateEffectName} - {bonusStat.GetKeyName()} : {bonusStat.Get(m_Level, m_Stacks):F2}", ELogTag.StatConversion);
+            ErrorHandler.Log(() => $"{StateEffectName} - {bonusStat.GetKeyName()} : {bonusStat.Get(m_Level, m_Stacks):F2}", ELogTag.StatConversion);
         }
 
         void RecalculateHeal()
@@ -168,7 +168,7 @@ namespace Game.Spells
             }
 
             bonusStat.BaseValue = m_SizeToDamageConversion * m_Controller.StateHandler.Size;
-            ErrorHandler.Log($"{StateEffectName} - {bonusStat.GetKeyName()} : {bonusStat.Get(m_Level, m_Stacks):F2}", ELogTag.StatConversion);
+            ErrorHandler.Log(() => $"{StateEffectName} - {bonusStat.GetKeyName()} : {bonusStat.Get(m_Level, m_Stacks):F2}", ELogTag.StatConversion);
         }
 
         void CheckSizeThreshold()

@@ -42,7 +42,7 @@ MonoBehaviour:
     BaseValue: 15
     BonusValue: 0
     ScalingFactor: 0.12
-    DamageCategories: 01000000
+    DamageCategories: 
     HitCategories: 
     SpecialConditions: []
     StateEffectStackFactors: []
@@ -64,7 +64,6 @@ MonoBehaviour:
     StateEffectStackFactors: []
   m_SpecialPowers:
   - Description: 
-    m_DescriptionVariables: []
     m_BonusLevel: 0
     m_TriggerEffects:
     - SpellDataName: Melting

@@ -1,4 +1,5 @@
 ﻿using Enums;
+using Game.Loaders;
 using Menu.Common.Notifications;
 using Save;
 using Tools;
@@ -58,6 +59,8 @@ namespace Menu.Common.Buttons
                 SetAsUpgradable();
             else
                 SetAsInfo();
+
+            RefreshMasteryParticles(character);
         }
 
         void SetAsInfo()
@@ -83,6 +86,32 @@ namespace Menu.Common.Buttons
                 size: Vector2.one,
                 colorHexa: null
             );
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        void RefreshMasteryParticles(ECharacter character)
+        {
+            int nAchivementsToCollect = 0;
+            foreach (var achievementData in AchievementLoader.Achievements)
+            {
+                if (achievementData.IsUnlockable && achievementData.IsCharacterMastery && achievementData.Character == character)
+                    nAchivementsToCollect++;
+            }
+
+            if (nAchivementsToCollect > 0)
+            {
+                NotificationPulse.Add(
+                    baseGameObject:     gameObject,
+                    animationTarget:    gameObject,
+                    redDotTarget:       gameObject,
+                    counter:            nAchivementsToCollect
+                );
+            } else
+            {
+                NotificationPulse.Remove(gameObject);
+            }
         }
 
         #endregion

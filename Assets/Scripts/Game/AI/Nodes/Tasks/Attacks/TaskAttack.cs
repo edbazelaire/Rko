@@ -73,12 +73,12 @@ public class TaskAttack : BaseTask
             return m_State;
         }
 
-        ErrorHandler.Log("===================================================================", ELogTag.AITaskAttack);
-        ErrorHandler.Log("TaskAttack.Evaluate()", ELogTag.AITaskAttack);
+        ErrorHandler.Log(() => "===================================================================", ELogTag.AITaskAttack);
+        ErrorHandler.Log(() => "TaskAttack.Evaluate()", ELogTag.AITaskAttack);
         if (m_Controller.SpellHandler.IsCasting)
         {
-            ErrorHandler.Log("     + IsCasting     : true",     ELogTag.AITaskAttack);
-            ErrorHandler.Log("     + State         : RUNNING",  ELogTag.AITaskAttack);
+            ErrorHandler.Log(() => "     + IsCasting     : true",     ELogTag.AITaskAttack);
+            ErrorHandler.Log(() => "     + State         : RUNNING",  ELogTag.AITaskAttack);
 
             m_State = NodeState.RUNNING;
             return m_State;
@@ -87,8 +87,8 @@ public class TaskAttack : BaseTask
         // check that no state is blocking the cast
         if (! m_Controller.StateHandler.CanCast)
         {
-            ErrorHandler.Log("     + HasStateBlockingCast  : true",     ELogTag.AITaskAttack);
-            ErrorHandler.Log("     + State                 : FAILURE",  ELogTag.AITaskAttack);
+            ErrorHandler.Log(() => "     + HasStateBlockingCast  : true",     ELogTag.AITaskAttack);
+            ErrorHandler.Log(() => "     + State                 : FAILURE",  ELogTag.AITaskAttack);
 
             m_State = NodeState.FAILURE;
             return m_State;
@@ -100,10 +100,10 @@ public class TaskAttack : BaseTask
         {
             m_Controller.SpellHandler.TryStartCastSpell(spell, m_Controller.CharacterLevel, out string _);
                 
-            ErrorHandler.Log("     + Casting Spell     : " + spell, ELogTag.AITaskAttack);
-            ErrorHandler.Log("     + State             : SUCCESS",  ELogTag.AITaskAttack);
+            ErrorHandler.Log(() => "     + Casting Spell     : " + spell, ELogTag.AITaskAttack);
+            ErrorHandler.Log(() => "     + State             : SUCCESS",  ELogTag.AITaskAttack);
 
-            ErrorHandler.Log("TaskAttack() : Casting Spell - " + spell, ELogTag.AIFinalDecision);
+            ErrorHandler.Log(() => "TaskAttack() : Casting Spell - " + spell, ELogTag.AIFinalDecision);
 
             m_State = NodeState.SUCCESS;
             m_Controller.StartCoroutine(TimerAttackCoroutine());
@@ -111,8 +111,8 @@ public class TaskAttack : BaseTask
         }
 
         // action failed, no spell can be used
-        ErrorHandler.Log("     + no spell avaliable", ELogTag.AI);
-        ErrorHandler.Log("     + State                 : FAILURE", ELogTag.AITaskAttack);
+        ErrorHandler.Log(() => "     + no spell avaliable", ELogTag.AI);
+        ErrorHandler.Log(() => "     + State                 : FAILURE", ELogTag.AITaskAttack);
 
         m_State = NodeState.FAILURE;
         return m_State;
@@ -173,7 +173,7 @@ public class TaskAttack : BaseTask
         if (spell != ESpell.None)
             return;
 
-        ErrorHandler.Log("CheckUltimate()", ELogTag.AITaskAttack);
+        ErrorHandler.Log(() => "CheckUltimate()", ELogTag.AITaskAttack);
 
         // check : ULTIMATE
         if (m_SpellHandler.CanCast(m_SpellHandler.Ultimate))
@@ -186,7 +186,7 @@ public class TaskAttack : BaseTask
         if (spell != ESpell.None)
             return;
 
-        ErrorHandler.Log("CheckSpawners()", ELogTag.AITaskAttack);
+        ErrorHandler.Log(() => "CheckSpawners()", ELogTag.AITaskAttack);
 
         CheckSpells(ref spell, m_SpellCategories[ESpellTypeCategory.Spawner]);
     }
@@ -201,7 +201,7 @@ public class TaskAttack : BaseTask
         if (spell != ESpell.None)
             return;
 
-        ErrorHandler.Log("CheckHealingSpells()", ELogTag.AITaskAttack);
+        ErrorHandler.Log(() => "CheckHealingSpells()", ELogTag.AITaskAttack);
 
         if (m_Controller.Life.Hp.Value == m_Controller.Life.MaxHp.Value)
             return;
@@ -219,7 +219,7 @@ public class TaskAttack : BaseTask
         if (spell != ESpell.None)
             return;
 
-        ErrorHandler.Log("CheckBuffs()", ELogTag.AITaskAttack);
+        ErrorHandler.Log(() => "CheckBuffs()", ELogTag.AITaskAttack);
 
         CheckSpells(ref spell, m_SpellCategories[ESpellTypeCategory.Buff]);
     }
@@ -234,7 +234,7 @@ public class TaskAttack : BaseTask
         if (spell != ESpell.None)
             return;
 
-        ErrorHandler.Log("CheckStateEffectsConsum()", ELogTag.AITaskAttack);
+        ErrorHandler.Log(() => "CheckStateEffectsConsum()", ELogTag.AITaskAttack);
         var target = GameManager.Instance.GetFirstEnemy(m_Controller.Team);
 
         // list of spell that can be casted
@@ -310,7 +310,7 @@ public class TaskAttack : BaseTask
         if (spell != ESpell.None)
             return;
 
-        ErrorHandler.Log("CheckDamageSpells()", ELogTag.AITaskAttack);
+        ErrorHandler.Log(() => "CheckDamageSpells()", ELogTag.AITaskAttack);
 
         CheckSpells(ref spell, m_SpellCategories[ESpellTypeCategory.Damage]);
     }

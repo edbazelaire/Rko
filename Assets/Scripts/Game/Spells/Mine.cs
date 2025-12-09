@@ -63,6 +63,7 @@ namespace Game.Spells
 
             m_DurationTimer = m_SpellData.Duration;
             m_ActivationCounter = 0;
+            m_SpellData.ActivationData.SetParent(m_SpellData.Parent);
 
             State.OnValueChanged += SpawnGFXPrefabs;
 

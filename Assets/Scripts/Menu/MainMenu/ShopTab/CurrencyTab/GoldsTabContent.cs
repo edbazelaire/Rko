@@ -17,7 +17,8 @@ namespace Menu.MainMenu
                 ShopManagementData.KeysShopData, 
                 ShopManagementData.GoldsShopData, 
                 ShopManagementData.XpShopData,
-                ShopManagementData.GemsShopData.GetRange(0, 1)
+                ShopManagementData.GemsShopData
+                //ShopManagementData.GemsShopData.GetRange(0, 2)
             });
         }
 

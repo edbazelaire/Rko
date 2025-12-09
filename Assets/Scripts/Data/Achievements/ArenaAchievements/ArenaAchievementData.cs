@@ -10,11 +10,11 @@ namespace Data
         #region Members
 
         [SerializeField]
-        protected EArenaType        m_ArenaType;
+        protected EArenaType m_ArenaType;
         [SerializeField]
-        protected EArenaDifficulty  m_ArenaDifficulty;
+        protected EArenaDifficulty m_ArenaDifficulty;
         [SerializeField]
-        public List<EArenaMod>      m_ArenaMods;
+        public List<EArenaMod> m_ArenaMods;
 
         public override string ID => m_ArenaType.ToString() + base.ID;
 
@@ -35,7 +35,7 @@ namespace Data
             bool test = false;
             for (int i = CurrentIndex; i < AchievementSubData.Count; i++)
             {
-                if (! AchievementSubData[i].Check(arenaType, arenaDifficulty, arenaMods))
+                if (!AchievementSubData[i].Check(arenaType, arenaDifficulty, arenaMods))
                     break;
 
                 IncreaseAtIndex(i, save: save);
@@ -55,10 +55,10 @@ namespace Data
             foreach (var subAchievement in AchievementSubData)
             {
                 subAchievement.Override(
-                    arenaType:              m_ArenaType,
-                    arenaDifficulty:        m_ArenaDifficulty,
-                    arenaMods:              m_ArenaMods
-                ); 
+                    arenaType: m_ArenaType,
+                    arenaDifficulty: m_ArenaDifficulty,
+                    arenaMods: m_ArenaMods
+                );
             }
         }
 

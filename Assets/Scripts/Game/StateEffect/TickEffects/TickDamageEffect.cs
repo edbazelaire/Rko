@@ -91,7 +91,7 @@ namespace Game.Spells
 
         protected virtual void ApplyTickEffects()
         {
-            ErrorHandler.Log($"Applying {name} with " + m_Stacks + " stacks", ELogTag.StateEffects);
+            ErrorHandler.Log(() => $"Applying {name} with " + m_Stacks + " stacks", ELogTag.StateEffects);
 
             // check if has spell requirements that need to be applied when applying effect
             if (! TryApplySpellRequirements(m_TickSpellRequirements))
@@ -104,13 +104,13 @@ namespace Game.Spells
             int damages = GetInt(EStateEffectProperty.DotDamage);
             if (damages > 0)
             {
-                ErrorHandler.Log($"{name} : {damages} DAMAGES", ELogTag.StateEffects);
+                ErrorHandler.Log(() => $"{name} : {damages} DAMAGES", ELogTag.StateEffects);
                 damages = m_Controller.Life.Hit(damages, m_Caster.PlayerId, m_Parent, EDamageCategory.Magical, EHitCategory.Dot, m_IsTrueDamage);
 
                 int lifesteal = (int)Mathf.Round(damages * FinalTickLifeSteal);
                 if (lifesteal > 0)
                 {
-                    ErrorHandler.Log($"{name} : {lifesteal} LIFESTEAL", ELogTag.StateEffects);
+                    ErrorHandler.Log(() => $"{name} : {lifesteal} LIFESTEAL", ELogTag.StateEffects);
                     m_Caster.Life.Heal(lifesteal, m_Caster.PlayerId, m_Parent, EHitCategory.Dot);
                 }
             }
@@ -119,7 +119,7 @@ namespace Game.Spells
             int heal = GetInt(EStateEffectProperty.DotHeal);
             if (heal > 0)
             {
-                ErrorHandler.Log($"{name} : {heal} HEALS", ELogTag.StateEffects);
+                ErrorHandler.Log(() => $"{name} : {heal} HEALS", ELogTag.StateEffects);
                 m_Controller.Life.Heal(heal, m_Caster.PlayerId, m_Parent, EHitCategory.Dot);
             }
 

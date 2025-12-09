@@ -272,7 +272,7 @@ namespace Assets
             }
 
 #if UNITY_EDITOR
-            ErrorHandler.Log("UNITY EDITOR MODE", ELogTag.System);
+            ErrorHandler.Log(() => "UNITY EDITOR MODE", ELogTag.System);
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
             ApplicationQuitEvent += CloudSaveManager.Instance.OnApplicationQuit;
 #endif
@@ -652,7 +652,7 @@ namespace Assets
             // remove event signed in
             AuthenticationService.Instance.SignedIn -= OnSignedIn;
 
-            ErrorHandler.Log("SIGNED ID : " + AuthenticationService.Instance.PlayerId, ELogTag.System);
+            ErrorHandler.Log(() => "SIGNED ID : " + AuthenticationService.Instance.PlayerId, ELogTag.System);
             m_SignedIn = true;
 
             // setup analytics
@@ -665,7 +665,7 @@ namespace Assets
         private void OnInitializationCompleted()
         {
             if (SceneLoader.Instance == null)
-                ErrorHandler.Log("SceneLoader is null", ELogTag.System);
+                ErrorHandler.Log(() => "SceneLoader is null", ELogTag.System);
 
             // loading MainMenu
             if (! AuthorizeAccess())
@@ -674,7 +674,7 @@ namespace Assets
                 return;
             } 
 
-            ErrorHandler.Log("Initialization of the data completed : loading MainMenu", ELogTag.System);
+            ErrorHandler.Log(() => "Initialization of the data completed : loading MainMenu", ELogTag.System);
 
             // check that current version matches the last played version for the player (apply changes if needed)
             UpdateManager.CheckUpdates();
@@ -696,7 +696,7 @@ namespace Assets
 
         private void OnStateChanged(EAppState state)
         {
-            ErrorHandler.Log("New state : " + state.ToString(), ELogTag.System);
+            ErrorHandler.Log(() => "New state : " + state.ToString(), ELogTag.System);
 
             if (!m_StoredEvents.ContainsKey(state))
                 return;

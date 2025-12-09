@@ -44,12 +44,12 @@ namespace Game.AI.Tasks.Variables
             m_State = NodeState.SUCCESS;
             if (m_Timer == null)
             {
-                ErrorHandler.Log("ResetTimer - SUCCESS : Reseting " + m_Id + " with timer " + m_Timer, ELogTag.AITaskJump);
+                ErrorHandler.Log(() => "ResetTimer - SUCCESS : Reseting " + m_Id + " with timer " + m_Timer, ELogTag.AITaskJump);
                 m_Controller.BehaviorTree.DeleteTimer(m_Id);
             }
             else
             {
-                ErrorHandler.Log("ResetTimer - SUCCESS : Reseting " + m_Id + " with timer " + m_Timer, ELogTag.AITaskJump);
+                ErrorHandler.Log(() => "ResetTimer - SUCCESS : Reseting " + m_Id + " with timer " + m_Timer, ELogTag.AITaskJump);
                 m_Controller.BehaviorTree.ResetTimer(m_Id, m_Timer.Value);
             }
 
