@@ -44,7 +44,7 @@ namespace Assets.Scripts.Managers
                 return;
             }
 
-            while (CurrentVersion != GameVersion)
+            while (CurrentVersion < GameVersion)
             {
                 if (! UpdateVersion())
                 {
