@@ -2,6 +2,7 @@
 using Enums;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Tools;
 using UnityEngine;
 using UnityEngine.Purchasing;
@@ -14,6 +15,7 @@ namespace Managers.Monetization.IAP
         #region Members
 
         public static IAPManager Instance;
+        public bool Aborted = false;
 
         [Serializable]
         public class ProductInfo
@@ -31,7 +33,7 @@ namespace Managers.Monetization.IAP
         private Action m_OnPurchaseSuccess;
 
         public static bool Initialized =>
-            Instance != null && Instance.m_StoreController != null;
+            Instance != null && Instance.m_StoreController != null && ! Instance.Aborted;
 
         #endregion
 
@@ -72,36 +74,44 @@ namespace Managers.Monetization.IAP
         {
             try
             {
+                Aborted = false;
+
                 // 1) Get controller
                 m_StoreController = UnityIAPServices.StoreController();
 
                 // 2) Subscribe to events BEFORE connecting
-                m_StoreController.OnProductsFetched += OnProductsFetched;
+                m_StoreController.OnProductsFetched     += OnProductsFetched;
                 m_StoreController.OnProductsFetchFailed += OnProductsFetchFailed;
 
-                m_StoreController.OnPurchasesFetched += OnPurchasesFetched;
+                m_StoreController.OnPurchasesFetched    += OnPurchasesFetched;
 
-                m_StoreController.OnPurchasePending += OnPurchasePending;
-                m_StoreController.OnPurchaseConfirmed += OnPurchaseConfirmed;
-                m_StoreController.OnPurchaseFailed += OnPurchaseFailed;
+                m_StoreController.OnPurchasePending     += OnPurchasePending;
+                m_StoreController.OnPurchaseConfirmed   += OnPurchaseConfirmed;
+                m_StoreController.OnPurchaseFailed      += OnPurchaseFailed;
+                m_StoreController.OnStoreDisconnected   += OnStoreDisconnected;
 
-                // 3) Connect to the store
-                await m_StoreController.Connect();
-                Debug.Log("[IAP] Connected to store.");
-
-                // 4) Tell IAP which products you care about
-                var productDefs = new List<ProductDefinition>();
-                foreach (var info in m_ProductsInfo)
-                {
-                    productDefs.Add(new ProductDefinition(info.Product.ToString(), info.Type));
-                }
-
-                m_StoreController.FetchProducts(productDefs);   // triggers OnProductsFetched
+                await ConnectToStore();
             }
             catch (Exception e)
             {
                 ErrorHandler.Error($"[IAP] Initialization failed: {e}");
             }
+        }
+
+        async Task ConnectToStore()
+        {
+            // 3) Connect to the store
+            await m_StoreController.Connect();
+            Debug.Log("[IAP] Connected to store.");
+
+            // 4) Tell IAP which products you care about
+            var productDefs = new List<ProductDefinition>();
+            foreach (var info in m_ProductsInfo)
+            {
+                productDefs.Add(new ProductDefinition(info.Product.ToString(), info.Type));
+            }
+
+            m_StoreController.FetchProducts(productDefs);   // triggers OnProductsFetched
         }
 
         #endregion
@@ -215,6 +225,16 @@ namespace Managers.Monetization.IAP
         private void OnPurchaseFailed(FailedOrder failedOrder)
         {
             Debug.Log($"[IAP] Purchase failed. Details: {failedOrder.Details}");
+        }
+
+        private async void OnStoreDisconnected(StoreConnectionFailureDescription storeConnectionFailure)
+        {
+            Debug.Log($"[IAP] Purchase failed. Details: {storeConnectionFailure.Message}");
+
+            if (storeConnectionFailure.isRetryable)
+                await ConnectToStore();
+            else
+                Aborted = true;
         }
 
         #endregion
