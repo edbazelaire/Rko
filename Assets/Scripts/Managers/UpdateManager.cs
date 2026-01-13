@@ -16,7 +16,7 @@ namespace Assets.Scripts.Managers
 {
     public static class UpdateManager
     {
-        /// <summary> player's current installed version </summary>
+          /// <summary> player's current installed version </summary>
         public static Version CurrentVersion => new Version(PlayerPrefs.GetString("LastVersion", "0.0.0"));
         /// <summary> game's expected version </summary>
         public static Version GameVersion => new Version(Application.version);
