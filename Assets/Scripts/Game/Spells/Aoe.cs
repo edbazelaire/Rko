@@ -1,4 +1,4 @@
-﻿using Data;
+using Data;
 using Enums;
 using Game.NetworkStructures;
 using System.Collections.Generic;
@@ -19,6 +19,7 @@ namespace Game.Spells
         AoeData m_SpellData => m_BaseSpellData as AoeData;
 
         readonly NetworkVariable<float> m_Radius = new NetworkVariable<float>();
+        List<Controller> m_AllControllersBuffer = new List<Controller>();
 
         public IReplicatedVar<float> Radius { get; protected set; }
 
@@ -129,13 +130,14 @@ namespace Game.Spells
             // if "ApplyIfNotHitting" : set hitControllers to be the list of ALL controllers NOT HIT
             if (m_SpellData.ApplyIfNotHitting)
             {
-                var allControllers = m_SpellData.IsEnemyTarget
-                    ? GameManager.Instance.GetAllEnemies(m_Caster.Team)
-                    : GameManager.Instance.GetAllAllies(m_Caster.Team);
+                if (m_SpellData.IsEnemyTarget)
+                    GameManager.Instance.GetAllEnemies(m_Caster.Team, m_AllControllersBuffer);
+                else
+                    GameManager.Instance.GetAllAllies(m_Caster.Team, m_AllControllersBuffer);
 
-                hitControllers = allControllers.Where(
-                    controller => ! hitControllers.Any(hitController => hitController.PlayerId == controller.PlayerId)
-                ).ToList();
+                hitControllers = m_AllControllersBuffer
+                    .Where(controller => !hitControllers.Any(hitController => hitController.PlayerId == controller.PlayerId))
+                    .ToList();
             }
 
             // Apply OnHit effect on each Controllers

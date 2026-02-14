@@ -1,4 +1,4 @@
-﻿using Assets;
+using Assets;
 using Assets.Scripts.Game;
 using Game.GameManagers.Interfaces;
 using Assets.Scripts.Managers.Sound;
@@ -84,6 +84,12 @@ namespace Game
         protected int m_BotId = 0;
         /// <summary> [SERVER] current SPAWN extra id (to add to base SPAWN_CLIENT_ID) </summary>
         protected int m_SpawnId = 0;
+        /// <summary> [SERVER] registry of active spells by name for fast lookup (avoids FindObjectsByType) </summary>
+        Dictionary<string, List<Spell>> m_ActiveSpellsByName = new();
+        /// <summary> Reusable buffers for Get* methods to reduce allocations when using fill overloads </summary>
+        List<Controller> m_GetEnemiesBuffer = new();
+        List<Controller> m_GetAlliesBuffer = new();
+        List<Controller> m_GetSpawnsBuffer = new();
 
         // -- Initialization
         /// <summary> [CLIENT/SERVER] has the GameManager current Instance been initialized ? </summary>
@@ -878,37 +884,46 @@ namespace Game
         {
             Controller returnedController = null;
 
-            var controllers = GetAllTauntingEnemies(team, spawnIncluded: true);
-            if (controllers.Count > 0)
-                return controllers[0];
-
+            // First pass: taunting enemies (no allocation)
             foreach (Controller controller in m_Controllers.Values)
             {
-                // CHECK : controller null or deactivated
-                if (controller == null || ! controller.gameObject.activeInHierarchy || ! controller.IsActive)
+                if (controller == null || !controller.gameObject.activeInHierarchy || !controller.IsActive)
                     continue;
-
-                // CHECK : same team
-                if (controller.Team == team)
+                if (controller.Team == team || !controller.Life.IsAlive)
                     continue;
-
-                // CHECK : no alive
-                if (!controller.Life.IsAlive)
-                    continue;
-
-                // return this controller if can be targetted
-                if (! controller.StateHandler.IsUnTargetable)
+                if (controller.StateHandler.IsTaunting && !controller.StateHandler.IsUnTargetable)
                     return controller;
-
-                // save this as current returned controller but keep looking for a better fit
-                returnedController = controller;
+            }
+            foreach (Controller controller in m_Spawns.Values)
+            {
+                if (controller == null || !controller.gameObject.activeInHierarchy || !controller.IsActive)
+                    continue;
+                if (controller.Team == team || !controller.Life.IsAlive)
+                    continue;
+                if (controller.StateHandler.IsTaunting && !controller.StateHandler.IsUnTargetable)
+                    return controller;
             }
 
-            // get first targetable spawn
-            var spawnController = GetFirstSpawn(team, ally: false);
-            if (spawnController != null && ! spawnController.StateHandler.IsUnTargetable) 
+            // Second pass: first targetable enemy (controller then spawn)
+            foreach (Controller controller in m_Controllers.Values)
             {
-                returnedController = spawnController;
+                if (controller == null || !controller.gameObject.activeInHierarchy || !controller.IsActive)
+                    continue;
+                if (controller.Team == team || !controller.Life.IsAlive)
+                    continue;
+                if (!controller.StateHandler.IsUnTargetable)
+                    return controller;
+                returnedController = controller;
+            }
+            foreach (Controller controller in m_Spawns.Values)
+            {
+                if (controller == null || !controller.gameObject.activeInHierarchy || !controller.IsActive)
+                    continue;
+                if (controller.Team == team || !controller.Life.IsAlive)
+                    continue;
+                if (!controller.StateHandler.IsUnTargetable)
+                    return controller;
+                returnedController = controller;
             }
 
             return returnedController;
@@ -927,25 +942,43 @@ namespace Game
 
         public List<Controller> GetAllEnemies(int team, bool spawnIncluded = true)
         {
-            var controllers = m_Controllers.Values.Where(controller => controller.Team != team).ToList();
-            if (spawnIncluded)
-                controllers.AddRange(m_Spawns.Values.Where(controller => controller.Team != team).ToList());
+            GetAllEnemies(team, m_GetEnemiesBuffer, spawnIncluded);
+            return new List<Controller>(m_GetEnemiesBuffer);
+        }
 
-            return controllers;
+        /// <summary> Fills the list with enemies (no allocation). List is cleared first. </summary>
+        public void GetAllEnemies(int team, List<Controller> listToFill, bool spawnIncluded = true)
+        {
+            listToFill.Clear();
+            foreach (Controller c in m_Controllers.Values)
+                if (c != null && c.Team != team)
+                    listToFill.Add(c);
+            if (spawnIncluded)
+                foreach (Controller c in m_Spawns.Values)
+                    if (c != null && c.Team != team)
+                        listToFill.Add(c);
         }
 
         public List<Controller> GetAllTauntingEnemies(int team, bool spawnIncluded = true)
         {
-            var controllers = GetAllEnemies(team, spawnIncluded);
-            if (controllers.Count == 0) 
-                return controllers;
-
-            return controllers.Where(controller => controller.StateHandler.IsTaunting && ! controller.StateHandler.IsUnTargetable).ToList();
+            GetAllEnemies(team, m_GetEnemiesBuffer, spawnIncluded);
+            m_GetEnemiesBuffer.RemoveAll(c => !c.StateHandler.IsTaunting || c.StateHandler.IsUnTargetable);
+            return new List<Controller>(m_GetEnemiesBuffer);
         }
 
         public List<Controller> GetAllAllies(int team)
         {
-            return m_Controllers.Values.Where(controller => controller.Team == team).ToList();
+            GetAllAllies(team, m_GetAlliesBuffer);
+            return new List<Controller>(m_GetAlliesBuffer);
+        }
+
+        /// <summary> Fills the list with allies (no allocation). List is cleared first. </summary>
+        public void GetAllAllies(int team, List<Controller> listToFill)
+        {
+            listToFill.Clear();
+            foreach (Controller c in m_Controllers.Values)
+                if (c != null && c.Team == team)
+                    listToFill.Add(c);
         }
 
         public bool HasPlayer(ulong clientId)
@@ -955,40 +988,43 @@ namespace Game
 
         public List<Controller> GetAllSpawns(int team, bool ally = false)
         {
-            return m_Spawns.Values.Where(controller => ally == (controller.Team == team)).ToList();
+            GetAllSpawns(team, m_GetSpawnsBuffer, ally);
+            return new List<Controller>(m_GetSpawnsBuffer);
+        }
+
+        /// <summary> Fills the list with spawns (no allocation). List is cleared first. </summary>
+        public void GetAllSpawns(int team, List<Controller> listToFill, bool ally = false)
+        {
+            listToFill.Clear();
+            foreach (Controller c in m_Spawns.Values)
+                if (c != null && (ally == (c.Team == team)))
+                    listToFill.Add(c);
         }
 
         public Controller GetFirstSpawn(int team, bool ally = false)
         {
-            var spawns = GetAllSpawns(team, ally);
-            if (spawns == null || spawns.Count == 0)
+            GetAllSpawns(team, m_GetSpawnsBuffer, ally);
+            if (m_GetSpawnsBuffer.Count == 0)
                 return null;
-
-            return spawns[0];
+            return m_GetSpawnsBuffer[0];
         }
 
         public bool TryFindSpellInArena(string spellName, out Spell spell, Controller controller = null)
         {
             spell = null;
 
-            // Finds all active Spell components in the scene
-            List<Spell> spells = FindObjectsByType<Spell>(FindObjectsSortMode.InstanceID).ToList();
-            spells = spells
-                .Where(s => s.SpellData != null && s.SpellData.Name == spellName)
-                .ToList();
-
-            if (spells.Count == 0)
+            if (!IsServer || !m_ActiveSpellsByName.TryGetValue(spellName, out List<Spell> spells) || spells.Count == 0)
                 return false;
 
             if (controller == null)
             {
-                spell = spells.First(); 
+                spell = spells[0];
                 return true;
             }
 
             foreach (Spell tempSpell in spells)
             {
-                if (tempSpell.Caster == controller)
+                if (tempSpell != null && tempSpell.Caster == controller)
                 {
                     spell = tempSpell;
                     return true;
@@ -996,6 +1032,34 @@ namespace Game
             }
 
             return false;
+        }
+
+        /// <summary> [SERVER] Register an active spell for fast lookup. Called from Spell.Initialize. </summary>
+        public void RegisterSpell(Spell spell, string spellName)
+        {
+            if (!IsServer || spell == null || string.IsNullOrEmpty(spellName))
+                return;
+
+            if (!m_ActiveSpellsByName.TryGetValue(spellName, out List<Spell> list))
+            {
+                list = new List<Spell>();
+                m_ActiveSpellsByName[spellName] = list;
+            }
+            if (!list.Contains(spell))
+                list.Add(spell);
+        }
+
+        /// <summary> [SERVER] Unregister a spell when it is despawned. Called from Spell.OnDespawned. </summary>
+        public void UnregisterSpell(Spell spell)
+        {
+            if (!IsServer || spell == null || m_ActiveSpellsByName == null)
+                return;
+
+            foreach (List<Spell> list in m_ActiveSpellsByName.Values)
+            {
+                if (list.Remove(spell))
+                    break;
+            }
         }
 
 

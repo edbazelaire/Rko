@@ -1,6 +1,7 @@
-﻿using Data;
+using Data;
 using Enums;
 using System;
+using System.Collections.Generic;
 using Tools;
 using UnityEngine;
 
@@ -17,6 +18,7 @@ namespace Game.Spells
         protected Vector3   m_OriginalPosition;
         private Rigidbody2D m_RigidBody;
         private Vector2     m_LastPosition;
+        List<Controller> m_AllControllersBuffer = new List<Controller>();
 
         public Vector3 OriginalPosition => m_OriginalPosition;
         public virtual float Speed => m_SpellData.Speed;
@@ -147,8 +149,11 @@ namespace Game.Spells
             }
 
             // if "ApplyIfNotHitting" : apply effects to every not hit targets
-            var allControllers = m_SpellData.IsEnemyTarget ? GameManager.Instance.GetAllEnemies(m_Team) : GameManager.Instance.GetAllAllies(m_Team);
-            foreach (Controller controller in allControllers)
+            if (m_SpellData.IsEnemyTarget)
+                GameManager.Instance.GetAllEnemies(m_Team, m_AllControllersBuffer);
+            else
+                GameManager.Instance.GetAllAllies(m_Team, m_AllControllersBuffer);
+            foreach (Controller controller in m_AllControllersBuffer)
             {
                 OnHit(controller);
             }

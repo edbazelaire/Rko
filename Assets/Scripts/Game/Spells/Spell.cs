@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Game;
+using Assets.Scripts.Game;
 using Assets.Scripts.Game.Pool;
 using Assets.Scripts.Managers.Sound;
 using Data;
@@ -106,6 +106,9 @@ namespace Game.Spells
         {
             base.OnDespawned();
 
+            if (GameManager.Exists && GameManager.Instance != null)
+                GameManager.Instance.UnregisterSpell(this);
+
             // make sure is over is called
             m_IsOver = true;
 
@@ -199,6 +202,9 @@ namespace Game.Spells
             // -- also increase counter of TriggerEffect that procced the effect
             if (m_SpellData.Parent != m_SpellData.Name && (SpellLoader.IsRune(m_SpellData.Parent) || SpellLoader.IsPowerUp(m_SpellData.Parent)))
                 GameAnalyticsManager.Instance.IncreaseCounter(m_Caster.IsSpawn ? m_Caster.SpawnOwner.PlayerId : m_Caster.PlayerId, m_SpellData.Parent);
+
+            if (GameManager.Exists && GameManager.Instance != null)
+                GameManager.Instance.RegisterSpell(this, m_SpellData.Name);
         }
 
         /// <summary>

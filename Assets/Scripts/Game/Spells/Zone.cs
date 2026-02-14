@@ -1,4 +1,4 @@
-﻿using Data;
+using Data;
 using Enums;
 using System.Collections;
 using System.Collections.Generic;
@@ -23,8 +23,12 @@ namespace Game.Spells
         float m_CollisionCheckRefreshTimer;
         /// <summary> dictionary of players touched by the spell linked to their tick timer (before re-appliance) </summary>
         Dictionary<ulong, float> m_PlayersAffected;
+        /// <summary> reusable buffer for iterating m_PlayersAffected keys without allocating each frame </summary>
+        List<ulong> m_KeysBuffer;
         /// <summary> list of players in the zone </summary>
         List<Controller> m_PlayersInZone;
+        /// <summary> reusable buffer for GetAllEnemies/GetAllAllies to avoid allocation </summary>
+        List<Controller> m_AllControllersBuffer;
         /// <summary> calculates number of players in zone right now (for OnTrigger event purpuses) </summary>
         protected int m_NPlayersInZone => m_PlayersInZone.Count();
 
@@ -42,6 +46,8 @@ namespace Game.Spells
         public override void Initialize(ulong clientId, Vector3 target, SpellData spellData)
         {
             m_PlayersAffected = new Dictionary<ulong, float>();
+            m_KeysBuffer = new List<ulong>();
+            m_AllControllersBuffer = new List<Controller>();
             m_PlayersInZone = new();
             m_CollisionCheckRefreshTimer = 0;
 
@@ -79,10 +85,13 @@ namespace Game.Spells
             }
             else
             {
-                var allControllers = m_SpellData.IsEnemyTarget ? GameManager.Instance.GetAllEnemies(m_Caster.Team) : GameManager.Instance.GetAllAllies(m_Caster.Team);
-                hitControllers = allControllers.Where(
-                    controller => hitControllers.Any(hitController => hitController.PlayerId == controller.PlayerId)
-                ).ToList();
+                if (m_SpellData.IsEnemyTarget)
+                    GameManager.Instance.GetAllEnemies(m_Caster.Team, m_AllControllersBuffer);
+                else
+                    GameManager.Instance.GetAllAllies(m_Caster.Team, m_AllControllersBuffer);
+                hitControllers = m_AllControllersBuffer
+                    .Where(controller => hitControllers.Any(hitController => hitController.PlayerId == controller.PlayerId))
+                    .ToList();
             }
 
             foreach (Controller controller in hitControllers)
@@ -154,9 +163,10 @@ namespace Game.Spells
             // check who's in the collision
             CheckCollision();
 
-            // update time before re-appliance to each players affected
-            var keys = m_PlayersAffected.Keys.ToList();
-            foreach (ulong clientId in keys)
+            // update time before re-appliance to each players affected (reuse buffer to avoid allocation per frame)
+            m_KeysBuffer.Clear();
+            m_KeysBuffer.AddRange(m_PlayersAffected.Keys);
+            foreach (ulong clientId in m_KeysBuffer)
             {
                 m_PlayersAffected[clientId] -= Time.deltaTime;
                 if (m_PlayersAffected[clientId] <= 0f)
