@@ -27,8 +27,6 @@ namespace Game.Spells
         List<ulong> m_KeysBuffer;
         /// <summary> list of players in the zone </summary>
         List<Controller> m_PlayersInZone;
-        /// <summary> reusable buffer for GetAllEnemies/GetAllAllies to avoid allocation </summary>
-        List<Controller> m_AllControllersBuffer;
         /// <summary> calculates number of players in zone right now (for OnTrigger event purpuses) </summary>
         protected int m_NPlayersInZone => m_PlayersInZone.Count();
 

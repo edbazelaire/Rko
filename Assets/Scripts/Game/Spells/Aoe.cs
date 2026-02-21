@@ -19,7 +19,7 @@ namespace Game.Spells
         AoeData m_SpellData => m_BaseSpellData as AoeData;
 
         readonly NetworkVariable<float> m_Radius = new NetworkVariable<float>();
-        List<Controller> m_AllControllersBuffer = new List<Controller>();
+        protected List<Controller> m_AllControllersBuffer = new List<Controller>();
 
         public IReplicatedVar<float> Radius { get; protected set; }
 

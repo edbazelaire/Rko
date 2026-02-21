@@ -1,0 +1,1 @@
+Print in the console : "Hello world"

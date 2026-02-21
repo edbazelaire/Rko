@@ -49,9 +49,10 @@ namespace Game.UI
             gameObject.SetActive(activate);
         }
 
-        public IEnumerator ClickOn(GameObject gameObject)
+        public IEnumerator ClickOn(GameObject gameObject, Vector3? clickOffset = null)
         {
-            transform.position = gameObject.transform.position + m_ClickOffset;
+            clickOffset ??= m_ClickOffset;
+            transform.position = gameObject.transform.position + clickOffset.Value;
             var button = Finder.FindComponent<Button>(gameObject, throwError: false);
             bool hasButton = button != null;
             if (! hasButton)

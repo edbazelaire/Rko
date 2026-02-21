@@ -1,4 +1,4 @@
-﻿using Analytics.Events;
+using Analytics.Events;
 using Assets;
 using Assets.Scripts.Managers;
 using Data.GameManagement;
@@ -495,6 +495,7 @@ namespace Save
 
         // KEYS ------------------------------------
         public const string KEY_TUTO_DONE               = "TutoDone";
+        public const string KEY_TUTO_FIGHT_DONE         = "TutoFightDone";
         public const string KEY_PSEUDO_CHANGED          = "PseudoChanged";
         public const string KEY_GAMER_TAG               = "GamerTag";
         public const string KEY_IS_ADMIN                = "IsAdmin";
@@ -537,6 +538,7 @@ namespace Save
         /// <summary> default data for the Inventory </summary>
         protected override Dictionary<string, object> m_Data { get; set; } = new Dictionary<string, object>() {
             { KEY_TUTO_DONE,                false                                               },
+            { KEY_TUTO_FIGHT_DONE,          false                                               },
             { KEY_PSEUDO_CHANGED,           false                                               },
             { KEY_GAMER_TAG,                ""                                                  },
             { KEY_IS_ADMIN,                 false                                               },
@@ -564,6 +566,7 @@ namespace Save
         public static string                GamerTag            => (string)Instance.m_Data[KEY_GAMER_TAG];
         public static string                Tag                 => (string)Instance.m_Data[KEY_TAG];
         public static bool                  TutoDone            => (bool)Instance.m_Data[KEY_TUTO_DONE];
+        public static bool                  TutoFightDone       => (bool)Instance.m_Data[KEY_TUTO_FIGHT_DONE];
         public static bool                  PseudoChanged       => (bool)Instance.m_Data[KEY_PSEUDO_CHANGED];
         public static string                Token               => (string)Instance.m_Data[KEY_TOKEN];
         public static string                AuthToken           => (string)Instance.m_Data[KEY_AUTH_TOKEN];
@@ -1165,6 +1168,7 @@ namespace Save
                 // List of un-resetable data
                 case KEY_PSEUDO_CHANGED:
                 case KEY_TUTO_DONE:
+                case KEY_TUTO_FIGHT_DONE:
                 case KEY_IS_ADMIN:
                     break;
 
@@ -1447,15 +1451,15 @@ namespace Save
         void CheckTuto()
         {
             if (! m_Data.ContainsKey(KEY_TUTO_DONE))
-            {
                 m_Data[KEY_TUTO_DONE] = false;
-            }
+            if (! m_Data.ContainsKey(KEY_TUTO_FIGHT_DONE))
+                m_Data[KEY_TUTO_FIGHT_DONE] = false;
 
             if (TutoDone)
                 return;
 
             // if player has played already, no need to display tuto
-            if (AccountLevel > 1)
+            if (AccountLevel > 1 && ! Main.ForceIsNewPlayer)
             {
                 m_Data[KEY_TUTO_DONE] = true;
                 SaveValue(KEY_TUTO_DONE);

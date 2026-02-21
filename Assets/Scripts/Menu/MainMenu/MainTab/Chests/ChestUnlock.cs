@@ -1,4 +1,4 @@
-﻿using Assets;
+using Assets;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Menu.MainMenu.MainTab.Chests;
 using Data.GameManagement;
@@ -14,7 +14,6 @@ using UnityEngine.UI;
 
 namespace Menu
 {
-
     public class ChestUnlock : MObject
     {
         #region Members
@@ -44,6 +43,9 @@ namespace Menu
 
         ChestData m_ChestData   => (ChestsCloudData.Instance.Data[ChestsCloudData.KEY_CHESTS] as ChestData[])[m_Index];
         EChestLockState m_State => m_ChestData == null ? EChestLockState.Empty : m_ChestData.GetState();
+
+        public bool IsReady => m_State == EChestLockState.Ready;
+        public GameObject ButtonGameObject => m_Button != null ? m_Button.gameObject : null;
         int UnlockedIn => (int)(m_ChestData.GetUnlockedTime() - DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
 

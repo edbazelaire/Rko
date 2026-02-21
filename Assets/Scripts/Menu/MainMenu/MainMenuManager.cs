@@ -1,4 +1,5 @@
-﻿using Menu.Common.Notifications;
+using Enums;
+using Menu.Common.Notifications;
 using Save;
 using System;
 using System.Collections;
@@ -56,6 +57,17 @@ namespace Menu.MainMenu
         {
             m_MainSelectionTab = Finder.Find("MainMenuSelection");
             m_TabButtonsContainer = Finder.Find(m_MainSelectionTab, "Content");
+        }
+
+        protected virtual void Start()
+        {
+            ErrorHandler.Log(() => "[MainMenuManager] Starting MainMenuManager", ELogTag.GameSystem);
+
+            if (ProfileCloudData.TutoFightDone && !ProfileCloudData.TutoDone && TutoMainMenuManager.Instance == null)
+            {
+                ErrorHandler.Log(() => "[TutoMainMenu] MainMenuManager: adding TutoMainMenuManager component", ELogTag.GameSystem);
+                gameObject.AddComponent<TutoMainMenuManager>();
+            }
         }
 
         #endregion

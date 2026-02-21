@@ -1,4 +1,4 @@
-﻿using Analytics.Events;
+using Analytics.Events;
 using Assets;
 using Assets.Scripts.Game;
 using Assets.Scripts.Managers;
@@ -183,6 +183,13 @@ public class EndGameUI : MObject
         // stop animation coroutine
         StopAllCoroutines();
 
+        // if Tuto is done, save as completed
+        if (LobbyHandler.Instance.IsTuto)
+        {
+            ProfileCloudData.Instance.SetData(ProfileCloudData.KEY_TUTO_FIGHT_DONE, true, true);
+            LobbyHandler.Instance.IsTuto = false;
+        }
+
         // reset network manager
         NetworkManager.Singleton.Shutdown();
 
@@ -348,7 +355,11 @@ public class EndGameUI : MObject
                 ErrorHandler.Warning("Multiple chests provided to EndGameUI : case not handled");
 
             m_ChestRewardIcon.sprite = AssetLoader.LoadChestIcon(chests[0]);
-            InventoryManager.AddChest(chests[0]);
+            // Tutorial: add chest already Ready (UnlockedAt = 1 = past) so player can open it immediately on MainMenu
+            var chestData = LobbyHandler.Instance.IsTuto
+                ? new ChestData(chests[0], 1)
+                : new ChestData(chests[0]);
+            InventoryManager.AddChest(chestData);
         }
 
         // ----------------------------------------------------------------------------
@@ -497,11 +508,6 @@ public class EndGameUI : MObject
 
             // no progression on training game
             case EGameMode.Training:
-                if (LobbyHandler.Instance.IsTuto)
-                {
-                    ProfileCloudData.Instance.SetData(ProfileCloudData.KEY_TUTO_DONE, true, true);
-                    LobbyHandler.Instance.IsTuto = false;
-                }
                 break;
 
             default:

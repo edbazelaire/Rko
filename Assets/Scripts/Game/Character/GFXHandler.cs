@@ -176,15 +176,15 @@ namespace Game.Character
                 return;
             
             target.mass                     = source.mass;
-            target.linearDamping                     = source.linearDamping;
-            target.angularDamping              = source.angularDamping;
+            target.linearDamping            = source.linearDamping;
+            target.angularDamping           = source.angularDamping;
             target.gravityScale             = source.gravityScale;
             target.collisionDetectionMode   = source.collisionDetectionMode;
             target.interpolation            = source.interpolation;
             target.constraints              = source.constraints;
             target.sleepMode                = source.sleepMode;
             target.useAutoMass              = source.useAutoMass;
-            target.isKinematic              = source.isKinematic;
+            target.bodyType                 = source.bodyType;
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-﻿using Data;
+using Data;
 using Enums;
 using Game.Loaders;
 using Game.Spells;
@@ -349,8 +349,13 @@ namespace Game
 
             void OnSpellSpawn(Spell spell)
             {
-                // check is right spell
-                if (spell.SpellData.Spell != ESpell.FireBarrage || spell.Caster.PlayerId != m_Enemy.Controller.PlayerId)
+                // check is right caster
+                if (spell.Caster.PlayerId != m_Enemy.Controller.PlayerId)
+                    return;
+                // FireBarrage spawns projectiles via ProjectileData; each projectile has Parent == "FireBarrage", not Spell == FireBarrage
+                bool isFireBarrageOrProjectile = spell.SpellData.Spell == ESpell.FireBarrage
+                    || spell.SpellData.Parent == ESpell.FireBarrage.ToString();
+                if (!isFireBarrageOrProjectile)
                     return;
 
                 spell.OnSpellEvent += OnSpellEvent;

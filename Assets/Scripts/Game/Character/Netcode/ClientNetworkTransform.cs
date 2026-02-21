@@ -1,5 +1,4 @@
 ﻿using Unity.Netcode.Components;
-using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Scripts.Game.Character.Netcode
@@ -13,7 +12,7 @@ namespace Assets.Scripts.Game.Character.Netcode
     [DisallowMultipleComponent]
     public class ClientNetworkTransform : NetworkTransform
     {
-        public AuthorityMode AuthorityMode = AuthorityMode.Client;
+        public new AuthorityMode AuthorityMode = AuthorityMode.Client;
 
         protected override bool OnIsServerAuthoritative() => AuthorityMode == AuthorityMode.Server;
     }

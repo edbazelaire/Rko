@@ -99,8 +99,8 @@ namespace Assets
         public static Canvas            Canvas                  => Instance.m_Canvas;
         public static bool              ActivateSaveOnClose     => Instance.m_ActivateSaveOnClose;
         public static bool              ForceIsNewPlayer        => Instance.m_ForceIsNewPlayer;
-        //public static bool              IsNewPlayer             => ForceIsNewPlayer || ! ProfileCloudData.TutoDone;
-        public static bool IsNewPlayer => false;
+        public static bool              IsNewPlayer             => ForceIsNewPlayer || ! ProfileCloudData.TutoFightDone;
+        // public static bool IsNewPlayer => false;
         public static List<ELogTag>     LogTags                 => s_Instance != null ? Instance.m_LogTags : new List<ELogTag>();
         public static bool CheatMode
         {

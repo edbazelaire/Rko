@@ -9,8 +9,6 @@ public class FocusManager : MonoBehaviour
 
     private void Start()
     {
-        m_MaskMaterial = Finder.FindComponent<Image>(gameObject).material;
-
         Activate(false);
     }
 
@@ -27,6 +25,7 @@ public class FocusManager : MonoBehaviour
 
     private IEnumerator AnimateFocus(GameObject target, float size = 0.3f)
     {
+        m_MaskMaterial = Finder.FindComponent<Image>(gameObject).material;
         RectTransform targetRect = target.GetComponent<RectTransform>();
         Canvas canvas = target.GetComponentInParent<Canvas>();
         Vector2 normalizedPos;
