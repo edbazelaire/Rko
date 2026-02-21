@@ -9,7 +9,7 @@ namespace Game.Spells
     {
         #region Members
 
-        const float c_JumpReturnFailsafeDelay = 3.5f;
+        const float c_JumpReturnFailsafeDelay = 1f;
 
         JumpData    m_SpellData => m_BaseSpellData as JumpData;
         float       m_CharacterOffsetY;

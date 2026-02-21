@@ -259,6 +259,7 @@ namespace Menu
 
                     m_ChestData.SetUnlockTime();
                     ChestsCloudData.Instance.SaveValue(ChestsCloudData.KEY_CHESTS);
+                    MobileNotificationManager.RefreshChestReadyNotification();
                     return;
 
                 case EChestLockState.Unlocking:

@@ -1,4 +1,5 @@
-﻿using Analytics.Events;
+using Analytics.Events;
+using Assets.Scripts.Managers;
 using Data.GameManagement;
 using Enums;
 using Game.Loaders;
@@ -337,6 +338,7 @@ namespace Inventory
 
             // call for async save of the updated value
             ChestsCloudData.Instance.SaveValue(ChestsCloudData.KEY_CHESTS);
+            MobileNotificationManager.RefreshChestReadyNotification();
         }
 
         public static void RemoveChestAtIndex(int index)
@@ -358,6 +360,7 @@ namespace Inventory
             // remove chest data from cloud data
             Chests[index] = null;
             ChestsCloudData.Instance.SaveValue(ChestsCloudData.KEY_CHESTS);
+            MobileNotificationManager.RefreshChestReadyNotification();
         } 
 
         #endregion

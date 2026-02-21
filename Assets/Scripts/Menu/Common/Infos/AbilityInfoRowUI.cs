@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Managers;
+using Assets.Scripts.Managers;
 using Data;
 using Enums;
 using Game.Loaders;
@@ -18,7 +18,6 @@ namespace Menu.Common.Infos
         [SerializeField] GameObject m_TemplateIconDisplayer;
 
         GameObject m_StateEffectsContainer;
-        Button m_Button;
 
         SpellData m_SpellData;
 

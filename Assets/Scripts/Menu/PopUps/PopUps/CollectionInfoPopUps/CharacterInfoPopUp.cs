@@ -1,4 +1,4 @@
-﻿using Assets;
+using Assets;
 using Assets.Scripts.Game.Loaders.Filters;
 using Assets.Scripts.Managers;
 using Data;
@@ -25,13 +25,14 @@ namespace Menu.PopUps
 
         // =========================================================================================
         // GameObjects & Components
-        protected TMP_Text              m_DescriptionText;
-        protected StateEffectsInfoRow   m_StateEffectsInfoRow;
-        protected GameObject            m_SpellsContent;
-        protected GameObject            m_MasteryContent;
-        protected AbilityInfoRowUI      m_TemplateAbilityInfoRowUI;
-        protected Button                m_MasteryUpgradeButton;
-        protected TMP_Text              m_MasteryUpgradeCostText;
+        protected TMP_Text                  m_DescriptionText;
+        protected StateEffectsInfoRow       m_StateEffectsInfoRow;
+        protected GameObject                m_SpellsContent;
+        protected GameObject                m_MasteryContent;
+        protected AbilityInfoRowUI          m_TemplateAbilityInfoRowUI;
+        protected Button                    m_MasteryUpgradeButton;
+        protected TMP_Text                  m_MasteryUpgradeCostText;
+        protected CharacterInfosTabManager  m_CharacterInfosTabManager;
 
         // =========================================================================================
         // Local Variables
@@ -54,6 +55,7 @@ namespace Menu.PopUps
             m_DescriptionText           = Finder.FindComponent<TMP_Text>(gameObject, "Description");
             m_StateEffectsInfoRow       = Finder.FindComponent<StateEffectsInfoRow>(gameObject);
             m_SpellsContent             = Finder.Find(gameObject, "SpellsContent");
+            m_CharacterInfosTabManager  = Finder.FindComponent<CharacterInfosTabManager>(gameObject);
 
             // -- mastery content
             m_MasteryContent            = Finder.Find(gameObject, "MasteryContent", false);
@@ -70,6 +72,9 @@ namespace Menu.PopUps
             SetUpAbilities();
             SetUpSpecialEffects();
             RefreshMasteryDisplay();
+
+            // Spells content is often created while its tab is inactive: force one delayed rebuild.
+            CoroutineManager.DelayMethod(RefreshSpellsScroll);
         }
 
         #endregion
@@ -154,6 +159,33 @@ namespace Menu.PopUps
                 AbilityInfoRowUI abilityInfoRow = Instantiate(m_TemplateAbilityInfoRowUI, m_SpellsContent.transform);
                 abilityInfoRow.Initialize(ability, m_Level);
             }
+
+            RefreshSpellsScroll();
+        }
+
+        void RefreshSpellsScroll()
+        {
+            if (m_SpellsContent == null)
+                return;
+
+            var contentRect = m_SpellsContent.GetComponent<RectTransform>();
+            var scrollRect = m_SpellsContent.GetComponentInParent<ScrollRect>(true);
+            if (contentRect != null)
+                LayoutRebuilder.MarkLayoutForRebuild(contentRect);
+
+            if (scrollRect == null)
+                return;
+
+            if (scrollRect.content != null)
+                LayoutRebuilder.MarkLayoutForRebuild(scrollRect.content);
+
+            if (scrollRect.viewport != null)
+                LayoutRebuilder.MarkLayoutForRebuild(scrollRect.viewport);
+
+            LayoutRebuilder.MarkLayoutForRebuild(scrollRect.GetComponent<RectTransform>());
+            Canvas.ForceUpdateCanvases();
+            scrollRect.StopMovement();
+            scrollRect.enabled = true;
         }
 
         #endregion
@@ -266,6 +298,9 @@ namespace Menu.PopUps
 
             if (m_MasteryUpgradeButton != null)
                 m_MasteryUpgradeButton.onClick.AddListener(OnMasteryUpgradeButtonClicked);
+
+            if (m_CharacterInfosTabManager != null)
+                m_CharacterInfosTabManager.TabSelectedEvent += OnTabSelected;
         }
 
         protected override void UnRegisterListeners()
@@ -274,6 +309,9 @@ namespace Menu.PopUps
 
             if (m_MasteryUpgradeButton != null)
                 m_MasteryUpgradeButton.onClick.RemoveAllListeners();
+
+            if (m_CharacterInfosTabManager != null)
+                m_CharacterInfosTabManager.TabSelectedEvent -= OnTabSelected;
         }
 
         protected override void OnCollectableDataChanged(SCollectableCloudData collectableCloudData)
@@ -288,6 +326,15 @@ namespace Menu.PopUps
         void OnMasteryUpgradeButtonClicked()
         {
             ScreenManager.ConfirmUpgradeMastery(m_Collectable, m_Mastery + 1, m_UpgradeMasteryPrice);
+        }
+
+        void OnTabSelected(string tabName)
+        {
+            if (tabName != ECharacterInfosTabs.Spells.ToString())
+                return;
+
+            RefreshSpellsScroll();
+            CoroutineManager.DelayMethod(RefreshSpellsScroll);
         }
 
         #endregion

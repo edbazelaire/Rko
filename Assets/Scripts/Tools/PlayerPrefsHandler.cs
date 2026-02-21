@@ -1,4 +1,5 @@
-﻿using Data.ArenaEffects.ArenaMods;
+using Data.ArenaEffects.ArenaMods;
+using Assets.Scripts.Managers;
 using Enums;
 using Save;
 using Save.Data.Progression.Structs;
@@ -31,6 +32,7 @@ namespace Tools
         TrainingReactionTime,
         TrainingMovementTime,
         TrainingMovementRefresh,
+        ChestReadyNotificationsEnabled,
     }
 
     public enum EDebugOption
@@ -224,6 +226,19 @@ namespace Tools
         public static bool GetWarningAccepted()
         {
             return PlayerPrefs.GetInt(EPlayerPref.WarningMessageAccepted.ToString(), 0) > 0;
+        }
+
+        public static bool AreChestReadyNotificationsEnabled()
+        {
+            return PlayerPrefs.GetInt(EPlayerPref.ChestReadyNotificationsEnabled.ToString(), 1) == 1;
+        }
+
+        public static void SetChestReadyNotificationsEnabled(bool enabled)
+        {
+            PlayerPrefs.SetInt(EPlayerPref.ChestReadyNotificationsEnabled.ToString(), enabled ? 1 : 0);
+            PlayerPrefs.Save();
+
+            MobileNotificationManager.RefreshChestReadyNotification();
         }
 
         public static void SetDebug(EDebugOption option, bool activate)
