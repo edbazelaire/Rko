@@ -1,5 +1,6 @@
-﻿using Data;
+using Data;
 using Enums;
+using System.Collections;
 using UnityEngine;
 
 namespace Game.Spells
@@ -8,8 +9,11 @@ namespace Game.Spells
     {
         #region Members
 
+        const float c_JumpReturnFailsafeDelay = 3.5f;
+
         JumpData    m_SpellData => m_BaseSpellData as JumpData;
         float       m_CharacterOffsetY;
+        Coroutine   m_ReturnFailsafeCoroutine;
 
         public override float Speed => m_SpellData.Speed * Mathf.Max(0.2f, m_Caster.Movement.CalculateRawSpeed());
 
@@ -38,6 +42,9 @@ namespace Game.Spells
                 m_Caster.StateHandler.SetStateJump(true);
                 m_Caster.SpellHandler.ForceBlockCast(true);
                 m_Caster.Movement.ForceBlockMovement(true);
+
+                // Safety net: if jump lifecycle gets interrupted, force a return to origin.
+                m_ReturnFailsafeCoroutine = StartCoroutine(StartReturnFailsafe());
             }
 
             // play corresponding animation
@@ -71,6 +78,12 @@ namespace Game.Spells
 
         public override void OnDespawned()
         {
+            if (m_ReturnFailsafeCoroutine != null)
+            {
+                StopCoroutine(m_ReturnFailsafeCoroutine);
+                m_ReturnFailsafeCoroutine = null;
+            }
+
             base.OnDespawned();
 
             // cancel animation
@@ -87,6 +100,29 @@ namespace Game.Spells
             m_Caster.StateHandler.SetStateJump(false);
             m_Caster.SpellHandler.ForceBlockCast(false);
             m_Caster.Movement.ForceBlockMovement(false);
+        }
+
+        IEnumerator StartReturnFailsafe()
+        {
+            yield return new WaitForSeconds(c_JumpReturnFailsafeDelay);
+
+            if (!IsServer || m_Caster == null)
+                yield break;
+
+            if (!m_Caster.StateHandler.HasState(EStateEffect.Jump))
+                yield break;
+
+            // Force restore of player state and position if jump never properly ended.
+            m_OriginalPosition.y = 0.5f;
+            m_Caster.transform.position = m_OriginalPosition;
+            m_Caster.Collider.enabled = true;
+            m_Caster.GFXHandler.HideCharacterClientRPC(false);
+            m_Caster.StateHandler.SetStateJump(false);
+            m_Caster.SpellHandler.ForceBlockCast(false);
+            m_Caster.Movement.ForceBlockMovement(false);
+
+            if (!m_IsOver)
+                Terminate(instant: true);
         }
 
         #endregion
