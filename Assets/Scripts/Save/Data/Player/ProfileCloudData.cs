@@ -636,7 +636,7 @@ namespace Save
             // update value in AuthService
             AuthenticationService.Instance.UpdatePlayerNameAsync(gamerTag);
 
-            MAnalytics.SendEvent(new PlayerDataEvent(gamerTag, Token, Region));
+            MAnalytics.SendEvent(new PlayerDataEvent(gamerTag, Region));
             PseudoChangedEvent?.Invoke();
         }
 

@@ -1,4 +1,4 @@
-﻿using Data;
+using Data;
 using Data.GameManagement;
 using Enums;
 using Game.Loaders;
@@ -150,9 +150,9 @@ namespace Menu.MainMenu
         {
             base.RegisterListeners();
 
-            CharacterBuildsCloudData.SelectedCharacterChangedEvent += RefreshSpellItemsDisplay;
-            CharacterBuildsCloudData.CurrentBuildIndexChangedEvent += RefreshSpellItemsDisplay;
-            //CharacterBuildsCloudData.CurrentBuildValueChangedEvent += RefreshSpellItemsDisplay;
+            // CharacterBuildsCloudData.SelectedCharacterChangedEvent += RefreshSpellItemsDisplay;
+            // CharacterBuildsCloudData.CurrentBuildIndexChangedEvent += RefreshSpellItemsDisplay;
+            // CharacterBuildsCloudData.CurrentBuildValueChangedEvent += RefreshSpellItemsDisplay;
             InventoryManager.UnlockCollectableEvent += OnUnlockedSpell;
             m_SpellFiltersSection.FilterChangedEvent += OnFilterChanged;
         }
@@ -161,9 +161,9 @@ namespace Menu.MainMenu
         {
             base.UnRegisterListeners();
 
-            CharacterBuildsCloudData.SelectedCharacterChangedEvent -= RefreshSpellItemsDisplay;
-            CharacterBuildsCloudData.CurrentBuildIndexChangedEvent -= RefreshSpellItemsDisplay;
-            //CharacterBuildsCloudData.CurrentBuildValueChangedEvent -= RefreshSpellItemsDisplay;
+            // CharacterBuildsCloudData.SelectedCharacterChangedEvent -= RefreshSpellItemsDisplay;
+            // CharacterBuildsCloudData.CurrentBuildIndexChangedEvent -= RefreshSpellItemsDisplay;
+            // CharacterBuildsCloudData.CurrentBuildValueChangedEvent -= RefreshSpellItemsDisplay;
             InventoryManager.UnlockCollectableEvent -= OnUnlockedSpell;
             m_SpellFiltersSection.FilterChangedEvent -= OnFilterChanged;
             m_SpellFiltersSection.SearchInputField.onValueChanged.RemoveListener(OnSearchValueChanged);

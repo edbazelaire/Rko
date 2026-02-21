@@ -385,6 +385,7 @@ public class EndGameUI : MObject
 
         // init image
         m_PowerOrbContainer.Initialize(currentPowerOrb.Clone(), activateIdle: false);
+        m_PowerOrbContainer.transform.localScale *= 5f;
 
         // check if a bonus star has been provided
         if (m_IsBossFight && currentPowerOrb.TryUpgradeRarety())

@@ -205,7 +205,7 @@ namespace Assets.Scripts.Managers
             var test = true;
 
             // register GamerTag and Token
-            MAnalytics.SendEvent(new PlayerDataEvent(ProfileCloudData.GamerTag, ProfileCloudData.Token, ProfileCloudData.Region));
+            MAnalytics.SendEvent(new PlayerDataEvent(ProfileCloudData.GamerTag, ProfileCloudData.Region));
 
             // save version
             if (!SetVersion("0.1.5"))
