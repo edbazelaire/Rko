@@ -1,4 +1,4 @@
-﻿using Data.GameManagement;
+using Data.GameManagement;
 using Enums;
 using Inventory;
 using Menu.Common.Buttons;
@@ -138,6 +138,30 @@ namespace Menu.Common
 
                 // deactivate icon
                 m_Icon.enabled = false;
+            }
+            // PACKS (Special Offers by name)
+            else if (reward.RewardType == typeof(SPacksReward))
+            {
+                if (ShopManagementData.TryGetSpecialOffer(reward.RewardName, out SShopData offerData) && offerData.Icon != null)
+                    m_Icon.sprite = offerData.Icon;
+                else
+                    m_Icon.sprite = AssetLoader.LoadIcon(reward.RewardName);
+            }
+            else if (reward.RewardType == typeof(SMateryReward) && Enum.TryParse(reward.RewardName, out ECharacter character))
+            {
+                var baseTemplate = AssetLoader.LoadTemplateItem(character).GetComponent<TemplateCollectableItemUI>();
+                if (baseTemplate == null)
+                {
+                    Abort("Unable to load template for mastery reward " + reward.RewardName);
+                    return;
+                }
+
+                m_Qty.gameObject.SetActive(false);
+                var template = Instantiate(baseTemplate, m_Icon.transform.parent);
+                template.Initialize(character, asIconOnly: true);
+                template.SetBottomOverlay("M" + reward.Qty.ToString());
+                Destroy(template.Button);
+                m_Icon.gameObject.SetActive(false);
             }
 
             // OTHERS

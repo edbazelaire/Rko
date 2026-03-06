@@ -501,6 +501,7 @@ namespace Save
         public const string KEY_IS_ADMIN                = "IsAdmin";
         public const string KEY_TAG                     = "Tag";
         public const string KEY_TOKEN                   = "Token";
+        public const string KEY_DISCORD_ID              = "DiscordId";
         public const string KEY_AUTH_TOKEN              = "AuthToken";
         public const string KEY_REGION                  = "Region";
         public const string KEY_CURRENT_PROFILE_DATA    = "CurrentProfileData";
@@ -544,6 +545,7 @@ namespace Save
             { KEY_IS_ADMIN,                 false                                               },
             { KEY_TAG,                      ""                                                  },
             { KEY_TOKEN,                    ""                                                  },
+            { KEY_DISCORD_ID,               ""                                                  },
             { KEY_AUTH_TOKEN,               ""                                                  },
             { KEY_REGION,                   ""                                                  },
             { KEY_CURRENT_PROFILE_DATA,     new SProfileCurrentData()                           },
@@ -569,6 +571,7 @@ namespace Save
         public static bool                  TutoFightDone       => (bool)Instance.m_Data[KEY_TUTO_FIGHT_DONE];
         public static bool                  PseudoChanged       => (bool)Instance.m_Data[KEY_PSEUDO_CHANGED];
         public static string                Token               => (string)Instance.m_Data[KEY_TOKEN];
+        public static string                DiscordId           => (string)Instance.m_Data[KEY_DISCORD_ID];
         public static string                AuthToken           => (string)Instance.m_Data[KEY_AUTH_TOKEN];
         public static string                Region              => (string)Instance.m_Data[KEY_REGION];
         public static SProfileCurrentData   CurrentProfileData  => (SProfileCurrentData)Instance.m_Data[KEY_CURRENT_PROFILE_DATA];
@@ -656,6 +659,11 @@ namespace Save
         public static void SetToken(string token)
         {
             Instance.SetData(KEY_TOKEN, token);
+        }
+
+        public static void SetDiscordId(string discordId)
+        {
+            Instance.SetData(KEY_DISCORD_ID, discordId);
         }
 
         /// <summary>
@@ -1186,6 +1194,10 @@ namespace Save
                     
                 case KEY_TOKEN:
                     SetToken("");
+                    return;
+
+                case KEY_DISCORD_ID:
+                    SetDiscordId("");
                     return;
                     
                 case KEY_AUTH_TOKEN:

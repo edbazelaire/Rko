@@ -83,7 +83,6 @@ namespace Tools
         public static void ResetAll()
         {
             PlayerPrefs.SetString(EPlayerPref.ArenaType.ToString(), EArenaType.FrostArena.ToString());
-            
         }
 
         #endregion

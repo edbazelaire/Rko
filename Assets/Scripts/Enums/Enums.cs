@@ -1909,6 +1909,7 @@
         None = 0,
 
         ChestSpeedBoost = 1,
+        GoldenKey=2,
     }
 
     public enum EVolumeOption

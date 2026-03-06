@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Managers;
+using Assets.Scripts.Managers;
 using Enums;
 using Menu.Common.Filters;
 using Menu.PopUps;
@@ -81,7 +81,7 @@ namespace Menu.MainMenu.MainTab
         bool ShouldDisplay()
         {
             return m_ArenaDifficulty >= EArenaDifficulty.Brutal &&
-               m_ArenaDifficulty <= ProgressionCloudData.GetUnlockedArenaDifficulty(m_ArenaType);
+               ProgressionCloudData.IsCompleted(m_ArenaType, m_ArenaDifficulty);
         }
 
         #endregion

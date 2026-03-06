@@ -1,4 +1,4 @@
-﻿using Data.GameManagement;
+using Data.GameManagement;
 using Enums;
 using System.Collections.Generic;
 using System;
@@ -45,6 +45,7 @@ namespace Menu.MainMenu.MainTab
         Image               m_LockIcon;
 
         bool m_RequiresKey => ProgressionCloudData.IsCompleted(m_ArenaType, m_ArenaDifficulty.Difficulty);
+        bool m_HasGoldenKeyBoost => TimeCloudData.GetBoost(EBoost.GoldenKey)?.IsExpired() == false;
 
         #endregion
 
@@ -153,7 +154,7 @@ namespace Menu.MainMenu.MainTab
                 m_StageSectionUI.transform.parent.gameObject.SetActive(false);
                 m_ButtonsSection.gameObject.SetActive(true);
                 m_SelectButton.gameObject.SetActive(true);
-                m_KeyIcon.gameObject.SetActive(m_RequiresKey);
+                m_KeyIcon.gameObject.SetActive(m_RequiresKey && !m_HasGoldenKeyBoost);
                 m_CollectButton.gameObject.SetActive(false);
 
                 // check if has notification of unlocked arena
@@ -411,7 +412,7 @@ namespace Menu.MainMenu.MainTab
                 return;
             }
 
-            if (m_RequiresKey)
+            if (m_RequiresKey && !m_HasGoldenKeyBoost)
             {
                 if (InventoryCloudData.Instance.GetCurrency(ECurrency.Keys) <= 0)
                 {

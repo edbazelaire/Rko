@@ -1,4 +1,4 @@
-﻿using Enums;
+using Enums;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
@@ -10,6 +10,7 @@ using Unity.VisualScripting;
 using MyBox;
 using Managers.Monetization.IAP;
 using System.Linq;
+using Newtonsoft.Json;
 
 
 namespace Data.GameManagement
@@ -74,6 +75,42 @@ namespace Data.GameManagement
     }
 
     [Serializable]
+    public struct SPacksReward
+    {
+        public string PackName;
+
+        public SPacksReward(string packName)
+        {
+            PackName = packName;
+        }
+
+        public SReward AsReward()
+        {
+            return new SReward(typeof(SPacksReward), PackName, 1);
+        }
+    }
+
+    [Serializable]
+    public struct SMateryReward
+    {
+        [JsonProperty("tiers")]
+        public int Tiers;
+        [JsonProperty("character")]
+        public ECharacter Character;
+
+        public SMateryReward(ECharacter character, int tiers)
+        {
+            Character = character;
+            Tiers = tiers;
+        }
+
+        public SReward AsReward()
+        {
+            return new SReward(typeof(SMateryReward), Character.ToString(), Tiers);
+        }
+    }
+
+    [Serializable]
     public struct SRewardsData
     {
         public List<SCurrencyReward>        Currencies;
@@ -82,6 +119,8 @@ namespace Data.GameManagement
         public List<SCollectableReward>     Collectables;
         public List<SAchievementReward>     AchievementRewards;
         public List<SBoostReward>           Boosts;
+        public List<string>                 Packs;
+        public List<SMateryReward>          Mastery;
 
         public readonly bool IsEmpty => Count == 0;
         public readonly int Count => 
@@ -90,14 +129,18 @@ namespace Data.GameManagement
             + (PowerOrbs != null            ? PowerOrbs.Count           : 0)
             + (Collectables != null         ? Collectables.Count        : 0)
             + (AchievementRewards != null   ? AchievementRewards.Count  : 0)
-            + (Boosts != null               ? Boosts.Count              : 0);
+            + (Boosts != null               ? Boosts.Count              : 0)
+            + (Packs != null                ? Packs.Count               : 0)
+            + (Mastery != null              ? Mastery.Count             : 0);
 
         public SRewardsData(List<SCurrencyReward> currencyRewards       = null,
                             List<EChest> chests                         = null,
                             List<SPowerOrb> powerOrbs                   = null,
                             List<SCollectableReward> collectableRewards = null,
                             List<SAchievementReward> achievementRewards = null,
-                            List<SBoostReward> boosts                   = null)
+                            List<SBoostReward> boosts                   = null,
+                            List<string> packs                          = null,
+                            List<SMateryReward> mastery                 = null)
         {
             Currencies          = currencyRewards       ?? new List<SCurrencyReward>();
             Chests              = chests                ?? new List<EChest>();
@@ -105,6 +148,8 @@ namespace Data.GameManagement
             Collectables        = collectableRewards    ?? new List<SCollectableReward>();
             AchievementRewards  = achievementRewards    ?? new List<SAchievementReward>();
             Boosts              = boosts                ?? new List<SBoostReward>();
+            Packs               = packs                 ?? new List<string>();
+            Mastery             = mastery               ?? new List<SMateryReward>();
         }
 
         public void SetDefaultData()
@@ -115,6 +160,8 @@ namespace Data.GameManagement
             Collectables        ??= new List<SCollectableReward>();
             AchievementRewards  ??= new List<SAchievementReward>();
             Boosts              ??= new List<SBoostReward>();
+            Packs               ??= new List<string>();
+            Mastery             ??= new List<SMateryReward>();
         }
 
         #region Adding Rewards
@@ -169,6 +216,21 @@ namespace Data.GameManagement
             AchievementRewards.Add(achievementReward);
         }
 
+        public void Add(SPacksReward packReward)
+        {
+            if (string.IsNullOrWhiteSpace(packReward.PackName))
+                return;
+
+            Packs ??= new List<string>();
+            Packs.Add(packReward.PackName);
+        }
+
+        public void Add(SMateryReward masteryReward)
+        {
+            Mastery ??= new List<SMateryReward>();
+            Mastery.Add(masteryReward);
+        }
+
         public void Add(List<SAchievementReward> achievementRewards)
         {
             AchievementRewards ??= new List<SAchievementReward>();
@@ -212,6 +274,18 @@ namespace Data.GameManagement
                 Boosts ??= new List<SBoostReward>();
                 Boosts.AddRange(rewardsData.Boosts);
             }
+
+            if (rewardsData.Packs != null)
+            {
+                Packs ??= new List<string>();
+                Packs.AddRange(rewardsData.Packs);
+            }
+
+            if (rewardsData.Mastery != null)
+            {
+                Mastery ??= new List<SMateryReward>();
+                Mastery.AddRange(rewardsData.Mastery);
+            }
         }
 
         #endregion
@@ -248,6 +322,8 @@ namespace Data.GameManagement
                 list.AddRange(AsRewardStruct(Collectables));
                 list.AddRange(AsRewardStruct(AchievementRewards));
                 list.AddRange(AsRewardStruct(Boosts));
+                list.AddRange(AsRewardStruct(Packs));
+                list.AddRange(AsRewardStruct(Mastery));
 
                 return list;
             }
@@ -345,6 +421,37 @@ namespace Data.GameManagement
             foreach (EEmot data in emots)
             {
                 rewards.Add(new SReward(typeof(EEmot), data.ToString(), 1));
+            }
+
+            return rewards;
+        }
+
+        public List<SReward> AsRewardStruct(List<string> packs)
+        {
+            if (packs == null || packs.Count == 0)
+                return new List<SReward>();
+
+            var rewards = new List<SReward>();
+            foreach (string packName in packs)
+            {
+                if (string.IsNullOrWhiteSpace(packName))
+                    continue;
+
+                rewards.Add(new SPacksReward(packName).AsReward());
+            }
+
+            return rewards;
+        }
+
+        public List<SReward> AsRewardStruct(List<SMateryReward> masteryRewards)
+        {
+            if (masteryRewards == null || masteryRewards.Count == 0)
+                return new List<SReward>();
+
+            var rewards = new List<SReward>();
+            foreach (SMateryReward data in masteryRewards)
+            {
+                rewards.Add(data.AsReward());
             }
 
             return rewards;
@@ -582,6 +689,28 @@ namespace Data.GameManagement
 
             ErrorHandler.Error("Unable to find CurrencyColor config for currency " + currency);
             return Color.white;
+        }
+
+        public static bool TryGetSpecialOffer(string offerName, out SShopData offerData)
+        {
+            offerData = default;
+            if (string.IsNullOrWhiteSpace(offerName))
+                return false;
+            if (SpecialOffers == null || SpecialOffers.Count == 0)
+                return false;
+
+            foreach (SShopData data in SpecialOffers)
+            {
+                if (string.Equals(data.Name, offerName, StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(data.ProductId, offerName, StringComparison.OrdinalIgnoreCase)
+                    || (data.Product != EProduct.None && string.Equals(data.Product.ToString(), offerName, StringComparison.OrdinalIgnoreCase)))
+                {
+                    offerData = data;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public static SPriceData GetPrice(Enum collectable)

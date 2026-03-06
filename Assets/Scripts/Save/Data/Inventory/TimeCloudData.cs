@@ -1,14 +1,16 @@
-﻿using Assets;
+using Assets;
 using Data;
 using Data.GameManagement;
 using Enums;
 using Inventory;
 using MyBox;
 using Newtonsoft.Json;
+using Network;
 using Save.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Tools;
 using Unity.Services.CloudSave.Models;
 using UnityEngine;
@@ -250,6 +252,34 @@ namespace Save
             return default;
         }
 
+        public static bool CollectSpecialShopOffer(string name, int nCollections = 1)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                ErrorHandler.Error("Trying to collect special shop offer but name is empty");
+                return false;
+            }
+
+            if (!ShopManagementData.TryGetSpecialOffer(name, out SShopData shopData))
+            {
+                ErrorHandler.Error("Unable to collect special shop offer, no matching offer found for " + name);
+                return false;
+            }
+
+            // Unlimited offers do not have timer entries to update.
+            if (shopData.MaxCollection <= 0)
+                return true;
+
+            string timeDataName = GetSpecialShopOfferId(shopData.Name);
+            STimeData? timeData = GetTimeData(timeDataName);
+            if (timeData == null || timeData.Value.IsExpired())
+            {
+                UpdateTimeData(GenerateSpecialShopOffer(shopData), false);
+            }
+
+            return CollectTimeData(timeDataName, nCollections);
+        }
+
         #endregion
 
 
@@ -411,8 +441,27 @@ namespace Save
 
             SetDailyRewardsData(data, save);
             DailyRewardCollected?.Invoke();
+            _ = SendDailyRewardCollectedEventAsync(data.Streak);
 
             return reward;
+        }
+
+        static async Task SendDailyRewardCollectedEventAsync(int streak)
+        {
+            var response = await InGameEventsApiClient.SendDailyRewardCollectedEventAsync(streak);
+
+            if (response.Ok)
+            {
+                ErrorHandler.Log(
+                    () => "Daily reward API response (" + response.StatusCode + "): " + response.ResponseBody,
+                    ELogTag.System
+                );
+                return;
+            }
+
+            ErrorHandler.Warning(
+                "Daily reward API failed (" + response.StatusCode + "): " + response.ResponseBody
+            );
         }
 
 

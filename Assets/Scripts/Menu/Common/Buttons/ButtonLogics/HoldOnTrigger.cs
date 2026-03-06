@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections;
@@ -72,7 +72,6 @@ namespace Menu.Common.Buttons
         }
 
         #endregion
-
 
 
         #region Pointer Events

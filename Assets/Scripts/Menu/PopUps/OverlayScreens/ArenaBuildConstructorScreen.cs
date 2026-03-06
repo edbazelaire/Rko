@@ -97,11 +97,11 @@ namespace Menu.PopUps.OverlayScreens
 
             SBuildData buildData = new SBuildData(
                 characterLevel: ProfileCloudData.AccountLevel,
-                character: character.ToString(),
-                runes: runes.ToArray(),
-                runeLevels: new int[] { ProfileCloudData.AccountLevel, ProfileCloudData.AccountLevel, ProfileCloudData.AccountLevel },
-                spells: spells.ToArray(),
-                spellLevels: new int[] { ProfileCloudData.AccountLevel, ProfileCloudData.AccountLevel, ProfileCloudData.AccountLevel, ProfileCloudData.AccountLevel }
+                character:      character.ToString(),
+                runes:          runes.ToArray(),
+                runeLevels:     new int[] { ProfileCloudData.AccountLevel, ProfileCloudData.AccountLevel, ProfileCloudData.AccountLevel },
+                spells:         spells.ToArray(),
+                spellLevels:    new int[] { ProfileCloudData.AccountLevel, ProfileCloudData.AccountLevel, ProfileCloudData.AccountLevel, ProfileCloudData.AccountLevel }
             );
 
             ProgressionCloudData.SetCurrentArenaBuild(buildData);

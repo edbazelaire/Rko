@@ -1,8 +1,9 @@
-﻿using Assets.Scripts.Game.Loaders.Filters;
+using Assets.Scripts.Game.Loaders.Filters;
 using Data;
 using Data.GameManagement;
 using Enums;
 using System.Collections.Generic;
+using System.Linq;
 using Tools;
 using UnityEngine;
 
@@ -67,13 +68,34 @@ namespace Game.Loaders
 
         public static IAchievement Get (string achievement, ECharacter character = ECharacter.None) 
         {
-            return m_Achievements.FilterByCharacter(character).FilterByName(achievement);
+            if (string.IsNullOrEmpty(achievement) || m_Achievements == null)
+                return null;
+
+            var filtered = m_Achievements.FilterByCharacter(character);
+
+            // Prefer ID match first (handles prefixed IDs like arena/character IDs).
+            var byId = filtered.FirstOrDefault(data => data.GetID() == achievement);
+            if (byId != null)
+                return byId;
+
+            // Fallback to raw name for legacy callsites.
+            var byName = filtered.FirstOrDefault(data => data.GetName() == achievement);
+            if (byName != null)
+                return byName;
+
+            ErrorHandler.Warning("Achievement not found for value '" + achievement + "' and character '" + character + "'");
+            return null;
         }
 
         public static IAchievement GetFromId(string achievementId)
         {
             if (string.IsNullOrEmpty(achievementId))
                 return null;
+
+            // First try exact ID lookup to support all ID formats.
+            var byExactId = m_Achievements?.FirstOrDefault(a => a.GetID() == achievementId);
+            if (byExactId != null)
+                return byExactId;
 
             // Cherche pattern "Character_AchievementName"
             int index = achievementId.IndexOf('_');
@@ -90,7 +112,7 @@ namespace Game.Loaders
                 }
             }
 
-            // Sinon, c'est juste le nom de l'achievement
+            // Sinon, essaie comme nom/ID non préfixé
             return Get(achievementId, ECharacter.None);
         }
 

@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Managers.Sound;
+using Assets.Scripts.Managers.Sound;
 using Assets.Scripts.Menu.Common.Buttons.TemplateItemButtons;
 using Assets.Scripts.Menu.MainMenu.MainTab.Chests;
 using Data;
@@ -308,6 +308,14 @@ namespace Menu.PopUps
             {
                 yield return DisplayEmotReward(emot);
             }
+            else if (reward.RewardType == typeof(SPacksReward))
+            {
+                yield return DisplayPackReward(reward.RewardName);
+            }
+            else if (reward.RewardType == typeof(SMateryReward) && Enum.TryParse(reward.RewardName, out ECharacter character))
+            {
+                yield return DisplayMasteryReward(character, reward.Qty);
+            }
             else
             {
                 var collectable = CollectablesManagementData.Cast(reward.RewardName, reward.RewardType);
@@ -319,6 +327,30 @@ namespace Menu.PopUps
 
                 yield return DisplayCollectableReward(CollectablesManagementData.Cast(reward.RewardName, reward.RewardType), reward.Qty);
             }
+        }
+
+        #endregion
+
+        #region Packs
+
+        IEnumerator DisplayPackReward(string packName)
+        {
+            ErrorHandler.Log(() => "DisplayPackReward : " + packName, ELogTag.Rewards);
+
+            if (!ShopManagementData.TryGetSpecialOffer(packName, out SShopData packData))
+            {
+                ErrorHandler.Error("Unable to display pack reward " + packName + " because no matching Special Offer was found.");
+                yield break;
+            }
+
+            if (!TimeCloudData.CollectSpecialShopOffer(packData.Name))
+            {
+                ErrorHandler.Warning("Unable to mark special offer as collected for pack reward " + packData.Name);
+            }
+
+            // Displaying nested rewards adds one depth level in coroutine management.
+            m_Depth++;
+            yield return DisplayRewards(packData.Rewards.Rewards);
         }
 
         #endregion
@@ -639,6 +671,55 @@ namespace Menu.PopUps
             ProfileCloudData.AddAchievementReward(EAchievementReward.Emot, emot.ToString());
 
             // wait for click to display next
+            yield return new WaitUntil(() => m_Skip);
+        }
+
+        IEnumerator DisplayMasteryReward(ECharacter character, int tiers)
+        {
+            ErrorHandler.Log(() => "DisplayMasteryReward : ", ELogTag.Rewards);
+            ErrorHandler.Log(() => "      + character : " + character, ELogTag.Rewards);
+            ErrorHandler.Log(() => "      + tiers : " + tiers, ELogTag.Rewards);
+
+            SoundFXManager.PlayOnce(SoundFXManager.AchievementRewardCollectedSoundFX);
+
+            m_RewardDisplayContainer.SetActive(true);
+            m_RewardInfosSection.SetActive(false);
+            m_ChestContainer.SetActive(false);
+
+            UIHelper.CleanContent(m_RewardIconSection);
+
+            var templateObj = Instantiate(AssetLoader.LoadTemplateItem(character), m_RewardIconSection.transform);
+            var template = templateObj.GetComponent<TemplateCollectableItemUI>();
+            if (template == null)
+            {
+                ErrorHandler.Error("Unable to instantiate mastery reward template for " + character);
+                yield break;
+            }
+
+            m_CurrentTemplateItem = templateObj;
+            template.Initialize(character, asIconOnly: true);
+            template.SetMysteryIcon(false);
+            int displayTier = Mathf.Clamp(tiers, 1, 3);
+            template.SetBottomOverlay("Mastery " + TextHandler.ToRoman(displayTier));
+            template.ForceState(EButtonState.Normal);
+
+            yield return PlayAchievementRewardAnimation();
+            AnimationHandler.AddRaycast(m_RewardIconSection, size: 2f, color: new Color(1f, 1f, 1f, 0.3f));
+
+            var cloudData = InventoryCloudData.Instance.GetCollectable(character);
+            if (tiers <= 0 || tiers > 3)
+            {
+                ErrorHandler.Warning("Unable to collect mastery reward for " + character + ": tiers (" + tiers + ") must be > 0 and <= 3");
+            }
+            else if (tiers <= cloudData.Mastery)
+            {
+                ErrorHandler.Warning("Unable to collect mastery reward for " + character + ": tiers (" + tiers + ") must be > current mastery (" + cloudData.Mastery + ")");
+            }
+            else
+            {
+                InventoryManager.UpgradeMastery(character, tiers);
+            }
+
             yield return new WaitUntil(() => m_Skip);
         }
 

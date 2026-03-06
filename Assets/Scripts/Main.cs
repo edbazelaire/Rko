@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Network;
+using Assets.Scripts.Network;
 using Enums;
 using Game.Loaders;
 using Save;
@@ -22,6 +22,8 @@ using Unity.Services.Friends.Models;
 using UnityEngine.SceneManagement;
 using MyBox;
 using Managers.Monetization.IAP;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 
 
@@ -609,6 +611,182 @@ namespace Assets
             ErrorHandler.Error("Unable to setup Region for the player");
         }
 
+        async void CheckAlphestivalRewards()
+        {
+            var pendingRewardsResponse = await InGameEventsApiClient.GetPendingRewardsAsync();
+            if (!pendingRewardsResponse.Ok)
+            {
+                ErrorHandler.Warning("Unable to fetch pending rewards (" + pendingRewardsResponse.StatusCode + "): " + pendingRewardsResponse.ResponseBody);
+                return;
+            }
+
+            JObject data;
+            try
+            {
+                data = JObject.Parse(pendingRewardsResponse.ResponseBody);
+            }
+            catch (Exception ex)
+            {
+                ErrorHandler.Warning("Invalid pending rewards payload: " + ex.Message);
+                return;
+            }
+
+            if (data["rewards"] is not JArray rewardsArray || rewardsArray.Count == 0)
+                return;
+
+            string gamerId = data["gamer_id"] != null ? data["gamer_id"].ToString() : InGameEventsApiConfig.ResolveDiscordId();
+
+            foreach (JToken rewardEntry in rewardsArray)
+            {
+                string rewardId = rewardEntry["reward_id"] != null ? rewardEntry["reward_id"].ToString() : "";
+                JToken rewardJson = rewardEntry["reward"];
+                if (rewardJson == null || rewardJson.Type == JTokenType.Null)
+                {
+                    ErrorHandler.Warning("Pending reward has no reward payload. reward_id=" + rewardId);
+                    continue;
+                }
+
+                SRewardsData rewardsData;
+                try
+                {
+                    rewardsData = ParseApiRewardsData(rewardJson);
+                }
+                catch (Exception ex)
+                {
+                    ErrorHandler.Warning("Unable to parse reward payload for reward_id=" + rewardId + ": " + ex.Message);
+                    continue;
+                }
+
+                NotificationCloudData.AddMessage(new SMessage()
+                {
+                    Title = "Alphestival reward",
+                    Content = "Alphestival reward is now available in your inbox.",
+                    RewardsData = rewardsData
+                });
+
+                var collectResponse = await InGameEventsApiClient.CollectRewardAsync(gamerId, rewardId);
+                if (collectResponse.Ok)
+                    continue;
+
+                ErrorHandler.Warning("Unable to collect reward_id=" + rewardId + " (" + collectResponse.StatusCode + "): " + collectResponse.ResponseBody);
+            }
+        }
+
+        SRewardsData ParseApiRewardsData(JToken rewardJson)
+        {
+            var rewardsData = JsonConvert.DeserializeObject<SRewardsData>(rewardJson.ToString());
+            rewardsData.SetDefaultData();
+
+            // Normalize packs for messages coming from API payloads.
+            rewardsData.Packs = NormalizePackNames(rewardJson["Packs"], rewardsData.Packs);
+
+            // Normalize boosts for API payloads that use "name" instead of "Boost".
+            rewardsData.Boosts = NormalizeBoostRewards(rewardJson["Boosts"], rewardsData.Boosts);
+
+            // Legacy compatibility: API may send a single "Pack" field.
+            if (rewardJson["Pack"] != null)
+                rewardsData.Packs = NormalizePackNames(rewardJson["Pack"], rewardsData.Packs);
+
+            // Legacy compatibility: API may send a single "Boost" field.
+            if (rewardJson["Boost"] != null)
+                rewardsData.Boosts = NormalizeBoostRewards(rewardJson["Boost"], rewardsData.Boosts);
+
+            return rewardsData;
+        }
+
+        List<string> NormalizePackNames(JToken packsToken, List<string> currentPacks)
+        {
+            var normalized = currentPacks != null ? new List<string>(currentPacks) : new List<string>();
+            if (packsToken == null || packsToken.Type == JTokenType.Null)
+                return normalized;
+
+            if (packsToken.Type == JTokenType.Array)
+            {
+                foreach (JToken entry in (JArray)packsToken)
+                    AddPackName(normalized, entry?.ToString());
+            }
+            else
+            {
+                AddPackName(normalized, packsToken.ToString());
+            }
+
+            return normalized;
+        }
+
+        static void AddPackName(List<string> packs, string rawPackName)
+        {
+            string packName = rawPackName != null ? rawPackName.Trim() : "";
+            if (string.IsNullOrWhiteSpace(packName))
+                return;
+
+            if (packs.Any(p => string.Equals(p, packName, StringComparison.OrdinalIgnoreCase)))
+                return;
+
+            packs.Add(packName);
+        }
+
+        List<SBoostReward> NormalizeBoostRewards(JToken boostsToken, List<SBoostReward> currentBoosts)
+        {
+            var normalized = new List<SBoostReward>();
+
+            if (boostsToken != null && boostsToken.Type != JTokenType.Null)
+            {
+                if (boostsToken.Type == JTokenType.Array)
+                {
+                    foreach (JToken entry in (JArray)boostsToken)
+                        AddBoostReward(normalized, entry);
+                }
+                else
+                {
+                    AddBoostReward(normalized, boostsToken);
+                }
+            }
+
+            // If normalization from payload failed, keep only valid already-deserialized values.
+            if (normalized.Count > 0)
+                return normalized;
+
+            if (currentBoosts == null)
+                return normalized;
+
+            foreach (SBoostReward reward in currentBoosts)
+            {
+                if (reward.Boost == EBoost.None || reward.Duration <= 0)
+                    continue;
+
+                normalized.Add(reward);
+            }
+
+            return normalized;
+        }
+
+        static void AddBoostReward(List<SBoostReward> boosts, JToken boostToken)
+        {
+            if (boostToken == null || boostToken.Type == JTokenType.Null)
+                return;
+
+            string boostName = boostToken["name"]?.ToString();
+            if (string.IsNullOrWhiteSpace(boostName))
+                boostName = boostToken["Boost"]?.ToString();
+            if (string.IsNullOrWhiteSpace(boostName) && boostToken.Type == JTokenType.String)
+                boostName = boostToken.ToString();
+
+            if (!Enum.TryParse(boostName, true, out EBoost boost) || boost == EBoost.None)
+            {
+                ErrorHandler.Warning("Unable to parse boost reward name from API payload: " + boostName);
+                return;
+            }
+
+            JToken durationToken = boostToken["Duration"] ?? boostToken["duration"] ?? boostToken["Qty"] ?? boostToken["qty"];
+            if (durationToken == null || !int.TryParse(durationToken.ToString(), out int duration) || duration <= 0)
+            {
+                ErrorHandler.Warning("Unable to parse boost reward duration from API payload for boost " + boostName);
+                return;
+            }
+
+            boosts.Add(new SBoostReward(boost, duration));
+        }
+
         public void CheckCurrentMessage()
         {
             // pseudo not changed : this a new player no need to reset
@@ -684,6 +862,7 @@ namespace Assets
 
             // check if a current message needs to be displayed to the user before loading the scene 
             CheckCurrentMessage();
+            CheckAlphestivalRewards();
 
             // set error handler active depending on DebugOption settings
             ErrorHandler.IsActivated = PlayerPrefsHandler.GetDebug(EDebugOption.ErrorHandler);

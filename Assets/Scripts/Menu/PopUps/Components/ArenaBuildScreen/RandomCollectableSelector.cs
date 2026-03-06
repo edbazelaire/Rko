@@ -1,4 +1,4 @@
-﻿using Data;
+using Data;
 using Enums;
 using Game.Loaders;
 using Managers;
@@ -89,14 +89,26 @@ namespace Menu.PopUps.Components
                 // init template with values
                 templateItem.Initialize(m_Values[i], ProfileCloudData.AccountLevel, asIconOnly: true, removeListeners: true);
                 templateItem.SetBottomOverlay(m_Values[i].ToString());
-                templateItem.OverrideOnClickListener(() => { });
-                templateItem.ActivateHoldOnTrigger(true);
-                templateItem.HoldOnTrigger.HoldTriggeredEvent += (bool activate) => { 
-                    if (activate)
-                        templateItem.OpenInfoPopUp(asIconOnly: true); 
-                    else
-                        ToggleSelection(templateItem);
-                };
+                if (templateItem.HoldOnTrigger != null)
+                {
+                    // Keep tap/hold split behavior when HoldOnTrigger exists:
+                    // - short tap selects
+                    // - long hold opens info
+                    templateItem.OverrideOnClickListener(() => { });
+                    templateItem.ActivateHoldOnTrigger(true);
+                    templateItem.HoldOnTrigger.HoldTriggeredEvent += (bool activate) =>
+                    {
+                        if (activate)
+                            templateItem.OpenInfoPopUp(asIconOnly: true);
+                        else
+                            ToggleSelection(templateItem);
+                    };
+                }
+                else
+                {
+                    // Fallback for prefabs without HoldOnTrigger: regular click selects.
+                    templateItem.OverrideOnClickListener(() => ToggleSelection(templateItem));
+                }
 
                 // add to list of templates
                 m_Templates.Add(templateItem);

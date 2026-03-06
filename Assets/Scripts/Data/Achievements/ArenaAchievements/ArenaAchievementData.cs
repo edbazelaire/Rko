@@ -1,4 +1,4 @@
-﻿using Enums;
+using Enums;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,6 +15,10 @@ namespace Data
         protected EArenaDifficulty m_ArenaDifficulty;
         [SerializeField]
         public List<EArenaMod> m_ArenaMods;
+
+        public EArenaType ArenaType => m_ArenaType;
+        public EArenaDifficulty ArenaDifficulty => m_ArenaDifficulty;
+        public List<EArenaMod> ArenaMods => m_ArenaMods;
 
         public override string ID => m_ArenaType.ToString() + base.ID;
 
