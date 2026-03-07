@@ -1283,8 +1283,8 @@
         GlacialCrystal  = 9,
 
         // poison chests
-        RarePoison      = 10,    // TODO
-        EpicPoison      = 11,    // TODO
+        Infected        = 10,    
+        Corrosive       = 11,   
         Vinebound       = 12,
 
         // Void chests
@@ -1541,7 +1541,7 @@
 
         // ======================================================================================
         // Commons
-        Blessed = 1,
+        Blessed         = 1,
         FireDemon       = 2,
         Meteor          = 3,
         Coin            = 4,
@@ -1552,6 +1552,7 @@
         ChibiTao        = 9,
         Assassin        = 12,
         PrincessLife    = 13,
+        Alphavatar      = 14,
 
         // ======================================================================================
         // Chibis
