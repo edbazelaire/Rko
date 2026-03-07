@@ -21,7 +21,8 @@ namespace Network
         public static int RequestTimeoutSeconds = 15;
 
         // Fill these to activate API calls.
-        public static string BaseUrl        = "http://localhost:8080";
+        //public static string BaseUrl = "http://localhost:8080";
+        public static string BaseUrl = "https://web-production-d510a.up.railway.app";
         public static string SharedSecret   = "";
 
         public static string ResolveDiscordId()
