@@ -1423,6 +1423,7 @@
     public enum EAchievement
     {
         Lootless = 1,
+        GoldCollected = 2,
     }
 
     public enum ETitle

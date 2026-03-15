@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using Tools;
 using Unity.VisualScripting;
 using UnityEngine;
-using Network;
 
 
 namespace Data
@@ -214,48 +213,6 @@ namespace Data
 
             // save that the achievement was completed
             ProfileCloudData.CompleteAchievement(ID, m_ResetCount);
-
-            // Plug-and-play API hook: only emit when an arena achievement unlocks.
-            if (this is ArenaAchievementData arenaAchievement)
-                _ = SendArenaAchievementEventWithResponseAsync(arenaAchievement, achievementData as SArenaAchievementSubData);
-        }
-
-        async Task SendArenaAchievementEventWithResponseAsync(ArenaAchievementData arenaAchievement, SArenaAchievementSubData currentStep)
-        {
-            EArenaType arenaType = currentStep != null && currentStep.ArenaType != EArenaType.None
-                ? currentStep.ArenaType
-                : arenaAchievement.ArenaType;
-
-            EArenaDifficulty arenaDifficulty = currentStep != null
-                ? currentStep.ArenaDifficulty
-                : arenaAchievement.ArenaDifficulty;
-
-            List<EArenaMod> arenaMods = currentStep != null && currentStep.ArenaMods != null
-                ? currentStep.ArenaMods
-                : arenaAchievement.ArenaMods;
-
-            var response = await InGameEventsApiClient.SendArenaAchievementUnlockedEventAsync(
-                arenaType,
-                arenaDifficulty,
-                arenaMods
-            );
-
-            if (response.Ok)
-            {
-                ErrorHandler.Log(
-                    () => "Arena achievement API response (" + response.StatusCode + "): " + response.ResponseBody,
-                    ELogTag.System
-                );
-                return;
-            }
-
-            ErrorHandler.Warning(
-                "Arena achievement API failed (" + response.StatusCode + "): " + response.ResponseBody
-                + "\n Arena type: " + arenaType
-                + "\n Arena difficulty: " + arenaDifficulty
-                + "\n Arena mods: " + string.Join(", ", arenaMods)
-            );
-            
         }
 
         /// <summary>

@@ -31,12 +31,12 @@ namespace Assets.Scripts.Menu
 
             RefreshUI();
 
-            InventoryCloudData.CurrencyChangedEvent += OnCurrencyChanged;
+            InventoryCloudData.CurrencyTotalChangedEvent += OnCurrencyChanged;
         }
 
         protected void OnDestroy()
         {
-            InventoryCloudData.CurrencyChangedEvent -= OnCurrencyChanged;
+            InventoryCloudData.CurrencyTotalChangedEvent -= OnCurrencyChanged;
         }
 
         #endregion

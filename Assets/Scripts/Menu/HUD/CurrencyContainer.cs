@@ -35,13 +35,13 @@ namespace Assets.Scripts.Menu
             m_TextValue.text = TextHandler.FormatNumericalString(InventoryManager.GetCurrency(m_Currency));
 
             m_Button.onClick.AddListener(OnCurrencyButtonClicked);
-            InventoryCloudData.CurrencyChangedEvent += OnCurrencyChanged;
+            InventoryCloudData.CurrencyTotalChangedEvent += OnCurrencyChanged;
         }
 
         protected void OnDestroy()
         {
             m_Button.onClick.RemoveAllListeners();
-            InventoryCloudData.CurrencyChangedEvent -= OnCurrencyChanged;
+            InventoryCloudData.CurrencyTotalChangedEvent -= OnCurrencyChanged;
         }
 
         #endregion

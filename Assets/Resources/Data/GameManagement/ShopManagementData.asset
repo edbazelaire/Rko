@@ -38,6 +38,7 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
     Cost: 100
     MaxCollection: 1
@@ -58,6 +59,7 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
     Cost: 100
     MaxCollection: 1
@@ -68,14 +70,15 @@ MonoBehaviour:
     Rewards:
       Currencies:
       - Currency: 0
-        Qty: 5000
+        Qty: 10000
       Chests: 0700000008000000
       Collectables: []
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 500
+    Cost: 250
     MaxCollection: 1
     Reduction: 0
   - Product: 0
@@ -84,14 +87,15 @@ MonoBehaviour:
     Rewards:
       Currencies:
       - Currency: 0
-        Qty: 5000
+        Qty: 10000
       Chests: 0400000005000000
       Collectables: []
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 500
+    Cost: 250
     MaxCollection: 1
     Reduction: 0
   - Product: 0
@@ -100,14 +104,15 @@ MonoBehaviour:
     Rewards:
       Currencies:
       - Currency: 0
-        Qty: 5000
+        Qty: 10000
       Chests: 0a0000000b000000
       Collectables: []
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 500
+    Cost: 250
     MaxCollection: 1
     Reduction: 0
   - Product: 0
@@ -116,14 +121,15 @@ MonoBehaviour:
     Rewards:
       Currencies:
       - Currency: 0
-        Qty: 5000
+        Qty: 10000
       Chests: 0d0000000e000000
       Collectables: []
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 500
+    Cost: 250
     MaxCollection: 1
     Reduction: 0
   m_BundleShopData:
@@ -137,6 +143,7 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
     Cost: 25
     MaxCollection: 0
@@ -151,8 +158,9 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 80
+    Cost: 55
     MaxCollection: 0
     Reduction: 0
   - Product: 0
@@ -165,8 +173,9 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 500
+    Cost: 200
     MaxCollection: 0
     Reduction: 0
   - Product: 0
@@ -179,8 +188,9 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 1800
+    Cost: 500
     MaxCollection: 0
     Reduction: 0
   - Product: 0
@@ -193,8 +203,9 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 2200
+    Cost: 650
     MaxCollection: 0
     Reduction: 0
   - Product: 0
@@ -207,8 +218,9 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 2200
+    Cost: 650
     MaxCollection: 0
     Reduction: 0
   - Product: 0
@@ -221,8 +233,9 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 2200
+    Cost: 650
     MaxCollection: 0
     Reduction: 0
   - Product: 0
@@ -235,8 +248,9 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 2200
+    Cost: 650
     MaxCollection: 0
     Reduction: 0
   - Product: 0
@@ -246,27 +260,14 @@ MonoBehaviour:
       Currencies:
       - Currency: 0
         Qty: 15000
-      Chests: 000000000100000002000000
+      - Currency: 3
+        Qty: 2500
+      Chests: 00000000010000000200000002000000
       Collectables: []
       AchievementRewards: []
       Boosts: []
       Packs: []
-    Currency: 1
-    Cost: 1200
-    MaxCollection: 0
-    Reduction: 0
-  - Product: 0
-    Name: Pack_01
-    Icon: {fileID: 0}
-    Rewards:
-      Currencies:
-      - Currency: 0
-        Qty: 15000
-      Chests: 000000000100000002000000
-      Collectables: []
-      AchievementRewards: []
-      Boosts: []
-      Packs: []
+      Mastery: []
     Currency: 1
     Cost: 1200
     MaxCollection: 0
@@ -278,13 +279,16 @@ MonoBehaviour:
       Currencies:
       - Currency: 0
         Qty: 50000
+      - Currency: 3
+        Qty: 10000
       Chests: 010000000200000002000000
       Collectables: []
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 3500
+    Cost: 2250
     MaxCollection: 0
     Reduction: 0
   - Product: 0
@@ -294,13 +298,16 @@ MonoBehaviour:
       Currencies:
       - Currency: 0
         Qty: 100000
-      Chests: 0200000003000000
+      - Currency: 3
+        Qty: 25000
+      Chests: 020000000300000003000000
       Collectables: []
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 5500
+    Cost: 4800
     MaxCollection: 0
     Reduction: 0
   m_GoldsShopData:
@@ -316,8 +323,9 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 80
+    Cost: 45
     MaxCollection: 0
     Reduction: 0
   - Product: 0
@@ -332,8 +340,9 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 700
+    Cost: 400
     MaxCollection: 0
     Reduction: 0
   - Product: 0
@@ -348,8 +357,9 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 2800
+    Cost: 1800
     MaxCollection: 0
     Reduction: 0
   - Product: 0
@@ -364,8 +374,9 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 4800
+    Cost: 3200
     MaxCollection: 0
     Reduction: 0
   - Product: 0
@@ -380,8 +391,9 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 11500
+    Cost: 7500
     MaxCollection: 0
     Reduction: 0
   - Product: 0
@@ -396,8 +408,9 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 19000
+    Cost: 11500
     MaxCollection: 0
     Reduction: 0
   m_GemsShopData:
@@ -413,6 +426,7 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 2
     Cost: 0.99
     MaxCollection: 0
@@ -429,6 +443,7 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 2
     Cost: 4.99
     MaxCollection: 0
@@ -445,6 +460,7 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 2
     Cost: 9.99
     MaxCollection: 0
@@ -461,6 +477,7 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 2
     Cost: 19.99
     MaxCollection: 0
@@ -477,6 +494,7 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 2
     Cost: 39.99
     MaxCollection: 0
@@ -493,6 +511,7 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 2
     Cost: 99.99
     MaxCollection: 0
@@ -510,6 +529,7 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
     Cost: 25
     MaxCollection: 0
@@ -526,6 +546,7 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
     Cost: 250
     MaxCollection: 0
@@ -542,6 +563,7 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
     Cost: 999
     MaxCollection: 0
@@ -559,8 +581,9 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 0
-    Cost: 1500
+    Cost: 1000
     MaxCollection: 0
     Reduction: 0
   - Product: 0
@@ -569,12 +592,30 @@ MonoBehaviour:
     Rewards:
       Currencies:
       - Currency: 3
-        Qty: 10000
+        Qty: 3500
       Chests: 
       Collectables: []
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
+    Currency: 0
+    Cost: 10000
+    MaxCollection: 0
+    Reduction: 0
+  - Product: 0
+    Name: 
+    Icon: {fileID: 0}
+    Rewards:
+      Currencies:
+      - Currency: 3
+        Qty: 25000
+      Chests: 
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+      Packs: []
+      Mastery: []
     Currency: 0
     Cost: 50000
     MaxCollection: 0
@@ -591,8 +632,9 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
     Currency: 1
-    Cost: 3500
+    Cost: 100
     MaxCollection: 0
     Reduction: 0
   - Product: 0
@@ -607,6 +649,24 @@ MonoBehaviour:
       AchievementRewards: []
       Boosts: []
       Packs: []
+      Mastery: []
+    Currency: 1
+    Cost: 5500
+    MaxCollection: 0
+    Reduction: 0
+  - Product: 0
+    Name: 
+    Icon: {fileID: 0}
+    Rewards:
+      Currencies:
+      - Currency: 3
+        Qty: 50000
+      Chests: 
+      Collectables: []
+      AchievementRewards: []
+      Boosts: []
+      Packs: []
+      Mastery: []
     Currency: 1
     Cost: 5500
     MaxCollection: 0
@@ -622,9 +682,9 @@ MonoBehaviour:
       Currency: 0
   - Rarety: 2
     Price:
-      Price: 75000
+      Price: 55000
       Currency: 0
   - Rarety: 3
     Price:
-      Price: 150000
+      Price: 120000
       Currency: 0

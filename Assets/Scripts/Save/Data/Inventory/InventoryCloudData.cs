@@ -202,8 +202,10 @@ namespace Save
 
         // ===============================================================================================
         // EVENTS
-        /// <summary> action fired when the amount of gold changed </summary>
-        public static Action<ECurrency, int>        CurrencyChangedEvent;
+        /// <summary> [DEPRECATED] action fired when the total amount of a currency changes </summary>
+        public static Action<ECurrency, int>        CurrencyTotalChangedEvent;
+        /// <summary> action fired when a currency is added (+/-) </summary>
+        public static Action<ECurrency, int> CurrencyAddedEvent;
         /// <summary> event fired when a collectable data has changed </summary>
         public static Action<SCollectableCloudData> CollectableDataChangedEvent;
         /// <summary> event fired when a collectable data has been upgraded </summary>
@@ -232,13 +234,19 @@ namespace Save
 
         public override void SetData(string key, object value, bool save = true)
         {
-            base.SetData(key, value, save);
-
             if (Enum.TryParse(key, out ECurrency currency))
             {
-                // fire event that currency has changed
-                CurrencyChangedEvent?.Invoke(currency, System.Convert.ToInt32(value));
+                int currentValue = GetCurrency(currency);
+
+                // fire event that the a currency was added
+                CurrencyAddedEvent?.Invoke(currency, System.Convert.ToInt32(value) - currentValue);
+
+                /* [DEPRECATED] use only CurrencyAddedEvent */
+                // fire event that the total of the currency has changed
+                CurrencyTotalChangedEvent?.Invoke(currency, System.Convert.ToInt32(value));
             }
+
+            base.SetData(key, value, save);
         }
 
         public void SetData(ECurrency currency, object value, bool save = true)
@@ -434,27 +442,27 @@ namespace Save
             {
                 case KEY_GOLD:
                     m_Data[KEY_GOLD] = 0;
-                    CurrencyChangedEvent?.Invoke(ECurrency.Gold, 0);
+                    CurrencyTotalChangedEvent?.Invoke(ECurrency.Gold, 0);
                     break;
 
                 case KEY_GEMS:
                     m_Data[KEY_GEMS] = 0;
-                    CurrencyChangedEvent?.Invoke(ECurrency.Gems, 0);
+                    CurrencyTotalChangedEvent?.Invoke(ECurrency.Gems, 0);
                     break;
 
                 case KEY_KEYS:
                     m_Data[KEY_KEYS] = 0;
-                    CurrencyChangedEvent?.Invoke(ECurrency.Keys, 0);
+                    CurrencyTotalChangedEvent?.Invoke(ECurrency.Keys, 0);
                     break;
 
                 case KEY_XP:
                     m_Data[KEY_XP] = 0;
-                    CurrencyChangedEvent?.Invoke(ECurrency.Xp, 0);
+                    CurrencyTotalChangedEvent?.Invoke(ECurrency.Xp, 0);
                     break;
 
                 case KEY_TOTAL_XP:
                     m_Data[KEY_TOTAL_XP] = 0;
-                    CurrencyChangedEvent?.Invoke(ECurrency.TotalXp, 0);
+                    CurrencyTotalChangedEvent?.Invoke(ECurrency.TotalXp, 0);
                     break;
 
                 case KEY_CHARACTERS:

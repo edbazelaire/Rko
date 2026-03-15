@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GoldCollected
   m_EditorClassIdentifier: 
   m_PrettyName: 
-  m_Description: 
+  m_Description: Collect [TresholdValue] gold
   m_ResetCount: 0
   m_Character: -1
   m_MasteryThresholds: 
@@ -27,6 +27,8 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
+      Packs: []
+      Mastery: []
   - MaxValue: 10000
     Rewards:
       Currencies: []
@@ -41,6 +43,8 @@ MonoBehaviour:
         Badge: 0
         League: 0
       Boosts: []
+      Packs: []
+      Mastery: []
   - MaxValue: 25000
     Rewards:
       Currencies: []
@@ -55,6 +59,8 @@ MonoBehaviour:
         Badge: 501
         League: 2
       Boosts: []
+      Packs: []
+      Mastery: []
   - MaxValue: 50000
     Rewards:
       Currencies: []
@@ -62,6 +68,8 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
+      Packs: []
+      Mastery: []
   - MaxValue: 100000
     Rewards:
       Currencies: []
@@ -76,6 +84,8 @@ MonoBehaviour:
         Badge: 501
         League: 3
       Boosts: []
+      Packs: []
+      Mastery: []
   - MaxValue: 150000
     Rewards:
       Currencies: []
@@ -83,6 +93,8 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
+      Packs: []
+      Mastery: []
   - MaxValue: 250000
     Rewards:
       Currencies: []
@@ -97,6 +109,8 @@ MonoBehaviour:
         Badge: 501
         League: 4
       Boosts: []
+      Packs: []
+      Mastery: []
   - MaxValue: 350000
     Rewards:
       Currencies: []
@@ -104,6 +118,8 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
+      Packs: []
+      Mastery: []
   - MaxValue: 500000
     Rewards:
       Currencies: []
@@ -118,6 +134,8 @@ MonoBehaviour:
         Badge: 0
         League: 0
       Boosts: []
+      Packs: []
+      Mastery: []
   - MaxValue: 750000
     Rewards:
       Currencies: []
@@ -125,6 +143,8 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
+      Packs: []
+      Mastery: []
   - MaxValue: 1000000
     Rewards:
       Currencies: []
@@ -139,6 +159,8 @@ MonoBehaviour:
         Badge: 501
         League: 5
       Boosts: []
+      Packs: []
+      Mastery: []
   - MaxValue: 1500000
     Rewards:
       Currencies:
@@ -148,6 +170,8 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
+      Packs: []
+      Mastery: []
   - MaxValue: 2000000
     Rewards:
       Currencies: []
@@ -155,6 +179,8 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
+      Packs: []
+      Mastery: []
   - MaxValue: 2500000
     Rewards:
       Currencies: []
@@ -169,6 +195,8 @@ MonoBehaviour:
         Badge: 0
         League: 0
       Boosts: []
+      Packs: []
+      Mastery: []
   - MaxValue: 3000000
     Rewards:
       Currencies:
@@ -178,6 +206,8 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
+      Packs: []
+      Mastery: []
   - MaxValue: 3500000
     Rewards:
       Currencies: []
@@ -192,6 +222,8 @@ MonoBehaviour:
         Badge: 0
         League: 0
       Boosts: []
+      Packs: []
+      Mastery: []
   - MaxValue: 4000000
     Rewards:
       Currencies: []
@@ -199,6 +231,8 @@ MonoBehaviour:
       Collectables: []
       AchievementRewards: []
       Boosts: []
+      Packs: []
+      Mastery: []
   - MaxValue: 5000000
     Rewards:
       Currencies: []
@@ -213,6 +247,8 @@ MonoBehaviour:
         Badge: 501
         League: 6
       Boosts: []
+      Packs: []
+      Mastery: []
   - MaxValue: 10000000
     Rewards:
       Currencies: []
@@ -227,3 +263,5 @@ MonoBehaviour:
         Badge: 501
         League: 7
       Boosts: []
+      Packs: []
+      Mastery: []

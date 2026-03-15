@@ -224,6 +224,9 @@ namespace Game
 
         IEnumerator StartFight()
         {
+            // Subscribe to enemy HP early so we detect death even if player kills enemy before stage 6
+            m_Enemy.Controller.Life.Hp.OnValueChanged += OnEnemyHpValueChanged;
+
             // -- Khanan
             yield return GameUIManager.TutoGameUI.SpeakerEnemy.Write("I am Kahnan !", ECaptionType.Normal);
             yield return GameUIManager.TutoGameUI.SpeakerEnemy.Write("Humble servent of the true King", ECaptionType.Normal);
@@ -275,7 +278,6 @@ namespace Game
             yield return GameUIManager.TutoGameUI.Speaker.WriteOnce("Now... Let's FIGHT !", ECaptionType.Exclamation, showSpeaker: true);
 
             // give full freedom to player and AI
-            m_Enemy.Controller.Life.Hp.OnValueChanged += OnEnemyHpValueChanged;
             UnlockSpells();            // -- unlock all spells after that
             Pause(false);
         }
@@ -597,8 +599,14 @@ namespace Game
 
         protected void OnEnemyHpValueChanged(int _, int hp)
         {
-            if (hp > 500 || m_EndStarted)
+            if (hp > 1000 || m_EndStarted)
                 return;
+
+            if (! m_Enemy.Controller.Life.IsAlive)
+            {
+                GameManager.Instance.GameOver(m_Controller.Team);  
+                return;
+            }
 
             StartCoroutine(StartFinishAnimation());
         }

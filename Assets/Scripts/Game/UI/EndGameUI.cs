@@ -541,6 +541,19 @@ public class EndGameUI : MObject
                     extraDifficulty:    ProgressionCloudData.CurrentArena.SArenaDifficulty.Level,
                     arenaMods:          ProgressionCloudData.CurrentArena.ArenaMods
                 ));
+
+                if (m_GameResult == EGameResult.Win 
+                    && ProgressionCloudData.CurrentArena.GetArenaDifficulty() >= EArenaDifficulty.Brutal
+                    && ProgressionCloudData.CurrentArena.IsLastBoss())
+                {
+                    // Achievement Reward API call to Discord Bot at end of Arena
+                    _ = InGameEventsApiClient.SendArenaAchievementUnlockedEventAsync(
+                        ProgressionCloudData.CurrentArena.ArenaType,
+                        ProgressionCloudData.CurrentArena.GetArenaDifficulty(),
+                        ProgressionCloudData.CurrentArena.GetArenaMods()
+                    );
+                }
+
                 break;
 
             case EGameMode.Ranked:

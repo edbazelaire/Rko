@@ -51,13 +51,13 @@ namespace Managers.MainMenu
         protected override void RegisterListeners()
         {
             base.RegisterListeners();
-            InventoryCloudData.CurrencyChangedEvent += OnCurrencyChanged;
+            InventoryCloudData.CurrencyTotalChangedEvent += OnCurrencyChanged;
         }
 
         protected override void UnRegisterListeners()
         {
             base.UnRegisterListeners();
-            InventoryCloudData.CurrencyChangedEvent -= OnCurrencyChanged;
+            InventoryCloudData.CurrencyTotalChangedEvent -= OnCurrencyChanged;
         }
 
         void OnCurrencyChanged(ECurrency currency, int total = 0)

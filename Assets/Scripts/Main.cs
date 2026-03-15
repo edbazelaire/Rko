@@ -864,6 +864,9 @@ namespace Assets
             CheckCurrentMessage();
             CheckAlphestivalRewards();
 
+            // register core listeners (happening everywhere in the game)
+            RegisterCoreListeners();
+
             // set error handler active depending on DebugOption settings
             ErrorHandler.IsActivated = PlayerPrefsHandler.GetDebug(EDebugOption.ErrorHandler);
 
@@ -899,6 +902,23 @@ namespace Assets
             }
         }
 #endif
+
+        void RegisterCoreListeners()
+        {
+            InventoryCloudData.CurrencyAddedEvent += (ECurrency currency, int amount) => {
+                // must be a positive value
+                if (amount <= 0)
+                    return;
+
+                // update according Achievement 
+                switch (currency)
+                {
+                    case ECurrency.Gold:
+                        AchievementLoader.Get(EAchievement.GoldCollected).Increase(amount);
+                        break;
+                }
+            };
+        }
 
         /// <summary>
         /// When new player join the game, directly lead them to the tutorial

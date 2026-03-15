@@ -285,7 +285,7 @@ namespace Menu.MainMenu
             ProgressionCloudData.CurrentArenaDataChangedEvent       += OnSelectedCharacterChanged;
             PlayerPrefsHandler.GameModeChangedEvent                 += OnGameModeChanged;
             InventoryManager.CollectableUpgradedEvent               += OnCharacterLeveledUp;
-            InventoryCloudData.CurrencyChangedEvent                 += OnCurrencyChanged;
+            InventoryCloudData.CurrencyTotalChangedEvent                 += OnCurrencyChanged;
         }
 
         void UnregisterListeners()
@@ -299,7 +299,7 @@ namespace Menu.MainMenu
             ProgressionCloudData.CurrentArenaDataChangedEvent       -= OnSelectedCharacterChanged;
             PlayerPrefsHandler.GameModeChangedEvent                 -= OnGameModeChanged;
             InventoryManager.CollectableUpgradedEvent               -= OnCharacterLeveledUp;
-            InventoryCloudData.CurrencyChangedEvent                 -= OnCurrencyChanged;
+            InventoryCloudData.CurrencyTotalChangedEvent                 -= OnCurrencyChanged;
         }
 
         /// <summary>
