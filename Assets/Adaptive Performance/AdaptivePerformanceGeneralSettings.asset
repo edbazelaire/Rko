@@ -9,11 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 179fc3111e144bc4688dca4038b3265d, type: 3}
+  m_Script: {fileID: 21000, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: Standalone Settings
   m_EditorClassIdentifier: 
   m_LoaderManagerInstance: {fileID: -799038525302630712}
   m_InitManagerOnStart: 0
+  m_LastSelectedProvider: 
 --- !u!114 &-5147250993270963342
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -23,7 +24,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 536372c49e1ca914d822849d36de938c, type: 3}
+  m_Script: {fileID: 21001, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: iPhone Providers
   m_EditorClassIdentifier: 
   m_AutomaticLoading: 0
@@ -38,11 +39,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 179fc3111e144bc4688dca4038b3265d, type: 3}
+  m_Script: {fileID: 21000, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: Android Settings
   m_EditorClassIdentifier: 
   m_LoaderManagerInstance: {fileID: 2672286991639749311}
   m_InitManagerOnStart: 1
+  m_LastSelectedProvider: 
 --- !u!114 &-799038525302630712
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -52,7 +54,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 536372c49e1ca914d822849d36de938c, type: 3}
+  m_Script: {fileID: 21001, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: Standalone Providers
   m_EditorClassIdentifier: 
   m_AutomaticLoading: 0
@@ -68,7 +70,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb0ece14d1f711a4fb9325ca819dee95, type: 3}
+  m_Script: {fileID: 21010, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: AdaptivePerformanceGeneralSettings
   m_EditorClassIdentifier: 
   Keys: 070000000100000004000000
@@ -76,6 +78,8 @@ MonoBehaviour:
   - {fileID: -4846420906422244304}
   - {fileID: -5195001158050476799}
   - {fileID: 9075092094793521741}
+  m_EnableAdaptivePerformance: 1
+  m_Version: 6000.3
 --- !u!114 &2672286991639749311
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -85,14 +89,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 536372c49e1ca914d822849d36de938c, type: 3}
+  m_Script: {fileID: 21001, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: Android Providers
   m_EditorClassIdentifier: 
   m_AutomaticLoading: 0
   m_AutomaticRunning: 0
   m_Loaders:
   - {fileID: 11400000, guid: 2c3fbfbd5c229bb41895935e49f6ba9a, type: 2}
-  - {fileID: 11400000, guid: 255dbcc7a8119174c8ab77a0d99eb0ce, type: 2}
 --- !u!114 &9075092094793521741
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -102,8 +105,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 179fc3111e144bc4688dca4038b3265d, type: 3}
+  m_Script: {fileID: 21000, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: iPhone Settings
   m_EditorClassIdentifier: 
   m_LoaderManagerInstance: {fileID: -5147250993270963342}
   m_InitManagerOnStart: 1
+  m_LastSelectedProvider: 
